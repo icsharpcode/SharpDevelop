@@ -8,19 +8,9 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 {
 	public class MemberNode : ExtTreeNode
 	{
-		int    line;
-		int    column;
 		ModifierEnum modifiers;
 		IClass declaringType;
 		
-		string FileName {
-			get {
-				if (declaringType == null || declaringType.CompilationUnit == null) {
-					return null;
-				}
-				return declaringType.CompilationUnit.FileName;
-			}
-		}
 		public override bool Visible {
 			get {
 				ClassBrowserFilter filter = ClassBrowserPad.Instance.Filter;
@@ -51,8 +41,6 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu";
 			declaringType = member.DeclaringType;
 			modifiers = member.Modifiers;
-			line   = member.Region.BeginLine;
-			column = member.Region.BeginColumn;
 		}
 		
 		public static string GetText(IMember member)
@@ -123,9 +111,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		
 		public override void ActivateItem()
 		{
-			if (FileName != null) {
-				FileService.JumpToFilePosition(FileName, line, column);
-			}
+			NavigationService.NavigateTo(member);
 		}
 	}
 }

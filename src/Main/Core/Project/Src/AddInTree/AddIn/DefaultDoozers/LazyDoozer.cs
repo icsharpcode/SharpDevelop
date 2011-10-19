@@ -51,14 +51,14 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
 			IDoozer doozer = (IDoozer)addIn.CreateObject(className);
 			if (doozer == null) {
 				return null;
 			}
 			AddInTree.Doozers[name] = doozer;
-			return doozer.BuildItem(caller, codon, subItems);
+			return doozer.BuildItem(args);
 		}
 		
 		public override string ToString()
@@ -67,6 +67,5 @@ namespace ICSharpCode.Core
 			                     className,
 			                     name);
 		}
-		
 	}
 }

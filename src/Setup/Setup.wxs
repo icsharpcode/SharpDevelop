@@ -16,7 +16,7 @@
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
-		UpgradeCode="53805F5D-AC04-4592-8078-6EB7164D8C15"
+		UpgradeCode="BEA7A5F1-423F-47AD-9286-6A803A844AC5"
 		Version="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)">
 		
 		<!-- When a new major SharpDevelop version should be allowed to be installed in parallel to old versions,
@@ -28,11 +28,11 @@
 			Compressed="yes"/>
 		
 		<!-- Upgrade information -->
-		<Upgrade Id="53805F5D-AC04-4592-8078-6EB7164D8C15">
+		<Upgrade Id="BEA7A5F1-423F-47AD-9286-6A803A844AC5">
 			<!-- The UpgradeCode must be changed to allow two versions of SharpDevelop to be installed side-by-side -->
 			
 			<!-- Checks for older versions -->
-			<UpgradeVersion Minimum="4.1.0"
+			<UpgradeVersion Minimum="4.2.0"
 				IncludeMinimum="yes"
 				Maximum="$(var.PRODUCTMAJORVERSION).$(var.PRODUCTBUILDVERSION)"
 				IncludeMaximum="no" 
@@ -195,7 +195,6 @@
 				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
-				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="GraphSharpDll"/>
 				<ComponentRef Id="GraphSharpControlsDll"/>
@@ -298,9 +297,32 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>
+				<ComponentRef Id="EmptyCSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="CSharpMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBFileTemplates"/>
+				<ComponentRef Id="EmptyVBMvcWebProjectTemplate"/>
 				<ComponentRef Id="VBMvcWebProjectTemplate"/>
+				<ComponentRef Id="CSharpMvcControllerFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcViewUserControlFileTemplate"/>
+				<ComponentRef Id="VBMvcControllerFileTemplate"/>
+				<ComponentRef Id="VBMvcViewPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewContentPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewMasterPageFileTemplate"/>
+				<ComponentRef Id="VBMvcViewUserControlFileTemplate"/>
+				
+				<ComponentRef Id="CSharpWcfServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfServiceFileTemplate"/>
+				
+				<ComponentRef Id="CSharpWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfRestServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceFileTemplate"/>
+				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
@@ -524,6 +546,12 @@
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
 				<ComponentRef Id="JQuery161NuGetPackage"/>
 				<ComponentRef Id="Modernizr17NuGetPackage"/>
+			
+				<ComponentRef Id="MonoTextTemplatingDll"/>
+				<ComponentRef Id="TextTemplatingAddin"/>
+				<ComponentRef Id="TextTemplatingDll"/>
+				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
+				<ComponentRef Id="VBTextTemplateFileTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

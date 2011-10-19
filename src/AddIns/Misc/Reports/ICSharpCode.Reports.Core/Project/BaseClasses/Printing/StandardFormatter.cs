@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using ICSharpCode.Reports.Core.Project.BaseClasses;
 
 /// <summary>
 /// This Class handles the formatting of Output Values depending on there
@@ -17,18 +18,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 	internal static class StandardFormatter
 	{
 		
-		private static TypeCode TypeCodeFromString (string type) {
-			if (String.IsNullOrEmpty(type)) {
-				throw new ArgumentNullException("type");
-			}
-			return Type.GetTypeCode( Type.GetType(type));
-		}
-		
 		
 		public static string FormatOutput(string valueToFormat,string format,
 		                                     string dataType, string nullValue )
 		{
-			TypeCode typeCode = TypeCodeFromString(dataType);
+			TypeCode typeCode = TypeHelpers.TypeCodeFromString(dataType);
 			return StandardFormatter.FormatItem(valueToFormat,format,
 			                                    typeCode,nullValue);
 		}
@@ -121,7 +115,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					str = dec.ToString (format,CultureInfo.CurrentCulture);
 					
 				} catch (System.FormatException e) {
-						string s = String.Format(CultureInfo.InvariantCulture,"\tDecimalValue < {0} > {1}",toFormat,e.Message);
+					throw e;
 				}
 				return str;
 			} else {
@@ -140,7 +134,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				                           DateTimeFormatInfo.CurrentInfo);
 				
 				return str.Trim();
-			} catch (System.FormatException) {
+			} catch (System.FormatException ) {
 //					string s = String.Format("< {0} > {1}",toFormat,e.Message);
 //					System.Console.WriteLine("\t\tDateValue {0}",s);
 			}

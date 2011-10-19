@@ -2,24 +2,18 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
-using ICSharpCode.AvalonEdit.AddIn.Options;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
-using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -44,6 +38,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (!disposed) {
 				changeWatcher.ChangeOccurred -= ChangeOccurred;
+				changeWatcher.Dispose();
 				disposed = true;
 			}
 		}
@@ -54,10 +49,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextView textView = this.TextView;
 			
 			if (textView != null && textView.VisualLinesValid) {
+				var zeroLineInfo = changeWatcher.GetChange(0);
+				
 				foreach (VisualLine line in textView.VisualLines) {
 					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
 					
 					LineChangeInfo info = changeWatcher.GetChange(line.FirstDocumentLine.LineNumber);
+					
+					if (zeroLineInfo.Change == ChangeType.Deleted && line.FirstDocumentLine.LineNumber == 1 && info.Change != ChangeType.Unsaved) {
+						info.Change = ChangeType.Modified;
+					}
 					
 					switch (info.Change) {
 						case ChangeType.None:
@@ -142,8 +143,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextEditor editor = this.TextView.Services.GetService(typeof(TextEditor)) as TextEditor;
 			markerService = this.TextView.Services.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
+			LineChangeInfo zeroLineInfo = changeWatcher.GetChange(0);
+			
 			int offset, length;
 			bool hasNewVersion = changeWatcher.GetNewVersionFromLine(line, out offset, out length);
+			
+			if (line == 1 && zeroLineInfo.Change == ChangeType.Deleted) {
+				int zeroStartLine; bool zeroAdded;
+				startLine = 1;
+				string deletedText = changeWatcher.GetOldVersionFromLine(0, out zeroStartLine, out zeroAdded);
+				var docLine = editor.Document.GetLineByNumber(line);
+				string newLine = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, 1);
+				deletedText += newLine;
+				deletedText += editor.Document.GetText(docLine.Offset, docLine.Length);
+				if (oldText != null)
+					oldText = deletedText + newLine + oldText;
+				else
+					oldText = deletedText;
+				
+				if (!hasNewVersion) {
+					offset = 0;
+					length = docLine.Length;
+					hasNewVersion = true;
+				}
+			}
 			
 			if (hasNewVersion) {
 				if (marker != null)
@@ -158,6 +181,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			if (oldText != null) {
+				LineChangeInfo currLineInfo = changeWatcher.GetChange(startLine);
+				
+				if (currLineInfo.Change == ChangeType.Deleted && !(line == 1 && zeroLineInfo.Change == ChangeType.Deleted)) {
+					var docLine = editor.Document.GetLineByNumber(startLine);
+					if (docLine.DelimiterLength == 0)
+						oldText = DocumentUtilitites.GetLineTerminator(changeWatcher.CurrentDocument, startLine) + oldText;
+					oldText = editor.Document.GetText(docLine.Offset, docLine.TotalLength) + oldText;
+				}
+				
 				DiffControl differ = new DiffControl();
 				differ.editor.SyntaxHighlighting = editor.SyntaxHighlighting;
 				differ.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
@@ -165,41 +197,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				differ.editor.Document.Text = oldText;
 				differ.Background = Brushes.White;
 				
-				// TODO : deletions on line 0 cannot be displayed.
-				
-				LineChangeInfo prevLineInfo = changeWatcher.GetChange(startLine - 1);
-				LineChangeInfo lineInfo = changeWatcher.GetChange(startLine);
-				
-				if (prevLineInfo.Change == ChangeType.Deleted) {
-					var docLine = editor.Document.GetLineByNumber(startLine - 1);
-					differ.editor.Document.Insert(0, editor.Document.GetText(docLine.Offset, docLine.TotalLength));
-				}
-				
 				if (oldText == string.Empty) {
 					differ.editor.Visibility = Visibility.Collapsed;
 					differ.copyButton.Visibility = Visibility.Collapsed;
 				} else {
-					var baseDocument = new TextDocument(changeWatcher.BaseDocument.Text);
+					var baseDocument = new TextDocument(DocumentUtilitites.GetTextSource(changeWatcher.BaseDocument));
 					if (differ.editor.SyntaxHighlighting != null) {
 						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
 						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
 						
-						if (prevLineInfo.Change == ChangeType.Deleted)
-							popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(prevLineInfo.OldStartLineNumber);
-						else
-							popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(lineInfo.OldStartLineNumber);
+						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(currLineInfo.OldStartLineNumber);
 					}
 				}
 				
 				differ.revertButton.Click += delegate {
 					if (hasNewVersion) {
-						int delimiter = 0;
-						DocumentLine l = Document.GetLineByOffset(offset + length);
-						if (added)
-							delimiter = l.DelimiterLength;
-						if (length == 0)
-							oldText += DocumentUtilitites.GetLineTerminator(new AvalonEditDocumentAdapter(Document, null), l.LineNumber);
-						Document.Replace(offset, length + delimiter, oldText);
+						Document.Replace(offset, length, oldText);
 						tooltip.IsOpen = false;
 					}
 				};

@@ -57,15 +57,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RefreshPad()
 		{
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
+			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				localVarList.WatchItems.Clear();
 				return;
 			}
-			localVarList.WatchItems.Clear();
+			
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
-					foreach (var item in new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes) {
+					StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+					if (frame == null) return;
+					
+					localVarList.WatchItems.Clear();
+					foreach (var item in new StackFrameNode(frame).ChildNodes) {
 						localVarList.WatchItems.Add(item);
 					}
 				} 

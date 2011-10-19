@@ -3,7 +3,9 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
+
 namespace ICSharpCode.Reports.Core
 {
 	

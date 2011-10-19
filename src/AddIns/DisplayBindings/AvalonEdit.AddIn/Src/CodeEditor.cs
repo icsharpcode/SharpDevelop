@@ -13,12 +13,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -31,11 +31,20 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
+	public interface ICodeEditor
+	{
+		TextDocument Document { get; }
+		
+		void Redraw(ISegment segment, DispatcherPriority priority);
+		
+		event EventHandler DocumentChanged;
+	}
+	
 	/// <summary>
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
-	public class CodeEditor : Grid, IDisposable
+	public class CodeEditor : Grid, IDisposable, ICodeEditor
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
@@ -117,8 +126,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.errorPainter.UpdateErrors();
 					}
-					changeWatcher.Initialize(this.DocumentAdapter);
-					
+					if (changeWatcher != null) {
+						changeWatcher.Initialize(this.DocumentAdapter);
+					}
 					FetchParseInformation();
 				}
 			}
@@ -145,8 +155,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();
-			changeWatcher = new DefaultChangeWatcher();
-			
+			if (CodeEditorOptions.Instance.EnableChangeMarkerMargin) {
+				changeWatcher = new DefaultChangeWatcher();
+			}
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
@@ -195,6 +206,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
 			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
+			codeEditorView.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(codeEditorView.TextArea));
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
@@ -205,7 +217,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
-			codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			if (changeWatcher != null) {
+				codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			}
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
@@ -568,7 +582,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					quickClassBrowser = null;
 				}
 			}
-			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo, document);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);

@@ -33,6 +33,13 @@ namespace ICSharpCode.PackageManagement.Design
 			this.Version = new Version(1, 0, 0, 0);
 		}
 		
+		public FakePackage(string id, string version)
+		{
+			this.Id = id;
+			this.Description = String.Empty;
+			this.Version = new Version(version);
+		}
+		
 		public static FakePackage CreatePackageWithVersion(string version)
 		{
 			return CreatePackageWithVersion("Test", version);
@@ -149,5 +156,11 @@ namespace ICSharpCode.PackageManagement.Design
 			file.TargetPath = fileName;
 			FilesList.Add(file);
 		}
+		
+		public DateTime? LastUpdated { get; set; }
+		public bool IsLatestVersion { get; set; }
+		public Nullable<DateTimeOffset> Published { get; set; }
+		public string ReleaseNotes { get; set; }
+		public string Copyright { get; set; }
 	}
 }

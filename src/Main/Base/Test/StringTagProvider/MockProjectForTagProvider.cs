@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -279,6 +281,22 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		public void ProjectCreationComplete()
 		{
 			throw new NotImplementedException();
+		}
+		
+		public XElement LoadProjectExtensions(string name)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void SaveProjectExtensions(string name, XElement element)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public Properties ProjectSpecificProperties {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

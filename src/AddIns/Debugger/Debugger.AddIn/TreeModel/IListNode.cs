@@ -16,13 +16,14 @@ namespace Debugger.AddIn.TreeModel
 		Expression targetList;
 		int listCount;
 		
-		public IListNode(Expression targetListObject)
+		public IListNode(TreeNode parent, Expression targetListObject)
+			: base(parent)
 		{
 			this.targetList = targetListObject;
 			
 			this.Name = "IList";
 			this.listCount = this.targetList.GetIListCount();
-			this.ChildNodes = Utils.LazyGetItemsOfIList(this.targetList);
+			this.childNodes = Utils.LazyGetItemsOfIList(this, this.targetList);
 		}
 		
 		public override bool HasChildNodes {

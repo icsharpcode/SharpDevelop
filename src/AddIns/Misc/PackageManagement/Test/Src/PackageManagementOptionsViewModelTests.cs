@@ -46,6 +46,7 @@ namespace PackageManagement.Tests
 		void AddPackageToRecentRepository()
 		{
 			fakeRecentRepository.FakePackages.Add(new FakePackage());
+			fakeRecentRepository.HasRecentPackages = true;
 		}
 		
 		void AddPackageToMachineCache()
@@ -64,6 +65,7 @@ namespace PackageManagement.Tests
 		{
 			CreateRecentRepository();
 			CreateViewModelUsingCreatedRecentRepository();
+			fakeRecentRepository.HasRecentPackages = false;
 			
 			bool hasPackages = viewModel.HasNoRecentPackages;
 			
@@ -74,6 +76,7 @@ namespace PackageManagement.Tests
 		public void HasNoRecentPackages_RecentPackageRepositoryHasOnePackage_ReturnsFalse()
 		{
 			CreateRecentRepository();
+			fakeRecentRepository.HasRecentPackages = true;
 			AddPackageToRecentRepository();
 			CreateViewModelUsingCreatedRecentRepository();
 			
@@ -184,6 +187,7 @@ namespace PackageManagement.Tests
 			
 			RecordPropertyChanges();
 			viewModel.ClearRecentPackages();
+			fakeRecentRepository.HasRecentPackages = false;
 			
 			bool hasPackages = viewModel.HasNoRecentPackages;
 			

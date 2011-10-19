@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -13,8 +15,10 @@ using System.Xml;
 
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
@@ -68,7 +72,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				this.UserContent = designer;
 				InitPropertyEditor();
 			}
-			this.UserContent=designer;
+			this.UserContent = designer;
 			if (outline != null) {
 				outline.Root = null;
 			}
@@ -84,8 +88,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 						context.Services.AddService(typeof(ChooseClassServiceBase), new IdeChooseClassService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
-				try{
-					settings.ReportErrors=UpdateTasks;
+				try {
+					settings.ReportErrors = UpdateTasks;
 					designer.LoadDesigner(r, settings);
 					
 					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/AddIns/WpfDesign/Designer/ContextMenu");
@@ -97,10 +101,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 					propertyGridView.PropertyGrid.SelectedItems = null;
 					designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 					designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
-				}
-				catch
-				{
-					this.UserContent=new WpfDocumentError();
+				} catch {
+					this.UserContent = new WpfDocumentError();
 				}
 			}
 		}
@@ -110,7 +112,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			if(designer.DesignContext!=null){
+			if (IsDirty && designer.DesignContext != null) {
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
@@ -118,36 +120,35 @@ namespace ICSharpCode.WpfDesign.AddIn
 				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
 					designer.SaveDesigner(xmlWriter);
 				}
-			}
-			else{
-				if(_stream.CanRead){
+			} else {
+				if (_stream.CanRead) {
 					_stream.Position = 0;
-					using (var reader = new StreamReader(_stream))
+					using (var reader = new StreamReader(_stream)) {
 						using (var writer = new StreamWriter(stream)) {
-						writer.Write(reader.ReadToEnd());
+							writer.Write(reader.ReadToEnd());
+						}
 					}
 				}
 			}
-			
 		}
 		
 		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
-			Debug.Assert(xamlErrorService!=null);
-			foreach (var task in tasks) {
+			Debug.Assert(xamlErrorService != null);
+			foreach (Task task in tasks) {
 				TaskService.Remove(task);
 			}
 			
 			tasks.Clear();
 			
-			foreach (var error in xamlErrorService.Errors) {
+			foreach (XamlError error in xamlErrorService.Errors) {
 				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
 			}
 			
 			if (xamlErrorService.Errors.Count != 0) {
-				WorkbenchSingleton.Workbench.GetPad(typeof (ErrorListPad)).BringPadToFront();
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		
@@ -164,11 +165,35 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			propertyGridView = new PropertyGridView();
 			propertyContainer.PropertyGridReplacementContent = propertyGridView;
+			propertyGridView.PropertyGrid.PropertyChanged += OnPropertyGridPropertyChanged;
 		}
 		
 		void OnSelectionChanged(object sender, DesignItemCollectionEventArgs e)
 		{
 			propertyGridView.PropertyGrid.SelectedItems = DesignContext.Services.Selection.SelectedItems;
+		}
+
+		void OnPropertyGridPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "Name") {
+				if (!propertyGridView.PropertyGrid.IsNameCorrect) return;
+				
+				// get the XAML file
+				OpenedFile fileName = this.Files.Where(f => f.FileName.ToString().EndsWith(".xaml")).FirstOrDefault();
+				if (fileName == null) return;
+				
+				// parse the XAML file
+				ParseInformation info = ParserService.ParseFile(fileName.FileName.ToString());
+				if (info == null || info.CompilationUnit == null) return;
+				if (info.CompilationUnit.Classes.Count != 1) return;
+				
+				// rename the member
+				IMember member = info.CompilationUnit.Classes[0].AllMembers
+					.Where(m => m.Name == propertyGridView.PropertyGrid.OldName).FirstOrDefault();
+				if (member != null) {
+					FindReferencesAndRenameHelper.RenameMember(member, propertyGridView.PropertyGrid.Name);
+				}
+			}
 		}
 		
 		static bool IsCollectionWithSameElements(ICollection<DesignItem> a, ICollection<DesignItem> b)

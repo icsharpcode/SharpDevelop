@@ -40,9 +40,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			GetPackageReferences();
 			IPackageReferenceFile file = PackageReferenceFile;
-			foreach (PackageReference packageReference in packageReferences) {
-				file.DeleteEntry(packageReference.Id, packageReference.Version);
-			}
+			file.Delete();
 		}
 		
 		void GetPackageReferences()

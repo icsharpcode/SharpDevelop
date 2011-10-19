@@ -11,25 +11,12 @@ namespace ICSharpCode.PackageManagement
 {
 	public class UpdatedPackagesViewModel : PackagesViewModel
 	{
-		IPackageManagementSolution solution;
+		PackageManagementSelectedProjects selectedProjects;
 		UpdatedPackages updatedPackages;
 		string errorMessage = String.Empty;
 		
 		public UpdatedPackagesViewModel(
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories,
-			IPackageViewModelFactory packageViewModelFactory,
-			ITaskFactory taskFactory)
-			: this(
-				solution,
-				registeredPackageRepositories,
-				new UpdatedPackageViewModelFactory(packageViewModelFactory),
-				taskFactory)
-		{
-		}
-		
-		public UpdatedPackagesViewModel(
-			IPackageManagementSolution packageManagementService,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			UpdatedPackageViewModelFactory packageViewModelFactory,			
 			ITaskFactory taskFactory)
@@ -38,18 +25,23 @@ namespace ICSharpCode.PackageManagement
 				packageViewModelFactory,
 				taskFactory)
 		{
-			this.solution = packageManagementService;
+			this.selectedProjects = new PackageManagementSelectedProjects(solution);
 		}
 		
 		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			try {
 				IPackageRepository aggregateRepository = RegisteredPackageRepositories.CreateAggregateRepository();
-				IPackageManagementProject project = solution.GetActiveProject(aggregateRepository);
-				updatedPackages = new UpdatedPackages(project, aggregateRepository);
+				IQueryable<IPackage> installedPackages = GetInstalledPackages(aggregateRepository);
+				updatedPackages = new UpdatedPackages(installedPackages, aggregateRepository);
 			} catch (Exception ex) {
 				errorMessage = ex.Message;
 			}
+		}
+		
+		IQueryable<IPackage> GetInstalledPackages(IPackageRepository aggregateRepository)
+		{
+			return selectedProjects.GetInstalledPackages(aggregateRepository);
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

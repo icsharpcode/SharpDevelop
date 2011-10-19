@@ -25,7 +25,7 @@ namespace SharpRefactoring.Gui
 		
 		public PropertyOrFieldWrapper(IMember member)
 		{
-			if (member == null || member.ReturnType == null)
+			if (member == null)
 				throw new ArgumentNullException("member");
 			if (!(member is IField || member is IProperty))
 				throw new ArgumentException("member must be IField or IProperty");

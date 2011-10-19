@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.TextTemplating</RootNamespace>
+    <AssemblyName>TextTemplating</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\TextTemplating\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Project</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.TextTemplating">
+      <HintPath>lib\Mono.TextTemplating.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Src\AddInAssemblyName.cs" />
+    <Compile Include="Src\AddInAssemblyRuntime.cs" />
+    <Compile Include="Src\CompilerErrorTask.cs" />
+    <Compile Include="Src\IAddIn.cs" />
+    <Compile Include="Src\IAddInRuntime.cs" />
+    <Compile Include="Src\IAddInTree.cs" />
+    <Compile Include="Src\IAppDomain.cs" />
+    <Compile Include="Src\IAssemblyParserService.cs" />
+    <Compile Include="Src\IReflectionProjectContent.cs" />
+    <Compile Include="Src\ITextTemplatingAppDomain.cs" />
+    <Compile Include="Src\ITextTemplatingAppDomainFactory.cs" />
+    <Compile Include="Src\ITextTemplatingAssemblyPathResolver.cs" />
+    <Compile Include="Src\ITextTemplatingAssemblyResolver.cs" />
+    <Compile Include="Src\ITextTemplatingCustomToolContext.cs" />
+    <Compile Include="Src\ITextTemplatingEnvironment.cs" />
+    <Compile Include="Src\ITextTemplatingFilePreprocessor.cs" />
+    <Compile Include="Src\ITextTemplatingHost.cs" />
+    <Compile Include="Src\ITextTemplatingFileGenerator.cs" />
+    <Compile Include="Src\ITextTemplatingHostAppDomainAssemblyResolver.cs" />
+    <Compile Include="Src\ITextTemplatingPathResolver.cs" />
+    <Compile Include="Src\ITextTemplatingStringParser.cs" />
+    <Compile Include="Src\ITextTemplatingVariables.cs" />
+    <Compile Include="Src\NamespaceHint.cs" />
+    <Compile Include="Src\TemplatingHostProcessTemplateError.cs" />
+    <Compile Include="Src\TextTemplatingAddIn.cs" />
+    <Compile Include="Src\TextTemplatingAddInRuntime.cs" />
+    <Compile Include="Src\TextTemplatingAddInTree.cs" />
+    <Compile Include="Src\TextTemplatingAppDomain.cs" />
+    <Compile Include="Src\TextTemplatingAppDomainFactory.cs" />
+    <Compile Include="Src\TextTemplatingAssemblyParserService.cs" />
+    <Compile Include="Src\TextTemplatingAssemblyPathResolver.cs" />
+    <Compile Include="Src\TextTemplatingAssemblyResolver.cs" />
+    <Compile Include="Src\TextTemplatingCustomTool.cs" />
+    <Compile Include="Src\TextTemplatingCustomToolContext.cs" />
+    <Compile Include="Src\TextTemplatingDirectoryVariable.cs" />
+    <Compile Include="Src\TextTemplatingEnvironment.cs" />
+    <Compile Include="Src\TextTemplatingFileGenerator.cs" />
+    <Compile Include="Src\TextTemplatingFileGeneratorCustomTool.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\TextTemplatingFilePreprocessor.cs" />
+    <Compile Include="Src\TextTemplatingFilePreprocessorCustomTool.cs" />
+    <Compile Include="Src\TextTemplatingFileProcessor.cs" />
+    <Compile Include="Src\TextTemplatingHost.cs" />
+    <Compile Include="Src\TextTemplatingHostAppDomain.cs" />
+    <Compile Include="Src\TextTemplatingHostAppDomainAssemblyResolver.cs" />
+    <Compile Include="Src\TextTemplatingHostContext.cs" />
+    <Compile Include="Src\TextTemplatingPathResolver.cs" />
+    <Compile Include="Src\TextTemplatingReflectionProjectContent.cs" />
+    <Compile Include="Src\TextTemplatingServiceProvider.cs" />
+    <Compile Include="Src\TextTemplatingStringParser.cs" />
+    <Compile Include="Src\TextTemplatingVariableLocation.cs" />
+    <Compile Include="Src\TextTemplatingVariables.cs" />
+    <Compile Include="Src\TextTemplatingVariablesStringBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\TextTemplating.xshd" />
+    <None Include="Templates\CSharp.TextTemplate.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\VB.TextTemplate.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TextTemplating.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates" />
+    <Folder Include="Resources" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

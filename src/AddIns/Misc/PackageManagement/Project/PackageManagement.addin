@@ -19,11 +19,11 @@
 	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
-				id="AddPackageReference"
-				label="Add Package Reference"
-				insertafter="AddReference"
-				insertbefore="AddWebReference"
-				class = "ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>		
+				id="ManagePackages"
+				label="Manage Packages..."
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
 		</Condition>
 	</Path>
 	
@@ -31,11 +31,11 @@
 	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
-				id="AddPackageReference"
-				label="Add Package Reference"
-				insertafter="AddReference"
-				insertbefore="AddWebReference"
-				class="ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>
+				id="ManagePackages"
+				label="Manage Packages..."
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 		</Condition>
 	</Path>
 	
@@ -43,11 +43,23 @@
 	<Path name="/SharpDevelop/Workbench/MainMenu/Project">
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem
-				id="AddPackageReference"
-				label="Add Package Reference"
-				insertafter="AddReference"
-				insertbefore="AddWebReference"
-				class="ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>				
+				id="ManagePackages"
+				label="Manage Packages..."
+				insertafter="AddWebReference"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>				
+		</Condition>
+	</Path>
+	
+	<!-- Projects window context menu - solution selected -->
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
+		<Condition name="WriteableSolution" action="Disable">
+			<MenuItem
+				id="ManagePackagesForSolution"
+				label="Manage Packages..."
+				insertafter="CombineAddMenu"
+				insertbefore="AddSeparator"
+				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>
 		</Condition>
 	</Path>
 
@@ -66,6 +78,10 @@
 				id="PackageSources"
 				label="Package Sources"
 				class="ICSharpCode.PackageManagement.RegisteredPackageSourcesView"/>
+			<OptionPanel
+				id="ProjectTemplatePackageSources"
+				label="Template Package Sources"
+				class="ICSharpCode.PackageManagement.RegisteredProjectTemplatePackageSourcesView"/>
 		</OptionPanel>
 	</Path>
 	

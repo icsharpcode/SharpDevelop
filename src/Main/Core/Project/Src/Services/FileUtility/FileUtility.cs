@@ -140,6 +140,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string windowsSdk71InstallRoot = null;
+		/// <summary>
+		/// Location of the .NET 4.0 SDK (Windows SDK 7.1) install root.
+		/// </summary>
+		public static string WindowsSdk71InstallRoot {
+			get {
+				if (windowsSdk71InstallRoot == null) {
+					windowsSdk71InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.1", "InstallationFolder") ?? string.Empty;
+				}
+				return windowsSdk71InstallRoot;
+			}
+		}
+		
 		#endregion
 		
 		[Obsolete("Use System.IO.Path.Combine instead")]
@@ -202,6 +215,10 @@ namespace ICSharpCode.Core
 		/// <returns>The path of the executable, or null if the exe is not found.</returns>
 		public static string GetSdkPath(string exeName) {
 			string execPath;
+			if (!string.IsNullOrEmpty(WindowsSdk71InstallRoot)) {
+				execPath = Path.Combine(WindowsSdk71InstallRoot, "bin\\" + exeName);
+				if (File.Exists(execPath)) { return execPath; }
+			}
 			if (!string.IsNullOrEmpty(WindowsSdk70InstallRoot)) {
 				execPath = Path.Combine(WindowsSdk70InstallRoot, "bin\\" + exeName);
 				if (File.Exists(execPath)) { return execPath; }
@@ -231,6 +248,9 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static string GetRelativePath(string baseDirectoryPath, string absPath)
 		{
+			if (string.IsNullOrEmpty(baseDirectoryPath)) {
+				return absPath;
+			}
 			if (IsUrl(absPath) || IsUrl(baseDirectoryPath)){
 				return absPath;
 			}

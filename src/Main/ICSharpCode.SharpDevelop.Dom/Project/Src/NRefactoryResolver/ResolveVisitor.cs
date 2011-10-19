@@ -497,9 +497,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			List<string> fieldNames = new List<string>();
 			
 			foreach (Expression expr in initializer.CreateExpressions) {
-				if (expr is NamedArgumentExpression) {
+				if (expr is MemberInitializerExpression) {
 					// use right part only
-					fieldTypes.Add( ResolveType(((NamedArgumentExpression)expr).Expression) );
+					fieldTypes.Add( ResolveType(((MemberInitializerExpression)expr).Expression) );
 				} else {
 					fieldTypes.Add( ResolveType(expr) );
 				}
@@ -534,8 +534,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (expr is MemberReferenceExpression) {
 				return ((MemberReferenceExpression)expr).MemberName;
-			} else if (expr is NamedArgumentExpression) {
-				return ((NamedArgumentExpression)expr).Name;
+			} else if (expr is MemberInitializerExpression) {
+				return ((MemberInitializerExpression)expr).Name;
 			} else if (expr is IdentifierExpression) {
 				return ((IdentifierExpression)expr).Identifier;
 			} else {
@@ -688,6 +688,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					PointerReturnType prt = type.CastToDecoratingReturnType<PointerReturnType>();
 					if (prt != null) {
 						return CreateResolveResult(prt.BaseType);
+					} else {
+						return null;
+					}
+				case UnaryOperatorType.Await:
+					var crt = type.CastToConstructedReturnType();
+					if (crt != null && crt.Name == "Task" && crt.TypeArguments.Count == 1) {
+						return CreateResolveResult(crt.TypeArguments[0]);
 					} else {
 						return null;
 					}

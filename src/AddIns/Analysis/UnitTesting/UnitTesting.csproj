@@ -63,6 +63,7 @@
     <Compile Include="Src\InnerClassEnumerator.cs" />
     <Compile Include="Src\IUnitTestMessageService.cs" />
     <Compile Include="Src\MultipleProjectBuildable.cs" />
+    <Compile Include="Src\TestMemberEventArgs.cs" />
     <Compile Include="Src\TestProcessRunnerBaseContext.cs" />
     <Compile Include="Src\UnitTestAddInTree.cs" />
     <Compile Include="Src\UnitTestBuildOptions.cs" />
@@ -134,14 +135,14 @@
     <Compile Include="Src\TestProject.cs" />
     <Compile Include="Src\ITestTreeView.cs" />
     <Compile Include="Src\TestClass.cs" />
-    <Compile Include="Src\TestMethod.cs" />
+    <Compile Include="Src\TestMember.cs" />
     <Compile Include="Src\TestAttributeName.cs" />
     <Compile Include="Src\TestTreeNode.cs" />
     <Compile Include="Src\TestTreeViewImageList.cs" />
     <Compile Include="Src\TestProjectTreeNode.cs" />
     <Compile Include="Src\TestNamespaceTreeNode.cs" />
     <Compile Include="Src\TestClassTreeNode.cs" />
-    <Compile Include="Src\TestMethodTreeNode.cs" />
+    <Compile Include="Src\TestMemberTreeNode.cs" />
     <Compile Include="Src\UnitTestingOptions.cs" />
     <Compile Include="Src\UnitTestingOptionsPanel.cs">
       <SubType>UserControl</SubType>
@@ -156,9 +157,8 @@
     <Compile Include="Src\TestResultsMonitor.cs" />
     <Compile Include="Src\TestFinishedEventArgs.cs" />
     <Compile Include="Src\TestClassCollection.cs" />
-    <Compile Include="Src\TestMethodCollection.cs" />
+    <Compile Include="Src\TestMemberCollection.cs" />
     <Compile Include="Src\TestClassEventArgs.cs" />
-    <Compile Include="Src\TestMethodEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

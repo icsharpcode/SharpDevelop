@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			//item.Image = ClassBrowserIconService.Method.Bitmap;
 			item.ShortcutKeys = Keys.F6;
 			item.Click += delegate {
-				ContextActionsPopupHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus();
+				ContextActionsHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus();
 			};
 			return item;
 		}

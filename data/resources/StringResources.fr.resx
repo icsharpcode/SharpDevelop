@@ -298,6 +298,15 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Système numérique</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Décimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadécimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Octal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Redimensionner à la largeur actuelle</value>
   </data>
@@ -779,9 +788,6 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' a été supprimé de la liste d'ignorés.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Laisser la solution précédente ouverte</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Poser un verrou</value>
   </data>
@@ -808,12 +814,6 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Afficher l'&amp;historique des fichiers sous contrôle de version</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Recharger la solution</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop a detecté que l'opération de contrôle de version a changée des fichiers du projet. Rechargez la solution.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Relocaliser</value>
@@ -974,9 +974,6 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fichier</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>A propos</value>
@@ -2412,6 +2409,12 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Déboguage en cours</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pause lors des exceptions gérées</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Pas-à-pas en cours</value>
   </data>
@@ -2697,6 +2700,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>Lissage des polices</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Activer la marge pour le marqueur de suivi des modification</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Activer la &amp;complétion de code</value>
   </data>
@@ -2976,7 +2982,7 @@ Un changement des arrangements est visible lors du prochain relancement de #Deve
     <value>Processeur Itanium 64bits</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Processeur AMD 64bits</value>
+    <value>Processeur 64 bits (x64)</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Processeur 32bits compatible Intel</value>
@@ -3491,6 +3497,9 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Démarrer</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Ligne</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Mettre à jo&amp;ur</value>
   </data>
@@ -3766,9 +3775,6 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fin de ligne</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Ligne</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossible de localiser l'application console NCover.
@@ -4286,7 +4292,7 @@ Toutes les modifications seront perdues.</value>
     <value>${CurrentMethodNumber} sur ${NumberOfTotalMethods}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
-    <value>Le fichier ${File} a été modifié de l'extérieur, voulez-vous le recharger ?
+    <value>Le fichier ${File} a été modifié hors de SharpDevelop, voulez-vous le recharger ?
 </value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
@@ -4389,7 +4395,7 @@ Toutes les modifications seront perdues.</value>
     <value>Catégories</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.DialogName" xml:space="preserve">
-    <value>Configurer l'encadré (sidebar)</value>
+    <value>Configuration des outils</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace" xml:space="preserve">
     <value>Espace de noms</value>
@@ -4805,6 +4811,15 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Chargement de ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Laisser la solution précédente ouverte</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Recharger la solution</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>La solution a été modifiée hors de SharpDevelop.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convertir les projets sélectionnés vers:</value>
@@ -5516,6 +5531,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>Vous ne pouvez pas changer pour une fonction sans symboles.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>Les options de décompilation du code doivent être activés pour aller vers une fonction sans symboles.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Méthodes externes]</value>
   </data>
@@ -5525,6 +5543,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Langage</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Afficher le nom des arguments</value>
   </data>
@@ -5533,6 +5554,12 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Afficher les méthodes externes</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Afficher les numéros de ligne</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Afficher les noms des modules</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Demander</value>
@@ -5754,6 +5781,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Définir l'instruction suivante</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Souhaitez-vous arrêter le déboguage?</value>
+  </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>Détacher du processus ou le terminer ?</value>
   </data>
@@ -5766,8 +5796,14 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>Vous ne pouvez pas faire de pas-à-pas car il n'y a pas de fonction active sélectionnée</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>Impossible de chager de thread sans cadre disponible.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>Vous ne pouvez pas changer de fonction lorsque le débogueur est lancé.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>Les options de décompilation du code doivent être activés pour changer de thread.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Pause</value>
@@ -7099,6 +7135,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Fichier vide</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Créée une nouvelle classe pour les Exceptions.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Exception</value>
   </data>
@@ -7230,6 +7269,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Formulaire Web ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Créée un gestionnaire web ASP.NET avec code attaché.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>Gestionnaire ASP.NET</value>
@@ -7460,7 +7502,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Créer un nouveau rapport avec le Report Wizard</value>
   </data>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
-    <value>Configurer l'encadré (sidebar)...</value>
+    <value>Configuration des outils</value>
   </data>
   <data name="XML.MainMenu.Analysis" xml:space="preserve">
     <value>&amp;Analyses</value>
@@ -7557,6 +7599,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Supprimer tous les points d'arrêt</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Exécuter le dernier build</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Exécuter &amp;sans débogueur</value>
@@ -8095,15 +8140,6 @@ Erreur lors du démarrage:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Utilisateur:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Vous devriez regarder les nouvelles versions de SharpDevelop, recommander SharpDevelop à vos amis et écrire des programmes en C# avec !</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Vous pouvez ouvrir l'assistant de modèles de code avec Ctrl+J.</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Que vous pouvez taper "? name =...;" (C#) ou "Dim name As ? =..." (VB) et SharpDevelop substituera le point d'interrogation par le nom du type de "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Options du tampon</value>

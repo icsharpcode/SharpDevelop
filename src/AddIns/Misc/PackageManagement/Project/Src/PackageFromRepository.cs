@@ -102,6 +102,28 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Rating; }
 		}
 		
+		public DateTime? LastUpdated {
+			get { return GetLastUpdated(); }
+		}
+		
+		DateTime? GetLastUpdated()
+		{
+			DateTimeOffset? lastUpdated = GetDataServicePackageLastUpdated();
+			if (lastUpdated.HasValue) {
+				return lastUpdated.Value.DateTime;
+			}
+			return null;
+		}
+		
+		protected virtual DateTimeOffset? GetDataServicePackageLastUpdated()
+		{
+			var dataServicePackage = package as DataServicePackage;
+			if (dataServicePackage != null) {
+				return dataServicePackage.LastUpdated;
+			}
+			return null;
+		}
+		
 		public IEnumerable<IPackageFile> GetFiles()
 		{
 			return package.GetFiles();
@@ -120,6 +142,22 @@ namespace ICSharpCode.PackageManagement
 				}
 				return hasDependencies.Value;
 			}
+		}
+		
+		public bool IsLatestVersion {
+			get { return package.IsLatestVersion; }
+		}
+		
+		public Nullable<DateTimeOffset> Published {
+			get { return package.Published; }
+		}
+		
+		public string ReleaseNotes {
+			get { return package.ReleaseNotes; }
+		}
+		
+		public string Copyright {
+			get { return package.Copyright; }
 		}
 	}
 }

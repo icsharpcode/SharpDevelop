@@ -9,30 +9,21 @@ using System.ComponentModel;
 	public interface IDataNavigator {
  		
  		void Fill (ReportItemCollection collection);
- 		bool MoveNext () ;
+ 		bool MoveNext ();
+ 		
  		void Reset();
  		
- 		CurrentItemsCollection GetDataRow();
- 		
- 		bool HasMoreData {
- 			get;
- 		}
- 		
+ 		CurrentItemsCollection GetDataRow {get;}
+ 			
+ 		bool HasMoreData {get;}
+ 			
  		#region Try make recursive with ChildNavigator
  		
- 		IDataNavigator GetChildNavigator();
+ 		IDataNavigator GetChildNavigator{get;}
  		
  		#endregion
  		
- 		// childList -----------------
- 		
  		bool HasChildren {get;}
- 
- 		// end child list --------------------
- 		
- 		bool IsSorted {get;}
- 		
- 		bool IsGrouped {get;}
  		
  		int CurrentRow  {get;}
  			
@@ -41,6 +32,5 @@ using System.ComponentModel;
  		object Current {get;}
  		
  		AvailableFieldsCollection AvailableFields{get;}
- 		 
  	}
  }

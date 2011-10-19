@@ -82,6 +82,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnSourceInitialized(e);
 			HwndSource.FromHwnd(this.MainWin32Window.Handle).AddHook(SingleInstanceHelper.WndProc);
+			// validate after PresentationSource is initialized
+			Rect bounds = new Rect(Left, Top, Width, Height);
+			bounds = FormLocationHelper.Validate(bounds.TransformToDevice(this).ToSystemDrawing()).ToWpf().TransformFromDevice(this);
+			this.Left = bounds.Left;
+			this.Top = bounds.Top;
+			this.Width = bounds.Width;
+			this.Height = bounds.Height;
 		}
 		
 		public void Initialize()
@@ -554,7 +561,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SetMemento(Properties memento)
 		{
 			Rect bounds = memento.Get("Bounds", new Rect(10, 10, 750, 550));
-			bounds = FormLocationHelper.Validate(bounds);
+			// bounds are validated after PresentationSource is initialized (see OnSourceInitialized)
 			this.Left = bounds.Left;
 			this.Top = bounds.Top;
 			this.Width = bounds.Width;
@@ -573,25 +580,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				}
 				
-				Project.ProjectService.SaveSolutionPreferences();
-				
-				while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
-					IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
-					if (!window.CloseWindow(false)) {
-						e.Cancel = true;
-						return;
+				if (!Project.ProjectService.IsClosingCanceled()) {
+					// save preferences
+					Project.ProjectService.SaveSolutionPreferences();
+					
+					while (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
+						IWorkbenchWindow window = WorkbenchSingleton.Workbench.WorkbenchWindowCollection[0];
+						if (!window.CloseWindow(false)) {
+							e.Cancel = true;
+							return;
+						}
 					}
-				}
-				
-				Project.ProjectService.CloseSolution();
-				ParserService.StopParserThread();
-				
-				restoreBoundsBeforeClosing = this.RestoreBounds;
-				
-				this.WorkbenchLayout = null;
-				
-				foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
-					padDescriptor.Dispose();
+					
+					Project.ProjectService.CloseSolution();
+					ParserService.StopParserThread();
+					
+					restoreBoundsBeforeClosing = this.RestoreBounds;
+					
+					this.WorkbenchLayout = null;
+					
+					foreach (PadDescriptor padDescriptor in this.PadContentCollection) {
+						padDescriptor.Dispose();
+					}
+				} else {
+					e.Cancel = true;
 				}
 			}
 		}

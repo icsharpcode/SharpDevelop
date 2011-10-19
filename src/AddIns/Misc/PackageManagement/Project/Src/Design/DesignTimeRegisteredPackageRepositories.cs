@@ -28,7 +28,8 @@ namespace ICSharpCode.PackageManagement.Design
 			var package = new FakePackage();
 			package.Id = "Package ID: " + i;
 			package.Description = "Package description.";
-			package.Summary = "Package summary. Package summary. Package summary. " +
+			package.Summary =
+				"Package summary. Package summary. Package summary. " +
 				"Package summary. Package summary. Package summary. Package summary.";
 			package.DownloadCount = i;
 			package.Rating = 4.5;
@@ -38,6 +39,7 @@ namespace ICSharpCode.PackageManagement.Design
 			package.ProjectUrl = new Uri("http://www.codeplex.com");
 			package.ReportAbuseUrl = new Uri("http://www.google.com");
 			package.Version = Version.Parse("1.0.4.5");
+			package.LastUpdated = new DateTime(2011, 1, 2);
 			package.AddAuthor("A User");
 			package.AddAuthor("B User");
 			package.AddDependency("NuGet.Package." + i, Version.Parse("1.0.0.1"), Version.Parse("1.2.0.2"));

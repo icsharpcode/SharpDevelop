@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageManagerFactory
 	{
 		ISharpDevelopPackageManager CreatePackageManager(
-			IPackageRepository packageRepository, 
+			IPackageRepository sourceRepository, 
 			MSBuildBasedProject project);
 	}
 }

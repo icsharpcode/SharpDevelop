@@ -15,16 +15,17 @@ namespace PackageManagement.Tests
 	public class RegisteredPackageSourcesViewModelTests
 	{
 		RegisteredPackageSourcesViewModel viewModel;
-		PackageManagementOptions options;
 		FakeFolderBrowser fakeFolderBrowser;
 		List<string> propertiesChanged;
+		RegisteredPackageSources packageSources;
 		
 		void CreateViewModel()
 		{
-			options = new TestablePackageManagementOptions();
-			options.PackageSources.Clear();
+			var options = new TestablePackageManagementOptions();
+			packageSources = options.PackageSources;
+			packageSources.Clear();
 			fakeFolderBrowser = new FakeFolderBrowser();
-			viewModel = new RegisteredPackageSourcesViewModel(options, fakeFolderBrowser);
+			viewModel = new RegisteredPackageSourcesViewModel(packageSources, fakeFolderBrowser);
 		}
 		
 		void CreateViewModelWithOnePackageSource()
@@ -43,7 +44,7 @@ namespace PackageManagement.Tests
 		void AddPackageSourceToOptions(string name, string url)
 		{
 			var source = new PackageSource(url, name);
-			options.PackageSources.Add(source);
+			packageSources.Add(source);
 		}
 		
 		void RecordPropertyChanges()
@@ -76,7 +77,7 @@ namespace PackageManagement.Tests
 			viewModel.Load();
 			
 			var expectedSources = new PackageSource[] {
-				options.PackageSources[0]
+				packageSources[0]
 			};
 			
 			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
@@ -89,8 +90,8 @@ namespace PackageManagement.Tests
 			viewModel.Load();
 			
 			var expectedSources = new PackageSource[] {
-				options.PackageSources[0],
-				options.PackageSources[1]
+				packageSources[0],
+				packageSources[1]
 			};
 			
 			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
@@ -111,7 +112,7 @@ namespace PackageManagement.Tests
 				new PackageSource("http://sharpdevelop.com", "Test")
 			};
 			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, options.PackageSources);
+			PackageSourceCollectionAssert.AreEqual(expectedSources, packageSources);
 		}
 		
 		[Test]
@@ -131,7 +132,7 @@ namespace PackageManagement.Tests
 				new PackageSource("url-updated", "Test-updated")
 			};
 			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, options.PackageSources);
+			PackageSourceCollectionAssert.AreEqual(expectedSources, packageSources);
 		}
 		
 		[Test]
@@ -155,7 +156,7 @@ namespace PackageManagement.Tests
 				newSource
 			};
 			
-			PackageSourceCollectionAssert.AreEqual(expectedSources, options.PackageSources);
+			PackageSourceCollectionAssert.AreEqual(expectedSources, packageSources);
 		}
 		
 		[Test]
@@ -259,7 +260,7 @@ namespace PackageManagement.Tests
 			viewModel.RemovePackageSourceCommand.Execute(null);
 			
 			var expectedSources = new PackageSource[] {
-				options.PackageSources[1]
+				packageSources[1]
 			};
 			
 			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
@@ -314,8 +315,8 @@ namespace PackageManagement.Tests
 			viewModel.MovePackageSourceUpCommand.Execute(null);
 			
 			var expectedSources = new PackageSource[] {
-				options.PackageSources[1],
-				options.PackageSources[0]
+				packageSources[1],
+				packageSources[0]
 			};
 			
 			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);
@@ -366,8 +367,8 @@ namespace PackageManagement.Tests
 			viewModel.MovePackageSourceDownCommand.Execute(null);
 			
 			var expectedSources = new PackageSource[] {
-				options.PackageSources[1],
-				options.PackageSources[0]
+				packageSources[1],
+				packageSources[0]
 			};
 			
 			PackageSourceCollectionAssert.AreEqual(expectedSources, viewModel.PackageSourceViewModels);

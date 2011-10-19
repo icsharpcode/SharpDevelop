@@ -49,7 +49,7 @@ namespace PackageManagement.Tests
 			var packageSource = new PackageSource(packageSourceUrl, packageSourceName);
 			AddRegisteredPackageSource(packageSource);
 			FakePackageRepository fakeRepository = new FakePackageRepository();
-			fakeMainCache.FakePackageRepositories.Add(packageSource, fakeRepository);
+			fakeMainCache.FakePackageRepositories.Add(packageSource.Source, fakeRepository);
 			return fakeRepository;
 		}
 		

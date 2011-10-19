@@ -19,7 +19,7 @@ namespace ICSharpCode.MachineSpecifications
 	/// </summary>
 	public class MSpecTestFramework : ITestFramework
 	{
-		public bool IsTestMethod(IMember member) {
+		public bool IsTestMember(IMember member) {
 			return member is IField 
 				&& IsSpecificationMember(member as IField);
 		}

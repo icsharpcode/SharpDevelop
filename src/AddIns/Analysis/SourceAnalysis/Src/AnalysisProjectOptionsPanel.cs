@@ -63,7 +63,7 @@ namespace MattEverson.SourceAnalysis {
 			string styleCopPath = StyleCopWrapper.FindStyleCopPath();
 			string executable;
 			if (styleCopPath != null)
-				executable = Path.Combine(styleCopPath, "StyleCopSettingsEditor.exe");
+				executable = Path.Combine(Path.GetDirectoryName(styleCopPath), "StyleCopSettingsEditor.exe");
 			else
 				executable = null;
 			string parameters = "\"" + settingsFile + "\"";

@@ -17,7 +17,7 @@ namespace UnitTesting.Tests.Project
 	{
 		TestProject testProject;
 		TestClass testClass;
-		TestMethod testMethod;
+		TestMember testMethod;
 		bool resultChangedCalled;
 		MockProjectContent projectContent;
 		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
@@ -47,13 +47,13 @@ namespace UnitTesting.Tests.Project
 			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
 			testProject = new TestProject(project, projectContent, testFrameworks);
 			testClass = testProject.TestClasses[0];
-			testMethod = testClass.TestMethods[0];
+			testMethod = testClass.TestMembers[0];
 		}
 		
 		[Test]
 		public void OneMethod()
 		{
-			Assert.AreEqual(1, testClass.TestMethods.Count);
+			Assert.AreEqual(1, testClass.TestMembers.Count);
 		}
 		
 		[Test]
@@ -151,7 +151,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void FindTestMethod()
 		{
-			Assert.AreSame(testMethod, testClass.TestMethods["TestMethod"]);
+			Assert.AreSame(testMethod, testClass.TestMembers["TestMethod"]);
 		}
 		
 		[Test]
@@ -166,7 +166,7 @@ namespace UnitTesting.Tests.Project
 		public void AddNewMethodNodeWhenTestPassed()
 		{
 			testMethod.Result = TestResultType.Success;
-			TestMethodTreeNode node = new TestMethodTreeNode(testProject, testMethod);
+			TestMemberTreeNode node = new TestMemberTreeNode(testProject, testMethod);
 			Assert.AreEqual(TestTreeViewImageListIndex.TestPassed, (TestTreeViewImageListIndex)node.ImageIndex);
 		}
 		
@@ -193,16 +193,16 @@ namespace UnitTesting.Tests.Project
 			mockClass.SetCompoundClass(compoundClass);
 			
 			// Monitor test methods removed.
-			List<TestMethod> methodsRemoved = new List<TestMethod>();
-			testClass.TestMethods.TestMethodRemoved += delegate(Object source, TestMethodEventArgs e)
-				{ methodsRemoved.Add(e.TestMethod); };
+			List<TestMember> methodsRemoved = new List<TestMember>();
+			testClass.TestMembers.TestMemberRemoved += delegate(Object source, TestMemberEventArgs e)
+				{ methodsRemoved.Add(e.TestMember); };
 
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
 			
-			Assert.IsFalse(testClass.TestMethods.Contains("TestMethod"));
+			Assert.IsFalse(testClass.TestMembers.Contains("TestMethod"));
 			Assert.AreEqual(1, methodsRemoved.Count);
-			Assert.AreSame(testMethod.Method, methodsRemoved[0].Method);
+			Assert.AreSame(testMethod.Member, methodsRemoved[0].Member);
 		}
 				
 		void ResultChanged(object source, EventArgs e)

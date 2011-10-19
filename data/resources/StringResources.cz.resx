@@ -234,6 +234,12 @@
   <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
     <value>Pro spuštění tohoto příkazu musí být nainstalován TortoiseGit.</value>
   </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Obsah</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Zobrazit Obsah</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Přidat nápovědu k Oblíbeným.</value>
   </data>
@@ -399,6 +405,39 @@
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Použít aktuální jazyk projektu</value>
   </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
+    <value>Extrahovat metodu</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>Nelze extrahovat metodu, protože vybraný kód obsahuje break bez cyklu.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>Nelze extrahovat metodu, protože vybraný kód obsahuje continue bez cyklu.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>Nelze extrahovat metodu, protože vybraný kód obsahuje goto, ale ne label.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
+    <value>Jméno nové metody:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.InvalidSelection" xml:space="preserve">
+    <value>Výběr nelze extrahovat jako metodu. Prosím vyberte platný kus kódu.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ParseErrors" xml:space="preserve">
+    <value>Nelze extahovat metodu - kód není syntakticky validní.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
+    <value>Funkce Extrahovat metodu pro {0} není v současnosti implementována.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel" xml:space="preserve">
+    <value>Přidat kontrolu na null</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel" xml:space="preserve">
+    <value>Přidat kontrolu rozsahu</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
+    <value>Přetížit metodu ToString</value>
+  </data>
   <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
     <value>Přidat k seznamu ignorovaných</value>
   </data>
@@ -489,6 +528,40 @@
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Update na revizi</value>
   </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Díky za účast! Nastavení můžete kdykoliv změnit v okně Nástroje/Možnosti.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Chtěl(a) bych pomoci - odesílat informace o používání funkcí</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Nastavení můžete kdykoliv změnit v okně Nastavení/Možnosti.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>Nechci se zůčastnit</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>Potřebujeme Tvoji pomoc! Abychom mohli SharpDevelop stále zlepšovat, pomohlo by nám vedět, které funkce používáš nejčastěji.
+SharpDevelop může sledovat využívání jednotlivých funkcí a informace automaticky odesílat na server.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Osobní údaje</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Zobrazit data</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes" xml:space="preserve">
+    <value>Odstranit zbytečné atributy</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>Uložení souboru v aktuálním kódování ${encoding} bude mít za následek ztrátu části dat.</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Pokračovat</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Uložit jako UTF-8</value>
+  </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Projekt je nastaven jako dll a není určen žádný příkaz vykonávání. Můžete určit příkaz vykonávání v možnostech projektu.</value>
   </data>
@@ -500,9 +573,6 @@
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Soubor</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Řádek</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>O Inspektoru</value>
@@ -1925,6 +1995,30 @@ Chcete přidat nový soubor do projektu ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.CodingOptionsText" xml:space="preserve">
     <value>Psaní kódu</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
+    <value>Ladění</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
+    <value>Krokování</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
+    <value>Zapnout možnost 'Just My Code'</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverAllProperties" xml:space="preserve">
+    <value>Přeskakovat vlastnosti</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverDebuggerAttributes" xml:space="preserve">
+    <value>Přeskakovat kód označený pomocí speciálních atributů</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverFieldAccessProperties" xml:space="preserve">
+    <value>Přeskakovat vlastnosti, které jen čtou fieldy</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverNoSymbols" xml:space="preserve">
+    <value>Přeskakovat kód bez informací o symbolech</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.StepOverSingleLineProperties" xml:space="preserve">
+    <value>Přeskakovat jednořádkové vlastnosti</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
     <value>&amp;Hlavička</value>
   </data>
@@ -2092,6 +2186,9 @@ Chcete přidat nový soubor do projektu ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>Převádět Tabulát&amp;ory na Mezery</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Jít na definici pomocí Ctrl+Click</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>Automaticky vkládat složené závorky</value>
@@ -2622,6 +2719,21 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="Dialog.ProjectOptions.StoreInUserFile" xml:space="preserve">
     <value>Ukládat v souboru .user</value>
   </data>
+  <data name="Dialog.Refactoring.ExtractInterface.GeneratedName" xml:space="preserve">
+    <value>Vygenerované jméno</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.IncludeComments" xml:space="preserve">
+    <value>Včetně komentářů</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.InterfaceName" xml:space="preserve">
+    <value>Jméno interface</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.NewFileName" xml:space="preserve">
+    <value>Jméno nového souboru</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
+    <value>Vyberte veřejné vlastnosti a metody</value>
+  </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>Prohlížeč .NET Assembly</value>
   </data>
@@ -2712,6 +2824,9 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="FileUtilityService.ErrorWhileSaving" xml:space="preserve">
     <value>Chyba při ukládání</value>
   </data>
+  <data name="FileUtilityService.FileSizeTooBig" xml:space="preserve">
+    <value>Soubor nemůže být otevřen, protože je příliš velký.</value>
+  </data>
   <data name="FormsDesigner.DesignErrorPanel.ErrorText" xml:space="preserve">
     <value>Prosím opravte všechny chyby ve zdrojovém kódu dříve, než budete navrhovat formulář</value>
   </data>
@@ -2720,6 +2835,9 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   </data>
   <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
     <value>Zdrojový kód</value>
+  </data>
+  <data name="Global.AbortButtonText" xml:space="preserve">
+    <value>Zrušit</value>
   </data>
   <data name="Global.AddButtonText" xml:space="preserve">
     <value>&amp;Přidat</value>
@@ -2754,6 +2872,9 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="Global.DeleteButtonText" xml:space="preserve">
     <value>O&amp;dstranit</value>
   </data>
+  <data name="Global.DeselectAllButtonText" xml:space="preserve">
+    <value>Odznačit vše</value>
+  </data>
   <data name="Global.EditButtonText" xml:space="preserve">
     <value>&amp;Upravit</value>
   </data>
@@ -2771,6 +2892,9 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   </data>
   <data name="Global.FinishedCaptionText" xml:space="preserve">
     <value>Dokončeno</value>
+  </data>
+  <data name="Global.Folder" xml:space="preserve">
+    <value>Adresář</value>
   </data>
   <data name="Global.HelpButtonText" xml:space="preserve">
     <value>&amp;Nápověda</value>
@@ -2820,11 +2944,17 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="Global.OpenButtonText" xml:space="preserve">
     <value>&amp;Otevřít</value>
   </data>
+  <data name="Global.OptionsLabelText" xml:space="preserve">
+    <value>Možnosti</value>
+  </data>
   <data name="Global.Path" xml:space="preserve">
     <value>Cesta</value>
   </data>
   <data name="Global.PleaseWait" xml:space="preserve">
     <value>Prosím čekejte...</value>
+  </data>
+  <data name="Global.Preview" xml:space="preserve">
+    <value>Náhled</value>
   </data>
   <data name="Global.QuestionText" xml:space="preserve">
     <value>Otázka</value>
@@ -2835,14 +2965,23 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="Global.RenameButtonText" xml:space="preserve">
     <value>Přejme&amp;novat</value>
   </data>
+  <data name="Global.ReplaceButtonText" xml:space="preserve">
+    <value>Nahradit</value>
+  </data>
   <data name="Global.RetryButtonText" xml:space="preserve">
     <value>Opakovat</value>
+  </data>
+  <data name="Global.SelectAllButtonText" xml:space="preserve">
+    <value>Vybrat vše</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Malé ikony</value>
   </data>
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
+  </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Řádek</value>
   </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Akt&amp;ualizovat</value>
@@ -3111,9 +3250,6 @@ Můžete se také rozhodnout, že všechny volby budou uloženy ve vlastním .us
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Koncový řádek</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Řádek</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Nemohu najít konzolovou aplikaci NCover.
 
@@ -3340,6 +3476,9 @@ Prosím nastavte umístění spustitelného souboru NAnt v Možnostech SharpDeve
   <data name="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel" xml:space="preserve">
     <value>Vložit signatury PInvoke...</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>Nelze zobrazit potomky - symbol pod kurzorem není třída ani přetížená vlastnost nebo metoda.</value>
+  </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Nelze otevřít soubor ${FileNameWithoutPath} z ${Path}.
 Ověřte existenci a oprávnění k souboru.</value>
@@ -3545,6 +3684,9 @@ Všechny provedené změny by byly ztraceny.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Soubor uložen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Ukázat soubor v okně Projekty</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>Z VB.NET do C#</value>
@@ -3836,6 +3978,12 @@ TATO CHYBA NIJAK NEOVLIVNÍ ZDROJOVÝ KÓD.</value>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.WebServicesTabPageTitle" xml:space="preserve">
     <value>Dostupné Webové Služby</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AttachToProcessForm.AttachButtonText" xml:space="preserve">
+    <value>Připojit</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AttachToProcessForm.Title" xml:space="preserve">
+    <value>Připojit se k procesu...</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.CantCreateDirectoryError" xml:space="preserve">
     <value>Nelze vytvořit výstupní adresář.
 Ověřte, zda máte požadované oprávnění.</value>
@@ -4008,6 +4156,15 @@ Povolena jsou písmena, číslice, mezery, tečky a podtržítka.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Načítám ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Převést vybrané &amp;projekty do:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Převést</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;neměnit&gt;</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Zvolené preferované prostředí nebylo nalezeno.
@@ -4677,6 +4834,9 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   <data name="MainWindow.Windows.Debug.Modules.VersionColumn" xml:space="preserve">
     <value>Verze</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
+    <value>Graf objektů</value>
+  </data>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Pokračuj od tohoto místa</value>
   </data>
@@ -4935,6 +5095,9 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   <data name="OpenFileTabEventHandler.CopyPathName" xml:space="preserve">
     <value>Kopírovat složku/soubor</value>
   </data>
+  <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
+    <value>Otevřít adresář v průzkumníku</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Přidat existující soubory</value>
   </data>
@@ -4970,6 +5133,9 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   </data>
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>&amp;Pročistit</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Sbalit vše</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Chcete z disku odstranit '${FileName}'?</value>
@@ -5301,6 +5467,9 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   <data name="SharpDevelop.Gui.Dialogs.WizardDialog.StepsLabel" xml:space="preserve">
     <value>Kroky</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
+    <value>Bázové třídy k ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>Operace nemůže být provedena protože zdrojový kód obsahuje chyby:</value>
   </data>
@@ -5331,8 +5500,17 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
     <value>Použití typu</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
+    <value>Extrahovat interface</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Najít bázové třídy</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Najít od&amp;děděné třídy</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
+    <value>Najít odvozené třídy, metody nebo vlastnosti</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Najít odkazy...</value>
@@ -5426,6 +5604,9 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   </data>
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Všechny známé formáty projektů</value>
+  </data>
+  <data name="SharpDevelop.Solution.CannotSave.ReadOnly" xml:space="preserve">
+    <value>Nelze uložit řešení {0}, protože soubor je pouze pro čtení.</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>V tomto projektu byly soubory resources.
@@ -5634,11 +5815,17 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Poslední strana</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Další</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Vytvořeno stran</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Vytvořit soubor PDF</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Předchozí</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Zvětšit</value>
@@ -6408,6 +6595,12 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   <data name="XML.MainMenu.EditMenu.Paste" xml:space="preserve">
     <value>&amp;Vložit</value>
   </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsComment" xml:space="preserve">
+    <value>Vložit jako komentář</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsString" xml:space="preserve">
+    <value>Vložit jako řetězec</value>
+  </data>
   <data name="XML.MainMenu.EditMenu.Paste.Description" xml:space="preserve">
     <value>Vloží text do schránky</value>
   </data>
@@ -6823,15 +7016,6 @@ Došlo k chybě při spuštění:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Uživatel:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Můžete očekávat vylepšené verze SharpDevelop a mezitím říci svým známým o tomto editoru pro psaní báječných programů v jazyce C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Můžete otevřít okno s šablonami doplňování kódu pomocí Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Můžete napsat "? name = ...;" (C#) nebo "Dim name As ? = ..." (VB) a SharpDevelop nahradí otazník typem výrazu "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Možnosti editoru</value>

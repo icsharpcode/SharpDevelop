@@ -8,14 +8,14 @@ using System.Drawing.Drawing2D;
 
 using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
 	/// Description of BaseRectangleItem.
 	/// </summary>
-	
-	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ShapeDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ContainerItemDesigner))]
 	public class BaseRectangleItem:AbstractItem
 	{
 		private RectangleShape shape = new RectangleShape();

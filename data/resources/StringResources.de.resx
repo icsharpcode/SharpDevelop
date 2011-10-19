@@ -298,6 +298,15 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Zahlensystem</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Dezimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadezimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Oktal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Größe an aktuelle Breite anpassen</value>
   </data>
@@ -780,9 +789,6 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' wurde von der Ignorier-Liste entfernt.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Alte Projektmappe offen halten</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Datei sperren</value>
   </data>
@@ -809,13 +815,6 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Zeige &amp;Vergangenheits-Tab für Dateien unter Versionskontrolle</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Projektmappe neu laden</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop hat festgestellt, dass die Versionskontroll-Operation Projektdateien verändert hat.
-Sie sollten die Projektmappe neu laden.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Umplatzieren</value>
@@ -977,9 +976,6 @@ Ein Ausführungskommando kann in den Projektoptionen eingestellt werden.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Datei</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Zeile</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Info</value>
@@ -3482,6 +3478,9 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Zeile</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Akt&amp;ualisieren</value>
   </data>
@@ -3758,9 +3757,6 @@ Bitte einen anderen Dateinamen wählen.</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Endzeile</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Zeile</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Kann die NCover Konsolenanwendung nicht finden.
@@ -4802,6 +4798,12 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Lade ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Alte Projektmappe offen halten</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Projektmappe neu laden</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Neue &amp;Compilerversion:</value>
@@ -7997,15 +7999,6 @@ Fehler beim Starten:
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Benutzer:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>dass sie nach neuen SharpDevelop-Versionen Ausschau halten sollten und allen ihren Freunden erzählen sollten, wie gut SharpDevelop ist und dass sie tolle Programme in C# damit entwickeln sollten?</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>dass Sie mit Strg+J vordefinierte Code-Schablonen aktivieren können?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>dass Sie "? name = ...;" (C#) oder "Dim name As ? = ..." (VB) tippen können und SharpDevelop automatisch das Fragezeichen durch den passenden Typ ersetzt?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Bufferoptionen</value>

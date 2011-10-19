@@ -14,7 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddFakePackageReference(string packageId, string version)
 		{
-			var packageReference = new PackageReference(packageId, new Version(version));
+			var packageReference = new PackageReference(packageId, new Version(version), null);
 			FakePackageReferences.Add(packageReference);
 		}
 		
@@ -27,8 +27,15 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void DeleteEntry(string id, Version version)
 		{
-			var packageReference = new PackageReference(id, version);
+			var packageReference = new PackageReference(id, version, null);
 			EntriesDeleted.Add(packageReference);
+		}
+		
+		public bool IsDeleteCalled;
+		
+		public void Delete()
+		{
+			IsDeleteCalled = true;
 		}
 	}
 }

@@ -69,7 +69,16 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\AddPackageReferenceCommandTests.cs" />
+    <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
+    <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
+    <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />
+    <Compile Include="Src\Helpers\FakeUpdatePackageActionsFactory.cs" />
+    <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
+    <Compile Include="Src\Helpers\TestableInstalledPackageViewModel.cs" />
+    <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
+    <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\InstalledPackageViewModelTests.cs" />
+    <Compile Include="Src\ManagePackagesCommandTests.cs" />
     <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />
     <Compile Include="Src\DefaultProjectTemplatePackageSourceTests.cs" />
     <Compile Include="Src\EnvDTE\ColorableItemsTests.cs" />
@@ -91,7 +100,7 @@
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageReferencesForProject.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingRegisteredPackageRepositories.cs" />
-    <Compile Include="Src\Helpers\FakeAddPackageReferenceView.cs" />
+    <Compile Include="Src\Helpers\FakeManagePackagesView.cs" />
     <Compile Include="Src\Helpers\FakeLogger.cs" />
     <Compile Include="Src\Helpers\FakeLoggingService.cs" />
     <Compile Include="Src\Helpers\FakeMessageService.cs" />
@@ -119,7 +128,7 @@
     <Compile Include="Src\Helpers\FakeSolutionPackageRepository.cs" />
     <Compile Include="Src\Helpers\FakeTextEditorOptions.cs" />
     <Compile Include="Src\Helpers\ProjectItemCollectionAssert.cs" />
-    <Compile Include="Src\Helpers\TestableAddPackageReferenceCommand.cs" />
+    <Compile Include="Src\Helpers\TestableManagePackagesCommand.cs" />
     <Compile Include="Src\Helpers\TestableDTEProject.cs" />
     <Compile Include="Src\Helpers\TestableInstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\Helpers\TestablePowerShellMissingConsoleHost.cs" />
@@ -132,6 +141,8 @@
     <Compile Include="Src\PackageManagementEventsTests.cs" />
     <Compile Include="Src\PackageManagementLoggerTests.cs" />
     <Compile Include="Src\PackageManagementProjectTests.cs" />
+    <Compile Include="Src\PackageManagementSelectedProjectsTests.cs" />
+    <Compile Include="Src\PackageManagementSelectedProjectTests.cs" />
     <Compile Include="Src\PackageOperationMessageTests.cs" />
     <Compile Include="Src\PackageReferenceInstallerTests.cs" />
     <Compile Include="Src\PackageReferencesForProjectTests.cs" />
@@ -192,7 +203,7 @@
     <Compile Include="Src\Helpers\TestableViewModelBase.cs" />
     <Compile Include="Src\Helpers\Tests\PackageReferenceRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Src\AddPackageReferenceViewModelTests.cs" />
+    <Compile Include="Src\ManagePackagesViewModelTests.cs" />
     <Compile Include="Src\AvailablePackagesViewModelTests.cs" />
     <Compile Include="Src\BooleanToFontWeightConverterTests.cs" />
     <Compile Include="Src\DelegateCommandTests.cs" />
@@ -215,6 +226,10 @@
     <Compile Include="Src\Scripting\PowerShellMissingConsoleHostTests.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectoryTests.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosedTests.cs" />
+    <Compile Include="Src\SelectedProjectsForInstalledPackagesTests.cs" />
+    <Compile Include="Src\SelectedProjectsForUpdatedPackagesTests.cs" />
+    <Compile Include="Src\SelectProjectsViewModelTests.cs" />
+    <Compile Include="Src\SharpDevelopProjectManagerTests.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPathTests.cs" />
     <Compile Include="Src\PackageSourceViewModelTests.cs" />
     <Compile Include="Src\PackagesViewModelTests.cs" />
@@ -230,6 +245,8 @@
     <Compile Include="Src\SolutionPackageRepositoryTests.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEventsTests.cs" />
     <Compile Include="Src\UninstallPackageActionTests.cs" />
+    <Compile Include="Src\UpdateAllPackagesInProjectTests.cs" />
+    <Compile Include="Src\UpdateAllPackagesInSolutionTests.cs" />
     <Compile Include="Src\UpdatedPackagesViewModelTests.cs" />
     <Compile Include="Src\PackageViewModelTests.cs" />
     <Compile Include="Src\PagesTests.cs" />
@@ -246,6 +263,7 @@
     <Compile Include="Src\StringToStringCollectionConverterTests.cs" />
     <Compile Include="Src\UpdatedPackageViewModelTests.cs" />
     <Compile Include="Src\UpdatePackageActionTests.cs" />
+    <Compile Include="Src\UpdatePackageInAllProjectsTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
     <Compile Include="Src\VisualStudio\PackageTests.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManagerTests.cs" />

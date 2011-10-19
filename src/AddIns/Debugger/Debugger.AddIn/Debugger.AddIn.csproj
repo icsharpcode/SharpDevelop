@@ -98,6 +98,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
+      <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Pads\CallStackPad.xaml.cs">
       <DependentUpon>CallStackPad.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -144,12 +148,6 @@
     <Compile Include="IsActiveBreakpointCondition.cs" />
     <Compile Include="IsBreakpointCondition.cs" />
     <Compile Include="Options\DebuggingOptions.cs" />
-    <Compile Include="Options\DebuggingOptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Options\DebuggingOptionsPanel.Designer.cs">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Options\DebuggingSymbolsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -290,9 +288,6 @@
     <Compile Include="Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Service\RunToCursorCommand.cs" />
     <Compile Include="Service\WindowsDebugger.cs" />
-    <EmbeddedResource Include="Options\DebuggingOptionsPanel.resx">
-      <DependentUpon>DebuggingOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -305,9 +300,6 @@
     </Compile>
     <Compile Include="Pads\DebuggerPad.cs" />
     <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="TreeModel\Adapters\TreeViewVarNode.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="TreeModel\ArrayRangeNode.cs" />
     <Compile Include="TreeModel\ExpressionNode.cs" />
     <Compile Include="TreeModel\IContextMenu.cs" />
@@ -358,6 +350,11 @@
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -392,6 +389,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Controls\ConditionCell.xaml" />
     <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
@@ -415,11 +413,6 @@
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj">
-      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
-      <Name>Aga.Controls</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">

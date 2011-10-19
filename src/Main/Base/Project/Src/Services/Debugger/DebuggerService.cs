@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -13,6 +14,7 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -27,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			ProjectService.SolutionLoaded += delegate {
 				ClearDebugMessages();
 			};
+			
+			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
 			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
@@ -222,12 +226,52 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
+		static void OnBeforeSolutionClosing(object sender, SolutionCancelEventArgs e)
 		{
+			if (currentDebugger == null)
+				return;
+			
+			if (currentDebugger.IsDebugging) {
+				string caption = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Stop}");
+				string message = StringParser.Parse("${res:MainWindow.Windows.Debug.StopDebugging.Message}");
+				string[] buttonLabels = new string[] { StringParser.Parse("${res:Global.Yes}"), StringParser.Parse("${res:Global.No}") };
+				int result = MessageService.ShowCustomDialog(caption,
+				                                             message,
+				                                             0, // yes
+				                                             1, // no
+				                                             buttonLabels);
+				
+				if (result == 0) {
+					currentDebugger.Stop();
+				} else {
+					e.Cancel = true;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Toggles a breakpoint bookmark.
+		/// </summary>
+		/// <param name="editor">Text editor where the bookmark is toggled.</param>
+		/// <param name="lineNumber">Line number.</param>
+		/// <param name="breakpointType">Type of breakpoint bookmark.</param>
+		/// <param name="parameters">Optional constructor parameters.</param>
+		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber, Type breakpointType, object[] parameters = null)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			
+			if (breakpointType == null)
+				throw new ArgumentNullException("breakpointType");
+			
+			if (!typeof(BreakpointBookmark).IsAssignableFrom(breakpointType))
+				throw new ArgumentException("breakpointType is not a BreakpointBookmark");
+			
 			BookmarkManager.ToggleBookmark(
 				editor, lineNumber,
 				b => b.CanToggle && b is BreakpointBookmark,
-				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""));
+				location => (BreakpointBookmark)Activator.CreateInstance(breakpointType, 
+				                                                         parameters ?? new object[] { editor.FileName, location, BreakpointAction.Break, "", ""}));
 		}
 		
 		/* TODO: reimplement this stuff
@@ -243,12 +287,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			CurrentLineBookmark.Remove();
 		}
 		
-		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
+		public static void JumpToCurrentLine(string sourceFullFilename, int startLine, int startColumn, int endLine, int endColumn)
 		{
-			IViewContent viewContent = FileService.OpenFile(SourceFullFilename);
+			IViewContent viewContent = FileService.OpenFile(sourceFullFilename);
 			if (viewContent is ITextEditorProvider)
-				((ITextEditorProvider)viewContent).TextEditor.JumpTo(StartLine, StartColumn);
-			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
+				((ITextEditorProvider)viewContent).TextEditor.JumpTo(startLine, startColumn);
+			CurrentLineBookmark.SetPosition(viewContent, startLine, startColumn, endLine, endColumn);
 		}
 		
 		#region Tool tips
@@ -264,9 +308,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return;
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(e.Editor.FileName);
+			FileName fileName = e.Editor.FileName;
+			
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null)
 				return;
+			
 			var currentLine = doc.GetLine(logicPos.Y);
 			if (logicPos.X > currentLine.Length)
 				return;
@@ -275,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			string expression = (expressionResult.Expression ?? "").Trim();
 			if (expression.Length > 0) {
 				// Look if it is variable
-				ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y, logicPos.X, e.Editor.FileName, textContent);
+				ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y, logicPos.X, fileName, textContent);
 				bool debuggerCanShowValue;
 				string toolTipText = GetText(result, expression, out debuggerCanShowValue);
 				if (Control.ModifierKeys == Keys.Control) {
@@ -421,5 +468,53 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			DebuggerService.HandleToolTipRequest(e);
 		}
+	}
+	
+	/// <summary>
+	/// Interface for common debugger-decompiler mapping operations.
+	/// </summary>
+	public interface IDebuggerDecompilerService
+	{
+		/// <summary>
+		/// Gets or sets the current method token and IL offset. Used for step in/out.
+		/// </summary>
+		Tuple<int, int> DebugStepInformation { get; set; }
+		
+		/// <summary>
+		/// Checks the code mappings.
+		/// </summary>
+		bool CheckMappings(int typeToken);
+		
+		/// <summary>
+		/// Decompiles on demand a type.
+		/// </summary>
+		void DecompileOnDemand(TypeDefinition type);
+		
+		/// <summary>
+		/// Gets the IL from and IL to.
+		/// </summary>
+		bool GetILAndTokenByLineNumber(int typeToken, int lineNumber, out int[] ilRanges, out int memberToken);
+		
+		/// <summary>
+		/// Gets the ILRange and source code line number.
+		/// </summary>
+		bool GetILAndLineNumber(int typeToken, int memberToken, int ilOffset, out int[] ilRange, out int line, out bool isMatch);
+		
+		/// <summary>
+		/// Gets the local variables of a type and a member.
+		/// </summary>
+		IEnumerable<string> GetLocalVariables(int typeToken, int memberToken);
+		
+		/// <summary>
+		/// Gets the local variable index.
+		/// </summary>
+		object GetLocalVariableIndex(int typeToken, int memberToken, string name);
+		
+		/// <summary>
+		/// Gets an implementation of an assembly resolver.
+		/// </summary>
+		/// <param name="assemblyFile">Assembly file path.</param>
+		/// <returns>An <see cref="IAssemblyResolver"/>.</returns>
+		IAssemblyResolver GetAssemblyResolver(string assemblyFile);
 	}
 }

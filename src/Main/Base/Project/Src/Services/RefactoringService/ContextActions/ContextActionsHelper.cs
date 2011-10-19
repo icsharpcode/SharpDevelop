@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	public class ContextActionsPopupHelper
+	public class ContextActionsHelper
 	{
 		public static ContextActionsPopup MakePopupWithDerivedClasses(IClass baseClass)
 		{
@@ -37,8 +37,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ContextActionsPopup MakePopupWithOverrides(IMember member)
 		{
 			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
-			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.FullyQualifiedName }}))};
+			var popupViewModel = new ContextActionsViewModel {
+				Title = MenuService.ConvertLabel(StringParser.Parse(
+					"${res:SharpDevelop.Refactoring.OverridesOf}",
+					new StringTagPair("Name", member.FullyQualifiedName))
+			)};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
 			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };
 		}
@@ -110,9 +113,21 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<IClass>> classTree)
 			{
-				return new ObservableCollection<ContextActionViewModel>(
-					classTree.Select(
-						node => MakeGoToMemberAction(node.Content, BuildTreeViewModel(node.Children))).Where(action => action != null));
+				ObservableCollection<ContextActionViewModel> c = new ObservableCollection<ContextActionViewModel>();
+				foreach (var node in classTree) {
+					var childNodes = BuildTreeViewModel(node.Children);
+					var action = MakeGoToMemberAction(node.Content, childNodes);
+					if (action != null) {
+						c.Add(action);
+					} else {
+						// If the member doesn't exist in the derived class, directly append the
+						// children of that derived class here.
+						c.AddRange(childNodes);
+						// This is necessary so that the method C.M() is shown in the case
+						// "class A { virtual void M(); } class B : A {} class C : B { override void M(); }"
+					}
+				}
+				return c;
 			}
 		}
 	}

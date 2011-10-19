@@ -17,21 +17,21 @@ namespace UnitTesting.Tests.Project
 		public void GetClassName()
 		{
 			string name = "RootNamespace.ClassName.Method";
-			Assert.AreEqual("RootNamespace.ClassName", TestMethod.GetQualifiedClassName(name));
+			Assert.AreEqual("RootNamespace.ClassName", TestMember.GetQualifiedClassName(name));
 		}
 		
 		[Test]
 		public void NoRootNamespace()
 		{
 			string name = "ClassName.Method";
-			Assert.AreEqual("ClassName", TestMethod.GetQualifiedClassName(name));
+			Assert.AreEqual("ClassName", TestMember.GetQualifiedClassName(name));
 		}
 		
 		[Test]
 		public void OnlyMethod()
 		{
 			string name = "Method";
-			Assert.IsNull(TestMethod.GetQualifiedClassName(name));
+			Assert.IsNull(TestMember.GetQualifiedClassName(name));
 		}
 	}
 }

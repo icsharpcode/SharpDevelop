@@ -19,12 +19,14 @@ namespace PackageManagement.Tests
 		FakeInstallPackageAction fakeAction;
 		FakePowerShellDetection powerShellDetection;
 		FakePackageManagementEvents fakeEvents;
+		List<FakeInstallPackageAction> fakeActions;
 		
 		void CreateRunner()
 		{
 			fakeConsoleActionRunner = new FakePackageActionRunner();
 			powerShellDetection = new FakePowerShellDetection();
 			fakeEvents = new FakePackageManagementEvents();
+			fakeActions = new List<FakeInstallPackageAction>();
 			runner = new PackageActionRunner(fakeConsoleActionRunner, fakeEvents, powerShellDetection);
 		}
 		
@@ -33,6 +35,7 @@ namespace PackageManagement.Tests
 			var fakeProject = new FakePackageManagementProject();
 			fakeAction = new FakeInstallPackageAction(fakeProject);
 			fakeAction.Operations = new PackageOperation[0];
+			fakeActions.Add(fakeAction);
 		}
 		
 		void CreateInstallActionWithOnePowerShellScript()
@@ -47,11 +50,17 @@ namespace PackageManagement.Tests
 			operations.Add(operation);
 			
 			fakeAction.Operations = operations;
+			fakeActions.Add(fakeAction);
 		}
 		
 		void Run()
 		{
 			runner.Run(fakeAction);
+		}
+		
+		void RunMultipleActions()
+		{
+			runner.Run(fakeActions);
 		}
 		
 		[Test]
@@ -120,6 +129,52 @@ namespace PackageManagement.Tests
 				"PowerShell is not installed. PowerShell scripts will not be run for the package.";
 			
 			Assert.AreEqual(expectedMessage, message);
+		}
+		
+		[Test]
+		public void Run_TwoInstallActionsWithoutPowerShellScripts_ActionsAreExecutedDirectly()
+		{
+			CreateRunner();
+			CreateInstallActionWithNoPowerShellScripts();
+			CreateInstallActionWithNoPowerShellScripts();
+			RunMultipleActions();
+			
+			bool firstActionIsExecuted = fakeActions[0].IsExecuteCalled;
+			bool secondActionIsExecuted = fakeActions[1].IsExecuteCalled;
+			
+			Assert.IsTrue(firstActionIsExecuted);
+			Assert.IsTrue(secondActionIsExecuted);
+		}
+		
+		[Test]
+		public void Run_TwoInstallActionsAndSecondHasOnePowerShellScript_AllActionsPassedToConsoleToRun()
+		{
+			CreateRunner();
+			CreateInstallActionWithNoPowerShellScripts();
+			CreateInstallActionWithOnePowerShellScript();
+			powerShellDetection.IsPowerShell2InstalledReturnValue = true;
+			RunMultipleActions();
+			
+			IEnumerable<ProcessPackageAction> actions = fakeConsoleActionRunner.ActionsRunInOneCall;
+			
+			CollectionAssert.AreEqual(fakeActions, actions);
+		}
+		
+		[Test]
+		public void Run_TwoInstallActionsBothWithOnePowerShellScriptsAndPowerShellIsNotInstalled_ActionsAreExecutedDirectly()
+		{
+			CreateRunner();
+			CreateInstallActionWithOnePowerShellScript();
+			CreateInstallActionWithOnePowerShellScript();
+			powerShellDetection.IsPowerShell2InstalledReturnValue = false;
+			
+			RunMultipleActions();
+			
+			bool firstActionIsExecuted = fakeActions[0].IsExecuteCalled;
+			bool secondActionIsExecuted = fakeActions[1].IsExecuteCalled;
+			
+			Assert.IsTrue(firstActionIsExecuted);
+			Assert.IsTrue(secondActionIsExecuted);
 		}
 	}
 }

@@ -811,7 +811,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// Additonal amount that allows horizontal scrolling past the end of the longest line.
 		/// This is necessary to ensure the caret always is visible, even when it is at the end of the longest line.
 		/// </summary>
-		const double AdditionalHorizontalScrollAmount = 30;
+		const double AdditionalHorizontalScrollAmount = 3;
 		
 		Size lastAvailableSize;
 		bool inMeasure;
@@ -833,7 +833,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			MeasureInlineObjects();
 			
 			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
-			textLayer.InvalidateVisual();
 			
 			double maxWidth;
 			if (document == null) {
@@ -862,16 +861,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 			}
 			
+			textLayer.SetVisualLines(visibleVisualLines);
+			
 			SetScrollData(availableSize,
 			              new Size(maxWidth, heightTreeHeight),
 			              scrollOffset);
 			if (VisualLinesChanged != null)
 				VisualLinesChanged(this, EventArgs.Empty);
 			
-			return new Size(
-				canHorizontallyScroll ? Math.Min(availableSize.Width, maxWidth) : maxWidth,
-				canVerticallyScroll ? Math.Min(availableSize.Height, heightTreeHeight) : heightTreeHeight
-			);
+			return new Size(Math.Min(availableSize.Width, maxWidth), Math.Min(availableSize.Height, heightTreeHeight));
 		}
 		
 		/// <summary>
@@ -1153,14 +1151,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 		}
 		
-		internal void RenderTextLayer(DrawingContext drawingContext)
+		internal void ArrangeTextLayer(IList<VisualLineDrawingVisual> visuals)
 		{
 			Point pos = new Point(-scrollOffset.X, -clippedPixelsOnTop);
-			foreach (VisualLine visualLine in allVisualLines) {
-				foreach (TextLine textLine in visualLine.TextLines) {
-					textLine.Draw(drawingContext, pos, InvertAxes.None);
-					pos.Y += textLine.Height;
+			foreach (VisualLineDrawingVisual visual in visuals) {
+				TranslateTransform t = visual.Transform as TranslateTransform;
+				if (t == null || t.X != pos.X || t.Y != pos.Y) {
+					visual.Transform = new TranslateTransform(pos.X, pos.Y);
+					visual.Transform.Freeze();
 				}
+				pos.Y += visual.Height;
 			}
 		}
 		#endregion
@@ -1275,6 +1275,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		void SetScrollOffset(Vector vector)
 		{
+			if (!canHorizontallyScroll)
+				vector.X = 0;
+			if (!canVerticallyScroll)
+				vector.Y = 0;
+			
 			if (!scrollOffset.IsClose(vector)) {
 				scrollOffset = vector;
 				if (ScrollOffsetChanged != null)
@@ -1609,6 +1614,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <summary>
 		/// Gets the text view position from the specified visual position.
+		/// If the position is within a character, it is rounded to the next character boundary.
 		/// </summary>
 		/// <param name="visualPosition">The position in WPF device-independent pixels relative
 		/// to the top left corner of the document.</param>
@@ -1622,6 +1628,26 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (line == null)
 				return null;
 			int visualColumn = line.GetVisualColumn(visualPosition);
+			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
+			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
+		}
+		
+		/// <summary>
+		/// Gets the text view position from the specified visual position.
+		/// If the position is inside a character, the position in front of the character is returned.
+		/// </summary>
+		/// <param name="visualPosition">The position in WPF device-independent pixels relative
+		/// to the top left corner of the document.</param>
+		/// <returns>The logical position, or null if the position is outside the document.</returns>
+		public TextViewPosition? GetPositionFloor(Point visualPosition)
+		{
+			VerifyAccess();
+			if (this.Document == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			VisualLine line = GetVisualLineFromVisualTop(visualPosition.Y);
+			if (line == null)
+				return null;
+			int visualColumn = line.GetVisualColumnFloor(visualPosition);
 			int documentOffset = line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
 			return new TextViewPosition(document.GetLocation(documentOffset), visualColumn);
 		}

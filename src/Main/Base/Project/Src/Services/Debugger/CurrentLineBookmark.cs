@@ -13,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 {
 	public class CurrentLineBookmark : SDMarkerBookmark
 	{
+		static object syncObject = new object();
 		static CurrentLineBookmark instance;
 		
 		static int startLine;
@@ -20,23 +21,24 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		static int endLine;
 		static int endColumn;
 		
-		public static void SetPosition(IViewContent viewContent,  int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+		public static void SetPosition(IViewContent viewContent, int markerStartLine, int markerStartColumn, int markerEndLine, int markerEndColumn)
 		{
 			ITextEditorProvider tecp = viewContent as ITextEditorProvider;
-			if (tecp != null)
-				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
-			else
-				Remove();
+			if (tecp != null) {
+				SetPosition(tecp.TextEditor.FileName, tecp.TextEditor.Document, markerStartLine, markerStartColumn, markerEndLine, markerEndColumn);
+			}
 		}
 		
-		public static void SetPosition(FileName fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
+		public static void SetPosition(FileName fileName, IDocument document, int markerStartLine, int markerStartColumn, int markerEndLine, int markerEndColumn)
 		{
+			if (document == null)
+				return;
 			Remove();
 			
-			startLine   = makerStartLine;
-			startColumn = makerStartColumn;
-			endLine     = makerEndLine;
-			endColumn   = makerEndColumn;
+			startLine   = markerStartLine;
+			startColumn = markerStartColumn;
+			endLine     = markerEndLine;
+			endColumn   = markerEndColumn;
 			
 			if (startLine < 1 || startLine > document.TotalNumberOfLines)
 				return;

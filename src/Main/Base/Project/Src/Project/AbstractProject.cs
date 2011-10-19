@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -51,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void Dispose()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			
+			watcher.Dispose();
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);
@@ -70,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
+			// breakpoints and files
 			Properties properties = new Properties();
 			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
 			List<string> files = new List<string>();
@@ -80,9 +83,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			properties.Set("files", files.ToArray());
 			
+			// web project properties
 			var webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Name);
 			if (webOptions != null)
 				properties.Set("WebProjectOptions", webOptions);
+			
+			// other project data
+			properties.Set("projectSavedData", ProjectSpecificProperties ?? new Properties());
 			
 			return properties;
 		}
@@ -98,13 +105,18 @@ namespace ICSharpCode.SharpDevelop.Project
 				filesToOpenAfterSolutionLoad.Add(fileName);
 			}
 			
+			// web project properties
 			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
+			
+			// other project data
+			ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
 		}
 		#endregion
 		
 		#region Filename / Directory
 		volatile string fileName;
 		string cachedDirectoryName;
+		protected IProjectChangeWatcher watcher;
 		
 		/// <summary>
 		/// Gets the name of the project file.
@@ -122,6 +134,18 @@ namespace ICSharpCode.SharpDevelop.Project
 					throw new ArgumentNullException();
 				WorkbenchSingleton.AssertMainThread();
 				Debug.Assert(FileUtility.IsUrl(value) || Path.IsPathRooted(value));
+				
+				if (WorkbenchSingleton.Workbench == null)
+					watcher = new MockProjectChangeWatcher();
+				
+				if (watcher == null) {
+					watcher = new ProjectChangeWatcher(value);
+					watcher.Enable();
+				} else {
+					watcher.Disable();
+					watcher.Rename(value);
+					watcher.Enable();
+				}
 				
 				lock (SyncRoot) { // locking still required for Directory
 					fileName = value;
@@ -501,6 +525,31 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		/// <summary>
+		/// Resolves assembly references for this project.
+		/// The resulting list of resolved references will include project references.
+		/// </summary>
+		public virtual IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			ResolveAssemblyReferences();
+			List<ReferenceProjectItem> referenceItems = new List<ReferenceProjectItem>();
+			bool mscorlib = false;
+			foreach (ProjectItem item in this.Items) {
+				cancellationToken.ThrowIfCancellationRequested();
+				if (ItemType.ReferenceItemTypes.Contains(item.ItemType)) {
+					ReferenceProjectItem reference = item as ReferenceProjectItem;
+					if (reference != null) {
+						referenceItems.Add(reference);
+						mscorlib |= "mscorlib".Equals(reference.Include, StringComparison.OrdinalIgnoreCase);
+					}
+				}
+			}
+			if (!mscorlib) {
+				referenceItems.Add(new ReferenceProjectItem(this, "mscorlib") { FileName = typeof(object).Module.FullyQualifiedName });
+			}
+			return referenceItems;
+		}
+		
 		public virtual void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			feedbackSink.ReportError(new BuildError { ErrorText = "Building project " + Name + " is not supported.", IsWarning = true });
@@ -562,6 +611,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ProjectCreationComplete()
 		{
+		}
+		
+		public virtual XElement LoadProjectExtensions(string name)
+		{
+			return new XElement(name);
+		}
+		
+		public virtual void SaveProjectExtensions(string name, XElement element)
+		{
+		}
+		
+		[Browsable(false)]
+		public Properties ProjectSpecificProperties {
+			get; protected set;
 		}
 	}
 }

@@ -290,6 +290,16 @@
     <Compile Include="Rendering\VisualYPosition.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Search\RegexSearchStrategy.cs" />
+    <Compile Include="Search\DropDownButton.cs" />
+    <Compile Include="Search\ISearchStrategy.cs" />
+    <Compile Include="Search\SearchCommands.cs" />
+    <Compile Include="Search\SearchResultBackgroundRenderer.cs" />
+    <Compile Include="Search\SearchPanel.xaml.cs">
+      <DependentUpon>SearchPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Search\SearchStrategyFactory.cs" />
     <Compile Include="Snippets\IActiveElement.cs" />
     <Compile Include="Snippets\SnippetAnchorElement.cs" />
     <Compile Include="Snippets\SnippetEventArgs.cs" />
@@ -406,10 +416,21 @@
   <ItemGroup>
     <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="CodeCompletion\InsightWindow.xaml" />
+    <Page Include="Search\SearchPanel.xaml" />
+    <Page Include="Search\DropDownButton.xaml">
+      <DependentUpon>DropDownButton.cs</DependentUpon>
+    </Page>
     <Page Include="TextEditor.xaml" />
     <Page Include="themes\generic.xaml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Highlighting\Resources\CSS-Mode.xshd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Search" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Search\next.png" />
+    <Resource Include="Search\prev.png" />
   </ItemGroup>
 </Project>

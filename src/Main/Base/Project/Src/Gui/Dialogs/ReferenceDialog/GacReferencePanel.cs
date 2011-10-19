@@ -154,6 +154,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		void searchTask_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
+			if (this.IsDisposed) {
+				// avoid crash when dialog is closed before search is completed
+				return;
+			}
 			searchButton.Text = "Search"; this.toolTip.SetToolTip(searchButton, searchButton.Text);
 			filterTextBox.ReadOnly = false;
 			if (resultList != null && resultList.Count > 0) {
@@ -374,7 +378,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				});
 			
-			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray());
+			MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 			
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
@@ -418,7 +422,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						}
 					});
 				
-				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray());
+				MSBuildInternals.ResolveAssemblyReferences(project, referenceItems.ToArray(), resolveOnlyAdditionalReferences: true, logErrorsToOutputPad: false);
 				foreach (ReferenceProjectItem rpi in referenceItems) {
 					if (string.IsNullOrEmpty(rpi.Redist)) continue;
 					if (!redistNameToRequiredFramework.ContainsKey(rpi.Redist)) {

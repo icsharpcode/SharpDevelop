@@ -12,6 +12,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using RubyBinding.Tests;
 using RubyBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace RubyBinding.Tests.Parsing
 {
@@ -87,7 +88,7 @@ namespace RubyBinding.Tests.Parsing
 		public void CanParseRubyProject()
 		{
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			createInfo.OutputProjectFileName = @"C:\projects\test.rbproj";
 			RubyProject project = new RubyProject(createInfo);
 			Assert.IsTrue(parser.CanParse(project));

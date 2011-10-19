@@ -15,7 +15,8 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	/// <remarks>
 	/// Properties accessed by this binding have to be managed by a custom
-	/// settings class, which contains all settings as static properties or fields.<br />
+	/// settings class, which contains all settings as static properties or fields, 
+	/// or is a singleton class with the standard 'Instance' property.<br />
 	/// Do not use PropertyService directly!<br />
 	/// This markup extension can only be used in OptionPanels or other <br />containers implementing IOptionBindingContainer!
 	/// </remarks>

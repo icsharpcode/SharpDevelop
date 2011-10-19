@@ -5,9 +5,12 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Xml;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.Reports.Core;
+
 using ICSharpCode.Core;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.SharpDevelop;
+
 /// <summary>
 /// Abstract Class for all ReportGenerators
 /// </summary>
@@ -81,9 +84,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			settings.GroupColumnsCollection.Clear();
 			settings.GroupColumnsCollection.AddRange(this.groupColumnCollection);
-//			settings.ParameterCollection.Clear();
-//			settings.ParameterCollection.AddRange(this.SqlQueryParameters);
 		}
+		
 		
 		private void AdjustSectionToDefault () {
 			
@@ -91,7 +93,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			foreach (ICSharpCode.Reports.Core.BaseSection s in ReportModel.SectionCollection) {
 				s.Size = new Size(settings.PageSize.Width - settings.LeftMargin - settings.RightMargin,
 			                        GlobalValues.DefaultSectionHeight);
-				Console.WriteLine("AdjustSectionToDefaul Size : {0}",s.Size);
+				Console.WriteLine("Adjust Section To DefaultSize : {0}",s.Size);
 			}
 		}
 		
@@ -99,7 +101,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		protected void  WriteToXml ()
 		{
 			
-			LoggingService.Debug("AbstractreportGenerator - Generate Xml friom RepotModel");
+			LoggingService.Debug("AbstractReportGenerator - Generate Xml from RepotModel");
 			
 			ReportDesignerWriter rpd = new ReportDesignerWriter();
 			StringWriterWithEncoding writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);

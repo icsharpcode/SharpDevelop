@@ -4,10 +4,11 @@
 using System;
 using System.Drawing.Printing;
 using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.text.factories;
 
+using ICSharpCode.Reports.Core.Globals;
+using iTextSharp.text;
+using iTextSharp.text.factories;
+using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 {
@@ -100,17 +101,9 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		
 		private void DrawPage (ExporterCollection items)
 		{
-			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items) {
-				if (baseExportColumn != null) {
-
-					IExportContainer container = baseExportColumn as ExportContainer;
-					if (container == null) {
-						baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-					} else {
-						container.DrawItem(this.pdfWriter,this.pdfUnitConverter);
-						this.DrawPage(container.Items);
-					}
-				}
+			foreach (ICSharpCode.Reports.Core.Exporter.BaseExportColumn baseExportColumn in items)
+			{
+				baseExportColumn.DrawItem(this.pdfWriter,this.pdfUnitConverter);
 			}
 		}
 		
@@ -156,7 +149,8 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 	}
 	
 	
-	public class PdfUnitConverter {
+	public class PdfUnitConverter
+	{
 		Rectangle pageSize;
 		float lowerLeftX;
 		float lowerleftY;

@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
-			} else { 
+			} else {
 				DebuggerService.CurrentDebugger.StepOver();
 			}
 		}
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
-			} else { 
+			} else {
 				DebuggerService.CurrentDebugger.StepInto();
 			}
 		}
@@ -119,12 +119,22 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
+			var viewContent = WorkbenchSingleton.Workbench.ActiveContent;
+			ITextEditorProvider provider = viewContent as ITextEditorProvider;
+			ITextEditor editor = null;
 			
 			if (provider != null) {
-				ITextEditor editor = provider.TextEditor;
+				editor = provider.TextEditor;
 				if (!string.IsNullOrEmpty(editor.FileName)) {
-					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
+					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(BreakpointBookmark));
+				}
+			} else {
+				var view = viewContent as AbstractViewContentWithoutFile;
+				if (view != null) {
+					editor = view.GetService(typeof(ITextEditor)) as ITextEditor;
+					if (editor != null) {
+						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(DecompiledBreakpointBookmark));
+					}
 				}
 			}
 		}
@@ -168,6 +178,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			DebuggerService.CurrentDebugger.Detach();
+		}
+	}
+	
+	public class ExecuteLastBuild : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (ProjectService.OpenSolution == null)
+				return;
+			
+			if (ProjectService.OpenSolution.StartupProject == null)
+				return;
+			
+			ProjectService.OpenSolution.StartupProject.Start(false);
 		}
 	}
 }

@@ -6,6 +6,7 @@ using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests.Scripting
 {
@@ -38,7 +39,7 @@ namespace PackageManagement.Tests.Scripting
 		public void GetWorkingDirectory_SolutionOpen_ReturnsSolutionDirectory()
 		{
 			CreateWorkingDirectory();
-			var solution = new Solution();
+			var solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = @"d:\projects\MyProject\myproject.sln";
 			fakeProjectService.OpenSolution = solution;
 			

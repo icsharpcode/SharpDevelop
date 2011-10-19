@@ -459,9 +459,6 @@
 									</Component>
 								</Directory>
 							</Directory>
-							<Component Guid="3730EF42-5257-4EB2-9DA1-57151E5EB5A3" Id="AgaControlsDll" DiskId="1">
-								<File Source="..\..\bin\Aga.Controls.dll" Id="Aga.Controls.dll" Name="Aga.Controls.dll" Assembly=".net" AssemblyApplication="Aga.Controls.dll" AssemblyManifest="Aga.Controls.dll" KeyPath="yes" />
-							</Component>
 							<Component Guid="2EC34D8A-CF14-4E1F-A512-9A596A1C256D" Id="ICSharpCodeCoreWinFormsDll" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.WinForms.dll" Name="ICSharpCode.Core.WinForms.dll" Id="ICSharpCode.Core.WinForms.dll" KeyPath="yes" />
 							</Component>
@@ -715,6 +712,27 @@
 										<Component Guid="47C2A81B-8BC1-4762-BE7F-8989E8DE0703" Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass" DiskId="1">
 											<File Source="..\..\data\templates\file\CSharp\RecentFilesCollection.cs" Name="RecentFilesCollection.cs" Id="RecentFilesCollection.cs" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpMvcControllerFileTemplate" Guid="93AF3CAF-FA60-4765-9D24-415535A7F1F2" DiskId="1">
+											<File Id="CSharp.Mvc.Controller.xft" Name="CSharp.Mvc.Controller.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Controller.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewContentPageFileTemplate" Guid="04C2BEF8-DB03-4D56-9176-E85529DB6789" DiskId="1">
+											<File Id="CSharp.Mvc.ViewContentPage.xft" Name="CSharp.Mvc.ViewContentPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewContentPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewMasterPageFileTemplate" Guid="1482F786-8437-4402-8798-D0EF2664FCB4" DiskId="1">
+											<File Id="CSharp.Mvc.ViewMasterPage.xft" Name="CSharp.Mvc.ViewMasterPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewMasterPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewPageFileTemplate" Guid="6C77F3F2-AF84-4927-BD9C-1995D8F30559" DiskId="1">
+											<File Id="CSharp.Mvc.ViewPage.xft" Name="CSharp.Mvc.ViewPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcViewUserControlFileTemplate" Guid="FF8B0A8A-6C11-471E-AAAC-351D8D762973" DiskId="1">
+											<File Id="CSharp.Mvc.ViewUserControl.xft" Name="CSharp.Mvc.ViewUserControl.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.ViewUserControl.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpWcfServiceFileTemplate" Guid="FBCEE100-BE0D-11E0-A9F2-C7D14824019B" DiskId="1">
+											<File Id="CSharp.WcfService.xft" Name="CSharp.WcfService.xft" Source="..\..\data\templates\file\CSharp\CSharp.WcfService.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpWcfRestServiceFileTemplate" Guid="00AE5E3C-DD9C-11E0-A234-EEB74724019B" DiskId="1">
+											<File Id="CSharp.WcfRestService.xft" Name="CSharp.WcfRestService.xft" Source="..\..\data\templates\file\CSharp\CSharp.WcfRestService.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
 										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
@@ -771,6 +789,27 @@
 											<File Id="VB.WPFUserControl.xft" Name="VB.WPFUserControl.xft" Source="..\..\data\templates\file\VB\VB.WPFUserControl.xft" />
 											<File Id="VB.WPFWindow.xft" Name="VB.WPFWindow.xft" Source="..\..\data\templates\file\VB\VB.WPFWindow.xft" />
 										</Component>
+										<Component Id="VBMvcControllerFileTemplate" Guid="E56644A3-2A6C-4E49-88E2-85EEDA3B0999" DiskId="1">
+											<File Id="VB.Mvc.Controller.xft" Name="VB.Mvc.Controller.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Controller.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewContentPageFileTemplate" Guid="D1A45934-F42E-4B69-82CA-FF0769A39268" DiskId="1">
+											<File Id="VB.Mvc.ViewContentPage.xft" Name="VB.Mvc.ViewContentPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewContentPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewMasterPageFileTemplate" Guid="014285CD-C24F-4C40-9C31-089C83E09660" DiskId="1">
+											<File Id="VB.Mvc.ViewMasterPage.xft" Name="VB.Mvc.ViewMasterPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewMasterPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewPageFileTemplate" Guid="4C6C4367-AC3E-49F3-AA89-2EC2AF5D27C5" DiskId="1">
+											<File Id="VB.Mvc.ViewPage.xft" Name="VB.Mvc.ViewPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcViewUserControlFileTemplate" Guid="A6272501-2DB7-48B5-AF86-7D53016DF29A" DiskId="1">
+											<File Id="VB.Mvc.ViewUserControl.xft" Name="VB.Mvc.ViewUserControl.xft" Source="..\..\data\templates\file\VB\VB.Mvc.ViewUserControl.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBWcfServiceFileTemplate" Guid="A1EABE3E-BE0D-11E0-A4E6-5BD14824019B" DiskId="1">
+											<File Id="VB.WcfService.xft" Name="VB.WcfService.xft" Source="..\..\data\templates\file\VB\VB.WcfService.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBWcfRestServiceFileTemplate" Guid="28AB44B8-DD9C-11E0-AEE3-30B84724019B" DiskId="1">
+											<File Id="VB.WcfRestService.xft" Name="VB.WcfRestService.xft" Source="..\..\data\templates\file\VB\VB.WcfRestService.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
@@ -809,6 +848,15 @@
 										<Component Id="CSharpMvcWebProjectTemplate" Guid="82060284-5670-4B2F-8AB0-BE075D09D4BE" DiskId="1">
 											<File Id="CSharp.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\MvcWebProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="EmptyCSharpMvcWebProjectTemplate" Guid="3EA7EF3D-F72A-446C-AA21-BA97EF9B321A" DiskId="1">
+											<File Id="Empty.CSharp.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\CSharp\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpWcfServiceProjectTemplate" Guid="D793DD78-BE0C-11E0-AC34-34D04824019B" DiskId="1">
+											<File Id="CSharp.WcfServiceProject.xpt" Name="CSharp.WcfServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfServiceProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpWcfRestServiceProjectTemplate" Guid="8FEE65EC-DD9C-11E0-8968-81B84724019B" DiskId="1">
+											<File Id="CSharp.WcfRestServiceProject.xpt" Name="CSharp.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfRestServiceProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
@@ -843,6 +891,15 @@
 										</Component>
 										<Component Id="VBMvcWebProjectTemplate" Guid="FBDC313E-FC77-4500-84EC-35F0E19925C1" DiskId="1">
 											<File Id="VB.MvcWebProject.xpt" Name="MvcWebProject.xpt" Source="..\..\data\templates\project\VB\MvcWebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyVBMvcWebProjectTemplate" Guid="DCCCBDDE-6F8A-4163-8294-F84E5E76917C" DiskId="1">
+											<File Id="Empty.VB.MvcWebProject.xpt" Name="EmptyMvcWebProject.xpt" Source="..\..\data\templates\project\VB\EmptyMvcWebProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="VBWcfServiceProjectTemplate" Guid="FF1C11DA-BE0C-11E0-A35E-6FD04824019B" DiskId="1">
+											<File Id="VB.WcfServiceProject.xpt" Name="VB.WcfServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfServiceProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="VBWcfRestServiceProjectTemplate" Guid="A45203E0-DD9C-11E0-974A-93B84724019B" DiskId="1">
+											<File Id="VB.WcfRestServiceProject.xpt" Name="VB.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfRestServiceProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
@@ -1374,6 +1431,15 @@
 										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
+								<Directory Id="Decompiler" Name="Decompiler">
+									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
+										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.dll" KeyPath="yes" />
+										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\DisplayBindings\Decompiler\ILSpyAddIn.addin" />
+										<File Id="ICSharpCode.NewNRefactory.dll" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NewNRefactory.dll" />
+										<File Id="ICSharpCode.NRefactory.CSharp.dll" Name="ICSharpCode.NRefactory.CSharp.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.NRefactory.CSharp.dll" />
+										<File Id="ICSharpCode.Decompiler.dll" Name="ICSharpCode.Decompiler.dll" Source="..\..\AddIns\DisplayBindings\Decompiler\ICSharpCode.Decompiler.dll" />
+									</Component>
+								</Directory>
 							</Directory>
 							<Directory Id="DebuggerFolder" Name="Debugger">
 								<Component Guid="27C66A5A-0149-45F4-B1AF-C320FE005E6B" Id="DebuggerAddInFiles" DiskId="1">
@@ -1521,12 +1587,6 @@
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 									</Component>
 								</Directory>
-								<Directory Id="ILSpyAddIn" Name="ILSpyAddIn">
-									<Component Id="ILSpyAddInFiles" Guid="F1422563-5927-4D98-B4D4-33FE5576C665" DiskId="1">
-										<File Id="ILSpyAddIn.dll" Name="ILSpyAddIn.dll" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.dll" KeyPath="yes" />
-										<File Id="ILSpyAddIn.addin" Name="ILSpyAddIn.addin" Source="..\..\AddIns\Misc\ILSpyAddIn\ILSpyAddIn.addin" />
-									</Component>
-								</Directory>
 								<Directory Id="PackageManagement" Name="PackageManagement">
 									<Component Id="NuGetCoreDll" Guid="AA347D26-712F-4BF7-BB74-517F6BFC563F" DiskId="1">
 										<File Id="NuGet.Core.dll" Name="NuGet.Core.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Core.dll" AssemblyManifest="NuGet.Core.dll" />
@@ -1557,6 +1617,25 @@
 									<Component Id="PackageManagementPowerShellDll" Guid="78A57EFC-EB7D-4982-A6DA-42F061BCA2D2" DiskId="1">
 										<File Id="PackageManagement.PowerShell.dll" Name="PackageManagement.PowerShell.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.PowerShell.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.PowerShell.dll" AssemblyManifest="PackageManagement.PowerShell.dll" />
 									</Component>
+								</Directory>
+								<Directory Id="TextTemplating" Name="TextTemplating">
+									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">
+										<File Id="Mono.TextTemplating.dll" Name="Mono.TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\Mono.TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Mono.TextTemplating.dll" AssemblyManifest="Mono.TextTemplating.dll" />
+									</Component>
+									<Component Id="TextTemplatingAddin" Guid="4641009D-3B33-4D5D-8910-48543211BAD1" DiskId="1">
+										<File Id="TextTemplating.addin" Name="TextTemplating.addin" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="TextTemplatingDll" Guid="EB7774C9-9C60-46F5-95C1-17D86E743F83" DiskId="1">
+										<File Id="TextTemplating.dll" Name="TextTemplating.dll" Source="..\..\AddIns\Misc\TextTemplating\TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="TextTemplating.dll" AssemblyManifest="TextTemplating.dll" />
+									</Component>
+									<Directory Id="TextTemplatingTemplates" Name="Templates">
+										<Component Id="CSharpTextTemplateFileTemplate" Guid="D271B972-2CBB-4615-9D35-23F75969CA9B" DiskId="1">
+											<File Id="CSharp.TextTemplate.xft" Name="CSharp.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\CSharp.TextTemplate.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBTextTemplateFileTemplate" Guid="21E9FFAB-491C-48A4-BD3D-41E596C50D66" DiskId="1">
+											<File Id="VB.TextTemplate.xft" Name="VB.TextTemplate.xft" Source="..\..\AddIns\Misc\TextTemplating\Templates\VB.TextTemplate.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
 								</Directory>
 							</Directory>
 							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
@@ -1630,7 +1709,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Component Id="SharpDevelopProgramMenuItems" Guid="212A9717-E2C6-4522-AB76-9B92B7FB7FB6">
+				<Component Id="SharpDevelopProgramMenuItems" Guid="E7C5EA6C-D3D2-4567-BA9F-377D6D6BCB66">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
@@ -1641,7 +1720,7 @@
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="03C3A248-04B0-4DE7-B4BA-C2D7275AA9FA">
+				<Component Id="DesktopFolderItems" Guid="2C49B793-F6B6-4AF9-BDD5-7C8D61270FD9">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp

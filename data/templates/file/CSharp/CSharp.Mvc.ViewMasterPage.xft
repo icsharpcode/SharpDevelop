@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Template author="Matt Ward" version="1.0">
+	
+	<Config
+		name="MVC View Master Page"
+		icon="C#.File.NewClass"
+		category="C#"
+		subcategory="ASP.NET MVC"
+		defaultname="ViewMasterPage${Number}.master"
+		language="C#"/>
+	 
+	<Description>MVC View Master Page</Description>
+	
+	<Files>
+		<File name="${FullName}" language="C#">
+<![CDATA[<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><asp:ContentPlaceHolder id="Title" runat="server"/></title>
+	</head>
+	<body>
+		<div id="page">
+			<section id="main">
+				<asp:ContentPlaceHolder id="Main" runat="server"/>
+			</section>
+		</div>
+	</body>
+</html>
+]]>
+		</File>
+	</Files>
+</Template>
+

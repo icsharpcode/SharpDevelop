@@ -53,8 +53,23 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\Libraries\Irony.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="NUnit.Framework">
+      <HintPath>$(SharpDevelopBinPath)\Tools\NUnit\NUnit.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="ReachFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -64,19 +79,34 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Project\BaseClasses\ExtensionMethodes.cs" />
+    <Compile Include="Project\BaseClasses\Printing\LayoutHelper.cs" />
+    <Compile Include="Project\BaseClasses\TypeHelpers.cs" />
     <Compile Include="Project\BaseClasses\CurrentItem.cs" />
     <Compile Include="Project\BaseClasses\GroupColumn.cs" />
     <Compile Include="Project\BaseClasses\PageInfo.cs" />
@@ -104,8 +134,9 @@
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
     <Compile Include="Project\DataManager\Comparer\GroupSeparator.cs" />
     <Compile Include="Project\DataManager\Comparer\SortComparer.cs" />
+    <Compile Include="Project\DataManager\DataAccess\SqlDataAccess.cs" />
+    <Compile Include="Project\DataManager\DataAccess\SqlQueryChecker.cs" />
     <Compile Include="Project\DataManager\ListStrategy\TableStrategy.cs" />
-    <Compile Include="Project\DataManager\SqlDataAccess.cs" />
     <Compile Include="Project\DataManager\ListHandling\IndexList.cs" />
     <Compile Include="Project\DataManager\ListHandling\ExtendedPropertyDescriptor.cs" />
     <Compile Include="Project\DataManager\ListHandling\ExtendedTypeDescriptor.cs" />
@@ -114,13 +145,16 @@
     <Compile Include="Project\DataManager\ListStrategy\CollectionStrategy.cs" />
     <Compile Include="Project\DataManager\DataManager.cs" />
     <Compile Include="Project\Dialogs\EditorDialog.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
     <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
-    <Compile Include="Project\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
-    <Compile Include="Project\Dialogs\ParameterDialog.cs" />
+    <Compile Include="Project\Dialogs\ParameterDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Project\Dialogs\PreviewControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
     <Compile Include="Project\Dialogs\SortingCollectionEditor.cs" />
@@ -137,6 +171,14 @@
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
     <Compile Include="Project\Exporter\Converters\GroupedTableConverter.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\ExportGraphicContainer.cs" />
+    <Compile Include="Project\Exporter\ExportColumns\IBaseExportColumn.cs" />
+    <Compile Include="Project\Exporter\ExportHelper.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\ExportRunner.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\FixedDocumentRenderer.cs" />
+    <Compile Include="Project\Exporter\ExportRenderer\IExportRunner.cs" />
+    <Compile Include="Project\Exporter\GapList.cs" />
+    <Compile Include="Project\Expressions\EvaluationHelper.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
@@ -148,7 +190,6 @@
     <Compile Include="Project\Exporter\ExportColumns\IExportContainer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\HTMLRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PdfRenderer.cs" />
-    <Compile Include="Project\Exporter\ExportRenderer\XPSRenderer.cs" />
     <Compile Include="Project\Exporter\FormPageBuilder.cs" />
     <Compile Include="Project\Expressions\ExpressionEvaluatorFacade.cs" />
     <Compile Include="Project\Expressions\IExpressionEvaluatorFacade.cs" />
@@ -198,6 +239,7 @@
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators\UnaryOperator.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\UserId.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\UserLanguage.cs" />
+    <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Substring.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Today.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ToString.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\UnknownFunction.cs" />
@@ -239,6 +281,7 @@
     <Compile Include="Project\Factories\DisplayNameAttribute.cs" />
     <Compile Include="Project\Factories\RendererFactory.cs" />
     <Compile Include="Project\Factories\SectionFactory.cs" />
+    <Compile Include="Project\Globals\ServiceContainer.cs" />
     <Compile Include="Project\Globals\CreateGraphicObject.cs" />
     <Compile Include="Project\Globals\FilePathConverter.cs" />
     <Compile Include="Project\Globals\FileUtility.cs" />
@@ -249,15 +292,16 @@
     <Compile Include="Project\Globals\GraphicsUnit.cs" />
     <Compile Include="Project\Globals\PdfHelper.cs" />
     <Compile Include="Project\Globals\ReportSectionNames.cs" />
+    <Compile Include="Project\Globals\StringHelpers.cs" />
     <Compile Include="Project\Globals\UnitConverter.cs" />
     <Compile Include="Project\Interfaces\IDataAccessStrategy.cs" />
     <Compile Include="Project\Interfaces\IDataViewStrategy.cs" />
     <Compile Include="Project\Interfaces\IItemConverter.cs" />
     <Compile Include="Project\Interfaces\ILayouter.cs" />
     <Compile Include="Project\Interfaces\IReportItem.cs" />
-    <Compile Include="Project\Interfaces\IMeasurementService.cs" />
     <Compile Include="Project\Interfaces\IReportModel.cs" />
     <Compile Include="Project\Interfaces\ISinglePage.cs" />
+    <Compile Include="Project\Interfaces\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\IReportCreator.cs" />
     <Compile Include="Project\Printing\Graphics\BaseLine.cs" />
     <Compile Include="Project\Printing\Graphics\BaseShape.cs" />
@@ -268,14 +312,13 @@
     <Compile Include="Project\Printing\Graphics\RectangleShape.cs" />
     <Compile Include="Project\Printing\AbstractRenderer.cs" />
     <Compile Include="Project\Printing\RenderDataReport.cs" />
-    <Compile Include="Project\Printing\RendererFactory.cs" />
     <Compile Include="Project\Printing\RenderFormSheetReport.cs" />
-    <Compile Include="Project\Printing\RenderTable.cs" />
     <Compile Include="Project\Printing\ReportDocument.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Project\ReportEngine.cs" />
     <Compile Include="Project\ReportViewer\NumericToolStripTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Project\ConnectionObject.cs" />
     <Compile Include="Project\ReportModel.cs" />
@@ -291,7 +334,6 @@
     <Compile Include="Project\BaseClasses\BasicParameter.cs" />
     <Compile Include="Project\BaseClasses\SqlParameter.cs" />
     <Compile Include="Project\Collections\Collections.cs" />
-    <Compile Include="Project\DataManager\SqlQueryChecker.cs" />
     <Compile Include="Project\Exceptions\MissingModelException.cs" />
     <Compile Include="Project\BaseItems\BaseRowItem.cs" />
     <Compile Include="Project\Interfaces\IContainerItem.cs" />
@@ -311,11 +353,6 @@
     <Compile Include="Project\Exporter\ExportColumns\ExportText.cs" />
     <Compile Include="Project\Exporter\ExportColumns\IExportColumnBuilder .cs" />
     <Compile Include="Project\ReportViewer\PageNavigationEventArgs.cs" />
-    <Compile Include="Project\ReportViewer\ReportViewer.cs">
-    </Compile>
-    <Compile Include="Project\ReportViewer\ReportViewer.Designer.cs">
-      <DependentUpon>Project\ReportViewer.cs</DependentUpon>
-    </Compile>
     <Compile Include="Project\Exporter\ExportColumns\ExportGraphic.cs" />
     <Compile Include="Project\Exporter\Decorators\TextStyleDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\GraphicStyleDecorator.cs" />
@@ -327,6 +364,18 @@
     <Compile Include="Project\Exporter\ExportRenderer\BaseExportRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PreviewRenderer.cs" />
     <Compile Include="Project\Exporter\ExportRenderer\PrintRenderer.cs" />
+    <Compile Include="Project\ReportViewer\ReportViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportViewer\ReportViewer.designer.cs">
+      <DependentUpon>ReportViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\WpfReportViewer\PreviewViewModel.cs" />
+    <Compile Include="Project\WpfReportViewer\WpfReportViewer.xaml.cs">
+      <DependentUpon>WpfReportViewer.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Project\WPF\FixedDocumentCreator.cs" />
     <Compile Include="Project\Xml\BaseItemLoader.cs" />
     <Compile Include="Project\Xml\MycroParser.cs" />
     <Compile Include="Project\Xml\MycroWriter.cs" />
@@ -337,8 +386,7 @@
       <DependentUpon>ParameterDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project\ReportViewer\ReportViewer.resx">
-      <DependentUpon>ReportViewer.Designer.cs</DependentUpon>
-      <Generator>ResXFileCodeGenerator</Generator>
+      <DependentUpon>ReportViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Project\Resources\CoreResource.resx" />
     <None Include="Project\Expressions\SimpleExpressionEvaluator\Parser\SimpleExpressionLanguage.tpg" />
@@ -348,47 +396,12 @@
     <None Include="Project\ReportViewer\Resources\Icons\Next.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Project\BaseClasses\Printing" />
-    <Folder Include="Project\BaseItems" />
-    <Folder Include="Project\BaseItems\Graphics" />
-    <Folder Include="Project\Collections" />
-    <Folder Include="Project\DataManager" />
-    <Folder Include="Project\DataManager\Comparer" />
-    <Folder Include="Project\DataManager\ListHandling" />
-    <Folder Include="Project\DataManager\ListStrategy" />
-    <Folder Include="Project\Dialogs" />
-    <Folder Include="Project\Events" />
-    <Folder Include="Project\Exceptions" />
-    <Folder Include="Project\Exporter\Converters" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator" />
-    <Folder Include="Project\Expressions\ReportingLanguage" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\AggregateFunctions" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\Operators" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Evaluation" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Parser" />
-    <Folder Include="Project\Expressions\SimpleExpressionEvaluator\Utilities" />
-    <Folder Include="Project\Factories" />
-    <Folder Include="Project\Globals" />
-    <Folder Include="Project\Interfaces" />
-    <Folder Include="Project\Expressions" />
-    <Folder Include="Project\ReportViewer\Resources\Icons" />
-    <Folder Include="Project\Resources" />
-    <Folder Include="Project\Printing" />
-    <Folder Include="Project\Printing\Graphics" />
-    <Folder Include="Project\Xml" />
-    <Folder Include="Project\Configuration" />
-    <Folder Include="Project\BaseClasses" />
-    <Folder Include="Project\Exporter" />
-    <Folder Include="Project\Exporter\ExportColumns" />
-    <Folder Include="Project\ReportViewer" />
-    <Folder Include="Project\ReportViewer\Resources" />
-    <ProjectReference Include="..\Irony\Irony.csproj">
-      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
-      <Name>Irony</Name>
-    </ProjectReference>
+    <Folder Include="Project\DataManager\DataAccess" />
+    <Folder Include="Project\WpfReportViewer" />
+    <Folder Include="Project\WPF" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Project\WpfReportViewer\WpfReportViewer.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

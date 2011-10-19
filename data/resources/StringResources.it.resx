@@ -298,6 +298,15 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Sistema numerazione</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimale</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Esadecimale</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Ottale</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Ridimensiona per riempire la larghezza corrente</value>
   </data>
@@ -779,9 +788,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' è stato rimosso dalla lista degli elementi da ignorare.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Mantieni aperta la vecchia soluzione</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Acquisisci blocco</value>
   </data>
@@ -808,12 +814,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Mostra cronologia per i files sotto il controllo della versione</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Ricarica soluzione</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop ha individuato dei cambiamenti nei file di progetto a causa del sistema di controllo versione. E' necessario ricaricare la soluzione.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Cambia posizione</value>
@@ -974,9 +974,6 @@ Salva questi file prima di eseguire l'operazione.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>File</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linea</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Informazioni su</value>
@@ -2416,6 +2413,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Debugging</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Eccezioni</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Fermati sulle Eccezioni gestite</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stepping</value>
   </data>
@@ -2979,7 +2982,7 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
     <value>Processore Intel 64-bit Itanium</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Processori AMD 64-bit</value>
+    <value>Processore x86-64</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Processore compatibile Intel 32-bit</value>
@@ -3495,6 +3498,9 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Esegui</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linea</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Aggiorna</value>
   </data>
@@ -3770,9 +3776,6 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fine riga</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Riga</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Impossibile trovare l'applicazione console NCover
@@ -4215,7 +4218,7 @@ Nota: Questa operazione non influenza i propri layout.</value>
     <value>Il progetto è stato convertito con successo. Puoi trovare il progetto convertito in questa cartella:</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
-    <value>Dal C# al Boo</value>
+    <value>Da C# a Boo</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertVBNetProjectToBoo" xml:space="preserve">
     <value>Dal VB.NET al Boo</value>
@@ -4294,7 +4297,7 @@ Tutti i cambiamenti saranno persi.</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
     <value>Il file
 ${File}
-è stato cambiato esternamente, vuoi ricaricarlo?
+è stato cambiato esternamente. Vuoi ricaricarlo?
 </value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
@@ -4814,6 +4817,15 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Caricamento ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Mantieni aperta la vecchia soluzione</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Ricarica soluzione</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>La soluzione ha subito dei cambiamenti esterni.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Converti &amp;progetti selezionati in:</value>
@@ -5534,6 +5546,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Linguaggio</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Modulo</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Mostra i nomi degli argomenti</value>
   </data>
@@ -5542,6 +5557,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Mostra i metodi esterni</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Mostra numero di riga</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Mostra nome moduli</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Chiedi</value>
@@ -5761,6 +5782,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Imposta istruzione corrente</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Vuoi interrompere il debug?</value>
   </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>Scollegare o chiudere il processo?</value>
@@ -6051,7 +6075,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Percorso/nome del file di copia</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Apri la cartella in Explorer</value>
+    <value>Apri la cartella in Esplora risorse</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Comprimi tutti i nodi</value>
@@ -7564,6 +7588,9 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Rimuovi tutti i punti di interruzione</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Esegui l'ultima versione</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Esegue &amp;senza debugger</value>
   </data>
@@ -8102,15 +8129,6 @@ Errore durante esecuzione:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Utente:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Controlla l'esistenza di nuove versioni di SharpDevelop, di a tutti i tuoi amici quanto è buono e scrivici programmi C# "ganzi"!!!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Puoi aprire la finestra di completamento dei modelli con Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Vuoi che digitando "? name = ...;" (C#) o "Dim name As ? = ..." (VB) SharpDevelop sostituisca il punto interrogativo con il tipo di "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opzioni dell'Editor</value>

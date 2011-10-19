@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItem
+	public class ProjectItem : MarshalByRefObject
 	{
 		SD.FileProjectItem projectItem;
 		

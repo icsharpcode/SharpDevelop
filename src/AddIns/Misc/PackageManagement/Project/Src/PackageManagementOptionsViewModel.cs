@@ -43,7 +43,7 @@ namespace ICSharpCode.PackageManagement
 		
 		bool RecentPackageRepositoryHasPackages()
 		{
-			return recentPackageRepository.GetPackages().Any();
+			return recentPackageRepository.HasRecentPackages;
 		}
 		
 		void CreateCommands()

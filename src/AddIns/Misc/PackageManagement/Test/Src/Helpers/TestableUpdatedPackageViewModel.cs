@@ -18,38 +18,34 @@ namespace PackageManagement.Tests.Helpers
 		public ILogger LoggerUsedWhenCreatingPackageResolver;
 		public FakePackageActionRunner FakeActionRunner;
 		
-		public TestableUpdatedPackageViewModel()
-			: this(new FakePackageManagementSolution())
-		{
-		}
-		
 		public TestableUpdatedPackageViewModel(FakePackageManagementSolution solution)
 			: this(
 				new FakePackage(),
-				solution,
+				new SelectedProjectsForUpdatedPackages(solution),
 				new FakePackageManagementEvents(),
 				new FakePackageActionRunner(),
 				new FakeLogger())
-		{		
+		{
+			this.FakeSolution = solution;
 		}
 		
 		public TestableUpdatedPackageViewModel(
 			FakePackage package,
-			FakePackageManagementSolution solution,
+			SelectedProjectsForUpdatedPackages selectedProjects,
 			FakePackageManagementEvents packageManagementEvents,
 			FakePackageActionRunner actionRunner,
 			FakeLogger logger)
 			: base(
 				package,
-				solution,
+				selectedProjects,
 				packageManagementEvents,
 				actionRunner,
 				logger)
 		{
 			this.FakePackage = package;
-			this.FakeSolution = solution;
 			this.FakeActionRunner = actionRunner;
 			this.FakeLogger = logger;
+			this.FakePackageManagementEvents = packageManagementEvents;
 		}
 	}
 }

@@ -9,7 +9,7 @@ namespace ICSharpCode.UnitTesting
 {
 	public interface ITestFramework
 	{
-		bool IsTestMethod(IMember member);
+		bool IsTestMember(IMember member);
 		bool IsTestClass(IClass c);
 		bool IsTestProject(IProject project);
 		

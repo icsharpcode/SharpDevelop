@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.PackageManagement.Scripting;
 using ICSharpCode.SharpDevelop.Project;
 using NuGet;
 
@@ -16,15 +17,13 @@ namespace ICSharpCode.PackageManagement
 		public SharpDevelopPackageManager(
 			IPackageRepository sourceRepository,
 			IProjectSystem projectSystem,
-			IFileSystem fileSystem,
-			ISharedPackageRepository localRepository,
-			IPackagePathResolver pathResolver,
+			ISolutionPackageRepository solutionPackageRepository,
 			IPackageOperationResolverFactory packageOperationResolverFactory)
 			: base(
 				sourceRepository,
-				pathResolver,
-				fileSystem,
-				localRepository)
+				solutionPackageRepository.PackagePathResolver,
+				solutionPackageRepository.FileSystem,
+				solutionPackageRepository.Repository)
 		{
 			this.projectSystem = projectSystem;
 			this.packageOperationResolverFactory = packageOperationResolverFactory;
@@ -86,7 +85,15 @@ namespace ICSharpCode.PackageManagement
 		public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
 		{
 			ProjectManager.RemovePackageReference(package.Id, forceRemove, removeDependencies);
-			base.UninstallPackage(package, forceRemove, removeDependencies);
+			if (!IsPackageReferencedByOtherProjects(package)) {
+				base.UninstallPackage(package, forceRemove, removeDependencies);
+			}
+		}
+		
+		bool IsPackageReferencedByOtherProjects(IPackage package)
+		{
+			var sharedRepository = LocalRepository as ISharedPackageRepository;
+			return sharedRepository.IsReferenced(package.Id, package.Version);
 		}
 		
 		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)

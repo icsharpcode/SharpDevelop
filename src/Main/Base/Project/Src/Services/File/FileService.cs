@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsValidPath(path))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", path}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", path)));
 			return false;
 		}
 		
@@ -189,7 +189,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (FileUtility.IsValidDirectoryEntryName(name))
 				return true;
-			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", name}}));
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", name)));
 			return false;
 		}
 		
@@ -533,7 +533,6 @@ namespace ICSharpCode.SharpDevelop
 			bool loggingResumed = false;
 			
 			try {
-				
 				IViewContent content = OpenFile(fileName);
 				if (content is IPositionable) {
 					// TODO: enable jumping to a particular view
@@ -547,11 +546,11 @@ namespace ICSharpCode.SharpDevelop
 					NavigationService.Log(content);
 				}
 				
-				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
-				
 				return content;
 				
 			} finally {
+				LoggingService.InfoFormatted("FileService\n\tJumped to File Position:  [{0} : {1}x{2}]", fileName, line, column);
+				
 				if (!loggingResumed) {
 					NavigationService.ResumeLogging();
 				}
@@ -705,6 +704,16 @@ namespace ICSharpCode.SharpDevelop
 			public IViewContent CreateContentForFile(OpenedFile file)
 			{
 				return new SimpleViewContent(errorMessage) { TitleName = Path.GetFileName(file.FileName) };
+			}
+			
+			public bool IsPreferredBindingForFile(string fileName)
+			{
+				return false;
+			}
+			
+			public double AutoDetectFileContent(string fileName, Stream fileContent, string detectedMimeType)
+			{
+				return double.NegativeInfinity;
 			}
 		}
 	}

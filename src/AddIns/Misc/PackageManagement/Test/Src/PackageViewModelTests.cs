@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
@@ -15,25 +17,33 @@ namespace PackageManagement.Tests
 	public class PackageViewModelTests
 	{
 		TestablePackageViewModel viewModel;
-		FakePackage package;
+		FakePackage fakePackage;
 		FakePackageManagementSolution fakeSolution;
-		FakePackageManagementEvents packageManagementEvents;
+		FakePackageManagementEvents fakePackageManagementEvents;
 		ExceptionThrowingPackageManagementSolution exceptionThrowingSolution;
 		ExceptionThrowingPackageManagementProject exceptionThrowingProject;
 		FakeInstallPackageAction fakeInstallPackageAction;
 		FakeUninstallPackageAction fakeUninstallPackageAction;
 		FakeLogger fakeLogger;
 		FakePackageActionRunner fakeActionRunner;
+		List<FakeSelectedProject> fakeSelectedProjects;
+		
+		void CreateFakeSolution()
+		{
+			fakeSolution = new FakePackageManagementSolution();
+			fakeSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
+		}
 		
 		void CreateViewModel()
 		{
-			fakeSolution = new FakePackageManagementSolution();
+			CreateFakeSolution();
 			CreateViewModel(fakeSolution);
 		}
 		
 		void CreateViewModelWithExceptionThrowingSolution()
 		{
 			exceptionThrowingSolution = new ExceptionThrowingPackageManagementSolution();
+			exceptionThrowingSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
 			CreateViewModel(exceptionThrowingSolution);
 		}
 		
@@ -41,21 +51,102 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			exceptionThrowingProject = new ExceptionThrowingPackageManagementProject();
-			viewModel.FakeSolution.FakeProject = exceptionThrowingProject;
+			viewModel.FakeSolution.FakeProjectToReturnFromGetProject = exceptionThrowingProject;
 		}
 		
 		void CreateViewModel(FakePackageManagementSolution solution)
 		{
 			viewModel = new TestablePackageViewModel(solution);
-			package = viewModel.FakePackage;
+			fakePackage = viewModel.FakePackage;
 			this.fakeSolution = solution;
-			packageManagementEvents = viewModel.FakePackageManagementEvents;
+			fakePackageManagementEvents = viewModel.FakePackageManagementEvents;
 			fakeLogger = viewModel.FakeLogger;
-			fakeInstallPackageAction = solution.FakeProject.FakeInstallPackageAction;
-			fakeUninstallPackageAction = solution.FakeProject.FakeUninstallPackageAction;
+			fakeInstallPackageAction = solution.FakeProjectToReturnFromGetProject.FakeInstallPackageAction;
+			fakeUninstallPackageAction = solution.FakeProjectToReturnFromGetProject.FakeUninstallPackageAction;
 			fakeActionRunner = viewModel.FakeActionRunner;
 		}
+		
+		void AddProjectToSolution()
+		{
+			TestableProject project = ProjectHelper.CreateTestProject();
+			fakeSolution.FakeMSBuildProjects.Add(project);
+		}
+		
+		void CreateViewModelWithTwoProjectsSelected(string projectName1, string projectName2)
+		{
+			CreateFakeSolution();
+			AddTwoProjectsSelected(projectName1, projectName2);
+			CreateViewModel(fakeSolution);
+		}
 
+		void AddTwoProjectsSelected(string projectName1, string projectName2)
+		{			
+			AddProjectToSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeMSBuildProjects[0].Name = projectName1;
+			fakeSolution.FakeMSBuildProjects[1].Name = projectName2;
+			fakeSolution.NoProjectsSelected();
+			
+			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName1);
+			fakeSolution.AddFakeProjectToReturnFromGetProject(projectName2);
+		}
+		
+		void SetPackageIdAndVersion(string id, string version)
+		{
+			fakePackage.Id = id;
+			fakePackage.Version = new Version(version);
+		}
+		
+		void UserCancelsProjectSelection()
+		{
+			fakePackageManagementEvents.OnSelectProjectsReturnValue = false;
+		}
+		
+		void UserAcceptsProjectSelection()
+		{
+			fakePackageManagementEvents.OnSelectProjectsReturnValue = true;
+		}
+		
+		List<FakeSelectedProject> CreateTwoFakeSelectedProjects()
+		{
+			fakeSelectedProjects = new List<FakeSelectedProject>();
+			fakeSelectedProjects.Add(new FakeSelectedProject("Project A"));
+			fakeSelectedProjects.Add(new FakeSelectedProject("Project B"));
+			return fakeSelectedProjects;
+		}
+		
+		FakePackageOperation AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FakeSelectedProject selectedProject)
+		{
+			return AddFakeInstallPackageOperationWithPackage(selectedProject, requireLicenseAcceptance: true);
+		}
+		
+		FakePackageOperation AddFakeInstallPackageOperationWithPackageThatDoesNotRequireLicenseAcceptance(FakeSelectedProject selectedProject)
+		{
+			return AddFakeInstallPackageOperationWithPackage(selectedProject, requireLicenseAcceptance: false);
+		}
+		
+		FakePackageOperation AddFakeInstallPackageOperationWithPackage(FakeSelectedProject selectedProject, bool requireLicenseAcceptance)
+		{
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = requireLicenseAcceptance;
+			return operation;
+		}
+		
+		FakePackageOperation AddFakeUninstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FakeSelectedProject selectedProject)
+		{
+			FakePackageOperation uninstallOperation = selectedProject.AddFakeUninstallPackageOperation();
+			uninstallOperation.FakePackage.RequireLicenseAcceptance = true;
+			return uninstallOperation;
+		}
+		
+		FakeSelectedProject FirstFakeSelectedProject {
+			get { return fakeSelectedProjects[0]; }
+		}
+		
+		FakeSelectedProject SecondFakeSelectedProject {
+			get { return fakeSelectedProjects[1]; }
+		}
+		
 		[Test]
 		public void AddPackageCommand_CommandExecuted_InstallsPackage()
 		{
@@ -64,7 +155,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackageCommand.Execute(null);
 						
-			Assert.AreEqual(package, fakeInstallPackageAction.Package);
+			Assert.AreEqual(fakePackage, fakeInstallPackageAction.Package);
 		}
 		
 		[Test]
@@ -75,7 +166,7 @@ namespace PackageManagement.Tests
 			
 			viewModel.AddPackage();
 						
-			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
+			Assert.AreEqual(fakePackage.Repository, fakeSolution.RepositoryPassedToGetProject);
 		}
 		
 		[Test]
@@ -99,7 +190,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 		
 			PackageOperation[] expectedOperations = new PackageOperation[] {
-				new PackageOperation(package, PackageAction.Install)
+				new PackageOperation(fakePackage, PackageAction.Install)
 			};
 			
 			CollectionAssert.AreEqual(expectedOperations, fakeInstallPackageAction.Operations);
@@ -128,14 +219,14 @@ namespace PackageManagement.Tests
 			};
 			viewModel.AddPackage();
 			
-			Assert.AreEqual(package, packagePassedToInstallPackageWhenPropertyNameChanged);
+			Assert.AreEqual(fakePackage, packagePassedToInstallPackageWhenPropertyNameChanged);
 		}
 
 		[Test]
 		public void HasLicenseUrl_PackageHasLicenseUrl_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.LicenseUrl = new Uri("http://sharpdevelop.com");
+			fakePackage.LicenseUrl = new Uri("http://sharpdevelop.com");
 			
 			Assert.IsTrue(viewModel.HasLicenseUrl);
 		}
@@ -144,7 +235,7 @@ namespace PackageManagement.Tests
 		public void HasLicenseUrl_PackageHasNoLicenseUrl_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.LicenseUrl = null;
+			fakePackage.LicenseUrl = null;
 			
 			Assert.IsFalse(viewModel.HasLicenseUrl);
 		}
@@ -153,7 +244,7 @@ namespace PackageManagement.Tests
 		public void HasProjectUrl_PackageHasProjectUrl_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.ProjectUrl = new Uri("http://sharpdevelop.com");
+			fakePackage.ProjectUrl = new Uri("http://sharpdevelop.com");
 			
 			Assert.IsTrue(viewModel.HasProjectUrl);
 		}
@@ -162,7 +253,7 @@ namespace PackageManagement.Tests
 		public void HasProjectUrl_PackageHasNoProjectUrl_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.ProjectUrl = null;
+			fakePackage.ProjectUrl = null;
 			
 			Assert.IsFalse(viewModel.HasProjectUrl);
 		}
@@ -171,7 +262,7 @@ namespace PackageManagement.Tests
 		public void HasReportAbuseUrl_PackageHasReportAbuseUrl_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.ReportAbuseUrl = new Uri("http://sharpdevelop.com");
+			fakePackage.ReportAbuseUrl = new Uri("http://sharpdevelop.com");
 			
 			Assert.IsTrue(viewModel.HasReportAbuseUrl);
 		}
@@ -180,7 +271,7 @@ namespace PackageManagement.Tests
 		public void HasReportAbuseUrl_PackageHasNoReportAbuseUrl_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.ReportAbuseUrl = null;
+			fakePackage.ReportAbuseUrl = null;
 			
 			Assert.IsFalse(viewModel.HasReportAbuseUrl);
 		}
@@ -189,7 +280,7 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectHasPackageAdded_ReturnsTrue()
 		{
 			CreateViewModel();
-			fakeSolution.FakeProject.IsInstalledReturnValue = true;
+			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Add(fakePackage);
 			
 			Assert.IsTrue(viewModel.IsAdded);
 		}
@@ -198,21 +289,9 @@ namespace PackageManagement.Tests
 		public void IsAdded_ProjectDoesNotHavePackageInstalled_ReturnsFalse()
 		{
 			CreateViewModel();
-			fakeSolution.FakeProject.IsInstalledReturnValue = false;
+			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Clear();
 			
 			Assert.IsFalse(viewModel.IsAdded);
-		}
-		
-		[Test]
-		public void IsAdded_CalledTwice_ActiveProjectRetrievedOnce()
-		{
-			CreateViewModel();
-			bool result = viewModel.IsAdded;
-			result = viewModel.IsAdded;
-			
-			int count = fakeSolution.GetActiveProjectCallCount;
-			
-			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
@@ -221,7 +300,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.RemovePackageCommand.Execute(null);
 						
-			Assert.AreEqual(package, fakeUninstallPackageAction.Package);
+			Assert.AreEqual(fakePackage, fakeUninstallPackageAction.Package);
 		}
 		
 		[Test]
@@ -230,7 +309,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(package.Repository, fakeSolution.RepositoryPassedToGetActiveProject);
+			Assert.AreEqual(fakePackage.Repository, fakeSolution.RepositoryPassedToGetProject);
 		}
 		
 		[Test]
@@ -254,14 +333,14 @@ namespace PackageManagement.Tests
 			};
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(package, packagePassedToUninstallPackageWhenPropertyNameChanged);
+			Assert.AreEqual(fakePackage, packagePassedToUninstallPackageWhenPropertyNameChanged);
 		}
 		
 		[Test]
 		public void HasDependencies_PackageHasNoDependencies_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.HasDependencies = false;
+			fakePackage.HasDependencies = false;
 			
 			Assert.IsFalse(viewModel.HasDependencies);
 		}
@@ -270,7 +349,7 @@ namespace PackageManagement.Tests
 		public void HasDependencies_PackageHasDependency_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.HasDependencies = true;
+			fakePackage.HasDependencies = true;
 			
 			Assert.IsTrue(viewModel.HasDependencies);
 		}
@@ -279,7 +358,7 @@ namespace PackageManagement.Tests
 		public void HasNoDependencies_PackageHasNoDependencies_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.HasDependencies = false;
+			fakePackage.HasDependencies = false;
 			
 			Assert.IsTrue(viewModel.HasNoDependencies);
 		}
@@ -288,7 +367,7 @@ namespace PackageManagement.Tests
 		public void HasNoDependencies_PackageHasOneDependency_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.HasDependencies = true;
+			fakePackage.HasDependencies = true;
 			
 			Assert.IsFalse(viewModel.HasNoDependencies);
 		}
@@ -297,7 +376,7 @@ namespace PackageManagement.Tests
 		public void HasDownloadCount_DownloadCountIsZero_ReturnsTrue()
 		{
 			CreateViewModel();
-			package.DownloadCount = 0;
+			fakePackage.DownloadCount = 0;
 			
 			Assert.IsTrue(viewModel.HasDownloadCount);
 		}
@@ -306,9 +385,27 @@ namespace PackageManagement.Tests
 		public void HasDownloadCount_DownloadCountIsMinusOne_ReturnsFalse()
 		{
 			CreateViewModel();
-			package.DownloadCount = -1;
+			fakePackage.DownloadCount = -1;
 			
 			Assert.IsFalse(viewModel.HasDownloadCount);
+		}
+		
+		[Test]
+		public void HasLastUpdated_PackageHasLastUpdatedDate_ReturnsTrue()
+		{
+			CreateViewModel();
+			fakePackage.LastUpdated = new DateTime(2011, 1, 2);
+			
+			Assert.IsTrue(viewModel.HasLastUpdated);
+		}
+		
+		[Test]
+		public void HasLastUpdated_PackageHasNoLastUpdatedDate_ReturnsFalse()
+		{
+			CreateViewModel();
+			fakePackage.LastUpdated = null;
+			
+			Assert.IsFalse(viewModel.HasLastUpdated);
 		}
 				
 		[Test]
@@ -316,28 +413,44 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			package.RequireLicenseAcceptance = true;
-			packageManagementEvents.AcceptLicensesReturnValue = true;
+			fakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = true;
 			
 			viewModel.AddPackage();
 			
 			var expectedPackages = new FakePackage[] {
-				package
+				fakePackage
 			};
 			
-			var actualPackages = packageManagementEvents.PackagesPassedToOnAcceptLicenses;
+			IEnumerable<IPackage> actualPackages = fakePackageManagementEvents.LastPackagesPassedToOnAcceptLicenses;
 			
 			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void AddPackage_PackageRequiresLicenseAgreementAcceptanceButPackageInstalledInSolutionAlready_UserNotAskedToAcceptLicenseAgreementForPackageBeforeInstalling()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			fakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = true;
+			fakeSolution.FakeInstalledPackages.Add(fakePackage);
+			
+			viewModel.AddPackage();
+			
+			bool acceptLicenses = fakePackageManagementEvents.IsOnAcceptLicensesCalled;
+			
+			Assert.IsFalse(acceptLicenses);
 		}
 		
 		[Test]
 		public void AddPackage_PackageDoesNotRequireLicenseAgreementAcceptance_UserNotAskedToAcceptLicenseAgreementBeforeInstalling()
 		{
 			CreateViewModel();
-			package.RequireLicenseAcceptance = false;
+			fakePackage.RequireLicenseAcceptance = false;
 			viewModel.AddPackage();
 			
-			Assert.IsFalse(packageManagementEvents.IsOnAcceptLicensesCalled);
+			Assert.IsFalse(fakePackageManagementEvents.IsOnAcceptLicensesCalled);
 		}
 		
 		[Test]
@@ -345,8 +458,8 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			package.RequireLicenseAcceptance = true;
-			packageManagementEvents.AcceptLicensesReturnValue = false;
+			fakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
 			
 			viewModel.AddPackage();
 			
@@ -358,8 +471,8 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			package.RequireLicenseAcceptance = true;
-			packageManagementEvents.AcceptLicensesReturnValue = false;
+			fakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
 			bool propertyChangedEventFired = false;
 			viewModel.PropertyChanged += (sender, e) => propertyChangedEventFired = true;
 			
@@ -372,13 +485,13 @@ namespace PackageManagement.Tests
 		public void AddPackage_OnePackageOperationIsToUninstallPackageWhichRequiresLicenseAcceptance_UserIsNotAskedToAcceptLicenseAgreementForPackageToBeUninstalled()
 		{
 			CreateViewModel();
-			package.RequireLicenseAcceptance = false;
-			var operation = viewModel.AddOneFakeUninstallPackageOperation();
+			fakePackage.RequireLicenseAcceptance = false;
+			PackageOperation operation = viewModel.AddOneFakeUninstallPackageOperation();
 			FakePackage packageToUninstall = operation.Package as FakePackage;
 			packageToUninstall.RequireLicenseAcceptance = true;
 			viewModel.AddPackage();
 			
-			Assert.IsFalse(packageManagementEvents.IsOnAcceptLicensesCalled);
+			Assert.IsFalse(fakePackageManagementEvents.IsOnAcceptLicensesCalled);
 		}
 		
 		[Test]
@@ -389,7 +502,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			ILogger expectedLogger = viewModel.OperationLoggerCreated;
-			ILogger actualLogger = fakeSolution.FakeProject.Logger;
+			ILogger actualLogger = fakeSolution.FakeProjectToReturnFromGetProject.Logger;
 			Assert.AreEqual(expectedLogger, actualLogger);
 		}
 		
@@ -398,8 +511,8 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			package.Id = "Test.Package";
-			package.Version = new Version(1, 2, 0, 55);
+			fakePackage.Id = "Test.Package";
+			fakePackage.Version = new Version(1, 2, 0, 55);
 			viewModel.AddPackage();
 			
 			string expectedMessage = "------- Installing...Test.Package 1.2.0.55 -------";
@@ -439,8 +552,8 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
-			package.Id = "Test.Package";
-			package.Version = new Version(1, 2, 0, 55);
+			fakePackage.Id = "Test.Package";
+			fakePackage.Version = new Version(1, 2, 0, 55);
 			viewModel.RemovePackage();
 			
 			string expectedMessage = "------- Uninstalling...Test.Package 1.2.0.55 -------";
@@ -480,10 +593,10 @@ namespace PackageManagement.Tests
 			CreateViewModelWithExceptionThrowingProject();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			Exception ex = new Exception("Test");
-			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageTaskCalled = ex;
+			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageActionCalled = ex;
 			viewModel.AddPackage();
 			
-			Assert.AreEqual(ex, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.AreEqual(ex, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
 		}
 		
 		[Test]
@@ -493,7 +606,7 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.AddPackage();
 			
-			Assert.IsTrue(packageManagementEvents.IsOnPackageOperationsStartingCalled);
+			Assert.IsTrue(fakePackageManagementEvents.IsOnPackageOperationsStartingCalled);
 		}
 		
 		[Test]
@@ -502,7 +615,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithExceptionThrowingProject();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			Exception ex = new Exception("Exception error message");
-			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageTaskCalled = ex;
+			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageActionCalled = ex;
 			viewModel.AddPackage();
 			
 			string actualMessage = fakeLogger.SecondFormattedMessageLogged;
@@ -519,7 +632,7 @@ namespace PackageManagement.Tests
 			exceptionThrowingProject.ExceptionToThrowWhenCreateUninstallPackageActionCalled = ex;
 			viewModel.RemovePackage();
 			
-			Assert.AreEqual(ex, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.AreEqual(ex, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
 		}
 		
 		[Test]
@@ -528,7 +641,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.RemovePackage();
 			
-			Assert.IsTrue(packageManagementEvents.IsOnPackageOperationsStartingCalled);
+			Assert.IsTrue(fakePackageManagementEvents.IsOnPackageOperationsStartingCalled);
 		}
 		
 		[Test]
@@ -551,11 +664,11 @@ namespace PackageManagement.Tests
 			CreateViewModelWithExceptionThrowingSolution();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			
-			var exception = new Exception("Test");;
-			exceptionThrowingSolution.ExceptionToThrowWhenGetActiveProjectCalled = exception;
+			var exception = new Exception("Test");
+			exceptionThrowingSolution.ExceptionToThrowWhenGetProjectCalled = exception;
 			viewModel.AddPackage();
 			
-			Assert.AreEqual(exception, packageManagementEvents.ExceptionPassedToOnPackageOperationError);
+			Assert.AreEqual(exception, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
 		}
 		
 		[Test]
@@ -565,9 +678,9 @@ namespace PackageManagement.Tests
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			viewModel.AddPackage();
 			
-			var expectedPackage = package;
-			var actualPackage = fakeSolution
-				.FakeProject
+			FakePackage expectedPackage = fakePackage;
+			IPackage actualPackage = fakeSolution
+				.FakeProjectToReturnFromGetProject
 				.PackagePassedToGetInstallPackageOperations;
 			
 			Assert.AreEqual(expectedPackage, actualPackage);
@@ -581,7 +694,7 @@ namespace PackageManagement.Tests
 			viewModel.AddPackage();
 			
 			bool result = fakeSolution
-				.FakeProject
+				.FakeProjectToReturnFromGetProject
 				.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);
@@ -597,6 +710,478 @@ namespace PackageManagement.Tests
 			ProcessPackageAction actionExecuted = fakeActionRunner.ActionPassedToRun;
 			
 			Assert.AreEqual(fakeUninstallPackageAction, actionExecuted);
+		}
+		
+		[Test]
+		public void IsAdded_SolutionSelectedContainingOneProjectAndPackageIsInstalledInSolutionSharedRepository_ReturnsTrue()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			fakeSolution.NoProjectsSelected();
+			fakeSolution.FakeInstalledPackages.Add(fakePackage);
+			CreateViewModel(fakeSolution);
+			
+			bool added = viewModel.IsAdded;
+			
+			Assert.IsTrue(added);
+		}
+		
+		[Test]
+		public void IsAdded_SolutionSelectedContainingOneProjectAndPackageIsNotInstalledInSolutionSharedRepository_ReturnsFalse()
+		{
+			CreateViewModel();
+			AddProjectToSolution();
+			fakeSolution.NoProjectsSelected();
+			
+			bool added = viewModel.IsAdded;
+			
+			Assert.IsFalse(added);
+		}
+		
+		[Test]
+		public void IsManaged_SolutionSelectedContainingTwoProjects_ReturnsTrue()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			AddProjectToSolution();
+			fakeSolution.NoProjectsSelected();
+			CreateViewModel(fakeSolution);
+			
+			bool managed = viewModel.IsManaged;
+			
+			Assert.IsTrue(managed);
+		}
+		
+		[Test]
+		public void IsManaged_SolutionWithOneProjectSelected_ReturnsFalse()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			fakeSolution.FakeActiveMSBuildProject = fakeSolution.FakeMSBuildProjects[0];
+			CreateViewModel(fakeSolution);
+			
+			bool managed = viewModel.IsManaged;
+			
+			Assert.IsFalse(managed);
+		}
+		
+		[Test]
+		public void ManagePackageCommand_TwoProjectsSelectedAndCommandExecuted_UserPromptedToSelectTwoProjects()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserCancelsProjectSelection();
+			viewModel.ManagePackageCommand.Execute(null);
+			
+			IEnumerable<IPackageManagementSelectedProject> selectedProjects = 
+				fakePackageManagementEvents.SelectedProjectsPassedToOnSelectProjects;
+			
+			var expectedSelectedProjects = new List<IPackageManagementSelectedProject>();
+			expectedSelectedProjects.Add(new FakeSelectedProject("Project A"));
+			expectedSelectedProjects.Add(new FakeSelectedProject("Project B"));
+			
+			SelectedProjectCollectionAssert.AreEqual(expectedSelectedProjects, selectedProjects);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_MessagesReportedPreviouslyAreCleared()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			
+			viewModel.ManagePackage();
+			
+			Assert.IsTrue(fakePackageManagementEvents.IsOnPackageOperationsStartingCalled);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsSelectedAndUserCancelsSelectedProjects_MessagesReportedPreviouslyAreNotCleared()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserCancelsProjectSelection();
+			
+			viewModel.ManagePackage();
+			
+			Assert.IsFalse(fakePackageManagementEvents.IsOnPackageOperationsStartingCalled);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_IsAddedPropertyChanged()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			
+			string propertyChangedName = null;
+			viewModel.PropertyChanged += (sender, e) => propertyChangedName = e.PropertyName;
+			
+			viewModel.ManagePackage();
+			
+			Assert.AreEqual("IsAdded", propertyChangedName);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_NextToLastMessageLoggedMarksEndOfInstallation()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			
+			viewModel.ManagePackage();
+			
+			string expectedMessage = "==============================";
+			string actualMessage = fakeLogger.NextToLastFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsSelectedAndUserAcceptsSelectedProjects_LastMessageLoggedIsEmptyLine()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			
+			viewModel.ManagePackage();
+			
+			string expectedMessage = String.Empty;
+			string actualMessage = fakeLogger.LastFormattedMessageLogged;
+						
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_OneProjectIsSelected_OneProjectIsInstalled()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject project = fakeSelectedProjects[1];
+			project.IsSelected = true;
+			InstallPackageAction expectedAction = project.FakeInstallPackageAction;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			InstallPackageAction action = actions[0] as InstallPackageAction;
+			
+			Assert.AreEqual(1, actions.Count);
+			Assert.AreEqual(fakePackage, action.Package);
+			Assert.AreEqual(expectedAction, action);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndPackageOperationRequiresLicenseAcceptance_UserPromptedToAcceptLicenses()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject selectedProject = fakeSelectedProjects[0];
+			selectedProject.IsSelected = true;
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			var expectedPackages = new FakePackage[] {
+				operation.FakePackage
+			};
+			
+			List<IPackage> actualPackages = fakePackageManagementEvents.GetPackagesPassedToOnAcceptLicensesAsList();
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndPackageOperationRequiresLicenseAcceptance_PackageInViewModelUsedToGetPackageOperations()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject selectedProject = fakeSelectedProjects[0];
+			selectedProject.IsSelected = true;
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			IPackage actualPackage = selectedProject.FakeProject.PackagePassedToGetInstallPackageOperations;
+			
+			Assert.AreEqual(fakePackage, actualPackage);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndPackageOperationRequiresLicenseAcceptance_PackageDependenciesAreNotIgnored()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject selectedProject = fakeSelectedProjects[0];
+			selectedProject.IsSelected = true;
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			bool ignored = selectedProject.FakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(ignored);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndTwoPackageOperationsRequireLicenseAcceptance_UserPromptedToAcceptLicensesForTwoPackages()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			
+			FakePackageOperation firstOperation = 
+				AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			
+			FakePackageOperation secondOperation = 
+				AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			var expectedPackages = new FakePackage[] {
+				firstOperation.FakePackage,
+				secondOperation.FakePackage
+			};
+			
+			List<IPackage> actualPackages = fakePackageManagementEvents.GetPackagesPassedToOnAcceptLicensesAsList();
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_TwoPackageOperationsRequireLicenseAcceptanceButOneIsUninstallPackageOperation_UserPromptedToAcceptLicenseForInstallPackageOperationOnly()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			FakePackageOperation installOperation = 
+				AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			AddFakeUninstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+						
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			var expectedPackages = new FakePackage[] {
+				installOperation.FakePackage
+			};
+			
+			List<IPackage> actualPackages = fakePackageManagementEvents.GetPackagesPassedToOnAcceptLicensesAsList();
+			
+			CollectionAssert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_OneInstallPackageOperationsDoesNotRequireLicenseAcceptance_UserIsNotPromptedToAcceptLicense()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			AddFakeInstallPackageOperationWithPackageThatDoesNotRequireLicenseAcceptance(FirstFakeSelectedProject);
+			
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			Assert.IsFalse(fakePackageManagementEvents.IsOnAcceptLicensesCalled);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_OneInstallPackageOperationsRequiresLicenseAcceptanceButIsInstalledInSolutionAlready_UserIsNotPromptedToAcceptLicense()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			
+			FakePackageOperation installOperation = 
+				AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			
+			fakeSolution.FakeInstalledPackages.Add(installOperation.FakePackage);
+			
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			Assert.IsFalse(fakePackageManagementEvents.IsOnAcceptLicensesCalled);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndUserDoesNotAcceptPackageLicense_PackageIsNotInstalled()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			
+			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			Assert.IsFalse(fakeActionRunner.IsRunCalled);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_TwoProjectsButNeitherIsSelected_NoPackageActionsAreRun()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			Assert.IsFalse(fakeActionRunner.IsRunCalled);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndUserAcceptsPackageLicense_PackageIsInstalled()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			
+			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = true;
+				
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			InstallPackageAction expectedAction = FirstFakeSelectedProject.FakeInstallPackageAction;
+			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			InstallPackageAction action = actions[0] as InstallPackageAction;
+			
+			Assert.AreEqual(1, actions.Count);
+			Assert.AreEqual(fakePackage, action.Package);
+			Assert.AreEqual(expectedAction, action);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_TwoProjectsAreSelectedAndUserAcceptsPackageLicense_UserIsNotPromptedTwiceToAcceptLicenses()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			
+			SecondFakeSelectedProject.IsSelected = true;
+			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(SecondFakeSelectedProject);
+			
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = true;
+				
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			List<IEnumerable<IPackage>> packagesPassedToAcceptLicenses =
+				fakePackageManagementEvents.PackagesPassedToAcceptLicenses;
+			Assert.AreEqual(1, packagesPassedToAcceptLicenses.Count);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectSelectedAndExceptionThrownWhenResolvingPackageOperations_ExceptionReported()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			var exceptionThrowingProject = new ExceptionThrowingPackageManagementProject();
+			FirstFakeSelectedProject.FakeProject = exceptionThrowingProject;
+			AddFakeInstallPackageOperationWithPackageThatDoesNotRequireLicenseAcceptance(FirstFakeSelectedProject);
+			
+			var exception = new Exception("Test");
+			exceptionThrowingProject.ExceptionToThrowWhenGetInstallPackageOperationsCalled = exception;
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			Assert.AreEqual(exception, fakePackageManagementEvents.ExceptionPassedToOnPackageOperationError);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectSelectedAndExceptionThrownWhenCreatingInstallAction_ExceptionLogged()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			var exceptionThrowingProject = new ExceptionThrowingPackageManagementProject();
+			FirstFakeSelectedProject.FakeProject = exceptionThrowingProject;
+			AddFakeInstallPackageOperationWithPackageThatDoesNotRequireLicenseAcceptance(FirstFakeSelectedProject);
+			
+			var exception = new Exception("Exception error message");
+			exceptionThrowingProject.ExceptionToThrowWhenCreateInstallPackageActionCalled = exception;
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			bool contains = fakeLogger.FormattedMessagesLoggedContainsText("Exception error message");
+			
+			Assert.IsTrue(contains);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_TwoProjectsOneSelectedAndPackageRequiresLicenseAcceptance_PackageViewModelLoggerUsedWhenResolvingPackageOperations()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FirstFakeSelectedProject.IsSelected = true;
+			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			ILogger expectedLogger = viewModel.OperationLoggerCreated;
+			ILogger actualLogger = FirstFakeSelectedProject.Project.Logger;
+			Assert.AreEqual(expectedLogger, actualLogger);
+		}
+		
+		[Test]
+		public void ManagePackage_UserAcceptsProjectSelection_ManagingPackageMessageIsFirstMessageLogged()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			fakePackage.Id = "Test.Package";
+			fakePackage.Version = new Version(1, 2, 0, 55);
+			viewModel.ManagePackage();
+			
+			string expectedMessage = "------- Managing...Test.Package 1.2.0.55 -------";
+			string actualMessage = fakeLogger.FirstFormattedMessageLogged;
+			
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_TwoProjectsNoneSelectedAndFirstPackageHasLicense_UserIsNotPromptedToAcceptLicense()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			AddFakeInstallPackageOperationWithPackageThatRequiresLicenseAcceptance(FirstFakeSelectedProject);
+				
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			Assert.IsFalse(fakePackageManagementEvents.IsOnAcceptLicensesCalled);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsAndFirstSelectedInDialog_PackageIsInstalled()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			fakePackageManagementEvents.ProjectsToSelect.Add("Project A");
+			viewModel.ManagePackage();
+			
+			List<ProcessPackageAction> actions = fakeActionRunner.GetActionsRunInOneCallAsList();
+			ProcessPackageAction action = actions[0];
+			FakePackageManagementProject expectedProject = fakeSolution.FakeProjectsToReturnFromGetProject["Project A"];
+			
+			Assert.AreEqual(expectedProject, action.Project);
+		}
+		
+		[Test]
+		public void ManagePackage_TwoProjectsAndSecondSelectedInDialog_ProjectHasLoggerSet()
+		{
+			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
+			UserAcceptsProjectSelection();
+			fakePackageManagementEvents.ProjectsToSelect.Add("Project B");
+			viewModel.ManagePackage();
+			
+			FakePackageManagementProject project = fakeSolution.FakeProjectsToReturnFromGetProject["Project B"];
+			ILogger expectedLogger = viewModel.OperationLoggerCreated;
+			ILogger actualLogger = project.Logger;
+			Assert.AreEqual(expectedLogger, actualLogger);
 		}
 	}
 }

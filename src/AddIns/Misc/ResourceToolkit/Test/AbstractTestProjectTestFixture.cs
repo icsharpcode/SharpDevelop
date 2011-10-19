@@ -45,7 +45,7 @@ namespace ResourceToolkit.Tests
 		{
 			TestHelper.InitializeParsers();
 			
-			this.solution = new Solution();
+			this.solution = new Solution(new MockProjectChangeWatcher());
 			this.project = this.CreateTestProject();
 			ProjectService.CurrentProject = this.project;
 			
@@ -92,7 +92,7 @@ namespace ResourceToolkit.Tests
 			DefaultProjectContent pc = new DefaultProjectContent();
 			
 			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System", "System"));
+			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.GetProjectContentForReference("System", typeof(Uri).Module.FullyQualifiedName));
 			
 			if (project != null) {
 				if (project.LanguageProperties != null) {

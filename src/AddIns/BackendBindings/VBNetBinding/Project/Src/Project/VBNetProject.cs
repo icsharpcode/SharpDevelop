@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ComponentModel;
-using System.Linq;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -67,12 +68,17 @@ namespace ICSharpCode.VBNetBinding
 		protected override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
-			ReferenceProjectItem vbRef = new ReferenceProjectItem(this, "Microsoft.VisualBasic");
-			if (vbRef != null) {
-				pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(vbRef));
-			}
 			MyNamespaceBuilder.BuildNamespace(this, pc);
 			return pc;
+		}
+		
+		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			ReferenceProjectItem[] additionalItems = {
+				new ReferenceProjectItem(this, "mscorlib"),
+				new ReferenceProjectItem(this, "Microsoft.VisualBasic"),
+			};
+			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
 		}
 		
 		void InitVB()
@@ -172,7 +178,14 @@ namespace ICSharpCode.VBNetBinding
 		
 		bool? GetValue(string name, bool defaultVal)
 		{
-			string val = GetEvaluatedProperty(name);
+			string val;
+			try {
+				val = GetEvaluatedProperty(name);
+			} catch (ObjectDisposedException) {
+				// This can happen when the project is disposed but the resolver still tries
+				// to access Option Infer (or similar).
+				val = null;
+			}
 			
 			if (val == null)
 				return defaultVal;

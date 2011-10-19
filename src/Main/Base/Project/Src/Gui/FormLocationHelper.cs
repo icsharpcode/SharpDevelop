@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (isResizable) {
 				form.Bounds = Validate(PropertyService.Get(propertyName, GetDefaultBounds(form)));
 			} else {
-				form.Location = Validate(PropertyService.Get(propertyName, GetDefaultLocation(form)), form.Size);
+				form.Location = Validate(new System.Drawing.Rectangle(PropertyService.Get(propertyName, GetDefaultLocation(form)), form.Size)).Location;
 			}
 			form.Closing += delegate {
 				if (isResizable) {
@@ -37,12 +37,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void ApplyWindow(Window window, string propertyName, bool isResizable)
 		{
 			window.WindowStartupLocation = WindowStartupLocation.Manual;
-			Window owner = window.Owner ?? WorkbenchSingleton.MainWindow;
-			Point ownerPos = (owner == null ? new Point(0, 0) : new Point(owner.Left, owner.Top));
+			var ownerLocation = GetOwnerLocation(window);
 			if (isResizable) {
 				Rect bounds = PropertyService.Get(propertyName, GetDefaultBounds(window));
-				bounds.Offset(ownerPos.X, ownerPos.Y);
-				bounds = Validate(bounds);
+				bounds.Offset(ownerLocation.X, ownerLocation.Y);
+				window.SourceInitialized += delegate {
+					bounds = Validate(bounds.TransformToDevice(window).ToSystemDrawing())
+						.ToWpf().TransformFromDevice(window);
+				};
 				window.Left = bounds.X;
 				window.Top = bounds.Y;
 				window.Width = bounds.Width;
@@ -50,82 +52,67 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				Size size = new Size(window.ActualWidth, window.ActualHeight);
 				Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
-				location.Offset(ownerPos.X, ownerPos.Y);
-				location = Validate(location, size);
-				window.Left = location.X;
-				window.Top = location.Y;
+				location.Offset(ownerLocation.X, ownerLocation.Y);
+				window.SourceInitialized += delegate {
+					var bounds = Validate(new Rect(location, size).TransformToDevice(window).ToSystemDrawing())
+						.ToWpf().TransformFromDevice(window);
+					window.Left = bounds.X;
+					window.Top = bounds.Y;
+				};
 			}
 			window.Closing += delegate {
-				owner = window.Owner ?? WorkbenchSingleton.MainWindow;
-				ownerPos = (owner == null ? new Point(0, 0) : new Point(owner.Left, owner.Top));
-			    if (isResizable) {
-					if (window.WindowState == System.Windows.WindowState.Normal) {
-						PropertyService.Set(propertyName, new Rect(window.Left, window.Top, window.ActualWidth, window.ActualHeight));
-					}
-				} else {
-					PropertyService.Set(propertyName, new Point(window.Left - ownerPos.X, window.Top - ownerPos.Y));
-				                         
-				}
-			};
-		}
-		
-		/*
-		public static void ApplyWindow(Window window, string propertyName, bool isResizable)
-		{
-			window.WindowStartupLocation = WindowStartupLocation.Manual;
-			if (isResizable) {
-				Rect bounds = Validate(PropertyService.Get(propertyName, GetDefaultBounds(window)));
-				window.Left = bounds.X;
-				window.Top = bounds.Y;
-				window.Width = bounds.Width;
-				window.Height = bounds.Height;
-			} else {
-				Size size = new Size(window.ActualWidth, window.ActualHeight);
-				Point location = Validate(PropertyService.Get(propertyName, GetDefaultLocation(window)), size);
-				window.Left = location.X;
-				window.Top = location.Y;
-			}
-			window.Closing += delegate {
+				var relativeToOwner = GetLocationRelativeToOwner(window);
 				if (isResizable) {
 					if (window.WindowState == System.Windows.WindowState.Normal) {
-						PropertyService.Set(propertyName, new Rect(window.Left, window.Top, window.ActualWidth, window.ActualHeight));
+						PropertyService.Set(propertyName, new Rect(relativeToOwner, new Size(window.ActualWidth, window.ActualHeight)));
 					}
 				} else {
-					PropertyService.Set(propertyName, new Point(window.Left, window.Top));
+					PropertyService.Set(propertyName, relativeToOwner);
 				}
 			};
 		}
-		*/
 		
-		public static Rect Validate(Rect bounds)
+		static Point GetLocationRelativeToOwner(Window window)
+		{
+			Point ownerLocation = GetOwnerLocation(window);
+			// TODO : do we need special support for maximized child windows?
+			// window.Left / window.Top do not return the proper values if the window is maximized
+			return new Point(window.Left - ownerLocation.X, window.Top - ownerLocation.Y);
+		}
+		
+		static Point GetOwnerLocation(Window window)
+		{
+			var owner = window.Owner ?? WorkbenchSingleton.MainWindow;
+			if (owner == null)
+				return new Point(0,0);
+			if (owner.WindowState == System.Windows.WindowState.Maximized) {
+				// find screen on which owner window is maximized
+				// owner.Left / owner.Top do not return the proper values if the window is maximized
+				var screen = Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(owner).Handle);
+				return screen.WorkingArea.Location.ToWpf();
+			}
+			return new Point(owner.Left, owner.Top);
+		}
+		
+		/// <remarks>Requires Pixels!!!</remarks>
+		public static System.Drawing.Rectangle Validate(System.Drawing.Rectangle bounds)
 		{
 			// Check if form is outside the screen and get it back if necessary.
 			// This is important when the user uses multiple screens, a window stores its location
 			// on the secondary monitor and then the secondary monitor is removed.
-			Rect screen1 = Screen.FromPoint(bounds.TopLeft.ToSystemDrawing()).WorkingArea.ToWpf();
-			Rect screen2 = Screen.FromPoint(bounds.TopRight.ToSystemDrawing()).WorkingArea.ToWpf();
-			if (bounds.Y < screen1.Y - 5 && bounds.Y < screen2.Y - 5)
-				bounds.Y = screen1.Y - 5;
-			if (bounds.X < screen1.X - bounds.Width / 2)
-				bounds.X = screen1.X - bounds.Width / 2;
-			else if (bounds.X > screen2.Right - bounds.Width / 2)
-				bounds.X = screen2.Right - bounds.Width / 2;
-			return bounds;
-		}
-		
-		static Point Validate(Point location, Size size)
-		{
-			return Validate(new Rect(location, size)).Location;
-		}
-		
-		static System.Drawing.Rectangle Validate(System.Drawing.Rectangle bounds)
-		{
-			return Validate(bounds.ToWpf()).ToSystemDrawing();
-		}
-		
-		static System.Drawing.Point Validate(System.Drawing.Point location, System.Drawing.Size size)
-		{
-			return Validate(location.ToWpf(), size.ToWpf()).ToSystemDrawing();
+			LoggingService.InfoFormatted("Number of screens: {0}", Screen.AllScreens.Length);
+			
+			foreach (var screen in Screen.AllScreens) {
+				var rect = System.Drawing.Rectangle.Intersect(bounds, screen.WorkingArea);
+				LoggingService.InfoFormatted("Screen {2}: Validating {0}; intersection {1}", bounds, rect, screen.Bounds);
+				if (rect.Width > 10 && rect.Height > 10)
+					return bounds;
+			}
+			// center on primary screen
+			LoggingService.InfoFormatted("Validating {0}; center on screen", bounds);
+			// TODO : maybe use screen where main window is most visible?
+			var targetScreen = Screen.PrimaryScreen;
+			return new System.Drawing.Rectangle((targetScreen.WorkingArea.Width - bounds.Width) / 2, (targetScreen.WorkingArea.Height - bounds.Height) / 2, bounds.Width, bounds.Height);
 		}
 		
 		static System.Drawing.Rectangle GetDefaultBounds(Form form)

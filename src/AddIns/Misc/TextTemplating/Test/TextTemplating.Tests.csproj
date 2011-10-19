@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{5186325C-DD7F-4246-9BE7-3F384EFBF5A6}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TextTemplating.Tests</RootNamespace>
+    <AssemblyName>TextTemplating.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <StartAction>Project</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.TextTemplating">
+      <HintPath>..\Project\lib\Mono.TextTemplating.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Helpers\FakeAddIn.cs" />
+    <Compile Include="Helpers\FakeAddInRuntime.cs" />
+    <Compile Include="Helpers\FakeAddInTree.cs" />
+    <Compile Include="Helpers\FakeAppDomain.cs" />
+    <Compile Include="Helpers\FakeAssemblyParserService.cs" />
+    <Compile Include="Helpers\FakeReflectionProjectContent.cs" />
+    <Compile Include="Helpers\FakeServiceProvider.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingAppDomain.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingAppDomainFactory.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingAssemblyPathResolver.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingAssemblyResolver.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingCustomToolContext.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingEnvironment.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingFilePreprocessor.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingHost.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingFileGenerator.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingHostAppDomainAssemblyResolver.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingPathResolver.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingStringParser.cs" />
+    <Compile Include="Helpers\FakeTextTemplatingVariables.cs" />
+    <Compile Include="Helpers\ProjectHelper.cs" />
+    <Compile Include="Helpers\TestableFileProjectItem.cs" />
+    <Compile Include="Helpers\TestableProject.cs" />
+    <Compile Include="Helpers\TestableTextTemplatingFileGeneratorCustomTool.cs" />
+    <Compile Include="Helpers\TestableTextTemplatingFilePreprocessorCustomTool.cs" />
+    <Compile Include="Helpers\TestableTextTemplatingHost.cs" />
+    <Compile Include="Helpers\TextTemplatingHostContextTests.cs" />
+    <Compile Include="Src\AddInAssemblyNameTests.cs" />
+    <Compile Include="Src\AddInAssemblyRuntimeTests.cs" />
+    <Compile Include="Src\CompilerErrorTaskTests.cs" />
+    <Compile Include="Src\NamespaceHintTests.cs" />
+    <Compile Include="Src\TextTemplatingAssemblyPathResolverTests.cs" />
+    <Compile Include="Src\TextTemplatingAssemblyResolverTests.cs" />
+    <Compile Include="Src\TextTemplatingFileGeneratorCustomToolTests.cs" />
+    <Compile Include="Src\TextTemplatingFileGeneratorTests.cs" />
+    <Compile Include="Src\TextTemplatingFilePreprocessorCustomToolTests.cs" />
+    <Compile Include="Src\TextTemplatingHostAppDomainAssemblyResolverTests.cs" />
+    <Compile Include="Src\TextTemplatingHostTests.cs" />
+    <Compile Include="Src\TextTemplatingPathResolverTests.cs" />
+    <Compile Include="Src\TextTemplatingPreprocessorTests.cs" />
+    <Compile Include="Src\TextTemplatingReflectionProjectContentTests.cs" />
+    <Compile Include="Src\TextTemplatingServiceProviderTests.cs" />
+    <Compile Include="Src\TextTemplatingVariableLocationTests.cs" />
+    <Compile Include="Src\TextTemplatingVariablesTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+    <Folder Include="Src" />
+    <Folder Include="Helpers" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\TextTemplating.csproj">
+      <Project>{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}</Project>
+      <Name>TextTemplating</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

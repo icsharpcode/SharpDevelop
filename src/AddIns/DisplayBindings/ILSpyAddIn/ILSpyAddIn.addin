@@ -1,0 +1,41 @@
+﻿<AddIn name        = "ILSpyAddIn"
+       author      = "Daniel Grunwald"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Can open ILSpy on a selected class or member."
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.ILSpyAddIn" />
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ILSpyAddIn.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Services/NavigateToEntityService">
+		<Class id="ILSpy" class="ICSharpCode.ILSpyAddIn.NavigateToDecompiledEntityService"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Services/DebuggerDecompilerService">
+		<Class id="DebuggerDecompilerService" class="ICSharpCode.ILSpyAddIn.DebuggerDecompilerService"/>
+	</Path>
+	
+	<!-- Text editor context menu: Launch ILSpy command -->
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
+		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
+		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
+		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
+		<MenuItem id="ILSpy" icon="ILSpy" type="Item" label="${res:ILSpyAddIn.OpenILSpyCommand}" class="ICSharpCode.ILSpyAddIn.TextEditorContextMenuCommand"/>
+	</Path>
+	
+</AddIn>

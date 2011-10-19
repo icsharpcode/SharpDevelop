@@ -68,6 +68,7 @@
       <DependentUpon>ColorPicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="CustomWindowsFormsHost.cs" />
     <Compile Include="DragListener.cs" />
     <Compile Include="ListViewSorting\AbstractListViewParseableColumnComparer.cs" />
     <Compile Include="ListViewSorting\AbstractListViewSubItemComparer.cs" />
@@ -82,6 +83,7 @@
     </Compile>
     <Compile Include="Picker.cs" />
     <Compile Include="RadioButtonGroup.cs" />
+    <Compile Include="RelayCommand.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="SideBar\SideBar.cs">
       <SubType>UserControl</SubType>
@@ -94,6 +96,7 @@
     </Compile>
     <Compile Include="StackPanelWithSpacing.cs" />
     <Compile Include="UniformGridWithSpacing.cs" />
+    <Compile Include="ViewModelBase.cs" />
     <Compile Include="ZoomButtons.cs">
       <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
     </Compile>

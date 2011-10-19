@@ -34,5 +34,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			IsClearCalled = true;
 		}
+		
+		public bool HasRecentPackages { get; set; }
 	}
 }

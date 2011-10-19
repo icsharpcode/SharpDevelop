@@ -7,7 +7,7 @@ using ICSharpCode.AvalonEdit.AddIn;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class FontsAndColorsItems
+	public class FontsAndColorsItems : MarshalByRefObject
 	{
 		static readonly string PlainTextItem = "Plain Text";
 		

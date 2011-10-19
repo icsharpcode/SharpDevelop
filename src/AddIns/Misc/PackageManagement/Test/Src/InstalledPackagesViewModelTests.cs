@@ -41,6 +41,7 @@ namespace PackageManagement.Tests
 		{
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
+			var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
 			taskFactory = new FakeTaskFactory();
 			packageManagementEvents = new PackageManagementEvents();
 			
@@ -48,7 +49,7 @@ namespace PackageManagement.Tests
 				solution,
 				packageManagementEvents,
 				registeredPackageRepositories,
-				packageViewModelFactory,
+				installedPackageViewModelFactory,
 				taskFactory);
 		}
 		
@@ -65,8 +66,20 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToProjectLocalRepository()
 		{
 			var package = new FakePackage("Test");
-			solution.FakeProject.FakePackages.Add(package);
+			solution.FakeActiveProject.FakePackages.Add(package);
 			return package;
+		}
+		
+		FakePackage AddPackageToSolution()
+		{
+			var package = new FakePackage("Test");
+			solution.FakeInstalledPackages.Add(package);
+			return package;
+		}
+		
+		void NoProjectSelected()
+		{
+			solution.NoProjectsSelected();
 		}
 		
 		[Test]
@@ -93,7 +106,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			solution.FakeProject.FakePackages.Clear();
+			solution.FakeActiveProject.FakePackages.Clear();
 
 			ClearReadPackagesTasks();
 			packageManagementEvents.OnParentPackageUninstalled(new FakePackage());
@@ -122,7 +135,7 @@ namespace PackageManagement.Tests
 			CreateViewModel(solution);
 			viewModel.ReadPackages();
 			
-			solution.FakeProject = null;
+			solution.FakeActiveProject = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
@@ -152,7 +165,7 @@ namespace PackageManagement.Tests
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
 			
-			solution.FakeProject.FakePackages.Clear();
+			solution.FakeActiveProject.FakePackages.Clear();
 			
 			ClearReadPackagesTasks();
 			viewModel.Dispose();
@@ -160,6 +173,23 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void PackageViewModels_OnlySolutionSelectedThatContainsOneInstalledPackage_ReturnsOnePackageViewModel()
+		{
+			CreateSolution();
+			NoProjectSelected();
+			CreateViewModel(solution);
+			FakePackage package = AddPackageToSolution();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				package
+			};
+		
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 	}
 }

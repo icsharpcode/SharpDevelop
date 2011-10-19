@@ -14,6 +14,29 @@ namespace Debugger
 {
 	internal enum DebuggeeStateAction { Keep, Clear }
 	
+	/// <summary>
+	/// Debug Mode Flags.
+	/// </summary>
+	public enum DebugModeFlag
+	{
+		/// <summary>
+		/// Run in the same mode as without debugger.
+		/// </summary>
+		Default,
+		/// <summary>
+		/// Run in forced optimized mode.
+		/// </summary>
+		Optimized,
+		/// <summary>
+		/// Run in debug mode (easy inspection) but slower.
+		/// </summary>
+		Debug,
+		/// <summary>
+		/// Run in ENC mode (ENC possible) but even slower than debug
+		/// </summary>
+		Enc
+	}
+	
 	public class Process: DebuggerObject
 	{
 		NDebugger debugger;
@@ -27,6 +50,7 @@ namespace Debugger
 		AppDomainCollection appDomains;
 		
 		string workingDirectory;
+		
 		
 		public NDebugger Debugger {
 			get { return debugger; }
@@ -107,6 +131,8 @@ namespace Debugger
 		public string WorkingDirectory {
 			get { return workingDirectory; }
 		}
+		
+		public static DebugModeFlag DebugMode { get; set; }
 		
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
 		{
@@ -209,14 +235,7 @@ namespace Debugger
 		
 		#region Exceptions
 		
-		bool pauseOnHandledException = false;
-		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;
-		
-		public bool PauseOnHandledException {
-			get { return pauseOnHandledException; }
-			set { pauseOnHandledException = value; }
-		}
 		
 		protected internal virtual void OnExceptionThrown(ExceptionEventArgs e)
 		{
@@ -673,13 +692,45 @@ namespace Debugger
 							breakpoint.Remove();
 						breakpoint = null;
 					};
-				} catch { 
+				} catch {
 					// the app does not have an entry point - COM exception
 				}
 				BreakAtBeginning = false;
 			}
+			
+			if (ModulesAdded != null)
+				ModulesAdded(this, new ModuleEventArgs(e.Item));
 		}
 		
 		#endregion
+		
+		public event EventHandler<ModuleEventArgs> ModulesAdded;
+		
+		public StackFrame GetCurrentExecutingFrame()
+		{
+			if (IsSelectedFrameForced()) {
+				return SelectedStackFrame; // selected from callstack or threads pads
+			}
+			
+			if (SelectedStackFrame != null) {
+				if (SelectedThread.MostRecentStackFrame != null) {
+					if (SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols)
+						return SelectedStackFrame;
+					else
+						return SelectedThread.MostRecentStackFrame;
+				} else {
+					return SelectedThread.MostRecentStackFrame;
+				}
+			} else {
+				return SelectedThread.MostRecentStackFrame;
+			}
+		}
+		
+		public bool IsSelectedFrameForced()
+		{
+			return pauseSession.PausedReason == PausedReason.CurrentFunctionChanged ||
+				pauseSession.PausedReason == PausedReason.CurrentThreadChanged ||
+				pauseSession.PausedReason == PausedReason.EvalComplete;
+		}
 	}
 }

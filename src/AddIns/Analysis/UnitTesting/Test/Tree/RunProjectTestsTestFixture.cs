@@ -19,11 +19,11 @@ namespace UnitTesting.Tests.Tree
 		MockCSharpProject project;
 		TestProject testProject;
 		TestResult errorTestResult;
-		TestMethod firstTestMethod;
+		TestMember firstTestMethod;
 		TestResult warningTestResult;
-		TestMethod secondTestMethod;
+		TestMember secondTestMethod;
 		TestResult successTestResult;
-		TestMethod thirdTestMethod;
+		TestMember thirdTestMethod;
 		MockTestFramework testFramework;
 		bool runningTestsBeforeTestsFinishedCalled;
 		
@@ -43,9 +43,9 @@ namespace UnitTesting.Tests.Tree
 					methodNames);
 			
 			TestClass testClass = testProject.TestClasses[0];
-			firstTestMethod = testClass.TestMethods[0];
-			secondTestMethod = testClass.TestMethods[1];
-			thirdTestMethod = testClass.TestMethods[2];
+			firstTestMethod = testClass.TestMembers[0];
+			secondTestMethod = testClass.TestMembers[1];
+			thirdTestMethod = testClass.TestMembers[2];
 			
 			context.MockUnitTestsPad.AddTestProject(testProject);
 			

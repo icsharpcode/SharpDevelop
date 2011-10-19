@@ -302,6 +302,15 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Numeral system</value>
   </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadecimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Octal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Resize to fit current width</value>
     <comment>Used for the HexEditor's full width display button in the left corner of the display.</comment>
@@ -802,10 +811,6 @@ Optionally you can specify a working directory and command line arguments.
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' was removed from the ignore list.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Keep old solution open</value>
-    <comment>Button text to keep old solution open</comment>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Get lock</value>
   </data>
@@ -836,14 +841,6 @@ Optionally you can specify a working directory and command line arguments.
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Show &amp;history tab for version-controlled files</value>
     <comment>Show tab page History for each version-controlled file</comment>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Reload solution</value>
-    <comment>Button to confirm reloading the solution after project files were changes</comment>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop detected that the version control operation changed project files.
-You should reload the solution.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Relocate</value>
@@ -1024,9 +1021,6 @@ You can specifiy an execution command in the project options.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>File</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Line</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>About</value>
@@ -1524,6 +1518,9 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Waiting for Application to Start</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code Quality Analysis</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Insert reference to explicit method; press tab or enter again to insert a new method stub.</value>
@@ -2481,6 +2478,12 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
     <value>Debugging</value>
     <comment>The root node in the options dialog</comment>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pause on handled Exceptions</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stepping</value>
   </data>
@@ -2780,6 +2783,9 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>&amp;Render font antialiased</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Enable Change Marker margin</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Enable &amp;code completion</value>
   </data>
@@ -3061,7 +3067,8 @@ A change in the highlighting schemes is visible upon the next restart of #Develo
     <value>Intel 64-bit Itanium processor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>AMD 64-bit processor</value>
+    <value>x86-64 processor</value>
+    <comment>AMD 64 / Intel 64 processor</comment>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>32-bit Intel-compatible processor</value>
@@ -3586,6 +3593,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Line</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Update</value>
   </data>
@@ -3876,10 +3886,6 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>End Line</value>
     <comment>List view column header containing the code coverage end line.</comment>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Line</value>
-    <comment>Code coverage line number column header for the list view.</comment>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Unable to locate the NCover console application.
@@ -4473,7 +4479,7 @@ All changes get lost.</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
     <value>The file
 ${File}
-has been changed externally do you want to reload it?</value>
+has been changed externally. Do you want to reload it?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Incremental Search:</value>
@@ -5040,6 +5046,17 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Loading ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Keep old solution open</value>
+    <comment>Button text to keep old solution open</comment>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Reload solution</value>
+    <comment>Button to confirm reloading the solution after project files were changes</comment>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>The solution has been changed externally.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convert selected &amp;projects to:</value>
   </data>
@@ -5150,7 +5167,7 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
     <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>There's no Project Url specified or external program. Check the web server at Project Properties -&amp;gt; Debug tab.</value>
+    <value>There's no Project Url specified or external program. Check the web server at Project Properties - Debug tab.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server port:</value>
@@ -5797,6 +5814,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>You cannot switch to a function without symbols.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>You cannot switch to a function without symbols without enabling decompiled code options.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[External methods]</value>
     <comment>Show in the callstack instead of external methods (without symbols)</comment>
@@ -5807,8 +5827,8 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Language</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
-    <value>Show external methods</value>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Module</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Show argument names</value>
@@ -5816,17 +5836,14 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentValues" xml:space="preserve">
     <value>Show argument values</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
-    <value>Show module names</value>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
+    <value>Show external methods</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
     <value>Show line number</value>
   </data>
-  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
-    <value>Module</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
-    <value>Line</value>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Show module names</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Ask</value>
@@ -6069,6 +6086,9 @@ Shows the full callstack of the error.</comment>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Set current statement</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Do you want to stop debugging?</value>
+  </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>Detach from the process or terminate it?</value>
   </data>
@@ -6081,8 +6101,14 @@ Shows the full callstack of the error.</comment>
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>You cannot step because there is no active function selected</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>You cannot switch to a thread with no available frame.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>You cannot switch threads while the debugger is running.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>You cannot switch to a thread in decompiled code without enabling decomplied code options.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Freeze</value>
@@ -6110,6 +6136,12 @@ Shows the full callstack of the error.</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Thread switch</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>You cannot switch to a thread in decompiled code without enabling decomplied code options.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>You cannot switch to a thread with no available frame.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
     <value>Toggle Method View</value>
@@ -6371,7 +6403,7 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Copy file path/name</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Open Containing Folder In Explorer</value>
+    <value>Open containing folder in Explorer</value>
     <comment>String for the editor tab context menu that will open the directory in which a documents file is contained in Windows Explorer.</comment>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
@@ -6517,6 +6549,12 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Set as St&amp;artUp Project</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>View in browser</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>The project is not a web project.</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>New Folder</value>
@@ -7501,6 +7539,9 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Empty File</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Creates a new Exception class.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Exception</value>
   </data>
@@ -7638,6 +7679,9 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Form</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Creates a ASP.NET WebHandler with code-behind.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET Web Handler</value>
@@ -7977,6 +8021,9 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Remove all breakpoints</value>
     <comment>Main menu command for removing all breakpoints + tooltip for the corresponding toolbar button (in the breakpoints pad)</comment>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Run last build</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Run &amp;without debugger</value>
@@ -8523,15 +8570,6 @@ Error while starting:
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>User:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>That you should look out for new SharpDevelop versions and tell all your friends how good SharpDevelop is and write cool C# programs with it!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>That you can open the template completion window with Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>That you can type "? name = ...;" (C#) or "Dim name As ? = ..." (VB) and SharpDevelop will substitute the question mark with the type of "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Buffer Options</value>

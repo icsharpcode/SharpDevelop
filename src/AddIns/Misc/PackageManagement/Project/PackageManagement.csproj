@@ -70,7 +70,18 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
-    <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
+    <Compile Include="Src\Design\FakePackageOperation.cs" />
+    <Compile Include="Src\Design\FakeSelectedProject.cs" />
+    <Compile Include="Src\InstalledPackageViewModel.cs" />
+    <Compile Include="Src\InstalledPackageViewModelFactory.cs" />
+    <Compile Include="Src\IPackageManagementSelectedProject.cs" />
+    <Compile Include="Src\ISelectProjectsService.cs" />
+    <Compile Include="Src\ISolutionPackageRepository.cs" />
+    <Compile Include="Src\ISolutionPackageRepositoryFactory.cs" />
+    <Compile Include="Src\IUpdatePackageActions.cs" />
+    <Compile Include="Src\IUpdatePackageActionsFactory.cs" />
+    <Compile Include="Src\ManagePackagesCommand.cs" />
     <Compile Include="Src\AggregateExceptionErrorMessage.cs" />
     <Compile Include="Src\ConsolePackageActionRunner.cs" />
     <Compile Include="Src\DefaultProjectTemplatePackageSource.cs" />
@@ -107,7 +118,7 @@
     <Compile Include="Src\EnvDTE\TextEditorFontSizeProperty.cs" />
     <Compile Include="Src\EnvDTE\TextEditorOptions.cs" />
     <Compile Include="Src\FileExistsException.cs" />
-    <Compile Include="Src\IAddPackageReferenceView.cs" />
+    <Compile Include="Src\IManagePackagesView.cs" />
     <Compile Include="Src\InstallProjectTemplatePackagesCommand.cs" />
     <Compile Include="Src\IPackageActionRunner.cs" />
     <Compile Include="Src\IPackageFromRepository.cs" />
@@ -122,6 +133,8 @@
     <Compile Include="Src\IPropertyService.cs" />
     <Compile Include="Src\ISettingsFactory.cs" />
     <Compile Include="Src\IThreadSafePackageManagementEvents.cs" />
+    <Compile Include="Src\ManagePackagesUserPrompts.cs" />
+    <Compile Include="Src\ManagePackagesViewTitle.cs" />
     <Compile Include="Src\NewProjectsCreated.cs" />
     <Compile Include="Src\OpenMSBuildProjects.cs" />
     <Compile Include="Src\PackageActionRunner.cs" />
@@ -134,6 +147,8 @@
     <Compile Include="Src\PackageManagementProject.cs" />
     <Compile Include="Src\PackageManagementProjectFactory.cs" />
     <Compile Include="Src\PackageManagementPropertyService.cs" />
+    <Compile Include="Src\PackageManagementSelectedProject.cs" />
+    <Compile Include="Src\PackageManagementSelectedProjects.cs" />
     <Compile Include="Src\PackageManagementWorkbench.cs" />
     <Compile Include="Src\PackageOperationExceptionEventArgs.cs" />
     <Compile Include="Src\PackageOperationMessage.cs" />
@@ -143,6 +158,8 @@
     <Compile Include="Src\PackageReferenceFileNameForProject.cs" />
     <Compile Include="Src\PackageReferenceInstaller.cs" />
     <Compile Include="Src\PackageReferencesForProject.cs" />
+    <Compile Include="Src\PackageSourceExtensions.cs" />
+    <Compile Include="Src\PackagesViewModels.cs" />
     <Compile Include="Src\PackageViewModelOperationLogger.cs" />
     <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
     <Compile Include="Src\ProcessPackageOperationsAction.cs" />
@@ -150,11 +167,11 @@
     <Compile Include="Src\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="Src\ProjectTemplatePackagesSettingsFileName.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
-    <Compile Include="Src\AddPackageReferenceView.xaml.cs">
-      <DependentUpon>AddPackageReferenceView.xaml</DependentUpon>
+    <Compile Include="Src\ManagePackagesView.cs">
+      <DependentUpon>ManagePackagesView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\AddPackageReferenceViewModel.cs" />
+    <Compile Include="Src\ManagePackagesViewModel.cs" />
     <Compile Include="Src\AvailablePackagesViewModel.cs" />
     <Compile Include="Src\BooleanToFontWeightConverter.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
@@ -226,6 +243,10 @@
     <Compile Include="Src\PackageManagementOptions.cs" />
     <Compile Include="Src\Process.cs" />
     <Compile Include="Src\RegisteredPackageSourceSettings.cs" />
+    <Compile Include="Src\RegisteredPackageSourcesUserControl.xaml.cs">
+      <DependentUpon>RegisteredPackageSourcesUserControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\RegisteredPackageSourcesView.xaml.cs">
       <DependentUpon>RegisteredPackageSourcesView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -237,10 +258,13 @@
     <Compile Include="Src\PackageManagementTask.cs" />
     <Compile Include="Src\PackageManagementTaskFactory.cs" />
     <Compile Include="Src\RegisteredProjectTemplatePackageSources.cs" />
+    <Compile Include="Src\RegisteredProjectTemplatePackageSourcesView.xaml.cs">
+      <DependentUpon>RegisteredProjectTemplatePackageSourcesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Scripting\IPackageManagementConsoleHost.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\IPowerShellDetection.cs" />
-    <Compile Include="Src\Scripting\ISolutionPackageRepository.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScripts.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsole.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsFactory.cs" />
@@ -249,7 +273,17 @@
     <Compile Include="Src\Scripting\PowerShellMissingConsoleHost.cs" />
     <Compile Include="Src\Scripting\PowerShellWorkingDirectory.cs" />
     <Compile Include="Src\Scripting\ResetPowerShellWorkingDirectoryOnSolutionClosed.cs" />
+    <Compile Include="Src\SelectedProjectsForInstalledPackages.cs" />
+    <Compile Include="Src\SelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\SelectProjectsEventArgs.cs" />
+    <Compile Include="Src\SelectProjectsService.cs" />
+    <Compile Include="Src\SelectProjectsView.xaml.cs">
+      <DependentUpon>SelectProjectsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\SelectProjectsViewModel.cs" />
     <Compile Include="Src\SettingsFactory.cs" />
+    <Compile Include="Src\SolutionPackageRepositoryFactory.cs" />
     <Compile Include="Src\SolutionPackageRepositoryPath.cs" />
     <Compile Include="Src\PackageSourceConverter.cs" />
     <Compile Include="Src\PackageSourceViewModel.cs" />
@@ -283,6 +317,8 @@
     <Compile Include="Src\SolutionPackageRepository.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
+    <Compile Include="Src\UpdateAllPackagesInProject.cs" />
+    <Compile Include="Src\UpdateAllPackagesInSolution.cs" />
     <Compile Include="Src\UpdatedPackagesViewModel.cs" />
     <Compile Include="Src\PackageViewModel.cs" />
     <Compile Include="Src\PackageViewModelFactory.cs" />
@@ -323,6 +359,8 @@
     <Compile Include="Src\UpdatedPackageViewModel.cs" />
     <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\UpdatePackageAction.cs" />
+    <Compile Include="Src\UpdatePackageActionsFactory.cs" />
+    <Compile Include="Src\UpdatePackageInAllProjects.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\PackageManagementViewModels.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
@@ -330,13 +368,16 @@
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\AddPackageReferenceView.xaml" />
+    <Page Include="Src\ManagePackagesView.xaml" />
     <Page Include="Src\LicenseAcceptanceView.xaml" />
     <Page Include="Src\PackageManagementOptionsView.xaml" />
+    <Page Include="Src\RegisteredPackageSourcesUserControl.xaml" />
     <Page Include="Src\RegisteredPackageSourcesView.xaml" />
     <Page Include="Src\PackagesView.xaml" />
     <Page Include="Src\PagedResultsView.xaml" />
+    <Page Include="Src\RegisteredProjectTemplatePackageSourcesView.xaml" />
     <Page Include="Src\Scripting\PackageManagementConsoleView.xaml" />
+    <Page Include="Src\SelectProjectsView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

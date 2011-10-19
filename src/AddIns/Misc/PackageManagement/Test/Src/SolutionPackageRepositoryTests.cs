@@ -25,7 +25,7 @@ namespace PackageManagement.Tests
 		
 		void CreateSolution(string fileName)
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = fileName;
 		}
 		
@@ -54,7 +54,7 @@ namespace PackageManagement.Tests
 		
 		void CreateRepository()
 		{
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			solution.FileName = @"d:\projects\test\myproject\myproject.sln";
 			CreateRepository(solution);
 		}
@@ -148,6 +148,65 @@ namespace PackageManagement.Tests
 			};
 			
 			Assert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void GetPackagesByReverseDependencyOrder_TwoPackagesInSharedRepositorySecondPackageDependsOnFirst_ReturnsSecondPackageFirst()
+		{
+			CreateSolution(@"d:\projects\myproject\myproject.sln");
+			CreateRepository(solution);
+			FakePackage firstPackage = AddPackageToSharedRepository("First");
+			FakePackage secondPackage = AddPackageToSharedRepository("Second");
+			secondPackage.AddDependency("First");
+						
+			List<IPackage> actualPackages = repository.GetPackagesByReverseDependencyOrder().ToList();
+			
+			var expectedPackages = new IPackage[] {
+				secondPackage,
+				firstPackage
+			};
+			
+			Assert.AreEqual(expectedPackages, actualPackages);
+		}
+		
+		[Test]
+		public void IsInstalled_PackageIsInSharedRepository_ReturnsTrue()
+		{
+			CreateSolution(@"d:\projects\myproject\myproject.sln");
+			CreateRepository(solution);
+			FakePackage firstPackage = AddPackageToSharedRepository("First");
+			
+			bool installed = repository.IsInstalled(firstPackage);
+			
+			Assert.IsTrue(installed);
+		}
+		
+		[Test]
+		public void IsInstalled_PackageIsNotInSharedRepository_ReturnsFalse()
+		{
+			CreateSolution(@"d:\projects\myproject\myproject.sln");
+			CreateRepository(solution);
+			FakePackage testPackage = new FakePackage("Test");
+			
+			bool installed = repository.IsInstalled(testPackage);
+			
+			Assert.IsFalse(installed);
+		}
+		
+		[Test]
+		public void GetPackages_OnePackageIsInSharedRepository_ReturnsOnePackage()
+		{
+			CreateSolution(@"d:\projects\myproject\myproject.sln");
+			CreateRepository(solution);
+			FakePackage firstPackage = AddPackageToSharedRepository("First");
+			
+			IQueryable<IPackage> packages = repository.GetPackages();
+			
+			var expectedPackages = new FakePackage[] {
+				firstPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, packages);
 		}
 	}
 }

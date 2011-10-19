@@ -17,7 +17,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[SetUp]
 		public void Init()
 		{
-			selectedTestsWithTestMethod = SelectedTestsHelper.CreateSelectedTestMethod();
+			selectedTestsWithTestMethod = SelectedTestsHelper.CreateSelectedTestMember();
 		}
 		
 		[Test]
@@ -41,7 +41,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void SelectedTestsHasMethodWithNameMyTestMethod()
 		{
-			Assert.AreEqual("MyTestMethod", selectedTestsWithTestMethod.Method.Name);
+			Assert.AreEqual("MyTestMethod", selectedTestsWithTestMethod.Member.Name);
 		}
 	}
 }

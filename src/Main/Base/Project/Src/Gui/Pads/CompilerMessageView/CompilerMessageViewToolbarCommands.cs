@@ -83,10 +83,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 				checkBox = (ToolBarCheckBox)Owner;
 			}
 		}
-		
-		public override void Run()
-		{
-			IsChecked = !IsChecked;
-		}
 	}
 }

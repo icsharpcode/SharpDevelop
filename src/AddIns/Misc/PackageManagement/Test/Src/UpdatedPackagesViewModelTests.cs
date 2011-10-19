@@ -27,6 +27,12 @@ namespace PackageManagement.Tests
 		void CreateSolution()
 		{
 			solution = new FakePackageManagementSolution();
+			solution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
+		}
+		
+		void NoProjectsSelected()
+		{
+			solution.NoProjectsSelected();
 		}
 		
 		void CreateViewModel(FakePackageManagementSolution solution)
@@ -34,16 +40,18 @@ namespace PackageManagement.Tests
 			taskFactory = new FakeTaskFactory();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories();
 			var packageViewModelFactory = new FakePackageViewModelFactory();
+			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
 			viewModel = new UpdatedPackagesViewModel(
 				solution,
 				registeredPackageRepositories,
-				packageViewModelFactory,
+				updatedPackageViewModelFactory,
 				taskFactory);
 		}
 		
 		void CreateExceptionThrowingSolution()
 		{
 			exceptionThrowingSolution = new ExceptionThrowingPackageManagementSolution();
+			exceptionThrowingSolution.FakeActiveMSBuildProject = ProjectHelper.CreateTestProject();
 		}
 		
 		void CompleteReadPackagesTask()
@@ -53,8 +61,8 @@ namespace PackageManagement.Tests
 
 		FakePackage AddPackageToLocalRepository(string version)
 		{
-			var package = FakePackage.CreatePackageWithVersion(version);
-			solution.AddPackageToActiveProjectLocalRepository(package);
+			FakePackage package = FakePackage.CreatePackageWithVersion(version);
+			solution.FakeProjectToReturnFromGetProject.FakePackages.Add(package);
 			return package;
 		}
 		
@@ -63,12 +71,19 @@ namespace PackageManagement.Tests
 			return registeredPackageRepositories.AddFakePackageWithVersionToAggregrateRepository(version);
 		}
 		
+		FakePackage AddPackageToSolution(string version)
+		{
+			FakePackage package = FakePackage.CreatePackageWithVersion(version);
+			solution.FakeInstalledPackages.Add(package);
+			return package;
+		}
+		
 		[Test]
 		public void ReadPackages_OneNewerPackageVersionAvailable_NewerPackageVersionDisplayed()
 		{
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
-			var newerPackage = AddPackageToAggregateRepository("1.1.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -86,7 +101,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
 			AddPackageToAggregateRepository("1.0.0.0");
-			var newerPackage = AddPackageToAggregateRepository("1.1.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
 			CompleteReadPackagesTask();
@@ -103,28 +118,72 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			AddPackageToLocalRepository("1.0.0.0");
-			var newerPackage = AddPackageToAggregateRepository("1.1.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
 			
 			registeredPackageRepositories.FakeAggregateRepository = null;
-			solution.FakeProject = null;
 			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
 		
 		[Test]
-		public void ReadPackages_GetActiveProjectThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		public void ReadPackages_GetProjectThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
 		{
 			CreateExceptionThrowingSolution();
-			exceptionThrowingSolution.ExceptionToThrowWhenGetActiveProjectCalled =
+			exceptionThrowingSolution.ExceptionToThrowWhenGetProjectCalled =
 				new Exception("Test");
 			CreateViewModel(exceptionThrowingSolution);
 			viewModel.ReadPackages();
 			
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
 			Assert.AreEqual("Test", ex.Message);
+		}
+		
+		[Test]
+		public void ReadPackages_OnlySolutionSelectedAndOneNewerPackageVersionAvailable_NewerPackageVersionDisplayed()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			CreateViewModel(solution);
+			AddPackageToSolution("1.0.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0.0");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				newerPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void ReadPackages_SolutionInitiallySelectedWithOneNewerPackageAndProjectSelectedBeforeSecondReadOfPackages_NewerPackageVersionDisplayed()
+		{
+			CreateSolution();
+			NoProjectsSelected();
+			CreateViewModel(solution);
+			AddPackageToSolution("1.0.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0.0");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			TestableProject msbuildProject = ProjectHelper.CreateTestProject("Test");
+			solution.FakeActiveMSBuildProject = msbuildProject;
+			solution.FakeActiveProject = new FakePackageManagementProject("Test");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				newerPackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
 	}
 }

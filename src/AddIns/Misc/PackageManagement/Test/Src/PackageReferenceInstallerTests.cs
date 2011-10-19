@@ -38,7 +38,7 @@ namespace PackageManagement.Tests
 		
 		void AddPackageReference(string packageId, string version)
 		{
-			var packageReference = new PackageReference(packageId, new Version(version));
+			var packageReference = new PackageReference(packageId, new Version(version), null);
 			packageReferences.Add(packageReference);
 		}
 		
@@ -49,7 +49,8 @@ namespace PackageManagement.Tests
 			AddPackageReference("PackageId", "1.3.4.5");
 			InstallPackages();
 			
-			var action = fakeActionRunner.ActionPassedToRun as InstallPackageAction;
+			var actions = new List<ProcessPackageAction>(fakeActionRunner.ActionsRunInOneCall);
+			var action = actions[0] as InstallPackageAction;
 			
 			var expectedVersion = new Version("1.3.4.5");
 			
@@ -65,7 +66,7 @@ namespace PackageManagement.Tests
 			InstallPackages();
 			
 			MSBuildBasedProject projectUsedToCreatePackageManagementProject
-				= fakeProjectFactory.ProjectPassedToCreateProject;
+				= fakeProjectFactory.FirstProjectPassedToCreateProject;
 			
 			Assert.AreEqual(project, projectUsedToCreatePackageManagementProject);
 		}
@@ -77,10 +78,10 @@ namespace PackageManagement.Tests
 			AddPackageReference("PackageId", "1.3.4.5");
 			InstallPackages();
 			
-			IPackageRepository repository = fakeProjectFactory.RepositoryPassedToCreateProject;
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			IPackageRepository expectedRepository = fakeRepositoryCache.FakeAggregateRepository;
 			
-			Assert.AreEqual(expectedRepository, repository);			
+			Assert.AreEqual(expectedRepository, repository);		
 		}
 	}
 }

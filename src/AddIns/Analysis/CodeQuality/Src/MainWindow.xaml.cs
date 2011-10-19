@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -21,9 +22,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
+	
 	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private MetricsReader metricsReader;
+		
 		public event PropertyChangedEventHandler PropertyChanged;
 		
 		public MetricsReader MetricsReader
@@ -45,6 +48,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			InitializeComponent();
 		}
 		
+		
 		private void NotifyPropertyChanged(string propertyName)
 		{
 			if (PropertyChanged != null)
@@ -53,6 +57,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
+			
+			var dataContext = this.DataContext as MainWindowViewModel;
+			
 			var fileDialog = new OpenFileDialog
 			{
 				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
@@ -63,15 +70,20 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
 			
-			progressBar.Visibility = Visibility.Visible;
-			assemblyStats.Visibility = Visibility.Hidden;
-			fileAssemblyLoading.Text = System.IO.Path.GetFileName(fileDialog.FileName);
+			dataContext.ProgressbarVisible = Visibility.Visible;
+			dataContext.AssemblyStatsVisible = Visibility.Hidden;
+			dataContext.FileName = System.IO.Path.GetFileName(fileDialog.FileName);
 			
 			var worker = new BackgroundWorker();
 			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);
 			worker.RunWorkerCompleted += (source, args) => {
-				progressBar.Visibility = Visibility.Hidden;
-				assemblyStats.Visibility = Visibility.Visible;
+
+				dataContext.ProgressbarVisible = Visibility.Hidden;
+				dataContext.AssemblyStatsVisible = Visibility.Visible;
+				dataContext.MainTabEnable = true;
+
+				Helper.FillTree(definitionTree, metricsReader.MainModule);
+				dataContext.MainModule = metricsReader.MainModule;
 				FillMatrix();
 			};
 			
@@ -93,32 +105,44 @@ namespace ICSharpCode.CodeQualityAnalysis
 			var matrix = new DependencyMatrix();
 
 			foreach (var ns in metricsReader.MainModule.Namespaces) {
-				matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
+				matrix.AddRow(ns);
 				foreach (var type in ns.Types) {
-					matrix.HeaderRows.Add(new MatrixCell<INode>(type));
+					matrix.AddRow(type);
+					foreach (var field in type.Fields)
+						matrix.AddRow(field);
+					foreach (var method in type.Methods)
+						matrix.AddRow(method);
 				}
-				matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
+				
+				matrix.AddColumn(ns);
 				foreach (var type in ns.Types) {
-					matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
+					matrix.AddColumn(type);
+					foreach (var field in type.Fields)
+						matrix.AddColumn(field);
+					foreach (var method in type.Methods)
+						matrix.AddColumn(method);
 				}
 			}
 
 			matrixControl.Matrix = matrix;
-			matrixControl.DrawMatrix();
 			matrixControl.DrawTree(metricsReader.MainModule);
 		}
-
-		private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		
+		
+		private void definitionTree_SelectedItemChanged(object sender, SelectionChangedEventArgs e)
 		{
-			var item = definitionTree.SelectedItem as INode;
-
-			if (item != null && item.Dependency != null)
+			var item = e.AddedItems[0] as DependecyTreeNode;
+			if (item != null && item.INode.Dependency != null)
 			{
-				var graph = item.Dependency.BuildDependencyGraph();
+				definitionTree.SelectedItem = item;
+				var graph = item.INode.Dependency.BuildDependencyGraph();
 				graphLayout.ChangeGraph(graph);
+				var d = this.DataContext as MainWindowViewModel;
+				d.MetrixTabEnable = true;
 			}
 		}
-
+		
+	
 		private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
 		{
 			var vertexControl = sender as VertexControl;
@@ -127,7 +151,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var vertex = vertexControl.Vertex as DependencyVertex;
 				if (vertex != null)
 				{
-					txbTypeInfo.Text = vertex.Node.GetInfo();
+					var d = this.DataContext as MainWindowViewModel;
+					d.TypeInfo = vertex.Node.GetInfo();
 				}
 			}
 		}
@@ -139,6 +164,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 		private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
 		{
+		
 			var fileDialog = new SaveFileDialog()
 			{
 				Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
@@ -210,8 +236,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Cyclomatic Complexity" });
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Variables" });
 			}
+			
 		}
 
+		
 		private void Metrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var levelItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
@@ -235,6 +263,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 			} else if (level == "Field") {
 
 			} else if (level == "Method") {
+//				var r =  from ns in MetricsReader.MainModule.Namespaces
+//									  from type in ns.Types
+//									  from method in type.Methods
+//									  select method;
 				treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
 									  from type in ns.Types
 									  from method in type.Methods
@@ -250,5 +282,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 					treemap.ItemDefinition.ValuePath = "Variables";
 			}
 		}
+		
 	}
 }

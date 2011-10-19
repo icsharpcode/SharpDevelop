@@ -11,7 +11,10 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
+using Mono.Cecil;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -20,9 +23,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class IconBarMargin : AbstractMargin, IDisposable
 	{
-		readonly IconBarManager manager;
+		readonly IBookmarkMargin manager;
 		
-		public IconBarMargin(IconBarManager manager)
+		public IconBarMargin(IBookmarkMargin manager)
 		{
 			if (manager == null)
 				throw new ArgumentNullException("manager");
@@ -47,7 +50,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnRedrawRequested(object sender, EventArgs e)
 		{
-			InvalidateVisual();
+			// Don't invalidate the IconBarMargin if it'll be invalidated again once the
+			// visual lines become valid.
+			if (this.TextView != null && this.TextView.VisualLinesValid) {
+				InvalidateVisual();
+			}
 		}
 		
 		public virtual void Dispose()
@@ -232,7 +239,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// no bookmark on the line: create a new breakpoint
 					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						ICSharpCode.SharpDevelop.Debugging.DebuggerService.ToggleBreakpointAt(textEditor, line);
+						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
+						return;
+					}
+					
+					// create breakpoint for the other posible active contents
+					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
+					if (viewContent != null) {
+						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+						if (textEditor != null) {
+							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
+							return;
+						}
 					}
 				}
 			}

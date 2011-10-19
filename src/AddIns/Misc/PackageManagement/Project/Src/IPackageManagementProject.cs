@@ -16,15 +16,18 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationEventArgs> PackageUninstalled;
 		event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;
 		event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
-			
+		
+		string Name { get; }
 		ILogger Logger { get; set; }
 		IPackageRepository SourceRepository { get; }
 		
 		Project ConvertToDTEProject();
 		
-		bool IsInstalled(IPackage package);
+		bool IsPackageInstalled(IPackage package);
+		bool IsPackageInstalled(string packageId);
 		
 		IQueryable<IPackage> GetPackages();
+		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies);
 		

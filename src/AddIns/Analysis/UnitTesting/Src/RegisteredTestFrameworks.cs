@@ -30,11 +30,11 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
 			ITestFramework testFramework = GetTestFramework(member);
 			if (testFramework != null) {
-				return testFramework.IsTestMethod(member);
+				return testFramework.IsTestMember(member);
 			}
 			return false;
 		}

@@ -22,14 +22,15 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageActionRunner packageActionRunner;
 		static readonly IPackageRepositoryCache projectTemplatePackageRepositoryCache;
 		static readonly RegisteredProjectTemplatePackageSources projectTemplatePackageSources;
+		static readonly PackageRepositoryCache packageRepositoryCache;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			var cache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
-			registeredPackageRepositories = new RegisteredPackageRepositories(cache, options);
+			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
-			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(cache, projectTemplatePackageSources);
+			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(packageRepositoryCache, projectTemplatePackageSources);
 			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
 			projectBrowserRefresher = new ProjectBrowserRefresher(projectService, packageManagementEvents);
@@ -58,6 +59,10 @@ namespace ICSharpCode.PackageManagement
 			get { return registeredPackageRepositories; }
 		}
 		
+		public static IPackageRepositoryCache PackageRepositoryCache {
+			get { return packageRepositoryCache; }
+		}
+		
 		public static IPackageManagementEvents PackageManagementEvents {
 			get { return packageManagementEvents; }
 		}
@@ -80,6 +85,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public static IPackageRepositoryCache ProjectTemplatePackageRepositoryCache {
 			get { return projectTemplatePackageRepositoryCache; }
+		}
+		
+		public static RegisteredPackageSources ProjectTemplatePackageSources {
+			get { return projectTemplatePackageSources.PackageSources; }
 		}
 	}
 }

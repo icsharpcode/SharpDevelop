@@ -30,10 +30,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="developwithpassion.specifications">
-      <HintPath>D:\git\sharpdevelop\packages\developwithpassion.specifications.rhinomocks.0.4.13.0\lib\developwithpassion.specifications.dll</HintPath>
+      <HintPath>..\..\..\..\..\packages\developwithpassion.specifications.rhinomocks.0.4.13.0\lib\developwithpassion.specifications.dll</HintPath>
     </Reference>
     <Reference Include="developwithpassion.specifications.rhinomocks">
-      <HintPath>D:\git\sharpdevelop\packages\developwithpassion.specifications.rhinomocks.0.4.13.0\lib\developwithpassion.specifications.rhinomocks.dll</HintPath>
+      <HintPath>..\..\..\..\..\packages\developwithpassion.specifications.rhinomocks.0.4.13.0\lib\developwithpassion.specifications.rhinomocks.dll</HintPath>
     </Reference>
     <Reference Include="Machine.Fakes">
       <HintPath>..\..\..\..\..\packages\Machine.Fakes.0.2.3.3\lib\Machine.Fakes.dll</HintPath>
@@ -66,6 +66,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\UnitTesting\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
@@ -73,18 +85,6 @@
     <ProjectReference Include="..\MachineSpecifications\MachineSpecifications.csproj">
       <Project>{D1DA3B8F-7313-4BDA-8880-461C5F007751}</Project>
       <Name>MachineSpecifications</Name>
-    </ProjectReference>
-    <ProjectReference Include="D:\git\sharpdevelop\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-    </ProjectReference>
-    <ProjectReference Include="D:\git\sharpdevelop\src\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="D:\git\sharpdevelop\src\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

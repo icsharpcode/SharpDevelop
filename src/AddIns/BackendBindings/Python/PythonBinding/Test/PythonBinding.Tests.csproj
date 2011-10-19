@@ -122,6 +122,7 @@
     <Compile Include="Converter\ConvertToPythonProjectCommandTestFixture.cs" />
     <Compile Include="Converter\EventHandlerWithObjectCreationTestFixture.cs" />
     <Compile Include="Converter\ForeachConversionWithMethodCallTestFixture.cs" />
+    <Compile Include="Converter\ForNextConversionTests.cs" />
     <Compile Include="Converter\GenerateMainMethodCallTestFixture.cs" />
     <Compile Include="Converter\GenericListConversionTestFixture.cs" />
     <Compile Include="Converter\IntegerMethodParameterTestFixture.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Converter\IntegerClassFieldWithConstructorTestFixture.cs" />
     <Compile Include="Converter\LocalVariableAssignedInConstructorTestFixture.cs" />
     <Compile Include="Converter\LocalVariableDeclarationInIfStatementTestFixture.cs" />
+    <Compile Include="Converter\LocalVariableDefinitionsOnSameLineTests.cs" />
     <Compile Include="Converter\LocalVariableNotInitializedTestFixture.cs" />
     <Compile Include="Converter\MethodCallInConstructorTestFixture.cs" />
     <Compile Include="Converter\MethodParameterConversionTestFixture.cs" />
@@ -148,6 +150,7 @@
     <Compile Include="Converter\IfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\ModulusOperatorConversionTestFixture.cs" />
     <Compile Include="Converter\MultiLineCommentTestFixture.cs" />
+    <Compile Include="Converter\MultipleFieldsOnSameLineTests.cs" />
     <Compile Include="Converter\NestedClassConversionTestFixture.cs" />
     <Compile Include="Converter\NestedIfStatementConversionTestFixture.cs" />
     <Compile Include="Converter\NullConversionTestFixture.cs" />
@@ -176,6 +179,7 @@
     <Compile Include="Converter\UnaryOperatorConversionTests.cs" />
     <Compile Include="Converter\UsingStatementConversionTestFixture.cs" />
     <Compile Include="Converter\VBClassConversionTestFixture.cs" />
+    <Compile Include="Converter\VBExitConversionTests.cs" />
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
@@ -410,7 +414,7 @@
     <Compile Include="Testing\PythonStandardLibraryPathTests.cs" />
     <Compile Include="Testing\PythonTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\PythonTestFrameworkIsTestClassTests.cs" />
-    <Compile Include="Testing\PythonTestFrameworkIsTestMethodTests.cs" />
+    <Compile Include="Testing\PythonTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="Testing\PythonTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="Testing\PythonTestResultFailureTestFixture.cs" />
     <Compile Include="Testing\PythonTestResultStackTraceLineNumberOverflowTestFixture.cs" />

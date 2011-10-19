@@ -60,6 +60,7 @@ Icons.16x16.ClosedReferenceFolder                 = ProjectBrowserIcons\GhostFol
 Icons.16x16.OpenResourceFolder                    = ProjectBrowserIcons\PropertyFolder.Open.png
 Icons.16x16.ClosedResourceFolder                  = ProjectBrowserIcons\PropertyFolder.Closed.png
 
+Icons.22x22.Browser			= BitmapResources-data\Icons.22x22.Browser.png
 
 Icons.16x16.ArrowLeftRight = BitmapResources-data\Icons.16x16.ArrowLeftRight.png
 Icons.16x16.ArrowDown      = BitmapResources-data\Icons.16x16.ArrowDown.png
@@ -496,6 +497,9 @@ Icons.16x16.XSLIcon = backendicons\miscFiles\XSL_16.png
 Icons.32x32.XSLIcon = backendicons\miscFiles\XSL_32.png
 Icons.16x16.ASPFileIcon = backendicons\miscFiles\ASP_16.png
 Icons.32x32.ASPFileIcon = backendicons\miscFiles\ASP_32.png
+
+TextTemplate.File = backendicons\miscFiles\TextTemplate.File.png
+TextTemplate.ProjectBrowser.File = backendicons\miscFiles\TextTemplate.ProjectBrowser.File.png
 
 HtmlHelp2.16x16.DynamicHelp   = PadIcons\HtmlHelp2.16x16.DynamicHelp.png
 HtmlHelp2.16x16.Favorites     = PadIcons\HtmlHelp2.16x16.Favorites.png

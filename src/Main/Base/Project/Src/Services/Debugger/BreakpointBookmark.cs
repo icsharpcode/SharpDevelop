@@ -114,5 +114,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			marker.ForegroundColor = Colors.White;
 			return marker;
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("{0} @{1}", this.FileName, this.LineNumber);
+		}
 	}
 }

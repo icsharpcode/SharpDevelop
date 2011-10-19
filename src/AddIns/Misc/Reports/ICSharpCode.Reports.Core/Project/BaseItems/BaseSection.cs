@@ -19,7 +19,6 @@ namespace ICSharpCode.Reports.Core
 	public class BaseSection : BaseReportItem,ISimpleContainer
 	{
 		
-//		private bool pageBreakAfter;
 		private ReportItemCollection items;
 		
 		public event EventHandler<SectionEventArgs> SectionPrinting;
@@ -106,7 +105,6 @@ namespace ICSharpCode.Reports.Core
 				if (cont != null) {
 					return FindRec (cont.Items,itemName);
 				} else {
-					//return InnerFind(itemName);
 					return FindRec(this.items,itemName);
 				}
 			}
@@ -119,6 +117,8 @@ namespace ICSharpCode.Reports.Core
 		
 		public  int SectionMargin {get;set;}
 	
+//		public virtual int SectionOffset {get;set;}
+		
 		
 		public ReportItemCollection Items
 		{
@@ -134,6 +134,32 @@ namespace ICSharpCode.Reports.Core
 		public virtual bool PageBreakAfter {get;set;}
 	
 		#endregion
+
+		
+		public Size MeasureOverride (Size availableSize)
+		{
+			Size resultSize = new Size(0,0);
+//			Console.WriteLine("MeasureOverride");
+			foreach (var item in Items) {
+//				Console.WriteLine("{0} - {1}",item.Location,item.Size);
+				resultSize.Width = Math.Max(resultSize.Width, item.Size.Width);
+				resultSize.Height = Math.Max(resultSize.Height, item.Size.Height);
+			}
+
+//			resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
+//				resultSize.Width : availableSize.Width;
+//
+//			resultSize.Height = double.IsPositiveInfinity(availableSize.Height) ?
+//				resultSize.Height : availableSize.Height;
+			
+			resultSize.Width = double.IsPositiveInfinity(availableSize.Width) ?
+				resultSize.Width : availableSize.Width;
+			var b = double.IsPositiveInfinity(availableSize.Height);
+			resultSize.Height = double.IsPositiveInfinity(availableSize.Height) ?
+				resultSize.Height : availableSize.Height;
+			
+			return resultSize;
+		}
 		
 		#region System.IDisposable interface implementation
 		

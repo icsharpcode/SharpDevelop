@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -21,6 +22,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public IEnumerator<Property> GetEnumerator()
+		{
+			List<Property> properties = GetProperties().ToList();
+			return properties.GetEnumerator();
+		}
+		
+		IEnumerable<Property> GetProperties()
 		{
 			yield return new ProjectItemProperty(projectItem, ProjectItem.CopyToOutputDirectoryPropertyName);
 			yield return new ProjectItemProperty(projectItem, ProjectItem.CustomToolPropertyName);

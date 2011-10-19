@@ -3,16 +3,19 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageReferenceFile : IPackageReferenceFile
 	{
 		NuGet.PackageReferenceFile file;
+		string fileName;
 		
 		public PackageReferenceFile(string fileName)
 		{
-			file = new NuGet.PackageReferenceFile(fileName);
+			this.fileName = fileName;
+			this.file = new NuGet.PackageReferenceFile(fileName);
 		}
 		
 		public IEnumerable<NuGet.PackageReference> GetPackageReferences()
@@ -23,6 +26,11 @@ namespace ICSharpCode.PackageManagement
 		public void DeleteEntry(string id, Version version)
 		{
 			file.DeleteEntry(id, version);
+		}
+		
+		public void Delete()
+		{
+			FileService.RemoveFile(fileName, false);
 		}
 	}
 }

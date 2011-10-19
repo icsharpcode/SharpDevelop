@@ -13,7 +13,7 @@ namespace ICSharpCode.UnitTesting
 		ITestRunner CreateTestRunner(IProject project);
 		ITestRunner CreateTestDebugger(IProject project);
 		
-		bool IsTestMethod(IMember member);
+		bool IsTestMember(IMember member);
 		bool IsTestClass(IClass c);
 		bool IsTestProject(IProject project);
 		
