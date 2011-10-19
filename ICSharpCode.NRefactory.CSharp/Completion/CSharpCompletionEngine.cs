@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,9 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Additional input properties
 		public CSharpFormattingOptions FormattingPolicy { get; set; }
-
 		public string EolMarker { get; set; }
-
 		public string IndentString { get; set; }
 		#endregion
 		
@@ -69,7 +68,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			SetOffset (offset);
 			if (offset > 0) {
 				char lastChar = document.GetCharAt (offset - 1);
-				return MagicKeyCompletion (lastChar, controlSpace) ?? Enumerable.Empty<ICompletionData> ();
+				var result = MagicKeyCompletion (lastChar, controlSpace) ?? Enumerable.Empty<ICompletionData> ();
+				if (controlSpace && char.IsWhiteSpace (lastChar)) {
+					offset -= 2;
+					while (offset >= 0 && char.IsWhiteSpace (document.GetCharAt (offset)))
+						offset--;
+					if (offset > 0) {
+						var nonWsResult = MagicKeyCompletion (document.GetCharAt (offset), controlSpace);
+						if (nonWsResult != null)
+							result = result.Concat (nonWsResult);
+					}
+				}
+				
+				return result;
 			}
 			return Enumerable.Empty<ICompletionData> ();
 		}
@@ -178,7 +189,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					int offset2 = document.GetOffset (parent.Type.EndLocation);
 					
 					string name = document.GetText (offset1, offset2 - offset1);
-					Console.WriteLine ("name: >" + name + "<");
 					var names = new List<string> ();
 					int lastNameStart = 0;
 					for (int i = 1; i < name.Length; i++) {
@@ -205,11 +215,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					AutoSelect = false;
 					AutoCompleteEmptyMatch = false;
-					Console.WriteLine (proposeNameList.Result.Count);
 					return proposeNameList.Result;
 				}
 			
-							
 //				int tokenIndex = offset;
 //				string token = GetPreviousToken (ref tokenIndex, false);
 //				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
@@ -343,9 +351,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return HandleKeywordCompletion (tokenIndex, token);
 			// Automatic completion
 			default:
-				if (IsInsideComment () || IsInsideString () ||
-					!(char.IsLetter (completionChar) || completionChar == '_'))
+				if (IsInsideComment () || IsInsideString ())
 					return null;
+				if (!(char.IsLetter (completionChar) || completionChar == '_'))
+					return controlSpace ? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
@@ -487,6 +496,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 		
+		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
+		{
+			var wrapper = new CompletionDataWrapper (this);
+			
+			var node = Unit.GetNodeAt (location);
+			var rr = ResolveExpression (CSharpParsedFile, node, Unit);
+			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
+			
+			return wrapper.Result;
+		}
+		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
 			if (state == null) 
@@ -521,8 +541,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			AddKeywords (wrapper, primitiveTypesKeywords);
-// TODO: Templates !!!
-//			CodeTemplateService.AddCompletionDataForMime ("text/x-csharp", wrapper.Result);
+			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 		}
 
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
@@ -868,7 +887,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return true;
 		}
-
 		string GetLineIndent (int lineNr)
 		{
 			var line = document.GetLineByNumber (lineNr);
@@ -1439,14 +1457,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
 		{
 			var parser = new CSharpParser ();
-			string text = this.document.GetText (0, offset) + "a; } } } }"; 
-			
-			var stream = new System.IO.StringReader (text);
+			string text = this.document.GetText (0, this.offset); 
+			var sb = new StringBuilder (text);
+			sb.Append ("a;");
+			AppendMissingClosingBrackets (sb, text, false);
+			var stream = new System.IO.StringReader (sb.ToString ());
 			var completionUnit = parser.Parse (stream, 0);
 			stream.Close ();
-			
-			var expr = completionUnit.GetNodeAt (location, n => n is Expression || n is VariableDeclarationStatement);
-			
+			var loc = document.GetLocation (offset);
+			var expr = completionUnit.GetNodeAt (loc, n => n is Expression || n is VariableDeclarationStatement);
 			if (expr == null)
 				return null;
 			var tsvisitor = new TypeSystemConvertVisitor (ProjectContent, CSharpParsedFile.FileName);
@@ -1671,17 +1690,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Keywords
 		static string[] expressionLevelKeywords = new string [] { "as", "is", "else", "out", "ref", "null", "delegate", "default"};
+		
 		static string[] primitiveTypesKeywords = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
+		
 		static string[] statementStartKeywords = new string [] { "base", "new", "sizeof", "this", 
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
 			"using", "while", "yield", "dynamic", "var" };
+		
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 
 			"class", "interface", "struct", "enum", "delegate",
 			"abstract", "sealed", "static", "unsafe", "partial"
 		};
+		
 		static string[] typeLevelKeywords = new string [] {
 			"public", "internal", "protected", "private",
 			"class", "interface", "struct", "enum", "delegate",
