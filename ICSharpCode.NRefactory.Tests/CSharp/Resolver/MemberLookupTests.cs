@@ -121,5 +121,29 @@ class Derived : Base {
 			Assert.AreEqual("Derived.Method", baseGroup[0].FullName);
 			Assert.AreEqual("``0", baseGroup[0].Parameters[0].Type.Resolve(context).ReflectionName);
 		}
+		
+		[Test]
+		public void TestOuterTemplateParameter()
+		{
+			string program = @"public class A<T>
+{
+	public class B
+	{
+		public T field;
+	}
+}
+
+public class Foo
+{
+	public void Bar ()
+	{
+		A<int>.B baz = new A<int>.B ();
+		$baz.field$.ToString ();
+	}
+}";
+			var lrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.Int32", lrr.Type.FullName);
+		}
+				
 	}
 }
