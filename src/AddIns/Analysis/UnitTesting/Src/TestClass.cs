@@ -280,40 +280,30 @@ namespace ICSharpCode.UnitTesting
 		TestMemberCollection GetTestMembers(IClass c)
 		{
 			TestMemberCollection testMembers = new TestMemberCollection();
-			foreach (IMember member in c.AllMembers) {
-				if (IsTestMember(member)) {
-					if (!testMembers.Contains(member.Name)) {
-						testMembers.Add(new TestMember(member));
-					}
-				}
-			}
+			foreach (var member in testFrameworks.GetTestMembersFor(c))
+				if (!testMembers.Contains(member.Name)) {
+					testMembers.Add(new TestMember(member));
+				}			
 			
 			// Add base class test members.
 			IClass declaringType = c;
 			while (c.BaseClass != null) {
-				foreach (var method in c.BaseClass.AllMembers) {
-					if (IsTestMember(method)) {
-						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
-						TestMember testMethod = new TestMember(c.BaseClass.Name, baseTestMethod);
-						if (method.IsVirtual) {
-							if (!testMembers.Contains(method.Name)) {
-								testMembers.Add(testMethod);	
-							}
-						} else {
-							if (!testMembers.Contains(testMethod.Name)) {
-								testMembers.Add(testMethod);
-							}
+				foreach (var method in testFrameworks.GetTestMembersFor(c.BaseClass)) {					
+					BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
+					TestMember testMethod = new TestMember(c.BaseClass.Name, baseTestMethod);
+					if (method.IsVirtual) {
+						if (!testMembers.Contains(method.Name)) {
+							testMembers.Add(testMethod);	
 						}
-					}
+					} else {
+						if (!testMembers.Contains(testMethod.Name)) {
+							testMembers.Add(testMethod);
+						}
+					}					
 				}
 				c = c.BaseClass;
 			}
 			return testMembers;
-		}
-		
-		bool IsTestMember(IMember member)
-		{
-			return testFrameworks.IsTestMember(member);
 		}
 		
 		/// <summary>

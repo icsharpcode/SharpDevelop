@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -26,6 +27,12 @@ namespace ICSharpCode.MachineSpecifications
 		
 		public bool IsTestClass(IClass c) {
 			return HasSpecificationMembers(c) && !IsBehavior(c);
+		}
+		
+		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
+			foreach (var field in @class.Fields)
+				if (IsSpecificationMember(field))
+					yield return field;
 		}
 		
 		public bool IsTestProject(IProject project) {

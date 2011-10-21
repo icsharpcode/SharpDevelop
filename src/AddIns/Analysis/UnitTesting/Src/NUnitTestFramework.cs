@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -56,7 +58,7 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
-		StringComparer GetNameComparer(IClass c)
+		static StringComparer GetNameComparer(IClass c)
 		{
 			if (c != null) {
 				IProjectContent projectContent = c.ProjectContent;
@@ -84,7 +86,11 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
-		bool IsTestMethod(IMethod method)
+		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod);
+		}
+		
+		static bool IsTestMethod(IMethod method)
 		{
 			var nameComparer = GetNameComparer(method.DeclaringType);
 			if (nameComparer != null) {

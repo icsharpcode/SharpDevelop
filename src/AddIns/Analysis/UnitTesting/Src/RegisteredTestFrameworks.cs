@@ -39,6 +39,13 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
+		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
+			ITestFramework testFramework = GetTestFramework(@class);
+			if (testFramework != null)
+				return testFramework.GetTestMembersFor(@class);
+			return new IMember[0];
+		}
+		
 		ITestFramework GetTestFramework(IMember member)
 		{
 			if (member != null) {

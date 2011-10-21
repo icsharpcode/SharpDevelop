@@ -31,6 +31,10 @@ namespace UnitTesting.Tests.Utils
 			return testMembers.Contains(member);
 		}
 		
+		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
+			return testMembers;
+		}
+		
 		public IMember IsTestMemberParameterUsed {
 			get { return isTestMemberParameterUsed; }
 		}
