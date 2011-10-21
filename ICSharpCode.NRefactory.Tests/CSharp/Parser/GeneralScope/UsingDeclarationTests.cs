@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			string program = "using\n";
 			CSharpParser parser = new CSharpParser();
-			CompilationUnit cu = parser.Parse(new StringReader(program));
+			CompilationUnit cu = parser.Parse (program);
 			Assert.AreEqual(0, cu.Children.Count());
 			Assert.IsTrue(parser.HasErrors);
 		}

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{63D3B27A-D966-4902-90B3-30290E1692F1}</ProjectGuid>
@@ -7,7 +7,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.NRefactory</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -33,14 +32,20 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\ICSharpCode.NRefactory\bin\Debug\</OutputPath>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\ICSharpCode.NRefactory\bin\Release\</OutputPath>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,14 +55,12 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\ICSharpCode.NRefactory\bin\Debug\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputPath>..\ICSharpCode.NRefactory\bin\Release\</OutputPath>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -65,11 +68,9 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-    <Reference Include="System.Core">
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-    </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
       <HintPath>..\..\Mono.Cecil\Test\libs\nunit-2.4.8\nunit.framework.dll</HintPath>
     </Reference>
@@ -186,6 +187,13 @@
     <Compile Include="Utils\TreeTraversalTests.cs" />
     <Compile Include="FormattingTests\TextEditorTestAdapter.cs" />
     <Compile Include="FormattingTests\TestBlankLineFormatting.cs" />
+    <Compile Include="CSharp\CodeCompletion\CodeCompletionAccessibleTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\CodeCompletionBugTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\CodeCompletionCSharp3Tests.cs" />
+    <Compile Include="CSharp\CodeCompletion\CodeCompletionCSharpTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\CodeComplteionOperatorTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\CompletionDataList.cs" />
+    <Compile Include="CSharp\CodeCompletion\ParameterCompletionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
@@ -199,12 +207,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
-    <Folder Include="CSharp\Refactoring" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
-    <Folder Include="Documentation" />
+    <Folder Include="CSharp\CodeCompletion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
