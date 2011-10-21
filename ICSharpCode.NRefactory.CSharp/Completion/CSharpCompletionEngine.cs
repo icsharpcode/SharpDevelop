@@ -1418,12 +1418,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
 		}
 		
-		static void Print (AstNode node)
-		{
-			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
-			node.AcceptVisitor (v, null);
-		}
-		
 		Tuple<CSharpParsedFile, Expression, CompilationUnit> GetExpressionAtCursor ()
 		{
 			if (currentMember == null && currentType == null)

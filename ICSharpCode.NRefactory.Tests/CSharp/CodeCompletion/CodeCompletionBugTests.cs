@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IEntity entity, string text)
 			{
-				return new CompletionData (entity.Name);
+				return new CompletionData (text);
 			}
 
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, string shortType)
