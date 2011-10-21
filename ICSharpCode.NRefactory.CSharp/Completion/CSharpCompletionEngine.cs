@@ -1399,7 +1399,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
 			Expression expr;
 			if (mref != null) {
-				expr = mref.Target;
+				expr = mref.Target.Clone ();
+				mref.Parent.ReplaceWith (expr);
 			} else {
 				var tref = baseUnit.GetNodeAt<TypeReferenceExpression> (location); 
 				var memberType = tref != null ? tref.Type as MemberType : null;
