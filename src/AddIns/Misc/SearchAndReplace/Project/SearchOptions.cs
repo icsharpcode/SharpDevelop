@@ -136,7 +136,7 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static SearchTarget DocumentIteratorType {
+		public static SearchTarget SearchTarget {
 			get {
 				return properties.Get("DocumentIteratorType", SearchTarget.CurrentDocument);
 			}

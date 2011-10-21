@@ -106,70 +106,46 @@ namespace SearchAndReplace
 			}
 		}
 		
+		SearchResultMatch lastMatch;
+		
 		void FindNextButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.DocumentIteratorType, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
-			SearchManager.SelectResult(result);
+			lastMatch = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			SearchManager.SelectResult(lastMatch);
 			Focus();
 		}
 		
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					RunAllInSelection(0);
-				}
-			} else {
-				var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.DocumentIteratorType, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
-				SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
-			}
+			var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
 		}
 		
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					RunAllInSelection(1);
-				}
-			} else {
-				var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.DocumentIteratorType, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
-				SearchManager.MarkAll(results);
-			}
+			var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			SearchManager.MarkAll(results);
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					RunAllInSelection(2);
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-//					SearchReplaceManager.ReplaceAll(monitor);
-				}
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true)) {
+				var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, false, monitor);
+				SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
 			}
 		}
 		
 		void ReplaceButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					ReplaceInSelection();
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-//					SearchReplaceManager.Replace(monitor);
-				}
-			}
+			if (SearchManager.IsResultSelected(lastMatch))
+				SearchManager.Replace(lastMatch, SearchOptions.ReplacePattern);
+			lastMatch = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			SearchManager.SelectResult(lastMatch);
 			Focus();
 		}
 		
@@ -191,9 +167,9 @@ namespace SearchAndReplace
 			
 			SearchOptions.SearchStrategyType = (SearchMode)Get<ComboBox>("use").SelectedIndex;
 			if (Get<ComboBox>("lookIn").DropDownStyle == ComboBoxStyle.DropDown) {
-				SearchOptions.DocumentIteratorType = SearchTarget.Directory;
+				SearchOptions.SearchTarget = SearchTarget.Directory;
 			} else {
-				SearchOptions.DocumentIteratorType = (SearchTarget)Get<ComboBox>("lookIn").SelectedIndex;
+				SearchOptions.SearchTarget = (SearchTarget)Get<ComboBox>("lookIn").SelectedIndex;
 			}
 		}
 		
@@ -236,10 +212,10 @@ namespace SearchAndReplace
 			if (IsMultipleLineSelection(SearchManager.GetActiveTextEditor())) {
 				SearchTarget = SearchTarget.CurrentSelection;
 			} else {
-				if (SearchOptions.DocumentIteratorType == SearchTarget.CurrentSelection) {
-					SearchOptions.DocumentIteratorType = SearchTarget.CurrentDocument;
+				if (SearchOptions.SearchTarget == SearchTarget.CurrentSelection) {
+					SearchOptions.SearchTarget = SearchTarget.CurrentDocument;
 				}
-				SearchTarget = SearchOptions.DocumentIteratorType;
+				SearchTarget = SearchOptions.SearchTarget;
 			}
 			
 			Get<ComboBox>("fileTypes").Text         = SearchOptions.LookInFiletypes;
@@ -372,36 +348,6 @@ namespace SearchAndReplace
 		{
 			RemoveSelectionChangedHandler();
 			RemoveActiveWindowChangedHandler();
-		}
-		
-		/// <summary>
-		/// action: 0 = find, 1 = mark, 2 = replace
-		/// </summary>
-		void RunAllInSelection(int action)
-		{
-			const IProgressMonitor monitor = null;
-			
-			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
-			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
-			
-			textEditor.Select(startOffset, endOffset - startOffset);
-			
-			try {
-				ignoreSelectionChanges = true;
-				if (action == 0) {
-//					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset, monitor);
-				} else if (action == 1) {
-//					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset, monitor);
-				} else if (action == 2) {
-					// use anchor for endOffset because the replacement might change the text length
-					var anchor = textEditor.Document.CreateAnchor(endOffset);
-//					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset, monitor);
-					endOffset = anchor.Offset;
-				}
-				textEditor.Select(startOffset, endOffset - startOffset);
-			} finally {
-				ignoreSelectionChanges = false;
-			}
 		}
 		
 		void ReplaceInSelection()

@@ -2,7 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading;
 using System.Windows.Threading;
+
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
@@ -28,6 +32,18 @@ namespace ICSharpCode.SharpDevelop
 		public static IDisposable Subscribe<T>(this IObservable<T> source, Action<T> onNext, Action<Exception> onError, Action onCompleted)
 		{
 			return source.Subscribe(new AnonymousObserver<T>(onNext, onError, onCompleted));
+		}
+		
+		public static List<T> ToList<T>(this IObservable<T> source, CancellationToken cancellation)
+		{
+			List<T> results = new List<T>();
+			ManualResetEventSlim ev = new ManualResetEventSlim();
+			Exception error = null;
+			using (source.Subscribe(item => results.Add(item), exception => { error = exception; ev.Set(); }, () => ev.Set()))
+				ev.Wait(cancellation);
+			if (error != null)
+				throw new TargetInvocationException(error);
+			return results;
 		}
 		
 		class AnonymousObservable<T> : IObservable<T>

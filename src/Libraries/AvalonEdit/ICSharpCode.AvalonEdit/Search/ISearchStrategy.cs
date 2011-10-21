@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.Search
 	/// </summary>
 	public interface ISearchResult : ISegment
 	{
-		
+		string ReplaceWith(string replacement);
 	}
 	
 	/// <summary>

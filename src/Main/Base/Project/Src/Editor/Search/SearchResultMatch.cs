@@ -15,6 +15,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	public class SearchResultMatch
 	{
 		FileName fileName;
+		int offset;
+		int length;
 		Location startLocation;
 		Location endLocation;
 		HighlightedInlineBuilder builder;
@@ -35,16 +37,30 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			get { return builder; }
 		}
 		
+		public int StartOffset {
+			get { return offset; }
+		}
+		
+		public int Length {
+			get { return length; }
+		}
+		
+		public int EndOffset {
+			get { return offset + length; }
+		}
+		
 		public virtual string TransformReplacePattern(string pattern)
 		{
 			return pattern;
 		}
 		
-		public SearchResultMatch(FileName fileName, Location startLocation, Location endLocation, HighlightedInlineBuilder builder)
+		public SearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder)
 		{
 			this.fileName = fileName;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
+			this.offset = offset;
+			this.length = length;
 			this.builder = builder;
 		}
 		
@@ -75,10 +91,26 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
-		public SimpleSearchResultMatch(FileName fileName, Location position, string displayText)
-			: base(fileName, position, position, new HighlightedInlineBuilder(displayText))
+		public SimpleSearchResultMatch(FileName fileName, Location position, int offset, string displayText)
+			: base(fileName, position, position, offset, 0, null)
 		{
 			this.displayText = displayText;
+		}
+	}
+	
+	public class RegexResultMatch : SearchResultMatch
+	{
+		ICSharpCode.AvalonEdit.Search.ISearchResult match;
+		
+		public RegexResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+			: base(fileName, startLocation, endLocation, offset, length, builder)
+		{
+			this.match = match;
+		}
+		
+		public override string TransformReplacePattern(string pattern)
+		{
+			return match.ReplaceWith(pattern);
 		}
 	}
 }

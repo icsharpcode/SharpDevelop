@@ -376,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				var document = new TextDocument(DocumentUtilitites.GetTextSource(ParserService.GetParseableFileContent(r.FileName)));
 				var start = document.GetLocation(r.Offset).ToLocation();
 				var end = document.GetLocation(r.Offset + r.Length).ToLocation();
-				SearchResultMatch res = new SearchResultMatch(new FileName(r.FileName), start, end, SearchResultsPad.CreateInlineBuilder(start, end, document, Path.GetExtension(r.FileName)));
+				SearchResultMatch res = new SearchResultMatch(new FileName(r.FileName), start, end, r.Offset, r.Length, SearchResultsPad.CreateInlineBuilder(start, end, document, Path.GetExtension(r.FileName)));
 				results.Add(res);
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);

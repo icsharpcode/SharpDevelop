@@ -39,7 +39,7 @@ namespace SearchAndReplace
 		public override void Run()
 		{
 			if (SearchOptions.CurrentFindPattern.Length > 0) {
-				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.DocumentIteratorType, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 				SearchManager.SelectResult(result);
 			} else {
 				Find find = new Find();
@@ -90,10 +90,10 @@ namespace SearchAndReplace
 			
 			if (textToFind != null && textToFind.Length > 0) {
 				SearchOptions.CurrentFindPattern = textToFind;
-				if (SearchOptions.DocumentIteratorType == SearchTarget.CurrentSelection) {
-					SearchOptions.DocumentIteratorType = SearchTarget.CurrentDocument;
+				if (SearchOptions.SearchTarget == SearchTarget.CurrentSelection) {
+					SearchOptions.SearchTarget = SearchTarget.CurrentDocument;
 				}
-				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.DocumentIteratorType, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 				SearchManager.SelectResult(result);
 			}
 		}

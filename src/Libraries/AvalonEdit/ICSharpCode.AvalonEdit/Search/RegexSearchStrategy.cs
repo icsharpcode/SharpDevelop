@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+
 using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Search
@@ -22,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 			foreach (Match result in searchPattern.Matches(document.Text)) {
 				if (offset <= result.Index && (offset + length) >= (result.Index + result.Length))
-					yield return new SearchResult { StartOffset = result.Index, Length = result.Length };
+					yield return new SearchResult { StartOffset = result.Index, Length = result.Length, Data = result };
 			}
 		}
 		
@@ -34,5 +36,11 @@ namespace ICSharpCode.AvalonEdit.Search
 	
 	class SearchResult : TextSegment, ISearchResult
 	{
+		public Match Data { get; set; }
+		
+		public string ReplaceWith(string replacement)
+		{
+			return Data.Result(replacement);
+		}
 	}
 }
