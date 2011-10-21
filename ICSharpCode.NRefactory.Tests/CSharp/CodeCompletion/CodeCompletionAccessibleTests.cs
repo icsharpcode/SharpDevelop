@@ -28,12 +28,15 @@
 
 using System;
 using NUnit.Framework;
+using System.Diagnostics;
+
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
-	[TestFixture()]
-	public class CodeCompletionAccessibleTests
+	[TestFixture]
+	public class CodeCompletionAccessibleTests : TestBase
 	{
+		
 		static string testClass = @"
 using System;
 

@@ -39,7 +39,7 @@ using System.Linq;
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class ParameterCompletionTests
+	public class ParameterCompletionTests : TestBase
 	{
 		class TestFactory : IParameterCompletionDataFactory
 		{

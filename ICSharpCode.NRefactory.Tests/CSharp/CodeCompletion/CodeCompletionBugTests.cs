@@ -35,16 +35,13 @@ using ICSharpCode.NRefactory.Completion;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
-
-
-
-
+using System.Diagnostics;
 
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class CodeCompletionBugTests
+	public class CodeCompletionBugTests : TestBase
 	{
 		static int pcount = 0;
 		

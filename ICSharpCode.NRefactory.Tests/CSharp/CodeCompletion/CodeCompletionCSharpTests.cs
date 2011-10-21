@@ -32,7 +32,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
 	[TestFixture()]
-	public class CodeCompletionCSharpTests
+	public class CodeCompletionCSharpTests : TestBase
 	{
 		[Test()]
 		public void TestUsingDeclaration ()
