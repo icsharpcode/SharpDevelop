@@ -339,9 +339,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
 			var visitor = new ResolveVisitor (csResolver, file, navigator);
-			unit.AcceptVisitor (visitor, null);
-			var result = visitor.Resolve (resolveNode);
+			visitor.Scan (unit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
+			var result = visitor.GetResolveResult (resolveNode);
 			return Tuple.Create (result, state);
 		}
 		#endregion

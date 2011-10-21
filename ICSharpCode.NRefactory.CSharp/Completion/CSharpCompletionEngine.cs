@@ -386,11 +386,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						nodes.Add (n.Parent);
 					var navigator = new NodeListResolveVisitorNavigator (nodes);
 					var visitor = new ResolveVisitor (csResolver, identifierStart.Item1, navigator);
-					identifierStart.Item3.AcceptVisitor (visitor, null);
+					visitor.Scan (identifierStart.Item3);
 					csResolver = visitor.GetResolverStateBefore (n);
 					// add attribute properties.
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
-						var resolved = visitor.Resolve (n.Parent);
+						var resolved = visitor.GetResolveResult (n.Parent);
 						if (resolved != null && resolved.Type != null) {
 							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
