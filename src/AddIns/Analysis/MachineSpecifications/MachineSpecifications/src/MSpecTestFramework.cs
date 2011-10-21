@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -30,9 +31,21 @@ namespace ICSharpCode.MachineSpecifications
 		}
 		
 		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
-			foreach (var field in @class.Fields)
-				if (IsSpecificationMember(field))
-					yield return field;
+			return GetTestMembers(@class, @class.Fields);
+		}
+
+		private IEnumerable<IMember> GetTestMembers(IClass testClass, IList<IField> fields)
+		{
+			var result = fields.Where(IsSpecificationMember).Cast<IMember>().ToList();
+			foreach (var field in fields)
+				if (IsBehaviorReference(field))
+				{
+					var behaviorFields = ResolveBehaviorFieldsOf(field);
+					var behaviorTestMembers = GetTestMembers(testClass, behaviorFields);
+					var decoratedTestMembers = behaviorTestMembers.Select(f => new BaseTestMethod(testClass, f)).Cast<IMember>();
+					result.AddRange(decoratedTestMembers);
+				}
+			return result;
 		}
 		
 		public bool IsTestProject(IProject project) {
@@ -56,15 +69,29 @@ namespace ICSharpCode.MachineSpecifications
 		public bool IsBuildNeededBeforeTestRun {
 			get {return true;}
 		}
+
+		private IList<IField> ResolveBehaviorFieldsOf(IField field)
+		{
+			var fieldReturnType = field.ReturnType.CastToConstructedReturnType();
+			if (fieldReturnType == null) return new List<IField>();
+			if (fieldReturnType.TypeArgumentCount != 1)
+				LoggingService.Error(string.Format("Expected behavior specification {0} to have one type argument but {1} found.", field.FullyQualifiedName, fieldReturnType.TypeArgumentCount));
+			var behaviorClassType = fieldReturnType.TypeArguments.FirstOrDefault();
+
+			return behaviorClassType != null ? behaviorClassType.GetFields() : new List<IField>();
+		}
 		
 		private bool HasSpecificationMembers(IClass c) {
 			return !c.IsAbstract
 				&& c.Fields.Any(IsSpecificationMember);
 		}
 		
+		private bool IsBehaviorReference(IField field) {
+			return MSpecBehavesLikeFQName.Equals(field.ReturnType.FullyQualifiedName);
+		}
+		
 		private bool IsSpecificationMember(IField field) {
-			return MSpecItFQName.Equals(field.ReturnType.FullyQualifiedName)
-				|| MSpecBehavesLikeFQName.Equals(field.ReturnType.FullyQualifiedName);
+			return MSpecItFQName.Equals(field.ReturnType.FullyQualifiedName);
 		}
 		
 		private bool IsBehavior(IClass c) {
