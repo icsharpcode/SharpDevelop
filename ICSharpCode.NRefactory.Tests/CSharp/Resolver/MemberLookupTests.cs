@@ -144,6 +144,49 @@ public class Foo
 			var lrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("System.Int32", lrr.Type.FullName);
 		}
-				
+		
+		[Test]
+		public void TestOuterTemplateParameterInDerivedClass()
+		{
+			string program = @"public class A<T>
+{
+	public class B
+	{
+		public T field;
+	}
+}
+
+public class Foo : A<int>.B
+{
+	public void Bar ()
+	{
+		$field$.ToString ();
+	}
+}";
+			var lrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.Int32", lrr.Type.FullName);
+		}
+		
+		[Test]
+		public void TestOuterTemplateParameterInDerivedClass2()
+		{
+			string program = @"public class A<T>
+{
+	public class B
+	{
+		public T field;
+	}
+}
+
+public class Foo : A<int>
+{
+	public void Bar (B v)
+	{
+		$v.field$.ToString ();
+	}
+}";
+			var lrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.Int32", lrr.Type.FullName);
+		}
 	}
 }
