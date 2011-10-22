@@ -60,6 +60,15 @@ namespace ICSharpCode.MachineSpecifications.Tests
 
 	public abstract class MSpecTestFrameworkFieldsConcern : Observes<MSpecTestFramework>
 	{
+		protected static ICompilationUnit CompilationUnit;
+
+		Establish ctx = () =>
+		{
+			var ProjectContent = fake.an<IProjectContent>();
+			ProjectContent.setup(x => x.SystemTypes).Return(new SystemTypes(ProjectContent));
+			CompilationUnit = new DefaultCompilationUnit(ProjectContent);
+		};
+
 		protected const string MSpecItTypeName = "Machine.Specifications.It";
 		protected const string MSpecBehavesTypeName = "Machine.Specifications.Behaves_like";
 		protected const string MSpecBehaviorTypeName = "Machine.Specifications.BehaviorsAttribute";
@@ -139,30 +148,35 @@ namespace ICSharpCode.MachineSpecifications.Tests
 
 	public class When_enumerating_test_members : MSpecTestFrameworkFieldsConcern
 	{
+		static IClass behaviorClass;
+		static IField testSpecificationInBehavior;
+
 		static IClass testClass;
 		static IField testSpecification;
 		static IField otherField;
-		static IField behaviorField;
-		static IField testSpecificationInBehavior;
+		static IField behavesLikeField;
+
 		static IEnumerable<IMember> result;
 
-		static IClass behaviorClass;
 		const string BehaviorClassName = "Test.Behavior";
 
 		Establish ctx = () =>
 		{
 			var itReturnType = SetupReturnType(MSpecItTypeName);
+			
+			behaviorClass = new DefaultClass(CompilationUnit, "BehaviorClass");
+			testSpecificationInBehavior = new DefaultField(itReturnType, "testSpecificationInBehavior", ModifierEnum.None, DomRegion.Empty, behaviorClass);
+			behaviorClass.Fields.Add(testSpecificationInBehavior);
 
-			testSpecification = SetupField(MSpecItTypeName);
-			otherField = SetupField("TestType");
+			testClass = new DefaultClass(CompilationUnit, "TestClass");
+			testSpecification = new DefaultField(itReturnType, "testSpecification", ModifierEnum.None, DomRegion.Empty, testClass);
+			testClass.Fields.Add(testSpecification);
+			otherField = new DefaultField(fake.an<IReturnType>(), "OtherField", ModifierEnum.None, DomRegion.Empty, testClass);
+			testClass.Fields.Add(otherField);
 
-			var behaviorFieldReturnType = new ConstructedReturnType(SetupReturnType(MSpecBehavesTypeName), new List<IReturnType> { SetupReturnType(BehaviorClassName)});
-			behaviorField = SetupField(MSpecBehavesTypeName);
-
-			testSpecificationInBehavior = SetupField(MSpecItTypeName);
-
-			testClass = fake.an<IClass>();
-			testClass.setup(x => x.Fields).Return(new List<IField> { testSpecification, otherField, behaviorField });
+			var behavesLikeReturnType = new ConstructedReturnType(SetupReturnType(MSpecBehavesTypeName), new List<IReturnType>{new DefaultReturnType(behaviorClass)});
+			behavesLikeField = new DefaultField(behavesLikeReturnType, "behavesLikeField", ModifierEnum.None, new DomRegion(), testClass);
+			testClass.Fields.Add(behavesLikeField);
 		};
 
 		Because of = () => result = sut.GetTestMembersFor(testClass);
@@ -170,10 +184,10 @@ namespace ICSharpCode.MachineSpecifications.Tests
 		It should_contain_field_with_it_return_type = () =>
 			result.ShouldContain(testSpecification);
 
-		It should_not_containt_field_with_arbitrary_return_type = () =>
+		It should_not_contain_field_with_arbitrary_return_type = () =>
 			result.ShouldNotContain(otherField);
 
-		It should_containt_it_field_from_behavior = () =>
-			result.ShouldContain(testSpecificationInBehavior);
+		It should_contain_imported_field_from_behavior = () =>
+			result.ShouldContain(member => member.FullyQualifiedName == "TestClass.testSpecificationInBehavior");
 	}
 }
