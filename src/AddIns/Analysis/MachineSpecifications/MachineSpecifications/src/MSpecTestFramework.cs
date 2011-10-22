@@ -42,7 +42,7 @@ namespace ICSharpCode.MachineSpecifications
 				{
 					var behaviorFields = ResolveBehaviorFieldsOf(field);
 					var behaviorTestMembers = GetTestMembers(testClass, behaviorFields);
-					var decoratedTestMembers = behaviorTestMembers.Select(f => new BaseTestMethod(testClass, f)).Cast<IMember>();
+					var decoratedTestMembers = behaviorTestMembers.Select(f => new BaseTestMember(testClass, f)).Cast<IMember>();
 					result.AddRange(decoratedTestMembers);
 				}
 			return result;

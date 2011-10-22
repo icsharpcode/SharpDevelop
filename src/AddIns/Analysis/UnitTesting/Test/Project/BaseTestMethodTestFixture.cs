@@ -18,7 +18,7 @@ namespace UnitTesting.Tests.Project
 	{
 		MockClass mockClass;
 		MockMethod mockMethod;
-		BaseTestMethod baseTestMethod;
+		BaseTestMember baseTestMethod;
 		DomRegion mockMethodRegion;
 		DomRegion mockMethodBodyRegion;
 		DefaultReturnType returnType;
@@ -39,7 +39,7 @@ namespace UnitTesting.Tests.Project
 			returnType = new DefaultReturnType(returnTypeClass);
 			mockMethod.ReturnType = returnType;
 			
-			baseTestMethod = new BaseTestMethod(mockClass, mockMethod);
+			baseTestMethod = new BaseTestMember(mockClass, mockMethod);
 		}
 		
 		[Test]
@@ -57,7 +57,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void ActualMethod()
 		{
-			Assert.AreEqual(mockMethod, baseTestMethod.Method);
+			Assert.AreEqual(mockMethod, baseTestMethod.Member);
 		}
 		
 		[Test]
@@ -81,7 +81,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void ReturnType()
 		{
-			Assert.IsTrue(Object.ReferenceEquals(returnType, baseTestMethod.ReturnType));
+			Assert.AreSame(returnType, baseTestMethod.ReturnType);
 		}
 	}
 }

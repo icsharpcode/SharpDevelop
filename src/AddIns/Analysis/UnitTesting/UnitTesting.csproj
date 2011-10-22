@@ -81,7 +81,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\AllTestsTreeNode.cs" />
-    <Compile Include="Src\BaseTestMethod.cs" />
+    <Compile Include="Src\BaseTestMember.cs" />
     <Compile Include="Src\EmptyUnitTestsPad.cs" />
     <Compile Include="Src\IAddInTree.cs" />
     <Compile Include="Src\IBuildOptions.cs" />

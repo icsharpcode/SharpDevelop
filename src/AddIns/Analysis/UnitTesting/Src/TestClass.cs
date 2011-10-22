@@ -289,7 +289,7 @@ namespace ICSharpCode.UnitTesting
 			IClass declaringType = c;
 			while (c.BaseClass != null) {
 				foreach (var method in testFrameworks.GetTestMembersFor(c.BaseClass)) {
-					BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
+					BaseTestMember baseTestMethod = new BaseTestMember(declaringType, method);
 					TestMember testMethod = new TestMember(c.BaseClass.Name, baseTestMethod);
 					if (method.IsVirtual) {
 						if (!testMembers.Contains(method.Name)) {

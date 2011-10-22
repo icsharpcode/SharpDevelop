@@ -50,8 +50,8 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestClassHasBaseClassTestMethod()
 		{
-			BaseTestMethod baseTestMethod = testClass.TestMembers[1].Member as BaseTestMethod;
-			Assert.AreEqual(baseClassTestMethod, baseTestMethod.Method);
+			BaseTestMember baseTestMethod = testClass.TestMembers[1].Member as BaseTestMember;
+			Assert.AreEqual(baseClassTestMethod, baseTestMethod.Member);
 		}
 	}
 }
