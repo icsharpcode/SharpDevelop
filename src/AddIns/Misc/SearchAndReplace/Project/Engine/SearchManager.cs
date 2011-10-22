@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
@@ -74,38 +74,14 @@ namespace SearchAndReplace
 			SearchResultsPad.Instance.BringToFront();
 		}
 		
-		public static IObservable<SearchResultMatch> FindAll(string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
-		                                                     SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, bool useParallel = true, IProgressMonitor progressMonitor = null)
+		public static IObservable<SearchResultMatch> FindAll(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
+		                                                     SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null, bool useParallel = true)
 		{
 			currentSearchRegion = null;
-			CancellationToken ct = progressMonitor != null ? progressMonitor.CancellationToken : new CancellationTokenSource().Token;
-			var monitor = progressMonitor ?? WorkbenchSingleton.Workbench.StatusBar.CreateProgressMonitor(ct);
-			monitor.TaskName = "Find all occurrences of '" + pattern + "' in " + GetTargetDescription(target, baseDirectory);
-			monitor.Status = OperationStatus.Normal;
 			var strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
 			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
 			IEnumerable<FileName> fileList = GenerateFileList(target, baseDirectory, filter, searchSubdirs);
-			return new SearchRun(strategy, fileFinder, fileList, monitor);
-		}
-		
-		static string GetTargetDescription(SearchTarget target, string baseDirectory = null)
-		{
-			switch (target) {
-				case SearchTarget.CurrentDocument:
-					return "the current document";
-				case SearchTarget.CurrentSelection:
-					return "the current selection";
-				case SearchTarget.AllOpenFiles:
-					return "all open files";
-				case SearchTarget.WholeProject:
-					return "the whole project";
-				case SearchTarget.WholeSolution:
-					return "the whole solution";
-				case SearchTarget.Directory:
-					return "the directory '" + baseDirectory + "'";
-				default:
-					throw new Exception("Invalid value for SearchTarget");
-			}
+			return new SearchRun(strategy, fileFinder, fileList, progressMonitor) { UseParallel = useParallel, Target = target, Selection = selection };
 		}
 		
 		class SearchRun : IObservable<SearchResultMatch>, IDisposable
@@ -116,8 +92,13 @@ namespace SearchAndReplace
 			IEnumerable<FileName> fileList;
 			IProgressMonitor monitor;
 			int count;
+			CancellationTokenSource cts;
 			
 			public bool UseParallel { get; set; }
+			
+			public SearchTarget Target { get; set; }
+			
+			public ISegment Selection { get; set; }
 			
 			public SearchRun(ISearchStrategy strategy, ParseableFileContentFinder fileFinder, IEnumerable<FileName> fileList, IProgressMonitor monitor)
 			{
@@ -125,6 +106,7 @@ namespace SearchAndReplace
 				this.fileFinder = fileFinder;
 				this.fileList = fileList;
 				this.monitor = monitor;
+				this.cts = new CancellationTokenSource();
 			}
 			
 			public IDisposable Subscribe(IObserver<SearchResultMatch> observer)
@@ -135,12 +117,18 @@ namespace SearchAndReplace
 						delegate {
 							var list = fileList.ToList();
 							this.count = list.Count;
+							monitor.CancellationToken.ThrowIfCancellationRequested();
+							cts.Token.ThrowIfCancellationRequested();
 							Parallel.ForEach(list, new ParallelOptions { CancellationToken = monitor.CancellationToken, MaxDegreeOfParallelism = Environment.ProcessorCount }, fileName => SearchFile(fileName, strategy, monitor.CancellationToken));
 						});
 					task.ContinueWith(t => { if (t.Exception != null) observer.OnError(t.Exception); else observer.OnCompleted(); this.Dispose(); });
 					task.Start();
 				} else {
-					foreach (var file in fileList) {
+					var list = fileList.ToList();
+					this.count = list.Count;
+					monitor.CancellationToken.ThrowIfCancellationRequested();
+					cts.Token.ThrowIfCancellationRequested();
+					foreach (var file in list) {
 						SearchFile(file, strategy, monitor.CancellationToken);
 					}
 				}
@@ -149,6 +137,7 @@ namespace SearchAndReplace
 			
 			public void Dispose()
 			{
+				cts.Cancel();
 				monitor.Dispose();
 			}
 			
@@ -163,8 +152,15 @@ namespace SearchAndReplace
 				var source = DocumentUtilitites.GetTextSource(buffer);
 				TextDocument document = null;
 				DocumentHighlighter highlighter = null;
-				foreach(var result in strategy.FindAll(source, 0, source.TextLength)) {
+				int offset = 0;
+				int length = source.TextLength;
+				if (Target == SearchTarget.CurrentSelection && Selection != null) {
+					offset = Selection.Offset;
+					length = Selection.Length;
+				}
+				foreach(var result in strategy.FindAll(source, offset, length)) {
 					ct.ThrowIfCancellationRequested();
+					cts.Token.ThrowIfCancellationRequested();
 					if (document == null) {
 						document = new TextDocument(source);
 						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));

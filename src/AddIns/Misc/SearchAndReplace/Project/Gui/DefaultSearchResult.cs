@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -13,6 +14,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Widgets.Resources;
 
 namespace SearchAndReplace
 {
@@ -192,14 +194,18 @@ namespace SearchAndReplace
 				collapseAll.Click += delegate { ExpandCollapseAll(false); };
 				toolbarItems.Add(collapseAll);
 				
-				stopButton = new Button { Content = "Stop" };
-				stopButton.Click += delegate {
-					stopButton.Visibility = Visibility.Collapsed;
-					if (Registration != null) Registration.Dispose();
-				};
+				stopButton = new Button { Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Debug.StopProcess") } };
+				stopButton.Click += StopButtonClick;
 				toolbarItems.Add(stopButton);
 			}
+			stopButton.Visibility = Visibility.Visible;
 			return toolbarItems;
+		}
+
+		void StopButtonClick(object sender, RoutedEventArgs e)
+		{
+			stopButton.Visibility = Visibility.Hidden;
+			if (Registration != null) Registration.Dispose();
 		}
 		
 		static void ExpandCollapseAll(bool newIsExpanded)

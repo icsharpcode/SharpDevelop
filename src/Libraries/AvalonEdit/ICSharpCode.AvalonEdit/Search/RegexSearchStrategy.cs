@@ -22,8 +22,9 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		public IEnumerable<ISearchResult> FindAll(ITextSource document, int offset, int length)
 		{
+			int endOffset = offset + length;
 			foreach (Match result in searchPattern.Matches(document.Text)) {
-				if (offset <= result.Index && (offset + length) >= (result.Index + result.Length))
+				if (offset <= result.Index && endOffset >= (result.Length + result.Index))
 					yield return new SearchResult { StartOffset = result.Index, Length = result.Length, Data = result };
 			}
 		}

@@ -361,7 +361,7 @@ namespace ICSharpCode.Core
 				dir = dir.Flatten(
 					d => {
 						try {
-							if (ignoreHidden && (File.GetAttributes(d) & FileAttributes.Hidden) == FileAttributes.Hidden)
+							if (Directory.GetDirectoryRoot(d) != d && ignoreHidden && (File.GetAttributes(d) & FileAttributes.Hidden) == FileAttributes.Hidden)
 								return empty;
 							return Directory.EnumerateDirectories(d);
 						} catch (UnauthorizedAccessException) {

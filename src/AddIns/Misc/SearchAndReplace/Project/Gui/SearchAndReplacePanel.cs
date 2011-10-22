@@ -1,6 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.SharpDevelop.Editor;
 using System;
@@ -14,32 +19,11 @@ using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	class StoredSelection
-	{
-		public readonly int Offset, Length;
-		
-		public int EndOffset {
-			get { return Offset + Length; }
-		}
-		
-		public bool IsTextSelected {
-			get { return Length > 0; }
-		}
-		
-		public StoredSelection(int offset, int length)
-		{
-			this.Offset = offset;
-			this.Length = length;
-		}
-	}
-	
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
-		SearchAndReplaceMode  searchAndReplaceMode;
-		StoredSelection selection;
+		SearchAndReplaceMode searchAndReplaceMode;
 		ITextEditor textEditor;
-		bool ignoreSelectionChanges;
-		bool findFirst;
+		ISegment selection;
 		
 		public SearchAndReplaceMode SearchAndReplaceMode {
 			get {
@@ -119,24 +103,30 @@ namespace SearchAndReplace
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			monitor.TaskName = "Searching ...";
+			var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
 			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
 		}
 		
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			monitor.TaskName = "Searching ...";
+			var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 			SearchManager.MarkAll(results);
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true)) {
-				var results = SearchManager.FindAll(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, false, monitor);
-				SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
-			}
+			AsynchronousWaitDialog.RunInCancellableWaitDialog(
+				"Searching ...", "replaceall",
+				monitor => {
+					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection, false);
+					SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
+				});
 		}
 		
 		void ReplaceButtonClicked(object sender, EventArgs e)
@@ -195,15 +185,7 @@ namespace SearchAndReplace
 			}
 			
 			Get<ComboBox>("lookIn").Text = SearchOptions.LookIn;
-			string[] lookInTexts = {
-				// must be in the same order as the DocumentIteratorType enum
-				"${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.CurrentSelection}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"
-			};
-			foreach (string lookInText in lookInTexts) {
+			foreach (string lookInText in typeof(SearchTarget).GetFields().SelectMany(f => f.GetCustomAttributes(false).OfType<DescriptionAttribute>()).Select(da => da.Description)) {
 				Get<ComboBox>("lookIn").Items.Add(StringParser.Parse(lookInText));
 			}
 			Get<ComboBox>("lookIn").Items.Add(SearchOptions.LookIn);
@@ -280,11 +262,11 @@ namespace SearchAndReplace
 		/// <summary>
 		/// Returns the first ISelection object from the currently active text editor
 		/// </summary>
-		static StoredSelection GetCurrentTextSelection()
+		static ISegment GetCurrentTextSelection()
 		{
 			ITextEditor textArea = SearchManager.GetActiveTextEditor();
 			if (textArea != null) {
-				return new StoredSelection(textArea.SelectionStart, textArea.SelectionLength);
+				return new TextSegment { StartOffset = textArea.SelectionStart, Length = textArea.SelectionLength };
 			}
 			return null;
 		}
@@ -329,16 +311,12 @@ namespace SearchAndReplace
 		/// changed.</remarks>
 		void TextSelectionChanged(object source, EventArgs e)
 		{
-			if (!ignoreSelectionChanges) {
-				LoggingService.Debug("TextSelectionChanged.");
-				selection = GetCurrentTextSelection();
-				findFirst = true;
-			}
+			LoggingService.Debug("TextSelectionChanged.");
+			selection = GetCurrentTextSelection();
 		}
 		
 		void InitSelectionSearch()
 		{
-			findFirst = true;
 			selection = GetCurrentTextSelection();
 			AddSelectionChangedHandler(SearchManager.GetActiveTextEditor());
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
@@ -348,31 +326,6 @@ namespace SearchAndReplace
 		{
 			RemoveSelectionChangedHandler();
 			RemoveActiveWindowChangedHandler();
-		}
-		
-		void ReplaceInSelection()
-		{
-			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
-			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
-			
-			if (findFirst) {
-				textEditor.Caret.Offset = startOffset;
-			}
-			
-			try {
-				ignoreSelectionChanges = true;
-				if (findFirst) {
-					findFirst = false;
-//					SearchReplaceManager.ReplaceFirstInSelection(startOffset, endOffset - startOffset, null);
-				} else {
-//					findFirst = !SearchReplaceManager.ReplaceNextInSelection(null);
-					if (findFirst) {
-						textEditor.Select(startOffset, endOffset - startOffset);
-					}
-				}
-			} finally {
-				ignoreSelectionChanges = false;
-			}
 		}
 		
 		/// <summary>
