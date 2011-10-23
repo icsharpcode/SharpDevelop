@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace SearchAndReplace
 {
-	abstract class SearchNode : INotifyPropertyChanged
+	public abstract class SearchNode : INotifyPropertyChanged
 	{
 		bool isExpanded;
 		

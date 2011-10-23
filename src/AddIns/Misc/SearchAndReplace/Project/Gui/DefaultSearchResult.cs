@@ -24,7 +24,11 @@ namespace SearchAndReplace
 	public class DefaultSearchResult : ISearchResult
 	{
 		IList<SearchResultMatch> matches;
-		SearchRootNode rootNode;
+		protected SearchRootNode rootNode;
+		
+		protected DefaultSearchResult()
+		{
+		}
 		
 		public DefaultSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
@@ -42,9 +46,9 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static ResultsTreeView resultsTreeViewInstance;
+		protected static ResultsTreeView resultsTreeViewInstance;
 		
-		public object GetControl()
+		public virtual object GetControl()
 		{
 			WorkbenchSingleton.AssertMainThread();
 			if (resultsTreeViewInstance == null)
@@ -57,9 +61,14 @@ namespace SearchAndReplace
 		static IList toolbarItems;
 		static MenuItem flatItem, perFileItem;
 		
-		public IList GetToolbarItems()
+		public virtual IList GetToolbarItems()
 		{
 			WorkbenchSingleton.AssertMainThread();
+			return GetDefaultToolbarItems();
+		}
+		
+		protected IList GetDefaultToolbarItems()
+		{
 			if (toolbarItems == null) {
 				toolbarItems = new List<object>();
 				DropDownButton perFileDropDown = new DropDownButton();
@@ -130,23 +139,18 @@ namespace SearchAndReplace
 		}
 	}
 	
-	public class ObserverSearchResult : ISearchResult, IObserver<SearchedFile>
+	public class ObserverSearchResult : DefaultSearchResult, IObserver<SearchedFile>
 	{
-		static Button stopButton;
-		SearchRootNode rootNode;
+		Button stopButton;
 		
 		public ObserverSearchResult(string title)
 		{
-			Text = title;
 			rootNode = new SearchRootNode(title, new List<SearchResultMatch>());
 		}
 		
-		public string Text { get; private set; }
 		public IDisposable Registration { get; set; }
 		
-		static ResultsTreeView resultsTreeViewInstance;
-		
-		public object GetControl()
+		public override object GetControl()
 		{
 			WorkbenchSingleton.AssertMainThread();
 			if (resultsTreeViewInstance == null)
@@ -156,75 +160,22 @@ namespace SearchAndReplace
 			return resultsTreeViewInstance;
 		}
 		
-		static IList toolbarItems;
-		static MenuItem flatItem, perFileItem;
-		
-		public IList GetToolbarItems()
+		public override IList GetToolbarItems()
 		{
-			WorkbenchSingleton.AssertMainThread();
-			if (toolbarItems == null) {
-				toolbarItems = new List<object>();
-				DropDownButton perFileDropDown = new DropDownButton();
-				perFileDropDown.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.FindIcon") };
-				perFileDropDown.SetValueToExtension(DropDownButton.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip"));
-				
-				flatItem = new MenuItem();
-				flatItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.Flat"));
-				flatItem.Click += delegate { SetPerFile(false); };
-				
-				perFileItem = new MenuItem();
-				perFileItem.SetValueToExtension(MenuItem.HeaderProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.PerFile"));
-				perFileItem.Click += delegate { SetPerFile(true); };
-				
-				perFileDropDown.DropDownMenu = new ContextMenu();
-				perFileDropDown.DropDownMenu.Items.Add(flatItem);
-				perFileDropDown.DropDownMenu.Items.Add(perFileItem);
-				toolbarItems.Add(perFileDropDown);
-				toolbarItems.Add(new Separator());
-				
-				Button expandAll = new Button();
-				expandAll.SetValueToExtension(Button.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip"));
-				expandAll.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.OpenAssembly") };
-				expandAll.Click += delegate { ExpandCollapseAll(true); };
-				toolbarItems.Add(expandAll);
-				
-				Button collapseAll = new Button();
-				collapseAll.SetValueToExtension(Button.ToolTipProperty, new LocalizeExtension("MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip"));
-				collapseAll.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Assembly") };
-				collapseAll.Click += delegate { ExpandCollapseAll(false); };
-				toolbarItems.Add(collapseAll);
-				
-				stopButton = new Button { Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Debug.StopProcess") } };
-				stopButton.Click += StopButtonClick;
-				toolbarItems.Add(stopButton);
-			}
+			var items = base.GetToolbarItems();
+			
+			stopButton = new Button { Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Debug.StopProcess") } };
+			stopButton.Click += StopButtonClick;
+			
+			items.Add(stopButton);
 			stopButton.Visibility = Visibility.Visible;
-			return toolbarItems;
+			return items;
 		}
 
 		void StopButtonClick(object sender, RoutedEventArgs e)
 		{
 			stopButton.Visibility = Visibility.Hidden;
 			if (Registration != null) Registration.Dispose();
-		}
-		
-		static void ExpandCollapseAll(bool newIsExpanded)
-		{
-			if (resultsTreeViewInstance != null) {
-				foreach (SearchNode node in resultsTreeViewInstance.ItemsSource.OfType<SearchNode>().Flatten(n => n.Children)) {
-					node.IsExpanded = newIsExpanded;
-				}
-			}
-		}
-		
-		static void SetPerFile(bool perFile)
-		{
-			ResultsTreeView.GroupResultsByFile = perFile;
-			if (resultsTreeViewInstance != null) {
-				foreach (SearchRootNode node in resultsTreeViewInstance.ItemsSource.OfType<SearchRootNode>()) {
-					node.GroupResultsByFile(perFile);
-				}
-			}
 		}
 		
 		void IObserver<SearchedFile>.OnNext(SearchedFile value)
@@ -250,5 +201,4 @@ namespace SearchAndReplace
 			OnCompleted();
 		}
 	}
-
 }

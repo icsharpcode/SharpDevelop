@@ -12,10 +12,9 @@ using ICSharpCode.SharpDevelop.Editor.Search;
 
 namespace SearchAndReplace
 {
-	class SearchFileNode : SearchNode
+	public class SearchFileNode : SearchNode
 	{
 		public FileName FileName { get; private set; }
-
 		
 		public SearchFileNode(FileName fileName, System.Collections.Generic.List<SearchResultNode> resultNodes)
 		{

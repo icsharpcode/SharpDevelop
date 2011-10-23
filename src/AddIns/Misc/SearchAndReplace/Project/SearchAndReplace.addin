@@ -15,7 +15,7 @@
 		<MenuItem id = "Find"
 		          label = "${res:XML.MainMenu.SearchMenu.Find}"
 		          icon = "Icons.16x16.FindIcon"
-		          shortcut = "Control|F"
+		          shortcut = "Control|Shift|F"
 		          class = "SearchAndReplace.Find"/>
 		<MenuItem id = "FindNext"
 		          insertafter = "Find"

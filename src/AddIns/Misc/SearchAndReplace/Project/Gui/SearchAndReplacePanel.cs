@@ -122,7 +122,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			AsynchronousWaitDialog.RunInCancellableWaitDialog(
-				"Searching ...", "replaceall",
+				"Searching ...", null,
 				monitor => {
 					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection, false);
 					SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);

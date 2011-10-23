@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Editor.Search;
 
 namespace SearchAndReplace
 {
-	sealed class SearchRootNode : SearchNode
+	public sealed class SearchRootNode : SearchNode
 	{
 		ObservableCollection<SearchResultNode> resultNodes;
 		ObservableCollection<SearchFileNode> fileNodes;

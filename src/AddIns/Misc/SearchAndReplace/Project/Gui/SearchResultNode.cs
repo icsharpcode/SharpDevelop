@@ -19,7 +19,7 @@ namespace SearchAndReplace
 	/// <summary>
 	/// Represents a search result.
 	/// </summary>
-	sealed class SearchResultNode : SearchNode
+	public sealed class SearchResultNode : SearchNode
 	{
 		SearchResultMatch result;
 		PermanentAnchor anchor;
