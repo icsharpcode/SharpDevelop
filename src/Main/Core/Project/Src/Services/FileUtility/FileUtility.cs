@@ -361,9 +361,10 @@ namespace ICSharpCode.Core
 				dir = dir.Flatten(
 					d => {
 						try {
-							if (Directory.GetDirectoryRoot(d) != d && ignoreHidden && (File.GetAttributes(d) & FileAttributes.Hidden) == FileAttributes.Hidden)
-								return empty;
-							return Directory.EnumerateDirectories(d);
+							if (ignoreHidden)
+								return Directory.EnumerateDirectories(d).Where(child => IsNotHidden(child));
+							else
+								return Directory.EnumerateDirectories(d);
 						} catch (UnauthorizedAccessException) {
 							return empty;
 						}
@@ -376,18 +377,18 @@ namespace ICSharpCode.Core
 					continue;
 				}
 				foreach (string f in files) {
-					try {
-						if (ignoreHidden && (File.GetAttributes(f) & FileAttributes.Hidden) == FileAttributes.Hidden)
-							continue;
-						if (isExtMatch && Path.GetExtension(f) != ext) continue;
-					} catch (UnauthorizedAccessException) {
-						// Ignore exception when access to a directory is denied.
-						// Fixes SD2-893.
-						continue;
-					}
-					
-					yield return new FileName(f);
+					if (!ignoreHidden || IsNotHidden(f))
+						yield return new FileName(f);
 				}
+			}
+		}
+		
+		static bool IsNotHidden(string dir)
+		{
+			try {
+				return (File.GetAttributes(dir) & FileAttributes.Hidden) != FileAttributes.Hidden;
+			} catch (UnauthorizedAccessException) {
+				return false;
 			}
 		}
 		
