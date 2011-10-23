@@ -92,6 +92,7 @@ namespace SearchAndReplace
 			IEnumerable<FileName> fileList;
 			IProgressMonitor monitor;
 			int count;
+			double oneStep;
 			CancellationTokenSource cts;
 			
 			public bool UseParallel { get; set; }
@@ -117,6 +118,7 @@ namespace SearchAndReplace
 						delegate {
 							var list = fileList.ToList();
 							this.count = list.Count;
+							this.oneStep = 1.0 / this.count;
 							monitor.CancellationToken.ThrowIfCancellationRequested();
 							cts.Token.ThrowIfCancellationRequested();
 							Parallel.ForEach(list, new ParallelOptions { CancellationToken = monitor.CancellationToken, MaxDegreeOfParallelism = Environment.ProcessorCount }, fileName => SearchFile(fileName, strategy, monitor.CancellationToken));
@@ -126,6 +128,7 @@ namespace SearchAndReplace
 				} else {
 					var list = fileList.ToList();
 					this.count = list.Count;
+					this.oneStep = 1.0 / this.count;
 					monitor.CancellationToken.ThrowIfCancellationRequested();
 					cts.Token.ThrowIfCancellationRequested();
 					foreach (var file in list) {
@@ -166,14 +169,18 @@ namespace SearchAndReplace
 						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
 						if (highlighting != null)
 							highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
+						else
+							highlighter = null;
 					}
 					var start = document.GetLocation(result.Offset).ToLocation();
 					var end = document.GetLocation(result.Offset + result.Length).ToLocation();
+					var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
+					var match = new SearchResultMatch(fileName, start, end, result.Offset, result.Length, builder);
 					lock (observer)
-						observer.OnNext(new SearchResultMatch(fileName, start, end, result.Offset, result.Length, SearchResultsPad.CreateInlineBuilder(start, end, document, Path.GetExtension(fileName))));
+						observer.OnNext(match);
 				}
 				lock (monitor)
-					monitor.Progress += 1.0 / count;
+					monitor.Progress += oneStep;
 			}
 		}
 		

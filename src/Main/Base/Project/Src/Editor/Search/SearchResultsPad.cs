@@ -147,15 +147,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return new DummySearchResult { Text = title };
 		}
 		
-		public static HighlightedInlineBuilder CreateInlineBuilder(Location startPosition, Location endPosition, TextDocument document, string fileExtension)
+		public static HighlightedInlineBuilder CreateInlineBuilder(Location startPosition, Location endPosition, TextDocument document, IHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
 				var matchedLine = document.GetLineByNumber(startPosition.Line);
 				HighlightedInlineBuilder inlineBuilder = new HighlightedInlineBuilder(document.GetText(matchedLine));
-				var def = HighlightingManager.Instance.GetDefinitionByExtension(fileExtension);
-				if (def == null)
-					return inlineBuilder;
-				var highlighter = new DocumentHighlighter(document, def.MainRuleSet);
 				if (highlighter != null) {
 					HighlightedLine highlightedLine = highlighter.HighlightLine(startPosition.Line);
 					int startOffset = highlightedLine.DocumentLine.Offset;
