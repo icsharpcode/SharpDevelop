@@ -45,7 +45,6 @@ namespace Gui.Dialogs.ReferenceDialog
 		
 		void Cbo_LostFocus(object sender, RoutedEventArgs e)
 		{
-//			http://stackoverflow.com/questions/3373239/wpf-editable-combobox
 			var comboBox = (ComboBox) sender;
 			if(comboBox.SelectedItem != null)
 				return;
@@ -54,6 +53,17 @@ namespace Gui.Dialogs.ReferenceDialog
 
 			comboBox.SelectedItem = newItem;
 
+		}
+		
+		void TreeView_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+		{
+			var d = tree.DataContext;
+			var it = tree.ItemTemplate;
+		}
+		
+		void Tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			MyItem m = (MyItem)e.NewValue;
 		}
 		
 	}

@@ -3,14 +3,34 @@
 	x:Class="Gui.Dialogs.ReferenceDialog.AddServiceReferenceDialog"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets" 
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:src="clr-namespace:Gui.Dialogs.ReferenceDialog"
+	xmlns:web="clr-namespace:System.Web.Services.Description;assembly=System.Web.Services"
 	WindowStartupLocation="CenterOwner"
 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
 	Height="425"
 	Width="500"
 	Title="{Binding Title}">
+	
+	<!-- http://blogs.msdn.com/b/chkoenig/archive/2008/05/24/hierarchical-databinding-in-wpf.aspx
+http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
+ -->
+	
+	<Window.Resources>
+		<!--
+		<DataTemplate x:Key="ServiceTemplate">
+			<TextBlock Text="{Binding Path=Name}" ></TextBlock>
+		</DataTemplate>
+		
+		ItemTemplate="{StaticResource ServiceTemplate}">-->
+		
+		<HierarchicalDataTemplate x:Key="HeaderTemplate"
+			ItemsSource="{Binding SubItems}">
+			<TextBlock Grid.Row="0" Text="{Binding Path=Name}" />
+		</HierarchicalDataTemplate>
+	
+	</Window.Resources>
 	
 	<Grid Name="grid" ShowGridLines="True">
 		<Grid.RowDefinitions>
@@ -34,7 +54,7 @@
 			></TextBox>
 			
 			<Grid Grid.Row="1" ShowGridLines="True">
-
+				
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"></RowDefinition>
 				</Grid.RowDefinitions>
@@ -42,11 +62,7 @@
 					<ColumnDefinition Width="300"></ColumnDefinition>
 					<ColumnDefinition></ColumnDefinition>
 				</Grid.ColumnDefinitions>
-
-<!-- editable combo
-http://stackoverflow.com/questions/582232/wpf-editable-combobox
-http://stackoverflow.com/questions/3373239/wpf-editable-combobox
- -->	
+				
 				<ComboBox Grid.Column="0" Margin="0,4,12,12"
 				          IsEditable="True"
 				          ItemsSource="{Binding MruServices}"
@@ -56,7 +72,7 @@ http://stackoverflow.com/questions/3373239/wpf-editable-combobox
 				</ComboBox>
 				
 				<widgets:UniformGridWithSpacing Columns="2" Grid.Column="1" Margin="0,4,12,12" HorizontalAlignment="Center">
-					<Button 
+					<Button
 						Content="Go"
 						Command="{Binding GoCommand}"
 						Style="{x:Static core:GlobalStyles.ButtonStyle}" />
@@ -74,34 +90,31 @@ http://stackoverflow.com/questions/3373239/wpf-editable-combobox
 				<ColumnDefinition Width="100"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-<!--			http://www.c-sharpcorner.com/UploadFile/mahesh/WPFTreeView08202008231544PM/WPFTreeView.aspx-->
-			<TreeView  HorizontalAlignment="Left"
-			          
-			          VerticalAlignment="Top" >
-				
-				<TreeViewItem Header="Service">
-					<!--
-					<TreeViewItem Header="Coke"></TreeViewItem>
-					
-					<TreeViewItem Header="Pepsi"></TreeViewItem>
-					
-					<TreeViewItem Header="Orange Juice"></TreeViewItem>
-					
-					<TreeViewItem Header="Milk"></TreeViewItem>
-					
-					<TreeViewItem Header="Iced Tea"></TreeViewItem>
-					
-					<TreeViewItem Header="Mango Shake"></TreeViewItem>
-				-->
-				</TreeViewItem> 
+			<!-- 
+			<TreeView Name="tree" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			          ItemsSource="{Binding Path=ServiceDescriptionCollection}"
+			          ItemTemplate="{StaticResource HeaderTemplate}"
+			          PreviewMouseDoubleClick="TreeView_PreviewMouseDoubleClick">
+			        
+			</TreeView>
+-->
+			<TreeView Name="tree" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			          ItemsSource="{Binding Path=Items}"
+			          ItemTemplate="{StaticResource HeaderTemplate}"
+			         SelectedItemChanged="Tree_SelectedItemChanged">
+			   
+				<TreeView.ItemContainerStyle>
+					<Style TargetType="{x:Type TreeViewItem}" >
+						<Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+					</Style>
+				</TreeView.ItemContainerStyle>
 			
 			</TreeView>
-			
 			
 			<GridSplitter Grid.Column="0" Width="2" Background="Black"/>
 			<Label Grid.Column="1"/>
 		</Grid>
-
+		
 		
 		<widgets:UniformGridWithSpacing Columns="2" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="0,4,12,12">
 			<Button

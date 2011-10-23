@@ -7,21 +7,25 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
+using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Windows;
 using System.Windows.Input;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Win32;
 using ICSharpCode.SharpDevelop.Widgets;
+using Microsoft.Win32;
 
 namespace Gui.Dialogs.ReferenceDialog
 {
@@ -35,6 +39,7 @@ namespace Gui.Dialogs.ReferenceDialog
 		string noUrl = "Please enter the address of the Service.";
 //		string discoverMenu ="Services in Solution";
 		Uri discoveryUri;
+		
 		public AddServiceReferenceViewModel(IProject project)
 		{
 			Project = project;
@@ -131,6 +136,8 @@ namespace Gui.Dialogs.ReferenceDialog
 				base.RaisePropertyChanged(() =>SelectedService);}
 		}
 		
+		
+		
 		#endregion
 		
 		#region Go
@@ -175,13 +182,14 @@ namespace Gui.Dialogs.ReferenceDialog
 			
 		CredentialCache credentialCache = new CredentialCache();
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
-		WebReference webReference;
-		
+		ICSharpCode.SharpDevelop.Gui.WebReference webReference;
+		string namespacePrefix = String.Empty;
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
 		delegate void AuthenticationHandler(Uri uri, string authenticationType);	
 		
-			
+		
+		
 		void StartDiscovery(Uri uri, DiscoveryNetworkCredential credential)
 		{
 			// Abort previous discovery.
@@ -199,6 +207,8 @@ namespace Gui.Dialogs.ReferenceDialog
 		/// Called after an asynchronous web services search has
 		/// completed.
 		/// </summary>
+		/// 
+		
 		void DiscoveryCompleted(IAsyncResult result)
 		{
 			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
@@ -214,19 +224,19 @@ namespace Gui.Dialogs.ReferenceDialog
 				DiscoveredWebServicesHandler handler = new DiscoveredWebServicesHandler(DiscoveredWebServices);
 				try {
 					DiscoverAnyAsync asyncDelegate = (DiscoverAnyAsync)((AsyncResult)result).AsyncDelegate;
-					DiscoveryDocument doc = asyncDelegate.EndInvoke(result);
+					DiscoveryDocument handlerdoc = asyncDelegate.EndInvoke(result);
 					if (!state.Credential.IsDefaultAuthenticationType) {
 						AddCredential(state.Uri, state.Credential);
 					}
-//					Invoke(handler, new object[] {protocol});
+					handler (protocol);
 				} catch (Exception ex) {
 					if (protocol.IsAuthenticationRequired) {
 						HttpAuthenticationHeader authHeader = protocol.GetAuthenticationHeader();
 						AuthenticationHandler authHandler = new AuthenticationHandler(AuthenticateUser);
-//						Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
+//	trouble					Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
 					} else {
 						LoggingService.Error("DiscoveryCompleted", ex);
-//						Invoke(handler, new object[] {null});
+//	trouble					Invoke(handler, new object[] {null});
 					}
 				}
 			}
@@ -270,7 +280,7 @@ namespace Gui.Dialogs.ReferenceDialog
 		}
 		
 		
-		void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
+		 void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
 		{
 			NetworkCredential matchedCredential = credentialCache.GetCredential(uri, credential.AuthenticationType);
 			if (matchedCredential != null) {
@@ -279,20 +289,185 @@ namespace Gui.Dialogs.ReferenceDialog
 			credentialCache.Add(uri, credential.AuthenticationType, credential);
 		}
 		
+		
 		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
 		{
 			if (protocol != null) {
-//				addButton.Enabled = true;
-//				namespaceTextBox.Text = GetDefaultNamespace();
-//				referenceNameTextBox.Text = GetReferenceName();
 //				webServicesView.Add(GetServiceDescriptions(protocol));
-//				webReference = new WebReference(project, discoveryUri.AbsoluteUri, referenceNameTextBox.Text, namespaceTextBox.Text, protocol);
-			} else {
+			
+				ServiceDescriptionCollection = GetServiceDescriptions(protocol);
+				FillItems (ServiceDescriptionCollection);
+				var defaultNameSpace =  GetDefaultNamespace();
+				var referenceName = GetReferenceName(discoveryUri);
+				webReference = new ICSharpCode.SharpDevelop.Gui.WebReference(project,
+				                                                             discoveryUri.AbsoluteUri,
+				                                                             defaultNameSpace,
+				                                                             referenceName, protocol);
+			}
+			else 
+			{
 				webReference = null;
-//				addButton.Enabled = false;
-//				webServicesView.Clear();
+			}
+		}
+		
+		
+		/// <summary>
+		/// Gets the namespace to be used with the generated web reference code.
+		/// </summary>
+		string GetDefaultNamespace()
+		{
+			if (namespacePrefix.Length > 0 && discoveryUri != null) {
+				return String.Concat(namespacePrefix, ".", discoveryUri.Host);
+			} else if (discoveryUri != null) {
+				return discoveryUri.Host;
+			}
+			return String.Empty;
+		}
+		
+		
+		static string GetReferenceName(Uri uri)
+		{
+			if (uri != null) {
+				return uri.Host;
+			}
+			return String.Empty;
+			/*
+			if (discoveryUri != null) {
+				return discoveryUri.Host;
+			}
+			return String.Empty;*/
+		}
+		
+		ServiceDescriptionCollection GetServiceDescriptions(DiscoveryClientProtocol protocol)
+		{
+			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
+			protocol.ResolveOneLevel();
+		
+			foreach (DictionaryEntry entry in protocol.References) {
+				ContractReference contractRef = entry.Value as ContractReference;
+				if (contractRef != null) {
+					services.Add(contractRef.Contract);
+				}
+			}
+			return services;
+		}
+		
+		ServiceDescriptionCollection serviceDescriptionCollection;
+		
+		public ServiceDescriptionCollection ServiceDescriptionCollection
+		{
+			get {return serviceDescriptionCollection;}
+				
+			set {
+				if (serviceDescriptionCollection == null) {
+					serviceDescriptionCollection = new ServiceDescriptionCollection();
+				}
+				serviceDescriptionCollection = value;
+				var s = serviceDescriptionCollection[0];
+				RaisePropertyChanged(() =>ServiceDescriptionCollection);
 			}
 		}
 		#endregion
+		
+		#region new binding
+		
+		
+		List<MyItem> items = new List <MyItem>();
+		
+		object isSelected;
+		
+		public object IsSelected {
+			get { return isSelected; }
+			set { isSelected = value; }
+		}
+		
+		
+		
+		public List <MyItem> Items {
+			get {return items; }
+			
+			set {
+				items = value;
+				base.RaisePropertyChanged(() =>Items);
+			}
+		}
+		
+		void FillItems (ServiceDescriptionCollection descriptions)
+		{
+			foreach (ServiceDescription element in descriptions)
+			{
+				Add (element);
+			}
+			
+		}
+		
+		void Add(ServiceDescription description)
+		{
+			List<MyItem> l = new List<MyItem>();
+			var rootNode = new MyItem(GetName(description));
+			rootNode.Tag = description;
+			l.Add(rootNode);
+			
+			foreach(Service service in description.Services) {
+				var serviceNode = new MyItem(service.Name);
+				serviceNode.Tag = service;
+				rootNode.SubItems.Add(serviceNode);
+				
+				foreach(Port port in service.Ports) {
+					var portNode = new MyItem(port.Name);
+					portNode.Tag = port;
+					serviceNode.SubItems.Add(portNode);
+					
+					// Get the operations
+					System.Web.Services.Description.Binding binding = description.Bindings[port.Binding.Name];
+					if (binding != null) {
+						PortType portType = description.PortTypes[binding.Type.Name];
+						if (portType != null) {
+							foreach(Operation operation in portType.Operations) {
+								var operationNode = new MyItem(operation.Name);
+								operationNode.Tag = operation;
+//								operationNode.ImageIndex = OperationImageIndex;
+//								operationNode.SelectedImageIndex = OperationImageIndex;
+								portNode.SubItems.Add(operationNode);
+							}
+						}
+					}
+				}
+			}
+			Items = l;
+		}
+		
+		
+		string GetName(ServiceDescription description)
+		{
+			if (description.Name != null) {
+				return description.Name;
+			} else if (description.RetrievalUrl != null) {
+				Uri uri = new Uri(description.RetrievalUrl);
+				if (uri.Segments.Length > 0) {
+					return uri.Segments[uri.Segments.Length - 1];
+				} else {
+					return uri.Host;
+				}
+			}
+			return String.Empty;
+		}
+		
+		#endregion
+		
+	}
+	
+	public class MyItem
+	{
+		public MyItem (string name)
+		{
+			this.Name = name;
+			SubItems = new List<MyItem>();
+		}
+		
+		public string Name {get;set;}
+		public object Tag {get;set;}
+		public List<MyItem> SubItems {get;set;}
+
 	}
 }
