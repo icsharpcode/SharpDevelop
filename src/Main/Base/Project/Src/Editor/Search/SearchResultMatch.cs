@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -111,6 +113,36 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		public override string TransformReplacePattern(string pattern)
 		{
 			return match.ReplaceWith(pattern);
+		}
+	}
+	
+	public class SearchedFile : IGrouping<FileName, SearchResultMatch>
+	{
+		IList<SearchResultMatch> matches;
+		
+		public FileName Key { get; private set; }
+		
+		public int Count { get { return matches.Count; } }
+		
+		public SearchedFile(FileName file, IList<SearchResultMatch> matches)
+		{
+			this.Key = file;
+			this.matches = matches;
+		}
+		
+		public IEnumerator<SearchResultMatch> GetEnumerator()
+		{
+			return matches.GetEnumerator();
+		}
+		
+		IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return (IEnumerator)matches.GetEnumerator();
+		}
+		
+		public static SearchedFile Empty(FileName fileName)
+		{
+			return new SearchedFile(fileName, new List<SearchResultMatch>());
 		}
 	}
 }

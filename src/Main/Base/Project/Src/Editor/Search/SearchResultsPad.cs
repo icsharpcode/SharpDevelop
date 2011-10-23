@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
-		public void ShowSearchResults(string title, IObservable<SearchResultMatch> matches)
+		public void ShowSearchResults(string title, IObservable<SearchedFile> matches)
 		{
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 		
 		
-		public static ISearchResult CreateSearchResult(string title, IObservable<SearchResultMatch> matches)
+		public static ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches)
 		{
 			if (title == null)
 				throw new ArgumentNullException("title");

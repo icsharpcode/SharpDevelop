@@ -122,7 +122,7 @@ namespace SearchAndReplace
 			return new DefaultSearchResult(title, matches);
 		}
 		
-		public ISearchResult CreateSearchResult(string title, IObservable<SearchResultMatch> matches)
+		public ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches)
 		{
 			var osr = new ObserverSearchResult(title);
 			osr.Registration = matches.ObserveOnUIThread().Subscribe(osr);
@@ -130,7 +130,7 @@ namespace SearchAndReplace
 		}
 	}
 	
-	public class ObserverSearchResult : ISearchResult, IObserver<SearchResultMatch>
+	public class ObserverSearchResult : ISearchResult, IObserver<SearchedFile>
 	{
 		static Button stopButton;
 		SearchRootNode rootNode;
@@ -227,12 +227,12 @@ namespace SearchAndReplace
 			}
 		}
 		
-		void IObserver<SearchResultMatch>.OnNext(SearchResultMatch value)
+		void IObserver<SearchedFile>.OnNext(SearchedFile value)
 		{
 			rootNode.Add(value);
 		}
 		
-		void IObserver<SearchResultMatch>.OnError(Exception error)
+		void IObserver<SearchedFile>.OnError(Exception error)
 		{
 			MessageService.ShowException(error);
 			OnCompleted();
@@ -245,9 +245,10 @@ namespace SearchAndReplace
 				Registration.Dispose();
 		}
 		
-		void IObserver<SearchResultMatch>.OnCompleted()
+		void IObserver<SearchedFile>.OnCompleted()
 		{
 			OnCompleted();
 		}
 	}
+
 }

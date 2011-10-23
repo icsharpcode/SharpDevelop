@@ -14,6 +14,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	{
 		ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches);
 		
-		ISearchResult CreateSearchResult(string title, IObservable<SearchResultMatch> matches);
+		ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches);
 	}
 }
