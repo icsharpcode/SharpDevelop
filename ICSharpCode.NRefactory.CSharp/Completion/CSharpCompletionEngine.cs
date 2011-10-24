@@ -1300,24 +1300,26 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
-			foreach (var member in type.GetMembers (ctx)) {
-				if (!lookup.IsAccessible (member, isProtectedAllowed)) {
-//					Console.WriteLine ("skip access: " + member.FullName);
-					continue;
+			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
+				foreach (var member in type.GetMembers (ctx)) {
+					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
+	//					Console.WriteLine ("skip access: " + member.FullName);
+						continue;
+					}
+					if (resolvedNode is BaseReferenceExpression && member.IsAbstract)
+						continue;
+					
+					if (!includeStaticMembers && member.IsStatic && !(resolveResult is TypeResolveResult)) {
+	//					Console.WriteLine ("skip static member: " + member.FullName);
+						continue;
+					}
+					if (!member.IsStatic && (resolveResult is TypeResolveResult)) {
+	//					Console.WriteLine ("skip non static member: " + member.FullName);
+						continue;
+					}
+	//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
+					result.AddMember (member);
 				}
-				if (resolvedNode is BaseReferenceExpression && member.IsAbstract)
-					continue;
-				
-				if (!includeStaticMembers && member.IsStatic && !(resolveResult is TypeResolveResult)) {
-//					Console.WriteLine ("skip static member: " + member.FullName);
-					continue;
-				}
-				if (!member.IsStatic && (resolveResult is TypeResolveResult)) {
-//					Console.WriteLine ("skip non static member: " + member.FullName);
-					continue;
-				}
-//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
-				result.AddMember (member);
 			}
 			
 			if (resolveResult is TypeResolveResult || includeStaticMembers) {
@@ -1403,19 +1405,38 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			baseUnit = ParseStub ("a()");
-			
+			Print (baseUnit);
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
-			Expression expr;
+			if (mref == null){
+				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
+				if (invoke != null)
+					mref = invoke.Target as MemberReferenceExpression;
+			}
+			Expression expr = null;
 			if (mref != null) {
 				expr = mref.Target.Clone ();
 				mref.Parent.ReplaceWith (expr);
 			} else {
-				var tref = baseUnit.GetNodeAt<TypeReferenceExpression> (location); 
-				var memberType = tref != null ? tref.Type as MemberType : null;
+				Expression tref = baseUnit.GetNodeAt<TypeReferenceExpression> (location); 
+				var memberType = tref != null ? ((TypeReferenceExpression)tref).Type as MemberType : null;
+				if (memberType == null) {
+					memberType =  baseUnit.GetNodeAt<MemberType> (location); 
+					if (memberType != null) {
+						tref = baseUnit.GetNodeAt<Expression> (location); 
+						if (tref == null)
+							return null;
+					}
+					if (tref is ObjectCreateExpression) {
+						expr = new TypeReferenceExpression (memberType.Target.Clone ());
+						expr.AddAnnotation (new ObjectCreateExpression ());
+					}
+				}
+					
 				if (memberType == null)
 					return null;
-				expr = new TypeReferenceExpression (memberType.Target.Clone ());
+				if (expr == null)
+					expr = new TypeReferenceExpression (memberType.Target.Clone ());
 				tref.ReplaceWith (expr);
 			}
 			
