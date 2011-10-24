@@ -954,6 +954,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return wrapper.Result;
 		}
 		
+		static string GetNameWithParamCount (IMember member)
+		{
+			var e = member as IMethod;
+			if (e == null || e.TypeParameters.Count == 0)
+				return member.Name;
+			return e.Name + "`" + e.TypeParameters.Count;
+		}
+		
 		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, ITypeDefinition type, string modifiers, ITypeDefinition curType, int declarationBegin)
 		{
 			if (curType == null)
@@ -966,9 +974,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					continue;
 				
 				var data = factory.CreateNewOverrideCompletionData (declarationBegin, type, m);
-				string text = m.ReflectionName; //TODO:correct ?
+				string text = GetNameWithParamCount (m);
+				
 				// check if the member is already implemented
-				bool foundMember = type.Members.Any (cm => cm.ReflectionName /*amb.GetString (ctx, cm, OutputFlags.ClassBrowserEntries)*/ == text);
+				bool foundMember = type.Members.Any (cm => GetNameWithParamCount (cm) == text);
 				if (!foundMember && !alreadyInserted.ContainsKey (text)) {
 					alreadyInserted [text] = true;
 					data.CompletionCategory = col.GetCompletionCategory (curType);

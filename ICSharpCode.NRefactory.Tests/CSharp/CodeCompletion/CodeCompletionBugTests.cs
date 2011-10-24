@@ -151,7 +151,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ICSharpCode.NRefactory.TypeSystem.ITypeDefinition type, ICSharpCode.NRefactory.TypeSystem.IMember m)
 			{
-				return new CompletionData (type.Name);
+				return new CompletionData (m.Name);
 			}
 
 			public System.Collections.Generic.IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ()
@@ -1104,27 +1104,22 @@ namespace CCTests
 		{
 			CompletionDataList provider = CreateProvider (
 @"
-namespace System {
-	public class Object
-	{
-		public virtual int GetHashCode ()
-		{
-		}
-		protected virtual void Finalize ()
-		{
-		}
-	}
-}
 public class TestMe : System.Object
 {
 	$override $
+
+	public override string ToString ()
+	{
+		return null; 
+	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.Count);
+			Assert.AreEqual (2, provider.Count);
 			Assert.IsNull (provider.Find ("Finalize"), "method 'Finalize' found, but shouldn't.");
 			Assert.IsNotNull (provider.Find ("GetHashCode"), "method 'GetHashCode' not found.");
+			Assert.IsNotNull (provider.Find ("Equals"), "method 'Equals' not found.");
 		}
-
+		
 		/// <summary>
 		/// Bug 457003 - code completion shows variables out of scope
 		/// </summary>
