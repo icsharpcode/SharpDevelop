@@ -16,13 +16,13 @@ namespace ICSharpCode.RubyBinding
 		public bool IsTestMember(IMember member)
 		{
 			var method = member as IMethod;
-			if (method != null)				
-				return IsTestMethod(method);			
+			if (method != null)
+				return IsTestMethod(method);
 			return false;
 		}
 		
-		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
-			return @class.Methods.Where(IsTestMethod);
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod).Select(method => new TestMember(method));
 		}
 
 		bool IsTestMethod(IMethod method)

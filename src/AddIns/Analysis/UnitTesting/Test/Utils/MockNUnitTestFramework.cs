@@ -54,7 +54,7 @@ namespace UnitTesting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
 			throw new NotImplementedException();
 		}
 		

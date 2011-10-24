@@ -22,6 +22,9 @@ namespace UnitTesting.Tests.Project
 	/// 		public void FooBar()
 	/// 		{
 	/// 		}
+	/// 
+	/// 		public class InnerTestLevel2 {
+	/// 		}
 	/// 	}
 	/// }
 	///
@@ -69,28 +72,28 @@ namespace UnitTesting.Tests.Project
 			AssertTestResultContainsClass(classNestedInInnerClass);
 		}
 
-        [Test]
-        public void TestClassNameShouldBeDotNetNameOfTheDoubleNestedClass()
-        {
-            Assert.AreEqual("A+InnerATest+InnerTestLevel2", TestClassRelatedTo(classNestedInInnerClass).Name);
-        }
+		[Test]
+		public void TestClassNameShouldBeDotNetNameOfTheDoubleNestedClass()
+		{
+			Assert.AreEqual("A+InnerATest+InnerTestLevel2", TestClassRelatedTo(classNestedInInnerClass).Name);
+		}
 
-        [Test]
-        public void TestClassNamespaceShouldBeValid()
-        {
-            Assert.AreEqual("MyTests", TestClassRelatedTo(classNestedInInnerClass).Namespace);
-        }
+		[Test]
+		public void TestClassNamespaceShouldBeValid()
+		{
+			Assert.AreEqual("MyTests", TestClassRelatedTo(classNestedInInnerClass).Namespace);
+		}
 
 		void AssertTestResultContainsClass(IClass clazz)
 		{
-		    var testClazz = TestClassRelatedTo(clazz);
+			var testClazz = TestClassRelatedTo(clazz);
 			if (testClazz == null)
 				throw new AssertionException(string.Format("Test result should contain class {0}.", clazz.FullyQualifiedName));
 		}
 
-        TestClass TestClassRelatedTo(IClass clazz)
-        {
-            return testProject.TestClasses.SingleOrDefault(c => c.Class == clazz);
-        }
+		TestClass TestClassRelatedTo(IClass clazz)
+		{
+			return testProject.TestClasses.SingleOrDefault(c => c.Class == clazz);
+		}
 	}
 }

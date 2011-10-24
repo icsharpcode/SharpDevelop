@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -35,6 +36,11 @@ namespace ICSharpCode.UnitTesting
 		public IClass Class {
 			get { return c; }
 		}
+
+		/// <summary>
+		/// Gets the list of other (e.g. base types) classes where from which test members included in this test class come from.
+		/// </summary>
+		private readonly ICollection<string> baseClassesFQNames = new List<string>();
 		
 		/// <summary>
 		/// Gets the test classes that exist in the specified namespace.
@@ -282,18 +288,19 @@ namespace ICSharpCode.UnitTesting
 			TestMemberCollection testMembers = new TestMemberCollection();
 			foreach (var member in testFrameworks.GetTestMembersFor(c))
 				if (!testMembers.Contains(member.Name)) {
-					testMembers.Add(new TestMember(member));
+					testMembers.Add(member);
 				}
 			
 			// Add base class test members.
 			IClass declaringType = c;
-			while (c.BaseClass != null) {
-				foreach (var method in testFrameworks.GetTestMembersFor(c.BaseClass)) {
-					BaseTestMember baseTestMethod = new BaseTestMember(declaringType, method);
-					TestMember testMethod = new TestMember(c.BaseClass.Name, baseTestMethod);
-					if (method.IsVirtual) {
-						if (!testMembers.Contains(method.Name)) {
-							testMembers.Add(testMethod);	
+			while (c.BaseClass != null)
+			{
+				foreach (var testMember in testFrameworks.GetTestMembersFor(c.BaseClass)) {
+					BaseTestMember baseTestMethod = new BaseTestMember(declaringType, testMember.Member);
+					TestMember testMethod = new TestMember(c, baseTestMethod);
+					if (testMember.Member.IsVirtual) {
+						if (!testMembers.Contains(testMember.Name)) {
+							testMembers.Add(testMethod);
 						}
 					} else {
 						if (!testMembers.Contains(testMethod.Name)) {
@@ -303,6 +310,11 @@ namespace ICSharpCode.UnitTesting
 				}
 				c = c.BaseClass;
 			}
+
+			baseClassesFQNames.Clear();
+			foreach (var memberDeclaringClass in testMembers.Select(member => member.DeclaringType).Distinct())
+				if (memberDeclaringClass != declaringType)
+					baseClassesFQNames.Add(memberDeclaringClass.FullyQualifiedName);
 			return testMembers;
 		}
 		
@@ -360,6 +372,11 @@ namespace ICSharpCode.UnitTesting
 				baseClass = baseClass.BaseClass;
 			}
 			return null;
+		}
+
+		public bool IsDerivedFrom(IClass c)
+		{
+			return baseClassesFQNames.Contains(c.FullyQualifiedName);
 		}
 	}
 }

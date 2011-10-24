@@ -65,7 +65,7 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestMethodName()
 		{
-			Assert.AreEqual("MyTest", testClass.TestMembers[0].Name);
+			Assert.AreEqual("MyTestFixtureBase.MyTest", testClass.TestMembers[0].Name);
 		}
 		
 		[Test]

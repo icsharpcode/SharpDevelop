@@ -32,8 +32,8 @@ namespace UnitTesting.Tests.Utils
 			return testMembers.Contains(member);
 		}
 		
-		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
-			return testMembers.Where(member => member.DeclaringType == @class);
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return testMembers.Where(member => member.DeclaringType == @class).Select(member => new TestMember(member));
 		}
 		
 		public IMember IsTestMemberParameterUsed {

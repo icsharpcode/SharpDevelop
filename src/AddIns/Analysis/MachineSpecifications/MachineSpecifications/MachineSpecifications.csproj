@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="src\BehaviorImportedTestMember.cs" />
     <Compile Include="src\ClassFilterBuilder.cs" />
     <Compile Include="src\MSpecApplication.cs" />
     <Compile Include="src\MSpecTestDebugger.cs" />

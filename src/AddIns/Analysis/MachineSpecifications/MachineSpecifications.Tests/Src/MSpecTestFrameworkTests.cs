@@ -156,7 +156,7 @@ namespace ICSharpCode.MachineSpecifications.Tests
 		static IField otherField;
 		static IField behavesLikeField;
 
-		static IEnumerable<IMember> result;
+		static IEnumerable<TestMember> result;
 
 		const string BehaviorClassName = "Test.Behavior";
 
@@ -182,12 +182,12 @@ namespace ICSharpCode.MachineSpecifications.Tests
 		Because of = () => result = sut.GetTestMembersFor(testClass);
 
 		It should_contain_field_with_it_return_type = () =>
-			result.ShouldContain(testSpecification);
+			result.Select(m => m.Member).ShouldContain(testSpecification);
 
 		It should_not_contain_field_with_arbitrary_return_type = () =>
-			result.ShouldNotContain(otherField);
+			result.Select(m => m.Member).ShouldNotContain(otherField);
 
 		It should_contain_imported_field_from_behavior = () =>
-			result.ShouldContain(member => member.FullyQualifiedName == "TestClass.testSpecificationInBehavior");
+			result.Select(m => m.Member).ShouldContain(member => member.FullyQualifiedName == "TestClass.testSpecificationInBehavior");
 	}
 }

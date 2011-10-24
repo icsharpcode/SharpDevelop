@@ -81,6 +81,7 @@
     <Compile Include="Frameworks\UnitTestingOptionsTestFixture.cs" />
     <Compile Include="Project\AbstractBaseClassWithTestMethodsTestFixture.cs" />
     <Compile Include="Project\BaseTestMethodTestFixture.cs" />
+    <Compile Include="Project\DoubleNestedTestClassWithBaseType.cs" />
     <Compile Include="Project\InnerClassInTestFixtureTests.cs" />
     <Compile Include="Project\DuplicateClassNameChangedTestFixture.cs" />
     <Compile Include="Project\InnerClassMethodRenamedTestFixture.cs" />

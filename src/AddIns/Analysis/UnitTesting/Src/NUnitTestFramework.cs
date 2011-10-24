@@ -86,8 +86,8 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
-		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
-			return @class.Methods.Where(IsTestMethod);
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod).Select(member => new TestMember(member));
 		}
 		
 		static bool IsTestMethod(IMethod method)

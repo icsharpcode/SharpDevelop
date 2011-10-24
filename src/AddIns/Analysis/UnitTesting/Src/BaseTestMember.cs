@@ -27,7 +27,12 @@ namespace ICSharpCode.UnitTesting
 		/// the class where the method is actually defined.</param>
 		/// <param name="method">The base class's test member.</param>
 		public BaseTestMember(IClass derivedClass, IMember member)
-			: base(derivedClass, member.Name)
+			: this(derivedClass, member, member.DeclaringType.Name + "." + member.Name)
+		{
+		}
+
+		protected BaseTestMember(IClass derivedClass, IMember member, string name)
+			: base(derivedClass, name)
 		{
 			this.member = member;
 			this.ReturnType = member.ReturnType;
@@ -57,7 +62,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public override string Documentation {get;set;}
-		
+
 		public override IMember Clone()
 		{
 			return new BaseTestMember(DeclaringType, Member);

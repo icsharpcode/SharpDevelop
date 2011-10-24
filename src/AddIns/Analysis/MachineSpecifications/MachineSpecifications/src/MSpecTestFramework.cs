@@ -30,20 +30,21 @@ namespace ICSharpCode.MachineSpecifications
 			return HasSpecificationMembers(c) && !HasBehaviorAttribute(c);
 		}
 		
-		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
 			return GetTestMembers(@class, @class.Fields);
 		}
 
-		private IEnumerable<IMember> GetTestMembers(IClass testClass, IList<IField> fields)
+		private IEnumerable<TestMember> GetTestMembers(IClass testClass, IList<IField> fields)
 		{
-			var result = fields.Where(HasItReturnType).Cast<IMember>().ToList();
+			var result = fields.Where(HasItReturnType).Select(field => new TestMember(field)).ToList();
 			foreach (var field in fields)
 				if (HasBehavesLikeReturnType(field))
 				{
 					var behaviorFields = ResolveBehaviorFieldsOf(field);
-					var behaviorTestMembers = GetTestMembers(testClass, behaviorFields);
-					var decoratedTestMembers = behaviorTestMembers.Select(f => new BaseTestMember(testClass, f)).Cast<IMember>();
-					result.AddRange(decoratedTestMembers);
+					var behaviorMembers = GetTestMembers(testClass, behaviorFields);
+					var testMembersFromBehavior = behaviorMembers.Select(member => 
+						new TestMember(member.DeclaringType, new BehaviorImportedTestMember(testClass, member.Member)));
+					result.AddRange(testMembersFromBehavior);
 				}
 			return result;
 		}

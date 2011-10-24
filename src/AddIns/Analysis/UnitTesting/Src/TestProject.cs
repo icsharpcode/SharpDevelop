@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -188,21 +189,50 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		void UpdateTestClass(IClass c)
 		{
-			if (TestClasses.Contains(c.DotNetName)) {
-				if (IsTestClass(c)) {
+			if (TestClasses.Contains(c.DotNetName))
+			{
+				if (IsTestClass(c))
+				{
 					TestClass testClass = TestClasses[c.DotNetName];
 					testClass.UpdateClass(c);
-				} else {
+				}
+				else
+				{
 					// TestFixture attribute has been removed so
 					// remove the class from the set of TestClasses.
 					TestClasses.Remove(c.DotNetName);
 				}
-			} else {
-				// TestFixture attribute may have been recently added to
-				// this class so call AddNewTestClass. No need to
-				// check if the class is actually a test class since
-				// AddNewTestClass does this anyway.
-				AddNewTestClass(c);
+			}
+			else
+			{
+					// TestFixture attribute may have been recently added to
+					// this class so call AddNewTestClass. No need to
+					// check if the class is actually a test class since
+					// AddNewTestClass does this anyway.
+					AddNewTestClass(c);
+			}
+
+			var derivedTestClasses = GetTestClassesDerivedFrom(c);
+			if (derivedTestClasses.Any())
+				UpdateClassesFromProjectContent(derivedTestClasses);
+
+		}
+
+		private IEnumerable<IClass> GetTestClassesDerivedFrom(IClass c)
+		{
+			return TestClasses
+				.Where(testClass => testClass.IsDerivedFrom(c))
+				.Select(testClass => testClass.Class)
+				.ToArray();
+		}
+
+		private void UpdateClassesFromProjectContent(IEnumerable<IClass> classes)
+		{
+			foreach (var c in classes)
+			{
+				var classInProjectContent = projectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count);
+				if (classInProjectContent != null)
+					UpdateTestClass(classInProjectContent);
 			}
 		}
 		

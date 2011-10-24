@@ -21,8 +21,8 @@ namespace ICSharpCode.PythonBinding
 			return false;
 		}
 		
-		public IEnumerable<IMember> GetTestMembersFor(IClass @class) {
-			return @class.Methods.Where(IsTestMethod);
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod).Select(method => new TestMember(method));
 		}
 
 		static bool IsTestMethod(IMethod method) {
