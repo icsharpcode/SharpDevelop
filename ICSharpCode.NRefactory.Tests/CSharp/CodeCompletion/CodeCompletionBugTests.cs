@@ -3085,7 +3085,11 @@ public class Test<T>
 ");
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNull (provider.Find ("Foo"), "method 'Foo' found.");
-			provider = CreateCtrlSpaceProvider (
+		}
+		
+		public void TestBug669285B ()
+		{
+			var provider = CreateCtrlSpaceProvider (
 @"static class Ext
 {
 	public static void Foo<T> (this T[] t)
@@ -3322,7 +3326,7 @@ namespace Test
 		}
 	}
 }");
-			Assert.IsNotNull (provider.Find ("Foo1"), "method 'Foo1' not found.");
+			Assert.IsNotNull (provider.Find ("Foo2"), "method 'Foo2' not found.");
 		}
 		
 		/// <summary>

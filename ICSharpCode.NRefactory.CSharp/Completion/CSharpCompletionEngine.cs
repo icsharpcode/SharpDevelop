@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				var methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
 				if (methodGroup != null)
-					return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, 0);
+					return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, 0, controlSpace);
 				return null;
 			case ',':
 				int cpos2;
@@ -183,7 +183,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				// check propose name, for context <variable name> <ctrl+space> (but only in control space context)
 				IType isAsType = null;
 				var isAsExpression = GetExpressionAt (offset);
-				if (controlSpace && isAsExpression != null && isAsExpression.Item2 is VariableDeclarationStatement) {
+				if (controlSpace && isAsExpression != null && isAsExpression.Item2 is VariableDeclarationStatement && token != "new") {
 					var parent = isAsExpression.Item2 as VariableDeclarationStatement;
 					int offset1 = document.GetOffset (parent.Type.StartLocation);
 					int offset2 = document.GetOffset (parent.Type.EndLocation);
@@ -217,7 +217,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AutoCompleteEmptyMatch = false;
 					return proposeNameList.Result;
 				}
-			
 //				int tokenIndex = offset;
 //				string token = GetPreviousToken (ref tokenIndex, false);
 //				if (result.ExpressionContext == ExpressionContext.ObjectInitializer) {
@@ -252,7 +251,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
 					if (methodGroup != null)
-						return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, currentParameter);
+						return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, currentParameter, controlSpace);
 					return null;
 				case "=":
 				case "==":
@@ -918,7 +917,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				DefaultCompletionString = GetShortType (hintType, GetState ());
 				wrapper.AddType (hintType, DefaultCompletionString);
 			}
-			AddTypesAndNamespaces (wrapper, state, pred);
+			AddTypesAndNamespaces (wrapper, state, pred, m => false);
 			AddKeywords (wrapper, primitiveTypesKeywords.Where (k => k != "void"));
 			AutoCompleteEmptyMatch = true;
 			return wrapper.Result;
@@ -946,7 +945,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null; // don't add override completion for static members
 				}
 			}
-			
 			foreach (var baseType in type.GetAllBaseTypeDefinitions (ctx)) {
 				AddVirtuals (alreadyInserted, wrapper, type, modifiers, baseType, declarationBegin);
 				addedVirtuals = true;
@@ -963,7 +961,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			foreach (var m in curType.Methods.Where (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.Properties.Cast<IMember> ())) {
 				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !(m.IsVirtual || m.IsOverride || m.IsAbstract))
 					continue;
-				
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
 				if (m is IMethod && m.Name == "Finalize")
 					continue;
@@ -972,7 +969,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				string text = m.ReflectionName; //TODO:correct ?
 				// check if the member is already implemented
 				bool foundMember = type.Members.Any (cm => cm.ReflectionName /*amb.GetString (ctx, cm, OutputFlags.ClassBrowserEntries)*/ == text);
-				
 				if (!foundMember && !alreadyInserted.ContainsKey (text)) {
 					alreadyInserted [text] = true;
 					data.CompletionCategory = col.GetCompletionCategory (curType);
@@ -1172,7 +1168,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		IEnumerable<ICompletionData> CreateParameterCompletion (MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, int parameter)
+		IEnumerable<ICompletionData> CreateParameterCompletion (MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, int parameter, bool controlSpace)
 		{
 			var result = new CompletionDataWrapper (this);
 			var addedEnums = new HashSet<string> ();
@@ -1197,10 +1193,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				}
 			}
-			if (addedEnums.Count + addedDelegates.Count == 0)
-				return Enumerable.Empty<ICompletionData> ();
-			AutoCompleteEmptyMatch = false;
-			AutoSelect = false;
+			if (!controlSpace) {
+				if (addedEnums.Count + addedDelegates.Count == 0)
+					return Enumerable.Empty<ICompletionData> ();
+				AutoCompleteEmptyMatch = false;
+				AutoSelect = false;
+			}
 			AddContextCompletion (result, state, invocation);
 			
 //			resolver.AddAccessibleCodeCompletionData (ExpressionContext.MethodBody, cdc);
@@ -1290,7 +1288,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine ("type:" + type +"/"+type.GetType ());
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
-//			Console.WriteLine (currentMember.IsStatic);
+//			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			foreach (var member in type.GetMembers (ctx)) {
 				if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 //					Console.WriteLine ("skip access: " + member.FullName);
