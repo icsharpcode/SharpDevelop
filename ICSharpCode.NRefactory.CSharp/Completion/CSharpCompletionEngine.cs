@@ -121,6 +121,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			case '<':
 				if (IsInsideDocComment ())
 					return GetXmlDocumentationCompletionData ();
+				if (controlSpace)
+					return DefaultControlSpaceItems ();
 				return null;
 			case '>':
 				if (!IsInsideDocComment ())
@@ -545,21 +547,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
 		{
-			if (state.CurrentTypeDefinition != null) {
-				
-				for (var ct = state.CurrentTypeDefinition; ct != null; ct = ct.DeclaringTypeDefinition) {
+			var currentType = state.CurrentTypeDefinition ?? this.currentType;
+			if (currentType != null) {
+				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
 						if (typePred == null || typePred (nestedType))
 							wrapper.AddType (nestedType, nestedType.Name);
 					}
 				}
 				
-				foreach (var member in state.CurrentTypeDefinition.Resolve (ctx).GetMembers (ctx)) {
+				foreach (var member in currentType.Resolve (ctx).GetMembers (ctx)) {
 					if (memberPred == null || memberPred (member))
 						wrapper.AddMember (member);
 				}
 				
-				foreach (var p in state.CurrentTypeDefinition.TypeParameters) {
+				foreach (var p in currentType.TypeParameters) {
 					wrapper.AddTypeParameter (p);
 				}
 			}
