@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// Default implementation of <see cref="ITypeParameter"/>.
 	/// </summary>
 	[Serializable]
-	public sealed class DefaultTypeParameter : AbstractTypeParameter, ISupportsInterning
+	public sealed class DefaultTypeParameter : AbstractTypeParameter
 	{
 		IList<ITypeReference> constraints;
 		
@@ -152,6 +152,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this.HasDefaultConstructorConstraint, this.HasReferenceTypeConstraint, this.HasValueTypeConstraint);
 		}
 		
+		/*
+		 * Interning for type parameters is disabled; we can't intern cyclic structures as might
+		 * occur in the constraints, and incomplete interning is dangerous for type parameters
+		 * as we use reference equality.
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
 			// protect against cyclic constraints
@@ -180,6 +184,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return base.EqualsForInterning(o)
 				&& this.constraints == o.constraints
 				&& this.flags == o.flags;
-		}
+		}*/
 	}
 }

@@ -25,6 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Represents a type parameter that inherits its constraints from the overridden method in the base class.
 	/// </summary>
+	[Serializable]
 	public sealed class TypeParameterWithInheritedConstraints : AbstractTypeParameter
 	{
 		readonly IMethod parentMethod;
