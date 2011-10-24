@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var testClass = testCasePC.GetTypeDefinition(typeof(GenericClass<,>));
 			Assert.AreEqual(EntityType.TypeDefinition, testClass.TypeParameters[0].OwnerType);
 			Assert.AreEqual(EntityType.TypeDefinition, testClass.TypeParameters[1].OwnerType);
-			Assert.AreSame(testClass.TypeParameters[1], testClass.TypeParameters[0].Constraints[0].Resolve(ctx));
+			Assert.AreSame(testClass.TypeParameters[1], testClass.TypeParameters[0].GetConstraints(ctx)[0].Resolve(ctx));
 		}
 		
 		[Test]
@@ -181,8 +181,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
 			Assert.AreEqual(EntityType.Method, m.TypeParameters[1].OwnerType);
 			
-			Assert.AreEqual("System.IComparable`1[[``1]]", m.TypeParameters[0].Constraints[0].Resolve(ctx).ReflectionName);
-			Assert.AreSame(m.TypeParameters[0], m.TypeParameters[1].Constraints[0].Resolve(ctx));
+			Assert.AreEqual("System.IComparable`1[[``1]]", m.TypeParameters[0].GetConstraints(ctx)[0].Resolve(ctx).ReflectionName);
+			Assert.AreSame(m.TypeParameters[0], m.TypeParameters[1].GetConstraints(ctx)[0].Resolve(ctx));
 		}
 		
 		[Test]
@@ -194,7 +194,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("T", m.TypeParameters[0].Name);
 			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
 			
-			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].Constraints[0].Resolve(ctx);
+			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].GetConstraints(ctx)[0].Resolve(ctx);
 			Assert.AreEqual("IEquatable", constraint.Name);
 			Assert.AreEqual(1, constraint.TypeParameterCount);
 			Assert.AreEqual(1, constraint.TypeArguments.Count);
@@ -303,6 +303,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var d = typeof(Derived<string, int>).ToTypeReference().Resolve(ctx);
 			Assert.AreEqual(new[] { typeof(Base<>.Nested<>).FullName + "[[System.Int32],[]]" },
 			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
+		}
+		
+		[Test]
+		public void ConstraintsOnOverrideAreInherited()
+		{
+			ITypeDefinition d = ctx.GetTypeDefinition(typeof(Derived<,>));
+			ITypeParameter tp = d.Methods.Single(m => m.Name == "GenericMethodWithConstraints").TypeParameters.Single();
+			Assert.AreEqual("Y", tp.Name);
+			ITypeParameterConstraints constraints = tp.GetConstraints(ctx);
+			Assert.IsFalse(constraints.HasValueTypeConstraint);
+			Assert.IsFalse(constraints.HasReferenceTypeConstraint);
+			Assert.IsTrue(constraints.HasDefaultConstructorConstraint);
+			Assert.AreEqual(1, constraints.Count);
+			Assert.AreEqual("System.Collections.Generic.IComparer`1[[`1]]", constraints[0].ReflectionName);
 		}
 		
 		[Test]
@@ -421,15 +435,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(VarianceModifier.Contravariant, type.TypeParameters[0].Variance);
 			Assert.AreEqual(VarianceModifier.Covariant, type.TypeParameters[1].Variance);
 			
-			Assert.AreSame(type.TypeParameters[1], type.TypeParameters[0].Constraints[0].Resolve(ctx));
+			Assert.AreSame(type.TypeParameters[1], type.TypeParameters[0].GetConstraints(ctx)[0].Resolve(ctx));
 		}
 		
 		[Test]
 		public void GenericDelegate_ReferenceTypeConstraints()
 		{
 			ITypeDefinition type = ctx.GetTypeDefinition(typeof(GenericDelegate<,>));
-			Assert.IsFalse(type.TypeParameters[0].HasReferenceTypeConstraint);
-			Assert.IsTrue(type.TypeParameters[1].HasReferenceTypeConstraint);
+			Assert.IsFalse(type.TypeParameters[0].GetConstraints(ctx).HasReferenceTypeConstraint);
+			Assert.IsTrue(type.TypeParameters[1].GetConstraints(ctx).HasReferenceTypeConstraint);
 			
 			Assert.IsNull(type.TypeParameters[0].IsReferenceType(ctx));
 			Assert.AreEqual(true, type.TypeParameters[1].IsReferenceType(ctx));

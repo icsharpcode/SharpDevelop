@@ -77,10 +77,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		CombinedFlags = Flag1 | Flag2
 	}
 	
-	public class Base<T> {
+	public class Base<T>
+	{
 		public class Nested<X> {}
+		
+		public virtual void GenericMethodWithConstraints<X>(T a) where X : IComparer<T>, new() {}
 	}
-	public class Derived<A, B> : Base<B> {}
+	public class Derived<A, B> : Base<B>
+	{
+		public override void GenericMethodWithConstraints<Y>(B a) { }
+	}
 	
 	public struct MyStructWithCtor
 	{

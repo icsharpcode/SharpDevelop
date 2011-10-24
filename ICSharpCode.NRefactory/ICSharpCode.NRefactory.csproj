@@ -118,6 +118,7 @@
     <Compile Include="TypeSystem\Implementation\AbstractFreezable.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractMember.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
+    <Compile Include="TypeSystem\Implementation\AbstractTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\BaseTypeCollector.cs" />
     <Compile Include="TypeSystem\Implementation\CompoundTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAccessor.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultTypeParameterConstraints.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
@@ -146,10 +148,12 @@
     <Compile Include="TypeSystem\Implementation\SpecializedMethod.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\SubstitutionTypeReference.cs" />
+    <Compile Include="TypeSystem\Implementation\TypeParameterWithInheritedConstraints.cs" />
     <Compile Include="TypeSystem\Implementation\TypeStorage.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
     <Compile Include="TypeSystem\Implementation\VoidTypeDefinition.cs" />
     <Compile Include="TypeSystem\INamedElement.cs" />
+    <Compile Include="TypeSystem\InheritanceHelper.cs" />
     <Compile Include="TypeSystem\IntersectionType.cs" />
     <Compile Include="TypeSystem\IParameter.cs" />
     <Compile Include="TypeSystem\IParameterizedMember.cs" />
