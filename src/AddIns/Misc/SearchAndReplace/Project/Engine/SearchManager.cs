@@ -75,7 +75,7 @@ namespace SearchAndReplace
 		}
 		
 		public static IObservable<SearchedFile> FindAll(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
-		                                                            SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null, bool useParallel = true)
+		                                                SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null, bool useParallel = true)
 		{
 			currentSearchRegion = null;
 			var strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
@@ -86,7 +86,6 @@ namespace SearchAndReplace
 		
 		class SearchRun : IObservable<SearchedFile>, IDisposable
 		{
-			IObserver<SearchedFile> observer;
 			ISearchStrategy strategy;
 			ParseableFileContentFinder fileFinder;
 			IEnumerable<FileName> fileList;
@@ -110,15 +109,23 @@ namespace SearchAndReplace
 			
 			public IDisposable Subscribe(IObserver<SearchedFile> observer)
 			{
-				this.observer = observer;
 				if (UseParallel) {
+					LoggingService.Debug("Parallel FindAll starting");
 					var task = new System.Threading.Tasks.Task(
 						delegate {
 							var list = fileList.ToList();
 							ThrowIfCancellationRequested();
-							SearchParallel(list, observer, fileName => SearchFile(fileName, strategy));
+							SearchParallel(list, observer);
+						}, TaskCreationOptions.LongRunning);
+					task.ContinueWith(
+						t => {
+							LoggingService.Debug("Parallel FindAll finished " + (t.IsFaulted ? "with error" : "successfully"));
+							if (t.Exception != null)
+								observer.OnError(t.Exception);
+							else
+								observer.OnCompleted();
+							this.Dispose();
 						});
-					task.ContinueWith(t => { if (t.Exception != null) observer.OnError(t.Exception); else observer.OnCompleted(); this.Dispose(); });
 					task.Start();
 				} else {
 					var list = fileList.ToList();
@@ -131,7 +138,7 @@ namespace SearchAndReplace
 				return this;
 			}
 			
-			void SearchParallel(List<FileName> files, IObserver<SearchedFile> observer, Func<FileName, SearchedFile> searchInFile)
+			void SearchParallel(List<FileName> files, IObserver<SearchedFile> observer)
 			{
 				int taskCount = 2 * Environment.ProcessorCount;
 				Queue<Task<SearchedFile>> queue = new Queue<Task<SearchedFile>>(taskCount);
@@ -142,7 +149,7 @@ namespace SearchAndReplace
 					}
 					if (exceptions.Count == 0) {
 						FileName file = files[i];
-						queue.Enqueue(System.Threading.Tasks.Task.Factory.StartNew(() => searchInFile(file)));
+						queue.Enqueue(System.Threading.Tasks.Task.Factory.StartNew(() => SearchFile(file)));
 					}
 				}
 				while (queue.Count > 0) {
@@ -161,7 +168,7 @@ namespace SearchAndReplace
 					exceptions.AddRange(ex.InnerExceptions);
 					return;
 				}
-				if (exceptions.Count == 0 && result.Count > 0)
+				if (exceptions.Count == 0 && result != null)
 					observer.OnNext(result);
 				monitor.Progress += 1.0 / files.Count;
 			}
@@ -178,15 +185,16 @@ namespace SearchAndReplace
 				monitor.Dispose();
 			}
 			
-			SearchedFile SearchFile(FileName fileName, ISearchStrategy strategy)
+			SearchedFile SearchFile(FileName fileName)
 			{
 				ITextBuffer buffer = fileFinder.Create(fileName);
-				List<SearchResultMatch> results = new List<SearchResultMatch>();
 				if (buffer == null)
-					return SearchedFile.Empty(fileName);
+					return null;
+				
+				ThrowIfCancellationRequested();
 				
 				if (!MimeTypeDetection.FindMimeType(buffer).StartsWith("text/", StringComparison.Ordinal))
-					return SearchedFile.Empty(fileName);
+					return null;
 				var source = DocumentUtilitites.GetTextSource(buffer);
 				TextDocument document = null;
 				DocumentHighlighter highlighter = null;
@@ -196,7 +204,8 @@ namespace SearchAndReplace
 					offset = Selection.Offset;
 					length = Selection.Length;
 				}
-				foreach(var result in strategy.FindAll(source, offset, length)) {
+				List<SearchResultMatch> results = new List<SearchResultMatch>();
+				foreach (var result in strategy.FindAll(source, offset, length)) {
 					ThrowIfCancellationRequested();
 					if (document == null) {
 						document = new TextDocument(source);
@@ -211,7 +220,10 @@ namespace SearchAndReplace
 					var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
 					results.Add(new SearchResultMatch(fileName, start, end, result.Offset, result.Length, builder));
 				}
-				return new SearchedFile(fileName, results);
+				if (results.Count > 0)
+					return new SearchedFile(fileName, results);
+				else
+					return null;
 			}
 		}
 		
@@ -390,7 +402,11 @@ namespace SearchAndReplace
 			int count = 0;
 			results.ObserveOnUIThread()
 				.Subscribe(
-					match => { count++; match.ForEach(m => MarkResult(m, false)); },
+					searchedFile => {
+						count++;
+						foreach (var m in searchedFile.Matches)
+							MarkResult(m, false);
+					},
 					error => MessageService.ShowException(error),
 					() => ShowMarkDoneMessage(count)
 				);
@@ -401,9 +417,9 @@ namespace SearchAndReplace
 			int count = 0;
 			results.ObserveOnUIThread()
 				.Subscribe(
-					matches => {
+					searchedFile => {
 						int difference = 0;
-						foreach (var match in matches) {
+						foreach (var match in searchedFile.Matches) {
 							ITextEditor textArea = OpenTextArea(match.FileName, false);
 							if (textArea != null) {
 								string newString = match.TransformReplacePattern(replacement);

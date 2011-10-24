@@ -116,33 +116,20 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 	}
 	
-	public class SearchedFile : IGrouping<FileName, SearchResultMatch>
+	public class SearchedFile
 	{
-		IList<SearchResultMatch> matches;
+		public FileName FileName { get; private set; }
 		
-		public FileName Key { get; private set; }
+		public IList<SearchResultMatch> Matches { get; private set; }
 		
-		public int Count { get { return matches.Count; } }
-		
-		public SearchedFile(FileName file, IList<SearchResultMatch> matches)
+		public SearchedFile(FileName fileName, IList<SearchResultMatch> matches)
 		{
-			this.Key = file;
-			this.matches = matches;
-		}
-		
-		public IEnumerator<SearchResultMatch> GetEnumerator()
-		{
-			return matches.GetEnumerator();
-		}
-		
-		IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			return (IEnumerator)matches.GetEnumerator();
-		}
-		
-		public static SearchedFile Empty(FileName fileName)
-		{
-			return new SearchedFile(fileName, new List<SearchResultMatch>());
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (matches == null)
+				throw new ArgumentNullException("matches");
+			this.FileName = fileName;
+			this.Matches = matches;
 		}
 	}
 }
