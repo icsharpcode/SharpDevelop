@@ -8,7 +8,7 @@ using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
 
-using Gui.Dialogs.ReferenceDialog;
+using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;

@@ -27,7 +27,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets;
 using Microsoft.Win32;
 
-namespace Gui.Dialogs.ReferenceDialog
+namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 {
 	/// <summary>
 	/// Description of AddServiceReferenceViewModel.
@@ -47,7 +47,7 @@ namespace Gui.Dialogs.ReferenceDialog
 			discoverButtonContend = "Disvover";
 			HeadLine = header1 + header2;
 			
-			MruServices = AddMruList();
+			MruServices = ServiceReferenceHelper.AddMruList();
 			SelectedService = MruServices[0];
 			
 			GoCommand = new RelayCommand(ExecuteGo,CanExecuteGo);
@@ -97,31 +97,10 @@ namespace Gui.Dialogs.ReferenceDialog
 	
 		#region Create List of services
 		
-		// Modifyed Code from Matt
-		
-		List <string>  AddMruList()
-		{
-			var list = new List<string>();
-			try {
-				RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Internet Explorer\TypedURLs");
-				if (key != null) {
-					foreach (string name in key.GetValueNames()) {
-						list.Add ((string)key.GetValue(name));
-					}
-				}
-			} catch (Exception)
-			{
-			};
-			return list;
-		}
-		
-		private List<string> mruServices;
+		private List<string> mruServices = new List<string>();
 		
 		public List<string> MruServices {
 			get {
-				if (mruServices == null) {
-					mruServices = new List<string>();
-				}
 				return mruServices; }
 			set { mruServices = value;
 				base.RaisePropertyChanged(() =>MruServices);
@@ -135,8 +114,6 @@ namespace Gui.Dialogs.ReferenceDialog
 			set { selectedService = value;
 				base.RaisePropertyChanged(() =>SelectedService);}
 		}
-		
-		
 		
 		#endregion
 		
@@ -182,7 +159,7 @@ namespace Gui.Dialogs.ReferenceDialog
 			
 		CredentialCache credentialCache = new CredentialCache();
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
-		ICSharpCode.SharpDevelop.Gui.WebReference webReference;
+//		ICSharpCode.SharpDevelop.Gui.WebReference webReference;
 		string namespacePrefix = String.Empty;
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
@@ -295,18 +272,20 @@ namespace Gui.Dialogs.ReferenceDialog
 			if (protocol != null) {
 //				webServicesView.Add(GetServiceDescriptions(protocol));
 			
-				ServiceDescriptionCollection = GetServiceDescriptions(protocol);
+				ServiceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
 				FillItems (ServiceDescriptionCollection);
 				var defaultNameSpace =  GetDefaultNamespace();
 				var referenceName = GetReferenceName(discoveryUri);
+				/*
 				webReference = new ICSharpCode.SharpDevelop.Gui.WebReference(project,
 				                                                             discoveryUri.AbsoluteUri,
 				                                                             defaultNameSpace,
 				                                                             referenceName, protocol);
+*/
 			}
 			else 
 			{
-				webReference = null;
+//				webReference = null;
 			}
 		}
 		
@@ -335,55 +314,33 @@ namespace Gui.Dialogs.ReferenceDialog
 			if (discoveryUri != null) {
 				return discoveryUri.Host;
 			}
-			return String.Empty;*/
+			return String.Empty;
+			*/
 		}
 		
-		ServiceDescriptionCollection GetServiceDescriptions(DiscoveryClientProtocol protocol)
-		{
-			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
-			protocol.ResolveOneLevel();
-		
-			foreach (DictionaryEntry entry in protocol.References) {
-				ContractReference contractRef = entry.Value as ContractReference;
-				if (contractRef != null) {
-					services.Add(contractRef.Contract);
-				}
-			}
-			return services;
-		}
-		
-		ServiceDescriptionCollection serviceDescriptionCollection;
+	
+		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
 		
 		public ServiceDescriptionCollection ServiceDescriptionCollection
 		{
-			get {return serviceDescriptionCollection;}
-				
-			set {
-				if (serviceDescriptionCollection == null) {
-					serviceDescriptionCollection = new ServiceDescriptionCollection();
-				}
+			get {
+				return serviceDescriptionCollection;
+			}
+			set
+			{
 				serviceDescriptionCollection = value;
-				var s = serviceDescriptionCollection[0];
 				RaisePropertyChanged(() =>ServiceDescriptionCollection);
 			}
 		}
+
 		#endregion
 		
 		#region new binding
 		
-		
-		List<MyItem> items = new List <MyItem>();
-		
-		object isSelected;
-		
-		public object IsSelected {
-			get { return isSelected; }
-			set { isSelected = value; }
-		}
+		List<ServiceItem> items = new List <ServiceItem>();
 		
 		
-		
-		public List <MyItem> Items {
+		public List <ServiceItem> Items {
 			get {return items; }
 			
 			set {
@@ -392,6 +349,21 @@ namespace Gui.Dialogs.ReferenceDialog
 			}
 		}
 		
+		ServiceItem myItem;
+		
+		public ServiceItem ServiceItem {
+			get { return myItem; }
+			set { myItem = value;
+				UpdateListView();
+				base.RaisePropertyChanged(() =>ServiceItem);
+			}
+		}
+		
+		void UpdateListView ()
+		{
+			
+		}
+			
 		void FillItems (ServiceDescriptionCollection descriptions)
 		{
 			foreach (ServiceDescription element in descriptions)
@@ -401,20 +373,21 @@ namespace Gui.Dialogs.ReferenceDialog
 			
 		}
 		
+		
 		void Add(ServiceDescription description)
 		{
-			List<MyItem> l = new List<MyItem>();
-			var rootNode = new MyItem(GetName(description));
+			List<ServiceItem> l = new List<ServiceItem>();
+			var rootNode = new ServiceItem(GetName(description));
 			rootNode.Tag = description;
 			l.Add(rootNode);
 			
 			foreach(Service service in description.Services) {
-				var serviceNode = new MyItem(service.Name);
+				var serviceNode = new ServiceItem(service.Name);
 				serviceNode.Tag = service;
 				rootNode.SubItems.Add(serviceNode);
 				
 				foreach(Port port in service.Ports) {
-					var portNode = new MyItem(port.Name);
+					var portNode = new ServiceItem(port.Name);
 					portNode.Tag = port;
 					serviceNode.SubItems.Add(portNode);
 					
@@ -424,7 +397,7 @@ namespace Gui.Dialogs.ReferenceDialog
 						PortType portType = description.PortTypes[binding.Type.Name];
 						if (portType != null) {
 							foreach(Operation operation in portType.Operations) {
-								var operationNode = new MyItem(operation.Name);
+								var operationNode = new ServiceItem(operation.Name);
 								operationNode.Tag = operation;
 //								operationNode.ImageIndex = OperationImageIndex;
 //								operationNode.SelectedImageIndex = OperationImageIndex;
@@ -457,17 +430,16 @@ namespace Gui.Dialogs.ReferenceDialog
 		
 	}
 	
-	public class MyItem
+	public class ServiceItem
 	{
-		public MyItem (string name)
+		public ServiceItem (string name)
 		{
 			this.Name = name;
-			SubItems = new List<MyItem>();
+			SubItems = new List<ServiceItem>();
 		}
 		
 		public string Name {get;set;}
 		public object Tag {get;set;}
-		public List<MyItem> SubItems {get;set;}
-
+		public List<ServiceItem> SubItems {get;set;}
 	}
 }

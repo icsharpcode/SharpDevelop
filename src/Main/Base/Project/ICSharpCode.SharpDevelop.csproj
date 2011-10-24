@@ -254,6 +254,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddServiceReferenceViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
       <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
