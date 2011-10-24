@@ -267,7 +267,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (resolveResult == null)
 						return null;
 					
-					if (resolveResult.Item1.Type.IsEnum ()) {
+					if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 						var wrapper = new CompletionDataWrapper (this);
 						AddContextCompletion (wrapper, resolveResult.Item2, expressionOrVariableDeclaration.Item2);
 						AddEnumMembers (wrapper, resolveResult.Item1.Type, resolveResult.Item2);
@@ -604,8 +604,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var wrapper = new CompletionDataWrapper (this);
 				AddTypesAndNamespaces (wrapper, GetState (), t => false);
 				return wrapper.Result;
-//				case "case":
-//					return CreateCaseCompletionData (location, result);
+				case "case":
+					return CreateCaseCompletionData (location);
 //				case ",":
 //				case ":":
 //					if (result.ExpressionContext == ExpressionContext.InheritableType) {
@@ -1376,6 +1376,28 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 			}
+		}
+		IEnumerable<ICompletionData> CreateCaseCompletionData (TextLocation location)
+		{
+			var unit = ParseStub ("a: break;");
+			if (unit == null)
+				return null;
+			var s = unit.GetNodeAt<SwitchStatement> (location);
+			if (s == null)
+				return null;
+			
+			var offset = document.GetOffset (s.Expression.StartLocation);
+			var expr = GetExpressionAt (offset);
+			if (expr == null)
+				return null;
+			
+			var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
+			if (resolveResult == null || resolveResult.Item1.Type.Kind != TypeKind.Enum) 
+				return null;
+			var wrapper = new CompletionDataWrapper (this);
+			AddEnumMembers (wrapper, resolveResult.Item1.Type, resolveResult.Item2);
+			AutoCompleteEmptyMatch = false;
+			return wrapper.Result;
 		}
 		
 		#region Parsing methods
