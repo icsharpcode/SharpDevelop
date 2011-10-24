@@ -188,5 +188,21 @@ public class Foo : A<int>
 			var lrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("System.Int32", lrr.Type.FullName);
 		}
+		
+		[Test]
+		public void MemberInGenericClassReferringToInnerClass()
+		{
+			string program = @"public class Foo<T> {
+	public class TestFoo { }
+	public TestFoo Bar = new TestFoo ();
+}
+public class Test {
+	public void SomeMethod (Foo<Test> foo) {
+		var f = $foo.Bar$;
+	}
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Foo`1+TestFoo[[Test]]", mrr.Type.ReflectionName);
+		}
 	}
 }

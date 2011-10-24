@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			b1.Kind = TypeKind.Interface;
 			b1.Properties.Add(new DefaultProperty(b1, "P1"));
 			
-			DefaultTypeDefinition b2 = new DefaultTypeDefinition(mscorlib, string.Empty, "B1");
+			DefaultTypeDefinition b2 = new DefaultTypeDefinition(mscorlib, string.Empty, "B2");
 			b2.Kind = TypeKind.Interface;
 			b2.Properties.Add(new DefaultProperty(b1, "P2"));
 			
@@ -93,7 +93,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition dictionary = mscorlib.GetTypeDefinition(typeof(Dictionary<,>));
 			IType keyCollection = dictionary.GetNestedTypes(mscorlib).Single(t => t.Name == "KeyCollection");
-			Assert.IsTrue(keyCollection is ITypeDefinition);
+			// the type should be parameterized
+			Assert.AreEqual("System.Collections.Generic.Dictionary`2+KeyCollection[[`0],[`1]]", keyCollection.ReflectionName);
 		}
 		
 		[Test]

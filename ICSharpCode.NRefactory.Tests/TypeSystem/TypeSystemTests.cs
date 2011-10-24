@@ -476,5 +476,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsTrue(answer.IsConst);
 			Assert.IsNull(answer.ConstantValue.Resolve(ctx).ConstantValue);
 		}
+		
+		[Test]
+		public void InnerClassInGenericClassIsReferencedUsingParameterizedType()
+		{
+			ITypeDefinition type = ctx.GetTypeDefinition(typeof(OuterGeneric<>));
+			IField field1 = type.Fields.Single(f => f.Name == "Field1");
+			IField field2 = type.Fields.Single(f => f.Name == "Field2");
+			IField field3 = type.Fields.Single(f => f.Name == "Field3");
+			
+			// types must be self-parameterized
+			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]", field1.Type.Resolve(ctx).ReflectionName);
+			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]", field2.Type.Resolve(ctx).ReflectionName);
+			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]]]", field3.Type.Resolve(ctx).ReflectionName);
+		}
 	}
 }

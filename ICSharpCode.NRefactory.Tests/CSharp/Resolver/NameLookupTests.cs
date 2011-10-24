@@ -862,7 +862,7 @@ class B
 		}
 		
 		[Test]
-		public void InheritingInnerClassShouldNotCauseStackOverflow() 
+		public void InheritingInnerClassShouldNotCauseStackOverflow()
 		{
 			string program = @"class Test : $Test.Base$, Test.ITest { public class Base {} interface ITest {} }";
 			var result = Resolve<TypeResolveResult>(program);

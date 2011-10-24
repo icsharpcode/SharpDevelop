@@ -127,4 +127,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		public const string NullString = null;
 	}
+	
+	public class OuterGeneric<X>
+	{
+		public class Inner {}
+		
+		public OuterGeneric<X>.Inner Field1;
+		public Inner Field2;
+		public OuterGeneric<OuterGeneric<X>.Inner>.Inner Field3;
+	}
 }
