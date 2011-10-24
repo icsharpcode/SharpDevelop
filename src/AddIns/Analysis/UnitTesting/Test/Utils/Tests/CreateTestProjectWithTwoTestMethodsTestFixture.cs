@@ -28,19 +28,19 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void TestProjectWithTwoTestMethodsHasTwoMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMethods.Count);
+			Assert.AreEqual(2, testClass.TestMembers.Count);
 		}
 		
 		[Test]
 		public void FirstTestMethodNameIsFoo()
 		{
-			Assert.AreEqual("Foo", testClass.TestMethods[0].Name);
+			Assert.AreEqual("Foo", testClass.TestMembers[0].Name);
 		}
 		
 		[Test]
 		public void SecondTestMethodNameIsBar()
 		{
-			Assert.AreEqual("Bar", testClass.TestMethods[1].Name);
+			Assert.AreEqual("Bar", testClass.TestMembers[1].Name);
 		}
 	}
 }

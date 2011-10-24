@@ -51,14 +51,14 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NewTestMethodExists()
 		{
-			TestMethod method = innerTestClass.TestMethods[0];
+			TestMember method = innerTestClass.TestMembers[0];
 			Assert.AreEqual("FooBarRenamed", method.Name);
 		}
 		
 		[Test]
 		public void OldTestMethodRemoved()
 		{
-			Assert.AreEqual(1, innerTestClass.TestMethods.Count);
+			Assert.AreEqual(1, innerTestClass.TestMembers.Count);
 		}
 	}
 }

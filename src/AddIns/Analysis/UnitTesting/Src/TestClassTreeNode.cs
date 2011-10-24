@@ -29,17 +29,15 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the underlying IClass for this test class.
 		/// </summary>
 		public IClass Class {
-			get {
-				return testClass.Class;
-			}
+			get { return testClass.Class; }
 		}
 		
 		public override void Dispose()
 		{
 			if (!IsDisposed) {
 				testClass.ResultChanged -= TestClassResultChanged;
-				testClass.TestMethods.TestMethodAdded -= TestMethodAdded;
-				testClass.TestMethods.TestMethodRemoved -= TestMethodRemoved;
+				testClass.TestMembers.TestMemberAdded -= TestMemberAdded;
+				testClass.TestMembers.TestMemberRemoved -= TestMemberRemoved;
 			}
 			base.Dispose();
 		}
@@ -48,19 +46,19 @@ namespace ICSharpCode.UnitTesting
 		{
 			Nodes.Clear();
 			
-			foreach (TestMethod method in testClass.TestMethods) {
-				AddTestMethodTreeNode(method);
+			foreach (TestMember member in testClass.TestMembers) {
+				AddTestMemberTreeNode(member);
 			}
-			testClass.TestMethods.TestMethodAdded += TestMethodAdded;
-			testClass.TestMethods.TestMethodRemoved += TestMethodRemoved;
+			testClass.TestMembers.TestMemberAdded += TestMemberAdded;
+			testClass.TestMembers.TestMemberRemoved += TestMemberRemoved;
 		}
 		
 		/// <summary>
-		/// Adds a new TestMethodTreeNode to this node.
+		/// Adds a new TestMemberTreeNode to this node.
 		/// </summary>
-		void AddTestMethodTreeNode(TestMethod method)
+		void AddTestMemberTreeNode(TestMember member)
 		{
-			TestMethodTreeNode node = new TestMethodTreeNode(TestProject, method);
+			TestMemberTreeNode node = new TestMemberTreeNode(TestProject, member);
 			node.AddTo(this);
 		}
 		
@@ -73,25 +71,25 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Adds a new test method tree node to this class node after a new
-		/// TestMethod has been added to the TestClass.
+		/// Adds a new test member tree node to this class node after a new
+		/// TestMember has been added to the TestClass.
 		/// </summary>
-		void TestMethodAdded(object source, TestMethodEventArgs e)
+		void TestMemberAdded(object source, TestMemberEventArgs e)
 		{
-			AddTestMethodTreeNode(e.TestMethod);
+			AddTestMemberTreeNode(e.TestMember);
 			SortChildNodes();
 		}
 		
 		/// <summary>
-		/// Removes the corresponding test method node after it has been
+		/// Removes the corresponding test member node after it has been
 		/// removed from the TestClass.
 		/// </summary>
-		void TestMethodRemoved(object source, TestMethodEventArgs e)
+		void TestMemberRemoved(object source, TestMemberEventArgs e)
 		{
-			foreach (TestMethodTreeNode methodNode in Nodes) {
-				if (methodNode.Text == e.TestMethod.Name) {
-					Nodes.Remove(methodNode);
-					methodNode.Dispose();
+			foreach (TestMemberTreeNode memberNode in Nodes) {
+				if (memberNode.Text == e.TestMember.Name) {
+					Nodes.Remove(memberNode);
+					memberNode.Dispose();
 					break;
 				}
 			}

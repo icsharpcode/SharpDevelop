@@ -32,8 +32,8 @@ namespace ICSharpCode.RubyBinding
 		
 		public void WriteTests(SelectedTests selectedTests)
 		{
-			if (selectedTests.Method != null) {
-				WriteTestFileNameForMethod(selectedTests.Method);
+			if (selectedTests.Member != null) {
+				WriteTestFileNameForMethod(selectedTests.Member);
 			} else if (selectedTests.Class != null) {
 				WriteTestFileNameForClass(selectedTests.Class);
 			} else if (selectedTests.Project != null) {

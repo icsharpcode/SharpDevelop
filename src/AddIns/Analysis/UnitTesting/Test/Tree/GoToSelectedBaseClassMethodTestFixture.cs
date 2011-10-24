@@ -33,7 +33,7 @@ namespace UnitTesting.Tests.Tree
 			BaseTestMethod baseTestMethod = new BaseTestMethod(derivedClass, baseClassMethod);
 			
 			treeView = new MockTestTreeView();
-			treeView.SelectedMethod = baseTestMethod;
+			treeView.SelectedMember = baseTestMethod;
 			fileService = new MockFileService();
 			gotoDefinitionCommand = new GotoDefinitionCommand(fileService);
 			gotoDefinitionCommand.Owner = treeView;

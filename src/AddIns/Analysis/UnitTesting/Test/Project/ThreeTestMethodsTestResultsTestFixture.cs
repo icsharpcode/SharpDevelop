@@ -14,32 +14,32 @@ namespace UnitTesting.Tests.Project
 	[TestFixture]
 	public class ThreeTestMethodsTestResultsTestFixture
 	{
-		TestMethod testMethod1;
-		TestMethod testMethod2;
-		TestMethod testMethod3;
-		TestMethodCollection testMethods;
+		TestMember testMethod1;
+		TestMember testMethod2;
+		TestMember testMethod3;
+		TestMemberCollection testMethods;
 		bool testMethodsResultChanged;
 		
 		[SetUp]
 		public void Init()
 		{
 			testMethodsResultChanged = false;
-			testMethods = new TestMethodCollection();
+			testMethods = new TestMemberCollection();
 			
 			// TestMethod1.
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
 			MockMethod mockMethod = new MockMethod(c, "TestMethod1");
-			testMethod1 = new TestMethod(mockMethod);
+			testMethod1 = new TestMember(mockMethod);
 			testMethods.Add(testMethod1);
 			
 			// TestMethod2.
 			mockMethod = new MockMethod(c, "TestMethod2");
-			testMethod2 = new TestMethod(mockMethod);
+			testMethod2 = new TestMember(mockMethod);
 			testMethods.Add(testMethod2);
 		
 			// TestMethod3.
 			mockMethod = new MockMethod(c, "TestMethod3");
-			testMethod3 = new TestMethod(mockMethod);
+			testMethod3 = new TestMember(mockMethod);
 			testMethods.Add(testMethod3);
 			
 			testMethods.ResultChanged += TestMethodsResultChanged;
@@ -156,7 +156,7 @@ namespace UnitTesting.Tests.Project
 			
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
 			MockMethod mockMethod = new MockMethod(c, "TestMethod4");
-			TestMethod testMethod4 = new TestMethod(mockMethod);
+			TestMember testMethod4 = new TestMember(mockMethod);
 			testMethod4.Result = TestResultType.Failure;
 			testMethods.Add(testMethod4);
 

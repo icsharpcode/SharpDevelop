@@ -38,8 +38,8 @@ namespace ICSharpCode.UnitTesting
 			}
 			if (selectedTests.Class != null) {
 				Fixture = selectedTests.Class.DotNetName;
-				if (selectedTests.Method != null) {
-					Test = selectedTests.Method.Name;
+				if (selectedTests.Member != null) {
+					Test = selectedTests.Member.Name;
 				}
 			}
 		}

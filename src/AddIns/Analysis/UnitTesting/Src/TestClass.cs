@@ -14,7 +14,7 @@ namespace ICSharpCode.UnitTesting
 	public class TestClass
 	{
 		IClass c;
-		TestMethodCollection testMethods;
+		TestMemberCollection testMembers;
 		TestResultType testResultType;
 		IRegisteredTestFrameworks testFrameworks;
 		
@@ -168,44 +168,44 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the test methods in this class.
+		/// Gets the test members in this class.
 		/// </summary>
-		public TestMethodCollection TestMethods {
+		public TestMemberCollection TestMembers {
 			get {
-				if (testMethods == null) {
-					GetTestMethods();
+				if (testMembers == null) {
+					GetTestMembers();
 				}
-				return testMethods;
+				return testMembers;
 			}
 		}
 		
 		/// <summary>
-		/// Gets the test method with the specified name.
+		/// Gets the test member with the specified name.
 		/// </summary>
-		/// <returns>Null if the method cannot be found.</returns>
-		public TestMethod GetTestMethod(string name)
+		/// <returns>Null if the member cannot be found.</returns>
+		public TestMember GetTestMember(string name)
 		{
-			if (TestMethods.Contains(name)) {
-				return TestMethods[name];
+			if (TestMembers.Contains(name)) {
+				return TestMembers[name];
 			}
 			return null;
 		}
 		
 		/// <summary>
-		/// Updates the test method with the specified test result.
+		/// Updates the test member with the specified test result.
 		/// </summary>
 		public void UpdateTestResult(TestResult testResult)
 		{
-			TestMethod method = null;
-			string methodName = TestMethod.GetMethodName(testResult.Name);
-			if (methodName != null) {
-				method = GetTestMethod(methodName);
-				if (method == null) {
-					method = GetPrefixedTestMethod(testResult.Name);
+			TestMember member = null;
+			string memberName = TestMember.GetMemberName(testResult.Name);
+			if (memberName != null) {
+				member = GetTestMember(memberName);
+				if (member == null) {
+					member = GetPrefixedTestMember(testResult.Name);
 				}
 			}
-			if (method != null) {
-				method.Result = testResult.ResultType;
+			if (member != null) {
+				member.Result = testResult.ResultType;
 			}
 		}
 		
@@ -215,34 +215,34 @@ namespace ICSharpCode.UnitTesting
 		public void ResetTestResults()
 		{
 			Result = TestResultType.None;
-			TestMethods.ResetTestResults();
+			TestMembers.ResetTestResults();
 		}
 		
 		/// <summary>
-		/// Updates the methods and class based on the new class
+		/// Updates the members and class based on the new class
 		/// information that has been parsed.
 		/// </summary>
 		public void UpdateClass(IClass c)
 		{
 			this.c = c.GetCompoundClass();
 			
-			// Remove missing methods.
-			TestMethodCollection newTestMethods = GetTestMethods(this.c);
-			TestMethodCollection existingTestMethods = TestMethods;
-			for (int i = existingTestMethods.Count - 1; i >= 0; --i) {
-				TestMethod method = existingTestMethods[i];
-				if (newTestMethods.Contains(method.Name)) {
-					method.Update(newTestMethods[method.Name].Method);
+			// Remove missing members.
+			TestMemberCollection newTestMembers = GetTestMembers(this.c);
+			TestMemberCollection existingTestMembers = TestMembers;
+			for (int i = existingTestMembers.Count - 1; i >= 0; --i) {
+				TestMember member = existingTestMembers[i];
+				if (newTestMembers.Contains(member.Name)) {
+					member.Update(newTestMembers[member.Name].Member);
 				} else {
-					existingTestMethods.RemoveAt(i);
+					existingTestMembers.RemoveAt(i);
 				}
 			}
 			
-			// Add new methods.
-			foreach (TestMethod method in newTestMethods) {
-				if (existingTestMethods.Contains(method.Name)) {
+			// Add new members.
+			foreach (TestMember member in newTestMembers) {
+				if (existingTestMembers.Contains(member.Name)) {
 				} else {
-					existingTestMethods.Add(method);
+					existingTestMembers.Add(member);
 				}
 			}
 		}
@@ -260,63 +260,63 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the test methods for the class.
+		/// Gets the test members for the class.
 		/// </summary>
-		void GetTestMethods()
+		void GetTestMembers()
 		{
-			testMethods = GetTestMethods(c);
-			testMethods.ResultChanged += TestMethodsResultChanged;
+			testMembers = GetTestMembers(c);
+			testMembers.ResultChanged += TestMembersResultChanged;
 		}
 		
 		/// <summary>
-		/// Gets the test methods for the specified class.
+		/// Gets the test members for the specified class.
 		/// </summary>
-		TestMethodCollection GetTestMethods(IClass c)
+		TestMemberCollection GetTestMembers(IClass c)
 		{
-			TestMethodCollection testMethods = new TestMethodCollection();
-			foreach (IMethod method in c.Methods) {
-				if (IsTestMethod(method)) {
-					if (!testMethods.Contains(method.Name)) {
-						testMethods.Add(new TestMethod(method));
+			TestMemberCollection testMembers = new TestMemberCollection();
+			foreach (IMember member in c.AllMembers) {
+				if (IsTestMember(member)) {
+					if (!testMembers.Contains(member.Name)) {
+						testMembers.Add(new TestMember(member));
 					}
 				}
 			}
 			
-			// Add base class test methods.
+			// Add base class test members.
 			IClass declaringType = c;
 			while (c.BaseClass != null) {
 				foreach (IMethod method in c.BaseClass.Methods) {
-					if (IsTestMethod(method)) {
+					if (IsTestMember(method)) {
 						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
-						TestMethod testMethod = new TestMethod(c.BaseClass.Name, baseTestMethod);
+						TestMember testMethod = new TestMember(c.BaseClass.Name, baseTestMethod);
 						if (method.IsVirtual) {
-							if (!testMethods.Contains(method.Name)) {
-								testMethods.Add(testMethod);	
+							if (!testMembers.Contains(method.Name)) {
+								testMembers.Add(testMethod);	
 							}
 						} else {
-							if (!testMethods.Contains(testMethod.Name)) {
-								testMethods.Add(testMethod);
+							if (!testMembers.Contains(testMethod.Name)) {
+								testMembers.Add(testMethod);
 							}
 						}
 					}
 				}
 				c = c.BaseClass;
 			}
-			return testMethods;
+			return testMembers;
 		}
 		
-		bool IsTestMethod(IMember method)
+		bool IsTestMember(IMember member)
 		{
-			return testFrameworks.IsTestMethod(method);
+			return testFrameworks.IsTestMember(member);
 		}
 		
 		/// <summary>
-		/// Updates the test class's test result after the test method's
+		/// Updates the test class's test result after the test member's
 		/// test result has changed.
 		/// </summary>
-		void TestMethodsResultChanged(object source, EventArgs e)
+		void TestMembersResultChanged(object source, EventArgs e)
 		{
-			Result = testMethods.Result;
+			Result = testMembers.Result;
 		}
 		
 		/// <summary>
@@ -331,7 +331,7 @@ namespace ICSharpCode.UnitTesting
 				
 		/// <summary>
 		/// This function adds the base class as a prefix and tries to find
-		/// the corresponding test method.
+		/// the corresponding test member.
 		/// 
 		/// Actual method name:
 		/// 
@@ -351,15 +351,15 @@ namespace ICSharpCode.UnitTesting
 		/// The test method name would have the base class name prefixed 
 		/// to it.
 		/// </remarks>
-		TestMethod GetPrefixedTestMethod(string testResultName)
+		TestMember GetPrefixedTestMember(string testResultName)
 		{
 			IClass baseClass = c.BaseClass;
 			while (baseClass != null) {
-				string methodName = TestMethod.GetMethodName(testResultName);
-				string actualMethodName = String.Concat(baseClass.Name, ".", methodName);
-				TestMethod method = GetTestMethod(actualMethodName);
-				if (method != null) {
-					return method;
+				string memberName = TestMember.GetMemberName(testResultName);
+				string actualMemberName = String.Concat(baseClass.Name, ".", memberName);
+				TestMember member = GetTestMember(actualMemberName);
+				if (member != null) {
+					return member;
 				}
 				baseClass = baseClass.BaseClass;
 			}

@@ -73,23 +73,23 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Returns the location of the specified test method in the
+		/// Returns the location of the specified test member in the
 		/// project being tested.
 		/// </summary>
-		static FileLineReference FindTest(string methodName, TestProject testProject)
+		static FileLineReference FindTest(string memberName, TestProject testProject)
 		{
 			if (testProject != null) {
-				TestMethod testMethod = testProject.TestClasses.GetTestMethod(methodName);
-				if (testMethod != null) {
-					return FindTest(testMethod);
+				TestMember testMember = testProject.TestClasses.GetTestMember(memberName);
+				if (testMember != null) {
+					return FindTest(testMember);
 				}
 			}
 			return null;
 		}
 		
-		static FileLineReference FindTest(TestMethod testMethod)
+		static FileLineReference FindTest(TestMember testMember)
 		{
-			MemberResolveResult resolveResult = new MemberResolveResult(null, null, testMethod.Method);
+			MemberResolveResult resolveResult = new MemberResolveResult(null, null, testMember.Member);
 			FilePosition filePos = resolveResult.GetDefinitionPosition();
 			return new FileLineReference(filePos.FileName, filePos.Line - 1, filePos.Column - 1);
 		}

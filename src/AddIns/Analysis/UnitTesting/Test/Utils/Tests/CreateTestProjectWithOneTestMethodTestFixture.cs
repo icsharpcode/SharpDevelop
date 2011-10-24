@@ -14,7 +14,7 @@ namespace UnitTesting.Tests.Utils.Tests
 	{
 		TestProject testProject;
 		TestClass testClass;
-		TestMethod testMethod;
+		TestMember testMethod;
 		
 		[SetUp]
 		public void Init()
@@ -24,8 +24,8 @@ namespace UnitTesting.Tests.Utils.Tests
 			
 			if (testProject.TestClasses.Count > 0) {
 				testClass = testProject.TestClasses[0];
-				if (testClass.TestMethods.Count > 0) {
-					testMethod = testClass.TestMethods[0];
+				if (testClass.TestMembers.Count > 0) {
+					testMethod = testClass.TestMembers[0];
 				}
 			}	
 		}
@@ -66,7 +66,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void TestClassHasOneTestMethod()
 		{
-			Assert.AreEqual(1, testClass.TestMethods.Count);
+			Assert.AreEqual(1, testClass.TestMembers.Count);
 		}
 		
 		[Test]
@@ -78,20 +78,20 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void TestMethodDeclaringTypeIsNotNull()
 		{
-			Assert.IsNotNull(testMethod.Method.DeclaringType);
+			Assert.IsNotNull(testMethod.Member.DeclaringType);
 		}
 		
 		[Test]
 		public void TestMethodDeclaringTypeEqualsTestClass()
 		{
-			Assert.AreEqual(testClass.Class, testMethod.Method.DeclaringType);
+			Assert.AreEqual(testClass.Class, testMethod.Member.DeclaringType);
 		}
 		
 		[Test]
 		public void TestMethodRegionIsLine4Column20()
 		{
 			DomRegion expectedRegion = new DomRegion(4, 20);
-			Assert.AreEqual(expectedRegion, testMethod.Method.Region);
+			Assert.AreEqual(expectedRegion, testMethod.Member.Region);
 		}
 		
 		[Test]
@@ -103,7 +103,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void ClassMethodMatchesTestMethodMethod()
 		{
-			Assert.AreEqual(testClass.Class.Methods[0], testMethod.Method);
+			Assert.AreEqual(testClass.Class.Methods[0], testMethod.Member);
 		}
 	}
 }

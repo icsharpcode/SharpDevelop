@@ -31,7 +31,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
 			if (testTreeView != null) {
-				return testTreeView.SelectedMethod;
+				return testTreeView.SelectedMember;
 			}
 			MemberNode memberNode = caller as MemberNode;
 			if (memberNode != null) {
@@ -106,7 +106,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			IMember m = GetMember(caller);
 			if (m != null) {
-				return testFrameworks.IsTestMethod(m);
+				return testFrameworks.IsTestMember(m);
 			}
 			IClass c = GetClass(caller);
 			if (ClassHasProject(c)) {

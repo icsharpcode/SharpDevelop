@@ -16,8 +16,8 @@ namespace UnitTesting.Tests.Project
 	{
 		TestProject testProject;
 		TestClass testClass;
-		TestMethod testMethod1;
-		TestMethod testMethod2;
+		TestMember testMethod1;
+		TestMember testMethod2;
 		MockClass mockClass;
 		MockTestFrameworksWithNUnitFrameworkSupport testFrameworks;
 		
@@ -49,14 +49,14 @@ namespace UnitTesting.Tests.Project
 			testFrameworks = new MockTestFrameworksWithNUnitFrameworkSupport();
 			testProject = new TestProject(project, projectContent, testFrameworks);
 			testClass = testProject.TestClasses[0];
-			testMethod1 = testClass.TestMethods[0];
-			testMethod2 = testClass.TestMethods[1];
+			testMethod1 = testClass.TestMembers[0];
+			testMethod2 = testClass.TestMembers[1];
 		}
 		
 		[Test]
 		public void TwoMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMethods.Count);
+			Assert.AreEqual(2, testClass.TestMembers.Count);
 		}
 			
 		[Test]
@@ -157,26 +157,26 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void FindTestMethod()
 		{
-			TestMethod method = testProject.TestClasses.GetTestMethod("RootNamespace.Tests.MyTestFixture.TestMethod1");
+			TestMember method = testProject.TestClasses.GetTestMember("RootNamespace.Tests.MyTestFixture.TestMethod1");
 			Assert.AreSame(testMethod1, method);
 		}
 		
 		[Test]
 		public void FindTestMethodFromUnknownTestMethod()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMethod("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
+			Assert.IsNull(testProject.TestClasses.GetTestMember("RootNamespace.Tests.MyTestFixture.UnknownTestMethod"));
 		}
 		
 		[Test]
 		public void FindTestMethodFromUnknownTestClass()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMethod("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
+			Assert.IsNull(testProject.TestClasses.GetTestMember("RootNamespace.Tests.UnknownTestFixture.TestMethod1"));
 		}
 		
 		[Test]
 		public void FindTestMethodFromInvalidTestMethodName()
 		{
-			Assert.IsNull(testProject.TestClasses.GetTestMethod(String.Empty));
+			Assert.IsNull(testProject.TestClasses.GetTestMember(String.Empty));
 		}
 		
 		/// <summary>
@@ -199,8 +199,8 @@ namespace UnitTesting.Tests.Project
 			testClass.UpdateClass(mockClass);
 			
 			// Ensure that the TestClass now uses the new method object.
-			TestMethod method = testClass.GetTestMethod("TestMethod1");
-			Assert.AreSame(mockMethod, method.Method);
+			TestMember method = testClass.GetTestMember("TestMethod1");
+			Assert.AreSame(mockMethod, method.Member);
 		}
 	}
 }

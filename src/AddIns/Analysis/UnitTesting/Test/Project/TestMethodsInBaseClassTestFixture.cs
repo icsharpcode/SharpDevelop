@@ -68,19 +68,19 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TwoTestMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMethods.Count);
+			Assert.AreEqual(2, testClass.TestMembers.Count);
 		}
 		
 		[Test]
 		public void DerivedMethod()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("DerivedMethod"));
+			Assert.IsTrue(testClass.TestMembers.Contains("DerivedMethod"));
 		}
 		
 		[Test]
 		public void BaseMethod()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("TestFixtureBase.BaseMethod"));
+			Assert.IsTrue(testClass.TestMembers.Contains("TestFixtureBase.BaseMethod"));
 		}
 		
 		/// <summary>
@@ -92,8 +92,8 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseMethodDeclaringTypeIsDerivedClass()
 		{
-			TestMethod method = testClass.TestMethods["TestFixtureBase.BaseMethod"];
-			Assert.AreEqual(c, method.Method.DeclaringType);
+			TestMember method = testClass.TestMembers["TestFixtureBase.BaseMethod"];
+			Assert.AreEqual(c, method.Member.DeclaringType);
 		}
 		
 		[Test]

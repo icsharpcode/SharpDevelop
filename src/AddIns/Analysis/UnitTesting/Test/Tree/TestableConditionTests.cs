@@ -67,7 +67,7 @@ namespace UnitTesting.Tests.Tree
 		{
 			MockTestTreeView mockTreeView = new MockTestTreeView();
 			MockMember mockMember = new MockMember();
-			mockTreeView.SelectedMethod = mockMember;
+			mockTreeView.SelectedMember = mockMember;
 			
 			Assert.IsTrue(Object.ReferenceEquals(mockMember, TestableCondition.GetMember(mockTreeView)));
 		}

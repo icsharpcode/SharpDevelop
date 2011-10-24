@@ -8,28 +8,28 @@ using NUnit.Framework;
 namespace UnitTesting.Tests.Project
 {
 	/// <summary>
-	/// Tests TestMethod.GetMethodName.
+	/// Tests TestMember.GetMemberName.
 	/// </summary>
 	[TestFixture]
-	public class MethodNameTests
+	public class TestMemberGetMethodNameTests
 	{
 		[Test]
 		public void RootNamespaceClass()
 		{
 			string qualifiedName = "RootNamespace.TestFixture.Method";
-			Assert.AreEqual("Method", TestMethod.GetMethodName(qualifiedName));
+			Assert.AreEqual("Method", TestMember.GetMemberName(qualifiedName));
 		}
 		
 		[Test]
 		public void NullName()
 		{
-			Assert.IsNull(TestMethod.GetMethodName(null));
+			Assert.IsNull(TestMember.GetMemberName(null));
 		}
 		
 		[Test]
 		public void NoClassOrNamespace()
 		{
-			Assert.IsNull(TestMethod.GetMethodName("Method"));
+			Assert.IsNull(TestMember.GetMemberName("Method"));
 		}
 	}
 }

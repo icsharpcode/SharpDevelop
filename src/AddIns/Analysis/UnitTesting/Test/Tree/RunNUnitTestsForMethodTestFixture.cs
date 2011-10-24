@@ -19,7 +19,7 @@ namespace UnitTesting.Tests.Tree
 		
 		void CreateNUnitTestRunner()
 		{
-			selectedTests = SelectedTestsHelper.CreateSelectedTestMethod();
+			selectedTests = SelectedTestsHelper.CreateSelectedTestMember();
 			context = new MockNUnitTestRunnerContext();
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 			

@@ -72,14 +72,14 @@ namespace ICSharpCode.Profiler.AddIn
 					.Select(m2 => m2.FullyQualifiedName);
 			}
 			
-			if (selectedTests.Method == null) {
+			if (selectedTests.Member == null) {
 				return content.Classes
 					.Where(c => c.FullyQualifiedName == selectedTests.Class.DotNetName).First().Methods
 					.Where(m => m.Attributes.Any(a2 => a2.AttributeType.FullyQualifiedName == "NUnit.Framework.TestAttribute"))
 					.Select(m2 => m2.FullyQualifiedName);
 			}
 			
-			return new[] { selectedTests.Class.DotNetName + "." + selectedTests.Method.Name };
+			return new[] { selectedTests.Class.DotNetName + "." + selectedTests.Member.Name };
 		}
 		
 		void AfterFinish(SelectedTests selectedTests, string path)

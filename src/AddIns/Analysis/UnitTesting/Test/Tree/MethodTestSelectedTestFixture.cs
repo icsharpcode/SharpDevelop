@@ -34,7 +34,7 @@ namespace UnitTesting.Tests.Tree
 			MockTestTreeView treeView = new MockTestTreeView();
 			treeView.SelectedProject = project;
 			treeView.SelectedNamespace = "MyNamespace";
-			treeView.SelectedMethod = method;
+			treeView.SelectedMember = method;
 			
 			selectedTests = new SelectedTests(treeView, projects.ToArray());
 		}
@@ -63,7 +63,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void MethodPropertyReturnsSelectedMethod()
 		{
-			Assert.AreEqual(method, selectedTests.Method);
+			Assert.AreEqual(method, selectedTests.Member);
 		}
 		
 		[Test]

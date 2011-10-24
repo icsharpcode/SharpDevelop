@@ -525,6 +525,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		/// <summary>
+		/// Resolves assembly references for this project.
+		/// The resulting list of resolved references will include project references.
+		/// </summary>
 		public virtual IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
 		{
 			ResolveAssemblyReferences();
