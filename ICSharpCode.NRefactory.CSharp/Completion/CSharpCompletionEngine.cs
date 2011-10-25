@@ -349,12 +349,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				}
 				
-				return HandleKeywordCompletion (tokenIndex, token);
+				var keywordCompletion = HandleKeywordCompletion (tokenIndex, token);
+				if (keywordCompletion == null && controlSpace)
+					goto default;
+				return keywordCompletion;
 			// Automatic completion
 			default:
 				if (IsInsideComment () || IsInsideString ())
 					return null;
-				if (!(char.IsLetter (completionChar) || completionChar == '_'))
+				var identifierStart = GetExpressionAtCursor ();
+				
+				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
 					return controlSpace ? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
@@ -372,12 +377,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 				}
 				
-				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart == null)
 					return null;
+				
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
 				var contextList = new CompletionDataWrapper (this);
+				if (n is ArrayInitializerExpression) {
+					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
+					if (initalizerResult != null) {
+						foreach (var property in initalizerResult.Item1.Type.GetProperties (ctx)) {
+							if (!property.IsPublic)
+								continue;
+							contextList.AddMember (property);
+						}
+						foreach (var field in initalizerResult.Item1.Type.GetProperties (ctx)){
+							if (!field.IsPublic)
+								continue;
+							contextList.AddMember (field);
+						}
+						return contextList.Result;
+					}
+					return null;
+				}
 				
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
 					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
@@ -1501,16 +1523,22 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 				
 			var baseUnit = ParseStub ("");
-			
 			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
 			if (expr == null)
 				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
 			if (expr == null) {
 				baseUnit = ParseStub ("()");
 				expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
-				if (expr == null)
-					return null;
 			}
+			
+			// try initializer expression
+			if (expr == null) {
+				baseUnit = ParseStub ("a = b};", false);
+				expr = baseUnit.GetNodeAt<ArrayInitializerExpression> (location.Line, location.Column - 1); 
+			}
+			Print (baseUnit);
+			if (expr == null)
+				return null;
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			if (member != null && member2 != null) {
