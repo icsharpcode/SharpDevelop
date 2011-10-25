@@ -2686,7 +2686,7 @@ class MyTest
 		[Test()]
 		public void TestBug534680 ()
 		{
-				CompletionDataList provider = CreateProvider (
+				CompletionDataList provider = CreateCtrlSpaceProvider (
 @"
 class Foo
 {

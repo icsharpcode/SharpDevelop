@@ -358,7 +358,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (IsInsideComment () || IsInsideString ())
 					return null;
 				var identifierStart = GetExpressionAtCursor ();
-				
+				if (IsInLinqContext (offset)) {
+					tokenIndex = offset;
+					token = GetPreviousToken (ref tokenIndex, false); // token last typed
+					if (linqKeywords.Contains (token)) {
+						if (token == "from") // after from no auto code completion.
+							return null;
+						return DefaultControlSpaceItems ();
+					}
+					var dataList = new CompletionDataWrapper (this);
+					AddKeywords (dataList, linqKeywords);
+					return dataList.Result;
+				}
+					
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
 					return controlSpace ? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
@@ -437,25 +449,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //				result = FindExpression (dom, completionContext, -1);
 //				if (result == null)
 //					return null;
-//				if (IsInLinqContext (result)) {
-//					tokenIndex = offset;
-//					token = GetPreviousToken (ref tokenIndex, false); // token last typed
-//					token = GetPreviousToken (ref tokenIndex, false); // possible linq keyword ?
-//					triggerWordLength = 1;
-//				
-//					if (linqKeywords.Contains (token)) {
-//						if (token == "from") // after from no auto code completion.
-//							return null;
-//						result.Expression = "";
-//						return CreateCtrlSpaceCompletionData (completionContext, result);
-//					}
-//					CompletionDataList dataList = new ProjectDomCompletionDataList ();
-//					CompletionDataCollector col = new CompletionDataCollector (this, dom, dataList, Document.CompilationUnit, null, new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset));
-//					foreach (string kw in linqKeywords) {
-//						col.Add (kw, "md-keyword");
-//					}
-//					return dataList;
-//				} else if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
+//				 else if (result.ExpressionContext != ExpressionContext.IdentifierExpected) {
 //					triggerWordLength = 1;
 //					bool autoSelect = true;
 //					IType returnType = null;
@@ -517,6 +511,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //				break;
 			}
 			return null;
+		}
+
+		bool IsInLinqContext (int offset)
+		{
+			string token;
+			while (null != (token = GetPreviousToken (ref offset, true))) {
+				if (token == "from")
+					return true;
+				if (token == ";")
+					return false;
+			}
+			return false;
 		}
 		
 		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
@@ -1536,7 +1542,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				baseUnit = ParseStub ("a = b};", false);
 				expr = baseUnit.GetNodeAt<ArrayInitializerExpression> (location.Line, location.Column - 1); 
 			}
-			Print (baseUnit);
+			
 			if (expr == null)
 				return null;
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
