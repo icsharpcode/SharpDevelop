@@ -1126,5 +1126,31 @@ public static void Query(MySqlConnection conn, string database, string table)
 			Assert.IsNotNull (provider.Find ("WriteLine"), "method 'WriteLine' not found.");
 		}
 		
+		[Test()]
+		public void TestAttributeContext ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"
+using System;
+
+$[O$
+class Test {
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Obsolete"), "attribute 'Obsolete' not found.");
+		}
+		
+		[Test()]
+		public void TestAttributeInNonAttributeContext ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (@"
+using System;
+
+class Test {
+$$
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("ObsoleteAttribute"), "attribute 'ObsoleteAttribute' not found.");
+		}
+		
 	}
 }
