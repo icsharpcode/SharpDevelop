@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -22,7 +23,7 @@ using ICSharpCode.SharpDevelop.Project;
 namespace SearchAndReplace
 {
 	/// <summary>
-	/// Provides all search actions: find next, find all, mark all, mark result
+	/// Provides all search actions: find next, parallel and sequential find all, mark all, mark result, interactive replace and replace all.
 	/// </summary>
 	public class SearchManager
 	{
@@ -74,14 +75,24 @@ namespace SearchAndReplace
 			SearchResultsPad.Instance.BringToFront();
 		}
 		
-		public static IObservable<SearchedFile> FindAll(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
-		                                                SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null, bool useParallel = true)
+		public static IObservable<SearchedFile> FindAllParallel(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
+		                                                        SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null)
 		{
 			currentSearchRegion = null;
 			var strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
 			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
 			IEnumerable<FileName> fileList = GenerateFileList(target, baseDirectory, filter, searchSubdirs);
-			return new SearchRun(strategy, fileFinder, fileList, progressMonitor) { UseParallel = useParallel, Target = target, Selection = selection };
+			return new SearchRun(strategy, fileFinder, fileList, progressMonitor) { Target = target, Selection = selection };
+		}
+		
+		public static IEnumerable<SearchedFile> FindAll(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
+		                                                SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null)
+		{
+			currentSearchRegion = null;
+			var strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
+			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
+			IEnumerable<FileName> fileList = GenerateFileList(target, baseDirectory, filter, searchSubdirs);
+			return new SearchRun(strategy, fileFinder, fileList, progressMonitor) { Target = target, Selection = selection }.GetResults();
 		}
 		
 		class SearchRun : IObservable<SearchedFile>, IDisposable
@@ -91,8 +102,6 @@ namespace SearchAndReplace
 			IEnumerable<FileName> fileList;
 			IProgressMonitor monitor;
 			CancellationTokenSource cts;
-			
-			public bool UseParallel { get; set; }
 			
 			public SearchTarget Target { get; set; }
 			
@@ -109,33 +118,36 @@ namespace SearchAndReplace
 			
 			public IDisposable Subscribe(IObserver<SearchedFile> observer)
 			{
-				if (UseParallel) {
-					LoggingService.Debug("Parallel FindAll starting");
-					var task = new System.Threading.Tasks.Task(
-						delegate {
-							var list = fileList.ToList();
-							ThrowIfCancellationRequested();
-							SearchParallel(list, observer);
-						}, TaskCreationOptions.LongRunning);
-					task.ContinueWith(
-						t => {
-							LoggingService.Debug("Parallel FindAll finished " + (t.IsFaulted ? "with error" : "successfully"));
-							if (t.Exception != null)
-								observer.OnError(t.Exception);
-							else
-								observer.OnCompleted();
-							this.Dispose();
-						});
-					task.Start();
-				} else {
-					var list = fileList.ToList();
-					monitor.CancellationToken.ThrowIfCancellationRequested();
-					cts.Token.ThrowIfCancellationRequested();
-					foreach (var file in list) {
-						//SearchFile(file, strategy, monitor.CancellationToken);
-					}
-				}
+				LoggingService.Debug("Parallel FindAll starting");
+				var task = new System.Threading.Tasks.Task(
+					delegate {
+						var list = fileList.ToList();
+						ThrowIfCancellationRequested();
+						SearchParallel(list, observer);
+					}, TaskCreationOptions.LongRunning);
+				task.ContinueWith(
+					t => {
+						LoggingService.Debug("Parallel FindAll finished " + (t.IsFaulted ? "with error" : "successfully"));
+						if (t.Exception != null)
+							observer.OnError(t.Exception);
+						else
+							observer.OnCompleted();
+						this.Dispose();
+					});
+				task.Start();
 				return this;
+			}
+			
+			public IEnumerable<SearchedFile> GetResults()
+			{
+				var list = fileList.ToList();
+				foreach (var file in list) {
+					ThrowIfCancellationRequested();
+					var results = SearchFile(file);
+					if (results != null)
+						yield return results;
+					monitor.Progress += 1.0 / list.Count;
+				}
 			}
 			
 			void SearchParallel(List<FileName> files, IObserver<SearchedFile> observer)
@@ -237,6 +249,7 @@ namespace SearchAndReplace
 			}
 		}
 		
+		#region FindNext
 		static SearchRegion currentSearchRegion;
 		
 		public static SearchResultMatch FindNext(string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
@@ -396,7 +409,8 @@ namespace SearchAndReplace
 					searchSubdirs == this.searchSubdirs;
 			}
 		}
-		
+		#endregion
+
 		public static void MarkAll(IObservable<SearchedFile> results)
 		{
 			int count = 0;
@@ -412,26 +426,25 @@ namespace SearchAndReplace
 				);
 		}
 		
-		public static void ReplaceAll(IObservable<SearchedFile> results, string replacement, CancellationToken ct)
+		public static int ReplaceAll(IEnumerable<SearchedFile> results, string replacement, CancellationToken ct)
 		{
 			int count = 0;
-			results.ObserveOnUIThread()
-				.Subscribe(
-					searchedFile => {
-						int difference = 0;
-						foreach (var match in searchedFile.Matches) {
-							ITextEditor textArea = OpenTextArea(match.FileName, false);
-							if (textArea != null) {
-								string newString = match.TransformReplacePattern(replacement);
-								textArea.Document.Replace(match.StartOffset + difference, match.Length, newString);
-								difference += newString.Length - match.Length;
-								count++;
-							}
-						}
-					},
-					error => MessageService.ShowException(error),
-					() => ShowReplaceDoneMessage(count)
-				);
+			foreach (var searchedFile in results) {
+				ct.ThrowIfCancellationRequested();
+				int difference = 0;
+				ITextEditor textArea = OpenTextArea(searchedFile.FileName, false);
+				if (textArea != null) {
+					foreach (var match in searchedFile.Matches) {
+						ct.ThrowIfCancellationRequested();
+						string newString = match.TransformReplacePattern(replacement);
+						textArea.Document.Replace(match.StartOffset + difference, match.Length, newString);
+						difference += newString.Length - match.Length;
+						count++;
+					}
+				}
+			}
+			
+			return count;
 		}
 
 		static void MarkResult(SearchResultMatch result, bool switchToOpenedView = true)
@@ -466,7 +479,7 @@ namespace SearchAndReplace
 			return null;
 		}
 		
-		static void ShowReplaceDoneMessage(int count)
+		public static void ShowReplaceDoneMessage(int count)
 		{
 			if (count == 0) {
 				ShowNotFoundMessage();

@@ -31,11 +31,11 @@ namespace SearchAndReplace
 			this.IsExpanded = true;
 		}
 
-		public void Add(SearchedFile matches)
+		public void Add(SearchedFile searchedFile)
 		{
-			var results = matches.Select(m => new SearchResultNode(m)).ToList();
+			var results = searchedFile.Matches.Select(m => new SearchResultNode(m)).ToList();
 			resultNodes.AddRange(results);
-			this.fileNodes.Add(new SearchFileNode(matches.Key, results));
+			this.fileNodes.Add(new SearchFileNode(searchedFile.FileName, results));
 			InvalidateText();
 		}
 		

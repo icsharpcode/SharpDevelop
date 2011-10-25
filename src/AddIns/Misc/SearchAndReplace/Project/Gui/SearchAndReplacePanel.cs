@@ -105,8 +105,10 @@ namespace SearchAndReplace
 			WritebackOptions();
 			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = "Searching ...";
-			var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
-			SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
+			try {
+				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
+				SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
+			} catch (OperationCanceledException) {}
 		}
 		
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
@@ -114,19 +116,24 @@ namespace SearchAndReplace
 			WritebackOptions();
 			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = "Searching ...";
-			var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
-			SearchManager.MarkAll(results);
+			try {
+				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				SearchManager.MarkAll(results);
+			} catch (OperationCanceledException) {}
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
+			int count = -1;
 			AsynchronousWaitDialog.RunInCancellableWaitDialog(
 				"Searching ...", null,
 				monitor => {
-					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection, false);
-					SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
+					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
+					count = SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
 				});
+			if (count != -1)
+				SearchManager.ShowReplaceDoneMessage(count);
 		}
 		
 		void ReplaceButtonClicked(object sender, EventArgs e)
