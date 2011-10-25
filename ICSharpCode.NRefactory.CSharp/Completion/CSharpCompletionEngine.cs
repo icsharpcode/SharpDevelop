@@ -553,6 +553,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Predicate<ITypeDefinition> typePred = null, Predicate<IMember> memberPred = null)
 		{
 			var currentType = state.CurrentTypeDefinition ?? this.currentType;
+			var currentMember = state.CurrentMember ?? this.currentMember;
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
@@ -564,12 +565,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				
-				foreach (var member in currentType.Resolve (ctx).GetMembers (ctx)) {
-					if (memberPred == null || memberPred (member))
-						wrapper.AddMember (member);
+				if (currentMember !=  null) {
+					foreach (var member in currentType.Resolve (ctx).GetMembers (ctx)) {
+						if (memberPred == null || memberPred (member))
+							wrapper.AddMember (member);
+					}
 				}
-				
 				foreach (var p in currentType.TypeParameters) {
 					wrapper.AddTypeParameter (p);
 				}
