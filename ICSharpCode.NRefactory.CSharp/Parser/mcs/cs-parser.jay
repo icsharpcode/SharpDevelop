@@ -75,6 +75,8 @@ namespace Mono.CSharp
 		ParametersCompiled current_local_parameters;
 
 		bool parsing_anonymous_method;
+		
+		bool async_block;
 
 		///
 		/// An out-of-band stack.
@@ -885,7 +887,7 @@ named_attribute_argument
 	;
 	
 named_argument
-	: IDENTIFIER COLON opt_named_modifier expression
+	: identifier_inside_body COLON opt_named_modifier expression
 	  {
 		if (lang_version <= LanguageVersion.V_3)
 			FeatureIsNotAvailable (GetLocation ($1), "named argument");
@@ -1254,14 +1256,14 @@ method_declaration
 
 		// Add it early in the case of body being eof for full ast
 		Method m = (Method) $1;
-		lexer.async_block = (m.ModFlags & Modifiers.ASYNC) != 0;
+		async_block = (m.ModFlags & Modifiers.ASYNC) != 0;
 		current_container.AddMethod (m);
 	  }
 	  method_body
 	  {
 		Method method = (Method) $1;
 		method.Block = (ToplevelBlock) $3;
-		lexer.async_block = false;
+		async_block = false;
 		
 		if (method.Block == null) {
 			lbag.AppendToMember (method, savedLocation); // semicolon
@@ -3709,13 +3711,13 @@ typeof_type_expression
 	;
 	
 unbound_type_name
-	: IDENTIFIER generic_dimension
+	: identifier_inside_body generic_dimension
 	  {  
 		var lt = (Tokenizer.LocatedToken) $1;
 
 		$$ = new SimpleName (lt.Value, (int) $2, lt.Location);
 	  }
-	| qualified_alias_member IDENTIFIER generic_dimension
+	| qualified_alias_member identifier_inside_body generic_dimension
 	  {
 		var lt1 = (Tokenizer.LocatedToken) $1;
 		var lt2 = (Tokenizer.LocatedToken) $2;
@@ -3723,7 +3725,7 @@ unbound_type_name
 		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (int) $3, lt1.Location);
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
-	| unbound_type_name DOT IDENTIFIER
+	| unbound_type_name DOT identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
@@ -3731,7 +3733,7 @@ unbound_type_name
 			DotLocation = GetLocation ($2)
 		};
 	  }
-	| unbound_type_name DOT IDENTIFIER generic_dimension
+	| unbound_type_name DOT identifier_inside_body generic_dimension
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
@@ -3739,7 +3741,7 @@ unbound_type_name
 			DotLocation = GetLocation ($2)
 		};
 	  }
-	| namespace_or_type_name DOT IDENTIFIER generic_dimension
+	| namespace_or_type_name DOT identifier_inside_body generic_dimension
 	  {
 		var te = ((MemberName) $1).GetTypeExpression ();
 		if (te.HasTypeArguments)
@@ -3878,22 +3880,20 @@ unary_expression
 	  {
 		$$ = new Unary (Unary.Operator.OnesComplement, (Expression) $2, GetLocation ($1));
 	  }
-	| cast_expression
-	| await_expression
-	;
-
-cast_expression
-	: OPEN_PARENS_CAST type CLOSE_PARENS prefixed_unary_expression
+	| OPEN_PARENS_CAST type CLOSE_PARENS prefixed_unary_expression
 	  {
 		$$ = new Cast ((FullNamedExpression) $2, (Expression) $4, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($3));
 	  }
-	;
-	
-await_expression
-	: AWAIT unary_expression
+	| AWAIT prefixed_unary_expression
 	  {
-		current_block.ParametersBlock.IsAsync = true;
+		if (!async_block) {
+			report.Error (1992, GetLocation ($1),
+				"The `await' operator can only be used when its containing method or lambda expression is marked with the `async' modifier");
+		} else {
+			current_block.ParametersBlock.IsAsync = true;
+		}
+		
 		$$ = new Await ((Expression) $2, GetLocation ($1));
 	  }
 	;
@@ -4092,8 +4092,13 @@ conditional_expression
 	  }
 	;
 
+expression_recover
+	: expression
+	| error { $$ = new NullLiteral (GetLocation ($1)); }
+	;
+
 assignment_expression
-	: prefixed_unary_expression ASSIGN expression
+	: prefixed_unary_expression ASSIGN expression_recover
 	  {
 		$$ = new SimpleAssign ((Expression) $1, (Expression) $3, GetLocation ($2));
 	  }
@@ -4173,13 +4178,13 @@ lambda_parameter_list
 	;
 
 lambda_parameter
-	: parameter_modifier parameter_type IDENTIFIER
+	: parameter_modifier parameter_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 
 		$$ = new Parameter ((FullNamedExpression) $2, lt.Value, (Parameter.Modifier) $1, null, lt.Location);
 	  }
-	| parameter_type IDENTIFIER
+	| parameter_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 
@@ -4240,7 +4245,7 @@ lambda_expression
 		$$ = end_anonymous ((ParametersBlock) $4);
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
-	| ASYNC IDENTIFIER ARROW
+	| ASYNC identifier_inside_body ARROW
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		Parameter p = new ImplicitLambdaParameter (lt.Value, lt.Location);
@@ -4800,7 +4805,7 @@ empty_statement
 	;
 
 labeled_statement
-	: IDENTIFIER COLON 
+	: identifier_inside_body COLON 
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		LabeledStatement labeled = new LabeledStatement (lt.Value, current_block, lt.Location);
@@ -4908,8 +4913,19 @@ pointer_star
 	  }
 	;
 
+identifier_inside_body
+	: IDENTIFIER
+	| AWAIT
+	  {
+		if (async_block) {
+			report.Error (4003, GetLocation ($1), "`await' cannot be used as an identifier within an async method or lambda expression");
+			$$ = Tokenizer.LocatedToken.Create ("await", GetLocation ($1));
+		}
+	  }
+	;
+
 block_variable_declaration
-	: variable_type IDENTIFIER
+	: variable_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		var li = new LocalVariable (current_block, lt.Value, lt.Location);
@@ -4922,7 +4938,7 @@ block_variable_declaration
 		current_variable = null;
 		lbag.AppendTo ($$, GetLocation ($6));
 	  }
-	| CONST variable_type IDENTIFIER
+	| CONST variable_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		var li = new LocalVariable (current_block, lt.Value, LocalVariable.Flags.Constant, lt.Location);
@@ -4981,7 +4997,7 @@ variable_declarators
 	;
 	
 variable_declarator
-	: COMMA IDENTIFIER
+	: COMMA identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;	  
 		var li = new LocalVariable (current_variable.Variable, lt.Value, lt.Location);
@@ -4990,7 +5006,7 @@ variable_declarator
 		current_block.AddLocalName (li);
 	  	lbag.AddLocation (d, GetLocation ($1));
 	  }
-	| COMMA IDENTIFIER ASSIGN block_variable_initializer
+	| COMMA identifier_inside_body ASSIGN block_variable_initializer
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;	  
 		var li = new LocalVariable (current_variable.Variable, lt.Value, lt.Location);
@@ -5024,7 +5040,7 @@ const_declarators
 	;
 	
 const_declarator
-	: COMMA IDENTIFIER ASSIGN constant_initializer_expr
+	: COMMA identifier_inside_body ASSIGN constant_initializer_expr
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;	  
 		var li = new LocalVariable (current_block, lt.Value, LocalVariable.Flags.Constant, lt.Location);
@@ -5277,7 +5293,7 @@ opt_for_initializer
 	;
 
 for_initializer
-	: variable_type IDENTIFIER
+	: variable_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		var li = new LocalVariable (current_block, lt.Value, lt.Location);
@@ -5329,7 +5345,7 @@ foreach_statement
 		report.Error (230, GetLocation ($1), "Type and identifier are both required in a foreach statement");
 		$$ = null;
 	  }
-	| FOREACH open_parens_any type IDENTIFIER IN expression CLOSE_PARENS 
+	| FOREACH open_parens_any type identifier_inside_body IN expression CLOSE_PARENS 
 	  {
 		start_block (GetLocation ($2));
 		current_block.IsCompilerGenerated = true;
@@ -5377,7 +5393,7 @@ continue_statement
 	;
 
 goto_statement
-	: GOTO IDENTIFIER SEMICOLON 
+	: GOTO identifier_inside_body SEMICOLON 
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		$$ = new Goto (lt.Value, GetLocation ($1));
@@ -5412,7 +5428,7 @@ throw_statement
 	;
 
 yield_statement 
-	: IDENTIFIER RETURN opt_expression SEMICOLON
+	: identifier_inside_body RETURN opt_expression SEMICOLON
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		string s = lt.Value;
@@ -5428,7 +5444,7 @@ yield_statement
 		$$ = new Yield ((Expression) $3, lt.Location);
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
-	| IDENTIFIER BREAK SEMICOLON
+	| identifier_inside_body BREAK SEMICOLON
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		string s = lt.Value;
@@ -5499,7 +5515,7 @@ catch_clauses
 
 opt_identifier
 	: /* empty */
-	| IDENTIFIER
+	| identifier_inside_body
 	;
 
 catch_clause 
@@ -5575,7 +5591,7 @@ lock_statement
 	;
 
 fixed_statement
-	: FIXED open_parens_any variable_type IDENTIFIER
+	: FIXED open_parens_any variable_type identifier_inside_body
 	  {
 	    start_block (GetLocation ($2));
 	    
@@ -5603,7 +5619,7 @@ fixed_statement
 	;
 
 using_statement
-	: USING open_parens_any variable_type IDENTIFIER
+	: USING open_parens_any variable_type identifier_inside_body
 	  {
 	    start_block (GetLocation ($2));
 	    
@@ -5695,7 +5711,7 @@ query_expression
 	;
 	
 first_from_clause
-	: FROM_FIRST IDENTIFIER IN expression
+	: FROM_FIRST identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5703,7 +5719,7 @@ first_from_clause
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
 		$$ = new Linq.QueryExpression (new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1)));
 	  }
-	| FROM_FIRST type IDENTIFIER IN expression
+	| FROM_FIRST type identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5718,7 +5734,7 @@ first_from_clause
 	;
 
 nested_from_clause
-	: FROM IDENTIFIER IN expression
+	: FROM identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5726,7 +5742,7 @@ nested_from_clause
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
 		$$ = new Linq.QueryExpression (new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1)));
 	  }
-	| FROM type IDENTIFIER IN expression
+	| FROM type identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5741,7 +5757,7 @@ nested_from_clause
 	;
 	
 from_clause
-	: FROM IDENTIFIER IN
+	: FROM identifier_inside_body IN
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
@@ -5756,7 +5772,7 @@ from_clause
 		
 		((Linq.QueryBlock)current_block).AddRangeVariable (sn);
 	  }	  
-	| FROM type IDENTIFIER IN
+	| FROM type identifier_inside_body IN
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
@@ -5860,7 +5876,7 @@ query_body_clause
 	;
 	
 let_clause
-	: LET IDENTIFIER ASSIGN 
+	: LET identifier_inside_body ASSIGN 
 	  {
 	  	current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
@@ -5893,7 +5909,7 @@ where_clause
 	;
 	
 join_clause
-	: JOIN IDENTIFIER IN
+	: JOIN identifier_inside_body IN
 	  {
 		if (linq_clause_blocks == null)
 			linq_clause_blocks = new Stack<Linq.QueryBlock> ();
@@ -5955,7 +5971,7 @@ join_clause
 		current_block = block.Parent;
 		((Linq.QueryBlock)current_block).AddRangeVariable (into);
 	  }
-	| JOIN type IDENTIFIER IN
+	| JOIN type identifier_inside_body IN
 	  {
 		if (linq_clause_blocks == null)
 			linq_clause_blocks = new Stack<Linq.QueryBlock> ();
@@ -6023,7 +6039,7 @@ join_clause
 	
 opt_join_into
 	: /* empty */
-	| INTO IDENTIFIER
+	| INTO identifier_inside_body
 	  {
 		$$ = $2;
 	  }
@@ -6112,7 +6128,7 @@ then_by
 
 opt_query_continuation
 	: /* empty */
-	| INTO IDENTIFIER
+	| INTO identifier_inside_body
 	  {
 		// query continuation block is not linked with query block but with block
 		// before. This means each query can use same range variable names for
@@ -6651,7 +6667,7 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 	oob_stack.Push (current_anonymous_method);
 	oob_stack.Push (current_local_parameters);
 	oob_stack.Push (current_variable);
-	oob_stack.Push (lexer.async_block);
+	oob_stack.Push (async_block);
 
 	current_local_parameters = parameters;
 	if (isLambda) {
@@ -6666,7 +6682,7 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 		current_anonymous_method = new AnonymousMethodExpression (isAsync, loc);
 	}
 
-	lexer.async_block = isAsync;
+	async_block = isAsync;
 	// Force the next block to be created as a ToplevelBlock
 	parsing_anonymous_method = true;
 }
@@ -6682,7 +6698,7 @@ AnonymousMethodExpression end_anonymous (ParametersBlock anon_block)
 	current_anonymous_method.Block = anon_block;
 	retval = current_anonymous_method;
 
-	lexer.async_block = (bool) oob_stack.Pop ();
+	async_block = (bool) oob_stack.Pop ();
 	current_variable = (BlockVariableDeclaration) oob_stack.Pop ();
 	current_local_parameters = (ParametersCompiled) oob_stack.Pop ();
 	current_anonymous_method = (AnonymousMethodExpression) oob_stack.Pop ();
@@ -6901,8 +6917,6 @@ static string GetTokenName (int token)
 		return "add";
 	case Token.ASYNC:
 		return "async";
-	case Token.AWAIT:
-		return "await";		
 	case Token.BASE:
 		return "base";
 	case Token.BREAK:
@@ -7164,6 +7178,7 @@ static string GetTokenName (int token)
 	case Token.LITERAL:
 		return "value";
 	case Token.IDENTIFIER:
+	case Token.AWAIT:
 		return "identifier";
 
 	case Token.EOF:
