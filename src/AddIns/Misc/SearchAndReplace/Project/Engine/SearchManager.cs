@@ -159,10 +159,9 @@ namespace SearchAndReplace
 					if (i >= taskCount) {
 						HandleResult(queue.Dequeue(), observer, exceptions, files);
 					}
-					if (exceptions.Count == 0) {
-						FileName file = files[i];
-						queue.Enqueue(System.Threading.Tasks.Task.Factory.StartNew(() => SearchFile(file)));
-					}
+					if (exceptions.Count > 0) break;
+					FileName file = files[i];
+					queue.Enqueue(System.Threading.Tasks.Task.Factory.StartNew(() => SearchFile(file)));
 				}
 				while (queue.Count > 0) {
 					HandleResult(queue.Dequeue(), observer, exceptions, files);

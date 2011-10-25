@@ -142,6 +142,7 @@ namespace SearchAndReplace
 	public class ObserverSearchResult : DefaultSearchResult, IObserver<SearchedFile>
 	{
 		Button stopButton;
+		bool finished;
 		
 		public ObserverSearchResult(string title)
 		{
@@ -164,18 +165,24 @@ namespace SearchAndReplace
 		{
 			var items = base.GetToolbarItems();
 			
-			stopButton = new Button { Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Debug.StopProcess") } };
-			stopButton.Click += StopButtonClick;
+			if (!finished) {
+				stopButton = new Button { Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.Debug.StopProcess") } };
+				stopButton.Click += StopButtonClick;
+				
+				items.Add(stopButton);
+			}
 			
-			items.Add(stopButton);
-			stopButton.Visibility = Visibility.Visible;
 			return items;
 		}
 
 		void StopButtonClick(object sender, RoutedEventArgs e)
 		{
-			stopButton.Visibility = Visibility.Hidden;
-			if (Registration != null) Registration.Dispose();
+			try {
+				stopButton.Visibility = Visibility.Hidden;
+				if (Registration != null) Registration.Dispose();
+			} finally {
+				finished = true;
+			}
 		}
 		
 		void IObserver<SearchedFile>.OnNext(SearchedFile value)
@@ -191,9 +198,13 @@ namespace SearchAndReplace
 		
 		void OnCompleted()
 		{
-			stopButton.Visibility = Visibility.Collapsed;
-			if (Registration != null)
-				Registration.Dispose();
+			try {
+				stopButton.Visibility = Visibility.Collapsed;
+				if (Registration != null)
+					Registration.Dispose();
+			} finally {
+				finished = true;
+			}
 		}
 		
 		void IObserver<SearchedFile>.OnCompleted()
