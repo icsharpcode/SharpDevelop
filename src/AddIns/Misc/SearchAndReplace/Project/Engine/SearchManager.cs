@@ -407,12 +407,13 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static ISegment GetActiveSelection()
+		public static ISegment GetActiveSelection(bool useAnchors)
 		{
 			ITextEditor editor = GetActiveTextEditor();
 			if (editor != null) {
-				var document = new TextDocument(DocumentUtilitites.GetTextSource(editor.Document));
-				return new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
+				if (useAnchors)
+					return new AnchorSegment((TextDocument)editor.Document.GetService(typeof(TextDocument)), editor.SelectionStart, editor.SelectionLength);
+				return new TextSegment { StartOffset = editor.SelectionStart, Length = editor.SelectionLength };
 			}
 			
 			return null;
