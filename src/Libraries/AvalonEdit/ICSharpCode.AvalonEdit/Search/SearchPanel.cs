@@ -21,6 +21,9 @@ using ICSharpCode.AvalonEdit.Rendering;
 
 namespace ICSharpCode.AvalonEdit.Search
 {
+	/// <summary>
+	/// Provides search functionality for AvalonEdit. It is displayed in the top-right corner of the TextArea.
+	/// </summary>
 	public class SearchPanel : Control
 	{
 		TextArea textArea;
@@ -30,46 +33,76 @@ namespace ICSharpCode.AvalonEdit.Search
 		TextBox searchTextBox;
 		SearchPanelAdorner adorner;
 		
+		/// <summary>
+		/// Dependency property for <see cref="UseRegex"/>.
+		/// </summary>
 		public static readonly DependencyProperty UseRegexProperty =
 			DependencyProperty.Register("UseRegex", typeof(bool), typeof(SearchPanel),
 			                            new FrameworkPropertyMetadata(false, SearchPatternChangedCallback));
 		
+		/// <summary>
+		/// Gets/sets whether the search pattern should be interpreted as regular expression.
+		/// </summary>
 		public bool UseRegex {
 			get { return (bool)GetValue(UseRegexProperty); }
 			set { SetValue(UseRegexProperty, value); }
 		}
 		
+		/// <summary>
+		/// Dependency property for <see cref="MatchCase"/>.
+		/// </summary>
 		public static readonly DependencyProperty MatchCaseProperty =
 			DependencyProperty.Register("MatchCase", typeof(bool), typeof(SearchPanel),
 			                            new FrameworkPropertyMetadata(false, SearchPatternChangedCallback));
 		
+		/// <summary>
+		/// Gets/sets whether the search pattern should be interpreted case-sensitive.
+		/// </summary>
 		public bool MatchCase {
 			get { return (bool)GetValue(MatchCaseProperty); }
 			set { SetValue(MatchCaseProperty, value); }
 		}
 		
+		/// <summary>
+		/// Dependency property for <see cref="WholeWords"/>.
+		/// </summary>
 		public static readonly DependencyProperty WholeWordsProperty =
 			DependencyProperty.Register("WholeWords", typeof(bool), typeof(SearchPanel),
 			                            new FrameworkPropertyMetadata(false, SearchPatternChangedCallback));
 		
+		/// <summary>
+		/// Gets/sets whether the search pattern should only match whole words.
+		/// </summary>
 		public bool WholeWords {
 			get { return (bool)GetValue(WholeWordsProperty); }
 			set { SetValue(WholeWordsProperty, value); }
 		}
 		
+		/// <summary>
+		/// Dependency property for <see cref="SearchPattern"/>.
+		/// </summary>
 		public static readonly DependencyProperty SearchPatternProperty =
 			DependencyProperty.Register("SearchPattern", typeof(string), typeof(SearchPanel),
 			                            new FrameworkPropertyMetadata("", SearchPatternChangedCallback));
 		
+		/// <summary>
+		/// Gets/sets the search pattern.
+		/// </summary>
 		public string SearchPattern {
 			get { return (string)GetValue(SearchPatternProperty); }
 			set { SetValue(SearchPatternProperty, value); }
 		}
 		
+		/// <summary>
+		/// Dependency property for <see cref="MarkerBrush"/>.
+		/// </summary>
 		public static readonly DependencyProperty MarkerBrushProperty =
 			DependencyProperty.Register("MarkerBrush", typeof(Brush), typeof(SearchPanel),
 			                            new FrameworkPropertyMetadata(Brushes.LightGreen, MarkerBrushChangedCallback));
 		
+		/// <summary>
+		/// Gets/sets the Brush used for marking search results in the TextView.
+		/// </summary>
 		public Brush MarkerBrush {
 			get { return (Brush)GetValue(MarkerBrushProperty); }
 			set { SetValue(MarkerBrushProperty, value); }

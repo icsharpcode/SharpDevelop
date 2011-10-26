@@ -36,6 +36,9 @@ namespace ICSharpCode.AvalonEdit.Search
 	/// </summary>
 	public interface ISearchResult : ISegment
 	{
+		/// <summary>
+		/// Replaces parts of the replacement string with parts from the match. (e.g. $1)
+		/// </summary>
 		string ReplaceWith(string replacement);
 	}
 	
