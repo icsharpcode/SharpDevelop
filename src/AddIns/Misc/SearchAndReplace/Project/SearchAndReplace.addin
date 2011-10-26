@@ -15,7 +15,7 @@
 		<MenuItem id = "Find"
 		          label = "${res:XML.MainMenu.SearchMenu.Find}"
 		          icon = "Icons.16x16.FindIcon"
-		          shortcut = "Control|F"
+		          shortcut = "Control|Shift|F"
 		          class = "SearchAndReplace.Find"/>
 		<MenuItem id = "FindNext"
 		          insertafter = "Find"
@@ -29,25 +29,12 @@
 		          shortcut = "Control|F3"
 		          class = "SearchAndReplace.FindNextSelected"/>
 		<MenuItem id = "Replace"
-		          insertbefore = "SearchIncremental"
 		          insertafter = "FindNextSelected"
+		          insertbefore = "SearchSeparator"
 		          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 		          icon = "Icons.16x16.ReplaceIcon"
 		          shortcut = "Control|H"
 		          class = "SearchAndReplace.Replace"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
-		<MenuItem id    = "*Char"
-		          label = "* Zero or more of any character" />
-		<MenuItem id    = "?Char"
-		          label = "? Any single character" />
-		<MenuItem id    = "#Char"
-		          label = "# Any single digit" />
-		<MenuItem id    = "[]Char"
-		          label = "[] Any one character in the set" />
-		<MenuItem id    = "[!]Char"
-		          label = "[!] Any one character not in the set" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
@@ -56,21 +43,6 @@
 		             icon    = "Icons.16x16.FindIcon"
 		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
 		             class   = "SearchAndReplace.Find"/>
-		
-		<ToolbarItem id      = "FindComboBox"
-		             type    = "ComboBox"
-		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
-		             class   = "SearchAndReplace.FindComboBox"/>
-	</Path>
-	
-	<!-- File extensions that should not be searched since they are not opened
-	 in a text editor -->
-	<Path name="/AddIns/DefaultTextEditor/Search/ExcludedFileExtensions">
-		<String text=".resx"/>
-		<String text=".resources"/>
-		<String text=".exe"/>
-		<String text=".dll"/>
-		<String text=".pdb"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/SearchResultPad/Factories">

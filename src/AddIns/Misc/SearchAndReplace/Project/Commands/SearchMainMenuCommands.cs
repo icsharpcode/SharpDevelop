@@ -1,9 +1,10 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace SearchAndReplace
 {
@@ -12,7 +13,7 @@ namespace SearchAndReplace
 		public static void SetSearchPattern()
 		{
 			// Get Highlighted value and set it to FindDialog.searchPattern
-			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor textArea = SearchManager.GetActiveTextEditor();
 			if (textArea != null) {
 				string selectedText = textArea.SelectedText;
 				if (selectedText != null && selectedText.Length > 0 && !IsMultipleLines(selectedText)) {
@@ -38,7 +39,8 @@ namespace SearchAndReplace
 		public override void Run()
 		{
 			if (SearchOptions.CurrentFindPattern.Length > 0) {
-				SearchReplaceManager.FindNext(null);
+				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				SearchManager.SelectResult(result);
 			} else {
 				Find find = new Find();
 				find.Run();
@@ -65,7 +67,7 @@ namespace SearchAndReplace
 	{
 		public override void Run()
 		{
-			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor textArea = SearchManager.GetActiveTextEditor();
 			if (textArea == null) {
 				return;
 			}
@@ -88,10 +90,11 @@ namespace SearchAndReplace
 			
 			if (textToFind != null && textToFind.Length > 0) {
 				SearchOptions.CurrentFindPattern = textToFind;
-				if (SearchOptions.DocumentIteratorType == DocumentIteratorType.CurrentSelection) {
-					SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
+				if (SearchOptions.SearchTarget == SearchTarget.CurrentSelection) {
+					SearchOptions.SearchTarget = SearchTarget.CurrentDocument;
 				}
-				SearchReplaceManager.FindNext(null);
+				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				SearchManager.SelectResult(result);
 			}
 		}
 	}

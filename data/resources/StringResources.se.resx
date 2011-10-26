@@ -356,9 +356,6 @@ Du måste installera .NET Framework SDK för att komma åt hjälpsystemet.</valu
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Sök</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Sök...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Sök endast i tidigare funna ämnen</value>
   </data>
@@ -388,6 +385,9 @@ Du måste installera .NET Framework SDK för att komma åt hjälpsystemet.</valu
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Använd nuvarande projektspråk</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Sök...</value>
   </data>
   <data name="AddIns.Subversion.CleanUp" xml:space="preserve">
     <value>Städa upp</value>

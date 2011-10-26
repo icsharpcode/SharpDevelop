@@ -434,9 +434,6 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Pesquisar</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Pesquisar...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>A pesquisa no dados anteriores só encontrou tópicos</value>
   </data>
@@ -505,6 +502,9 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   </data>
   <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
     <value>Nome</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Pesquisar...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrair method</value>

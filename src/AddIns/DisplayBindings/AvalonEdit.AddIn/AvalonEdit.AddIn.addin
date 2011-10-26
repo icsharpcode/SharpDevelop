@@ -133,20 +133,6 @@
 		</MenuItem>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
-			<MenuItem id = "SearchIncremental"
-			          label = "${res:XML.MainMenu.SearchMenu.IncrementalSearch}"
-			          shortcut = "Control|E"
-			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.RunIncrementalSearch"/>
-			<MenuItem id = "SearchReverseIncremental"
-			          label = "${res:XML.MainMenu.SearchMenu.ReverseIncrementalSearch}"
-			          shortcut = "Control|Shift|E"
-			          class = "ICSharpCode.AvalonEdit.AddIn.Commands.RunReverseIncrementalSearch"
-			          insertbefore = "SearchInFilesSeparator"/>
-		</Condition>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"

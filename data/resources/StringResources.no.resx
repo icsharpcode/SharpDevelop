@@ -434,9 +434,6 @@ Du må installere .NET Framework SDK for å få tilgang til hjelpesystemet.</val
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Søk</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Søk...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Søk bare i søkeresultatene</value>
   </data>
@@ -646,6 +643,9 @@ Du må installere .NET Framework SDK for å få tilgang til hjelpesystemet.</val
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Kjør med profilering</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Søk...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Lag metode</value>
