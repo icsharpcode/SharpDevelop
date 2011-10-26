@@ -100,11 +100,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 	}
 	
-	public class RegexResultMatch : SearchResultMatch
+	public class AvalonEditSearchResultMatch : SearchResultMatch
 	{
 		ICSharpCode.AvalonEdit.Search.ISearchResult match;
 		
-		public RegexResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+		public AvalonEditSearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, ICSharpCode.AvalonEdit.Search.ISearchResult match)
 			: base(fileName, startLocation, endLocation, offset, length, builder)
 		{
 			this.match = match;
