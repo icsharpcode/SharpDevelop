@@ -3577,5 +3577,25 @@ public class Test
 			Assert.IsNotNull (provider.Find ("B"), "class 'B' not found.");
 			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found.");
 		}
+		
+		[Test()]
+		public void TestCompletionInTryCatch ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class Test { public void TM1 () {} public void TM2 () {} public int TF1; }
+class CCTest {
+void TestMethod ()
+{
+	Test t;
+	try {
+		$t.$
+}
+}
+");
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("TM1"));
+			Assert.IsNotNull (provider.Find ("TM2"));
+			Assert.IsNotNull (provider.Find ("TF1"));
+		}
 	}
 }
