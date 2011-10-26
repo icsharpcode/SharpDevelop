@@ -117,6 +117,9 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 		}
 		
+		/// <summary>
+		/// Attaches this SearchPanel to a TextArea instance.
+		/// </summary>
 		public void Attach(TextArea textArea)
 		{
 			if (textArea == null)
@@ -154,6 +157,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			DoSearch(false);
 		}
 		
+		/// <inheritdoc/>
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();

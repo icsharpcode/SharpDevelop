@@ -372,9 +372,6 @@
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Hledat</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Hledat...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Hledat pouze v nalezených tématech</value>
   </data>
@@ -404,6 +401,9 @@
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Použít aktuální jazyk projektu</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Hledat...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrahovat metodu</value>

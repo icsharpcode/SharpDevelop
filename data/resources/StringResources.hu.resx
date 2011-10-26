@@ -368,9 +368,6 @@ Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői k
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Keresés</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Keresés...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Keresés az előző keresési eredményben</value>
   </data>
@@ -400,6 +397,9 @@ Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői k
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Használja a jelenlegi Projekt nyelvét</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Keresés...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Metódus kiemelése</value>

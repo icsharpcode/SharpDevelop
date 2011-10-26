@@ -443,9 +443,6 @@ Installieren Sie das .NET Framework SDK.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Suchen</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Suchen...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Vorherige Ergebnisse durchsuchen</value>
   </data>
@@ -656,6 +653,9 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Mit Profiler starten</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Suchen...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Methode extrahieren</value>

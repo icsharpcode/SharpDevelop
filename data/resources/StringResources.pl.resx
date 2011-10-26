@@ -398,9 +398,6 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Szukaj</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Szukaj...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Szukaj tylko w poprzednio znalezionych tematach</value>
   </data>
@@ -430,6 +427,9 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Użyj języka bieżącego Projektu</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Szukaj...</value>
   </data>
   <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
     <value>Dodaj do listy ignorowanych</value>
