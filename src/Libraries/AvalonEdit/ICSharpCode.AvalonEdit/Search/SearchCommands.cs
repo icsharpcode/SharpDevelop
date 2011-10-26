@@ -71,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
 		{
-			if (panel == null) {
+			if (panel == null || panel.IsClosed) {
 				panel = new SearchPanel();
 				panel.Attach(TextArea);
 			}

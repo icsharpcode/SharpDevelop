@@ -324,6 +324,11 @@ namespace ICSharpCode.AvalonEdit.Search
 		}
 		
 		/// <summary>
+		/// Gets whether the Panel is already closed.
+		/// </summary>
+		public bool IsClosed { get; private set; }
+		
+		/// <summary>
 		/// Closes the SearchPanel.
 		/// </summary>
 		public void Close()
@@ -336,6 +341,8 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (currentDocument != null)
 				currentDocument.TextChanged -= textArea_Document_TextChanged;
 			messageView.IsOpen = false;
+			textArea.Focus();
+			IsClosed = true;
 		}
 	}
 	
