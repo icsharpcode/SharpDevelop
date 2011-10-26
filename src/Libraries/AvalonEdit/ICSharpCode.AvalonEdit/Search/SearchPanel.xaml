@@ -20,18 +20,18 @@
 									<Popup StaysOpen="False">
 										<Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" BorderThickness="1">
 											<StackPanel Orientation="Vertical">
-												<CheckBox IsChecked="{Binding MatchCase, RelativeSource={RelativeSource TemplatedParent}}" Content="Match case" Margin="3" />
-												<CheckBox IsChecked="{Binding WholeWords, RelativeSource={RelativeSource TemplatedParent}}" Content="Match whole words" Margin="3" />
-												<CheckBox IsChecked="{Binding UseRegex, RelativeSource={RelativeSource TemplatedParent}}" Content="Use Regular Expressions" Margin="3" />
+												<CheckBox IsChecked="{Binding MatchCase, RelativeSource={RelativeSource TemplatedParent}}" Content="{Binding Localization.MatchCaseText, RelativeSource={RelativeSource TemplatedParent}}" Margin="3" />
+												<CheckBox IsChecked="{Binding WholeWords, RelativeSource={RelativeSource TemplatedParent}}" Content="{Binding Localization.MatchWholeWordsText, RelativeSource={RelativeSource TemplatedParent}}" Margin="3" />
+												<CheckBox IsChecked="{Binding UseRegex, RelativeSource={RelativeSource TemplatedParent}}" Content="{Binding Localization.UseRegexText, RelativeSource={RelativeSource TemplatedParent}}" Margin="3" />
 											</StackPanel>
 										</Border>
 									</Popup>
 								</search:DropDownButton.DropDownContent>
 							</search:DropDownButton>
-							<Button Margin="3" Height="24" Width="24" Command="search:SearchCommands.FindPrevious" ToolTip="Find Next (Shift+F3)">
+							<Button Margin="3" Height="24" Width="24" Command="search:SearchCommands.FindPrevious" ToolTip="{Binding Localization.FindPreviousText, RelativeSource={RelativeSource TemplatedParent}}">
 								<Image Width="16" Height="16" Stretch="Fill" Source="prev.png" />
 							</Button>
-							<Button Margin="3" Height="24" Width="24" Command="search:SearchCommands.FindNext" ToolTip="Find Next (F3)">
+							<Button Margin="3" Height="24" Width="24" Command="search:SearchCommands.FindNext" ToolTip="{Binding Localization.FindNextText, RelativeSource={RelativeSource TemplatedParent}}">
 								<Image Width="16" Height="16" Stretch="Fill" Source="next.png" />
 							</Button>
 							<Button Height="16" Width="16" HorizontalAlignment="Right" VerticalAlignment="Top" Command="search:SearchCommands.CloseSearchPanel"

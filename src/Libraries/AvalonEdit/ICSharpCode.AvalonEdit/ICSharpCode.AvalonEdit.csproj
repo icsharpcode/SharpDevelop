@@ -290,6 +290,7 @@
     <Compile Include="Rendering\VisualYPosition.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Search\Localization.cs" />
     <Compile Include="Search\RegexSearchStrategy.cs" />
     <Compile Include="Search\DropDownButton.cs" />
     <Compile Include="Search\ISearchStrategy.cs" />

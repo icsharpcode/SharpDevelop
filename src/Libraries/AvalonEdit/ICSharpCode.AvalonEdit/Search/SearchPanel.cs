@@ -33,6 +33,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		TextBox searchTextBox;
 		SearchPanelAdorner adorner;
 		
+		#region DependencyProperties
 		/// <summary>
 		/// Dependency property for <see cref="UseRegex"/>.
 		/// </summary>
@@ -107,6 +108,22 @@ namespace ICSharpCode.AvalonEdit.Search
 			get { return (Brush)GetValue(MarkerBrushProperty); }
 			set { SetValue(MarkerBrushProperty, value); }
 		}
+		
+		/// <summary>
+		/// Dependency property for <see cref="Localization"/>.
+		/// </summary>
+		public static readonly DependencyProperty LocalizationProperty =
+			DependencyProperty.Register("Localization", typeof(Localization), typeof(SearchPanel),
+			                            new FrameworkPropertyMetadata(new Localization()));
+		
+		/// <summary>
+		/// Gets/sets the localization for the SearchPanel.
+		/// </summary>
+		public Localization Localization {
+			get { return (Localization)GetValue(LocalizationProperty); }
+			set { SetValue(LocalizationProperty, value); }
+		}
+		#endregion
 		
 		static void MarkerBrushChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -275,7 +292,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				}
 				if (!renderer.CurrentResults.Any()) {
 					messageView.IsOpen = true;
-					messageView.Content = "No matches found!";
+					messageView.Content = Localization.NoMatchesFoundText;
 					messageView.PlacementTarget = searchTextBox;
 				} else
 					messageView.IsOpen = false;
@@ -310,7 +327,7 @@ namespace ICSharpCode.AvalonEdit.Search
 					if (searchTextBox != null) {
 						var error = Validation.GetErrors(searchTextBox).FirstOrDefault();
 						if (error != null) {
-							messageView.Content = "Error: " + error.ErrorContent;
+							messageView.Content = Localization.ErrorText + error.ErrorContent;
 							messageView.PlacementTarget = searchTextBox;
 							messageView.IsOpen = true;
 						}
