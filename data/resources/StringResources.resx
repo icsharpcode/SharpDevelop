@@ -229,6 +229,19 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Unknown file format:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Error:</value>
+    <comment>Note: Mind the trailing space!</comment>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Find next</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Find previous</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Use regular expressions</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Show Class Diagram</value>
   </data>
@@ -6549,9 +6562,6 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
     <value>View in browser</value>
-  </data>
-  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
-    <value>The project is not a web project.</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>New Folder</value>

@@ -269,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			}
 		}
 		
-		ToolTip messageView = new ToolTip { Placement = PlacementMode.Bottom };
+		ToolTip messageView = new ToolTip { Placement = PlacementMode.Bottom, StaysOpen = false };
 
 		void DoSearch(bool changeSelection)
 		{
@@ -327,7 +327,7 @@ namespace ICSharpCode.AvalonEdit.Search
 					if (searchTextBox != null) {
 						var error = Validation.GetErrors(searchTextBox).FirstOrDefault();
 						if (error != null) {
-							messageView.Content = Localization.ErrorText + error.ErrorContent;
+							messageView.Content = Localization.ErrorText + " " + error.ErrorContent;
 							messageView.PlacementTarget = searchTextBox;
 							messageView.IsOpen = true;
 						}

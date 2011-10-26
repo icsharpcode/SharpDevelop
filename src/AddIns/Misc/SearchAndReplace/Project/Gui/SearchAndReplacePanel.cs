@@ -22,7 +22,6 @@ namespace SearchAndReplace
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode searchAndReplaceMode;
-		ITextEditor textEditor;
 		
 		public SearchAndReplaceMode SearchAndReplaceMode {
 			get {

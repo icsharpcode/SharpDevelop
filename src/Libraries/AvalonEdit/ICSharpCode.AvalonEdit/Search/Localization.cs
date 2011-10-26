@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel;
 
-namespace ICSharpCode.AvalonEdit
+namespace ICSharpCode.AvalonEdit.Search
 {
 	/// <summary>
 	/// Holds default texts for buttons and labels in the SearchPanel. Override properties to add other languages.
@@ -35,7 +35,6 @@ namespace ICSharpCode.AvalonEdit
 		
 		/// <summary>
 		/// Default: 'Find next (F3)'
-		/// 
 		/// </summary>
 		public virtual string FindNextText {
 			get { return "Find next (F3)"; }
