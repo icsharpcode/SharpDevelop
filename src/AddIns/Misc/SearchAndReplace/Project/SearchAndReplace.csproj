@@ -72,6 +72,7 @@
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\SearchManager.cs" />
     <Compile Include="Gui\DefaultSearchResult.cs" />
+    <Compile Include="Gui\ObserverSearchResult.cs" />
     <Compile Include="Gui\ResultsTreeView.cs">
       <SubType>Code</SubType>
       <DependentUpon>ResultsTreeView.xaml</DependentUpon>
