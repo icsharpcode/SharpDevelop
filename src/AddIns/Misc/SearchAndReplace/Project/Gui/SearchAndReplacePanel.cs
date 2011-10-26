@@ -104,7 +104,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
-			monitor.TaskName = "Searching ...";
+			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			try {
 				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
 				SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
@@ -115,7 +115,7 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
-			monitor.TaskName = "Searching ...";
+			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			try {
 				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 				SearchManager.MarkAll(results);
@@ -127,7 +127,7 @@ namespace SearchAndReplace
 			WritebackOptions();
 			int count = -1;
 			AsynchronousWaitDialog.RunInCancellableWaitDialog(
-				"Searching ...", null,
+				StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}"), null,
 				monitor => {
 					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
 					count = SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);

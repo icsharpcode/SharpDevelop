@@ -27,54 +27,7 @@ namespace SearchAndReplace
 	/// </summary>
 	public class SearchManager
 	{
-		static IEnumerable<FileName> GenerateFileList(SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false)
-		{
-			List<FileName> files = new List<FileName>();
-			
-			switch (target) {
-				case SearchTarget.CurrentDocument:
-				case SearchTarget.CurrentSelection:
-					ITextEditorProvider vc = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-					if (vc != null)
-						files.Add(vc.TextEditor.FileName);
-					break;
-				case SearchTarget.AllOpenFiles:
-					foreach (ITextEditorProvider editor in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>())
-						files.Add(editor.TextEditor.FileName);
-					break;
-				case SearchTarget.WholeProject:
-					if (ProjectService.CurrentProject == null)
-						break;
-					foreach (FileProjectItem item in ProjectService.CurrentProject.Items.OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
-					break;
-				case SearchTarget.WholeSolution:
-					if (ProjectService.OpenSolution == null)
-						break;
-					foreach (var item in ProjectService.OpenSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items))
-						files.Add(new FileName(Path.Combine(ProjectService.OpenSolution.Directory, item.Location)));
-					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
-					break;
-				case SearchTarget.Directory:
-					if (!Directory.Exists(baseDirectory))
-						break;
-					return FileUtility.LazySearchDirectory(baseDirectory, filter, searchSubdirs);
-				default:
-					throw new Exception("Invalid value for FileListType");
-			}
-			
-			return files.Distinct();
-		}
-		
-		public static void ShowSearchResults(string pattern, IObservable<SearchedFile> results)
-		{
-			string title = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
-			                                  new StringTagPair("Pattern", pattern));
-			SearchResultsPad.Instance.ShowSearchResults(title, results);
-			SearchResultsPad.Instance.BringToFront();
-		}
-		
+		#region FindAll
 		public static IObservable<SearchedFile> FindAllParallel(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
 		                                                        SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null)
 		{
@@ -237,16 +190,7 @@ namespace SearchAndReplace
 					return null;
 			}
 		}
-		
-		public static ITextEditor GetActiveTextEditor()
-		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (provider != null) {
-				return provider.TextEditor;
-			} else {
-				return null;
-			}
-		}
+		#endregion
 		
 		#region FindNext
 		static SearchRegion currentSearchRegion;
@@ -410,6 +354,7 @@ namespace SearchAndReplace
 		}
 		#endregion
 
+		#region Mark & Replace(All)
 		public static void MarkAll(IObservable<SearchedFile> results)
 		{
 			int count = 0;
@@ -445,6 +390,15 @@ namespace SearchAndReplace
 			
 			return count;
 		}
+		
+		public static void Replace(SearchResultMatch lastMatch, string replacement)
+		{
+			if (lastMatch == null)
+				return;
+			ITextEditor textArea = OpenTextArea(lastMatch.FileName);
+			if (textArea != null)
+				textArea.Document.Replace(lastMatch.StartOffset, lastMatch.Length, lastMatch.TransformReplacePattern(replacement));
+		}
 
 		static void MarkResult(SearchResultMatch result, bool switchToOpenedView = true)
 		{
@@ -462,7 +416,9 @@ namespace SearchAndReplace
 				BookmarkManager.AddMark(new Bookmark(result.FileName, result.StartLocation));
 			}
 		}
-
+		#endregion
+		
+		#region TextEditor helpers
 		static ITextEditor OpenTextArea(string fileName, bool switchToOpenedView = true)
 		{
 			ITextEditorProvider textEditorProvider;
@@ -478,6 +434,18 @@ namespace SearchAndReplace
 			return null;
 		}
 		
+		public static ITextEditor GetActiveTextEditor()
+		{
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			if (provider != null) {
+				return provider.TextEditor;
+			} else {
+				return null;
+			}
+		}
+		#endregion
+		
+		#region Show Messages
 		public static void ShowReplaceDoneMessage(int count)
 		{
 			if (count == 0) {
@@ -506,7 +474,9 @@ namespace SearchAndReplace
 		{
 			MessageService.ShowMessage("${res:Dialog.NewProject.SearchReplace.SearchStringNotFound}", "${res:Dialog.NewProject.SearchReplace.SearchStringNotFound.Title}");
 		}
+		#endregion
 
+		#region Result display helpers
 		public static void SelectResult(SearchResultMatch result)
 		{
 			if (result == null) {
@@ -534,13 +504,53 @@ namespace SearchAndReplace
 				&& result.Length == editor.SelectionLength;
 		}
 		
-		public static void Replace(SearchResultMatch lastMatch, string replacement)
+		public static void ShowSearchResults(string pattern, IObservable<SearchedFile> results)
 		{
-			if (lastMatch == null)
-				return;
-			ITextEditor textArea = OpenTextArea(lastMatch.FileName);
-			if (textArea != null)
-				textArea.Document.Replace(lastMatch.StartOffset, lastMatch.Length, lastMatch.TransformReplacePattern(replacement));
+			string title = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
+			                                  new StringTagPair("Pattern", pattern));
+			SearchResultsPad.Instance.ShowSearchResults(title, results);
+			SearchResultsPad.Instance.BringToFront();
+		}
+		#endregion
+
+		static IEnumerable<FileName> GenerateFileList(SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false)
+		{
+			List<FileName> files = new List<FileName>();
+			
+			switch (target) {
+				case SearchTarget.CurrentDocument:
+				case SearchTarget.CurrentSelection:
+					ITextEditorProvider vc = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+					if (vc != null)
+						files.Add(vc.TextEditor.FileName);
+					break;
+				case SearchTarget.AllOpenFiles:
+					foreach (ITextEditorProvider editor in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>())
+						files.Add(editor.TextEditor.FileName);
+					break;
+				case SearchTarget.WholeProject:
+					if (ProjectService.CurrentProject == null)
+						break;
+					foreach (FileProjectItem item in ProjectService.CurrentProject.Items.OfType<FileProjectItem>())
+						files.Add(new FileName(item.FileName));
+					break;
+				case SearchTarget.WholeSolution:
+					if (ProjectService.OpenSolution == null)
+						break;
+					foreach (var item in ProjectService.OpenSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items))
+						files.Add(new FileName(Path.Combine(ProjectService.OpenSolution.Directory, item.Location)));
+					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
+						files.Add(new FileName(item.FileName));
+					break;
+				case SearchTarget.Directory:
+					if (!Directory.Exists(baseDirectory))
+						break;
+					return FileUtility.LazySearchDirectory(baseDirectory, filter, searchSubdirs);
+				default:
+					throw new Exception("Invalid value for FileListType");
+			}
+			
+			return files.Distinct();
 		}
 	}
 }

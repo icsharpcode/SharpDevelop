@@ -192,7 +192,16 @@ namespace SearchAndReplace
 		
 		void IObserver<SearchedFile>.OnError(Exception error)
 		{
-			MessageService.ShowException(error);
+			// flatten AggregateException and
+			// filter OperationCanceledException
+			try {
+				if (error is AggregateException)
+					((AggregateException)error).Flatten().Handle(ex => ex is OperationCanceledException);
+				else if (!(error is OperationCanceledException))
+					throw error;
+			} catch (Exception ex) {
+				MessageService.ShowException(ex);
+			}
 			OnCompleted();
 		}
 		
