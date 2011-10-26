@@ -70,6 +70,7 @@
     <Compile Include="Commands\SearchMainMenuCommands.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Engine\Enums.cs" />
+    <Compile Include="Engine\SearchLocation.cs" />
     <Compile Include="Engine\SearchManager.cs" />
     <Compile Include="Gui\DefaultSearchResult.cs" />
     <Compile Include="Gui\ObserverSearchResult.cs" />

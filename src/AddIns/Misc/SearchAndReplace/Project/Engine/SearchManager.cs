@@ -28,24 +28,18 @@ namespace SearchAndReplace
 	public class SearchManager
 	{
 		#region FindAll
-		public static IObservable<SearchedFile> FindAllParallel(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
-		                                                        SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null)
+		public static IObservable<SearchedFile> FindAllParallel(ISearchStrategy strategy, SearchLocation location, IProgressMonitor progressMonitor)
 		{
 			currentSearchRegion = null;
-			var strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
 			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
-			IEnumerable<FileName> fileList = GenerateFileList(target, baseDirectory, filter, searchSubdirs);
-			return new SearchRun(strategy, fileFinder, fileList, progressMonitor) { Target = target, Selection = selection };
+			return new SearchRun(strategy, fileFinder, location.GenerateFileList(), progressMonitor) { Target = location.Target, Selection = location.Selection };
 		}
 		
-		public static IEnumerable<SearchedFile> FindAll(IProgressMonitor progressMonitor, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
-		                                                SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false, ISegment selection = null)
+		public static IEnumerable<SearchedFile> FindAll(ISearchStrategy strategy, SearchLocation location, IProgressMonitor progressMonitor)
 		{
 			currentSearchRegion = null;
-			var strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode);
 			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
-			IEnumerable<FileName> fileList = GenerateFileList(target, baseDirectory, filter, searchSubdirs);
-			return new SearchRun(strategy, fileFinder, fileList, progressMonitor) { Target = target, Selection = selection }.GetResults();
+			return new SearchRun(strategy, fileFinder, location.GenerateFileList(), progressMonitor) { Target = location.Target, Selection = location.Selection }.GetResults();
 		}
 		
 		class SearchRun : IObservable<SearchedFile>, IDisposable
@@ -195,18 +189,13 @@ namespace SearchAndReplace
 		#region FindNext
 		static SearchRegion currentSearchRegion;
 		
-		public static SearchResultMatch FindNext(string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode,
-		                                         SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false)
+		public static SearchResultMatch FindNext(ISearchStrategy strategy, SearchLocation location)
 		{
-			if (string.IsNullOrEmpty(pattern))
-				return null;
-			var files = GenerateFileList(target, baseDirectory, filter, searchSubdirs).ToArray();
+			var files = location.GenerateFileList().ToArray();
 			if (files.Length == 0)
 				return null;
-			if (currentSearchRegion == null || !currentSearchRegion.IsSameState(files, pattern, ignoreCase, matchWholeWords, mode,
-			                                                                    target, baseDirectory, filter, searchSubdirs))
-				currentSearchRegion = SearchRegion.CreateSearchRegion(files, pattern, ignoreCase, matchWholeWords, mode,
-				                                                      target, baseDirectory, filter, searchSubdirs);
+			if (currentSearchRegion == null || !currentSearchRegion.IsSameState(files, strategy, location))
+				currentSearchRegion = SearchRegion.CreateSearchRegion(files, strategy, location);
 			if (currentSearchRegion == null)
 				return null;
 			var result = currentSearchRegion.FindNext();
@@ -218,7 +207,7 @@ namespace SearchAndReplace
 		class SearchRegion
 		{
 			FileName[] files;
-			AnchorSegment selection;
+			SearchLocation location;
 			ISearchStrategy strategy;
 			
 			public SearchResultMatch FindNext()
@@ -242,9 +231,9 @@ namespace SearchAndReplace
 					int length;
 					// if (target == SearchTarget.CurrentSelection) selection will not be null
 					// hence use the selection as search region.
-					if (selection != null) {
-						searchOffset = Math.Max(selection.Offset, searchOffset);
-						length = selection.EndOffset - searchOffset;
+					if (location.Selection != null) {
+						searchOffset = Math.Max(location.Selection.Offset, searchOffset);
+						length = location.Selection.EndOffset - searchOffset;
 					} else {
 						length = document.TextLength - searchOffset;
 					}
@@ -264,9 +253,9 @@ namespace SearchAndReplace
 					if (buffer == null)
 						continue;
 					int length;
-					if (selection != null) {
-						searchOffset = selection.Offset;
-						length = selection.Length;
+					if (location.Selection != null) {
+						searchOffset = location.Selection.Offset;
+						length = location.Selection.Length;
 					} else {
 						searchOffset = 0;
 						length = buffer.TextLength;
@@ -300,56 +289,30 @@ namespace SearchAndReplace
 				return files.FindIndex(file => editor.FileName.Equals(file));
 			}
 			
-			public static SearchRegion CreateSearchRegion(FileName[] files, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
+			public static SearchRegion CreateSearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)
 			{
 				ITextEditor editor = GetActiveTextEditor();
 				if (editor != null) {
-					var document = new TextDocument(DocumentUtilitites.GetTextSource(editor.Document));
-					AnchorSegment selection = null;
-					if (target == SearchTarget.CurrentSelection)
-						selection = new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
-					return new SearchRegion(files, selection, pattern, ignoreCase, matchWholeWords, mode, target, baseDirectory, filter, searchSubdirs) { strategy = SearchStrategyFactory.Create(pattern, ignoreCase, matchWholeWords, mode) };
+					return new SearchRegion(files, strategy, location);
 				}
 				
 				return null;
 			}
 			
-			SearchRegion(FileName[] files, AnchorSegment selection, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
+			SearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)
 			{
 				if (files == null)
 					throw new ArgumentNullException("files");
 				this.files = files;
-				this.selection = selection;
-				this.pattern = pattern;
-				this.ignoreCase = ignoreCase;
-				this.matchWholeWords = matchWholeWords;
-				this.mode = mode;
-				this.target = target;
-				this.baseDirectory = baseDirectory;
-				this.filter = filter;
-				this.searchSubdirs = searchSubdirs;
+				this.strategy = strategy;
+				this.location = location;
 			}
 			
-			string pattern;
-			bool ignoreCase;
-			bool matchWholeWords;
-			SearchMode mode;
-			SearchTarget target;
-			string baseDirectory;
-			string filter;
-			bool searchSubdirs;
-			
-			public bool IsSameState(FileName[] files, string pattern, bool ignoreCase, bool matchWholeWords, SearchMode mode, SearchTarget target, string baseDirectory, string filter, bool searchSubdirs)
+			public bool IsSameState(FileName[] files, ISearchStrategy strategy, SearchLocation location)
 			{
 				return this.files.SequenceEqual(files) &&
-					pattern == this.pattern &&
-					ignoreCase == this.ignoreCase &&
-					matchWholeWords == this.matchWholeWords &&
-					mode == this.mode &&
-					target == this.target &&
-					baseDirectory == this.baseDirectory &&
-					filter == this.filter &&
-					searchSubdirs == this.searchSubdirs;
+					this.strategy.Equals(strategy) &&
+					this.location.EqualsWithoutSelection(location);
 			}
 		}
 		#endregion
@@ -443,6 +406,17 @@ namespace SearchAndReplace
 				return null;
 			}
 		}
+		
+		public static ISegment GetActiveSelection()
+		{
+			ITextEditor editor = GetActiveTextEditor();
+			if (editor != null) {
+				var document = new TextDocument(DocumentUtilitites.GetTextSource(editor.Document));
+				return new AnchorSegment(document, editor.SelectionStart, editor.SelectionLength);
+			}
+			
+			return null;
+		}
 		#endregion
 		
 		#region Show Messages
@@ -512,45 +486,5 @@ namespace SearchAndReplace
 			SearchResultsPad.Instance.BringToFront();
 		}
 		#endregion
-
-		static IEnumerable<FileName> GenerateFileList(SearchTarget target, string baseDirectory = null, string filter = "*.*", bool searchSubdirs = false)
-		{
-			List<FileName> files = new List<FileName>();
-			
-			switch (target) {
-				case SearchTarget.CurrentDocument:
-				case SearchTarget.CurrentSelection:
-					ITextEditorProvider vc = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-					if (vc != null)
-						files.Add(vc.TextEditor.FileName);
-					break;
-				case SearchTarget.AllOpenFiles:
-					foreach (ITextEditorProvider editor in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>())
-						files.Add(editor.TextEditor.FileName);
-					break;
-				case SearchTarget.WholeProject:
-					if (ProjectService.CurrentProject == null)
-						break;
-					foreach (FileProjectItem item in ProjectService.CurrentProject.Items.OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
-					break;
-				case SearchTarget.WholeSolution:
-					if (ProjectService.OpenSolution == null)
-						break;
-					foreach (var item in ProjectService.OpenSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items))
-						files.Add(new FileName(Path.Combine(ProjectService.OpenSolution.Directory, item.Location)));
-					foreach (var item in ProjectService.OpenSolution.Projects.SelectMany(p => p.Items).OfType<FileProjectItem>())
-						files.Add(new FileName(item.FileName));
-					break;
-				case SearchTarget.Directory:
-					if (!Directory.Exists(baseDirectory))
-						break;
-					return FileUtility.LazySearchDirectory(baseDirectory, filter, searchSubdirs);
-				default:
-					throw new Exception("Invalid value for FileListType");
-			}
-			
-			return files.Distinct();
-		}
 	}
 }

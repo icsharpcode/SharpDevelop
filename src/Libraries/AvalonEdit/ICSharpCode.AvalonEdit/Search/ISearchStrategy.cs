@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Search
 	/// <summary>
 	/// Basic interface for search algorithms.
 	/// </summary>
-	public interface ISearchStrategy
+	public interface ISearchStrategy : IEquatable<ISearchStrategy>
 	{
 		/// <summary>
 		/// Finds all matches in the given ITextSource and the given range.

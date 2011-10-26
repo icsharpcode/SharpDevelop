@@ -17,6 +17,8 @@ namespace ICSharpCode.AvalonEdit.Search
 		
 		public RegexSearchStrategy(Regex searchPattern)
 		{
+			if (searchPattern == null)
+				throw new ArgumentNullException("searchPattern");
 			this.searchPattern = searchPattern;
 		}
 		
@@ -32,6 +34,15 @@ namespace ICSharpCode.AvalonEdit.Search
 		public ISearchResult FindNext(ITextSource document, int offset, int length)
 		{
 			return FindAll(document, offset, length).FirstOrDefault();
+		}
+		
+		public bool Equals(ISearchStrategy other)
+		{
+			var strategy = other as RegexSearchStrategy;
+			return strategy != null &&
+				strategy.searchPattern.ToString() == searchPattern.ToString() &&
+				strategy.searchPattern.Options == searchPattern.Options &&
+				strategy.searchPattern.RightToLeft == searchPattern.RightToLeft;
 		}
 	}
 	
