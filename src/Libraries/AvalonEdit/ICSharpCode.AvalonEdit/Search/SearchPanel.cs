@@ -101,7 +101,11 @@ namespace ICSharpCode.AvalonEdit.Search
 
 		void UpdateSearch()
 		{
-			messageView.IsOpen = false;
+			// only reset as long as there are results
+			// if no results are found, the "no matches found" message should not flicker.
+			// if results are found by the next run, the message will be hidden inside DoSearch ...
+			if (renderer.CurrentResults.Any())
+				messageView.IsOpen = false;
 			strategy = SearchStrategyFactory.Create(SearchPattern ?? "", !MatchCase, WholeWords, UseRegex ? SearchMode.RegEx : SearchMode.Normal);
 			DoSearch(true);
 		}
@@ -217,6 +221,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		{
 			renderer.CurrentResults.Clear();
 			currentResult = null;
+			
 			if (!string.IsNullOrEmpty(SearchPattern)) {
 				int offset = textArea.Caret.Offset;
 				if (changeSelection) {
@@ -231,6 +236,12 @@ namespace ICSharpCode.AvalonEdit.Search
 					}
 					renderer.CurrentResults.Add(result);
 				}
+				if (!renderer.CurrentResults.Any()) {
+					messageView.IsOpen = true;
+					messageView.Content = "No matches found!";
+					messageView.PlacementTarget = searchTextBox;
+				} else
+					messageView.IsOpen = false;
 			}
 			textArea.TextView.InvalidateLayer(KnownLayer.Selection);
 		}
