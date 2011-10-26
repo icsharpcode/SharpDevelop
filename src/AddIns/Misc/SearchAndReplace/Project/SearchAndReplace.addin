@@ -23,11 +23,6 @@
 		          icon = "Icons.16x16.FindNextIcon"
 		          shortcut = "F3"
 		          class = "SearchAndReplace.FindNext"/>
-		<MenuItem id = "FindNextSelected"
-		          insertafter = "FindNext"
-		          label = "${res:XML.MainMenu.SearchMenu.FindNextSelected}"
-		          shortcut = "Control|F3"
-		          class = "SearchAndReplace.FindNextSelected"/>
 		<MenuItem id = "Replace"
 		          insertafter = "FindNextSelected"
 		          insertbefore = "SearchSeparator"

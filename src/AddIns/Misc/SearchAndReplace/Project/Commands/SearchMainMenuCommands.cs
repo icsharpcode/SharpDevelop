@@ -51,59 +51,6 @@ namespace SearchAndReplace
 		}
 	}
 	
-	/// <summary>
-	/// Finds the next text match based on the text currently
-	/// selected. It uses the currently active search options and only changes
-	/// the current find pattern. If the currently active search is inside the
-	/// current text selection then the quick find will change the search so it is
-	/// across the active document, otherwise it will not change the current setting.
-	/// </summary>
-	/// <remarks>
-	/// If there is a piece of text selected on a single line then the quick
-	/// find will search for that. If multiple lines of text are selected then
-	/// the word at the start of the selection is determined and searche for.
-	/// If no text is selected then the word next to the caret is used. If
-	/// no text is selected, but the caret is immediately surrounded by whitespace
-	/// then quick find does nothing.
-	/// </remarks>
-	public class FindNextSelected : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			ITextEditor textArea = SearchManager.GetActiveTextEditor();
-			if (textArea == null) {
-				return;
-			}
-			
-			// Determine what text we should search for.
-			string textToFind;
-			
-			string selectedText = textArea.SelectedText;
-			if (selectedText.Length > 0) {
-				if (Find.IsMultipleLines(selectedText)) {
-					// Locate the nearest word at the selection start.
-					textToFind = textArea.Document.GetWordAt(textArea.SelectionStart);
-				} else {
-					// Search for selected text.
-					textToFind = selectedText;
-				}
-			} else {
-				textToFind = textArea.Document.GetWordAt(textArea.Caret.Offset);
-			}
-			
-			if (textToFind != null && textToFind.Length > 0) {
-				SearchOptions.CurrentFindPattern = textToFind;
-				if (SearchOptions.SearchTarget == SearchTarget.CurrentSelection) {
-					SearchOptions.SearchTarget = SearchTarget.CurrentDocument;
-				}
-				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection() : null);
-				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-				var result = SearchManager.FindNext(strategy, location);
-				SearchManager.SelectResult(result);
-			}
-		}
-	}
-	
 	public class Replace : AbstractMenuCommand
 	{
 		public override void Run()
