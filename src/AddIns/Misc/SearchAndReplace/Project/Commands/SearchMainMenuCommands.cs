@@ -39,7 +39,7 @@ namespace SearchAndReplace
 		public override void Run()
 		{
 			if (SearchOptions.CurrentFindPattern.Length > 0) {
-				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 				SearchManager.SelectResult(result);
 			} else {
 				Find find = new Find();
@@ -93,7 +93,7 @@ namespace SearchAndReplace
 				if (SearchOptions.SearchTarget == SearchTarget.CurrentSelection) {
 					SearchOptions.SearchTarget = SearchTarget.CurrentDocument;
 				}
-				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				var result = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 				SearchManager.SelectResult(result);
 			}
 		}

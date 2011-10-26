@@ -95,7 +95,7 @@ namespace SearchAndReplace
 		void FindNextButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			lastMatch = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			lastMatch = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 			SearchManager.SelectResult(lastMatch);
 			Focus();
 		}
@@ -106,7 +106,7 @@ namespace SearchAndReplace
 			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			try {
-				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
+				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
 				SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
 			} catch (OperationCanceledException) {}
 		}
@@ -117,7 +117,7 @@ namespace SearchAndReplace
 			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
 			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
 			try {
-				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+				var results = SearchManager.FindAllParallel(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 				SearchManager.MarkAll(results);
 			} catch (OperationCanceledException) {}
 		}
@@ -129,7 +129,7 @@ namespace SearchAndReplace
 			AsynchronousWaitDialog.RunInCancellableWaitDialog(
 				StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}"), null,
 				monitor => {
-					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
+					var results = SearchManager.FindAll(monitor, SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, selection);
 					count = SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
 				});
 			if (count != -1)
@@ -141,7 +141,7 @@ namespace SearchAndReplace
 			WritebackOptions();
 			if (SearchManager.IsResultSelected(lastMatch))
 				SearchManager.Replace(lastMatch, SearchOptions.ReplacePattern);
-			lastMatch = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchStrategyType, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
+			lastMatch = SearchManager.FindNext(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode, SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories);
 			SearchManager.SelectResult(lastMatch);
 			Focus();
 		}
@@ -162,7 +162,7 @@ namespace SearchAndReplace
 			SearchOptions.MatchWholeWord = Get<CheckBox>("matchWholeWord").Checked;
 			SearchOptions.IncludeSubdirectories = Get<CheckBox>("includeSubFolder").Checked;
 			
-			SearchOptions.SearchStrategyType = (SearchMode)Get<ComboBox>("use").SelectedIndex;
+			SearchOptions.SearchMode = (SearchMode)Get<ComboBox>("use").SelectedIndex;
 			if (Get<ComboBox>("lookIn").DropDownStyle == ComboBoxStyle.DropDown) {
 				SearchOptions.SearchTarget = SearchTarget.Directory;
 			} else {
@@ -216,7 +216,7 @@ namespace SearchAndReplace
 			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.Standard}"));
 			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.RegexSearch}"));
 			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.WildcardSearch}"));
-			switch (SearchOptions.SearchStrategyType) {
+			switch (SearchOptions.SearchMode) {
 				case SearchMode.RegEx:
 					Get<ComboBox>("use").SelectedIndex = 1;
 					break;
