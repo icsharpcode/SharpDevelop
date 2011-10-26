@@ -1217,7 +1217,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (type == null || type.DeclaringType != null)
 				return type;
-			var result = ctx.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal);
+			var result = ctx.GetTypeDefinition (type.Namespace, type.Name, type.TypeParameterCount, StringComparer.Ordinal) ?? type;
+			if (result.GetParts ().Count == 1)
+				return type;
 //			Console.WriteLine ("result:"+  result);
 			return result;
 		}

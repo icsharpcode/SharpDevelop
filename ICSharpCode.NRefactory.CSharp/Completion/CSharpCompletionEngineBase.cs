@@ -203,8 +203,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!didAppendSemicolon)
 					wrapper.Append (';');
 			}
-			Console.WriteLine ("1111111111");
-			Console.WriteLine (wrapper);
 		}
 
 		protected CompilationUnit ParseStub (string continuation, bool appendSemicolon = true)
