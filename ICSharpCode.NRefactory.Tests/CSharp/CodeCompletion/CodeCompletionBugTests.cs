@@ -3218,6 +3218,24 @@ class Foo
 		}
 		
 		/// <summary>
+		/// Bug 675956 - Completion in for loops is broken
+		/// </summary>
+		[Test()]
+		public void TestBug675956Case2 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class Test
+{
+    public static void Main (string[] args)
+    {
+        $for (int i = 0; i$
+    }
+}
+");
+			Assert.IsNotNull (provider.Find ("i"), "variable 'i' not found.");
+		}
+		
+		/// <summary>
 		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
 		/// </summary>
 		[Test()]

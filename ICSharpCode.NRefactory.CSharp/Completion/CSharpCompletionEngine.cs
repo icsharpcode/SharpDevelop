@@ -388,7 +388,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!char.IsLetterOrDigit (last) && last != '_')
 						return null;
 				}
-				
 				if (identifierStart == null)
 					return null;
 				
@@ -532,9 +531,22 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
 		{
 			var wrapper = new CompletionDataWrapper (this);
+			while (offset > 0 && char.IsWhiteSpace (document.GetCharAt (offset))) {
+				offset--;
+			}
+			location = document.GetLocation (offset);
+			var xp = GetExpressionAtCursor ();
 			
-			var node = Unit.GetNodeAt (location);
-			var rr = ResolveExpression (CSharpParsedFile, node, Unit);
+			AstNode node;
+			Tuple<ResolveResult, CSharpResolver> rr;
+			if (xp != null) {
+				node = xp.Item2;
+				rr = ResolveExpression (xp.Item1, node, xp.Item3);
+			} else {
+				node = Unit.GetNodeAt (location);
+				rr = ResolveExpression (CSharpParsedFile, node, Unit);
+			}
+				
 			AddContextCompletion (wrapper, rr != null ? rr.Item2 : GetState (), node);
 			
 			return wrapper.Result;
@@ -1571,6 +1583,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			// try statement 
 			if (expr == null) {
 				expr = tmpUnit.GetNodeAt<SwitchStatement> (location.Line, location.Column - 1); 
+				baseUnit = tmpUnit;
+			}
+			
+			if (expr == null) {
+				var forStmt = tmpUnit.GetNodeAt<ForStatement> (location.Line, location.Column - 3); 
+				expr = forStmt;
+				if (forStmt != null && forStmt.EmbeddedStatement.IsNull) {
+					var id = new IdentifierExpression ("stub");
+					forStmt.EmbeddedStatement = new BlockStatement () { Statements = { new ExpressionStatement (id) }};
+					expr = id;
+				}
+				baseUnit = tmpUnit;
 			}
 			
 			if (expr == null)
