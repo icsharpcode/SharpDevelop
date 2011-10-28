@@ -1568,9 +1568,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				expr = baseUnit.GetNodeAt<ArrayInitializerExpression> (location.Line, location.Column - 1); 
 			}
 			
-			// try statement
+			// try statement 
 			if (expr == null) {
-				expr = tmpUnit.GetNodeAt<Statement> (location.Line, location.Column - 1); 
+				expr = tmpUnit.GetNodeAt<SwitchStatement> (location.Line, location.Column - 1); 
 			}
 			
 			if (expr == null)
