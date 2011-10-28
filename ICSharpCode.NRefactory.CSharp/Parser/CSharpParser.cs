@@ -1431,12 +1431,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), ForStatement.Roles.Semicolon);
 				if (forStatement.Test != null)
 					result.AddChild ((Expression)forStatement.Test.Accept (this), ForStatement.Roles.Condition);
-				if (location != null)
+				if (location != null && location.Count >= 3)
 					result.AddChild (new CSharpTokenNode (Convert (location [2]), 1), ForStatement.Roles.Semicolon);
 				
 				AddStatementOrList (result, forStatement.Increment, ForStatement.IteratorRole);
 				
-				if (location != null)
+				if (location != null && location.Count >= 4)
 					result.AddChild (new CSharpTokenNode (Convert (location [3]), 1), ForStatement.Roles.RPar);
 				
 				if (forStatement.Statement != null)

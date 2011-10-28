@@ -3891,7 +3891,7 @@ unary_expression
 			report.Error (1992, GetLocation ($1),
 				"The `await' operator can only be used when its containing method or lambda expression is marked with the `async' modifier");
 		} else {
-			current_block.ParametersBlock.IsAsync = true;
+			current_block.Explicit.RegisterAsyncAwait ();
 		}
 		
 		$$ = new Await ((Expression) $2, GetLocation ($1));
@@ -4092,13 +4092,8 @@ conditional_expression
 	  }
 	;
 
-expression_recover
-	: expression
-	| error { $$ = new NullLiteral (GetLocation ($1)); }
-	;
-
 assignment_expression
-	: prefixed_unary_expression ASSIGN expression_recover
+	: prefixed_unary_expression ASSIGN expression
 	  {
 		$$ = new SimpleAssign ((Expression) $1, (Expression) $3, GetLocation ($2));
 	  }
@@ -5280,6 +5275,16 @@ for_statement_cont
 
 		$$ = end_block (GetLocation ($2));
 	  }
+	| opt_for_initializer SEMICOLON error
+	  {
+		For f = new For ((Statement) $1, null, null, null, GetLocation ($-2));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2));
+
+		Error_SyntaxError (yyToken);
+		$$ = end_block (GetLocation ($2));
+	  }
 	| error
 	  {
 		Error_SyntaxError (yyToken);
@@ -5440,7 +5445,7 @@ yield_statement
 			FeatureIsNotAvailable (lt.Location, "iterators");
 		}
 		
-		current_block.ParametersBlock.TopBlock.IsIterator = true;
+		current_block.Explicit.RegisterIteratorYield ();
 		$$ = new Yield ((Expression) $3, lt.Location);
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
@@ -5454,7 +5459,7 @@ yield_statement
 			FeatureIsNotAvailable (lt.Location, "iterators");
 		}
 		
-		current_block.ParametersBlock.TopBlock.IsIterator = true;
+		current_block.Explicit.RegisterIteratorYield ();
 		$$ = new YieldBreak (lt.Location);
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($3));
 	  }
@@ -5629,20 +5634,20 @@ using_statement
 		current_block.AddLocalName (li);
 		current_variable = new Using.VariableDeclaration ((FullNamedExpression) $3, li);
 	  }
-	  using_or_fixed_variable_initializer opt_using_or_fixed_variable_declarators CLOSE_PARENS
+	  using_initialization CLOSE_PARENS
 	  {
 		$$ = current_variable;	  
 		current_variable = null;
 	  }
 	  embedded_statement
 	  {
-		if ($10 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
-			Warning_EmptyStatement (GetLocation ($10));
+		if ($9 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
+			Warning_EmptyStatement (GetLocation ($9));
 	  
-		Using u = new Using ((Using.VariableDeclaration) $9, (Statement) $10, GetLocation ($1));
-		lbag.AddStatement (u, GetLocation ($2), GetLocation ($8));
+		Using u = new Using ((Using.VariableDeclaration) $8, (Statement) $9, GetLocation ($1));
+		lbag.AddStatement (u, GetLocation ($2), GetLocation ($7));
 		current_block.AddStatement (u);
-		$$ = end_block (GetLocation ($8));
+		$$ = end_block (GetLocation ($7));
 	  }
 	| USING open_parens_any expression CLOSE_PARENS embedded_statement
 	  {
@@ -5652,6 +5657,15 @@ using_statement
 		Using u = new Using ((Expression) $3, (Statement) $5, GetLocation ($1));
 		lbag.AddStatement (u, GetLocation ($2), GetLocation ($4));
 		$$ = u;
+	  }
+	;
+	
+using_initialization
+	: using_or_fixed_variable_initializer opt_using_or_fixed_variable_declarators
+	| error
+	  {
+		// It has to be here for the parent to safely restore artificial block
+	  	Error_SyntaxError (yyToken);
 	  }
 	;
 	
@@ -6694,6 +6708,9 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 AnonymousMethodExpression end_anonymous (ParametersBlock anon_block)
 {
 	AnonymousMethodExpression retval;
+
+	if (async_block)
+		anon_block.IsAsync = true;
 
 	current_anonymous_method.Block = anon_block;
 	retval = current_anonymous_method;
