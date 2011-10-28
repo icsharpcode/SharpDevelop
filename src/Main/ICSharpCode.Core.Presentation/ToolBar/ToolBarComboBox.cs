@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,13 +13,15 @@ namespace ICSharpCode.Core.Presentation
 		IComboBoxCommand menuCommand;
 		readonly Codon codon;
 		readonly object caller;
+		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarComboBox(Codon codon, object caller)
+		public ToolBarComboBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
 			this.codon = codon;
 			this.caller = caller;
+			this.conditions = conditions;
 			ToolTipService.SetShowOnDisabled(this, true);
 			this.IsEditable = false;
 			menuCommand = (IComboBoxCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
@@ -38,7 +41,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void UpdateStatus()
 		{
-			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+			if (Condition.GetFailedAction(conditions, caller) == ConditionFailedAction.Exclude)
 				this.Visibility = Visibility.Collapsed;
 			else
 				this.Visibility = Visibility.Visible;

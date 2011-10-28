@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.Core
 {
@@ -53,7 +54,7 @@ namespace ICSharpCode.Core
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			return new ToolbarItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>());
+			return new ToolbarItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>(), args.Conditions);
 		}
 	}
 	
@@ -66,12 +67,14 @@ namespace ICSharpCode.Core
 		public readonly object Caller;
 		public readonly Codon Codon;
 		public readonly IList SubItems;
+		public readonly IEnumerable<ICondition> Conditions;
 		
-		public ToolbarItemDescriptor(object caller, Codon codon, IList subItems)
+		public ToolbarItemDescriptor(object caller, Codon codon, IList subItems, IEnumerable<ICondition> conditions)
 		{
 			this.Caller = caller;
 			this.Codon = codon;
 			this.SubItems = subItems;
+			this.Conditions = conditions;
 		}
 	}
 }
