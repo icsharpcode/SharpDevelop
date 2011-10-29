@@ -22,39 +22,49 @@ namespace ICSharpCode.MachineSpecifications.Tests
 	public class When_building_class_filter_from_test_selection : Observes<ClassFilterBuilder>
 	{
 		const string NAMESPACE_FILTER = "Namespace";
-		static IClass classAddedExplicitly, classInNamespace, classOutsideNamespace;
-		static SelectedTests selectedTests;	
+		static DefaultClass classAddedExplicitly, classInNamespace, classOutsideNamespace, classNestedInAddedExplicitly, classNestedInClassInNamespace;
+		static SelectedTests selectedTests;
 		static IProjectContent projectContent;
 		static IList<string> result;
 		
 		Establish ctx = () => {
-			classAddedExplicitly = fake.an<IClass>();			
-			classAddedExplicitly.setup(x => x.Namespace).Return("");
-			classAddedExplicitly.setup(x => x.FullyQualifiedName).Return("ClassAddedExplicitly");
-			classInNamespace = fake.an<IClass>();
-			classInNamespace.setup(x => x.Namespace).Return("Namespace.OtherNamespace");
-			classInNamespace.setup(x => x.FullyQualifiedName).Return("Namespace.OtherNamespace.ClassInNamespace");
-			classOutsideNamespace = fake.an<IClass>();
-			classOutsideNamespace.setup(x => x.Namespace).Return("Namespace2");
-			classOutsideNamespace.setup(x => x.FullyQualifiedName).Return("Namespace2.ClassOutsideNamespac");
-			
-			var project = fake.an<IProject>();			
 			projectContent = fake.an<IProjectContent>();
+			projectContent.setup(x => x.SystemTypes).Return(new SystemTypes(projectContent));
+			var compilationUnit = new DefaultCompilationUnit(projectContent);
+
+			classAddedExplicitly = new DefaultClass(compilationUnit, "ClassAddedExplicitly");
+			classNestedInAddedExplicitly = new DefaultClass(compilationUnit, classAddedExplicitly);
+			classNestedInAddedExplicitly.FullyQualifiedName = "ClassAddedExplicitly.InnerClass";
+			classAddedExplicitly.InnerClasses.Add(classNestedInAddedExplicitly);
+
+			classInNamespace = new DefaultClass(compilationUnit, "Namespace.OtherNamespace.ClassInNamespace");
+			classNestedInClassInNamespace = new DefaultClass(compilationUnit, classInNamespace);
+			classNestedInClassInNamespace.FullyQualifiedName = "Namespace.OtherNamespace.ClassInNamespace.InnerClass";
+			classInNamespace.InnerClasses.Add(classNestedInClassInNamespace);
+			classOutsideNamespace = new DefaultClass(compilationUnit, "Namespace2.ClassOutsideNamespac");
+			
+			var project = fake.an<IProject>();
 			projectContent.setup(x => x.Classes).Return(new[]{classInNamespace, classOutsideNamespace});
 			
 			selectedTests = new SelectedTests(project, NAMESPACE_FILTER, classAddedExplicitly, null);
 		};
 		
 		Because of = () =>
-			result = sut.BuildFilterFor(selectedTests, projectContent);			
+			result = sut.BuildFilterFor(selectedTests, projectContent);
 		
-		It should_add_fully_qualified_name_of_selected_test_class = () =>
-			result.ShouldContain(classAddedExplicitly.FullyQualifiedName);
+		It should_add_dotnet_name_of_selected_test_class = () =>
+			result.ShouldContain(classAddedExplicitly.DotNetName);
 		
 		It should_add_class_included_in_selected_namespace = () =>
-			result.ShouldContain(classInNamespace.FullyQualifiedName);
+			result.ShouldContain(classInNamespace.DotNetName);
 		
 		It should_not_include_class_not_included_in_namespace = () =>
-			result.ShouldNotContain(classOutsideNamespace.FullyQualifiedName);
+			result.ShouldNotContain(classOutsideNamespace.DotNetName);
+
+		It should_not_include_class_nested_in_selected_test_class = () =>
+			result.ShouldNotContain(classNestedInAddedExplicitly.DotNetName);
+
+		It should_include_class_nested_in_class_from_selected_namespace = () =>
+			result.ShouldContain(classNestedInClassInNamespace.DotNetName);
 	}
 }

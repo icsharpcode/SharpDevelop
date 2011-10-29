@@ -29,12 +29,12 @@ namespace ICSharpCode.MachineSpecifications
 		}
 		
 		public ProcessStartInfo GetProcessStartInfo() {
-            var result = new ProcessStartInfo();
-            result.FileName = ExecutableFileName;
-            result.Arguments = GetArguments();
-            result.WorkingDirectory = WorkingDirectory;
+			var result = new ProcessStartInfo();
+			result.FileName = ExecutableFileName;
+			result.Arguments = GetArguments();
+			result.WorkingDirectory = WorkingDirectory;
 
-            return result;
+			return result;
 		}
 
 	
@@ -42,97 +42,97 @@ namespace ICSharpCode.MachineSpecifications
 		
 		void InitializeFrom(SelectedTests tests) {
 			this.tests = tests;
-            project = tests.Project;
+			project = tests.Project;
 		}
 		
 		SelectedTests tests;
-        IProject project;
+		IProject project;
 
-        string GetArguments()
-        {
-            var builder = new StringBuilder();
+		string GetArguments()
+		{
+			var builder = new StringBuilder();
 
-            builder.Append("--xml \"");
-            builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, Results));
-            builder.Append("\" ");
+			builder.Append("--xml \"");
+			builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, Results));
+			builder.Append("\" ");
 
-            var filterFileName = CreateFilterFile();
-            if (filterFileName != null)
-            {
-                builder.Append("-f \"");
-                builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, filterFileName));
-                builder.Append("\" ");
-            }
+			var filterFileName = CreateFilterFile();
+			if (filterFileName != null)
+			{
+				builder.Append("-f \"");
+				builder.Append(FileUtility.GetAbsolutePath(Environment.CurrentDirectory, filterFileName));
+				builder.Append("\" ");
+			}
 
-            builder.Append("\"");
-            builder.Append(project.OutputAssemblyFullPath);
-            builder.Append("\"");            
+			builder.Append("\"");
+			builder.Append(project.OutputAssemblyFullPath);
+			builder.Append("\"");            
 
-            return builder.ToString();
-        }
+			return builder.ToString();
+		}
 
-        string CreateFilterFile()
-        {
-        	var classFilterBuilder = new ClassFilterBuilder();
-            var projectContent = ParserService.GetProjectContent(project);
-            var filter = classFilterBuilder.BuildFilterFor(tests, @using: projectContent);                
-        	
-        	string path = null;
-        	if (filter.Count > 0) {
-        		path = Path.GetTempFileName();
-        		using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
-    			using (var writer = new StreamWriter(stream))
-	        		foreach (var testClassName in filter) {
-        			       	writer.WriteLine(testClassName);
-	        		}
-        	}
-            return path;
-        }
+		string CreateFilterFile()
+		{
+			var classFilterBuilder = new ClassFilterBuilder();
+			var projectContent = ParserService.GetProjectContent(project);
+			var filter = classFilterBuilder.BuildFilterFor(tests, @using: projectContent);
+			
+			string path = null;
+			if (filter.Count > 0) {
+				path = Path.GetTempFileName();
+				using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+				using (var writer = new StreamWriter(stream))
+					foreach (var testClassName in filter) {
+							writer.WriteLine(testClassName);
+					}
+			}
+			return path;
+		}
 
-        string ExecutableFileName {
-            get {
-                var assemblyDirectory = Path.GetDirectoryName(new Uri(typeof(MSpecApplication).Assembly.CodeBase).LocalPath);
-                var runnerDirectory = Path.Combine(assemblyDirectory, "MSpecRunner");
+		string ExecutableFileName {
+			get {
+				var assemblyDirectory = Path.GetDirectoryName(new Uri(typeof(MSpecApplication).Assembly.CodeBase).LocalPath);
+				var runnerDirectory = Path.Combine(assemblyDirectory, "MSpecRunner");
 
-                string executableName = "mspec";
-                if (TargetPlatformIs32Bit(project))
-                    executableName += "-x86";
-                if (UsesClr4(project))
-                    executableName += "-clr4";
+				string executableName = "mspec";
+				if (TargetPlatformIs32Bit(project))
+					executableName += "-x86";
+				if (UsesClr4(project))
+					executableName += "-clr4";
 
-                executableName += ".exe";
-                return Path.Combine(runnerDirectory, executableName);
-            }
-        }
+				executableName += ".exe";
+				return Path.Combine(runnerDirectory, executableName);
+			}
+		}
 
-        private bool UsesClr4(IProject project)
-        {
-            MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-            if (msbuildProject != null)
-            {
-                string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
-                return String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
-            }
-            return false;
-        }
+		private bool UsesClr4(IProject project)
+		{
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null)
+			{
+				string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
+				return String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
+			}
+			return false;
+		}
 
-        private bool TargetPlatformIs32Bit(IProject project)
-        {
-            MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-            if (msbuildProject != null)
-            {
-                string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
-                return String.Compare(platformTarget, "x86", true) == 0;
-            }
-            return false;
-        }
+		private bool TargetPlatformIs32Bit(IProject project)
+		{
+			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
+			if (msbuildProject != null)
+			{
+				string platformTarget = msbuildProject.GetEvaluatedProperty("PlatformTarget");
+				return String.Compare(platformTarget, "x86", true) == 0;
+			}
+			return false;
+		}
 
-        string WorkingDirectory
-        {
-            get
-            {
-                return Path.GetDirectoryName(project.OutputAssemblyFullPath);
-            }
-        }
-    }
+		string WorkingDirectory
+		{
+			get
+			{
+				return Path.GetDirectoryName(project.OutputAssemblyFullPath);
+			}
+		}
+	}
 }
