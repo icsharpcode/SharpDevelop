@@ -23,6 +23,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	/*
 	/// <summary>
 	/// Resolve context represents the minimal mscorlib required for evaluating constants.
 	/// </summary>
@@ -177,4 +178,5 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return "MinimalResolveContext"; }
 		}
 	}
+	*/
 }

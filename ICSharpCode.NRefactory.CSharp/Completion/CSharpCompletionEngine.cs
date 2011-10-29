@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -317,14 +317,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						var evt = mrr.Member as IEvent;
 						if (evt == null)
 							return null;
-						var delegateType = evt.ReturnType.Resolve (ctx);
-						if (!delegateType.IsDelegate ())
+						var delegateType = evt.ReturnType;
+						if (delegateType.Kind != TypeKind.Delegate)
 							return null;
 						
 						var wrapper = new CompletionDataWrapper (this);
 						if (currentType != null) {
 //							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-							foreach (var method in currentType.GetMethods (ctx)) {
+							foreach (var method in currentType.GetMethods ()) {
 								if (MatchDelegate (delegateType, method) /*&& method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) &&*/) {
 									wrapper.AddMember (method);
 //									data.SetText (data.CompletionText + ";");
@@ -380,7 +380,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var contextList = new CompletionDataWrapper (this);
 				
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
-					csResolver = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
+					csResolver = new CSharpResolver (compilation);
 					var nodes = new List<AstNode> ();
 					nodes.Add (n);
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
@@ -393,10 +393,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 						var resolved = visitor.GetResolveResult (n.Parent);
 						if (resolved != null && resolved.Type != null) {
-							foreach (var property in resolved.Type.GetProperties (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
+							foreach (var property in resolved.Type.GetProperties (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (property);
 							}
-							foreach (var field in resolved.Type.GetFields (ctx).Where (p => p.Accessibility == Accessibility.Public)) {
+							foreach (var field in resolved.Type.GetFields (p => p.Accessibility == Accessibility.Public)) {
 								contextList.AddMember (field);
 							}
 						}
@@ -556,7 +556,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				
-				foreach (var member in currentType.Resolve (ctx).GetMembers (ctx)) {
+				foreach (var member in currentType.GetMembers ()) {
 					if (memberPred == null || memberPred (member))
 						wrapper.AddMember (member);
 				}
@@ -572,22 +572,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var u in n.Usings) {
-					var ns = u.ResolveNamespace (ctx);
-					if (ns == null)
+					var importedNamespace = u.ResolveNamespace (compilation);
+					if (importedNamespace == null)
 						continue;
-					foreach (var type in ctx.GetTypes (ns.NamespaceName, StringComparer.Ordinal)) {
+					foreach (var type in importedNamespace.Types) {
 						if (typePred == null || typePred (type))
 							wrapper.AddType (type, type.Name);
 					}
 				}
 				
-				foreach (var type in ctx.GetTypes (n.NamespaceName, StringComparer.Ordinal)) {
+				INamespace ns = null /* compilation.GetNamespace(n.NamespaceName) */; throw new NotImplementedException();
+				
+				foreach (var type in ns.Types) {
 					if (typePred == null || typePred (type))
 						wrapper.AddType (type, type.Name);
 				}
 				
-				foreach (var curNs in ctx.GetNamespaces ().Where (sn => sn.StartsWith (n.NamespaceName) && sn != n.NamespaceName)) {
-					wrapper.AddNamespace (n.NamespaceName, curNs);
+				foreach (var curNs in ns.ChildNamespaces) {
+					wrapper.AddNamespace (n.NamespaceName, curNs.FullName);
 				}
 			}
 		}
@@ -683,7 +685,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var isAsWrapper = new CompletionDataWrapper (this);
-				AddTypesAndNamespaces (isAsWrapper, GetState (), t => isAsType == null || t.IsDerivedFrom (isAsType.GetDefinition (), ctx));
+				AddTypesAndNamespaces (isAsWrapper, GetState (), t => isAsType == null || t.IsDerivedFrom (isAsType.GetDefinition ()));
 				return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
@@ -904,7 +906,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var wrapper = new CompletionDataWrapper (this);
 			var state = GetState ();
 			Predicate<ITypeDefinition> pred = null;
-			if (hintType != null && !hintType.Equals (SharedTypes.UnknownType)) {
+			if (hintType != null && !hintType.Equals (SpecialType.UnknownType)) {
 				var lookup = new MemberLookup (ctx, currentType, ProjectContent);
 				pred = t => {
 					// check if type is in inheritance tree.
@@ -1032,8 +1034,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count)
 				return false;
 			
+			// TODO: add support for covariant/contravariant method group conversions
 			for (int i = 0; i < delegateMethod.Parameters.Count; i++) {
-				if (!delegateMethod.Parameters [i].Type.Resolve (ctx).Equals (method.Parameters [i].Type.Resolve (ctx)))
+				if (!delegateMethod.Parameters [i].Type.Equals (method.Parameters [i].Type))
 					return false;
 			}
 			return true;

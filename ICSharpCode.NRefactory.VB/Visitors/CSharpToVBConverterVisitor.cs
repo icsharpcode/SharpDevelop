@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		TypeKind GetTypeKindForAstType(CSharp.AstType type);
 		TypeCode ResolveExpression(CSharp.Expression expression);
 		bool? IsReferenceType(CSharp.Expression expression);
-		ITypeResolveContext ResolveContext { get; }
+		//ITypeResolveContext ResolveContext { get; }
 		IType ResolveType(AstType type, TypeDeclaration entity = null);
 	}
 	
@@ -1624,7 +1624,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			
 			foreach (var type in current.ImplementsTypes) {
 				var resolved = provider.ResolveType(type, current);
-				var found = resolved.GetMembers(provider.ResolveContext, m => m.EntityType == EntityType.Method && m.Name == result.Name.Name);
+				var found = resolved.GetMembers(m => m.EntityType == EntityType.Method && m.Name == result.Name.Name);
 				if (found.FirstOrDefault() != null) {
 					result.ImplementsClause.Add(new InterfaceMemberSpecifier((AstType)type.Clone(), found.FirstOrDefault().Name));
 				}
@@ -1640,7 +1640,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			
 			foreach (var type in current.ImplementsTypes) {
 				var resolved = provider.ResolveType(type, current);
-				var found = resolved.GetMembers(provider.ResolveContext, m => m.EntityType == EntityType.Event && m.Name == result.Name.Name);
+				var found = resolved.GetMembers(m => m.EntityType == EntityType.Event && m.Name == result.Name.Name);
 				if (found.FirstOrDefault() != null) {
 					result.ImplementsClause.Add(new InterfaceMemberSpecifier((AstType)type.Clone(), found.FirstOrDefault().Name));
 				}

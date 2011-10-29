@@ -18,9 +18,26 @@
 
 using System;
 using System.Diagnostics.Contracts;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	public interface IUnresolvedEvent : IUnresolvedMember
+	{
+		bool CanAdd { get; }
+		bool CanRemove { get; }
+		bool CanInvoke { get; }
+		
+		IUnresolvedAccessor AddAccessor { get; }
+		IUnresolvedAccessor RemoveAccessor { get; }
+		IUnresolvedAccessor InvokeAccessor { get; }
+		
+		/// <summary>
+		/// Resolves the entity.
+		/// </summary>
+		new IEvent Resolve(ITypeResolveContext context);
+	}
+	
 	public interface IEvent : IMember
 	{
 		bool CanAdd { get; }

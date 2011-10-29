@@ -80,6 +80,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (context == null)
 				throw new ArgumentNullException("context");
 			
+			throw new NotImplementedException();
 //			CacheManager cache = context.CacheManager;
 //			if (cache != null) {
 //				IType cachedType = cache.GetShared(this) as IType;
@@ -87,10 +88,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 //					return cachedType;
 //			}
 			
-			IType type = context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
+//			IType type = context.GetTypeDefinition(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SpecialType.UnknownType;
 //			if (cache != null)
 //				cache.SetShared(this, type);
-			return type;
+//			return type;
 		}
 		
 		public override string ToString()

@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly IList<int> argumentToParameterMap;
 		
 		public CSharpInvocationResolveResult(
-			ResolveResult targetResult, IParameterizedMember member, IType returnType,
+			ResolveResult targetResult, IParameterizedMember member,
 			IList<ResolveResult> arguments,
 			OverloadResolutionErrors overloadResolutionErrors = OverloadResolutionErrors.None,
 			bool isExtensionMethodInvocation = false,
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isLiftedOperatorInvocation = false,
 			bool isDelegateInvocation = false,
 			IList<int> argumentToParameterMap = null)
-			: base(targetResult, member, returnType, arguments)
+			: base(targetResult, member, arguments)
 		{
 			this.OverloadResolutionErrors = overloadResolutionErrors;
 			this.IsExtensionMethodInvocation = isExtensionMethodInvocation;

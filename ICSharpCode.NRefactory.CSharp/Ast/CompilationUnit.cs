@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -86,6 +87,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitCompilationUnit (this, data);
+		}
+		
+		/// <summary>
+		/// Converts this compilation unit into a parsed file that can be stored in the type system.
+		/// </summary>
+		public CSharpParsedFile ToTypeSystem(string fileName)
+		{
+			return new TypeSystemConvertVisitor(fileName).Convert(this);
 		}
 	}
 }

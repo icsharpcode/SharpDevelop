@@ -19,7 +19,7 @@
 using System;
 using System.IO;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		[Test]
 		public void GenerateTypeSystem()
 		{
-			SimpleProjectContent pc = new SimpleProjectContent();
+			IProjectContent pc = new CSharpProjectContent();
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = true;
 			foreach (string fileName in fileNames) {
@@ -54,8 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					cu = parser.Parse(fs);
 				}
-				TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(pc, fileName);
-				pc.UpdateProjectContent(null, cv.Convert(cu));
+				pc = pc.UpdateProjectContent(null, cu.ToTypeSystem(fileName));
 			}
 		}
 		

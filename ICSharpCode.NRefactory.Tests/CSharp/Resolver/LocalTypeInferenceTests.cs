@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 }
 ";
 			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreSame(SharedTypes.UnknownType, lrr.Type);
+			Assert.AreSame(SpecialType.UnknownType, lrr.Type);
 		}
 		
 		[Test]
@@ -65,7 +65,7 @@ class TestClass {
 			$contact$.ToString();
 		} }";
 			var lrr = Resolve<LocalResolveResult>(program);
-			Assert.AreEqual(SharedTypes.UnknownType, lrr.Type);
+			Assert.AreEqual(SpecialType.UnknownType, lrr.Type);
 		}
 	}
 }

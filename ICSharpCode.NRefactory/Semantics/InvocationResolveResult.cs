@@ -35,10 +35,8 @@ namespace ICSharpCode.NRefactory.Semantics
 		/// </summary>
 		public readonly IList<ResolveResult> Arguments;
 		
-		public InvocationResolveResult(
-			ResolveResult targetResult, IParameterizedMember member, IType returnType,
-			IList<ResolveResult> arguments)
-			: base(targetResult, member, returnType)
+		public InvocationResolveResult(ResolveResult targetResult, IParameterizedMember member, IList<ResolveResult> arguments)
+			: base(targetResult, member)
 		{
 			this.Arguments = arguments ?? EmptyList<ResolveResult>.Instance;
 		}

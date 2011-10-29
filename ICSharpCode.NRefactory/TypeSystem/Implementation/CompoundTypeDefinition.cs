@@ -22,6 +22,7 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	/*
 	/// <summary>
 	/// Type definition that represents a partial class with multiple parts.
 	/// </summary>
@@ -30,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		IList<ITypeDefinition> parts;
 		
-		private CompoundTypeDefinition(ITypeDefinition declaringTypeDefinition, string name)
+		private CompoundTypeDefinition(CompoundTypeDefinition declaringTypeDefinition, string name)
 			: base(declaringTypeDefinition, name)
 		{
 		}
@@ -51,9 +52,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			base.FreezeInternal();
 		}
 		
-		public override IList<ITypeDefinition> GetParts()
-		{
-			return parts;
+		public override IList<ITypeDefinitionPart> Parts {
+			get { return parts; }
 		}
 		
 		public override string Documentation {
@@ -149,4 +149,5 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return false;
 		}
 	}
+	*/
 }

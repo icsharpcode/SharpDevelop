@@ -98,26 +98,22 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		Queue<DefiniteAssignmentNode> nodesWithModifiedInput = new Queue<DefiniteAssignmentNode>();
 		
 		public DefiniteAssignmentAnalysis(Statement rootStatement)
-			: this(rootStatement, null, CancellationToken.None)
+			: this(rootStatement, CancellationToken.None)
 		{
 		}
 		
+		
+		[ObsoleteAttribute]
+		public DefiniteAssignmentAnalysis(params object[] args)
+		{
+			throw new NotImplementedException();
+		}
 		public DefiniteAssignmentAnalysis(Statement rootStatement, CancellationToken cancellationToken)
-			: this(rootStatement, null, cancellationToken)
 		{
+			throw new NotImplementedException();
 		}
 		
-		public DefiniteAssignmentAnalysis(Statement rootStatement, ITypeResolveContext context)
-			: this(rootStatement, context, CancellationToken.None)
-		{
-		}
-		
-		public DefiniteAssignmentAnalysis(Statement rootStatement, ITypeResolveContext context, CancellationToken cancellationToken)
-			: this(rootStatement, new ResolveVisitor(new CSharpResolver(context ?? MinimalResolveContext.Instance, cancellationToken),
-			                                         null))
-		{
-		}
-		
+		/*
 		public DefiniteAssignmentAnalysis(Statement rootStatement, ResolveVisitor resolveVisitor)
 		{
 			if (rootStatement == null)
@@ -157,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			
 			this.analyzedRangeStart = 0;
 			this.analyzedRangeEnd = allNodes.Count - 1;
-		}
+		}*/
 		
 		void InsertAnonymousMethods(int insertPos, AstNode node)
 		{
@@ -416,10 +412,6 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		/// <returns>The constant value of the expression; or null if the expression is not a constant.</returns>
 		ConstantResolveResult EvaluateConstant(Expression expr)
 		{
-			if (resolveVisitor.TypeResolveContext is MinimalResolveContext) {
-				if (!(expr is PrimitiveExpression || expr is NullReferenceExpression))
-					return null;
-			}
 			return resolveVisitor.Resolve(expr) as ConstantResolveResult;
 		}
 		

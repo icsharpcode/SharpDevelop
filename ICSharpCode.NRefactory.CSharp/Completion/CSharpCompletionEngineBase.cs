@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngineBase.cs
 //  
 // Author:
@@ -45,11 +45,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected int offset;
 		protected TextLocation location;
 		
+		protected ICompilation compilation;
 		protected ITypeDefinition currentType;
 		protected IMember currentMember;
 		
 		#region Input properties
-		public ITypeResolveContext ctx { get; set; }
+		//public ITypeResolveContext ctx { get; set; }
 		public CompilationUnit Unit { get; set; }
 		public CSharpParsedFile CSharpParsedFile { get; set; }
 		public IProjectContent ProjectContent { get; set; }
@@ -60,8 +61,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.offset = offset;
 			this.location = document.GetLocation (offset);
 			
-			this.currentType = CSharpParsedFile.GetInnermostTypeDefinition (location);
-			this.currentMember = CSharpParsedFile.GetMember (location);	
+			throw new NotImplementedException();
+			//this.currentType = CSharpParsedFile.GetInnermostTypeDefinition (location);
+			//this.currentMember = CSharpParsedFile.GetMember (location);	
 		}
 		
 		#region Context helper methods

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UseExplicitType.cs
 //  
 // Author:
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (varDecl == null)
 				return false;
 			var type = context.Resolve (varDecl.Variables.First ().Initializer).Type;
-			return !type.Equals (SharedTypes.Null) && !type.Equals (SharedTypes.UnknownType);
+			return !type.Equals (SpecialType.NullType) && !type.Equals (SpecialType.UnknownType);
 		}
 		
 		public void Run (RefactoringContext context)

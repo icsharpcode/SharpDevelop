@@ -78,15 +78,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	
 	public interface IAmbience
 	{
-		ConversionFlags ConversionFlags {
-			get;
-			set;
-		}
+		ConversionFlags ConversionFlags { get; set; }
 		
-		string ConvertEntity(IEntity e, ITypeResolveContext context);
+		string ConvertEntity(IEntity e);
 		string ConvertType(IType type);
-		string ConvertType(ITypeReference type, ITypeResolveContext context);
-		string ConvertVariable(IVariable variable, ITypeResolveContext context);
+		string ConvertVariable(IVariable variable);
 		
 		string WrapAttribute(string attribute);
 		string WrapComment(string comment);

@@ -17,14 +17,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.CodeDom;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using Microsoft.CSharp;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -33,27 +27,32 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CodeDomConvertVisitorTests : ResolverTestBase
 	{
 		CodeDomConvertVisitor convertVisitor;
+		CSharpResolver resolver;
 		
 		public override void SetUp()
 		{
 			base.SetUp();
-			AddUsing("System");
-			AddUsing("System.Collections.Generic");
-			AddUsing("System.Linq");
-			resolver.CurrentTypeDefinition = new DefaultTypeDefinition(project, string.Empty, "MyClass");
+			resolver = new CSharpResolver(compilation);
+			resolver.CurrentUsingScope = new UsingScope();
+			resolver.CurrentUsingScope.Usings.Add(MakeReference("System"));
+			resolver.CurrentUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
+			resolver.CurrentUsingScope.Usings.Add(MakeReference("System.Linq"));
+			
 			convertVisitor = new CodeDomConvertVisitor();
 			convertVisitor.UseFullyQualifiedTypeNames = true;
 		}
 		
 		string Convert(Expression expr)
 		{
+			throw new NotImplementedException();
+			/*
 			ResolveVisitor rv = new ResolveVisitor(resolver, null);
 			rv.Scan(expr);
 			var codeExpr = (CodeExpression)convertVisitor.Convert(expr, rv);
 			StringWriter writer = new StringWriter();
 			writer.NewLine = " ";
 			new CSharpCodeProvider().GenerateCodeFromExpression(codeExpr, writer, new CodeGeneratorOptions { IndentString = " " });
-			return Regex.Replace(writer.ToString(), @"\s+", " ");
+			return Regex.Replace(writer.ToString(), @"\s+", " ");*/
 		}
 		
 		[Test]

@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						return type;
 				}
 			}
-			return SharedTypes.UnknownType;
+			return SpecialType.UnknownType;
 		}
 		
 		public override string ToString()

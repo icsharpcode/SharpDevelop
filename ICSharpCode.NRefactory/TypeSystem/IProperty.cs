@@ -23,6 +23,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents a property or indexer.
 	/// </summary>
+	public interface IUnresolvedProperty : IUnresolvedParameterizedMember
+	{
+		bool CanGet { get; }
+		bool CanSet { get; }
+		
+		IUnresolvedAccessor Getter { get; }
+		IUnresolvedAccessor Setter { get; }
+		
+		bool IsIndexer { get; }
+		
+		/// <summary>
+		/// Resolves the entity.
+		/// </summary>
+		new IProperty Resolve(ITypeResolveContext context);
+	}
+	
+	/// <summary>
+	/// Represents a property or indexer.
+	/// </summary>
 	public interface IProperty : IParameterizedMember
 	{
 		bool CanGet { get; }

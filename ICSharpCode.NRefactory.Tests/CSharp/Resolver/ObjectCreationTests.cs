@@ -52,7 +52,7 @@ class A {
 }
 ";
 			ResolveResult result = Resolve<ErrorResolveResult>(program);
-			Assert.AreSame(SharedTypes.UnknownType, result.Type);
+			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
 		[Test]
@@ -66,7 +66,7 @@ class A {
 ";
 			UnknownIdentifierResolveResult result = Resolve<UnknownIdentifierResolveResult>(program);
 			Assert.AreEqual("ThisClassDoesNotExist", result.Identifier);
-			Assert.AreSame(SharedTypes.UnknownType, result.Type);
+			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
 		[Test]

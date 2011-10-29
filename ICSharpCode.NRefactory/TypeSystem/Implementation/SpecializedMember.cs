@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		readonly IType declaringType;
 		readonly IMember memberDefinition;
-		ITypeReference returnType;
+		IType returnType;
 		
 		protected SpecializedMember(IType declaringType, IMember memberDefinition)
 		{
@@ -42,9 +42,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.memberDefinition = memberDefinition;
 		}
 		
-		protected virtual void Initialize(TypeVisitor substitution, ITypeResolveContext context)
+		protected virtual void Initialize(TypeVisitor substitution)
 		{
-			this.returnType = Substitute(memberDefinition.ReturnType, substitution, context);
+			this.returnType = Substitute(memberDefinition.ReturnType, substitution);
+		}
+		
+		public virtual IMemberReference ToMemberReference()
+		{
+			throw new NotImplementedException();
 		}
 		
 		internal static TypeVisitor GetSubstitution(IType declaringType)
@@ -56,14 +61,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return null;
 		}
 		
-		internal static ITypeReference Substitute(ITypeReference type, TypeVisitor substitution, ITypeResolveContext context)
+		internal static IType Substitute(IType type, TypeVisitor substitution)
 		{
 			if (substitution == null)
 				return type;
-			if (context != null)
-				return type.Resolve(context).AcceptVisitor(substitution);
 			else
-				return SubstitutionTypeReference.Create(type, substitution);
+				return type.AcceptVisitor(substitution);
 		}
 		
 		public IType DeclaringType {
@@ -74,12 +77,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition; }
 		}
 		
-		public ITypeReference ReturnType {
+		public IType ReturnType {
 			get { return returnType; }
 		}
 		
-		public IList<IExplicitInterfaceImplementation> InterfaceImplementations {
-			get { return memberDefinition.InterfaceImplementations; }
+		public IUnresolvedEntity UnresolvedEntity {
+			get { return memberDefinition.UnresolvedEntity; }
 		}
 		
 		public bool IsVirtual {
@@ -112,6 +115,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IAttribute> Attributes {
 			get { return memberDefinition.Attributes; }
+		}
+		
+		public IList<IMember> InterfaceImplementations {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public bool IsExplicitInterfaceImplementation {
+			get { return memberDefinition.IsExplicitInterfaceImplementation; }
 		}
 		
 		public string Documentation {
@@ -166,14 +177,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.IsProtectedAndInternal; }
 		}
 		
-		public IProjectContent ProjectContent {
-			get { return memberDefinition.ProjectContent; }
-		}
-		
-		public IParsedFile ParsedFile {
-			get { return memberDefinition.ParsedFile; }
-		}
-		
 		public string FullName {
 			get { return memberDefinition.FullName; }
 		}
@@ -190,14 +193,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.ReflectionName; }
 		}
 		
-		public bool IsFrozen {
-			get { return memberDefinition.IsFrozen; }
+		public ICompilation Compilation {
+			get { return memberDefinition.Compilation; }
 		}
 		
-		void IFreezable.Freeze()
-		{
-			if (!memberDefinition.IsFrozen)
-				throw new NotSupportedException();
+		public IAssembly ParentAssembly {
+			get { return memberDefinition.ParentAssembly; }
 		}
 		
 		public override bool Equals(object obj)
@@ -239,9 +240,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
-		protected override void Initialize(TypeVisitor substitution, ITypeResolveContext context)
+		protected override void Initialize(TypeVisitor substitution)
 		{
-			base.Initialize(substitution, context);
+			base.Initialize(substitution);
 			
 			var paramDefs = ((IParameterizedMember)this.MemberDefinition).Parameters;
 			if (paramDefs.Count == 0) {
@@ -249,9 +250,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			} else {
 				var parameters = new IParameter[paramDefs.Count];
 				for (int i = 0; i < parameters.Length; i++) {
-					ITypeReference newType = Substitute(paramDefs[i].Type, substitution, context);
+					IType newType = Substitute(paramDefs[i].Type, substitution);
 					if (newType != paramDefs[i].Type) {
-						parameters[i] = new DefaultParameter(paramDefs[i]) { Type = newType };
+						parameters[i] = new SpecializedParameter(paramDefs[i], newType);
 					} else {
 						parameters[i] = paramDefs[i];
 					}
@@ -281,6 +282,58 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			b.Append(this.ReturnType.ToString());
 			b.Append(']');
 			return b.ToString();
+		}
+		
+		sealed class SpecializedParameter : IParameter
+		{
+			readonly IParameter originalParameter;
+			readonly IType newType;
+			
+			public SpecializedParameter(IParameter originalParameter, IType newType)
+			{
+				this.originalParameter = originalParameter;
+				this.newType = newType;
+			}
+			
+			public IList<IAttribute> Attributes {
+				get { return originalParameter.Attributes; }
+			}
+			
+			public bool IsRef {
+				get { return originalParameter.IsRef; }
+			}
+			
+			public bool IsOut {
+				get { return originalParameter.IsOut; }
+			}
+			
+			public bool IsParams {
+				get { return originalParameter.IsParams; }
+			}
+			
+			public bool IsOptional {
+				get { return originalParameter.IsOptional; }
+			}
+			
+			public string Name {
+				get { return originalParameter.Name; }
+			}
+			
+			public DomRegion Region {
+				get { return originalParameter.Region; }
+			}
+			
+			public IType Type {
+				get { return newType; }
+			}
+			
+			public bool IsConst {
+				get { return originalParameter.IsConst; }
+			}
+			
+			public object ConstantValue {
+				get { return originalParameter.ConstantValue; }
+			}
 		}
 	}
 }

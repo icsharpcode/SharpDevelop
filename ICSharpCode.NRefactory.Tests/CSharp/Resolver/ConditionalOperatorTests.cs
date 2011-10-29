@@ -29,6 +29,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public class ConditionalOperatorTests : ResolverTestBase
 	{
+		CSharpResolver resolver;
+		
+		public override void SetUp()
+		{
+			base.SetUp();
+			resolver = new CSharpResolver(compilation);
+		}
+		
 		void TestOperator(ResolveResult condition, ResolveResult trueExpr, ResolveResult falseExpr,
 		                  Conversion conditionConv, Conversion trueConv, Conversion falseConv,
 		                  Type expectedResultType)

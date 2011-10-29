@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{63D3B27A-D966-4902-90B3-30290E1692F1}</ProjectGuid>
@@ -187,14 +187,6 @@
     <Compile Include="Utils\TreeTraversalTests.cs" />
     <Compile Include="FormattingTests\TextEditorTestAdapter.cs" />
     <Compile Include="FormattingTests\TestBlankLineFormatting.cs" />
-    <Compile Include="CSharp\CodeCompletion\CodeCompletionAccessibleTests.cs" />
-    <Compile Include="CSharp\CodeCompletion\CodeCompletionBugTests.cs" />
-    <Compile Include="CSharp\CodeCompletion\CodeCompletionCSharp3Tests.cs" />
-    <Compile Include="CSharp\CodeCompletion\CodeCompletionCSharpTests.cs" />
-    <Compile Include="CSharp\CodeCompletion\CodeComplteionOperatorTests.cs" />
-    <Compile Include="CSharp\CodeCompletion\CompletionDataList.cs" />
-    <Compile Include="CSharp\CodeCompletion\ParameterCompletionTests.cs" />
-    <Compile Include="CSharp\CodeCompletion\TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
@@ -212,7 +204,6 @@
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
-    <Folder Include="CSharp\CodeCompletion\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

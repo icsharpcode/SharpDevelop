@@ -29,6 +29,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public unsafe class BinaryOperatorTests : ResolverTestBase
 	{
+		CSharpResolver resolver;
+		
+		public override void SetUp()
+		{
+			base.SetUp();
+			resolver = new CSharpResolver(compilation);
+		}
+		
 		[Test]
 		public void Multiplication()
 		{
@@ -509,7 +517,7 @@ class Test {
 			Assert.IsTrue(irr.IsLiftedOperatorInvocation);
 			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
 			// even though we're calling the lifted operator, trr.Member should be the original operator method
-			Assert.AreEqual("S", irr.Member.ReturnType.Resolve(context).ReflectionName);
+			Assert.AreEqual("S", irr.Member.ReturnType.ReflectionName);
 			Assert.AreEqual("System.Nullable`1[[S]]", irr.Type.ReflectionName);
 			
 			Conversion lhsConv = ((ConversionResolveResult)irr.Arguments[0]).Conversion;

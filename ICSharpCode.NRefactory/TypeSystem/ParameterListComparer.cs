@@ -23,20 +23,28 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public static class ParameterListComparer
+	/// <summary>
+	/// Compares parameter lists by comparing the types of all parameters.
+	/// </summary>
+	/// <remarks>
+	/// 'ref int' and 'out int' are considered to be equal.
+	/// "Method{T}(T a)" and "Method{S}(S b)" are also considered equal.
+	/// </remarks>
+	public sealed class ParameterListComparer : IEqualityComparer<IList<IParameter>>
 	{
+		public static readonly ParameterListComparer Instance = new ParameterListComparer();
+		
 		// We want to consider the parameter lists "Method<T>(T a)" and "Method<S>(S b)" as equal.
 		// However, the parameter types are not considered equal, as T is a different type parameter than S.
 		// In order to compare the method signatures, we will normalize all method type parameters.
 		sealed class NormalizeMethodTypeParameters : TypeVisitor
 		{
-			public static readonly NormalizeMethodTypeParameters Instance = new NormalizeMethodTypeParameters();
-			
-			ITypeParameter[] normalTypeParameters = { new DefaultTypeParameter(EntityType.Method, 0, string.Empty) };
+			//ITypeParameter[] normalTypeParameters = { new DefaultTypeParameter(EntityType.Method, 0, string.Empty) };
 			
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
-				if (type.OwnerType == EntityType.Method) {
+				throw new NotImplementedException();
+				/*if (type.OwnerType == EntityType.Method) {
 					ITypeParameter[] tps = this.normalTypeParameters;
 					while (type.Index >= tps.Length) {
 						// We don't have a normal type parameter for this index, so we need to extend our array.
@@ -59,28 +67,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return tps[type.Index];
 				} else {
 					return base.VisitTypeParameter(type);
-				}
+				}*/
 			}
 		}
 		
-		public static bool Compare(ITypeResolveContext context, IParameterizedMember x, IParameterizedMember y)
+		readonly NormalizeMethodTypeParameters normalization = new NormalizeMethodTypeParameters();
+		
+		public bool Equals(IList<IParameter> x, IList<IParameter> y)
 		{
-			var px = x.Parameters;
-			var py = y.Parameters;
-			if (px.Count != py.Count)
+			if (x == y)
+				return true;
+			if (x == null || y == null || x.Count != y.Count)
 				return false;
-			for (int i = 0; i < px.Count; i++) {
-				var a = px[i];
-				var b = py[i];
+			for (int i = 0; i < x.Count; i++) {
+				var a = x[i];
+				var b = y[i];
 				if (a == null && b == null)
 					continue;
 				if (a == null || b == null)
 					return false;
-				IType aType = a.Type.Resolve(context);
-				IType bType = b.Type.Resolve(context);
-				
-				aType = aType.AcceptVisitor(NormalizeMethodTypeParameters.Instance);
-				bType = bType.AcceptVisitor(NormalizeMethodTypeParameters.Instance);
+				IType aType = a.Type.AcceptVisitor(normalization);
+				IType bType = b.Type.AcceptVisitor(normalization);
 				
 				if (!aType.Equals(bType))
 					return false;
@@ -88,18 +95,75 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return true;
 		}
 		
-		public static int GetHashCode(ITypeResolveContext context, IParameterizedMember obj)
+		public int GetHashCode(IList<IParameter> obj)
 		{
-			int hashCode = obj.Parameters.Count;
+			int hashCode = obj.Count;
 			unchecked {
-				foreach (IParameter p in obj.Parameters) {
+				foreach (IParameter p in obj) {
 					hashCode *= 27;
-					IType type = p.Type.Resolve(context);
-					type = type.AcceptVisitor(NormalizeMethodTypeParameters.Instance);
+					IType type = p.Type.AcceptVisitor(normalization);
 					hashCode += type.GetHashCode();
 				}
 			}
 			return hashCode;
+		}
+	}
+	
+	/// <summary>
+	/// Compares member signatures.
+	/// </summary>
+	/// <remarks>
+	/// This comparer checks for equal short name, equal type parameter count, and equal parameter types (using ParameterListComparer).
+	/// </remarks>
+	public sealed class SignatureComparer : IEqualityComparer<IMember>
+	{
+		StringComparer nameComparer;
+		
+		public SignatureComparer(StringComparer nameComparer)
+		{
+			if (nameComparer == null)
+				throw new ArgumentNullException("nameComparer");
+			this.nameComparer = nameComparer;
+		}
+		
+		/// <summary>
+		/// Gets a signature comparer that uses an ordinal comparison for the member name.
+		/// </summary>
+		public static readonly SignatureComparer Ordinal = new SignatureComparer(StringComparer.Ordinal);
+		
+		public bool Equals(IMember x, IMember y)
+		{
+			if (x == y)
+				return true;
+			if (x == null || y == null || x.EntityType != y.EntityType || !nameComparer.Equals(x.Name, y.Name))
+				return false;
+			IParameterizedMember px = x as IParameterizedMember;
+			IParameterizedMember py = y as IParameterizedMember;
+			if (px != null && py != null) {
+				IMethod mx = x as IMethod;
+				IMethod my = y as IMethod;
+				if (mx != null && my != null && mx.TypeParameters.Count != my.TypeParameters.Count)
+					return false;
+				return ParameterListComparer.Instance.Equals(px.Parameters, py.Parameters);
+			} else {
+				return true;
+			}
+		}
+		
+		public int GetHashCode(IMember obj)
+		{
+			unchecked {
+				int hash = (int)obj.EntityType * 33 + nameComparer.GetHashCode(obj.Name);
+				IParameterizedMember pm = obj as IParameterizedMember;
+				if (pm != null) {
+					hash *= 27;
+					hash += ParameterListComparer.Instance.GetHashCode(pm.Parameters);
+					IMethod m = pm as IMethod;
+					if (m != null)
+						hash += m.TypeParameters.Count;
+				}
+				return hash;
+			}
 		}
 	}
 }

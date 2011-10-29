@@ -26,6 +26,7 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	/*
 	/// <summary>
 	/// Simple <see cref="IProjectContent"/> implementation that stores the list of classes/namespaces.
 	/// Synchronization is implemented using a <see cref="ReaderWriterLockSlim"/>.
@@ -355,4 +356,5 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		#endregion
 	}
+	*/
 }

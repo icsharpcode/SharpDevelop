@@ -48,6 +48,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IType Resolve(ITypeResolveContext context);
 	}
 	
+	public interface ITypeResolveContext
+	{
+		/// <summary>
+		/// Gets the parent compilation.
+		/// This property never returns null.
+		/// </summary>
+		ICompilation Compilation { get; }
+		
+		/// <summary>
+		/// Gets the current assembly.
+		/// This property may return null if this context does not specify any assembly.
+		/// </summary>
+		IAssembly CurrentAssembly { get; }
+		
+		ITypeDefinition CurrentTypeDefinition { get ;}
+		
+		IMember CurrentMember { get; }
+		
+		/// <summary>
+		/// Gets the current entity.
+		/// This property may return null if this context does not specify any entity.
+		/// </summary>
+		IEntity CurrentEntity { get; }
+	}
+	
 	#if WITH_CONTRACTS
 	[ContractClassFor(typeof(ITypeReference))]
 	abstract class ITypeReferenceContract : ITypeReference

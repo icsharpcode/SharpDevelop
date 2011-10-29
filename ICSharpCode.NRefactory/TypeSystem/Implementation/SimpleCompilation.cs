@@ -1,0 +1,94 @@
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using ICSharpCode.NRefactory.Utils;
+
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+{
+	/// <summary>
+	/// Simple compilation implementation.
+	/// </summary>
+	public class SimpleCompilation : ICompilation
+	{
+		readonly CacheManager cacheManager;
+		IAssembly mainAssembly;
+		IList<IAssembly> referencedAssemblies;
+		
+		public SimpleCompilation(IUnresolvedAssembly mainAssembly, params IAssemblyReference[] assemblyReferences)
+			: this(mainAssembly, (IEnumerable<IAssemblyReference>)assemblyReferences)
+		{
+		}
+		
+		public SimpleCompilation(IUnresolvedAssembly mainAssembly, IEnumerable<IAssemblyReference> assemblyReferences)
+		{
+			this.cacheManager = new CacheManager();
+			this.mainAssembly = mainAssembly.Resolve(this);
+			this.referencedAssemblies = new List<IAssembly>();
+			foreach (var asmRef in assemblyReferences) {
+				IAssembly asm = asmRef.Resolve(this);
+				if (asm != null)
+					this.referencedAssemblies.Add(asm);
+			}
+			this.referencedAssemblies = new ReadOnlyCollection<IAssembly>(this.referencedAssemblies);
+		}
+		
+		public IAssembly MainAssembly {
+			get { return mainAssembly; }
+		}
+		
+		public IList<IAssembly> ReferencedAssemblies {
+			get { return referencedAssemblies; }
+		}
+		
+		public ITypeResolveContext TypeResolveContext {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public INamespace RootNamespace {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public CacheManager CacheManager {
+			get { return cacheManager; }
+		}
+		
+		public virtual INamespace GetNamespaceForExternAlias(string alias)
+		{
+			return null;
+		}
+		
+		public IEnumerable<ITypeDefinition> GetAllTypeDefinitions()
+		{
+			return TreeTraversal.PreOrder(this.RootNamespace, ns => ns.ChildNamespaces)
+				.SelectMany(ns => TreeTraversal.PreOrder(ns.Types, t => t.NestedTypes));
+		}
+		
+		IType ICompilation.FindType(KnownTypeCode typeCode)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

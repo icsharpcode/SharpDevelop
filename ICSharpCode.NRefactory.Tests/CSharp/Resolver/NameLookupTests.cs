@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -30,6 +31,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public class NameLookupTests : ResolverTestBase
 	{
+		CSharpResolver resolver;
+		
+		public override void SetUp()
+		{
+			base.SetUp();
+			resolver = new CSharpResolver(compilation);
+			resolver.CurrentUsingScope = new UsingScope();
+		}
+		
+		void AddUsing(string namespaceName)
+		{
+			resolver.CurrentUsingScope.Usings.Add(MakeReference(namespaceName));
+		}
+		
+		void AddUsingAlias(string alias, string namespaceName)
+		{
+			resolver.CurrentUsingScope.UsingAliases.Add(new KeyValuePair<string, TypeOrNamespaceReference>(alias, MakeReference(namespaceName)));
+		}
+		
 		[Test]
 		public void SimpleNameLookupWithoutContext()
 		{
@@ -43,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveSimpleName("System", new IType[0]);
 			Assert.AreEqual("System", nrr.NamespaceName);
-			Assert.AreSame(SharedTypes.UnknownType, nrr.Type);
+			Assert.AreSame(SpecialType.UnknownType, nrr.Type);
 		}
 		
 		[Test]
@@ -97,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AddUsingAlias("x", "String");
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
 			// Unknown type (as String isn't looked up in System)
-			Assert.AreSame(SharedTypes.UnknownType, trr.Type);
+			Assert.AreSame(SpecialType.UnknownType, trr.Type);
 		}
 		
 		[Test]
@@ -151,7 +171,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void FindTypeParameters()
 		{
 			resolver.CurrentUsingScope = MakeUsingScope("System.Collections.Generic");
-			resolver.CurrentTypeDefinition = context.GetTypeDefinition(typeof(List<>));
+			resolver.CurrentTypeDefinition = compilation.FindType(typeof(List<>)).GetDefinition();
 			resolver.CurrentMember = resolver.CurrentTypeDefinition.Methods.Single(m => m.Name == "ConvertAll");
 			
 			TypeResolveResult trr;
@@ -205,7 +225,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			UnknownIdentifierResolveResult result = Resolve<UnknownIdentifierResolveResult>(program);
 			Assert.AreEqual("StringBuilder", result.Identifier);
 			
-			Assert.AreSame(SharedTypes.UnknownType, result.Type);
+			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
 		const string propertyNameAmbiguousWithTypeNameProgram = @"class A {
@@ -806,7 +826,7 @@ class Test {
 }";
 			MemberResolveResult rr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("System.Nullable.Value", rr.Member.FullName);
-			Assert.AreEqual("System.Int32", rr.Member.ReturnType.Resolve(context).FullName);
+			Assert.AreEqual("System.Int32", rr.Member.ReturnType.FullName);
 		}
 		
 		[Test]
@@ -857,8 +877,8 @@ class B
 			
 			var m = (SpecializedMethod)rr.Methods.Single();
 			Assert.AreSame(rr.TypeArguments.Single(), m.TypeArguments.Single());
-			Assert.AreEqual("T", m.Parameters[0].Type.Resolve(context).Name);
-			Assert.AreEqual("X", m.Parameters[1].Type.Resolve(context).Name);
+			Assert.AreEqual("T", m.Parameters[0].Type.Name);
+			Assert.AreEqual("X", m.Parameters[1].Type.Name);
 		}
 		
 		[Test]

@@ -22,29 +22,16 @@ using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IConstantValueContract))]
-	#endif
-	public interface IConstantValue : IFreezable
+	/// <summary>
+	/// Represents an unresolved constant value.
+	/// </summary>
+	public interface IConstantValue
 	{
 		/// <summary>
 		/// Resolves the value of this constant.
 		/// </summary>
-		/// <param name="context">Type resolve context where the constant value will be used.</param>
+		/// <param name="compilation">Compilation context where the constant value will be used.</param>
 		/// <returns>Resolve result representing the constant value.</returns>
 		ResolveResult Resolve(ITypeResolveContext context);
 	}
-	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IConstantValue))]
-	abstract class IConstantValueContract : IFreezableContract, IConstantValue
-	{
-		ResolveResult IConstantValue.Resolve(ITypeResolveContext context)
-		{
-			Contract.Requires(context != null);
-			Contract.Ensures(Contract.Result<ResolveResult>() != null);
-			return null;
-		}
-	}
-	#endif
 }

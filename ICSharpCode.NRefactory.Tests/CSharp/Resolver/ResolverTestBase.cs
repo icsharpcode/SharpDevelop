@@ -21,8 +21,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.NRefactory.CSharp.Parser;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -35,23 +35,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public abstract class ResolverTestBase
 	{
-		protected readonly IProjectContent mscorlib = CecilLoaderTests.Mscorlib;
-		protected SimpleProjectContent project;
-		protected ITypeResolveContext context;
-		protected CSharpResolver resolver;
+		protected readonly IUnresolvedAssembly mscorlib = CecilLoaderTests.Mscorlib;
+		protected IProjectContent project;
+		protected ICompilation compilation;
 		
 		[SetUp]
 		public virtual void SetUp()
 		{
-			project = new SimpleProjectContent();
-			context = new CompositeTypeResolveContext(new [] { project, mscorlib, CecilLoaderTests.SystemCore });
-			resolver = new CSharpResolver(context);
-			resolver.CurrentUsingScope = MakeUsingScope("");
+			project = new CSharpProjectContent().AddAssemblyReferences(new [] { mscorlib });
+			compilation = project.CreateCompilation();
 		}
 		
 		protected UsingScope MakeUsingScope(string namespaceName)
 		{
-			UsingScope u = new UsingScope(project);
+			UsingScope u = new UsingScope();
 			if (!string.IsNullOrEmpty(namespaceName)) {
 				foreach (string element in namespaceName.Split('.')) {
 					u = new UsingScope(u, string.IsNullOrEmpty(u.NamespaceName) ? element : u.NamespaceName + "." + element);
@@ -60,36 +57,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return u;
 		}
 		
-		/// <summary>
-		/// Adds a using to the current using scope.
-		/// </summary>
-		protected void AddUsing(string namespaceName)
-		{
-			resolver.CurrentUsingScope.Usings.Add(MakeReference(namespaceName));
-		}
-		
-		/// <summary>
-		/// Adds a using alias to the current using scope.
-		/// </summary>
-		protected void AddUsingAlias(string alias, string target)
-		{
-			resolver.CurrentUsingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(alias, MakeReference(target)));
-		}
-		
-		protected ITypeOrNamespaceReference MakeReference(string namespaceName)
+		protected TypeOrNamespaceReference MakeReference(string namespaceName)
 		{
 			string[] nameParts = namespaceName.Split('.');
-			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.CurrentUsingScope, SimpleNameLookupMode.TypeInUsingDeclaration);
+			TypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], SimpleNameLookupMode.TypeInUsingDeclaration);
 			for (int i = 1; i < nameParts.Length; i++) {
-				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.CurrentUsingScope);
+				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0]);
 			}
 			return r;
 		}
 		
 		protected IType ResolveType(Type type)
 		{
-			IType t = type.ToTypeReference().Resolve(context);
-			if (SharedTypes.UnknownType.Equals(t))
+			IType t = compilation.FindType(type);
+			if (t.Kind == TypeKind.Unknown)
 				throw new InvalidOperationException("Could not resolve type");
 			return t;
 		}
@@ -97,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected ConstantResolveResult MakeConstant(object value)
 		{
 			if (value == null)
-				return new ConstantResolveResult(SharedTypes.Null, null);
+				return new ConstantResolveResult(SpecialType.NullType, null);
 			IType type = ResolveType(value.GetType());
 			if (type.Kind == TypeKind.Enum)
 				value = Convert.ChangeType(value, Enum.GetUnderlyingType(value.GetType()));
@@ -128,19 +109,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Assert.IsFalse(rr.IsError, rr.ToString() + " is an error");
 			Assert.IsFalse(rr.IsCompileTimeConstant, rr.ToString() + " is a compile-time constant");
-			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
+			Assert.AreEqual(compilation.FindType(expectedType), rr.Type);
 		}
 		
 		protected void AssertError(Type expectedType, ResolveResult rr)
 		{
 			Assert.IsTrue(rr.IsError, rr.ToString() + " is not an error, but an error was expected");
 			Assert.IsFalse(rr.IsCompileTimeConstant, rr.ToString() + " is a compile-time constant");
-			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
+			Assert.AreEqual(compilation.FindType(expectedType), rr.Type);
 		}
 		
 		protected void TestOperator(UnaryOperatorType op, ResolveResult input,
 		                            Conversion expectedConversion, Type expectedResultType)
 		{
+			CSharpResolver resolver = new CSharpResolver(compilation);
 			var rr = resolver.ResolveUnaryOperator(op, input);
 			AssertType(expectedResultType, rr);
 			Assert.AreEqual(typeof(OperatorResolveResult), rr.GetType());
@@ -151,6 +133,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected void TestOperator(ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs,
 		                            Conversion expectedLeftConversion, Conversion expectedRightConversion, Type expectedResultType)
 		{
+			CSharpResolver resolver = new CSharpResolver(compilation);
 			var rr = resolver.ResolveBinaryOperator(op, lhs, rhs);
 			AssertType(expectedResultType, rr);
 			Assert.AreEqual(typeof(OperatorResolveResult), rr.GetType());
@@ -196,10 +179,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			SetUp();
 			
-			CSharpParsedFile parsedFile = new CSharpParsedFile("test.cs", resolver.CurrentUsingScope);
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile);
-			cu.AcceptVisitor(convertVisitor, null);
-			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
+			CSharpParsedFile parsedFile = cu.ToTypeSystem("code.cs");
+			project = project.UpdateProjectContent(null, parsedFile);
+			compilation = project.CreateCompilation();
 			
 			FindNodeVisitor fnv = new FindNodeVisitor(dollars[0], dollars[1]);
 			cu.AcceptVisitor(fnv, null);
@@ -209,12 +191,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.WriteLine("Starting new resolver for " + fnv.ResultNode);
 			
 			var navigator = new NodeListResolveVisitorNavigator(new[] { fnv.ResultNode });
-			ResolveResult rr;
-			using (var context = this.context.Synchronize()) {
-				ResolveVisitor rv = new ResolveVisitor(new CSharpResolver(context), convertVisitor.ParsedFile, navigator);
-				rv.Scan(cu);
-				rr = rv.GetResolveResult(fnv.ResultNode);
-			}
+			ResolveVisitor rv = new ResolveVisitor(new CSharpResolver(compilation), parsedFile, navigator);
+			rv.Scan(cu);
+			ResolveResult rr = rv.GetResolveResult(fnv.ResultNode);
 			Assert.IsNotNull(rr, "ResolveResult is null - did something go wrong while navigating to the target node?");
 			Debug.WriteLine("ResolveResult is " + rr);
 			return rr;
@@ -261,12 +240,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			SetUp();
 			
-			CSharpParsedFile parsedFile = new CSharpParsedFile("test.cs", resolver.CurrentUsingScope);
-			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.CurrentUsingScope, null);
-			cu.AcceptVisitor(convertVisitor, null);
-			project.UpdateProjectContent(null, convertVisitor.ParsedFile);
+			CSharpParsedFile parsedFile = cu.ToTypeSystem("test.cs");
+			project = project.UpdateProjectContent(null, parsedFile);
+			compilation = project.CreateCompilation();
 			
-			ResolveResult rr = Resolver.ResolveAtLocation.Resolve(this.context, parsedFile, cu, dollars[0]);
+			ResolveResult rr = Resolver.ResolveAtLocation.Resolve(compilation, parsedFile, cu, dollars[0]);
 			return rr;
 		}
 		

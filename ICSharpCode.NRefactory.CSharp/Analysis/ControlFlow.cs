@@ -159,16 +159,14 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		Dictionary<string, ControlFlowNode> labels;
 		List<ControlFlowNode> gotoStatements;
 		
-		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ITypeResolveContext context)
+		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement)
 		{
-			return BuildControlFlowGraph(statement, context, CancellationToken.None);
+			return BuildControlFlowGraph(statement, CancellationToken.None);
 		}
 		
-		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ITypeResolveContext context, CancellationToken cancellationToken)
+		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, CancellationToken cancellationToken)
 		{
-			return BuildControlFlowGraph(statement, new ResolveVisitor(
-				new CSharpResolver(context, cancellationToken),
-				null));
+			throw new NotImplementedException();
 		}
 		
 		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ResolveVisitor resolveVisitor)
@@ -308,9 +306,10 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			if (c1 == null || c2 == null)
 				return false;
-			CSharpResolver r = new CSharpResolver(resolveVisitor.TypeResolveContext, resolveVisitor.CancellationToken);
+			throw new NotImplementedException();
+			/*CSharpResolver r = new CSharpResolver(resolveVisitor.TypeResolveContext, resolveVisitor.CancellationToken);
 			ResolveResult c = r.ResolveBinaryOperator(BinaryOperatorType.Equality, c1, c2);
-			return c.IsCompileTimeConstant && (c.ConstantValue as bool?) == true;
+			return c.IsCompileTimeConstant && (c.ConstantValue as bool?) == true;*/
 		}
 		#endregion
 		

@@ -25,14 +25,13 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
+	/*
 	[Serializable]
-	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition
+	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition, ITypeDefinitionPart
 	{
 		readonly IProjectContent projectContent;
 		readonly IParsedFile parsedFile;
-		readonly ITypeDefinition declaringTypeDefinition;
-		
-		volatile ITypeDefinition compoundTypeDefinition;
+		readonly DefaultTypeDefinition declaringTypeDefinition;
 		
 		string ns;
 		string name;
@@ -85,8 +84,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			this.name = name;
 			this.ns = declaringTypeDefinition.Namespace;
-			
-			this.compoundTypeDefinition = this;
 		}
 		
 		public DefaultTypeDefinition(IParsedFile parsedFile, string ns, string name)
@@ -99,8 +96,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.projectContent = parsedFile.ProjectContent;
 			this.ns = ns ?? string.Empty;
 			this.name = name;
-			
-			this.compoundTypeDefinition = this;
 		}
 		
 		public DefaultTypeDefinition(IProjectContent projectContent, string ns, string name)
@@ -112,8 +107,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.projectContent = projectContent;
 			this.ns = ns ?? string.Empty;
 			this.name = name;
-			
-			this.compoundTypeDefinition = this;
 		}
 		
 		public TypeKind Kind {
@@ -411,15 +404,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			ITypeDefinition compound = this.compoundTypeDefinition;
-			if (compound != this)
-				return compound.GetBaseTypes(context);
-			else
-				return GetBaseTypesImpl(context);
-		}
-		
-		IEnumerable<IType> GetBaseTypesImpl(ITypeResolveContext context)
-		{
 			bool hasNonInterface = false;
 			if (baseTypes != null && kind != TypeKind.Enum) {
 				foreach (ITypeReference baseTypeRef in baseTypes) {
@@ -452,19 +436,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		internal void SetCompoundTypeDefinition(ITypeDefinition compoundTypeDefinition)
-		{
-			this.compoundTypeDefinition = compoundTypeDefinition;
-		}
-		
-		public virtual IList<ITypeDefinition> GetParts()
-		{
-			return new ITypeDefinition[] { this };
-		}
-		
-		public ITypeDefinition GetDefinition()
-		{
-			return compoundTypeDefinition;
+		public virtual IList<ITypeDefinitionPart> Parts {
+			get {
+				return new ITypeDefinitionPart[] { this };
+			}
 		}
 		
 		IType ITypeReference.Resolve(ITypeResolveContext context)
@@ -474,15 +449,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
+		ITypeDefinition IType.GetDefinition()
+		{
+			return this;
+		}
+		
+		public ITypeDefinition GetCompoundTypeDefinition(ITypeResolveContext context)
+		{
+			ITypeDefinition typeDef = context.GetTypeDefinition(this.Namespace, this.Name, this.TypeParameterCount, StringComparer.Ordinal);
+			if (typeDef != null && typeDef.Parts.Contains(this))
+				return typeDef;
+			else
+				return null;
+		}
+		
 		#region GetMembers
 		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			const GetMemberOptions opt = GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions;
 			if ((options & opt) == opt) {
-				ITypeDefinition compound = this.compoundTypeDefinition;
-				if (compound != this)
-					return compound.GetNestedTypes(context, filter, options);
-				
 				return ApplyFilter(this.NestedTypes, filter);
 			} else {
 				return GetMembersHelper.GetNestedTypes(this, context, filter, options);
@@ -497,10 +482,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				ITypeDefinition compound = this.compoundTypeDefinition;
-				if (compound != this)
-					return compound.GetMethods(context, filter, options);
-				
 				return ApplyFilter(this.Methods, Utils.ExtensionMethods.And(m => !m.IsConstructor, filter));
 			} else {
 				return GetMembersHelper.GetMethods(this, context, filter, options);
@@ -515,10 +496,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				ITypeDefinition compound = this.compoundTypeDefinition;
-				if (compound != this)
-					return compound.GetConstructors(context, filter, options);
-				
 				return GetConstructorsImpl(filter);
 			} else {
 				return GetMembersHelper.GetConstructors(this, context, filter, options);
@@ -551,10 +528,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				ITypeDefinition compound = this.compoundTypeDefinition;
-				if (compound != this)
-					return compound.GetProperties(context, filter, options);
-				
 				return ApplyFilter(this.Properties, filter);
 			} else {
 				return GetMembersHelper.GetProperties(this, context, filter, options);
@@ -564,10 +537,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				ITypeDefinition compound = this.compoundTypeDefinition;
-				if (compound != this)
-					return compound.GetFields(context, filter, options);
-				
 				return ApplyFilter(this.Fields, filter);
 			} else {
 				return GetMembersHelper.GetFields(this, context, filter, options);
@@ -577,10 +546,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				ITypeDefinition compound = this.compoundTypeDefinition;
-				if (compound != this)
-					return compound.GetEvents(context, filter, options);
-				
 				return ApplyFilter(this.Events, filter);
 			} else {
 				return GetMembersHelper.GetEvents(this, context, filter, options);
@@ -613,20 +578,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#region Equals / GetHashCode
 		bool IEquatable<IType>.Equals(IType other)
 		{
-			// Two ITypeDefinitions are considered to be equal if they have the same compound class.
-			ITypeDefinition typeDef = other as ITypeDefinition;
-			return typeDef != null && this.ProjectContent == typeDef.ProjectContent && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
-		}
-		
-		public override bool Equals(object obj)
-		{
-			ITypeDefinition typeDef = obj as ITypeDefinition;
-			return typeDef != null && this.ProjectContent == typeDef.ProjectContent && this.GetDefinition().ReflectionName == typeDef.GetDefinition().ReflectionName;
-		}
-		
-		public override int GetHashCode()
-		{
-			return RuntimeHelpers.GetHashCode(compoundTypeDefinition);
+			// Use reference equality for ITypeDefinitions:
+			// We do not want to consider different versions of the same type as equal.
+			return this == other;
 		}
 		#endregion
 		
@@ -660,4 +614,5 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 	}
+	*/
 }

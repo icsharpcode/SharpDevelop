@@ -55,7 +55,7 @@ class A { void M() {
 	Console.W$riteLine(1);
 }}");
 			Assert.AreEqual("System.Console.WriteLine", rr.Member.FullName);
-			Assert.AreEqual("System.Int32", rr.Member.Parameters[0].Type.Resolve(context).FullName);
+			Assert.AreEqual("System.Int32", rr.Member.Parameters[0].Type.FullName);
 		}
 		
 		[Test]

@@ -36,31 +36,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets whether the member is considered to be invocable.
 		/// </summary>
-		public static bool IsInvocable(IMember member, ITypeResolveContext context)
+		public static bool IsInvocable(IMember member)
 		{
 			if (member == null)
 				throw new ArgumentNullException("member");
 			// C# 4.0 spec, §7.4 member lookup
 			if (member is IEvent || member is IMethod)
 				return true;
-			IType returnType = member.ReturnType.Resolve(context);
-			if (returnType == SharedTypes.Dynamic)
-				return true;
-			return returnType.Kind == TypeKind.Delegate;
+			IType returnType = member.ReturnType;
+			return returnType.Kind == TypeKind.Dynamic || returnType.Kind == TypeKind.Delegate;
 		}
 		#endregion
 		
-		ITypeResolveContext context;
 		ITypeDefinition currentTypeDefinition;
-		IProjectContent currentProject;
+		IAssembly currentAssembly;
 		
-		public MemberLookup(ITypeResolveContext context, ITypeDefinition currentTypeDefinition, IProjectContent currentProject)
+		public MemberLookup(ITypeDefinition currentTypeDefinition, IAssembly currentAssembly)
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.context = context;
 			this.currentTypeDefinition = currentTypeDefinition;
-			this.currentProject = currentProject;
+			this.currentAssembly = currentAssembly;
 		}
 		
 		#region IsAccessible
@@ -70,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public bool IsProtectedAccessAllowed(IType targetType)
 		{
 			ITypeDefinition typeDef = targetType.GetDefinition();
-			return typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition, context);
+			return typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition);
 		}
 		
 		/// <summary>
@@ -107,21 +101,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return (allowProtectedAccess || entity.IsStatic || entity.EntityType == EntityType.TypeDefinition)
 						&& IsProtectedAccessible(entity.DeclaringTypeDefinition);
 				case Accessibility.Internal:
-					return IsInternalAccessible(entity.ProjectContent);
+					return IsInternalAccessible(entity.ParentAssembly);
 				case Accessibility.ProtectedOrInternal:
 					return (allowProtectedAccess && IsProtectedAccessible(entity.DeclaringTypeDefinition))
-						|| IsInternalAccessible(entity.ProjectContent);
+						|| IsInternalAccessible(entity.ParentAssembly);
 				case Accessibility.ProtectedAndInternal:
 					return (allowProtectedAccess && IsProtectedAccessible(entity.DeclaringTypeDefinition))
-						&& IsInternalAccessible(entity.ProjectContent);
+						&& IsInternalAccessible(entity.ParentAssembly);
 				default:
 					throw new Exception("Invalid value for Accessibility");
 			}
 		}
 		
-		bool IsInternalAccessible(IProjectContent declaringProject)
+		bool IsInternalAccessible(IAssembly assembly)
 		{
-			return declaringProject != null && currentProject != null && declaringProject.InternalsVisibleTo(currentProject, context);
+			return assembly != null && currentAssembly != null && assembly.InternalsVisibleTo(currentAssembly);
 		}
 		
 		bool IsProtectedAccessible(ITypeDefinition declaringType)
@@ -130,7 +124,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			// PERF: this might hurt performance as this method is called several times (once for each member)
 			// make sure resolving base types is cheap (caches?) or cache within the MemberLookup instance
-			return currentTypeDefinition != null && currentTypeDefinition.IsDerivedFrom(declaringType, context);
+			return currentTypeDefinition != null && currentTypeDefinition.IsDerivedFrom(declaringType);
 		}
 		#endregion
 		
@@ -188,15 +182,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			List<LookupGroup> lookupGroups = new List<LookupGroup>();
 			if (declaringType.Kind != TypeKind.TypeParameter) {
-				foreach (IType type in declaringType.GetNonInterfaceBaseTypes(context)) {
+				foreach (IType type in declaringType.GetNonInterfaceBaseTypes()) {
 					List<IType> newNestedTypes = null;
 					IEnumerable<IType> typeBaseTypes = null;
 					
 					IEnumerable<IType> nestedTypes;
 					if (parameterizeResultType) {
-						nestedTypes = type.GetNestedTypes(typeArguments, context, filter, GetMemberOptions.IgnoreInheritedMembers);
+						nestedTypes = type.GetNestedTypes(typeArguments, filter, GetMemberOptions.IgnoreInheritedMembers);
 					} else {
-						nestedTypes = type.GetNestedTypes(context, filter, GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions);
+						nestedTypes = type.GetNestedTypes(filter, GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions);
 					}
 					AddNestedTypes(type, nestedTypes, typeArgumentCount, lookupGroups, ref typeBaseTypes, ref newNestedTypes);
 					
@@ -255,7 +249,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// 2) It adds a new lookup group with the members from a declaring type.
 			// 3) It replaces virtual members with the overridden version, placing the override in the
 			//    lookup group belonging to the base class.
-			foreach (IType type in targetResolveResult.Type.GetNonInterfaceBaseTypes(context)) {
+			foreach (IType type in targetResolveResult.Type.GetNonInterfaceBaseTypes()) {
 				
 				List<IType> newNestedTypes = null;
 				List<IParameterizedMember> newMethods = null;
@@ -267,7 +261,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Consider nested types only if it's not an invocation.
 					// type.GetNestedTypes() is checking the type parameter count for an exact match,
 					// so we don't need to do that in our filter.
-					var nestedTypes = type.GetNestedTypes(typeArguments, context, filter, GetMemberOptions.IgnoreInheritedMembers);
+					var nestedTypes = type.GetNestedTypes(typeArguments, filter, GetMemberOptions.IgnoreInheritedMembers);
 					AddNestedTypes(type, nestedTypes, typeArguments.Count, lookupGroups, ref typeBaseTypes, ref newNestedTypes);
 				}
 				
@@ -275,13 +269,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (typeArguments.Count == 0) {
 					// Note: IsInvocable-checking cannot be done as part of the filter;
 					// because it must be done after type substitution.
-					members = type.GetMembers(context, filter, GetMemberOptions.IgnoreInheritedMembers);
+					members = type.GetMembers(filter, GetMemberOptions.IgnoreInheritedMembers);
 					if (isInvocation)
-						members = members.Where(m => IsInvocable(m, context));
+						members = members.Where(m => IsInvocable(m));
 				} else {
 					// No need to check for isInvocation/isInvocable here:
 					// we only fetch methods
-					members = type.GetMethods(typeArguments, context, filter, GetMemberOptions.IgnoreInheritedMembers);
+					members = type.GetMethods(typeArguments, filter, GetMemberOptions.IgnoreInheritedMembers);
 				}
 				AddMembers(type, members, lookupGroups, false, ref typeBaseTypes, ref newMethods, ref newNonMethod);
 				
@@ -314,13 +308,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			};
 			
 			List<LookupGroup> lookupGroups = new List<LookupGroup>();
-			foreach (IType type in targetType.GetNonInterfaceBaseTypes(context)) {
+			foreach (IType type in targetType.GetNonInterfaceBaseTypes()) {
 				List<IParameterizedMember> newMethods = null;
 				IMember newNonMethod = null;
 				
 				IEnumerable<IType> typeBaseTypes = null;
 				
-				var members = type.GetProperties(context, filter, GetMemberOptions.IgnoreInheritedMembers);
+				var members = type.GetProperties(filter, GetMemberOptions.IgnoreInheritedMembers);
 				AddMembers(type, members, lookupGroups, true, ref typeBaseTypes, ref newMethods, ref newNonMethod);
 				
 				if (newMethods != null || newNonMethod != null)
@@ -366,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (lookupGroup.AllHidden)
 						continue; // everything is already hidden
 					if (typeBaseTypes == null)
-						typeBaseTypes = type.GetNonInterfaceBaseTypes(context);
+						typeBaseTypes = type.GetNonInterfaceBaseTypes();
 					
 					if (typeBaseTypes.Contains(lookupGroup.DeclaringType)) {
 						lookupGroup.MethodsAreHidden = true;
@@ -416,14 +410,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// in the most-derived type
 					for (int i = lookupGroups.Count - 1; i >= 0 && !replacedVirtualMemberWithOverride; i--) {
 						if (typeBaseTypes == null)
-							typeBaseTypes = type.GetNonInterfaceBaseTypes(context);
+							typeBaseTypes = type.GetNonInterfaceBaseTypes();
 						
 						var lookupGroup = lookupGroups[i];
 						if (typeBaseTypes.Contains(lookupGroup.DeclaringType)) {
 							if (method != null) {
 								// Find the matching method, and replace it with the override
 								for (int j = 0; j < lookupGroup.Methods.Count; j++) {
-									if (ParameterListComparer.Compare(context, method, lookupGroup.Methods[j])) {
+									if (SignatureComparer.Ordinal.Equals(method, lookupGroup.Methods[j])) {
 										lookupGroup.Methods[j] = method;
 										replacedVirtualMemberWithOverride = true;
 										break;
@@ -448,7 +442,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (lookupGroup.AllHidden)
 							continue; // everything is already hidden
 						if (typeBaseTypes == null)
-							typeBaseTypes = type.GetNonInterfaceBaseTypes(context);
+							typeBaseTypes = type.GetNonInterfaceBaseTypes();
 						
 						if (typeBaseTypes.Contains(lookupGroup.DeclaringType)) {
 							// Methods hide all non-methods; Non-methods hide everything
@@ -502,7 +496,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 									// The mapping of virtual to overridden methods is already done,
 									// so we can simply remove the methods from the collection
 									interfaceLookupGroup.Methods.RemoveAll(
-										m => ParameterListComparer.Compare(context, classMethod, m));
+										m => SignatureComparer.Ordinal.Equals(classMethod, m));
 								}
 							}
 						}
@@ -558,10 +552,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			if (lookupGroups.Count > 1) {
-				return new AmbiguousMemberResolveResult(targetResolveResult, resultGroup.NonMethod,
-				                                        resultGroup.NonMethod.ReturnType.Resolve(context));
+				return new AmbiguousMemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			} else {
-				return new MemberResolveResult(targetResolveResult, resultGroup.NonMethod, context);
+				return new MemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			}
 		}
 		#endregion

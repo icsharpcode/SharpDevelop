@@ -28,9 +28,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	[TestFixture]
 	public class CSharpAmbienceTests
 	{
-		IProjectContent mscorlib;
-		IProjectContent myLib;
-		CompositeTypeResolveContext compositeContext;
+		IUnresolvedAssembly mscorlib;
+		IUnresolvedAssembly myLib;
+		ICompilation compilation;
 		CSharpAmbience ambience;
 		
 		public CSharpAmbienceTests()
@@ -40,16 +40,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			var loader = new CecilLoader();
 			loader.IncludeInternalMembers = true;
 			myLib = loader.LoadAssemblyFile(typeof(CSharpAmbienceTests).Assembly.Location);
-			compositeContext = new CompositeTypeResolveContext(new[] { mscorlib, myLib });
+			compilation = new SimpleCompilation(myLib, mscorlib);
 		}
 		
 		#region ITypeDefinition tests
 		[Test]
 		public void GenericType()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(Dictionary<,>));
+			var typeDef = compilation.FindType(typeof(Dictionary<,>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("System.Collections.Generic.Dictionary<TKey, TValue>", result);
 		}
@@ -57,9 +57,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void GenericTypeShortName()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(Dictionary<,>));
+			var typeDef = compilation.FindType(typeof(Dictionary<,>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("Dictionary<TKey, TValue>", result);
 		}
@@ -67,9 +67,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void SimpleType()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(Object));
+			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("System.Object", result);
 		}
@@ -77,9 +77,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void SimpleTypeDefinition()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(Object));
+			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedMemberNames);
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("public class Object", result);
 		}
@@ -87,9 +87,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void SimpleTypeDefinitionWithoutModifiers()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(Object));
+			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("class Object", result);
 		}
@@ -97,9 +97,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void GenericTypeDefinitionFull()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(List<>));
+			var typeDef = compilation.FindType(typeof(List<>)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("public class System.Collections.Generic.List<T>", result);
 		}
@@ -107,9 +107,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void SimpleTypeShortName()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(Object));
+			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("Object", result);
 		}
@@ -117,9 +117,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void GenericTypeWithNested()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(List<>.Enumerator));
+			var typeDef = compilation.FindType(typeof(List<>.Enumerator)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("System.Collections.Generic.List<T>.Enumerator", result);
 		}
@@ -127,9 +127,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void GenericTypeWithNestedShortName()
 		{
-			var typeDef = mscorlib.GetTypeDefinition(typeof(List<>.Enumerator));
+			var typeDef = compilation.FindType(typeof(List<>.Enumerator)).GetDefinition();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			string result = ambience.ConvertEntity(typeDef, mscorlib);
+			string result = ambience.ConvertEntity(typeDef);
 			
 			Assert.AreEqual("List<T>.Enumerator", result);
 		}
@@ -139,34 +139,31 @@ namespace ICSharpCode.NRefactory.CSharp
 		[Test]
 		public void SimpleField()
 		{
-			var field = typeof(CSharpAmbienceTests.Program).ToTypeReference().Resolve(myLib)
-				.GetDefinition().Fields.Single(f => f.Name == "test");
+			var field = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetFields(f => f.Name == "test").Single();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(field, compositeContext);
+			string result = ambience.ConvertEntity(field);
 			
-			Assert.AreEqual("private int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.test", result);
+			Assert.AreEqual("private int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.test;", result);
 		}
 		
 		[Test]
 		public void SimpleConstField()
 		{
-			var field = typeof(CSharpAmbienceTests.Program).ToTypeReference().Resolve(myLib)
-				.GetDefinition().Fields.Single(f => f.Name == "TEST2");
+			var field = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetFields(f => f.Name == "TEST2").Single();
 			ambience.ConversionFlags = ConversionFlags.All;
-			string result = ambience.ConvertEntity(field, compositeContext);
+			string result = ambience.ConvertEntity(field);
 			
-			Assert.AreEqual("private const int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.TEST2", result);
+			Assert.AreEqual("private const int ICSharpCode.NRefactory.CSharp.CSharpAmbienceTests.Program.TEST2;", result);
 		}
 		
 		[Test]
 		public void SimpleFieldWithoutModifiers()
 		{
-			var field = typeof(CSharpAmbienceTests.Program).ToTypeReference().Resolve(myLib)
-				.GetDefinition().Fields.Single(f => f.Name == "test");
+			var field = compilation.FindType(typeof(CSharpAmbienceTests.Program)).GetFields(f => f.Name == "test").Single();
 			ambience.ConversionFlags = ConversionFlags.All & ~(ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowModifiers | ConversionFlags.ShowAccessibility);
-			string result = ambience.ConvertEntity(field, compositeContext);
+			string result = ambience.ConvertEntity(field);
 			
-			Assert.AreEqual("int test", result);
+			Assert.AreEqual("int test;", result);
 		}
 		#endregion
 		
