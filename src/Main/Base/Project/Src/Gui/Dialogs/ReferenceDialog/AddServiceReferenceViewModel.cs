@@ -19,6 +19,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 using ICSharpCode.Core;
@@ -52,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			
 			GoCommand = new RelayCommand(ExecuteGo,CanExecuteGo);
 			DiscoverCommand = new RelayCommand(ExecuteDiscover,CanExecuteDiscover);
+			TwoValues = new ObservableCollection<TwoValue>();
 		}
 		
 		private string art;
@@ -95,6 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			}
 		}
 	
+		
 		#region Create List of services
 		
 		private List<string> mruServices = new List<string>();
@@ -117,6 +120,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		
 		#endregion
 		
+		
 		#region Go
 		
 		public System.Windows.Input.ICommand GoCommand {get; private set;}
@@ -136,6 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		}
 		
 		#endregion
+		
 		
 		#region Discover
 		
@@ -335,19 +340,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 
 		#endregion
 		
+		
 		#region new binding
 		
 		List<ServiceItem> items = new List <ServiceItem>();
 		
 		
-		public List <ServiceItem> Items {
+		public List <ServiceItem> ServiceItems {
 			get {return items; }
 			
 			set {
 				items = value;
-				base.RaisePropertyChanged(() =>Items);
+				base.RaisePropertyChanged(() =>ServiceItems);
 			}
 		}
+		
 		
 		ServiceItem myItem;
 		
@@ -359,11 +366,74 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			}
 		}
 		
-		void UpdateListView ()
+		
+		private  ObservableCollection<TwoValue> twoValues;
+		
+		public ObservableCollection<TwoValue> TwoValues {
+			get { return twoValues; }
+			set {
+				twoValues = value;
+				base.RaisePropertyChanged(() =>TwoValues);
+			}
+		}
+		
+		
+		public void UpdateListView ()
 		{
+			TwoValues.Clear();
+			string l;
+			string r;
+			if(ServiceItem.Tag is ServiceDescription) {
+				ServiceDescription desc = (ServiceDescription)ServiceItem.Tag;
+				 l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.RetrievalUriProperty}");
+				 r = desc.RetrievalUrl;
+				var tv = new TwoValue(l,r);
+				TwoValues.Add(tv);
+			}
+			else if(ServiceItem.Tag is Service) {
+				Service service = (Service)ServiceItem.Tag;
+				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
+				r =service.Documentation;
+				var tv1 = new TwoValue(l,r);
+				TwoValues.Add(tv1);
+			}
 			
+			else if(ServiceItem.Tag is Port) {
+				Port port = (Port)ServiceItem.Tag;
+				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
+				r = port.Documentation;
+				var tv2 = new TwoValue(l,r);
+				TwoValues.Add(tv2);
+				
+				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.BindingProperty}");
+				r = port.Binding.Name;
+				var tv3 = new TwoValue(l,r);
+				TwoValues.Add(tv3);
+				
+			
+				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ServiceNameProperty}");
+				r = port.Service.Name;
+				var tv4 = new TwoValue(l,r);
+				TwoValues.Add(tv4);
+			}
+			
+			else if(ServiceItem.Tag is Operation) {
+				Operation operation = (Operation)ServiceItem.Tag;
+				
+				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
+				r = operation.Documentation;
+				var tv5 = new TwoValue(l,r);
+				TwoValues.Add(tv5);
+
+				
+				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ParametersProperty}");
+				r = operation.ParameterOrderString;
+				var tv6 = new TwoValue(l,r);
+				TwoValues.Add(tv6);
+			}
 		}
 			
+		
 		void FillItems (ServiceDescriptionCollection descriptions)
 		{
 			foreach (ServiceDescription element in descriptions)
@@ -407,7 +477,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 					}
 				}
 			}
-			Items = l;
+			ServiceItems = l;
 		}
 		
 		
@@ -430,6 +500,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		
 	}
 	
+	
+	public class TwoValue
+	{
+		public TwoValue(string left,string right)
+		{
+			LeftValue = left;
+			RightValue = right;
+		}
+		
+		public string LeftValue {get;set;}
+		public string RightValue {get;set;}
+	}
+	
+
 	public class ServiceItem
 	{
 		public ServiceItem (string name)

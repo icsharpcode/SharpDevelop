@@ -9,106 +9,121 @@
 	xmlns:web="clr-namespace:System.Web.Services.Description;assembly=System.Web.Services"
 	WindowStartupLocation="CenterOwner"
 	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
-	Height="425"
-	Width="500"
+	Height="570"
+	Width="700"
 	Title="{Binding Title}">
+	
 	<!--
 
  http://blogs.msdn.com/b/chkoenig/archive/2008/05/24/hierarchical-databinding-in-wpf.aspx
 http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
 -->
+	
 	<Window.Resources>
 		<HierarchicalDataTemplate x:Key="HeaderTemplate"
 			ItemsSource="{Binding SubItems}">
 			<TextBlock Grid.Row="0" Text="{Binding Path=Name}" />
 		</HierarchicalDataTemplate>
-	
 	</Window.Resources> 
-	<Grid
-		Name="grid"
-		ShowGridLines="True">
+	 
+<!-- Style="{x:Static core:GlobalStyles.ButtonStyle}" -->
+
+	<Grid>
+		
 		<Grid.RowDefinitions>
-			<RowDefinition
-				Height="1*" />
-			<RowDefinition
-				Height="3*"></RowDefinition>
-			<RowDefinition
-				Height="Auto" />
+			<RowDefinition Height="2*" />
+			<RowDefinition	Height="*"></RowDefinition>
+			<RowDefinition	Height="*"></RowDefinition>
+			<RowDefinition	Height="*"></RowDefinition>
+			<RowDefinition	Height="7*"></RowDefinition>
+			<RowDefinition	Height="2*"></RowDefinition>
+			<RowDefinition	Height="*"></RowDefinition>
+			<RowDefinition	Height="*"></RowDefinition>
+			<RowDefinition	Height="*"></RowDefinition>
 		</Grid.RowDefinitions>
-		<Grid
-			Grid.Row="0">
-			<Grid.RowDefinitions>
-				<RowDefinition
-					Height="40"></RowDefinition>
-				<RowDefinition
-					Height="Auto"></RowDefinition>
-			</Grid.RowDefinitions>
-			<TextBox
-				Grid.Row="0"
+		
+		<Grid.ColumnDefinitions>
+		<ColumnDefinition Width="200"></ColumnDefinition>
+		<ColumnDefinition Width="*"></ColumnDefinition>
+		<ColumnDefinition Width="*"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<TextBox Grid.ColumnSpan="3"
+		         Margin="4,0,4,0"
 				TextWrapping="Wrap"
 				Text="To see a list of available services on an specific Server,&#xD;&#xA;&#x9;&#x9;&#x9;enter a service URL and click Go.To browse for available services cklick Discover"></TextBox>
-			<Grid
-				Grid.Row="1"
-				ShowGridLines="True">
-				<Grid.RowDefinitions>
-					<RowDefinition
-						Height="Auto"></RowDefinition>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition
-						Width="300"></ColumnDefinition>
-					<ColumnDefinition></ColumnDefinition>
-				</Grid.ColumnDefinitions>
-				<ComboBox
-					Grid.Column="0"
-					Margin="0,4,12,12"
-					IsEditable="True"
-					ItemsSource="{Binding MruServices}"
-					IsSynchronizedWithCurrentItem="True"
-					LostFocus="Cbo_LostFocus"
-					SelectedItem="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}"></ComboBox>
-				<widgets:UniformGridWithSpacing
-					Columns="2"
-					Grid.Column="1"
-					Margin="0,4,12,12"
-					HorizontalAlignment="Center">
-					<Button
-						Content="Go"
-						Command="{Binding GoCommand}"
-						Style="{x:Static core:GlobalStyles.ButtonStyle}" />
-					<Button
-						Content="Discover"
-						Command="{Binding DiscoverCommand}"
-						Style="{x:Static core:GlobalStyles.ButtonStyle}" />
-				</widgets:UniformGridWithSpacing>
-			</Grid>
-		</Grid>
-		<!-- Main Area -->
-		<Grid
-			Grid.Row="1">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition
-					Width="100" />
-				<ColumnDefinition
-					Width="*" />
-			</Grid.ColumnDefinitions>
-			<TreeView
+		
+		<TextBlock Grid.Row="1" Text="Address:" Margin="4,0,4,0"></TextBlock>
+		
+		<ComboBox
+			Grid.Row="2"
+			Grid.ColumnSpan="2"
+			Margin="4,0,4,0"
+			IsEditable="True"
+			ItemsSource="{Binding MruServices}"
+			IsSynchronizedWithCurrentItem="True"
+			LostFocus="Cbo_LostFocus"
+			SelectedItem="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
+		</ComboBox>
+		<StackPanel Grid.Column="2"
+		            Grid.Row="2"
+		            Margin="4,0,4,0"
+		            Orientation="Horizontal">
+			<Button
+				Content="Go"
+				Width="30"
+				Margin="4,0,2,0"
+				HorizontalContentAlignment="Center"
+				Command="{Binding GoCommand}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"/>
+			
+			<Button
+				Content="Discover"
+				Margin="2,0,0,0"
+				HorizontalContentAlignment="Center"
+				Command="{Binding DiscoverCommand}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"/>
+		
+		</StackPanel>
+		
+		<TextBlock Grid.Row="3" Text="Service:" Margin="4,0,4,0"></TextBlock>
+		
+		<TreeView
+				Grid.Row="4" Margin="4"
 				Name="tree"
 				HorizontalAlignment="Stretch"
 				VerticalAlignment="Stretch"
-				ItemsSource="{Binding Path=Items}"
+				ItemsSource="{Binding Path=ServiceItems}"
 				ItemTemplate="{StaticResource HeaderTemplate}"
-				SelectedItemChanged="Tree_SelectedItemChanged"></TreeView>
-			<GridSplitter
-				Grid.Column="0"
-				Width="2"
-				Background="Black" />
-			<ListView Grid.Column="1"></ListView>
-		</Grid>
+				SelectedItemChanged="Tree_SelectedItemChanged">
+		</TreeView>
+		
+		<GridSplitter
+			Grid.Column="0"
+			Grid.Row="4"
+			Width="2"/>
+		
+		<ListView
+			Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Margin="4"
+			ItemsSource="{Binding Path=TwoValues}">
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="Poperty" Width="150" DisplayMemberBinding="{Binding LeftValue}"></GridViewColumn>
+					<GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding RightValue}"></GridViewColumn>
+				</GridView>
+			</ListView.View>
+		</ListView>
+		
+		<Border Grid.Row="5" Grid.ColumnSpan="3" Margin="4,0,4,0"  BorderThickness="2" BorderBrush="LightGray">
+			<TextBlock></TextBlock>
+		</Border>
+		
+		<TextBlock Grid.Row="6" Text="NameSpace:" Margin="4,0,4,0"></TextBlock>
+		<TextBox Grid.Row="7" Grid.ColumnSpan="3" Margin="4"></TextBox>
+		
 		<widgets:UniformGridWithSpacing
 			Columns="2"
-			Grid.Column="0"
-			Grid.Row="2"
+			Grid.Column="2"
+			Grid.Row="8"
 			HorizontalAlignment="Right"
 			Margin="0,4,12,12">
 			<Button
@@ -124,5 +139,25 @@ http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
 				Style="{x:Static core:GlobalStyles.ButtonStyle}"
 				Click="cancelButtonClick" />
 		</widgets:UniformGridWithSpacing>
+		
+		<!--
+				<widgets:UniformGridWithSpacing Background="Green" 
+					Columns="3"
+					Grid.Column="2"
+					Margin="4,4,12,12"
+					HorizontalAlignment="Center">
+				
+					<Button
+						Content="Go" HorizontalContentAlignment="Center"
+						Command="{Binding GoCommand}" />
+						
+					<Button
+						Content="Discover" HorizontalContentAlignment="Center"
+						Command="{Binding DiscoverCommand}" />
+						
+				</widgets:UniformGridWithSpacing>
+			</Grid>
+		</Grid>
+		-->
 	</Grid>
 </Window>

@@ -60,6 +60,5 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 				dc.ServiceItem = myItem;
 			}
 		}
-		
 	}
 }
