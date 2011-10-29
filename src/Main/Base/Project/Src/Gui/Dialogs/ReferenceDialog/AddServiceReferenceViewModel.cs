@@ -38,13 +38,33 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		string header1 = "To see a list of available services on an specific Server, ";
 		string header2 = "enter a service URL and click Go. To browse for available services click Discover";
 		string noUrl = "Please enter the address of the Service.";
-//		string discoverMenu ="Services in Solution";
+		string title =  "Add Service Reference";
+		string defaultNameSpace;
+		string serviceDescriptionMessage;
+		string namespacePrefix = String.Empty;
+		
+		private  ObservableCollection<TwoValue> twoValues;
+		
+		private List<string> mruServices = new List<string>();
+		private string selectedService;
+		private IProject project;
+		
+		List<ServiceItem> items = new List <ServiceItem>();
+		ServiceItem myItem;
+		
 		Uri discoveryUri;
+		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
+		CredentialCache credentialCache = new CredentialCache();
+		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
+		
+		delegate DiscoveryDocument DiscoverAnyAsync(string url);
+		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
+		delegate void AuthenticationHandler(Uri uri, string authenticationType);	
+		
 		
 		public AddServiceReferenceViewModel(IProject project)
 		{
-			Project = project;
-			title =  "Add Service Reference";
+			project = project;
 			discoverButtonContend = "Disvover";
 			HeadLine = header1 + header2;
 			
@@ -55,70 +75,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			DiscoverCommand = new RelayCommand(ExecuteDiscover,CanExecuteDiscover);
 			TwoValues = new ObservableCollection<TwoValue>();
 		}
-		
-		private string art;
-		
-		public string Art {
-			get { return art; }
-			set { art = value;
-				base.RaisePropertyChanged(() =>Art);
-			}
-		}
-		
-		
-		private string title;
-		public string Title
-		{
-			get {return title;}
-			set {title = value;
-				base.RaisePropertyChanged(() =>Title);
-			}
-		}
-		
-
-		public string HeadLine {get; private set;}
-		
-		private string discoverButtonContend;
-		
-		public string DiscoverButtonContend {
-			get { return discoverButtonContend; }
-			set { discoverButtonContend = value;
-			base.RaisePropertyChanged(() =>DiscoverButtonContend);}
-		}
-
-		
-		private IProject project;
-		
-		public IProject Project
-		{
-			get {return project;}
-			set {project = value;
-				base.RaisePropertyChanged(() =>Project);
-			}
-		}
-	
-		
-		#region Create List of services
-		
-		private List<string> mruServices = new List<string>();
-		
-		public List<string> MruServices {
-			get {
-				return mruServices; }
-			set { mruServices = value;
-				base.RaisePropertyChanged(() =>MruServices);
-			}
-		}
-		
-		private string selectedService;
-		
-		public string SelectedService {
-			get { return selectedService; }
-			set { selectedService = value;
-				base.RaisePropertyChanged(() =>SelectedService);}
-		}
-		
-		#endregion
 		
 		
 		#region Go
@@ -134,6 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
 		}
 		
+		
 		private bool CanExecuteGo()
 		{
 			return true;
@@ -142,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		#endregion
 		
 		
-		#region Discover
+		#region Discover Command
 		
 		public System.Windows.Input.ICommand DiscoverCommand {get;private set;}
 		
@@ -160,18 +117,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		
 		
 		#region discover service Code from Matt
-		
-			
-		CredentialCache credentialCache = new CredentialCache();
-		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
-//		ICSharpCode.SharpDevelop.Gui.WebReference webReference;
-		string namespacePrefix = String.Empty;
-		delegate DiscoveryDocument DiscoverAnyAsync(string url);
-		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
-		delegate void AuthenticationHandler(Uri uri, string authenticationType);	
-		
-		
-		
+
 		void StartDiscovery(Uri uri, DiscoveryNetworkCredential credential)
 		{
 			// Abort previous discovery.
@@ -262,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		}
 		
 		
-		 void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
+		void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
 		{
 			NetworkCredential matchedCredential = credentialCache.GetCredential(uri, credential.AuthenticationType);
 			if (matchedCredential != null) {
@@ -275,22 +221,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
 		{
 			if (protocol != null) {
-//				webServicesView.Add(GetServiceDescriptions(protocol));
-			
-				ServiceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
-				FillItems (ServiceDescriptionCollection);
-				var defaultNameSpace =  GetDefaultNamespace();
+				serviceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
+				
+				ServiceDescriptionMessage = String.Format("{0} service(s) found at address {1}",
+				                                          serviceDescriptionCollection.Count,
+				                                          discoveryUri);
+				DefaultNameSpace =  GetDefaultNamespace();
+				FillItems (serviceDescriptionCollection);
 				var referenceName = GetReferenceName(discoveryUri);
-				/*
-				webReference = new ICSharpCode.SharpDevelop.Gui.WebReference(project,
-				                                                             discoveryUri.AbsoluteUri,
-				                                                             defaultNameSpace,
-				                                                             referenceName, protocol);
-*/
-			}
-			else 
-			{
-//				webReference = null;
 			}
 		}
 		
@@ -315,27 +253,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 				return uri.Host;
 			}
 			return String.Empty;
-			/*
-			if (discoveryUri != null) {
-				return discoveryUri.Host;
-			}
-			return String.Empty;
-			*/
-		}
-		
-	
-		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
-		
-		public ServiceDescriptionCollection ServiceDescriptionCollection
-		{
-			get {
-				return serviceDescriptionCollection;
-			}
-			set
-			{
-				serviceDescriptionCollection = value;
-				RaisePropertyChanged(() =>ServiceDescriptionCollection);
-			}
 		}
 
 		#endregion
@@ -343,8 +260,41 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		
 		#region new binding
 		
-		List<ServiceItem> items = new List <ServiceItem>();
+		public string Title
+		{
+			get {return title;}
+			set {title = value;
+				base.RaisePropertyChanged(() =>Title);
+			}
+		}
 		
+
+		public string HeadLine {get; set;}
+		
+		private string discoverButtonContend;
+		
+		public string DiscoverButtonContend {
+			get { return discoverButtonContend; }
+			set { discoverButtonContend = value;
+			base.RaisePropertyChanged(() =>DiscoverButtonContend);}
+		}
+		
+		
+		public List<string> MruServices {
+			get {
+				return mruServices; }
+			set { mruServices = value;
+				base.RaisePropertyChanged(() =>MruServices);
+			}
+		}
+		
+		
+		public string SelectedService {
+			get { return selectedService; }
+			set { selectedService = value;
+				base.RaisePropertyChanged(() =>SelectedService);}
+		}
+	
 		
 		public List <ServiceItem> ServiceItems {
 			get {return items; }
@@ -356,8 +306,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		}
 		
 		
-		ServiceItem myItem;
-		
 		public ServiceItem ServiceItem {
 			get { return myItem; }
 			set { myItem = value;
@@ -367,7 +315,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		}
 		
 		
-		private  ObservableCollection<TwoValue> twoValues;
+		public string ServiceDescriptionMessage {
+			get { return serviceDescriptionMessage; }
+			set { serviceDescriptionMessage = value;
+				base.RaisePropertyChanged(() =>ServiceDescriptionMessage);
+			}
+		}
+		
+		
+		public string DefaultNameSpace {
+			get { return defaultNameSpace; }
+			set { defaultNameSpace = value;
+			base.RaisePropertyChanged(() =>DefaultNameSpace);}
+		}
+		
 		
 		public ObservableCollection<TwoValue> TwoValues {
 			get { return twoValues; }
@@ -378,7 +339,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		}
 		
 		
-		public void UpdateListView ()
+		void UpdateListView ()
 		{
 			TwoValues.Clear();
 			string l;
@@ -440,14 +401,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			{
 				Add (element);
 			}
-			
 		}
 		
 		
 		void Add(ServiceDescription description)
 		{
 			List<ServiceItem> l = new List<ServiceItem>();
-			var rootNode = new ServiceItem(GetName(description));
+			var name = ServiceReferenceHelper.GetServiceName(description);
+			var rootNode = new ServiceItem(name);
 			rootNode.Tag = description;
 			l.Add(rootNode);
 			
@@ -479,25 +440,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			}
 			ServiceItems = l;
 		}
-		
-		
-		string GetName(ServiceDescription description)
-		{
-			if (description.Name != null) {
-				return description.Name;
-			} else if (description.RetrievalUrl != null) {
-				Uri uri = new Uri(description.RetrievalUrl);
-				if (uri.Segments.Length > 0) {
-					return uri.Segments[uri.Segments.Length - 1];
-				} else {
-					return uri.Host;
-				}
-			}
-			return String.Empty;
-		}
-		
+
 		#endregion
-		
 	}
 	
 	
