@@ -41,9 +41,9 @@ namespace ICSharpCode.MachineSpecifications
 				if (HasBehavesLikeReturnType(field))
 				{
 					var behaviorFields = ResolveBehaviorFieldsOf(field);
-					var behaviorMembers = GetTestMembers(testClass, behaviorFields);
-					var testMembersFromBehavior = behaviorMembers.Select(member => 
-						new TestMember(member.DeclaringType, new BehaviorImportedTestMember(testClass, member.Member)));
+					var behaviorMembers = behaviorFields.Where(HasItReturnType);
+					var testMembersFromBehavior = behaviorMembers.Select(testField => 
+						new TestMember(testField.DeclaringType, new BehaviorImportedTestMember(testClass, testField)));
 					result.AddRange(testMembersFromBehavior);
 				}
 			return result;
