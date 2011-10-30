@@ -58,6 +58,9 @@ namespace SharpRefactoring
 			
 			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(current).ToList();
 			
+			if (!parameters.Any())
+				return null;
+			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			

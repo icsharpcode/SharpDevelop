@@ -31,11 +31,11 @@ namespace SharpRefactoring.Gui
 			if (!fields.Any())
 				Visibility = System.Windows.Visibility.Collapsed;
 			
-			implementInterface.IsChecked = HasOnPropertyChanged(current);
+			implementInterface.IsChecked = !current.IsStatic && HasOnPropertyChanged(current);
+			if (current.IsStatic)
+				implementInterface.Visibility = System.Windows.Visibility.Collapsed;
 			
-			listBox.SelectedItems.Clear();
-			foreach (FieldWrapper field in fields.Where(f => !current.AllMembers.Any(m => m.Name == f.PropertyName)))
-				listBox.SelectedItems.Add(field);
+			listBox.UnselectAll();
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
@@ -47,7 +47,7 @@ namespace SharpRefactoring.Gui
 			bool hasOnPropertyChanged = HasOnPropertyChanged(currentClass);
 			bool useEventArgs = false;
 			
-			if (implementInterface) {
+			if (implementInterface && !currentClass.IsStatic) {
 				if (!hasOnPropertyChanged) {
 					var nodes = new List<AbstractNode>();
 					var rt = new GetClassReturnType(currentClass.ProjectContent, "System.ComponentModel.INotifyPropertyChanged", 0);
@@ -75,8 +75,16 @@ namespace SharpRefactoring.Gui
 			
 			foreach (FieldWrapper field in listBox.SelectedItems) {
 				var prop = language.CodeGenerator.CreateProperty(field.Field, true, field.AddSetter);
-				if (field.AddSetter && implementInterface) {
-					prop.SetRegion.Block.AddChild(new ExpressionStatement(CreateInvocation(field.PropertyName, useEventArgs)));
+				if (!field.Field.IsStatic && !currentClass.IsStatic && field.AddSetter && implementInterface) {
+					var invocation = new ExpressionStatement(CreateInvocation(field.PropertyName, useEventArgs));
+					var assignment = prop.SetRegion.Block.Children[0];
+					prop.SetRegion.Block.Children.Clear();
+					prop.SetRegion.Block.AddChild(
+						new IfElseStatement(
+							new BinaryOperatorExpression(new IdentifierExpression(field.MemberName), BinaryOperatorType.InEquality, new IdentifierExpression("value")),
+							new BlockStatement { Children = { assignment, invocation } }
+						)
+					);
 				}
 				builder.AppendLine(language.CodeGenerator.GenerateCode(prop, indent));
 			}

@@ -56,7 +56,10 @@ namespace SharpRefactoring
 			if (current == null)
 				return null;
 			
-			List<FieldWrapper> parameters = FindFields(current).ToList();
+			List<FieldWrapper> parameters = FindFields(current).Where(f => !current.Properties.Any(p => p.Name == f.PropertyName)).ToList();
+			
+			if (!parameters.Any())
+				return null;
 			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
