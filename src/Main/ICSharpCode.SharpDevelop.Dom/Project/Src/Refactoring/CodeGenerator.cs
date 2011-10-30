@@ -552,7 +552,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			if (e.IsStatic)
 				modifier = ModifierEnum.Private | ModifierEnum.Static;
 			else if (e.DeclaringType.IsSealed)
-				modifier = ModifierEnum.Protected;
+				modifier = ModifierEnum.Private;
 			else
 				modifier = ModifierEnum.Protected | ModifierEnum.Virtual;
 			MethodDeclaration method = new MethodDeclaration {
