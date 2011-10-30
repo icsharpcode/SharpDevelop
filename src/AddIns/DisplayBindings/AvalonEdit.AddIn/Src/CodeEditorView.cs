@@ -454,6 +454,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				current = current.NextLine;
 				lineCount++;
 			}
+			if (current != endLine.NextLine)
+				builder.Append("...");
 			
 			return builder.ToString();
 		}

@@ -8,7 +8,7 @@ using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
 
-using Gui.Dialogs.ReferenceDialog;
+using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
@@ -243,29 +243,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			o.DataContext = vm;
 			o.Owner = WorkbenchSingleton.MainWindow;
 			var b = o.ShowDialog();
-			
-			
-			if (b == true) {
-				
-				/*
-				AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
-				var f = CompilableProject.GetAppConfigFile(node.Project,false);
-				
-//			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
-				
-				
-				CompilableProject project = ProjectService.CurrentProject as CompilableProject;
-				
-				var wpo =  WebProjectsOptions.Instance.GetWebProjectOptions(ProjectService.CurrentProject.Name);
-				
-				
-				
-				var s1 = project.AssemblyName;
-				var s2 = project.CreateStartInfo();
-				
-				var ss = s1 + s2;
-				*/
-			}
 		}
 	}
 	

@@ -443,9 +443,6 @@ Es necesario instalar el .NET Framework SDK para obtener el sistema de ayuda.</v
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Buscar</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Buscar...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Buscar sólo en temas encontrados</value>
   </data>
@@ -656,6 +653,9 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Ejecutar con el analizador</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Buscar...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraer método</value>
@@ -1471,6 +1471,9 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Esperando a que se Inicie la Aplicación</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Análisis de Calidad de Código</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Inserta una referencia a un método explicito; presione tabulador o enter otra vez para insertar un nuevo trozo de método.</value>
@@ -2703,6 +2706,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>&amp;Desplegar fuentes con anti-alias</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Habilita Cambio de Marcador de Margen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Activar autocompletar el &amp;código</value>
@@ -5536,6 +5542,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>No puede cambiar a una función sin símbolos.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>No puede cambiar a una función sin símbolos sin haber habilitado opciones de decompilación de código.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Métodos Externos]</value>
   </data>
@@ -5797,8 +5806,14 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>No se puede establecer la siguiente instrucción porque no hay ninguna función activa seleccionada</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>No puede cambiar a un hilo que no tiene un marco disponible.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>No puede cambiar entre hilos mientras el depurador se esta ejecutando.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>No puede cambiar a un hilo en código decompilado sin haber habilitado opciones de decompilación de código.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Congelar</value>
@@ -7131,6 +7146,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Archivo en Blanco</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Crea una nueva clase Excepcion.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Excepción</value>
   </data>
@@ -7262,6 +7280,9 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Formulario Web ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Crea un WebHandler ASP.NET con código subyacente.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>Manejador Web ASP.NET</value>

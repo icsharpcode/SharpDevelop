@@ -286,7 +286,7 @@ namespace SharpRefactoring.Gui
 				// IEquatable implementation:
 				method = new MethodDeclaration {
 					Name = "Equals",
-					Modifier = Modifiers.Public | Modifiers.Override,
+					Modifier = Modifiers.Public,
 					TypeReference = boolReference
 				};
 				method.Parameters.Add(new ParameterDeclarationExpression(currentType, "other"));

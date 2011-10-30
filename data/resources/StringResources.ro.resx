@@ -361,9 +361,6 @@ Pentru aceasta trebuie să instalaţi .NET Framework SDK.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Caută</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Caută...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Caută doar în subiectele găsite anterior</value>
   </data>
@@ -393,6 +390,9 @@ Pentru aceasta trebuie să instalaţi .NET Framework SDK.</value>
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Foloseste limbajul proiectului curent</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Caută...</value>
   </data>
   <data name="AddIns.Subversion.CleanUp" xml:space="preserve">
     <value>Curăţă</value>

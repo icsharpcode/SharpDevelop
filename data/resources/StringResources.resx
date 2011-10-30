@@ -229,6 +229,19 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Unknown file format:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Error:</value>
+    <comment>Note: Mind the trailing space!</comment>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Find next</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Find previous</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Use regular expressions</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Show Class Diagram</value>
   </data>
@@ -448,9 +461,6 @@ You need to install the .NET Framework SDK to get the help system.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Search</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Search...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Search in previously found topics only</value>
   </data>
@@ -663,6 +673,9 @@ Optionally you can specify a working directory and command line arguments.
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Run with profiler</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Searching ...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extract method</value>
@@ -6137,12 +6150,6 @@ Shows the full callstack of the error.</comment>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Thread switch</value>
   </data>
-  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
-    <value>You cannot switch to a thread in decompiled code without enabling decomplied code options.</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
-    <value>You cannot switch to a thread with no available frame.</value>
-  </data>
   <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
     <value>Toggle Method View</value>
   </data>
@@ -6527,6 +6534,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>New Solution &amp;Folder</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>The project is not a web project.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>O&amp;pen</value>
   </data>
@@ -6552,9 +6562,6 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
     <value>View in browser</value>
-  </data>
-  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
-    <value>The project is not a web project.</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>New Folder</value>

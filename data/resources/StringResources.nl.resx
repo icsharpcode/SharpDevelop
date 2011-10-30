@@ -442,9 +442,6 @@ Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.<
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Zoeken</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Zoeken...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Alleen zoeken in eerder gevonden onderwerpen</value>
   </data>
@@ -655,6 +652,9 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Voer uit met profiler</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Zoeken...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Onttrekken</value>
@@ -4929,7 +4929,7 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
     <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Geen project URL of extern programma opgegeven. Controleer de Web server op project eigenschappen -&amp;gt; Foutzoeken tab.</value>
+    <value>Er is geen project URL of extern programma gespecificeerd. Check de Web server bij Project eigenschappen -&gt; Foutzoeken tab.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server poort:</value>
@@ -6198,6 +6198,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>Nieuwe Oplossing map</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>Dit is geen web project.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>O&amp;penen</value>
   </data>
@@ -6218,6 +6221,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Als startproject instellen.</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Bekijk in de browser</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Nieuwe map</value>

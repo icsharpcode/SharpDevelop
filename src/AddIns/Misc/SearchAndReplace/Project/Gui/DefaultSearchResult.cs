@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using System.Windows.Controls;
 
 using ICSharpCode.Core.Presentation;
@@ -21,7 +20,11 @@ namespace SearchAndReplace
 	public class DefaultSearchResult : ISearchResult
 	{
 		IList<SearchResultMatch> matches;
-		SearchRootNode rootNode;
+		protected SearchRootNode rootNode;
+		
+		protected DefaultSearchResult()
+		{
+		}
 		
 		public DefaultSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
@@ -39,9 +42,9 @@ namespace SearchAndReplace
 			}
 		}
 		
-		static ResultsTreeView resultsTreeViewInstance;
+		protected static ResultsTreeView resultsTreeViewInstance;
 		
-		public object GetControl()
+		public virtual object GetControl()
 		{
 			WorkbenchSingleton.AssertMainThread();
 			if (resultsTreeViewInstance == null)
@@ -54,9 +57,14 @@ namespace SearchAndReplace
 		static IList toolbarItems;
 		static MenuItem flatItem, perFileItem;
 		
-		public IList GetToolbarItems()
+		public virtual IList GetToolbarItems()
 		{
 			WorkbenchSingleton.AssertMainThread();
+			return GetDefaultToolbarItems();
+		}
+		
+		protected IList GetDefaultToolbarItems()
+		{
 			if (toolbarItems == null) {
 				toolbarItems = new List<object>();
 				DropDownButton perFileDropDown = new DropDownButton();
@@ -117,6 +125,13 @@ namespace SearchAndReplace
 		public ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
 		{
 			return new DefaultSearchResult(title, matches);
+		}
+		
+		public ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches)
+		{
+			var osr = new ObserverSearchResult(title);
+			osr.Registration = matches.ObserveOnUIThread().Subscribe(osr);
+			return osr;
 		}
 	}
 }

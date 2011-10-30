@@ -434,9 +434,6 @@
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Поиск</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Искать..</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Искать только в ранее найденых темах</value>
   </data>
@@ -644,6 +641,9 @@
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Старт с профайлером</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Искать..</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Извлечь в отдельный метод</value>

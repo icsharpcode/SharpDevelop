@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace ICSharpCode.AvalonEdit.Search
 {
@@ -15,15 +17,23 @@ namespace ICSharpCode.AvalonEdit.Search
 		/// <summary>
 		/// Creates a default ISearchStrategy with the given parameters.
 		/// </summary>
-		public static ISearchStrategy Create(string searchPattern, bool ignoreCase, bool useRegularExpressions, bool matchWholeWords)
+		public static ISearchStrategy Create(string searchPattern, bool ignoreCase, bool matchWholeWords, SearchMode mode)
 		{
 			if (searchPattern == null)
 				throw new ArgumentNullException("searchPattern");
 			RegexOptions options = RegexOptions.Compiled | RegexOptions.Multiline;
 			if (ignoreCase)
 				options |= RegexOptions.IgnoreCase;
-			if (!useRegularExpressions)
-				searchPattern = Regex.Escape(searchPattern);
+			
+			switch (mode) {
+				case SearchMode.Normal:
+					searchPattern = Regex.Escape(searchPattern);
+					break;
+				case SearchMode.Wildcard:
+					searchPattern = ConvertWildcardsToRegex(searchPattern);
+					break;
+			}
+
 			if (matchWholeWords)
 				searchPattern = "\\b" + searchPattern + "\\b";
 			try {
@@ -32,6 +42,30 @@ namespace ICSharpCode.AvalonEdit.Search
 			} catch (ArgumentException ex) {
 				throw new SearchPatternException(ex.Message, ex);
 			}
+		}
+		
+		static string ConvertWildcardsToRegex(string searchPattern)
+		{
+			if (string.IsNullOrEmpty(searchPattern))
+				return "";
+			
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (char ch in searchPattern) {
+				switch (ch) {
+					case '?':
+						builder.Append(".");
+						break;
+					case '*':
+						builder.Append(".*");
+						break;
+					default:
+						builder.Append(Regex.Escape(ch.ToString()));
+						break;
+				}
+			}
+			
+			return builder.ToString();
 		}
 	}
 }

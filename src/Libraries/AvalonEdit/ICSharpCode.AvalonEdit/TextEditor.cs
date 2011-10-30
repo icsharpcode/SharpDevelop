@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
 			base.OnGotKeyboardFocus(e);
-			if (!this.TextArea.IsKeyboardFocusWithin) {
+			if (e.NewFocus == this) {
 				Keyboard.Focus(this.TextArea);
 				e.Handled = true;
 			}

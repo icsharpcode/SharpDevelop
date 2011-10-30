@@ -16,7 +16,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Gui.Dialogs.ReferenceDialog
+namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 {
 	/// <summary>
 	/// Interaction logic for AddServiceReferenceDialog.xaml
@@ -28,11 +28,9 @@ namespace Gui.Dialogs.ReferenceDialog
 			InitializeComponent();
 		}
 		
+		
 		void okButtonClick(object sender, RoutedEventArgs e)
 		{
-//			http://stackoverflow.com/questions/3373239/wpf-editable-combobox
-//			var s = cbo.Text;
-//			var d = this.DataContext;			
 			this.DialogResult = true;
 			Close();
 		}
@@ -43,18 +41,24 @@ namespace Gui.Dialogs.ReferenceDialog
 			Close();
 		}
 		
+		
 		void Cbo_LostFocus(object sender, RoutedEventArgs e)
 		{
-//			http://stackoverflow.com/questions/3373239/wpf-editable-combobox
 			var comboBox = (ComboBox) sender;
 			if(comboBox.SelectedItem != null)
 				return;
 			var newItem = comboBox.Text;
-			//        _names.Add(newItem);
-
 			comboBox.SelectedItem = newItem;
-
 		}
 		
+		
+		void Tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			if (e.NewValue != null) {
+				ServiceItem myItem = (ServiceItem)e.NewValue;
+				var dc = (AddServiceReferenceViewModel)tree.DataContext;
+				dc.ServiceItem = myItem;
+			}
+		}
 	}
 }
