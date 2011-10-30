@@ -27,7 +27,7 @@ namespace SharpRefactoring
 			return null;
 		}
 		
-		CreatePropertiesDialog CreateDialog(InsertionContext context)
+		internal static CreatePropertiesDialog CreateDialog(InsertionContext context)
 		{
 			ITextEditor textEditor = context.TextArea.GetService(typeof(ITextEditor)) as ITextEditor;
 			
@@ -68,7 +68,7 @@ namespace SharpRefactoring
 			return dialog;
 		}
 		
-		IEnumerable<FieldWrapper> FindFields(IClass sourceClass)
+		static IEnumerable<FieldWrapper> FindFields(IClass sourceClass)
 		{
 			int i = 0;
 			

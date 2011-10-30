@@ -8,6 +8,7 @@ using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
+using SharpRefactoring.Gui;
 
 namespace SharpRefactoring
 {
@@ -17,7 +18,7 @@ namespace SharpRefactoring
 		{
 			new Snippet {
 				Elements = {
-					new CreateProperties().GetElement(new SnippetInfo("refactoring:propall", "${refactoring:propall}", 0))
+					new InlineRefactorSnippetElement(context => CreateProperties.CreateDialog(context), "")
 				}
 			}.Insert((TextArea)textEditor.GetService(typeof(TextArea)));
 		}
