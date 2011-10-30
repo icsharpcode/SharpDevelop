@@ -89,6 +89,8 @@
     <Compile Include="Src\ContextActions\ParamCheckForNull.cs" />
     <Compile Include="Src\ContextActions\ParamRangeCheck.cs" />
     <Compile Include="Src\ContextActions\RenameFileToMatchClassName.cs" />
+    <Compile Include="Src\CreateProperties.cs" />
+    <Compile Include="Src\CreatePropertiesCommand.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />

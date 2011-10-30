@@ -17,17 +17,17 @@ using SharpRefactoring.Gui;
 
 namespace SharpRefactoring
 {
-	public class InsertCtorSnippetRefactoring : ISnippetElementProvider
+	public class CreateProperties : ISnippetElementProvider
 	{
 		public SnippetElement GetElement(SnippetInfo snippetInfo)
 		{
-			if ("refactoring:ctor".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
+			if ("refactoring:propall".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
 				return new InlineRefactorSnippetElement(context => CreateDialog(context), "{" + snippetInfo.Tag + "}");
 			
 			return null;
 		}
-
-		InsertCtorDialog CreateDialog(InsertionContext context)
+		
+		CreatePropertiesDialog CreateDialog(InsertionContext context)
 		{
 			ITextEditor textEditor = context.TextArea.GetService(typeof(ITextEditor)) as ITextEditor;
 			
@@ -56,39 +56,27 @@ namespace SharpRefactoring
 			if (current == null)
 				return null;
 			
-			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(current).ToList();
+			List<FieldWrapper> parameters = FindFields(current).ToList();
 			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current, parameters);
+			CreatePropertiesDialog dialog = new CreatePropertiesDialog(context, textEditor, anchor, current, parameters);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 			
 			return dialog;
 		}
 		
-		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IClass sourceClass)
+		IEnumerable<FieldWrapper> FindFields(IClass sourceClass)
 		{
 			int i = 0;
 			
 			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst
-			                                           && field.IsStatic == sourceClass.IsStatic
 			                                           && field.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(f) { Index = i };
-				i++;
-			}
-			
-			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer
-			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
-			                                               && prop.IsStatic == sourceClass.IsStatic
-			                                               && prop.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(p) { Index = i };
+				yield return new FieldWrapper(f) { Index = i };
 				i++;
 			}
 		}
 	}
-	
-
-
 }

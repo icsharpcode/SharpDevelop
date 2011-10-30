@@ -68,6 +68,12 @@ namespace SharpRefactoring
 			}
 		}
 		
+		public bool IsSetable {
+			get {
+				return !field.IsReadonly && !field.IsConst;
+			}
+		}
+		
 		static string ToPropertyName(string memberName)
 		{
 			if (string.IsNullOrEmpty(memberName))

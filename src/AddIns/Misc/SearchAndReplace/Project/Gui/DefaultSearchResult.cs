@@ -38,7 +38,7 @@ namespace SearchAndReplace
 		
 		public string Text {
 			get {
-				return rootNode.Title + " (" + SearchRootNode.GetOccurrencesString(rootNode.Occurrences) + ")";
+				return rootNode.Title + " (" + SearchRootNode.GetOccurrencesString(rootNode.Occurrences) + SearchRootNode.GetWasCancelledString(rootNode.WasCancelled) + ")";
 			}
 		}
 		

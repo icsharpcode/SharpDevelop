@@ -56,6 +56,7 @@ namespace SearchAndReplace
 				stopButton.Visibility = Visibility.Hidden;
 				if (Registration != null) Registration.Dispose();
 			} finally {
+				rootNode.WasCancelled = true;
 				finished = true;
 			}
 		}

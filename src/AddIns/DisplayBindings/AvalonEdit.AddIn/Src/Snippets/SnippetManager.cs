@@ -77,6 +77,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Keyword = "event"
 					},
 					new CodeSnippet {
+						Name = "propall",
+						Description = "Allows to implement properties for all fields in the class",
+						Text = "${refactoring:propall}${Caret}",
+						Keyword = "event"
+					},
+					new CodeSnippet {
 						Name = "propdp",
 						Description = "Dependency Property",
 						Text = "public static readonly DependencyProperty ${name}Property =" + Environment.NewLine

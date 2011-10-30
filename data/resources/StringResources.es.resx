@@ -229,6 +229,18 @@ Descargue un complemento de Internet, luego haga clic en 'Instalar Complemento' 
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de archivo desconocido:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Error:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Buscar siguiente</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Buscar anterior</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Usar expresiones regulares</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
@@ -655,7 +667,7 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
     <value>Ejecutar con el analizador</value>
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
-    <value>Buscar...</value>
+    <value>Buscando ...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraer método</value>
@@ -4936,7 +4948,7 @@ Vaya a 'Opciones-&gt;Estilo Visual' y cambie el lenguaje del ambiente.</value>
     <value>No se encontró el proceso ASP.NET/IIS (Express) ({0}).</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>No hay ningún url de proyecto ni programa externo especificado. Verifique el servidor web en Propiedades del Proyecto -&amp;gt; Depurar.</value>
+    <value>No hay ninguna url de proyecto ni programa externo especificado. Verifique el servidor web en la pestaña Propiedades del Proyecto - Depurar.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Puerto de servidor:</value>
@@ -6205,6 +6217,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>Nueva &amp;Carpeta de Solución</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>Este proyecto no es un proyecto web.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>A&amp;brir</value>
   </data>
@@ -6225,6 +6240,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Est&amp;ablecer como Proyecto de Inicio</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Ver en el navegador</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Directorio Nuevo</value>

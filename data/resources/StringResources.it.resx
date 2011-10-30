@@ -229,6 +229,18 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato file sconosciuto:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Errore:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Trova successivo</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Trova precedente</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Usa espressioni regolari</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostra Diagramma delle Classi</value>
   </data>
@@ -654,7 +666,7 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
     <value>Esegui con profiler</value>
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
-    <value>Cerca...</value>
+    <value>Ricerca...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Estrai metodo</value>
@@ -4937,7 +4949,7 @@ Vai a 'Opzioni-&gt;Stile visuale' e cambia l'attuale ambiente di linguaggio.</va
     <value>ASP.NET/IIS (Express) worker process ({0}) non trovato.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Non è stato specificato nessun Url di Progetto o programma esterno. Controlla parametri web server su Proprietà Progetto -&amp;gt; linguetta Debug.</value>
+    <value>Non è stato specificato nessun Url di Progetto o programma esterno. Controlla il web server su Proprietà Progetto - Debug.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Porta server:</value>
@@ -6206,6 +6218,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>Nuova &amp;Cartella Soluzione</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>Il progetto non è un progetto web.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>A&amp;pri</value>
   </data>
@@ -6226,6 +6241,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Imposta come Progetto Inizi&amp;ale</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Visualizza nel browser</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Cartella nuova</value>

@@ -22,6 +22,7 @@ namespace SearchAndReplace
 		ObservableCollection<SearchFileNode> fileNodes;
 		
 		public string Title { get; private set; }
+		public bool WasCancelled { get; set; }
 		
 		public SearchRootNode(string title, IList<SearchResultMatch> results)
 		{
@@ -61,7 +62,7 @@ namespace SearchAndReplace
 					new Bold(new Run(this.Title)),
 					new Run(" (" + GetOccurrencesString(resultNodes.Count)
 					        + StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ")
-					        + GetFileCountString(fileNodes.Count) + ")")
+					        + GetFileCountString(fileNodes.Count) + GetWasCancelledString(WasCancelled) + ")")
 				}
 			};
 		}
@@ -84,6 +85,14 @@ namespace SearchAndReplace
 				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.FileCount}",
 				                          new StringTagPair("Count", count.ToString()));
 			}
+		}
+		
+		public static string GetWasCancelledString(bool wasCancelled)
+		{
+			if (wasCancelled)
+				return "; was cancelled";
+			
+			return "";
 		}
 	}
 }
