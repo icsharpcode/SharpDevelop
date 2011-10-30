@@ -13,6 +13,7 @@ namespace ICSharpCode.MachineSpecifications
     {
         public event TestFinishedEventHandler TestFinished;
         private FileSystemWatcher fileSystemWatcher;
+        private ISet<string> reportedResults;
 
         public MSpecUnitTestMonitor()
         {
@@ -35,6 +36,7 @@ namespace ICSharpCode.MachineSpecifications
             var filter = FileName;
 
             fileSystemWatcher = new FileSystemWatcher(Path.GetDirectoryName(FileName), Path.GetFileName(FileName));
+            reportedResults = new HashSet<string>();
             if (File.Exists(FileName))
             {
                 fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
@@ -109,7 +111,10 @@ namespace ICSharpCode.MachineSpecifications
         {
             if (TestFinished != null)
                 foreach (var result in testResults)
-                    TestFinished(this, new TestFinishedEventArgs(result));
+            		if (!reportedResults.Contains(result.Name)) {
+                    	TestFinished(this, new TestFinishedEventArgs(result));
+                    	reportedResults.Add(result.Name);
+		            }
         }
 
         public long InitialFilePosition { get; set; }
