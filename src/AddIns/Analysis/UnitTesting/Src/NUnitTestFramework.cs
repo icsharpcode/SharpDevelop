@@ -44,6 +44,8 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public bool IsTestClass(IClass c)
 		{
+			if (c == null) return false;
+			if (c.IsAbstract) return false;
 			StringComparer nameComparer = GetNameComparer(c);
 			if (nameComparer != null) {
 				NUnitTestAttributeName testAttributeName = new NUnitTestAttributeName("TestFixture", nameComparer);

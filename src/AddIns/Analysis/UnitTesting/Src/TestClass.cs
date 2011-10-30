@@ -297,7 +297,7 @@ namespace ICSharpCode.UnitTesting
 			{
 				foreach (var testMember in testFrameworks.GetTestMembersFor(c.BaseClass)) {
 					BaseTestMember baseTestMethod = new BaseTestMember(declaringType, testMember.Member);
-					TestMember testMethod = new TestMember(c, baseTestMethod);
+					TestMember testMethod = new TestMember(c.BaseClass, baseTestMethod);
 					if (testMember.Member.IsVirtual) {
 						if (!testMembers.Contains(testMember.Name)) {
 							testMembers.Add(testMethod);
@@ -313,7 +313,7 @@ namespace ICSharpCode.UnitTesting
 
 			baseClassesFQNames.Clear();
 			foreach (var memberDeclaringClass in testMembers.Select(member => member.DeclaringType).Distinct())
-				if (memberDeclaringClass != declaringType)
+				if (memberDeclaringClass.CompareTo(declaringType) != 0)
 					baseClassesFQNames.Add(memberDeclaringClass.FullyQualifiedName);
 			return testMembers;
 		}
