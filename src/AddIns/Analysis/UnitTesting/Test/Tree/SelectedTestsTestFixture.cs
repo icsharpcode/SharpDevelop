@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -49,7 +51,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ProjectsReturnsSingleItemContainingProjectPassedToConstructor()
 		{
-			List<IProject> projects = new List<IProject>(selectedTests.Projects);
+			var projects = selectedTests.Projects.ToArray();
 			IProject[] expectedProjects = new IProject[] { project };
 			
 			Assert.AreEqual(expectedProjects, projects);
@@ -71,7 +73,7 @@ namespace UnitTesting.Tests.Tree
 		public void RemoveFirstProjectLeavesNoProjects()
 		{
 			selectedTests.RemoveFirstProject();
-			Assert.AreEqual(0, selectedTests.Projects.Count);
+			Assert.AreEqual(0, selectedTests.ProjectsCount);
 		}
 		
 		[Test]

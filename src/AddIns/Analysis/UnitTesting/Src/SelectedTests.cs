@@ -64,8 +64,12 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		public IList<IProject> Projects {
+		public IEnumerable<IProject> Projects {
 			get { return projects; }
+		}
+		
+		public int ProjectsCount {
+			get {return projects.Count;}
 		}
 		
 		public IProject Project {

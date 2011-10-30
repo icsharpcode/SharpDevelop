@@ -301,10 +301,10 @@ namespace ICSharpCode.UnitTesting
 			if (testProgressMonitor == null) {
 				OnBeforeRunTests();
 				testProgressMonitor = context.StatusBarService.CreateProgressMonitor();
-				totalProjectCount = selectedTests.Projects.Count;
+				totalProjectCount = selectedTests.ProjectsCount;
 			}
 			testProgressMonitor.TaskName = GetProgressMonitorLabel(selectedTests.Project);
-			testProgressMonitor.Progress = GetProgress(selectedTests.Projects);
+			testProgressMonitor.Progress = GetProgress(selectedTests.ProjectsCount);
 			
 			testRunner = CreateTestRunner(selectedTests.Project);
 			if (testRunner != null) {
@@ -326,9 +326,9 @@ namespace ICSharpCode.UnitTesting
 			return StringParser.Parse("${res:ICSharpCode.UnitTesting.StatusBarProgressLabel}", tagPair);
 		}
 		
-		double GetProgress(IList<IProject> projectsLeftToRun)
+		double GetProgress(int projectsLeftToRunCount)
 		{
-			return (double)(totalProjectCount - projectsLeftToRun.Count) / totalProjectCount;
+			return (double)(totalProjectCount - projectsLeftToRunCount) / totalProjectCount;
 		}
 		
 		protected virtual ITestRunner CreateTestRunner(IProject project)
