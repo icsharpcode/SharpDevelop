@@ -370,6 +370,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords (dataList, linqKeywords);
 					return dataList.Result;
 				}
+				
+				var contextList = new CompletionDataWrapper (this);
+				if (identifierStart == null) {
+					var unit = ParseStub ("get; }", false);
+					var node = unit.GetNodeAt (location, cn => !(cn is CSharpTokenNode));
+					if (node is Accessor)
+						node = node.Parent;
+					if (node is PropertyDeclaration) {
+						contextList.AddCustom ("get");
+						contextList.AddCustom ("set");
+						AddKeywords (contextList, accessorModifierKeywords);
+					} else if (node is CustomEventDeclaration) {
+						contextList.AddCustom ("add");
+						contextList.AddCustom ("remove");
+					} else {
+						AddContextCompletion (contextList, GetState (), null);
+					}
+					
+					return contextList.Result;
+				}
+				
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
 					return controlSpace ? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
@@ -386,11 +407,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					char last = token [token.Length - 1];
 					if (!char.IsLetterOrDigit (last) && last != '_')
 						return null;
-				}
-				var contextList = new CompletionDataWrapper (this);
-				if (identifierStart == null) {
-					AddContextCompletion (contextList, GetState (), null);
-					return contextList.Result;
 				}
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
@@ -554,7 +570,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
-			Console.WriteLine ("!!!!");
 			if (state == null) 
 				return;
 			foreach (var variable in state.LocalVariables) {
@@ -587,7 +602,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else if (state.CurrentTypeDefinition != null) {
 				AddKeywords (wrapper, typeLevelKeywords);
 			} else {
-				Console.WriteLine ("3");
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
 			
@@ -604,7 +618,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var n = node;
 			while (n != null && !(n is MemberDeclaration)) {
-				Console.WriteLine (n.GetType ());
 				if (n is SwitchStatement)
 					return true;
 				if (n is BlockStatement)
@@ -1482,8 +1495,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		#region Parsing methods
-
-		
 		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionBeforeCursor ()
 		{
 			CompilationUnit baseUnit;
@@ -1875,6 +1886,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"namespace", "using", "extern", "public", "internal", 
 			"class", "interface", "struct", "enum", "delegate",
 			"abstract", "sealed", "static", "unsafe", "partial"
+		};
+		
+		static string[] accessorModifierKeywords = new string [] {
+			"public", "internal", "protected", "private"
 		};
 		
 		static string[] typeLevelKeywords = new string [] {

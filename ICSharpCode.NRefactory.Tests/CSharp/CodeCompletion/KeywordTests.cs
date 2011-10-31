@@ -139,6 +139,121 @@ class Test
 			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
 			Assert.IsNull (provider.Find ("namespace"), "keyword 'namespace' found.");
 		}
+		
+		[Test()]
+		public void GetSetKeywordTest ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"class Test
+{
+	public int MyProperty {
+		$g$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+			Assert.IsNotNull (provider.Find ("get"), "keyword 'get' not found.");
+			Assert.IsNotNull (provider.Find ("set"), "keyword 'set' not found.");
+		}
+		
+		
+		[Test()]
+		public void GetSetKeywordTestCtrlSpace ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"class Test
+{
+	public int MyProperty {
+		$$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+			Assert.IsNotNull (provider.Find ("get"), "keyword 'get' not found.");
+			Assert.IsNotNull (provider.Find ("set"), "keyword 'set' not found.");
+		}
+		
+
+		[Test()]
+		public void AddRemoveKeywordTest ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System;
+class Test
+{
+	public event EventHandler MyProperty {
+		$g$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("add"), "keyword 'add' not found.");
+			Assert.IsNotNull (provider.Find ("remove"), "keyword 'remove' not found.");
+		}
+		
+		[Test()]
+		public void AddRemoveKeywordTestCtrlSpace ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+using System;
+class Test
+{
+	public event EventHandler MyProperty {
+		$g$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.AreEqual (2, provider.Count);
+			Assert.IsNotNull (provider.Find ("add"), "keyword 'add' not found.");
+			Assert.IsNotNull (provider.Find ("remove"), "keyword 'remove' not found.");
+		}
+		
+		
+		[Test()]
+		public void IsAsKeywordTest ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"
+using System;
+class Test
+{
+	public void Method ()
+	{
+		void TestMe (object o)
+		{
+			if (o $i$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("is"), "keyword 'is' not found.");
+			Assert.IsNotNull (provider.Find ("as"), "keyword 'as' not found.");
+		}
+		
+		[Test()]
+		public void IsAsKeywordTestCtrlSpace ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+using System;
+class Test
+{
+	public void Method ()
+	{
+		void TestMe (object o)
+		{
+			if (o i$$
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("is"), "keyword 'is' not found.");
+			Assert.IsNotNull (provider.Find ("as"), "keyword 'as' not found.");
+		}
 	}
 }
 
