@@ -9,7 +9,7 @@ namespace SearchAndReplace
 {
 	public static class SearchOptions
 	{
-		const string searchPropertyKey = "SearchAndReplaceProperties";
+		const string searchPropertyKey = "SearchAndReplaceProperties2";
 		
 		static Properties properties;
 		

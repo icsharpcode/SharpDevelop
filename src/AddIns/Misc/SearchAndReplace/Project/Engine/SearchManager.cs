@@ -341,12 +341,14 @@ namespace SearchAndReplace
 				int difference = 0;
 				ITextEditor textArea = OpenTextArea(searchedFile.FileName, false);
 				if (textArea != null) {
-					foreach (var match in searchedFile.Matches) {
-						ct.ThrowIfCancellationRequested();
-						string newString = match.TransformReplacePattern(replacement);
-						textArea.Document.Replace(match.StartOffset + difference, match.Length, newString);
-						difference += newString.Length - match.Length;
-						count++;
+					using (textArea.Document.OpenUndoGroup()) {
+						foreach (var match in searchedFile.Matches) {
+							ct.ThrowIfCancellationRequested();
+							string newString = match.TransformReplacePattern(replacement);
+							textArea.Document.Replace(match.StartOffset + difference, match.Length, newString);
+							difference += newString.Length - match.Length;
+							count++;
+						}
 					}
 				}
 			}
