@@ -86,7 +86,59 @@ void Test (string t)
 			Assert.IsNotNull (provider.Find ("case"), "keyword 'case' not found.");
 		}
 		
+		[Test()]
+		public void ModifierKeywordTest ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"
+$p$
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+			Assert.IsNotNull (provider.Find ("namespace"), "keyword 'namespace' not found.");
+		}
 		
+		[Test()]
+		public void ModifierKeywordTestCtrlSpace ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+$p$
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+			Assert.IsNotNull (provider.Find ("namespace"), "keyword 'namespace' not found.");
+		}
+		
+		[Test()]
+		public void ModifierKeywordTestCase2 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Test 
+{
+	$p$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+			Assert.IsNull (provider.Find ("namespace"), "keyword 'namespace' found.");
+		}
+		
+		[Test()]
+		public void ModifierKeywordTestCase2CrtlSpace ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+class Test 
+{
+	$p$
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("public"), "keyword 'public' not found.");
+			Assert.IsNull (provider.Find ("namespace"), "keyword 'namespace' found.");
+		}
 	}
 }
 

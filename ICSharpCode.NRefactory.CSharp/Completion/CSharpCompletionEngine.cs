@@ -370,7 +370,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords (dataList, linqKeywords);
 					return dataList.Result;
 				}
-					
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
 					return controlSpace ? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
@@ -388,12 +387,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (!char.IsLetterOrDigit (last) && last != '_')
 						return null;
 				}
-				if (identifierStart == null)
-					return null;
-				
+				var contextList = new CompletionDataWrapper (this);
+				if (identifierStart == null) {
+					AddContextCompletion (contextList, GetState (), null);
+					return contextList.Result;
+				}
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
-				var contextList = new CompletionDataWrapper (this);
 				if (n is ArrayInitializerExpression) {
 					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
 					if (initalizerResult != null) {
@@ -554,6 +554,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddContextCompletion (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node)
 		{
+			Console.WriteLine ("!!!!");
 			if (state == null) 
 				return;
 			foreach (var variable in state.LocalVariables) {
@@ -586,6 +587,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else if (state.CurrentTypeDefinition != null) {
 				AddKeywords (wrapper, typeLevelKeywords);
 			} else {
+				Console.WriteLine ("3");
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
 			
@@ -866,7 +868,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			case "static":
 				wrapper = new CompletionDataWrapper (this);
 				var state = GetState ();
-				AddTypesAndNamespaces (wrapper, state, null, m => false);
+				AddTypesAndNamespaces (wrapper, state, null, null, m => false);
 				AddKeywords (wrapper, typeLevelKeywords);
 				AddKeywords (wrapper, primitiveTypesKeywords);
 				return wrapper.Result;

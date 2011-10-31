@@ -3596,6 +3596,26 @@ public class Test
 			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 1744 - [New Resolver] Issues while typing a property
+		/// </summary>
+		[Test()]
+		public void Test1744 ()
+		{
+			var provider = CreateProvider (
+@"
+public class Test
+{
+	$public $
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("void"), "class 'void' not found.");
+			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found.");
+			Assert.IsNotNull (provider.Find ("System"), "namespace 'System' not found.");
+		}
+		
 		[Test()]
 		public void TestCompletionInTryCatch ()
 		{
