@@ -101,7 +101,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
-    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
     <Compile Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml.cs">
       <DependentUpon>HiddenDefinitionControl.xaml</DependentUpon>

@@ -2,9 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Windows.Input;
 
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
@@ -12,35 +15,125 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 using Ast = ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace CSharpBinding
 {
 	/// <summary>
 	/// Description of ExtendSelection.
 	/// </summary>
-	public class CodeManipulation
+	public class CodeManipulation : IDisposable
 	{
 		enum MoveStatementDirection { Up, Down };
 		
+		ITextEditor editor;
+		
+		public static readonly RoutedCommand ExtendSelectionCommand = new RoutedCommand(
+			"ExtendSelection", typeof(CodeManipulation),
+			new InputGestureCollection { new KeyGesture(Key.W, ModifierKeys.Control) }
+		);
+		
+		public static readonly RoutedCommand ShrinkSelectionCommand = new RoutedCommand(
+			"ShrinkSelection", typeof(CodeManipulation),
+			new InputGestureCollection { new KeyGesture(Key.W, ModifierKeys.Control | ModifierKeys.Shift) }
+		);
+		
+		public static readonly RoutedCommand MoveStatementUpCommand = new RoutedCommand(
+			"MoveStatementUp", typeof(CodeManipulation),
+			new InputGestureCollection { new KeyGesture(Key.Up, ModifierKeys.Alt) }
+		);
+		
+		public static readonly RoutedCommand MoveStatementDownCommand = new RoutedCommand(
+			"MoveStatementDown", typeof(CodeManipulation),
+			new InputGestureCollection { new KeyGesture(Key.Down, ModifierKeys.Alt) }
+		);
+		
+		IEnumerable<CommandBinding> bindings;
+		
+		public CodeManipulation(ITextEditor editor)
+		{
+			this.editor = editor;
+			this.editor.SelectionChanged += CodeManipulationSelectionChanged;
+			
+			TextArea area = (TextArea)editor.GetService(typeof(TextArea));
+			
+			bindings = new List<CommandBinding> {
+				new CommandBinding(ExtendSelectionCommand, ExtendSelectionExecuted),
+				new CommandBinding(ShrinkSelectionCommand, ShrinkSelectionExecuted),
+				new CommandBinding(MoveStatementUpCommand, MoveStatementUpExecuted),
+				new CommandBinding(MoveStatementDownCommand, MoveStatementDownExecuted)
+			};
+			
+			area.DefaultInputHandler.CommandBindings.AddRange(bindings);
+		}
+		
+		bool internalSelectionChange;
+		
+		void ExtendSelectionExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			internalSelectionChange = true;
+			try {
+				ExtendSelection();
+			} finally {
+				internalSelectionChange = false;
+			}
+		}
+		
+		void ShrinkSelectionExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			internalSelectionChange = true;
+			try {
+				ShrinkSelection();
+			} finally {
+				internalSelectionChange = false;
+			}
+		}
+		
+		void MoveStatementUpExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			MoveStatementUp();
+		}
+		
+		void MoveStatementDownExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			MoveStatementDown();
+		}
+		
+		readonly Stack<ISegment> previousSelections = new Stack<ISegment>();
+
 		class Selection
 		{
 			public Location Start { get; set; }
 			public Location End { get; set; }
 		}
 		
-		public static void MoveStatementUp(ITextEditor editor)
+		void CodeManipulationSelectionChanged(object sender, EventArgs e)
+		{
+			if (!internalSelectionChange)
+				previousSelections.Clear();
+		}
+		
+		public void Dispose()
+		{
+			this.editor.SelectionChanged -= CodeManipulationSelectionChanged;
+			TextArea area = (TextArea)editor.GetService(typeof(TextArea));
+			
+			foreach (var b in bindings)
+				area.DefaultInputHandler.CommandBindings.Remove(b);
+		}
+		
+		public void MoveStatementUp()
 		{
 			MoveStatement(editor, MoveStatementDirection.Up);
 			editor.ClearSelection();
 		}
 		
-		public static void MoveStatementDown(ITextEditor editor)
+		public void MoveStatementDown()
 		{
 			MoveStatement(editor, MoveStatementDirection.Down);
 			editor.ClearSelection();
 		}
 		
 		// move selection - find outermost node in selection, swap selection with closest child of its parent to the selection
-		static void MoveStatement(ITextEditor editor, MoveStatementDirection direction)
+		void MoveStatement(ITextEditor editor, MoveStatementDirection direction)
 		{
 			IList<ISpecial> commentsBlankLines;
 			var parsedCU = ParseDocument(editor, out commentsBlankLines);
@@ -81,7 +174,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		static Selection TryExtendSelectionToComments(IDocument document, Selection selection, IList<ISpecial> commentsBlankLines)
+		Selection TryExtendSelectionToComments(IDocument document, Selection selection, IList<ISpecial> commentsBlankLines)
 		{
 			var extendedToComments = ExtendSelectionToComments(document, selection, commentsBlankLines);
 			if (extendedToComments != null)
@@ -89,20 +182,37 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return selection;
 		}
 		
-		public static void ExtendSelection(ITextEditor editor)
+		public void ExtendSelection()
 		{
 			INode selectedNode = null;
 			IList<ISpecial> commentsBlankLines;
 			var parsedCU = ParseDocument(editor, out commentsBlankLines);
 			if (parsedCU == null)	return;
 			
+			ISegment oldSelection = new TextSegment { StartOffset = editor.SelectionStart, Length = editor.SelectionLength };
 			Selection extendedSelection = ExtendSelection(editor, parsedCU, commentsBlankLines, out selectedNode, new Type[] { typeof(INode) });	// any node type
 			
 			SelectText(extendedSelection, editor);
+			
+			if (previousSelections.Count == 0 || !(previousSelections.Peek().Offset == oldSelection.Offset && previousSelections.Peek().EndOffset == oldSelection.EndOffset)) {
+				previousSelections.Push(oldSelection);
+				LoggingService.Debug("pushed: " + oldSelection);
+			} else {
+				LoggingService.Debug("not accepted: " + oldSelection);
+			}
+		}
+		
+		public void ShrinkSelection()
+		{
+			if (previousSelections.Count < 1)
+				return;
+			var selection = previousSelections.Pop();
+			editor.Select(selection.Offset, selection.Length);
+			LoggingService.Debug("popped: " + selection);
 		}
 		
 		// could work to extend selection to set of adjacent statements separated by blank lines
-		static Selection ExtendSelection(ITextEditor editor, CompilationUnit parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
+		Selection ExtendSelection(ITextEditor editor, CompilationUnit parsedCU, IList<ISpecial> commentsBlankLines, out INode selectedResultNode, Type[] interestingNodeTypes)
 		{
 			selectedResultNode = null;
 			
@@ -168,7 +278,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new Selection { Start = selectionStart, End = selectionEnd };
 		}
 		
-		static Selection ExtendSelectionToComments(IDocument document, Selection selection, IList<ISpecial> commentsBlankLines)
+		Selection ExtendSelectionToComments(IDocument document, Selection selection, IList<ISpecial> commentsBlankLines)
 		{
 			if (selection == null)
 				throw new ArgumentNullException("selection");
@@ -178,7 +288,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// If there is a comment block immediately before selection, or behind selection on the same line, add it to selection.
 		/// </summary>
-		static Selection ExtendSelectionToComments(IDocument document, Location selectionStart, Location selectionEnd, IList<ISpecial> commentsBlankLines)
+		Selection ExtendSelectionToComments(IDocument document, Location selectionStart, Location selectionEnd, IList<ISpecial> commentsBlankLines)
 		{
 			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>();
 			// add "var i = 5; // comments" comments
@@ -194,7 +304,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// If there is a comment block behind selection on the same line ("var i = 5; // comment"), add it to selection.
 		/// </summary>
-		static Selection ExtendSelectionToEndOfLineComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
+		Selection ExtendSelectionToEndOfLineComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
 		{
 			var lineComment = commentsBlankLines.Where(c => c.StartPosition.Line == selectionEnd.Line && c.StartPosition >= selectionEnd).FirstOrDefault();
 			if (lineComment == null) {
@@ -213,7 +323,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// If there is a comment block immediately before selection, add it to selection.
 		/// </summary>
-		static Selection ExtendSelectionToSeparateComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
+		Selection ExtendSelectionToSeparateComments(IDocument document, Location selectionStart, Location selectionEnd, IEnumerable<Comment> commentsBlankLines)
 		{
 			var comments = commentsBlankLines.Where(c => c.CommentStartsLine).ToList();
 			int commentIndex = comments.FindIndex(c => c.EndPosition <= selectionStart && IsWhitespaceBetween(document, c.EndPosition, selectionStart));
@@ -234,7 +344,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// Searches for parent of interesting type. Skips uninteresting parents.
 		/// </summary>
-		static INode GetInterestingParent(INode node, Type[] interestingNodeTypes)
+		INode GetInterestingParent(INode node, Type[] interestingNodeTypes)
 		{
 			var parent = node.Parent;
 			while(parent != null) {
@@ -245,18 +355,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return null;
 		}
 		
-		static bool IsNodeTypeInteresting(INode node, Type[] interestingNodeTypes)
+		bool IsNodeTypeInteresting(INode node, Type[] interestingNodeTypes)
 		{
 			Type nodeType = node.GetType();
 			return interestingNodeTypes.Any(interestingType => interestingType.IsAssignableFrom(nodeType) || (nodeType == interestingType));
 		}
 		
-		static bool SelectionContainsBlankLines(Location selectionStart, Location selectionEnd, List<BlankLine> blankLines)
+		bool SelectionContainsBlankLines(Location selectionStart, Location selectionEnd, List<BlankLine> blankLines)
 		{
 			return blankLines.Exists(b => b.StartPosition >= selectionStart && b.EndPosition <= selectionEnd);
 		}
 		
-		static bool IsWhitespaceBetween(IDocument document, Location startPos, Location endPos)
+		bool IsWhitespaceBetween(IDocument document, Location startPos, Location endPos)
 		{
 			int startOffset = document.PositionToOffset(startPos);
 			int endOffset = document.PositionToOffset(endPos);
@@ -270,7 +380,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// If the text at startPos is preceded by any of the prefixes, moves the start backwards to include one prefix
 		/// (the rightmost one).
 		/// </summary>
-		static Location ExtendLeft(Location startPos, IDocument document, params String[] prefixes)
+		Location ExtendLeft(Location startPos, IDocument document, params String[] prefixes)
 		{
 			int startOffset = document.PositionToOffset(startPos);
 			foreach (string prefix in prefixes) {
@@ -285,7 +395,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		// could depend just on IDocument
-		static CompilationUnit ParseDocument(ITextEditor editor, out IList<ISpecial> parsedSpecials)
+		CompilationUnit ParseDocument(ITextEditor editor, out IList<ISpecial> parsedSpecials)
 		{
 			parsedSpecials = null;
 			var editorLang = EditorContext.GetEditorLanguage(editor);
@@ -308,7 +418,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// Swaps 2 ranges of text in a document.
 		/// </summary>
-		static void SwapText(IDocument document, Location start1, Location end1, Location start2, Location end2)
+		void SwapText(IDocument document, Location start1, Location end1, Location start2, Location end2)
 		{
 			if (start1 > start2) {
 				Location sw;
@@ -331,7 +441,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		static void SelectText(Selection selection, ITextEditor editor)
+		void SelectText(Selection selection, ITextEditor editor)
 		{
 			if (selection == null)
 				return;

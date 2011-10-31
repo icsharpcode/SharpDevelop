@@ -490,25 +490,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
-		#region CTRL+W extend selection
-		protected override void OnKeyUp(KeyEventArgs e)
-		{
-			base.OnKeyUp(e);
-			if (e.Handled) return;
-			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
-				CodeManipulation.ExtendSelection(this.Adapter);
-			}
-			if (e.SystemKey == Key.Up && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-				// Left Alt + Up (probably will have different shortcut)
-				CodeManipulation.MoveStatementUp(this.Adapter);
-			}
-			if (e.SystemKey == Key.Down && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-				// Left Alt + Down (probably will have different shortcut)
-				CodeManipulation.MoveStatementDown(this.Adapter);
-			}
-		}
-		#endregion
-		
 		public void JumpTo(int line, int column)
 		{
 			// closes Debugger popup on debugger step
