@@ -276,7 +276,7 @@ namespace SearchAndReplace
 				if (result != null) {
 					var start = document.OffsetToPosition(result.Offset);
 					var end = document.OffsetToPosition(result.EndOffset);
-					return new SearchResultMatch(file, start, end, result.Offset, result.Length, null);
+					return new AvalonEditSearchResultMatch(file, start, end, result.Offset, result.Length, null, result);
 				}
 				return null;
 			}
