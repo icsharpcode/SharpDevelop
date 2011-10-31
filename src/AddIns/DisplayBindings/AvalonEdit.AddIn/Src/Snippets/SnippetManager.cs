@@ -126,6 +126,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Text = "try {\n\t${Selection}\n} finally {\n\t${Caret}\n}",
 						Keyword = "try"
 					},
+					new CodeSnippet {
+						Name = "using",
+						Description = "Using statement",
+						Text = "using (${resource=null}) {\n\t${Selection}\n}",
+						Keyword = "try" // using is not a good keyword, because it is usable outside of method bodies as well.
+					},
 				}
 			},
 			new CodeSnippetGroup {
