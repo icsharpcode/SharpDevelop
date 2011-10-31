@@ -55,6 +55,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			return CreateProvider (text, true);
 		}
 		
+		public static void CombinedProviderTest (string text, Action<CompletionDataList> act)
+		{
+			var provider = CreateProvider (text);
+			Assert.IsNotNull (provider, "provider == null");
+			act (provider);
+			
+			provider = CreateCtrlSpaceProvider (text);
+			Assert.IsNotNull (provider, "provider == null");
+			act (provider);
+		}
+		
 		class TestFactory : ICompletionDataFactory
 		{
 			class CompletionData : ICompletionData
@@ -1573,32 +1584,6 @@ public class SomeControl : Control
 		/// Bug 487236 - Object initializer completion uses wrong type
 		/// </summary>
 		[Test()]
-		public void TestBug487236 ()
-		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
-@"
-public class A
-{
-	public string Name { get; set; }
-}
-
-class MyTest
-{
-	public void Test ()
-	{
-		$var x = new A () { $
-	}
-}
-");
-			Assert.IsNotNull (provider, "provider not found.");
-			
-			Assert.IsNotNull (provider.Find ("Name"), "property 'Name' not found.");
-		}
-		
-		/// <summary>
-		/// Bug 487236 - Object initializer completion uses wrong type
-		/// </summary>
-		[Test()]
 		public void TestBug487236B ()
 		{
 			CompletionDataList provider = CreateCtrlSpaceProvider (
@@ -1918,49 +1903,6 @@ public class Program
 		}
 		
 			
-		/// <summary>
-		/// Bug 526667 - wrong code completion in object initialisation (new O() {...};)
-		/// </summary>
-		[Test()]
-		public void TestBug526667 ()
-		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
-@"
-using System;
-using System.Collections.Generic;
-
-public class O
-{
-	public string X {
-		get;
-		set;
-	}
-	public string Y {
-		get;
-		set;
-	}
-	public List<string> Z {
-		get;
-		set;
-	}
-
-	public static O A ()
-	{
-		return new O {
-			X = ""x"",
-			Z = new List<string> (new string[] {
-				""abc"",
-				""def""
-			})
-			$, $
-		};
-	}
-}
-");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("Y"), "property 'Y' not found.");
-		}
-		
 		
 			
 		/// <summary>
@@ -3635,5 +3577,6 @@ void TestMethod ()
 			Assert.IsNotNull (provider.Find ("TM2"));
 			Assert.IsNotNull (provider.Find ("TF1"));
 		}
+		
 	}
 }

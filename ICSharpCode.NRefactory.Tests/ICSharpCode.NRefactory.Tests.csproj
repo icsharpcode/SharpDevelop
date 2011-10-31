@@ -196,6 +196,7 @@
     <Compile Include="CSharp\CodeCompletion\ParameterCompletionTests.cs" />
     <Compile Include="CSharp\CodeCompletion\TestBase.cs" />
     <Compile Include="CSharp\CodeCompletion\KeywordTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\ObjectInitializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">

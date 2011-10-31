@@ -165,6 +165,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (methodGroup != null)
 					return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, 0, controlSpace);
 				return null;
+			case '=':
+				return controlSpace ? DefaultControlSpaceItems () : null;
 			case ',':
 				int cpos2;
 				if (!GetParameterCompletionCommandOffset (out cpos2)) 
@@ -357,7 +359,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			default:
 				if (IsInsideComment () || IsInsideString ())
 					return null;
-				var identifierStart = GetExpressionAtCursor ();
 				if (IsInLinqContext (offset)) {
 					tokenIndex = offset;
 					token = GetPreviousToken (ref tokenIndex, false); // token last typed
@@ -373,6 +374,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var contextList = new CompletionDataWrapper (this);
 				
+				var identifierStart = GetExpressionAtCursor ();
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression)))
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
@@ -398,13 +400,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AstNode n = identifierStart.Item2;
 				if (n is ArrayInitializerExpression) {
 					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
-					if (initalizerResult != null) {
+					
+					var concreteNode = identifierStart.Item3.GetNodeAt<IdentifierExpression> (location);
+					// check if we're on the right side of an initializer expression
+					if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression)
+						return DefaultControlSpaceItems ();
+						
+					if (initalizerResult != null) { 
+						
 						foreach (var property in initalizerResult.Item1.Type.GetProperties (ctx)) {
 							if (!property.IsPublic)
 								continue;
 							contextList.AddMember (property);
 						}
-						foreach (var field in initalizerResult.Item1.Type.GetProperties (ctx)){
+						foreach (var field in initalizerResult.Item1.Type.GetFields (ctx)){      
 							if (!field.IsPublic)
 								continue;
 							contextList.AddMember (field);
@@ -568,6 +577,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = Unit.GetNodeAt (location);
 				rr = ResolveExpression (CSharpParsedFile, node, Unit);
 			}
+			
 			AddContextCompletion (wrapper, rr != null && (node is Expression) ? rr.Item2 : GetState (), node);
 			
 			return wrapper.Result;
