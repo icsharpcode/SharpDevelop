@@ -57,6 +57,32 @@ class MyTest
 			Assert.IsNotNull (provider.Find ("Name"), "property 'Name' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 487236 - Object initializer completion uses wrong type
+		/// </summary>
+		[Test()]
+		public void TestBug487236B ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+public class A
+{
+	public string Name { get; set; }
+}
+
+class MyTest
+{
+	public void Test ()
+	{
+		$A x = new NotExists () { $
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNull (provider.Find ("Name"), "property 'Name' found, but shouldn't'.");
+		}
+		
 		[Test()]
 		public void TestField ()
 		{

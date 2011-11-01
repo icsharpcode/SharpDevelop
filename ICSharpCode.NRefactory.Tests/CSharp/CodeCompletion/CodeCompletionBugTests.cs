@@ -1580,31 +1580,7 @@ public class SomeControl : Control
 			Assert.IsNull (provider.Find ("Right"), "enum 'Right' found");
 		}
 		
-		/// <summary>
-		/// Bug 487236 - Object initializer completion uses wrong type
-		/// </summary>
-		[Test()]
-		public void TestBug487236B ()
-		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
-@"
-public class A
-{
-	public string Name { get; set; }
-}
-
-class MyTest
-{
-	public void Test ()
-	{
-		$A x = new NotExists () { $
-	}
-}
-");
-			Assert.IsNotNull (provider, "provider not found.");
-			
-			Assert.IsNull (provider.Find ("Name"), "property 'Name' found, but shouldn't'.");
-		}
+		
 		
 		/// <summary>
 		/// Bug 487228 - No intellisense for implicit arrays
