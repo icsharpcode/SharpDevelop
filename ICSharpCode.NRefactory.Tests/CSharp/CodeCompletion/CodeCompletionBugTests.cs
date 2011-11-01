@@ -3558,6 +3558,45 @@ public class Test
 			Assert.IsNotNull (provider.Find ("System"), "namespace 'System' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 1747 - [New Resolver] Code completion issues when declaring a generic dictionary
+		/// </summary>
+		[Test()]
+		public void Test1747 ()
+		{
+			var provider = CreateProvider (
+@"public class Test
+{
+	$Dictionary<int, string> field = new $
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Dictionary<int, string>"), "type 'Dictionary<int, string>' not found.");
+			Assert.AreEqual ("Dictionary<int, string>", provider.DefaultCompletionString);
+		}
+		
+		[Test()]
+		public void Test1747Case2 ()
+		{
+			var provider = CreateProvider (
+@"public class Test
+{
+	$Dictionary<int, string> d$
+}
+");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider not empty.");
+			
+			provider = CreateCtrlSpaceProvider (
+@"public class Test
+{
+	$Dictionary<int, string> $
+}
+");
+			Assert.IsFalse (provider == null || provider.Count == 0, "provider not found.");
+			
+		}
+		
 		[Test()]
 		public void TestCompletionInTryCatch ()
 		{
