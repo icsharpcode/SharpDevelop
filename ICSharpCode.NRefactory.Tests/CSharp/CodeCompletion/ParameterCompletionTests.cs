@@ -76,8 +76,36 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					}
 				}
 				#endregion
-				
 			}
+			
+			class IndexerProvider : IParameterDataProvider
+			{
+				public IEnumerable<IProperty> Data { get; set; }
+				#region IParameterDataProvider implementation
+				public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+				{
+					return "";
+				}
+
+				public string GetParameterMarkup (int overload, int paramIndex)
+				{
+					return "";
+				}
+
+				public int GetParameterCount (int overload)
+				{
+					var method = Data.ElementAt (overload);
+					return method.Parameters.Count;
+				}
+
+				public int OverloadCount {
+					get {
+						return Data.Count ();
+					}
+				}
+				#endregion
+			}
+			
 			#region IParameterCompletionDataFactory implementation
 			public IParameterDataProvider CreateConstructorProvider (ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
@@ -105,6 +133,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return new Provider () {
 					Data = new [] { type.GetDelegateInvokeMethod () }
+				};
+			}
+			
+			public IParameterDataProvider CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
+			{
+				return new IndexerProvider () {
+					Data = type.GetProperties (ctx, p => p.IsIndexer)
 				};
 			}
 			#endregion
@@ -349,5 +384,23 @@ class AClass
 		}
 		
 		
+		/// <summary>
+		/// Bug 1760 - [New Resolver] Parameter tooltip not shown for indexers 
+		/// </summary>
+		[Test()]
+		public void Test1760 ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+	public static void Main (string[] args)
+	{
+		$args[$
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
 	}
 }
