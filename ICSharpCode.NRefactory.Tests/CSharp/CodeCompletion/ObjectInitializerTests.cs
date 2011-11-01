@@ -185,7 +185,7 @@ class test {
 	public void testcc ()
 	{
 		foo f = new foo () {
-			$$
+			$b$
 		};
 	}
 }
@@ -218,7 +218,52 @@ class CCTest {
 			Assert.IsNull (provider.Find ("TF1"));
 			Assert.IsNotNull (provider.Find ("Test"));
 			});
-		}		
+		}	
+		
+		[Test()]
+		public void TestBugAfterBracketContext ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"class Test {
+	public int TF1 { get; set; }
+}
+
+class CCTest {
+	void TestMethod ()
+	{
+		$new Test () {$
+	}
+}
+");
+			Assert.IsTrue (provider == null || provider.Count == 0);
+		}
+		
+		/// <summary>
+		/// Bug 487236 - Object initializer completion uses wrong type
+		/// </summary>
+		[Test()]
+		public void TestObjectInitializerContinuation ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"
+public class A
+{
+	public string Name { get; set; }
+}
+
+class MyTest
+{
+	static string Str = ""hello"";
+
+	public void Test ()
+	{
+		$var x = new A () { Name = MyTest.$
+	}
+}
+", provider => {
+			Assert.IsNotNull (provider.Find ("Str"), "field 'Str' not found.");
+			});
+		}
 	}
 }
 
