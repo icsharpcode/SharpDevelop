@@ -87,8 +87,8 @@ http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
 				<ColumnDefinition Width="*"></ColumnDefinition>
 				<ColumnDefinition Width="2*"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
-			<TextBlock Text="Service:" Margin="4,0,4,0"></TextBlock>
-			<TextBlock Grid.Column="1" Text="Service:" Margin="4,0,4,0"></TextBlock>
+			<TextBlock Text="Services:" Margin="4,0,4,0"></TextBlock>
+			<TextBlock Grid.Column="1" Text="Operations:" Margin="4,0,4,0"></TextBlock>
 			<TreeView 
 				Grid.Row="1"
 				Grid.Column="0"
@@ -110,8 +110,10 @@ http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
 				ItemsSource="{Binding Path=TwoValues}">
 				<ListView.View>
 					<GridView>
-						<GridViewColumn Header="Poperty" Width="150" DisplayMemberBinding="{Binding LeftValue}"></GridViewColumn>
+						<GridViewColumn Header="" Width="150" DisplayMemberBinding="{Binding LeftValue}"></GridViewColumn>
+						<!-- 
 						<GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding RightValue}"></GridViewColumn>
+					-->
 					</GridView>
 				</ListView.View>
 			</ListView>

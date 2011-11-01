@@ -35,10 +35,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 	/// </summary>
 	public class AddServiceReferenceViewModel:ViewModelBase
 	{
-		string header1 = "To see a list of available services on an specific Server, ";
-		string header2 = "enter a service URL and click Go. To browse for available services click Discover";
+		string header1 = "To see a list of available services on a specific server, ";
+		string header2 = "enter a service URL and click Go. To browse for available services click Discover.";
 		string noUrl = "Please enter the address of the Service.";
 		string title =  "Add Service Reference";
+		string waitMessage = "Please wait....";
 		string defaultNameSpace;
 		string serviceDescriptionMessage;
 		string namespacePrefix = String.Empty;
@@ -86,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			if (String.IsNullOrEmpty(SelectedService)) {
 				MessageBox.Show (noUrl);
 			}
+			ServiceDescriptionMessage = waitMessage;
 			Uri uri = new Uri(SelectedService);
 			StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
 		}
@@ -232,7 +234,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			}
 		}
 		
-		
 		/// <summary>
 		/// Gets the namespace to be used with the generated web reference code.
 		/// </summary>
@@ -341,56 +342,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		
 		void UpdateListView ()
 		{
+			ServiceDescription desc = null;
 			TwoValues.Clear();
-			string l;
+			string l = String.Empty;
 			string r;
 			if(ServiceItem.Tag is ServiceDescription) {
-				ServiceDescription desc = (ServiceDescription)ServiceItem.Tag;
-				 l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.RetrievalUriProperty}");
-				 r = desc.RetrievalUrl;
+				desc = (ServiceDescription)ServiceItem.Tag;
+				r = desc.RetrievalUrl;
 				var tv = new TwoValue(l,r);
 				TwoValues.Add(tv);
 			}
-			else if(ServiceItem.Tag is Service) {
-				Service service = (Service)ServiceItem.Tag;
-				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
-				r =service.Documentation;
-				var tv1 = new TwoValue(l,r);
-				TwoValues.Add(tv1);
-			}
-			
-			else if(ServiceItem.Tag is Port) {
-				Port port = (Port)ServiceItem.Tag;
-				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
-				r = port.Documentation;
-				var tv2 = new TwoValue(l,r);
-				TwoValues.Add(tv2);
-				
-				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.BindingProperty}");
-				r = port.Binding.Name;
-				var tv3 = new TwoValue(l,r);
-				TwoValues.Add(tv3);
-				
-			
-				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ServiceNameProperty}");
-				r = port.Service.Name;
-				var tv4 = new TwoValue(l,r);
-				TwoValues.Add(tv4);
-			}
-			
-			else if(ServiceItem.Tag is Operation) {
-				Operation operation = (Operation)ServiceItem.Tag;
-				
-				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
-				r = operation.Documentation;
-				var tv5 = new TwoValue(l,r);
-				TwoValues.Add(tv5);
-
-				
-				l = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ParametersProperty}");
-				r = operation.ParameterOrderString;
-				var tv6 = new TwoValue(l,r);
-				TwoValues.Add(tv6);
+			else if(ServiceItem.Tag is PortType) {
+				PortType portType = (PortType)ServiceItem.Tag;
+				foreach (Operation op in portType.Operations)
+				{					
+					l = op.Name;
+					r = op.Documentation;
+					TwoValues.Add(new TwoValue(l,r));
+				}
 			}
 		}
 			
@@ -410,37 +379,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			var name = ServiceReferenceHelper.GetServiceName(description);
 			var rootNode = new ServiceItem(name);
 			rootNode.Tag = description;
-			l.Add(rootNode);
-			
+
 			foreach(Service service in description.Services) {
 				var serviceNode = new ServiceItem(service.Name);
 				serviceNode.Tag = service;
-				rootNode.SubItems.Add(serviceNode);
-				
-				foreach(Port port in service.Ports) {
-					var portNode = new ServiceItem(port.Name);
-					portNode.Tag = port;
+				l.Add(serviceNode);
+				foreach (PortType portType  in description.PortTypes) {
+					var portNode = new ServiceItem(portType.Name);
+					portNode.Tag = portType;
 					serviceNode.SubItems.Add(portNode);
-					
-					// Get the operations
-					System.Web.Services.Description.Binding binding = description.Bindings[port.Binding.Name];
-					if (binding != null) {
-						PortType portType = description.PortTypes[binding.Type.Name];
-						if (portType != null) {
-							foreach(Operation operation in portType.Operations) {
-								var operationNode = new ServiceItem(operation.Name);
-								operationNode.Tag = operation;
-//								operationNode.ImageIndex = OperationImageIndex;
-//								operationNode.SelectedImageIndex = OperationImageIndex;
-								portNode.SubItems.Add(operationNode);
-							}
-						}
-					}
 				}
 			}
 			ServiceItems = l;
 		}
 
+		
 		#endregion
 	}
 	
@@ -458,6 +411,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 	}
 	
 
+	
+	
 	public class ServiceItem
 	{
 		public ServiceItem (string name)
