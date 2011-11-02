@@ -3593,5 +3593,27 @@ void TestMethod ()
 			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 		
+
+		[Test()]
+		public void TestPartialCompletionData ()
+		{
+			var provider = CreateProvider (
+@"
+public partial class TestMe
+{
+	partial void MyMethod ();
+	partial void Implemented ();
+}
+
+public partial class TestMe
+{
+	$partial $
+
+	partial void Implemented () { }
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("MyMethod"), "method 'MyMethod' not found.");
+			Assert.IsNull (provider.Find ("Implemented"), "method 'Implemented'  found.");
+		}		
 	}
 }
