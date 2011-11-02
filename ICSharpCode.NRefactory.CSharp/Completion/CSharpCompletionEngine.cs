@@ -419,7 +419,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : '\0';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
-				const string allowedChars = ";,[(){}+-*/%^?:&|~!<>=";
+				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
 				if (!Char.IsWhiteSpace (nextCh) && allowedChars.IndexOf (nextCh) < 0)
 					return null;
 				if (!(Char.IsWhiteSpace (prevCh) || allowedChars.IndexOf (prevCh) >= 0))
