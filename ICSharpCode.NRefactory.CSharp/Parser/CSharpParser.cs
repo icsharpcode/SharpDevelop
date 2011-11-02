@@ -1448,7 +1448,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (StatementExpression statementExpression)
 			{
 				var result = new ExpressionStatement ();
-				object expr = statementExpression.Expr.Accept (this);
+				var expr = statementExpression.Expr.Accept (this) as Expression;
+				if (expr != null)
+					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
+				var location = LocationsBag.GetLocations (statementExpression);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ExpressionStatement.Roles.Semicolon);
+				return result;
+			}
+			
+			public override object Visit (InvalidExpressionStatement statementExpression)
+			{
+				var result = new ExpressionStatement ();
+				if (statementExpression.Expression == null)
+					return result;
+				object expr = statementExpression.Expression.Accept (this);
 				if (expr != null)
 					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
 				var location = LocationsBag.GetLocations (statementExpression);
