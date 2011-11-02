@@ -881,13 +881,12 @@ namespace Mono.CSharp {
 		}
 
 		readonly Dictionary<TypeSpec, Expression> compatibles;
-		readonly bool is_async;
 
 		public ParametersBlock Block;
 
 		public AnonymousMethodExpression (bool isAsync, Location loc)
 		{
-			this.is_async = isAsync;
+			this.IsAsync = isAsync;
 			this.loc = loc;
 			this.compatibles = new Dictionary<TypeSpec, Expression> ();
 		}
@@ -906,18 +905,16 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public bool IsAsync {
-			get {
-				return is_async;
-			}
-		}
-
 		public ParametersCompiled Parameters {
 			get {
 				return Block.Parameters;
 			}
 		}
 
+		public bool IsAsync {
+			get;
+			private set;
+		}
 		#endregion
 
 		//

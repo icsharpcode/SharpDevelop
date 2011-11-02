@@ -3381,6 +3381,14 @@ element_access
 		$$ = new ElementAccess ((Expression) $1, (Arguments) $3, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($4));
 	  }
+	|  primary_expression OPEN_BRACKET_EXPR expression_list_arguments error	
+	  {
+		$$ = new ElementAccess ((Expression) $1, (Arguments) $3, GetLocation ($2));
+	  }
+	|  primary_expression OPEN_BRACKET_EXPR error	
+	  {
+		$$ = new ElementAccess ((Expression) $1, null, GetLocation ($2));
+	  }
 	;
 
 expression_list
@@ -5084,7 +5092,7 @@ statement_expression
 		ExpressionStatement s = $1 as ExpressionStatement;
 		if (s == null) {
 			Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
-			$$ = new StatementExpression (EmptyExpressionStatement.Instance);
+			$$ = new StatementExpression (new InvalidExpressionStatement ($1));
 		} else {
 			$$ = new StatementExpression (s);
 		}
