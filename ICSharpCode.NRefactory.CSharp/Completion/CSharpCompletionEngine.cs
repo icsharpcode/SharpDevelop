@@ -632,19 +632,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			foreach (var variable in state.LocalVariables) {
 				wrapper.AddVariable (variable);
 			}
-			if (state.CurrentMember is IParameterizedMember) {
-				var param = (IParameterizedMember)state.CurrentMember;
+			
+			if (currentMember is IParameterizedMember) {
+				var param = (IParameterizedMember)currentMember;
 				foreach (var p in param.Parameters) {
 					wrapper.AddVariable (p);
 				}
 			}
 			
-			if (state.CurrentMember is IMethod) {
-				var method = (IMethod)state.CurrentMember;
+			if (currentMember is IMethod) {
+				var method = (IMethod)currentMember;
 				foreach (var p in method.TypeParameters) {
 					wrapper.AddTypeParameter (p);
 				}
 			}
+			
 			Predicate<ITypeDefinition> typePred = null;
 			if (node is Attribute) {
 				var attribute = ctx.GetTypeDefinition ("System", "Attribute", 0, StringComparer.Ordinal);
@@ -991,11 +993,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //						}
 //					}
 //					return CreateCtrlSpaceCompletionData (completionContext, null);
-//				case "if":
-//				case "elif":
-//					if (stateTracker.Engine.IsInsidePreprocessorDirective) 
-//						return GetDefineCompletionData ();
-//					return null;
+			case "if":
+			case "elif":
+				if (wordStart > 0 && document.GetCharAt (wordStart - 1) == '#') 
+					return factory.CreatePreProcessorDefinesCompletionData ();
+				return null;
 			case "yield":
 				var yieldDataList = new CompletionDataWrapper (this);
 				DefaultCompletionString = "return";

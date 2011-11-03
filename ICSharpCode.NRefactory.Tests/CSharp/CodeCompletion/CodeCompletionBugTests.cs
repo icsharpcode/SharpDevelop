@@ -169,6 +169,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return Enumerable.Empty<ICompletionData> ();
 			}
+			
+			public IEnumerable<ICompletionData> CreatePreProcessorDefinesCompletionData ()
+			{
+				yield return new CompletionData ("DEBUG");
+				yield return new CompletionData ("TEST");
+			}
 			#endregion
 		}
 		

@@ -72,7 +72,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						currentMember = member;
 				}
 			}
-			
 			var stack = GetBracketStack (GetMemberTextToCaret ().Item1);
 			if (stack.Count == 0)
 				currentMember = null;
