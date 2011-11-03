@@ -402,5 +402,38 @@ class TestClass
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);
 		}
+		
+		[Test()]
+		public void TestSecondIndexerParameter ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+	public int this[int i, int j] { get { return 0; } } 
+	public void Test ()
+	{
+		$this[1,$
 	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
+		[Test()]
+		public void TestSecondMethodParameter ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+	public int TestMe (int i, int j) { return 0; } 
+	public void Test ()
+	{
+		$TestMe (1,$
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}}
 }
