@@ -131,7 +131,7 @@ namespace ICSharpCode.UnitTesting
 			if (newUnit != null) {
 				foreach (IClass c in newUnit.Classes) {
 					UpdateTestClass(c);
-					foreach (IClass innerClass in c.InnerClasses) {
+					foreach (IClass innerClass in new InnerClassEnumerator(c)) {
 						UpdateTestClass(innerClass);
 						removedClasses.Remove(innerClass);
 					}
