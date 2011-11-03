@@ -123,9 +123,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public new IMember Resolve(ITypeResolveContext context)
-		{
-			return (IMember)base.Resolve(context);
-		}
+		public abstract IMember CreateResolved(ITypeResolveContext context);
 	}
 }

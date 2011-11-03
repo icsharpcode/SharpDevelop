@@ -215,12 +215,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return false; }
 			}
 			
-			IUnresolvedEntity IEntity.UnresolvedEntity {
-				get { return null; }
-			}
-			
 			IAssembly IEntity.ParentAssembly {
-				get { throw new NotImplementedException(); }
+				get { return compilation.MainAssembly; }
 			}
 			
 			IMemberReference IMember.ToMemberReference()

@@ -2312,10 +2312,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		static bool IsTask(IType type)
 		{
-			if (type.Kind == TypeKind.Class && type.Name == "Task" && type.Namespace == "System.Threading.Tasks") {
-				if (type.TypeParameterCount == 0)
+			ITypeDefinition def = type.GetDefinition();
+			if (def != null) {
+				if (def.KnownTypeCode == KnownTypeCode.Task)
 					return true;
-				if (type.TypeParameterCount == 1)
+				if (def.KnownTypeCode == KnownTypeCode.TaskOfT)
 					return type is ParameterizedType;
 			}
 			return false;

@@ -80,14 +80,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public new IField Resolve(ITypeResolveContext context)
+		public override IMember CreateResolved(ITypeResolveContext context)
 		{
-			return (IField)base.Resolve(context);
-		}
-		
-		protected override IEntity ResolveInternal(ITypeResolveContext context)
-		{
-			throw new NotImplementedException();
+			return new DefaultResolvedField(this, context);
 		}
 	}
 }

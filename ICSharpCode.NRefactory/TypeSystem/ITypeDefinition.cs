@@ -35,11 +35,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		IList<IUnresolvedTypeDefinition> NestedTypes { get; }
 		IList<IUnresolvedMember> Members { get; }
-		
-		/// <summary>
-		/// Resolves the type definition.
-		/// </summary>
-		new ITypeDefinition Resolve(ITypeResolveContext context);
 	}
 	
 	/// <summary>

@@ -41,13 +41,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		IList<IUnresolvedAttribute> ReturnTypeAttributes { get; }
 		
-		//IAccessor CreateResolvedAccessor(ITypeResolveContext context);
+		IAccessor CreateResolvedAccessor(ITypeResolveContext context);
 	}
 	
 	/// <summary>
 	/// Represents an accessor (property getter/setter; or event add/remove/invoke).
 	/// </summary>
-	public interface IAccessor : IResolved, IHasAccessibility
+	public interface IAccessor : IHasAccessibility
 	{
 		/// <summary>
 		/// Gets the accessor region.

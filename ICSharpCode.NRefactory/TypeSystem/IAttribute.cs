@@ -38,10 +38,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		DomRegion Region { get; }
 		
-		/// <summary>
-		/// Gets the type of the attribute.
-		/// </summary>
-		ITypeReference AttributeType { get; }
+		//ITypeReference AttributeType { get; }
 		
 		/// <summary>
 		/// Resolves the attribute.

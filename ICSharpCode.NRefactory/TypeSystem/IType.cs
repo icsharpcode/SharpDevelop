@@ -115,7 +115,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets inner classes (including inherited inner classes).
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which types to return.
 		/// The filter is tested on the original type definitions (before parameterization).</param>
 		/// <remarks>
@@ -159,7 +158,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// that have <c>typeArguments.Count</c> additional type parameters.
 		/// </summary>
 		/// <param name="typeArguments">The type arguments passed to the inner class</param>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which types to return.
 		/// The filter is tested on the original type definitions (before parameterization).</param>
 		/// <remarks>
@@ -173,7 +171,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets all instance constructors for this type.
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which constructors to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <remarks>
@@ -183,12 +180,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMethod> GetConstructors(Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers);
+		IEnumerable<IMethod> GetConstructors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers);
 		
 		/// <summary>
 		/// Gets all methods that can be called on this type.
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which methods to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <remarks>
@@ -210,13 +206,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// the ambiguity can be avoided.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMethod> GetMethods(Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		IEnumerable<IMethod> GetMethods(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all generic methods that can be called on this type with the specified type arguments.
 		/// </summary>
 		/// <param name="typeArguments">The type arguments used for the method call.</param>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which methods to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
 		/// <remarks>
@@ -231,48 +226,44 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// and the other overload's remarks about ambiguous signatures apply here as well.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		IEnumerable<IMethod> GetMethods(IList<IType> typeArguments, Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this type.
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which properties to return.
 		/// The filter is tested on the original property definitions (before specialization).</param>
 		/// <remarks>
 		/// For properties on parameterized types, type substitution will be performed on the property signature,
 		/// and the appropriate <see cref="SpecializedProperty"/> will be returned.
 		/// </remarks>
-		IEnumerable<IProperty> GetProperties(Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		IEnumerable<IProperty> GetProperties(Predicate<IUnresolvedProperty> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all fields that can be accessed on this type.
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which constructors to return.
 		/// The filter is tested on the original field definitions (before specialization).</param>
 		/// <remarks>
 		/// For fields on parameterized types, type substitution will be performed on the field's return type,
 		/// and the appropriate <see cref="SpecializedField"/> will be returned.
 		/// </remarks>
-		IEnumerable<IField> GetFields(Predicate<IField> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		IEnumerable<IField> GetFields(Predicate<IUnresolvedField> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all events that can be accessed on this type.
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which events to return.
 		/// The filter is tested on the original event definitions (before specialization).</param>
 		/// <remarks>
 		/// For fields on parameterized types, type substitution will be performed on the event's return type,
 		/// and the appropriate <see cref="SpecializedEvent"/> will be returned.
 		/// </remarks>
-		IEnumerable<IEvent> GetEvents(Predicate<IEvent> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		IEnumerable<IEvent> GetEvents(Predicate<IUnresolvedEvent> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
 		/// <summary>
 		/// Gets all members that can be called on this type.
 		/// </summary>
-		/// <param name="context">The context used for resolving type references</param>
 		/// <param name="filter">The filter used to select which members to return.
 		/// The filter is tested on the original member definitions (before specialization).</param>
 		/// <remarks>
@@ -286,7 +277,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <see cref="GetMethods(ITypeResolveContext, Predicate{IMethod})"/> method apply here as well.
 		/// </para>
 		/// </remarks>
-		IEnumerable<IMember> GetMembers(Predicate<IMember> filter = null, GetMemberOptions options = GetMemberOptions.None);
+		IEnumerable<IMember> GetMembers(Predicate<IUnresolvedMember> filter = null, GetMemberOptions options = GetMemberOptions.None);
 	}
 	
 	[Flags]

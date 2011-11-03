@@ -208,6 +208,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ProjectedList<ITypeResolveContext, IUnresolvedAttribute, IAttribute>(context, attributes, (c, a) => a.CreateResolvedAttribute(c));
 		}
 		
+		public static IList<ITypeParameter> CreateResolvedTypeParameters(this IList<IUnresolvedTypeParameter> typeParameters, ITypeResolveContext context)
+		{
+			if (typeParameters == null)
+				throw new ArgumentNullException("typeParameters");
+			if (typeParameters.Count == 0)
+				return EmptyList<ITypeParameter>.Instance;
+			else
+				return new ProjectedList<ITypeResolveContext, IUnresolvedTypeParameter, ITypeParameter>(context, typeParameters, (c, a) => a.CreateResolvedTypeParameter(c));
+		}
+		
+		public static IList<IParameter> CreateResolvedParameters(this IList<IUnresolvedParameter> parameters, ITypeResolveContext context)
+		{
+			if (parameters == null)
+				throw new ArgumentNullException("parameters");
+			if (parameters.Count == 0)
+				return EmptyList<IParameter>.Instance;
+			else
+				return new ProjectedList<ITypeResolveContext, IUnresolvedParameter, IParameter>(context, parameters, (c, a) => a.CreateResolvedParameter(c));
+		}
+		
 		public static IList<IType> Resolve(this IList<ITypeReference> typeReferences, ITypeResolveContext context)
 		{
 			if (typeReferences == null)

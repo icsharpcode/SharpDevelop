@@ -81,10 +81,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return returnType; }
 		}
 		
-		public IUnresolvedEntity UnresolvedEntity {
-			get { return memberDefinition.UnresolvedEntity; }
-		}
-		
 		public bool IsVirtual {
 			get { return memberDefinition.IsVirtual; }
 		}

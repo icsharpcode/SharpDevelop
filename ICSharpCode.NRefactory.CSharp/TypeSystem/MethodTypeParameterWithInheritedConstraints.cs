@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 		}
 		
-		sealed class ResolvedMethodTypeParameterWithInheritedConstraints : AbstractResolvedTypeParameter
+		sealed class ResolvedMethodTypeParameterWithInheritedConstraints : AbstractTypeParameter
 		{
 			volatile ITypeParameter baseTypeParameter;
 			

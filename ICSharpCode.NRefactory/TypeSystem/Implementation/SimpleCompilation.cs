@@ -29,9 +29,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class SimpleCompilation : ICompilation
 	{
-		readonly CacheManager cacheManager;
-		IAssembly mainAssembly;
-		IList<IAssembly> referencedAssemblies;
+		readonly ITypeResolveContext context;
+		readonly CacheManager cacheManager = new CacheManager();
+		readonly KnownTypeCache knownTypeCache;
+		readonly IAssembly mainAssembly;
+		readonly IList<IAssembly> referencedAssemblies;
 		
 		public SimpleCompilation(IUnresolvedAssembly mainAssembly, params IAssemblyReference[] assemblyReferences)
 			: this(mainAssembly, (IEnumerable<IAssemblyReference>)assemblyReferences)
@@ -40,15 +42,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public SimpleCompilation(IUnresolvedAssembly mainAssembly, IEnumerable<IAssemblyReference> assemblyReferences)
 		{
-			this.cacheManager = new CacheManager();
-			this.mainAssembly = mainAssembly.Resolve(this);
-			this.referencedAssemblies = new List<IAssembly>();
+			this.context = new SimpleTypeResolveContext(this);
+			this.mainAssembly = mainAssembly.Resolve(context);
+			List<IAssembly> referencedAssemblies = new List<IAssembly>();
 			foreach (var asmRef in assemblyReferences) {
-				IAssembly asm = asmRef.Resolve(this);
+				IAssembly asm = asmRef.Resolve(context);
 				if (asm != null)
-					this.referencedAssemblies.Add(asm);
+					referencedAssemblies.Add(asm);
 			}
-			this.referencedAssemblies = new ReadOnlyCollection<IAssembly>(this.referencedAssemblies);
+			this.referencedAssemblies = referencedAssemblies.AsReadOnly();
+			this.knownTypeCache = new KnownTypeCache(this);
 		}
 		
 		public IAssembly MainAssembly {
@@ -60,9 +63,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public ITypeResolveContext TypeResolveContext {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return context; }
 		}
 		
 		public INamespace RootNamespace {
@@ -86,9 +87,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				.SelectMany(ns => TreeTraversal.PreOrder(ns.Types, t => t.NestedTypes));
 		}
 		
-		IType ICompilation.FindType(KnownTypeCode typeCode)
+		public IType FindType(KnownTypeCode typeCode)
 		{
-			throw new NotImplementedException();
+			return knownTypeCache.FindType(typeCode);
 		}
 	}
 }

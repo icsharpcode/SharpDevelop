@@ -34,12 +34,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the list of all assembly attributes in the project.
 		/// </summary>
-		IList<IUnresolvedAttribute> AssemblyAttributes { get; }
+		IEnumerable<IUnresolvedAttribute> AssemblyAttributes { get; }
 		
 		/// <summary>
 		/// Gets the list of all module attributes in the project.
 		/// </summary>
-		IList<IUnresolvedAttribute> ModuleAttributes { get; }
+		IEnumerable<IUnresolvedAttribute> ModuleAttributes { get; }
+		
+		/// <summary>
+		/// Gets all non-nested types in the assembly.
+		/// </summary>
+		IEnumerable<IUnresolvedTypeDefinition> TopLevelTypeDefinitions { get; }
 	}
 	
 	public interface IAssemblyReference
@@ -47,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Resolves this assembly.
 		/// </summary>
-		IAssembly Resolve(ICompilation compilation);
+		IAssembly Resolve(ITypeResolveContext context);
 	}
 	
 	/// <summary>
@@ -89,5 +94,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the root namespace for this assembly.
 		/// </summary>
 		INamespace RootNamespace { get; }
+		
+		ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount);
+		
+		/// <summary>
+		/// Gets the type definition for the specified unresolved type.
+		/// </summary>
+		ITypeDefinition GetTypeDefinition(IUnresolvedTypeDefinition unresolved);
 	}
 }

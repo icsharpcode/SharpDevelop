@@ -62,15 +62,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		IAssembly CurrentAssembly { get; }
 		
+		/// <summary>
+		/// Gets the current type definition.
+		/// </summary>
 		ITypeDefinition CurrentTypeDefinition { get ;}
 		
-		IMember CurrentMember { get; }
-		
 		/// <summary>
-		/// Gets the current entity.
-		/// This property may return null if this context does not specify any entity.
+		/// Gets the current member.
 		/// </summary>
-		IEntity CurrentEntity { get; }
+		IMember CurrentMember { get; }
 	}
 	
 	#if WITH_CONTRACTS

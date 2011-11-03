@@ -17,30 +17,45 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Semantics;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	public interface IUnresolvedEvent : IUnresolvedMember
+	public class DefaultResolvedField : AbstractResolvedMember, IField
 	{
-		bool CanAdd { get; }
-		bool CanRemove { get; }
-		bool CanInvoke { get; }
+		volatile ResolveResult constantValue;
 		
-		IUnresolvedAccessor AddAccessor { get; }
-		IUnresolvedAccessor RemoveAccessor { get; }
-		IUnresolvedAccessor InvokeAccessor { get; }
-	}
-	
-	public interface IEvent : IMember
-	{
-		bool CanAdd { get; }
-		bool CanRemove { get; }
-		bool CanInvoke { get; }
+		public DefaultResolvedField(IUnresolvedField unresolved, ITypeResolveContext parentContext)
+			: base(unresolved, parentContext)
+		{
+		}
 		
-		IAccessor AddAccessor { get; }
-		IAccessor RemoveAccessor { get; }
-		IAccessor InvokeAccessor { get; }
+		public bool IsReadOnly {
+			get { return ((IUnresolvedField)unresolved).IsReadOnly; }
+		}
+		
+		public bool IsVolatile {
+			get { return ((IUnresolvedField)unresolved).IsVolatile; }
+		}
+		
+		IType IVariable.Type {
+			get { return this.ReturnType; }
+		}
+		
+		public bool IsConst {
+			get { return ((IUnresolvedField)unresolved).IsConst; }
+		}
+		
+		public object ConstantValue {
+			get {
+				ResolveResult rr = this.constantValue;
+				if (rr == null) {
+					rr = ((IUnresolvedField)unresolved).ConstantValue.Resolve(this);
+					this.constantValue = rr;
+				}
+				return rr.ConstantValue;
+			}
+		}
 	}
 }

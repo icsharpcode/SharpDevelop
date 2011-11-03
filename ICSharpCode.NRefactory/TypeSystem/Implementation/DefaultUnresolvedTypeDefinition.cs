@@ -41,12 +41,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DefaultUnresolvedTypeDefinition(string namespaceName, string name)
 		{
+			this.EntityType = EntityType.TypeDefinition;
 			this.namespaceName = namespaceName;
 			this.Name = name;
 		}
 		
 		public DefaultUnresolvedTypeDefinition(IUnresolvedTypeDefinition declaringTypeDefinition, string name)
 		{
+			this.EntityType = EntityType.TypeDefinition;
 			this.DeclaringTypeDefinition = declaringTypeDefinition;
 			this.namespaceName = declaringTypeDefinition.Namespace;
 			this.Name = name;
@@ -60,6 +62,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public bool AddDefaultConstructorIfRequired {
+			get { return flags[FlagAddDefaultConstructorIfRequired]; }
+			set {
+				ThrowIfFrozen();
+				flags[FlagAddDefaultConstructorIfRequired] = value;
+			}
+		}
+		
 		public override string Namespace {
 			get { return namespaceName; }
 			set {
@@ -67,6 +77,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					throw new ArgumentNullException();
 				ThrowIfFrozen();
 				namespaceName = value;
+			}
+		}
+		
+		public override string ReflectionName {
+			get {
+				IUnresolvedTypeDefinition declaringTypeDef = this.DeclaringTypeDefinition;
+				if (declaringTypeDef != null) {
+					if (this.TypeParameters.Count > declaringTypeDef.TypeParameters.Count) {
+						return declaringTypeDef.ReflectionName + "+" + this.Name + "`" + (this.TypeParameters.Count - declaringTypeDef.TypeParameters.Count).ToString();
+					} else {
+						return declaringTypeDef.ReflectionName + "+" + this.Name;
+					}
+				} else if (string.IsNullOrEmpty(namespaceName)) {
+					if (this.TypeParameters.Count > 0)
+						return this.Name + "`" + this.TypeParameters.Count.ToString();
+					else
+						return this.Name;
+				} else {
+					if (this.TypeParameters.Count > 0)
+						return namespaceName + "." + this.Name + "`" + this.TypeParameters.Count.ToString();
+					else
+						return namespaceName + "." + this.Name;
+				}
 			}
 		}
 		
@@ -102,19 +135,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public new ITypeDefinition Resolve(ITypeResolveContext context)
+		public IType Resolve(ITypeResolveContext context)
 		{
-			return (ITypeDefinition)base.Resolve(context);
-		}
-		
-		IType ITypeReference.Resolve(ITypeResolveContext context)
-		{
-			return (ITypeDefinition)base.Resolve(context);
-		}
-		
-		protected override IEntity ResolveInternal(ITypeResolveContext context)
-		{
-			throw new NotImplementedException();
+			if (context == null)
+				throw new ArgumentNullException("context");
+			if (context.CurrentAssembly == null)
+				throw new ArgumentException("An ITypeDefinition cannot be resolved in a context without a current assembly.");
+			return context.CurrentAssembly.GetTypeDefinition(this);
 		}
 	}
 }

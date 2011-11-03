@@ -69,5 +69,15 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			throw new NotImplementedException();
 		}
+		
+		ITypeDefinition IAssembly.GetTypeDefinition(string ns, string name, int typeParameterCount)
+		{
+			throw new NotImplementedException();
+		}
+		
+		ITypeDefinition IAssembly.GetTypeDefinition(IUnresolvedTypeDefinition unresolved)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

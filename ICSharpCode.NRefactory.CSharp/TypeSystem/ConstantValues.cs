@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		
 		public ResolveResult Resolve(ITypeResolveContext context)
 		{
-			if (context.CurrentAssembly is CSharpAssembly && context.CurrentAssembly != context.Compilation.MainAssembly) {
+			if (context.CurrentAssembly != context.Compilation.MainAssembly) {
 				// The constant needs to be resolved in a different compilation.
 				throw new NotImplementedException();
 			} else {
@@ -47,35 +47,35 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			}
 		}
 		
-		static ResolveResult MapToNewContext(ResolveResult rr, ICompilation mainCompilation)
+		static ResolveResult MapToNewContext(ResolveResult rr, ITypeResolveContext newContext)
 		{
 			if (rr is TypeOfResolveResult) {
 				return new TypeOfResolveResult(
-					rr.Type.ToTypeReference().Resolve(mainCompilation.TypeResolveContext),
-					((TypeOfResolveResult)rr).ReferencedType.ToTypeReference().Resolve(mainCompilation.TypeResolveContext));
+					rr.Type.ToTypeReference().Resolve(newContext),
+					((TypeOfResolveResult)rr).ReferencedType.ToTypeReference().Resolve(newContext));
 			} else if (rr is ArrayCreateResolveResult) {
 				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
 				return new ArrayCreateResolveResult(
-					acrr.Type.ToTypeReference().Resolve(mainCompilation.TypeResolveContext),
-					MapToNewContext(acrr.SizeArguments, mainCompilation),
-					MapToNewContext(acrr.InitializerElements, mainCompilation));
+					acrr.Type.ToTypeReference().Resolve(newContext),
+					MapToNewContext(acrr.SizeArguments, newContext),
+					MapToNewContext(acrr.InitializerElements, newContext));
 			} else if (rr.IsCompileTimeConstant) {
 				return new ConstantResolveResult(
-					rr.Type.ToTypeReference().Resolve(mainCompilation.TypeResolveContext),
+					rr.Type.ToTypeReference().Resolve(newContext),
 					rr.ConstantValue
 				);
 			} else {
-				return new ErrorResolveResult(rr.Type.ToTypeReference().Resolve(mainCompilation.TypeResolveContext));
+				return new ErrorResolveResult(rr.Type.ToTypeReference().Resolve(newContext));
 			}
 		}
 		
-		static ResolveResult[] MapToNewContext(ResolveResult[] input, ICompilation mainCompilation)
+		static ResolveResult[] MapToNewContext(ResolveResult[] input, ITypeResolveContext newContext)
 		{
 			if (input == null)
 				return null;
 			ResolveResult[] output = new ResolveResult[input.Length];
 			for (int i = 0; i < input.Length; i++) {
-				output[i] = MapToNewContext(input[i], mainCompilation);
+				output[i] = MapToNewContext(input[i], newContext);
 			}
 			return output;
 		}

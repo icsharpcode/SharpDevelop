@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public enum KnownTypeCode
 	{
+		// Note: DefaultResolvedTypeDefinition uses (KnownTypeCode)-1 as special value for "not yet calculated"
 		// The order of type codes at the beginning must correspond to those in System.TypeCode.
 		
 		/// <summary>
@@ -118,7 +119,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[Serializable]
 	public sealed class KnownTypeReference : ITypeReference
 	{
-		static readonly KnownTypeReference[] knownTypeReferences = {
+		internal const int KnownTypeCodeCount = (int)KnownTypeCode.IDisposable + 1;
+		
+		static readonly KnownTypeReference[] knownTypeReferences = new KnownTypeReference[KnownTypeCodeCount] {
 			null, // None
 			new KnownTypeReference(KnownTypeCode.Object,   "System", "Object"),
 			new KnownTypeReference(KnownTypeCode.DBNull,   "System", "DBNull"),

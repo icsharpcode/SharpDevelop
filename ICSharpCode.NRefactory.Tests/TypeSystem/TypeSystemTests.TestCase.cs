@@ -40,6 +40,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public TypeTestAttribute(int a1, Type a2, Type a3) {}
 	}
 	
+	[Params(1, StringComparison.CurrentCulture, null, 4.0)]
+	public class ParamsAttribute : Attribute
+	{
+		public ParamsAttribute(params object[] x) {}
+	}
+	
 	public unsafe class DynamicTest
 	{
 		public dynamic SimpleProperty { get; set; }
@@ -118,6 +124,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		public void MethodWithOutParameter(out int x) { x = 0; }
 		public void MethodWithParamsArray(params object[] x) {}
+		public void MethodWithOptionalParameter(int x = 4) {}
+		public void MethodWithEnumOptionalParameter(StringComparison x = StringComparison.OrdinalIgnoreCase) {}
 	}
 	
 	[ComImport(), Guid("21B8916C-F28E-11D2-A473-00C04F8EF448"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -130,6 +138,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	public class ConstantTest
 	{
 		public const int Answer = 42;
+		
+		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
 		
 		public const string NullString = null;
 	}

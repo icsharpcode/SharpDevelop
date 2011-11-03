@@ -873,7 +873,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		List<OperatorInfo> GetApplicableConversionOperators(IType fromType, IType toType, bool isExplicit)
 		{
 			// Find the candidate operators:
-			Predicate<IMethod> opFilter;
+			Predicate<IUnresolvedMethod> opFilter;
 			if (isExplicit)
 				opFilter = m => m.IsStatic && m.IsOperator && m.Name == "op_Explicit" && m.Parameters.Count == 1;
 			else

@@ -148,18 +148,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			                     && accessibility == o.accessibility && region == o.region);
 		}
 		
-		public IAccessor Resolve(ITypeResolveContext context)
+		public IAccessor CreateResolvedAccessor(ITypeResolveContext context)
 		{
-			/*
-			CacheManager cacheManager = compilation.CacheManager;
-			IAccessor accessor = (IAccessor)cacheManager.GetShared(this);
-			if (accessor == null) {
-				Freeze();
-				accessor = new DefaultResolvedAccessor(compilation, accessibility, region, attributes.Resolve(compilation), returnTypeAttributes.Resolve(compilation));
-				accessor = (IAccessor)cacheManager.GetOrAddShared(this, accessor);
-			}
-			return accessor;*/
-			throw new NotImplementedException();
+			Freeze();
+			return new DefaultResolvedAccessor(accessibility, region, attributes.CreateResolvedAttributes(context), returnTypeAttributes.CreateResolvedAttributes(context));
 		}
 	}
 }

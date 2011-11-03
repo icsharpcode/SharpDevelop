@@ -41,10 +41,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		bool IsConst { get; }
 		
-		/// <summary>
-		/// Resolves the entity.
-		/// </summary>
-		new IField Resolve(ITypeResolveContext context);
+		IConstantValue ConstantValue { get; }
 	}
 	
 	/// <summary>

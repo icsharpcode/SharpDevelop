@@ -289,6 +289,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		#endregion
 		
+		#region Convert Attribute
+		public Attribute ConvertAttribute(IAttribute attribute)
+		{
+			Attribute attr = new Attribute();
+			attr.Type = ConvertType(attribute.AttributeType);
+			SimpleType st = attr.Type as SimpleType;
+			MemberType mt = attr.Type as MemberType;
+			if (st != null && st.Identifier.EndsWith("Attribute", StringComparison.Ordinal)) {
+				st.Identifier = st.Identifier.Substring(0, st.Identifier.Length - 9);
+			} else if (mt != null && mt.MemberName.EndsWith("Attribute", StringComparison.Ordinal)) {
+				mt.MemberName = mt.MemberName.Substring(0, mt.MemberName.Length - 9);
+			}
+			foreach (ResolveResult arg in attribute.PositionalArguments) {
+				attr.Arguments.Add(ConvertConstantValue(arg));
+			}
+			foreach (var pair in attribute.NamedArguments) {
+				attr.Arguments.Add(new NamedExpression(pair.Key.Name, ConvertConstantValue(pair.Value)));
+			}
+			return attr;
+		}
+		#endregion
+		
 		#region Convert Constant Value
 		public Expression ConvertConstantValue(ResolveResult rr)
 		{
@@ -678,7 +700,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		static bool IsObjectOrValueType(IType type)
 		{
-			return type.Namespace == "System" && type.TypeParameterCount == 0 && (type.Name == "Object" || type.Name == "ValueType");
+			ITypeDefinition d = type.GetDefinition();
+			return d != null && (d.KnownTypeCode == KnownTypeCode.Object || d.KnownTypeCode == KnownTypeCode.ValueType);
 		}
 		#endregion
 		

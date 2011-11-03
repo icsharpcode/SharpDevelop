@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -32,15 +33,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public IList<IUnresolvedAttribute> AssemblyAttributes {
+		public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
 			get {
-				throw new NotImplementedException();
+				return this.Files.SelectMany(f => f.AssemblyAttributes);
 			}
 		}
 		
-		public IList<IUnresolvedAttribute> ModuleAttributes {
+		public IEnumerable<IUnresolvedAttribute> ModuleAttributes {
 			get {
-				throw new NotImplementedException();
+				return this.Files.SelectMany(f => f.ModuleAttributes);
+			}
+		}
+		
+		public IEnumerable<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {
+			get {
+				return this.Files.SelectMany(f => f.TopLevelTypeDefinitions);
 			}
 		}
 		
@@ -74,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			throw new NotImplementedException();
 		}
 		
-		public IAssembly Resolve(ICompilation compilation)
+		IAssembly IAssemblyReference.Resolve(ITypeResolveContext context)
 		{
 			throw new NotImplementedException();
 		}

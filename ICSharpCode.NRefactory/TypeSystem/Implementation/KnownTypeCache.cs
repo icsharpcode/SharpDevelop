@@ -17,42 +17,47 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	public interface IUnresolvedMethod : IUnresolvedParameterizedMember
-	{
-		/// <summary>
-		/// Gets the attributes associated with the return type. (e.g. [return: MarshalAs(...)])
-		/// </summary>
-		IList<IUnresolvedAttribute> ReturnTypeAttributes { get; }
-		
-		IList<IUnresolvedTypeParameter> TypeParameters { get; }
-		
-		bool IsExtensionMethod { get; }
-		bool IsConstructor { get; }
-		bool IsDestructor { get; }
-		bool IsOperator { get; }
-	}
-	
 	/// <summary>
-	/// Represents a method, constructor, destructor or operator.
+	/// Cache for KnownTypeReferences.
 	/// </summary>
-	public interface IMethod : IParameterizedMember
+	sealed class KnownTypeCache
 	{
-		/// <summary>
-		/// Gets the attributes associated with the return type. (e.g. [return: MarshalAs(...)])
-		/// </summary>
-		IList<IAttribute> ReturnTypeAttributes { get; }
+		readonly ICompilation compilation;
+		readonly IType[] knownTypes = new IType[KnownTypeReference.KnownTypeCodeCount];
 		
-		IList<ITypeParameter> TypeParameters { get; }
+		public KnownTypeCache(ICompilation compilation)
+		{
+			this.compilation = compilation;
+		}
 		
-		bool IsExtensionMethod { get; }
-		bool IsConstructor { get; }
-		bool IsDestructor { get; }
-		bool IsOperator { get; }
+		public IType FindType(KnownTypeCode typeCode)
+		{
+			IType type = knownTypes[(int)typeCode];
+			if (type != null) {
+				LazyInit.ReadBarrier();
+				return type;
+			}
+			return LazyInit.GetOrSet(ref knownTypes[(int)typeCode], SearchType(typeCode));
+		}
+		
+		IType SearchType(KnownTypeCode typeCode)
+		{
+			KnownTypeReference typeRef = KnownTypeReference.Get(typeCode);
+			ITypeDefinition typeDef;
+			foreach (IAssembly asm in compilation.ReferencedAssemblies) {
+				typeDef = asm.GetTypeDefinition(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
+				if (typeDef != null)
+					return typeDef;
+			}
+			typeDef = compilation.MainAssembly.GetTypeDefinition(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
+			if (typeDef != null)
+				return typeDef;
+			else
+				return SpecialType.UnknownType;
+		}
 	}
 }

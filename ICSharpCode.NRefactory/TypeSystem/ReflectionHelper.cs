@@ -111,9 +111,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
 				return new NestedTypeReference(baseTypeRef, name, typeParameterCount);
 			} else {
+				IAssemblyReference assemblyReference = new DefaultAssemblyReference(type.Assembly.FullName);
 				int typeParameterCount;
 				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
-				return new GetClassTypeReference(type.Namespace, name, typeParameterCount);
+				return new GetClassTypeReference(assemblyReference, type.Namespace, name, typeParameterCount);
 			}
 		}
 		#endregion
@@ -248,7 +249,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// not a type parameter reference: read the actual type name
 			int tpc;
 			string typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
-			ITypeReference reference = new GetClassTypeReference(typeName, tpc);
+			string assemblyName = SkipAheadAndReadAssemblyName(reflectionTypeName, pos);
+			ITypeReference reference = CreateGetClassTypeReference(assemblyName, typeName, tpc);
 			// read type suffixes
 			while (pos < reflectionTypeName.Length) {
 				switch (reflectionTypeName[pos++]) {
@@ -326,6 +328,51 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			return reference;
+		}
+		
+		static ITypeReference CreateGetClassTypeReference(string assemblyName, string typeName, int tpc)
+		{
+			IAssemblyReference assemblyReference;
+			if (assemblyName != null) {
+				assemblyReference = new DefaultAssemblyReference(assemblyName);
+			} else {
+				assemblyReference = DefaultAssemblyReference.CurrentAssembly;
+			}
+			int pos = typeName.LastIndexOf('.');
+			if (pos < 0)
+				return new GetClassTypeReference(assemblyReference, string.Empty, typeName, tpc);
+			else
+				return new GetClassTypeReference(assemblyReference, typeName.Substring(0, pos), typeName.Substring(pos + 1), tpc);
+		}
+		
+		static string SkipAheadAndReadAssemblyName(string reflectionTypeName, int pos)
+		{
+			int nestingLevel = 0;
+			while (pos < reflectionTypeName.Length) {
+				switch (reflectionTypeName[pos++]) {
+					case '[':
+						nestingLevel++;
+						break;
+					case ']':
+						if (nestingLevel == 0)
+							return null;
+						nestingLevel--;
+						break;
+					case ',':
+						if (nestingLevel == 0) {
+							// first skip the whitespace
+							while (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ' ')
+								pos++;
+							// everything up to the end/next ']' is the assembly name
+							int endPos = pos;
+							while (endPos < reflectionTypeName.Length && reflectionTypeName[endPos] != ']')
+								endPos++;
+							return reflectionTypeName.Substring(pos, endPos - pos);
+						}
+						break;
+				}
+			}
+			return null;
 		}
 		
 		static string ReadTypeName(string reflectionTypeName, ref int pos, out int tpc)

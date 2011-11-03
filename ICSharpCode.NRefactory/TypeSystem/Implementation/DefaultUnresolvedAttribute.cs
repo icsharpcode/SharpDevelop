@@ -26,9 +26,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IUnresolvedAttribute"/>.
 	/// </summary>
-	public class DefaultUnresolvedAttribute : AbstractFreezable, IUnresolvedAttribute, IFreezable
+	public sealed class DefaultUnresolvedAttribute : AbstractFreezable, IUnresolvedAttribute, IFreezable, ISupportsInterning
 	{
-		readonly ITypeReference attributeType;
+		ITypeReference attributeType;
 		DomRegion region;
 		IList<ITypeReference> constructorParameterTypes;
 		IList<IConstantValue> positionalArguments;
@@ -53,6 +53,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			base.FreezeInternal();
 			constructorParameterTypes = FreezableHelper.FreezeList(constructorParameterTypes);
+			positionalArguments = FreezableHelper.FreezeListAndElements(positionalArguments);
 			namedArguments = FreezableHelper.FreezeList(namedArguments);
 			foreach (var pair in namedArguments) {
 				FreezableHelper.Freeze(pair.Key);
@@ -98,7 +99,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public void AddNamedFieldArgument(string fieldName, IConstantValue value)
 		{
-			throw new NotImplementedException();
+			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
+				new DefaultMemberReference(EntityType.Field, attributeType, fieldName),
+				value
+			));
 		}
 		
 		public void AddNamedFieldArgument(string fieldName, ITypeReference valueType, object value)
@@ -108,7 +112,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public void AddNamedPropertyArgument(string propertyName, IConstantValue value)
 		{
-			throw new NotImplementedException();
+			this.NamedArguments.Add(new KeyValuePair<IMemberReference, IConstantValue>(
+				new DefaultMemberReference(EntityType.Property, attributeType, propertyName),
+				value
+			));
 		}
 		
 		public void AddNamedPropertyArgument(string propertyName, ITypeReference valueType, object value)
@@ -118,7 +125,61 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IAttribute CreateResolvedAttribute(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			return new DefaultResolvedAttribute(this, context);
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			if (!this.IsFrozen) {
+				attributeType = provider.Intern(attributeType);
+				constructorParameterTypes = provider.InternList(constructorParameterTypes);
+				positionalArguments = provider.InternList(positionalArguments);
+				if (namedArguments != null) {
+					for (int i = 0; i < namedArguments.Count; i++) {
+						namedArguments[i] = new KeyValuePair<IMemberReference, IConstantValue>(
+							provider.Intern(namedArguments[i].Key),
+							provider.Intern(namedArguments[i].Value)
+						);
+					}
+				}
+				Freeze();
+			}
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			int hash = attributeType.GetHashCode() ^ constructorParameterTypes.GetHashCode() ^ positionalArguments.GetHashCode();
+			if (namedArguments != null) {
+				foreach (var pair in namedArguments) {
+					unchecked {
+						hash *= 71;
+						hash += pair.Key.GetHashCode() + pair.Value.GetHashCode() * 73;
+					}
+				}
+			}
+			return hash;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			DefaultUnresolvedAttribute o = other as DefaultUnresolvedAttribute;
+			return o != null && attributeType == o.attributeType
+				&& constructorParameterTypes == o.constructorParameterTypes && positionalArguments == o.positionalArguments
+				&& ListEquals(namedArguments ?? EmptyList<KeyValuePair<IMemberReference, IConstantValue>>.Instance,
+				              o.namedArguments ?? EmptyList<KeyValuePair<IMemberReference, IConstantValue>>.Instance);
+		}
+		
+		static bool ListEquals(IList<KeyValuePair<IMemberReference, IConstantValue>> list1, IList<KeyValuePair<IMemberReference, IConstantValue>> list2)
+		{
+			if (list1.Count != list2.Count)
+				return false;
+			for (int i = 0; i < list1.Count; i++) {
+				var a = list1[i];
+				var b = list2[i];
+				if (!(a.Key == b.Key && a.Value == b.Value))
+					return false;
+			}
+			return true;
 		}
 		
 		sealed class DefaultResolvedAttribute : IAttribute, IResolved
@@ -204,6 +265,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public ICompilation Compilation {
 				get { return context.Compilation; }
+			}
+			
+			public override string ToString()
+			{
+				if (positionalArguments.Count == 0)
+					return "[" + attributeType.ToString() + "]";
+				else
+					return "[" + attributeType.ToString() + "(...)]";
 			}
 		}
 	}

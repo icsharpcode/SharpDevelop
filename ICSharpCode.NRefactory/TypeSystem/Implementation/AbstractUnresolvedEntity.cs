@@ -50,6 +50,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal const ushort FlagShadowing = 0x0008;
 		internal const ushort FlagSynthetic = 0x0010;
 		internal const ushort FlagStatic    = 0x0020;
+		// flags for DefaultUnresolvedTypeDefinition
+		internal const ushort FlagAddDefaultConstructorIfRequired = 0x0040;
 		// flags for AbstractUnresolvedMember:
 		internal const ushort FlagExplicitInterfaceImplementation = 0x0040;
 		internal const ushort FlagVirtual = 0x0080;
@@ -284,21 +286,5 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			b.Append(']');
 			return b.ToString();
 		}
-		
-		public IEntity Resolve(ITypeResolveContext context)
-		{
-			/*
-			CacheManager cacheManager = context.CacheManager;
-			IEntity entity = (IEntity)cacheManager.GetShared(this);
-			if (entity == null) {
-				Freeze();
-				entity = ResolveInternal(context);
-				entity = (IEntity)cacheManager.GetOrAddShared(this, entity);
-			}
-			return entity;*/
-			throw new NotImplementedException();
-		}
-		
-		protected abstract IEntity ResolveInternal(ITypeResolveContext context);
 	}
 }

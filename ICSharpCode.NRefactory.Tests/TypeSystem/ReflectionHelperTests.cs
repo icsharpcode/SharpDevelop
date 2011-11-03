@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void ParseReflectionName()
 		{
-			var context = compilation.TypeResolveContext;
+			var context = new SimpleTypeResolveContext(compilation.MainAssembly);
 			Assert.AreEqual("System.Int32", ReflectionHelper.ParseReflectionName("System.Int32").Resolve(context).ReflectionName);
 			Assert.AreEqual("System.Int32&", ReflectionHelper.ParseReflectionName("System.Int32&").Resolve(context).ReflectionName);
 			Assert.AreEqual("System.Int32*&", ReflectionHelper.ParseReflectionName("System.Int32*&").Resolve(context).ReflectionName);
@@ -184,8 +184,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeReference typeRef = ReflectionHelper.ParseReflectionName("System.Converter`2[[`0],[``0]]");
 			Assert.AreEqual("System.Converter`2[[?],[?]]", typeRef.Resolve(compilation.TypeResolveContext).ReflectionName);
 			IMethod convertAll = compilation.FindType(typeof(List<>)).GetMethods(m => m.Name == "ConvertAll").Single();
-			throw new NotImplementedException();
-			//Assert.AreEqual("System.Converter`2[[`0],[``0]]", typeRef.Resolve(convertAll).ReflectionName);
+			Assert.AreEqual("System.Converter`2[[`0],[``0]]", typeRef.Resolve(new SimpleTypeResolveContext(convertAll)).ReflectionName);
 		}
 		
 		[Test, ExpectedException(typeof(ArgumentNullException))]

@@ -89,14 +89,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(Predicate<IMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		public override IEnumerable<IMethod> GetMethods(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			return compilation.FindType(KnownTypeCode.Array).GetMethods(filter, options);
 		}
 		
 		//static readonly DefaultUnresolvedParameter indexerParam = new DefaultUnresolvedParameter(KnownTypeReference.Int32, string.Empty);
 		
-		public override IEnumerable<IProperty> GetProperties(Predicate<IProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
+		public override IEnumerable<IProperty> GetProperties(Predicate<IUnresolvedProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			ITypeDefinition arrayDef = compilation.FindType(KnownTypeCode.Array) as ITypeDefinition;
 			if (arrayDef != null) {

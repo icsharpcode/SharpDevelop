@@ -25,17 +25,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	public sealed class DefaultResolvedAccessor : IAccessor
 	{
-		readonly ICompilation compilation;
 		readonly Accessibility accessibility;
 		readonly DomRegion region;
 		readonly IList<IAttribute> attributes;
 		readonly IList<IAttribute> returnTypeAttributes;
 		
-		public DefaultResolvedAccessor(ICompilation compilation, Accessibility accessibility, DomRegion region = default(DomRegion), IList<IAttribute> attributes = null, IList<IAttribute> returnTypeAttributes = null)
+		public DefaultResolvedAccessor(Accessibility accessibility, DomRegion region = default(DomRegion), IList<IAttribute> attributes = null, IList<IAttribute> returnTypeAttributes = null)
 		{
-			if (compilation == null)
-				throw new ArgumentNullException("compilation");
-			this.compilation = compilation;
 			this.accessibility = accessibility;
 			this.region = region;
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
@@ -52,10 +48,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IAttribute> ReturnTypeAttributes {
 			get { return returnTypeAttributes; }
-		}
-		
-		public ICompilation Compilation {
-			get { return compilation; }
 		}
 		
 		public Accessibility Accessibility {

@@ -237,8 +237,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool targetIsTypeParameter = targetResolveResult.Type.Kind == TypeKind.TypeParameter;
 			
 			bool allowProtectedAccess = IsProtectedAccessAllowed(targetResolveResult.Type);
-			Predicate<IEntity> filter = delegate(IEntity entity) {
+			Predicate<ITypeDefinition> nestedTypeFilter = delegate(ITypeDefinition entity) {
 				return entity.Name == name && IsAccessible(entity, allowProtectedAccess);
+			};
+			Predicate<IUnresolvedMember> memberFilter = delegate(IUnresolvedMember entity) {
+				return entity.Name == name;
 			};
 			
 			List<LookupGroup> lookupGroups = new List<LookupGroup>();
@@ -261,7 +264,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Consider nested types only if it's not an invocation.
 					// type.GetNestedTypes() is checking the type parameter count for an exact match,
 					// so we don't need to do that in our filter.
-					var nestedTypes = type.GetNestedTypes(typeArguments, filter, GetMemberOptions.IgnoreInheritedMembers);
+					var nestedTypes = type.GetNestedTypes(typeArguments, nestedTypeFilter, GetMemberOptions.IgnoreInheritedMembers);
 					AddNestedTypes(type, nestedTypes, typeArguments.Count, lookupGroups, ref typeBaseTypes, ref newNestedTypes);
 				}
 				
@@ -269,15 +272,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (typeArguments.Count == 0) {
 					// Note: IsInvocable-checking cannot be done as part of the filter;
 					// because it must be done after type substitution.
-					members = type.GetMembers(filter, GetMemberOptions.IgnoreInheritedMembers);
+					members = type.GetMembers(memberFilter, GetMemberOptions.IgnoreInheritedMembers);
 					if (isInvocation)
 						members = members.Where(m => IsInvocable(m));
 				} else {
 					// No need to check for isInvocation/isInvocable here:
 					// we only fetch methods
-					members = type.GetMethods(typeArguments, filter, GetMemberOptions.IgnoreInheritedMembers);
+					members = type.GetMethods(typeArguments, memberFilter, GetMemberOptions.IgnoreInheritedMembers);
 				}
-				AddMembers(type, members, lookupGroups, false, ref typeBaseTypes, ref newMethods, ref newNonMethod);
+				AddMembers(type, members, allowProtectedAccess, lookupGroups, false, ref typeBaseTypes, ref newMethods, ref newNonMethod);
 				
 				if (newNestedTypes != null || newMethods != null || newNonMethod != null)
 					lookupGroups.Add(new LookupGroup(type, newNestedTypes, newMethods, newNonMethod));
@@ -303,9 +306,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("targetType");
 			
 			bool allowProtectedAccess = IsProtectedAccessAllowed(targetType);
-			Predicate<IProperty> filter = delegate(IProperty property) {
-				return property.IsIndexer && IsAccessible(property, allowProtectedAccess);
-			};
+			Predicate<IUnresolvedProperty> filter = p => p.IsIndexer;
 			
 			List<LookupGroup> lookupGroups = new List<LookupGroup>();
 			foreach (IType type in targetType.GetNonInterfaceBaseTypes()) {
@@ -315,7 +316,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IEnumerable<IType> typeBaseTypes = null;
 				
 				var members = type.GetProperties(filter, GetMemberOptions.IgnoreInheritedMembers);
-				AddMembers(type, members, lookupGroups, true, ref typeBaseTypes, ref newMethods, ref newNonMethod);
+				AddMembers(type, members, allowProtectedAccess, lookupGroups, true, ref typeBaseTypes, ref newMethods, ref newNonMethod);
 				
 				if (newMethods != null || newNonMethod != null)
 					lookupGroups.Add(new LookupGroup(type, null, newMethods, newNonMethod));
@@ -386,16 +387,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="type">Declaring type of the members</param>
 		/// <param name="members">List of members to add.</param>
+		/// <param name="allowProtectedAccess">Whether protected members are accessible</param>
 		/// <param name="lookupGroups">List of existing lookup groups</param>
 		/// <param name="treatAllParameterizedMembersAsMethods">Whether to treat properties as methods</param>
 		/// <param name="typeBaseTypes">The base types of 'type' (initialized on demand)</param>
 		/// <param name="newMethods">The target list for methods (created on demand).</param>
 		/// <param name="newNonMethod">The target variable for non-method members.</param>
-		void AddMembers(IType type, IEnumerable<IMember> members, List<LookupGroup> lookupGroups,
+		void AddMembers(IType type, IEnumerable<IMember> members,
+		                bool allowProtectedAccess,
+		                List<LookupGroup> lookupGroups,
 		                bool treatAllParameterizedMembersAsMethods,
 		                ref IEnumerable<IType> typeBaseTypes, ref List<IParameterizedMember> newMethods, ref IMember newNonMethod)
 		{
 			foreach (IMember member in members) {
+				if (!IsAccessible(member, allowProtectedAccess))
+					continue;
+				
 				IParameterizedMember method;
 				if (treatAllParameterizedMembersAsMethods)
 					method = member as IParameterizedMember;
@@ -507,9 +514,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		static bool IsInterfaceOrSystemObject(IType type)
 		{
-			// return if type is an interface or System.Object
-			return type.Kind == TypeKind.Interface
-				|| (type.Name == "Object" && type.Namespace == "System" && type.TypeParameterCount == 0);
+			// return true if type is an interface or System.Object
+			if (type.Kind == TypeKind.Interface)
+				return true;
+			ITypeDefinition d = type.GetDefinition();
+			return d != null && d.KnownTypeCode == KnownTypeCode.Object;
 		}
 		#endregion
 		

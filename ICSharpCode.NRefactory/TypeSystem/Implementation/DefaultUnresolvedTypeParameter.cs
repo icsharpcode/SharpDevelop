@@ -30,7 +30,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public class DefaultUnresolvedTypeParameter : IUnresolvedTypeParameter, IFreezable
 	{
-		readonly IUnresolvedEntity owner;
 		readonly int index;
 		IList<IUnresolvedAttribute> attributes;
 		IList<ITypeReference> constraints;
@@ -62,7 +61,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			this.ownerType = ownerType;
 			this.index = index;
-			this.name = name ?? ((owner.EntityType == EntityType.Method ? "!!" : "!") + index.ToString());
+			this.name = name ?? ((ownerType == EntityType.Method ? "!!" : "!") + index.ToString());
 		}
 		
 		public EntityType OwnerType {
@@ -95,7 +94,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		string INamedElement.ReflectionName {
 			get {
-				if (owner.EntityType == EntityType.Method)
+				if (ownerType == EntityType.Method)
 					return "``" + index.ToString();
 				else
 					return "`" + index.ToString();
@@ -168,7 +167,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			if (owner == null)
 				throw new InvalidOperationException("Could not determine the type parameter's owner.");
-			return new DefaultResolvedTypeParameter(
+			return new DefaultTypeParameter(
 				owner, index, name, variance,
 				this.Attributes.CreateResolvedAttributes(context), this.Region,
 				this.HasValueTypeConstraint, this.HasReferenceTypeConstraint, this.HasDefaultConstructorConstraint, this.Constraints.Resolve(context)

@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -186,6 +188,62 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				b.Append(defaultValue.ToString());
 			}
 			return b.ToString();
+		}
+		
+		public IParameter CreateResolvedParameter(ITypeResolveContext context)
+		{
+			Freeze();
+			if (defaultValue != null) {
+				return new ResolvedParameterWithDefaultValue(defaultValue, context) {
+					Type = type.Resolve(context),
+					Name = name,
+					Region = region,
+					Attributes = attributes.CreateResolvedAttributes(context),
+					IsRef = this.IsRef,
+					IsOut = this.IsOut,
+					IsParams = this.IsParams
+				};
+			} else {
+				return new DefaultParameter(type.Resolve(context), name, region,
+				                            attributes.CreateResolvedAttributes(context), IsRef, IsOut, IsParams);
+			}
+		}
+		
+		sealed class ResolvedParameterWithDefaultValue : IParameter
+		{
+			readonly IConstantValue defaultValue;
+			readonly ITypeResolveContext context;
+			
+			public ResolvedParameterWithDefaultValue(IConstantValue defaultValue, ITypeResolveContext context)
+			{
+				this.defaultValue = defaultValue;
+				this.context = context;
+			}
+			
+			public IType Type { get; internal set; }
+			public string Name { get; internal set; }
+			public DomRegion Region { get; internal set; }
+			public IList<IAttribute> Attributes { get; internal set; }
+			public bool IsRef { get; internal set; }
+			public bool IsOut { get; internal set; }
+			public bool IsParams { get; internal set; }
+			public bool IsOptional { get { return true; } }
+			public bool IsConst { get { return false; } }
+			
+			ResolveResult resolvedDefaultValue;
+			
+			public object ConstantValue {
+				get {
+					ResolveResult rr = this.resolvedDefaultValue;
+					if (rr != null) {
+						LazyInit.ReadBarrier();
+						return rr.ConstantValue;
+					} else {
+						rr = defaultValue.Resolve(context);
+						return LazyInit.GetOrSet(ref this.resolvedDefaultValue, rr).ConstantValue;
+					}
+				}
+			}
 		}
 	}
 }

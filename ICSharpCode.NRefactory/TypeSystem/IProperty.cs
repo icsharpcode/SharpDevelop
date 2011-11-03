@@ -32,11 +32,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IUnresolvedAccessor Setter { get; }
 		
 		bool IsIndexer { get; }
-		
-		/// <summary>
-		/// Resolves the entity.
-		/// </summary>
-		new IProperty Resolve(ITypeResolveContext context);
 	}
 	
 	/// <summary>

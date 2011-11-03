@@ -253,9 +253,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void UnconstrainedTypeParameter()
 		{
-			ITypeParameter t = new DefaultResolvedTypeParameter(EntityType.TypeDefinition, 0, "T");
-			ITypeParameter t2 = new DefaultResolvedTypeParameter(EntityType.TypeDefinition, 1, "T2");
-			ITypeParameter tm = new DefaultResolvedTypeParameter(EntityType.Method, 0, "TM");
+			ITypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T");
+			ITypeParameter t2 = new DefaultTypeParameter(EntityType.TypeDefinition, 1, "T2");
+			ITypeParameter tm = new DefaultTypeParameter(EntityType.Method, 0, "TM");
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -272,7 +272,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithReferenceTypeConstraint()
 		{
-			ITypeParameter t = new DefaultResolvedTypeParameter(EntityType.TypeDefinition, 0, "T", hasReferenceTypeConstraint: true);
+			ITypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T", hasReferenceTypeConstraint: true);
 			
 			Assert.AreEqual(C.NullLiteralConversion, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.ImplicitReferenceConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -283,7 +283,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithValueTypeConstraint()
 		{
-			ITypeParameter t = new DefaultResolvedTypeParameter(EntityType.TypeDefinition, 0, "T", hasValueTypeConstraint: true);
+			ITypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T", hasValueTypeConstraint: true);
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
 			Assert.AreEqual(C.BoxingConversion, conversions.ImplicitConversion(t, compilation.FindType(KnownTypeCode.Object)));
@@ -294,7 +294,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithClassConstraint()
 		{
-			ITypeParameter t = new DefaultResolvedTypeParameter(EntityType.TypeDefinition, 0, "T",
+			ITypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T",
 			                                                    constraints: new[] { compilation.FindType(typeof(StringComparer)) });
 			
 			Assert.AreEqual(C.NullLiteralConversion,
@@ -316,7 +316,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TypeParameterWithInterfaceConstraint()
 		{
-			ITypeParameter t = new DefaultResolvedTypeParameter(EntityType.TypeDefinition, 0, "T",
+			ITypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T",
 			                                                    constraints: new [] { compilation.FindType(typeof(IList)) });
 			
 			Assert.AreEqual(C.None, conversions.ImplicitConversion(SpecialType.NullType, t));
@@ -501,8 +501,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					) } ) }));
 			
 			ICompilation compilation = new SimpleCompilation(CecilLoaderTests.Mscorlib);
-			ITypeDefinition resolvedA = a.Resolve(compilation.TypeResolveContext);
-			ITypeDefinition resolvedB = b.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a);
+			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b);
 			
 			IType type1 = new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.Double) });
 			IType type2 = new ParameterizedType(resolvedA, new [] { new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.String) }) });

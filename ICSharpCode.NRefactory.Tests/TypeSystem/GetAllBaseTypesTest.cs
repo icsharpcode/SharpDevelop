@@ -43,6 +43,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return types.Select(t => compilation.FindType(t)).OrderBy(t => t.ReflectionName).ToArray();;
 		}
 		
+		ITypeDefinition Resolve(IUnresolvedTypeDefinition typeDef)
+		{
+			return compilation.MainAssembly.GetTypeDefinition(typeDef);
+		}
+		
 		[Test]
 		public void ObjectBaseTypes()
 		{
@@ -82,7 +87,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// class C : C {}
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
 			c.BaseTypes.Add(c);
-			ITypeDefinition resolvedC = c.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedC = Resolve(c);
 			Assert.AreEqual(new [] { resolvedC }, resolvedC.GetAllBaseTypes().ToArray());
 		}
 		
@@ -94,8 +99,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var c2 = new DefaultUnresolvedTypeDefinition(string.Empty, "C2");
 			c1.BaseTypes.Add(c2);
 			c2.BaseTypes.Add(c1);
-			ITypeDefinition resolvedC1 = c1.Resolve(compilation.TypeResolveContext);
-			ITypeDefinition resolvedC2 = c2.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedC1 = Resolve(c1);
+			ITypeDefinition resolvedC2 = Resolve(c2);
 			Assert.AreEqual(new [] { resolvedC2, resolvedC1 }, resolvedC1.GetAllBaseTypes().ToArray());
 		}
 		
@@ -106,7 +111,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
 			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "X"));
 			c.BaseTypes.Add(new ParameterizedTypeReference(c, new [] { new ParameterizedTypeReference(c, new [] { new TypeParameterReference(EntityType.TypeDefinition, 0) }) }));
-			ITypeDefinition resolvedC = c.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedC = Resolve(c);
 			Assert.AreEqual(new [] { resolvedC }, resolvedC.GetAllBaseTypes().ToArray());
 		}
 		
@@ -117,7 +122,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
 			c.BaseTypes.Add(typeof(IEnumerable<int>).ToTypeReference());
 			c.BaseTypes.Add(typeof(IEnumerable<uint>).ToTypeReference());
-			ITypeDefinition resolvedC = c.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedC = Resolve(c);
 			IType[] expected = {
 				resolvedC,
 				compilation.FindType(typeof(IEnumerable<int>)),
@@ -137,10 +142,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var s = new DefaultUnresolvedTypeDefinition(string.Empty, "S");
 			s.Kind = TypeKind.Struct;
 			s.BaseTypes.Add(new ParameterizedTypeReference(typeof(IEquatable<>).ToTypeReference(), new[] { s }));
-			ITypeDefinition resolvedS = s.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedS = Resolve(s);
 			IType[] expected = {
 				resolvedS,
-				s.BaseTypes[0].Resolve(compilation.TypeResolveContext),
+				s.BaseTypes[0].Resolve(new SimpleTypeResolveContext(resolvedS)),
 				compilation.FindType(typeof(object)),
 				compilation.FindType(typeof(ValueType))
 			};

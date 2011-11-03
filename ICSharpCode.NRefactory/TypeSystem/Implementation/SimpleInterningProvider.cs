@@ -91,15 +91,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			ISupportsInterning s = obj as ISupportsInterning;
 			if (s != null) {
 				ISupportsInterning output;
-				if (supportsInternDict.TryGetValue(s, out output)) {
-					obj = (T)output;
-				} else {
+				//if (supportsInternDict.TryGetValue(s, out output)) {
+				//	obj = (T)output;
+				//} else {
 					s.PrepareForInterning(this);
 					if (supportsInternDict.TryGetValue(s, out output))
 						obj = (T)output;
 					else
 						supportsInternDict.Add(s, s);
-				}
+				//}
 			} else if (Type.GetTypeCode(obj.GetType()) >= TypeCode.Boolean) {
 				// Intern primitive types (and strings) by value
 				object output;

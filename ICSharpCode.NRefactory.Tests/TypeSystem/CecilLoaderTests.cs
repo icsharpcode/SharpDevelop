@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.Exception", c.DirectBaseTypes.First().FullName);
 			Assert.AreSame(c2, c.DirectBaseTypes.First());
 			
-			string[] superTypes = c.GetAllBaseTypes().Select(t => t.ToString()).ToArray();
+			string[] superTypes = c.GetAllBaseTypes().Select(t => t.ReflectionName).ToArray();
 			Assert.AreEqual(new string[] {
 			                	"System.Object",
 			                	"System.Runtime.Serialization.ISerializable", "System.Runtime.InteropServices._Exception",
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void GenericPropertyTest()
 		{
 			ITypeDefinition c = compilation.FindType(typeof(Comparer<>)).GetDefinition();
-			IProperty def = c.Members.OfType<IProperty>().Single(p => p.Name == "Default");
+			IProperty def = c.Properties.Single(p => p.Name == "Default");
 			ParameterizedType pt = (ParameterizedType)def.ReturnType;
 			Assert.AreEqual("System.Collections.Generic.Comparer", pt.FullName);
 			Assert.AreEqual(c.TypeParameters[0], pt.TypeArguments[0]);
@@ -94,9 +94,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void DateTimeDefaultConstructor()
 		{
 			ITypeDefinition c = compilation.FindType(typeof(DateTime)).GetDefinition();
-			Assert.IsFalse(c.Methods.Any(m => m.IsConstructor && m.Parameters.Count == 0)); // struct ctor isn't declared
-			// but it is implicit:
-			Assert.IsTrue(c.GetConstructors().Any(m => m.Parameters.Count == 0));
+			Assert.AreEqual(1, c.Methods.Count(m => m.IsConstructor && m.Parameters.Count == 0));
+			Assert.AreEqual(1, c.GetConstructors().Count(m => m.Parameters.Count == 0));
 		}
 		
 		[Test]
@@ -124,7 +123,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition c = compilation.FindType(typeof(Environment)).GetDefinition();
 			Assert.IsNotNull(c, "System.Environment not found");
-			IType rt = c.Members.OfType<IMethod>().First(m => m.Name == "GetFolderPath").Parameters[0].Type;
+			IType rt = c.Methods.First(m => m.Name == "GetFolderPath").Parameters[0].Type;
 			Assert.AreSame(c.NestedTypes.Single(ic => ic.Name == "SpecialFolder"), rt);
 		}
 		
@@ -138,7 +137,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
-		public void VoidTest()
+		public void VoidHasNoMembers()
 		{
 			ITypeDefinition c = compilation.FindType(typeof(void)).GetDefinition();
 			Assert.IsNotNull(c, "System.Void not found");
@@ -146,13 +145,41 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(0, c.GetProperties().Count());
 			Assert.AreEqual(0, c.GetEvents().Count());
 			Assert.AreEqual(0, c.GetFields().Count());
-			Assert.AreEqual(
-				new string[] {
-					"[System.SerializableAttribute]",
-					"[System.Runtime.InteropServices.StructLayoutAttribute(0, Size=1)]",
-					"[System.Runtime.InteropServices.ComVisibleAttribute(true)]"
-				},
-				c.Attributes.Select(a => a.ToString()).ToArray());
+			Assert.AreEqual(3, c.Attributes.Count);
+		}
+		
+		[Test]
+		public void Void_SerializableAttribute()
+		{
+			ITypeDefinition c = compilation.FindType(typeof(void)).GetDefinition();
+			var attr = c.Attributes.Single(a => a.AttributeType.FullName == "System.SerializableAttribute");
+			Assert.AreEqual(0, attr.Constructor.Parameters.Count);
+			Assert.AreEqual(0, attr.PositionalArguments.Count);
+			Assert.AreEqual(0, attr.NamedArguments.Count);
+		}
+		
+		[Test]
+		public void Void_StructLayoutAttribute()
+		{
+			ITypeDefinition c = compilation.FindType(typeof(void)).GetDefinition();
+			var attr = c.Attributes.Single(a => a.AttributeType.FullName == "System.Runtime.InteropServices.StructLayoutAttribute");
+			Assert.AreEqual(1, attr.Constructor.Parameters.Count);
+			Assert.AreEqual(1, attr.PositionalArguments.Count);
+			Assert.AreEqual(0, attr.PositionalArguments[0].ConstantValue);
+			Assert.AreEqual(1, attr.NamedArguments.Count);
+			Assert.AreEqual("System.Runtime.InteropServices.StructLayoutAttribute.Size", attr.NamedArguments[0].Key.FullName);
+			Assert.AreEqual(1, attr.NamedArguments[0].Value.ConstantValue);
+		}
+		
+		[Test]
+		public void Void_ComVisibleAttribute()
+		{
+			ITypeDefinition c = compilation.FindType(typeof(void)).GetDefinition();
+			var attr = c.Attributes.Single(a => a.AttributeType.FullName == "System.Runtime.InteropServices.ComVisibleAttribute");
+			Assert.AreEqual(1, attr.Constructor.Parameters.Count);
+			Assert.AreEqual(1, attr.PositionalArguments.Count);
+			Assert.AreEqual(true, attr.PositionalArguments[0].ConstantValue);
+			Assert.AreEqual(0, attr.NamedArguments.Count);
 		}
 		
 		[Test]
@@ -163,7 +190,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition valueCollection = compilation.FindType(typeof(Dictionary<,>.ValueCollection)).GetDefinition();
 			Assert.IsNotNull(valueCollection);
 			var dictionaryRT = new ParameterizedType(dictionary, new[] { compilation.FindType(typeof(string)).GetDefinition(), compilation.FindType(typeof(int)).GetDefinition() });
-			IProperty valueProperty = dictionaryRT.GetProperties().Single(p => p.Name == "Values");
+			IProperty valueProperty = dictionaryRT.GetProperties(p => p.Name == "Values").Single();
 			IType parameterizedValueCollection = valueProperty.ReturnType;
 			Assert.AreEqual("System.Collections.Generic.Dictionary`2+ValueCollection[[System.String],[System.Int32]]", parameterizedValueCollection.ReflectionName);
 			Assert.AreSame(valueCollection, parameterizedValueCollection.GetDefinition());

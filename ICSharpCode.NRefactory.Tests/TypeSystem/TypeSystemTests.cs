@@ -304,7 +304,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(tp.HasValueTypeConstraint);
 			Assert.IsFalse(tp.HasReferenceTypeConstraint);
 			Assert.IsTrue(tp.HasDefaultConstructorConstraint);
-			Assert.AreEqual(new string[] { "System.Collections.Generic.IComparer`1[[`1]]" }, tp.DirectBaseTypes.Select(t => t.ReflectionName).ToArray());
+			Assert.AreEqual(new string[] { "System.Collections.Generic.IComparer`1[[`1]]", "System.Object" },
+			                tp.DirectBaseTypes.Select(t => t.ReflectionName).ToArray());
 		}
 		
 		[Test]
@@ -339,12 +340,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual((int)LayoutKind.Explicit, arg1.ConstantValue);
 			
 			var arg2 = attr.NamedArguments[0];
-			Assert.AreEqual("CharSet", arg2.Key);
+			Assert.AreEqual("CharSet", arg2.Key.Name);
 			Assert.AreEqual("System.Runtime.InteropServices.CharSet", arg2.Value.Type.FullName);
 			Assert.AreEqual((int)CharSet.Unicode, arg2.Value.ConstantValue);
 			
 			var arg3 = attr.NamedArguments[1];
-			Assert.AreEqual("Pack", arg3.Key);
+			Assert.AreEqual("Pack", arg3.Key.Name);
 			Assert.AreEqual("System.Int32", arg3.Value.Type.FullName);
 			Assert.AreEqual(8, arg3.Value.ConstantValue);
 		}
@@ -398,6 +399,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void MethodWithOutParameter()
 		{
 			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithOutParameter").Parameters.Single();
+			Assert.IsFalse(p.IsOptional);
 			Assert.IsFalse(p.IsRef);
 			Assert.IsTrue(p.IsOut);
 			Assert.AreEqual(0, p.Attributes.Count);
@@ -408,11 +410,36 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void MethodWithParamsArray()
 		{
 			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithParamsArray").Parameters.Single();
+			Assert.IsFalse(p.IsOptional);
 			Assert.IsFalse(p.IsRef);
 			Assert.IsFalse(p.IsOut);
 			Assert.IsTrue(p.IsParams);
 			Assert.AreEqual(0, p.Attributes.Count);
 			Assert.IsTrue(p.Type.Kind == TypeKind.Array);
+		}
+		
+		[Test]
+		public void MethodWithOptionalParameter()
+		{
+			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithOptionalParameter").Parameters.Single();
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsFalse(p.IsRef);
+			Assert.IsFalse(p.IsOut);
+			Assert.IsFalse(p.IsParams);
+			Assert.AreEqual(0, p.Attributes.Count);
+			Assert.AreEqual(4, p.ConstantValue);
+		}
+		
+		[Test]
+		public void MethodWithEnumOptionalParameter()
+		{
+			IParameter p = GetTypeDefinition(typeof(ParameterTests)).Methods.Single(m => m.Name == "MethodWithEnumOptionalParameter").Parameters.Single();
+			Assert.IsTrue(p.IsOptional);
+			Assert.IsFalse(p.IsRef);
+			Assert.IsFalse(p.IsOut);
+			Assert.IsFalse(p.IsParams);
+			Assert.AreEqual(0, p.Attributes.Count);
+			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, p.ConstantValue);
 		}
 		
 		[Test]
@@ -453,7 +480,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// [ComImport]
 			Assert.AreEqual(1, type.Attributes.Count(a => a.AttributeType.FullName == typeof(ComImportAttribute).FullName));
 			
-			IMethod m = type.Members.OfType<IMethod>().Single();
+			IMethod m = type.Methods.Single();
 			Assert.AreEqual("GetNextAssembly", m.Name);
 			Assert.AreEqual(Accessibility.Public, m.Accessibility);
 			Assert.IsTrue(m.IsAbstract);
@@ -464,16 +491,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void ConstantAnswer()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Members.OfType<IField>().Single(f => f.Name == "Answer");
+			IField answer = type.Fields.Single(f => f.Name == "Answer");
 			Assert.IsTrue(answer.IsConst);
 			Assert.AreEqual(42, answer.ConstantValue);
+		}
+		
+		[Test]
+		public void ConstantEnumFromAnotherAssembly()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
+			IField answer = type.Fields.Single(f => f.Name == "EnumFromAnotherAssembly");
+			Assert.IsTrue(answer.IsConst);
+			Assert.AreEqual((int)StringComparison.OrdinalIgnoreCase, answer.ConstantValue);
 		}
 		
 		[Test]
 		public void ConstantNullString()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
-			IField answer = type.Members.OfType<IField>().Single(f => f.Name == "NullString");
+			IField answer = type.Fields.Single(f => f.Name == "NullString");
 			Assert.IsTrue(answer.IsConst);
 			Assert.IsNull(answer.ConstantValue);
 		}
@@ -482,14 +518,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void InnerClassInGenericClassIsReferencedUsingParameterizedType()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>));
-			IField field1 = type.Members.OfType<IField>().Single(f => f.Name == "Field1");
-			IField field2 = type.Members.OfType<IField>().Single(f => f.Name == "Field2");
-			IField field3 = type.Members.OfType<IField>().Single(f => f.Name == "Field3");
+			IField field1 = type.Fields.Single(f => f.Name == "Field1");
+			IField field2 = type.Fields.Single(f => f.Name == "Field2");
+			IField field3 = type.Fields.Single(f => f.Name == "Field3");
 			
 			// types must be self-parameterized
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]", field1.Type.ReflectionName);
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]", field2.Type.ReflectionName);
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]]]", field3.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void ParamsAttributeTest()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute)).GetDefinition();
+			var arr = (ArrayCreateResolveResult)type.Attributes.Single().PositionalArguments.Single();
+			Assert.AreEqual(4, arr.InitializerElements.Length);
+			
+			Assert.AreEqual("System.Int32", arr.InitializerElements[0].Type.FullName);
+			Assert.AreEqual(1, arr.InitializerElements[0].ConstantValue);
+			
+			Assert.AreEqual("System.StringComparison", arr.InitializerElements[1].Type.FullName);
+			Assert.AreEqual((int)StringComparison.CurrentCulture, arr.InitializerElements[1].ConstantValue);
+			
+			Assert.AreEqual("System.String", arr.InitializerElements[2].Type.FullName);
+			Assert.IsNull(arr.InitializerElements[2].ConstantValue);
+			
+			Assert.AreEqual("System.Double", arr.InitializerElements[3].Type.FullName);
+			Assert.AreEqual(4.0, arr.InitializerElements[3].ConstantValue);
 		}
 	}
 }

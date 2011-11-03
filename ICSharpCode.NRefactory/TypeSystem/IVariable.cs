@@ -51,6 +51,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// If this field is a constant, retrieves the value.
+		/// For parameters, this is the default value.
 		/// </summary>
 		object ConstantValue { get; }
 	}

@@ -24,14 +24,14 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	public class DefaultResolvedTypeParameter : AbstractResolvedTypeParameter
+	public class DefaultTypeParameter : AbstractTypeParameter
 	{
 		readonly bool hasValueTypeConstraint;
 		readonly bool hasReferenceTypeConstraint;
 		readonly bool hasDefaultConstructorConstraint;
 		readonly IList<IType> constraints;
 		
-		public DefaultResolvedTypeParameter(
+		public DefaultTypeParameter(
 			IEntity owner, int index,
 			string name = null,
 			VarianceModifier variance = VarianceModifier.Invariant,
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.constraints = constraints ?? EmptyList<IType>.Instance;
 		}
 		
-		public DefaultResolvedTypeParameter(
+		public DefaultTypeParameter(
 			EntityType ownerType, int index,
 			string name = null,
 			VarianceModifier variance = VarianceModifier.Invariant,

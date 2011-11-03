@@ -60,7 +60,7 @@ class Middle : Base {
 class Derived : Middle {
 	public override void Method() {}
 }";
-			ITypeDefinition derived = Parse(program).TopLevelTypeDefinitions[2].Resolve(compilation.TypeResolveContext);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(Parse(program).TopLevelTypeDefinitions[2]);
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(2, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -86,7 +86,7 @@ class Derived : Base<int> {
 	public override void Method(int a) {}
 	public override void Method(string a) {}
 }";
-			ITypeDefinition derived = Parse(program).TopLevelTypeDefinitions[1].Resolve(compilation.TypeResolveContext);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(Parse(program).TopLevelTypeDefinitions[1]);
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(2, rr.MethodsGroupedByDeclaringType.Count());
 			
@@ -113,7 +113,7 @@ class Base {
 class Derived : Base {
 	public override void Method<S>(S a) {}
 }";
-			ITypeDefinition derived = Parse(program).TopLevelTypeDefinitions[1].Resolve(compilation.TypeResolveContext);
+			ITypeDefinition derived = compilation.MainAssembly.GetTypeDefinition(Parse(program).TopLevelTypeDefinitions[1]);
 			var rr = lookup.Lookup(new ResolveResult(derived), "Method", EmptyList<IType>.Instance, true) as MethodGroupResolveResult;
 			Assert.AreEqual(1, rr.MethodsGroupedByDeclaringType.Count());
 			

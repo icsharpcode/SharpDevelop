@@ -94,14 +94,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public new IProperty Resolve(ITypeResolveContext context)
+		public override IMember CreateResolved(ITypeResolveContext context)
 		{
-			return (IProperty)base.Resolve(context);
-		}
-		
-		protected override IEntity ResolveInternal(ITypeResolveContext context)
-		{
-			throw new NotImplementedException();
+			return new DefaultResolvedProperty(this, context);
 		}
 	}
 }

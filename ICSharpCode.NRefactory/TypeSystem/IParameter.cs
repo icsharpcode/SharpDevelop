@@ -63,6 +63,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets whether this parameter is optional.
 		/// </summary>
 		bool IsOptional { get; }
+		
+		IParameter CreateResolvedParameter(ITypeResolveContext context);
 	}
 	
 	public interface IParameter : IVariable

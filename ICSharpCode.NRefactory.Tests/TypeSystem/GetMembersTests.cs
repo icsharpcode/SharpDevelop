@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			c.BaseTypes.Add(b1);
 			c.BaseTypes.Add(b2);
 			
-			ITypeDefinition resolvedC = c.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedC = compilation.MainAssembly.GetTypeDefinition(c);
 			Assert.AreEqual(new[] { "P1", "P2" }, resolvedC.GetProperties().Select(p => p.Name).ToArray());
 			// Test that there's only one copy of ToString():
 			Assert.AreEqual(1, resolvedC.GetMethods(m => m.Name == "ToString").Count());
@@ -119,8 +119,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			a.NestedTypes.Add(b);
 			
-			ITypeDefinition resolvedA = a.Resolve(compilation.TypeResolveContext);
-			ITypeDefinition resolvedB = b.Resolve(compilation.TypeResolveContext);
+			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a);
+			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b);
 			
 			// A<> gets self-parameterized, B<> stays unbound
 			Assert.AreEqual("A`1+B`1[[`0],[]]", resolvedA.GetNestedTypes().Single().ReflectionName);

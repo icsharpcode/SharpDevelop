@@ -181,7 +181,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return b.ToString();
 		}
 		
-		sealed class SpecializedTypeParameter : AbstractResolvedTypeParameter
+		sealed class SpecializedTypeParameter : AbstractTypeParameter
 		{
 			readonly ITypeParameter baseTp;
 			

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -69,6 +70,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public bool HasCecilReferences { get { return typeSystemTranslationTable != null; } }
 		#endregion
 		
+		ModuleDefinition currentModule;
+		CecilUnresolvedAssembly currentAssembly;
+		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
 		/// </summary>
@@ -95,6 +99,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (assemblyDefinition == null)
 				throw new ArgumentNullException("assemblyDefinition");
 			
+			this.currentModule = assemblyDefinition.MainModule;
+			
 			// Read assembly and module attributes
 			IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
 			IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
@@ -105,36 +111,41 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
 				moduleAttributes = this.InterningProvider.InternList(moduleAttributes);
 			}
-			assemblyAttributes = FreezableHelper.FreezeListAndElements(assemblyAttributes);
-			moduleAttributes = FreezableHelper.FreezeListAndElements(moduleAttributes);
 			
-			/*
-			TypeStorage typeStorage = new TypeStorage();
-			CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, moduleAttributes, this.DocumentationProvider);
+			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition.Name.Name, this.DocumentationProvider);
+			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
+			currentAssembly.ModuleAttributes.AddRange(assemblyAttributes);
 			
-			this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
-			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
+			// Create and register all types:
+			List<TypeDefinition> cecilTypeDefs = new List<TypeDefinition>();
+			List<DefaultUnresolvedTypeDefinition> typeDefs = new List<DefaultUnresolvedTypeDefinition>();
 			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 				foreach (TypeDefinition td in module.Types) {
 					this.CancellationToken.ThrowIfCancellationRequested();
 					if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
-						string name = td.FullName;
+						string name = td.Name;
 						if (name.Length == 0 || name[0] == '<')
 							continue;
 						
-						CecilTypeDefinition c = new CecilTypeDefinition(td);
-						types.Add(c);
-						typeStorage.UpdateType(c);
+						var t = CreateTopLevelTypeDefinition(td);
+						cecilTypeDefs.Add(td);
+						typeDefs.Add(t);
+						currentAssembly.AddTypeDefinition(t);
 					}
 				}
 			}
-			foreach (CecilTypeDefinition c in types) {
-				c.Init(this);
+			// Initialize the type's members:
+			for (int i = 0; i < typeDefs.Count; i++) {
+				InitTypeDefinition(cecilTypeDefs[i], typeDefs[i]);
 			}
+			
 			if (HasCecilReferences)
-				typeSystemTranslationTable[pc] = assemblyDefinition;
-			return pc;*/
-			throw new NotImplementedException();
+				typeSystemTranslationTable[this.currentAssembly] = assemblyDefinition;
+			
+			var result = this.currentAssembly;
+			this.currentAssembly = null;
+			this.currentModule = null;
+			return result;
 		}
 		
 		/// <summary>
@@ -144,70 +155,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="projectContent">The project content used as parent for the new type.</param>
 		/// <returns>ITypeDefinition representing the Cecil type.</returns>
 		[CLSCompliant(false)]
-		public ITypeDefinition LoadType(TypeDefinition typeDefinition)
+		public IUnresolvedTypeDefinition LoadType(TypeDefinition typeDefinition)
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
-			throw new NotImplementedException();
-			/*var c = new CecilTypeDefinition(typeDefinition);
-			c.Init(this);
-			return c;*/
+			var td = CreateTopLevelTypeDefinition(typeDefinition);
+			InitTypeDefinition(typeDefinition, td);
+			return td;
 		}
 		#endregion
 		
 		#region IUnresolvedAssembly implementation
-		/*
 		[Serializable]
-		sealed class CecilProjectContent : IUnresolvedAssembly, IDocumentationProvider
+		sealed class CecilUnresolvedAssembly : DefaultUnresolvedAssembly, IDocumentationProvider
 		{
-			readonly string assemblyName;
-			readonly IList<IAttribute> assemblyAttributes;
-			readonly IList<IAttribute> moduleAttributes;
 			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IList<IAttribute> moduleAttributes, IDocumentationProvider documentationProvider)
-				: base(types)
+			public CecilUnresolvedAssembly(string assemblyName, IDocumentationProvider documentationProvider)
+				: base(assemblyName)
 			{
 				Debug.Assert(assemblyName != null);
-				Debug.Assert(assemblyAttributes != null);
-				Debug.Assert(moduleAttributes != null);
-				this.assemblyName = assemblyName;
-				this.assemblyAttributes = assemblyAttributes;
-				this.moduleAttributes = moduleAttributes;
 				this.documentationProvider = documentationProvider;
-			}
-			
-			public IList<IAttribute> AssemblyAttributes {
-				get { return assemblyAttributes; }
-			}
-			
-			public IList<IAttribute> ModuleAttributes {
-				get { return moduleAttributes; }
-			}
-			
-			public string AssemblyName {
-				get { return assemblyName; }
-			}
-			
-			public override string ToString()
-			{
-				return "[CecilProjectContent " + assemblyName + "]";
-			}
-			
-			IParsedFile IProjectContent.GetFile(string fileName)
-			{
-				return null;
-			}
-			
-			IEnumerable<IParsedFile> IProjectContent.Files {
-				get {
-					return EmptyList<IParsedFile>.Instance;
-				}
-			}
-			
-			IProjectContent IProjectContent.UpdateProjectContent(IParsedFile oldFile, IParsedFile newFile)
-			{
-				throw new NotSupportedException();
 			}
 			
 			string IDocumentationProvider.GetDocumentation(IEntity entity)
@@ -217,35 +185,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				else
 					return null;
 			}
-			
-			IEnumerable<object> IAnnotatable.Annotations {
-				get { return EmptyList<object>.Instance; }
-			}
-			
-			T IAnnotatable.Annotation<T>()
-			{
-				return null;
-			}
-			
-			object IAnnotatable.Annotation(Type type)
-			{
-				return null;
-			}
-			
-			void IAnnotatable.AddAnnotation(object annotation)
-			{
-				throw new NotSupportedException();
-			}
-			
-			void IAnnotatable.RemoveAnnotations<T>()
-			{
-			}
-			
-			void IAnnotatable.RemoveAnnotations(Type type)
-			{
-			}
 		}
-		 */
 		#endregion
 		
 		#region Load Assembly From Disk
@@ -359,16 +299,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				} else {
 					int typeParameterCount;
 					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
-					/*var earlyBindContext = this.EarlyBindContext;
-					if (earlyBindContext != null) {
-						IType c = earlyBindContext.GetTypeDefinition(ns, name, typeParameterCount, StringComparer.Ordinal);
+					if (currentAssembly != null) {
+						IUnresolvedTypeDefinition c = currentAssembly.GetTypeDefinition(ns, name, typeParameterCount);
 						if (c != null)
 							return c;
 					}
-					return new GetClassTypeReference(ns, name, typeParameterCount);*/
-					throw new NotImplementedException();
+					return new GetClassTypeReference(GetAssemblyReference(type.Scope), ns, name, typeParameterCount);
 				}
 			}
+		}
+		
+		IAssemblyReference GetAssemblyReference(IMetadataScope scope)
+		{
+			if (scope == null || scope == currentModule)
+				return DefaultAssemblyReference.CurrentAssembly;
+			else
+				return new DefaultAssemblyReference(scope.Name);
 		}
 		
 		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
@@ -417,10 +363,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					int typeParameterCount;
 					string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
 					var typeForwardedTo = new DefaultUnresolvedAttribute(typeForwardedToAttributeTypeRef, new[] { KnownTypeReference.Type });
-					var typeRef = new GetClassTypeReference(type.Namespace, name, typeParameterCount);
-					typeForwardedTo.PositionalArguments.Add(new SimpleConstantValue(KnownTypeReference.Type, typeRef));
+					var typeRef = new GetClassTypeReference(GetAssemblyReference(type.Scope), type.Namespace, name, typeParameterCount);
+					typeForwardedTo.PositionalArguments.Add(new TypeOfConstantValue(typeRef));
 					outputList.Add(typeForwardedTo);
 				}
+			}
+		}
+		
+		[Serializable]
+		sealed class TypeOfConstantValue : IConstantValue
+		{
+			readonly ITypeReference typeRef;
+			
+			public TypeOfConstantValue(ITypeReference typeRef)
+			{
+				this.typeRef = typeRef;
+			}
+			
+			public ResolveResult Resolve(ITypeResolveContext context)
+			{
+				return new TypeOfResolveResult(context.Compilation.FindType(KnownTypeCode.Type), typeRef.Resolve(context));
 			}
 		}
 		#endregion
@@ -768,36 +730,60 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				attributeType = this.InterningProvider.Intern(attributeType);
 				ctorParameterTypes = this.InterningProvider.InternList(ctorParameterTypes);
 			}
-			return new CecilUnresolvedAttribute(attributeType, ctorParameterTypes, attribute.GetBlob());
+			return new CecilUnresolvedAttribute(attributeType, ctorParameterTypes ?? EmptyList<ITypeReference>.Instance, attribute.GetBlob());
 		}
 		#endregion
 		
 		#region CecilUnresolvedAttribute
+		static int GetBlobHashCode(byte[] blob)
+		{
+			unchecked {
+				int hash = 0;
+				foreach (byte b in blob) {
+					hash *= 257;
+					hash += b;
+				}
+				return hash;
+			}
+		}
+		
+		static bool BlobEquals(byte[] a, byte[] b)
+		{
+			if (a.Length != b.Length)
+				return false;
+			for (int i = 0; i < a.Length; i++) {
+				if (a[i] != b[i])
+					return false;
+			}
+			return true;
+		}
+		
 		[Serializable]
 		sealed class CecilUnresolvedAttribute : IUnresolvedAttribute, ISupportsInterning
 		{
-			readonly ITypeReference attributeType;
+			internal readonly ITypeReference attributeType;
 			internal readonly IList<ITypeReference> ctorParameterTypes;
 			internal readonly byte[] blob;
 			
 			public CecilUnresolvedAttribute(ITypeReference attributeType, IList<ITypeReference> ctorParameterTypes, byte[] blob)
 			{
+				Debug.Assert(attributeType != null);
+				Debug.Assert(ctorParameterTypes != null);
+				Debug.Assert(blob != null);
 				this.attributeType = attributeType;
 				this.ctorParameterTypes = ctorParameterTypes;
 				this.blob = blob;
 			}
 			
-			public DomRegion Region {
+			DomRegion IUnresolvedAttribute.Region {
 				get { return DomRegion.Empty; }
 			}
 			
-			public ITypeReference AttributeType {
-				get { return attributeType; }
-			}
-			
-			public IAttribute CreateResolvedAttribute(ITypeResolveContext context)
+			IAttribute IUnresolvedAttribute.CreateResolvedAttribute(ITypeResolveContext context)
 			{
-				throw new NotImplementedException();
+				if (context.CurrentAssembly == null)
+					throw new InvalidOperationException("Cannot resolve CecilUnresolvedAttribute without a parent assembly");
+				return new CecilResolvedAttribute(context, this);
 			}
 			
 			void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
@@ -807,28 +793,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			int ISupportsInterning.GetHashCodeForInterning()
 			{
-				unchecked {
-					int hash = attributeType.GetHashCode() ^ ctorParameterTypes.GetHashCode();
-					foreach (byte b in blob) {
-						hash *= 257;
-						hash += b;
-					}
-					return hash;
-				}
+				return attributeType.GetHashCode() ^ ctorParameterTypes.GetHashCode() ^ GetBlobHashCode(blob);
 			}
 			
 			bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 			{
 				CecilUnresolvedAttribute o = other as CecilUnresolvedAttribute;
-				if (o != null && attributeType == o.attributeType && ctorParameterTypes == o.ctorParameterTypes && blob.Length == o.blob.Length) {
-					for (int i = 0; i < blob.Length; i++) {
-						if (blob[i] != o.blob[i])
-							return false;
-					}
-					return true;
-				} else {
-					return false;
-				}
+				return o != null && attributeType == o.attributeType && ctorParameterTypes == o.ctorParameterTypes
+					&& BlobEquals(blob, o.blob);
 			}
 		}
 		#endregion
@@ -843,18 +815,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod constructor;
 			volatile bool constructorResolved;
 			
-			volatile IList<ResolveResult> positionalArguments;
-			volatile IList<KeyValuePair<IMember, ResolveResult>> namedArguments;
+			IList<ResolveResult> positionalArguments;
+			IList<KeyValuePair<IMember, ResolveResult>> namedArguments;
 			
 			public CecilResolvedAttribute(ITypeResolveContext context, CecilUnresolvedAttribute unresolved)
 			{
 				this.context = context;
 				this.unresolved = unresolved;
-				this.attributeType = unresolved.AttributeType.Resolve(context);
+				this.attributeType = unresolved.attributeType.Resolve(context);
 			}
 			
 			public DomRegion Region {
-				get { return unresolved.Region; }
+				get { return DomRegion.Empty; }
 			}
 			
 			public IType AttributeType {
@@ -891,8 +863,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public IList<ResolveResult> PositionalArguments {
 				get {
 					var result = this.positionalArguments;
-					if (result != null)
+					if (result != null) {
+						LazyInit.ReadBarrier();
 						return result;
+					}
 					DecodeBlob();
 					return positionalArguments;
 				}
@@ -901,8 +875,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public IList<KeyValuePair<IMember, ResolveResult>> NamedArguments {
 				get {
 					var result = this.namedArguments;
-					if (result != null)
+					if (result != null) {
+						LazyInit.ReadBarrier();
 						return result;
+					}
 					DecodeBlob();
 					return namedArguments;
 				}
@@ -912,265 +888,735 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				get { return context.Compilation; }
 			}
 			
+			public override string ToString()
+			{
+				return "[" + attributeType.ToString() + "(...)]";
+			}
+			
 			void DecodeBlob()
 			{
+				var positionalArguments = new List<ResolveResult>();
+				var namedArguments = new List<KeyValuePair<IMember, ResolveResult>>();
+				DecodeBlob(positionalArguments, namedArguments);
+				Interlocked.CompareExchange(ref this.positionalArguments, positionalArguments, null);
+				Interlocked.CompareExchange(ref this.namedArguments, namedArguments, null);
+			}
+			
+			void DecodeBlob(List<ResolveResult> positionalArguments, List<KeyValuePair<IMember, ResolveResult>> namedArguments)
+			{
+				BlobReader reader = new BlobReader(unresolved.blob, context.CurrentAssembly);
+				if (reader.ReadUInt16() != 0x0001) {
+					Debug.WriteLine("Unknown blob prolog");
+					return;
+				}
+				foreach (var ctorParameter in unresolved.ctorParameterTypes.Resolve(context)) {
+					positionalArguments.Add(reader.ReadFixedArg(ctorParameter));
+				}
+				ushort numNamed = reader.ReadUInt16();
+				for (int i = 0; i < numNamed; i++) {
+					var namedArg = reader.ReadNamedArg(attributeType);
+					if (namedArg.Key != null)
+						namedArguments.Add(namedArg);
+				}
+			}
+		}
+		#endregion
+		
+		#region class BlobReader
+		class BlobReader
+		{
+			byte[] buffer;
+			int position;
+			readonly IAssembly currentResolvedAssembly;
+
+			public BlobReader(byte[] buffer, IAssembly currentResolvedAssembly)
+			{
+				if (buffer == null)
+					throw new ArgumentNullException("buffer");
+				this.buffer = buffer;
+				this.currentResolvedAssembly = currentResolvedAssembly;
+			}
+			
+			public byte ReadByte()
+			{
+				return buffer[position++];
+			}
+
+			public sbyte ReadSByte()
+			{
+				unchecked {
+					return(sbyte) ReadByte();
+				}
+			}
+			
+			public byte[] ReadBytes(int length)
+			{
+				var bytes = new byte[length];
+				Buffer.BlockCopy(buffer, position, bytes, 0, length);
+				position += length;
+				return bytes;
+			}
+
+			public ushort ReadUInt16()
+			{
+				unchecked {
+					ushort value =(ushort)(buffer[position]
+					                       |(buffer[position + 1] << 8));
+					position += 2;
+					return value;
+				}
+			}
+
+			public short ReadInt16()
+			{
+				unchecked {
+					return(short) ReadUInt16();
+				}
+			}
+
+			public uint ReadUInt32()
+			{
+				unchecked {
+					uint value =(uint)(buffer[position]
+					                   |(buffer[position + 1] << 8)
+					                   |(buffer[position + 2] << 16)
+					                   |(buffer[position + 3] << 24));
+					position += 4;
+					return value;
+				}
+			}
+
+			public int ReadInt32()
+			{
+				unchecked {
+					return(int) ReadUInt32();
+				}
+			}
+
+			public ulong ReadUInt64()
+			{
+				unchecked {
+					uint low = ReadUInt32();
+					uint high = ReadUInt32();
+
+					return(((ulong) high) << 32) | low;
+				}
+			}
+
+			public long ReadInt64()
+			{
+				unchecked {
+					return(long) ReadUInt64();
+				}
+			}
+
+			public uint ReadCompressedUInt32()
+			{
+				unchecked {
+					byte first = ReadByte();
+					if((first & 0x80) == 0)
+						return first;
+
+					if((first & 0x40) == 0)
+						return((uint)(first & ~0x80) << 8)
+							| ReadByte();
+
+					return((uint)(first & ~0xc0) << 24)
+						|(uint) ReadByte() << 16
+						|(uint) ReadByte() << 8
+						| ReadByte();
+				}
+			}
+
+			public int ReadCompressedInt32()
+			{
+				unchecked {
+					var value =(int)(ReadCompressedUInt32() >> 1);
+					if((value & 1) == 0)
+						return value;
+					if(value < 0x40)
+						return value - 0x40;
+					if(value < 0x2000)
+						return value - 0x2000;
+					if(value < 0x10000000)
+						return value - 0x10000000;
+					return value - 0x20000000;
+				}
+			}
+
+			public float ReadSingle()
+			{
+				unchecked {
+					if(!BitConverter.IsLittleEndian) {
+						var bytes = ReadBytes(4);
+						Array.Reverse(bytes);
+						return BitConverter.ToSingle(bytes, 0);
+					}
+
+					float value = BitConverter.ToSingle(buffer, position);
+					position += 4;
+					return value;
+				}
+			}
+
+			public double ReadDouble()
+			{
+				unchecked {
+					if(!BitConverter.IsLittleEndian) {
+						var bytes = ReadBytes(8);
+						Array.Reverse(bytes);
+						return BitConverter.ToDouble(bytes, 0);
+					}
+
+					double value = BitConverter.ToDouble(buffer, position);
+					position += 8;
+					return value;
+				}
+			}
+			
+			public ResolveResult ReadFixedArg(IType argType)
+			{
+				if (argType.Kind == TypeKind.Array) {
+					if (((ArrayType)argType).Dimensions != 1) {
+						// Only single-dimensional arrays are supported
+						return ErrorResolveResult.UnknownError;
+					}
+					IType elementType = ((ArrayType)argType).ElementType;
+					uint numElem = ReadUInt32();
+					if (numElem == 0xffffffff) {
+						// null reference
+						return new ConstantResolveResult(argType, null);
+					} else {
+						ResolveResult[] elements = new ResolveResult[numElem];
+						for (int i = 0; i < elements.Length; i++) {
+							elements[i] = ReadElem(elementType);
+						}
+						return new ArrayCreateResolveResult(argType, null, elements);
+					}
+				} else {
+					return ReadElem(argType);
+				}
+			}
+			
+			public ResolveResult ReadElem(IType elementType)
+			{
+				ITypeDefinition underlyingType;
+				if (elementType.Kind == TypeKind.Enum) {
+					underlyingType = elementType.GetDefinition().EnumUnderlyingType.GetDefinition();
+				} else {
+					underlyingType = elementType.GetDefinition();
+				}
+				if (underlyingType == null)
+					return ErrorResolveResult.UnknownError;
+				KnownTypeCode typeCode = underlyingType.KnownTypeCode;
+				if (typeCode == KnownTypeCode.Object) {
+					// boxed value type
+					IType boxedTyped = ReadCustomAttributeFieldOrPropType();
+					return ReadElem(boxedTyped);
+				} else if (typeCode == KnownTypeCode.Type) {
+					return new TypeOfResolveResult(underlyingType, ReadType());
+				} else {
+					return new ConstantResolveResult(elementType, ReadElemValue(typeCode));
+				}
+			}
+			
+			object ReadElemValue(KnownTypeCode typeCode)
+			{
+				switch (typeCode) {
+					case KnownTypeCode.Boolean:
+						return ReadByte() != 0;
+					case KnownTypeCode.Char:
+						return (char)ReadUInt16();
+					case KnownTypeCode.SByte:
+						return ReadSByte();
+					case KnownTypeCode.Byte:
+						return ReadByte();
+					case KnownTypeCode.Int16:
+						return ReadInt16();
+					case KnownTypeCode.UInt16:
+						return ReadUInt16();
+					case KnownTypeCode.Int32:
+						return ReadInt32();
+					case KnownTypeCode.UInt32:
+						return ReadUInt32();
+					case KnownTypeCode.Int64:
+						return ReadInt64();
+					case KnownTypeCode.UInt64:
+						return ReadUInt64();
+					case KnownTypeCode.Single:
+						return ReadSingle();
+					case KnownTypeCode.Double:
+						return ReadDouble();
+					case KnownTypeCode.String:
+						return ReadSerString();
+					default:
+						return ErrorResolveResult.UnknownError;
+				}
+			}
+			
+			public string ReadSerString ()
+			{
+				if (buffer [position] == 0xff) {
+					position++;
+					return null;
+				}
+
+				int length = (int) ReadCompressedUInt32();
+				if (length == 0)
+					return string.Empty;
+
+				string @string = System.Text.Encoding.UTF8.GetString(
+					buffer, position,
+					buffer [position + length - 1] == 0 ? length - 1 : length);
+
+				position += length;
+				return @string;
+			}
+			
+			public KeyValuePair<IMember, ResolveResult> ReadNamedArg(IType attributeType)
+			{
+				EntityType memberType;
+				switch (ReadByte()) {
+					case 0x53:
+						memberType = EntityType.Field;
+						break;
+					case 0x54:
+						memberType = EntityType.Property;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+				IType type = ReadCustomAttributeFieldOrPropType();
+				string name = ReadSerString();
+				ResolveResult val = ReadFixedArg(type);
+				IMember member = null;
+				// Use last matching member, as GetMembers() returns members from base types first.
+				foreach (IMember m in attributeType.GetMembers(m => m.EntityType == memberType && m.Name == name)) {
+					if (m.ReturnType.Equals(type))
+						member = m;
+				}
+				return new KeyValuePair<IMember, ResolveResult>(member, val);
+			}
+			
+			IType ReadCustomAttributeFieldOrPropType()
+			{
+				ICompilation compilation = currentResolvedAssembly.Compilation;
+				switch (ReadByte()) {
+					case 0x02:
+						return compilation.FindType(KnownTypeCode.Boolean);
+					case 0x03:
+						return compilation.FindType(KnownTypeCode.Char);
+					case 0x04:
+						return compilation.FindType(KnownTypeCode.SByte);
+					case 0x05:
+						return compilation.FindType(KnownTypeCode.Byte);
+					case 0x06:
+						return compilation.FindType(KnownTypeCode.Int16);
+					case 0x07:
+						return compilation.FindType(KnownTypeCode.UInt16);
+					case 0x08:
+						return compilation.FindType(KnownTypeCode.Int32);
+					case 0x09:
+						return compilation.FindType(KnownTypeCode.UInt32);
+					case 0x0a:
+						return compilation.FindType(KnownTypeCode.Int64);
+					case 0x0b:
+						return compilation.FindType(KnownTypeCode.UInt64);
+					case 0x0c:
+						return compilation.FindType(KnownTypeCode.Single);
+					case 0x0d:
+						return compilation.FindType(KnownTypeCode.Double);
+					case 0x0e:
+						return compilation.FindType(KnownTypeCode.String);
+					case 0x1d:
+						return new ArrayType(compilation, ReadCustomAttributeFieldOrPropType());
+					case 0x50:
+						return compilation.FindType(KnownTypeCode.Type);
+					case 0x51: // boxed value type
+						return compilation.FindType(KnownTypeCode.Object);
+					case 0x55: // enum
+						return ReadType();
+					default:
+						throw new NotSupportedException();
+				}
+				throw new NotImplementedException();
+			}
+			
+			IType ReadType()
+			{
+				string typeName = ReadSerString();
+				ITypeReference typeReference = ReflectionHelper.ParseReflectionName(typeName);
+				IType typeInCurrentAssembly = typeReference.Resolve(new SimpleTypeResolveContext(currentResolvedAssembly));
+				if (typeInCurrentAssembly.Kind != TypeKind.Unknown)
+					return typeInCurrentAssembly;
+				// look for the type in mscorlib
 				throw new NotImplementedException();
 			}
 		}
 		#endregion
 		
 		#region Security Attributes
-		static readonly ITypeReference securityActionTypeReference = typeof(SecurityAction).ToTypeReference();
+		static readonly ITypeReference securityActionTypeReference = typeof(System.Security.Permissions.SecurityAction).ToTypeReference();
+		static readonly ITypeReference permissionSetAttributeTypeReference = typeof(System.Security.Permissions.PermissionSetAttribute).ToTypeReference();
 		
 		void AddSecurityAttributes(Mono.Collections.Generic.Collection<SecurityDeclaration> securityDeclarations, IList<IUnresolvedAttribute> targetCollection)
 		{
 			foreach (var secDecl in securityDeclarations) {
-				try {
-					foreach (var secAttribute in secDecl.SecurityAttributes) {
-						ITypeReference attributeType = ReadTypeReference(secAttribute.AttributeType);
-						var a = new DefaultUnresolvedAttribute(attributeType, new[] { securityActionTypeReference });
-						a.PositionalArguments.Add(new SimpleConstantValue(securityActionTypeReference, (ushort)secDecl.Action));
-						
-						throw new NotImplementedException();
-						/*
-						if (secAttribute.HasFields || secAttribute.HasProperties) {
-							foreach (var arg in secAttribute.Fields) {
-								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
-							}
-							foreach (var arg in secAttribute.Properties) {
-								a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
-							}
-						}
-						targetCollection.Add(a);*/
+				byte[] blob = secDecl.GetBlob();
+				BlobReader reader = new BlobReader(blob, null);
+				var securityAction = new SimpleConstantValue(securityActionTypeReference, (int)secDecl.Action);
+				if (reader.ReadByte() == '.') {
+					// binary attribute
+					uint attributeCount = reader.ReadCompressedUInt32();
+					UnresolvedSecurityDeclaration unresolvedSecDecl = new UnresolvedSecurityDeclaration(securityAction, blob);
+					if (this.InterningProvider != null) {
+						unresolvedSecDecl = this.InterningProvider.Intern(unresolvedSecDecl);
 					}
-				} catch (ResolutionException) {
-					// occurs when Cecil can't decode an argument
-					// TODO: use CecilAttribute so that we can do the blob decoding ourselves
+					for (uint i = 0; i < attributeCount; i++) {
+						targetCollection.Add(new UnresolvedSecurityAttribute(unresolvedSecDecl, (int)i));
+					}
+				} else {
+					// for backward compatibility with .NET 1.0: XML-encoded attribute
+					var attr = new DefaultUnresolvedAttribute(permissionSetAttributeTypeReference);
+					attr.ConstructorParameterTypes.Add(securityActionTypeReference);
+					attr.PositionalArguments.Add(securityAction);
+					string xml = System.Text.Encoding.Unicode.GetString(blob);
+					attr.AddNamedPropertyArgument("XML", KnownTypeReference.String, xml);
+					targetCollection.Add(attr);
 				}
 			}
+		}
+		
+		[Serializable]
+		sealed class UnresolvedSecurityDeclaration : ISupportsInterning
+		{
+			IConstantValue securityAction;
+			byte[] blob;
+			
+			public UnresolvedSecurityDeclaration(IConstantValue securityAction, byte[] blob)
+			{
+				Debug.Assert(securityAction != null);
+				Debug.Assert(blob != null);
+				this.securityAction = securityAction;
+				this.blob = blob;
+			}
+			
+			public IList<IAttribute> Resolve(IAssembly currentAssembly)
+			{
+				// TODO: make this a per-assembly cache
+//				CacheManager cache = currentAssembly.Compilation.CacheManager;
+//				IList<IAttribute> result = (IList<IAttribute>)cache.GetShared(this);
+//				if (result != null)
+//					return result;
+				
+				ITypeResolveContext context = new SimpleTypeResolveContext(currentAssembly);
+				BlobReader reader = new BlobReader(blob, currentAssembly);
+				IList<IAttribute> result = new List<IAttribute>();
+				if (reader.ReadByte() != '.') {
+					// should not use UnresolvedSecurityDeclaration for XML secdecls
+					throw new InvalidOperationException();
+				}
+				ResolveResult securityActionRR = securityAction.Resolve(context);
+				uint attributeCount = reader.ReadCompressedUInt32();
+				for (uint i = 0; i < attributeCount; i++) {
+					string attributeTypeName = reader.ReadSerString();
+					ITypeReference attributeTypeRef = ReflectionHelper.ParseReflectionName(attributeTypeName);
+					IType attributeType = attributeTypeRef.Resolve(context);
+					
+					reader.ReadCompressedUInt32(); // ??
+					// The specification seems to be incorrect here, so I'm using the logic from Cecil instead.
+					uint numNamed = reader.ReadCompressedUInt32();
+					
+					var namedArgs = new List<KeyValuePair<IMember, ResolveResult>>((int)numNamed);
+					for (uint j = 0; j < numNamed; j++) {
+						var namedArg = reader.ReadNamedArg(attributeType);
+						if (namedArg.Key != null)
+							namedArgs.Add(namedArg);
+						
+					}
+					result.Add(new ResolvedSecurityAttribute {
+					           	AttributeType = attributeType,
+					           	NamedArguments = namedArgs,
+					           	PositionalArguments = new ResolveResult[] { securityActionRR }
+					           });
+				}
+				
+				return result;
+//				return (IList<IAttribute>)cache.GetOrAddShared(this, result);
+			}
+			
+			void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+			{
+				securityAction = provider.Intern(securityAction);
+			}
+			
+			int ISupportsInterning.GetHashCodeForInterning()
+			{
+				return securityAction.GetHashCode() ^ GetBlobHashCode(blob);
+			}
+			
+			bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+			{
+				UnresolvedSecurityDeclaration o = other as UnresolvedSecurityDeclaration;
+				return o != null && securityAction == o.securityAction && BlobEquals(blob, o.blob);
+			}
+		}
+		
+		[Serializable]
+		sealed class UnresolvedSecurityAttribute : IUnresolvedAttribute
+		{
+			readonly UnresolvedSecurityDeclaration secDecl;
+			readonly int index;
+			
+			public UnresolvedSecurityAttribute(UnresolvedSecurityDeclaration secDecl, int index)
+			{
+				Debug.Assert(secDecl != null);
+				this.secDecl = secDecl;
+				this.index = index;
+			}
+			
+			DomRegion IUnresolvedAttribute.Region {
+				get { return DomRegion.Empty; }
+			}
+			
+			IAttribute IUnresolvedAttribute.CreateResolvedAttribute(ITypeResolveContext context)
+			{
+				return secDecl.Resolve(context.CurrentAssembly)[index];
+			}
+		}
+		
+		sealed class ResolvedSecurityAttribute : IAttribute
+		{
+			public IType AttributeType { get; internal set; }
+			
+			DomRegion IAttribute.Region {
+				get { return DomRegion.Empty; }
+			}
+			
+			volatile IMethod constructor;
+			
+			public IMethod Constructor {
+				get {
+					IMethod ctor = this.constructor;
+					if (ctor == null) {
+						foreach (IMethod candidate in this.AttributeType.GetConstructors(m => m.Parameters.Count == 1)) {
+							if (candidate.Parameters[0].Type.Equals(this.PositionalArguments[0].Type)) {
+								ctor = candidate;
+								break;
+							}
+						}
+						this.constructor = ctor;
+					}
+					return ctor;
+				}
+			}
+			
+			public IList<ResolveResult> PositionalArguments { get; internal set; }
+			
+			public IList<KeyValuePair<IMember, ResolveResult>> NamedArguments { get; internal set; }
 		}
 		#endregion
 		#endregion
 		
-		/*
 		#region Read Type Definition
-		[Serializable]
-		sealed class CecilTypeDefinition : DefaultTypeDefinition
+		DefaultUnresolvedTypeDefinition CreateTopLevelTypeDefinition(TypeDefinition typeDefinition)
 		{
-			[NonSerialized]
-			internal TypeDefinition typeDefinition;
-			
-			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
-				: base(pc, typeDefinition.Namespace, ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
-			{
-				this.typeDefinition = typeDefinition;
-				InitTypeParameters();
+			string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeDefinition.Name);
+			var td = new DefaultUnresolvedTypeDefinition(typeDefinition.Namespace, name);
+			InitTypeParameters(typeDefinition, td);
+			return td;
+		}
+		
+		static void InitTypeParameters(TypeDefinition typeDefinition, DefaultUnresolvedTypeDefinition td)
+		{
+			// Type parameters are initialized within the constructor so that the class can be put into the type storage
+			// before the rest of the initialization runs - this allows it to be available for early binding as soon as possible.
+			for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
+				if (typeDefinition.GenericParameters[i].Position != i)
+					throw new InvalidOperationException("g.Position != i");
+				td.TypeParameters.Add(new DefaultUnresolvedTypeParameter(
+					EntityType.TypeDefinition, i, typeDefinition.GenericParameters[i].Name));
 			}
+		}
+		
+		void InitTypeDefinition(TypeDefinition typeDefinition, DefaultUnresolvedTypeDefinition td)
+		{
+			InitTypeModifiers(typeDefinition, td);
 			
-			public CecilTypeDefinition(CecilTypeDefinition parentType, string name, TypeDefinition typeDefinition)
-				: base(parentType, name)
-			{
-				this.typeDefinition = typeDefinition;
-				InitTypeParameters();
-			}
-			
-			void InitTypeParameters()
-			{
-				// Type parameters are initialized within the constructor so that the class can be put into the type storage
-				// before the rest of the initialization runs - this allows it to be available for early binding as soon as possible.
+			if (typeDefinition.HasGenericParameters) {
 				for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
-					if (typeDefinition.GenericParameters[i].Position != i)
-						throw new InvalidOperationException("g.Position != i");
-					this.TypeParameters.Add(new DefaultTypeParameter(
-						EntityType.TypeDefinition, i, typeDefinition.GenericParameters[i].Name));
+					AddConstraints((DefaultUnresolvedTypeParameter)td.TypeParameters[i], typeDefinition.GenericParameters[i]);
 				}
 			}
 			
-			public void Init(CecilLoader loader)
-			{
-				loader.CancellationToken.ThrowIfCancellationRequested();
-				InitModifiers();
-				
-				if (typeDefinition.HasGenericParameters) {
-					for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
-						loader.AddConstraints(this, (DefaultTypeParameter)this.TypeParameters[i], typeDefinition.GenericParameters[i]);
-					}
-				}
-				
-				InitNestedTypes(loader); // nested types can be initialized only after generic parameters were created
-				
-				loader.AddAttributes(typeDefinition, this);
-				
-				this.HasExtensionMethods = HasExtensionAttribute(typeDefinition);
-				
-				// set base classes
-				if (typeDefinition.IsEnum) {
-					foreach (FieldDefinition enumField in typeDefinition.Fields) {
-						if (!enumField.IsStatic) {
-							BaseTypes.Add(loader.ReadTypeReference(enumField.FieldType, entity: this));
-							break;
-						}
-					}
-				} else {
-					if (typeDefinition.BaseType != null) {
-						BaseTypes.Add(loader.ReadTypeReference(typeDefinition.BaseType, entity: this));
-					}
-					if (typeDefinition.HasInterfaces) {
-						foreach (TypeReference iface in typeDefinition.Interfaces) {
-							BaseTypes.Add(loader.ReadTypeReference(iface, entity: this));
-						}
-					}
-				}
-				
-				InitMembers(loader);
-				if (!loader.HasCecilReferences)
-					this.typeDefinition = null;
-				Freeze(); // freeze after initialization
-				ApplyInterningProvider(loader.InterningProvider);
-			}
+			InitNestedTypes(typeDefinition, td); // nested types can be initialized only after generic parameters were created
+			AddAttributes(typeDefinition, td);
 			
-			void InitNestedTypes(CecilLoader loader)
-			{
-				if (!typeDefinition.HasNestedTypes)
-					return;
-				foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
-					TypeAttributes visibility = nestedType.Attributes & TypeAttributes.VisibilityMask;
-					if (loader.IncludeInternalMembers
-					    || visibility == TypeAttributes.NestedPublic
-					    || visibility == TypeAttributes.NestedFamily
-					    || visibility == TypeAttributes.NestedFamORAssem)
-					{
-						string name = nestedType.Name;
-						int pos = name.LastIndexOf('/');
-						if (pos > 0)
-							name = name.Substring(pos + 1);
-						if (name.Length == 0 || name[0] == '<')
-							continue;
-						name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name);
-						NestedTypes.Add(new CecilTypeDefinition(this, name, nestedType));
+			// set base classes
+			if (typeDefinition.IsEnum) {
+				foreach (FieldDefinition enumField in typeDefinition.Fields) {
+					if (!enumField.IsStatic) {
+						td.BaseTypes.Add(ReadTypeReference(enumField.FieldType));
+						break;
 					}
 				}
-				foreach (CecilTypeDefinition nestedType in this.NestedTypes) {
-					nestedType.Init(loader);
+			} else {
+				if (typeDefinition.BaseType != null) {
+					td.BaseTypes.Add(ReadTypeReference(typeDefinition.BaseType));
+				}
+				if (typeDefinition.HasInterfaces) {
+					foreach (TypeReference iface in typeDefinition.Interfaces) {
+						td.BaseTypes.Add(ReadTypeReference(iface));
+					}
 				}
 			}
 			
-			void InitModifiers()
-			{
-				TypeDefinition td = this.typeDefinition;
-				// set classtype
-				if (td.IsInterface) {
-					this.Kind = TypeKind.Interface;
-				} else if (td.IsEnum) {
-					this.Kind = TypeKind.Enum;
-				} else if (td.IsValueType) {
-					this.Kind = TypeKind.Struct;
-				} else if (IsDelegate(td)) {
-					this.Kind = TypeKind.Delegate;
-				} else if (IsModule(td)) {
-					this.Kind = TypeKind.Module;
-				} else {
-					this.Kind = TypeKind.Class;
-				}
-				this.IsSealed = td.IsSealed;
-				this.IsAbstract = td.IsAbstract;
-				switch (td.Attributes & TypeAttributes.VisibilityMask) {
-					case TypeAttributes.NotPublic:
-					case TypeAttributes.NestedAssembly:
-						this.Accessibility = Accessibility.Internal;
-						break;
-					case TypeAttributes.Public:
-					case TypeAttributes.NestedPublic:
-						this.Accessibility = Accessibility.Public;
-						break;
-					case TypeAttributes.NestedPrivate:
-						this.Accessibility = Accessibility.Private;
-						break;
-					case TypeAttributes.NestedFamily:
-						this.Accessibility = Accessibility.Protected;
-						break;
-					case TypeAttributes.NestedFamANDAssem:
-						this.Accessibility = Accessibility.ProtectedAndInternal;
-						break;
-					case TypeAttributes.NestedFamORAssem:
-						this.Accessibility = Accessibility.ProtectedOrInternal;
-						break;
-					case TypeAttributes.LayoutMask:
-						this.Accessibility = Accessibility;
-						break;
+			InitMembers(typeDefinition, td);
+			if (HasCecilReferences)
+				typeSystemTranslationTable[td] = typeDefinition;
+			if (this.InterningProvider != null) {
+				td.ApplyInterningProvider(this.InterningProvider);
+			}
+			td.Freeze();
+		}
+		
+		void InitNestedTypes(TypeDefinition typeDefinition, DefaultUnresolvedTypeDefinition td)
+		{
+			if (!typeDefinition.HasNestedTypes)
+				return;
+			foreach (TypeDefinition nestedTypeDef in typeDefinition.NestedTypes) {
+				TypeAttributes visibility = nestedTypeDef.Attributes & TypeAttributes.VisibilityMask;
+				if (this.IncludeInternalMembers
+				    || visibility == TypeAttributes.NestedPublic
+				    || visibility == TypeAttributes.NestedFamily
+				    || visibility == TypeAttributes.NestedFamORAssem)
+				{
+					string name = nestedTypeDef.Name;
+					int pos = name.LastIndexOf('/');
+					if (pos > 0)
+						name = name.Substring(pos + 1);
+					if (name.Length == 0 || name[0] == '<')
+						continue;
+					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name);
+					var nestedType = new DefaultUnresolvedTypeDefinition(td, name);
+					InitTypeParameters(nestedTypeDef, nestedType);
+					td.NestedTypes.Add(nestedType);
+					InitTypeDefinition(nestedTypeDef, nestedType);
 				}
 			}
-			
-			static bool IsDelegate(TypeDefinition type)
-			{
-				if (type.BaseType == null)
-					return false;
-				else
-					return type.BaseType.FullName == "System.Delegate"
-						|| type.BaseType.FullName == "System.MulticastDelegate";
+		}
+		
+		static void InitTypeModifiers(TypeDefinition typeDefinition, DefaultUnresolvedTypeDefinition td)
+		{
+			// set classtype
+			if (typeDefinition.IsInterface) {
+				td.Kind = TypeKind.Interface;
+			} else if (typeDefinition.IsEnum) {
+				td.Kind = TypeKind.Enum;
+			} else if (typeDefinition.IsValueType) {
+				td.Kind = TypeKind.Struct;
+			} else if (IsDelegate(typeDefinition)) {
+				td.Kind = TypeKind.Delegate;
+			} else if (IsModule(typeDefinition)) {
+				td.Kind = TypeKind.Module;
+			} else {
+				td.Kind = TypeKind.Class;
 			}
-			
-			static bool IsModule(TypeDefinition type)
-			{
-				if (!type.HasCustomAttributes)
-					return false;
-				foreach (var att in type.CustomAttributes) {
-					if (att.AttributeType.FullName == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
-					    || att.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerGlobalScopeAttribute")
-					{
-						return true;
-					}
-				}
+			td.IsSealed = typeDefinition.IsSealed;
+			td.IsAbstract = typeDefinition.IsAbstract;
+			switch (typeDefinition.Attributes & TypeAttributes.VisibilityMask) {
+				case TypeAttributes.NotPublic:
+				case TypeAttributes.NestedAssembly:
+					td.Accessibility = Accessibility.Internal;
+					break;
+				case TypeAttributes.Public:
+				case TypeAttributes.NestedPublic:
+					td.Accessibility = Accessibility.Public;
+					break;
+				case TypeAttributes.NestedPrivate:
+					td.Accessibility = Accessibility.Private;
+					break;
+				case TypeAttributes.NestedFamily:
+					td.Accessibility = Accessibility.Protected;
+					break;
+				case TypeAttributes.NestedFamANDAssem:
+					td.Accessibility = Accessibility.ProtectedAndInternal;
+					break;
+				case TypeAttributes.NestedFamORAssem:
+					td.Accessibility = Accessibility.ProtectedOrInternal;
+					break;
+			}
+		}
+		
+		static bool IsDelegate(TypeDefinition type)
+		{
+			if (type.BaseType == null)
 				return false;
+			else
+				return type.BaseType.FullName == "System.Delegate"
+					|| type.BaseType.FullName == "System.MulticastDelegate";
+		}
+		
+		static bool IsModule(TypeDefinition type)
+		{
+			if (!type.HasCustomAttributes)
+				return false;
+			foreach (var att in type.CustomAttributes) {
+				if (att.AttributeType.FullName == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
+				    || att.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerGlobalScopeAttribute")
+				{
+					return true;
+				}
 			}
-			
-			void InitMembers(CecilLoader loader)
-			{
-				this.AddDefaultConstructorIfRequired = (this.Kind == TypeKind.Struct || this.Kind == TypeKind.Enum);
-				if (typeDefinition.HasMethods) {
-					foreach (MethodDefinition method in typeDefinition.Methods) {
-						if (loader.IsVisible(method.Attributes)) {
-							EntityType type = EntityType.Method;
-							if (method.IsSpecialName) {
-								if (method.IsConstructor)
-									type = EntityType.Constructor;
-								else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
-									type = EntityType.Operator;
-								else
-									continue;
-							}
-							this.Methods.Add(loader.ReadMethod(method, this, type));
+			return false;
+		}
+		
+		void InitMembers(TypeDefinition typeDefinition, DefaultUnresolvedTypeDefinition td)
+		{
+			td.AddDefaultConstructorIfRequired = (td.Kind == TypeKind.Struct || td.Kind == TypeKind.Enum);
+			if (typeDefinition.HasMethods) {
+				foreach (MethodDefinition method in typeDefinition.Methods) {
+					if (IsVisible(method.Attributes)) {
+						EntityType type = EntityType.Method;
+						if (method.IsSpecialName) {
+							if (method.IsConstructor)
+								type = EntityType.Constructor;
+							else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
+								type = EntityType.Operator;
+							else
+								continue;
 						}
+						td.Members.Add(ReadMethod(method, td, type));
 					}
 				}
-				if (typeDefinition.HasFields) {
-					foreach (FieldDefinition field in typeDefinition.Fields) {
-						if (loader.IsVisible(field.Attributes) && !field.IsSpecialName) {
-							this.Fields.Add(loader.ReadField(field, this));
-						}
+			}
+			if (typeDefinition.HasFields) {
+				foreach (FieldDefinition field in typeDefinition.Fields) {
+					if (IsVisible(field.Attributes) && !field.IsSpecialName) {
+						td.Members.Add(ReadField(field, td));
 					}
 				}
-				if (typeDefinition.HasProperties) {
-					string defaultMemberName = null;
-					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
-						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
-					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
-						defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
-					}
-					foreach (PropertyDefinition property in typeDefinition.Properties) {
-						bool getterVisible = property.GetMethod != null && loader.IsVisible(property.GetMethod.Attributes);
-						bool setterVisible = property.SetMethod != null && loader.IsVisible(property.SetMethod.Attributes);
-						if (getterVisible || setterVisible) {
-							EntityType type = property.Name == defaultMemberName ? EntityType.Indexer : EntityType.Property;
-							this.Properties.Add(loader.ReadProperty(property, this, type));
-						}
+			}
+			if (typeDefinition.HasProperties) {
+				string defaultMemberName = null;
+				var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
+					a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
+				if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
+					defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
+				}
+				foreach (PropertyDefinition property in typeDefinition.Properties) {
+					bool getterVisible = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
+					bool setterVisible = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
+					if (getterVisible || setterVisible) {
+						EntityType type = property.Name == defaultMemberName ? EntityType.Indexer : EntityType.Property;
+						td.Members.Add(ReadProperty(property, td, type));
 					}
 				}
-				if (typeDefinition.HasEvents) {
-					foreach (EventDefinition ev in typeDefinition.Events) {
-						if (ev.AddMethod != null && loader.IsVisible(ev.AddMethod.Attributes)) {
-							this.Events.Add(loader.ReadEvent(ev, this));
-						}
+			}
+			if (typeDefinition.HasEvents) {
+				foreach (EventDefinition ev in typeDefinition.Events) {
+					if (ev.AddMethod != null && IsVisible(ev.AddMethod.Attributes)) {
+						td.Members.Add(ReadEvent(ev, td));
 					}
 				}
 			}
@@ -1179,26 +1625,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Method
 		[CLSCompliant(false)]
-		public IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType = EntityType.Method)
+		public IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
-			DefaultMethod m = new DefaultMethod(parentType, method.Name);
+			DefaultUnresolvedMethod m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.EntityType = methodType;
 			if (method.HasGenericParameters) {
 				for (int i = 0; i < method.GenericParameters.Count; i++) {
 					if (method.GenericParameters[i].Position != i)
 						throw new InvalidOperationException("g.Position != i");
-					m.TypeParameters.Add(new DefaultTypeParameter(
+					m.TypeParameters.Add(new DefaultUnresolvedTypeParameter(
 						EntityType.Method, i, method.GenericParameters[i].Name));
 				}
 				for (int i = 0; i < method.GenericParameters.Count; i++) {
-					AddConstraints(m, (DefaultTypeParameter)m.TypeParameters[i], method.GenericParameters[i]);
+					AddConstraints((DefaultUnresolvedTypeParameter)m.TypeParameters[i], method.GenericParameters[i]);
 				}
 			}
 			
 			if (method.IsConstructor)
 				m.ReturnType = parentType;
 			else
-				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.MethodReturnType, entity: m);
+				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.MethodReturnType);
 			
 			if (HasAnyAttributes(method))
 				AddAttributes(method, m.Attributes, m.ReturnTypeAttributes);
@@ -1206,7 +1652,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			if (method.HasParameters) {
 				foreach (ParameterDefinition p in method.Parameters) {
-					m.Parameters.Add(ReadParameter(p, parentMember: m));
+					m.Parameters.Add(ReadParameter(p));
 				}
 			}
 			
@@ -1257,7 +1703,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		void TranslateModifiers(MethodDefinition method, AbstractMember m)
+		void TranslateModifiers(MethodDefinition method, AbstractUnresolvedMember m)
 		{
 			if (m.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				// interface members don't have modifiers, but we want to handle them as "public abstract"
@@ -1286,12 +1732,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Parameter
 		[CLSCompliant(false)]
-		public IParameter ReadParameter(ParameterDefinition parameter, IParameterizedMember parentMember = null)
+		public IUnresolvedParameter ReadParameter(ParameterDefinition parameter)
 		{
 			if (parameter == null)
 				throw new ArgumentNullException("parameter");
-			var type = ReadTypeReference(parameter.ParameterType, typeAttributes: parameter, entity: parentMember);
-			DefaultParameter p = new DefaultParameter(type, parameter.Name);
+			var type = ReadTypeReference(parameter.ParameterType, typeAttributes: parameter);
+			var p = new DefaultUnresolvedParameter(type, parameter.Name);
 			
 			if (parameter.ParameterType is Mono.Cecil.ByReferenceType) {
 				if (!parameter.IsIn && parameter.IsOut)
@@ -1302,7 +1748,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AddAttributes(parameter, p);
 			
 			if (parameter.IsOptional) {
-				p.DefaultValue = ReadConstantValue(new CustomAttributeArgument(parameter.ParameterType, parameter.Constant));
+				p.DefaultValue = new SimpleConstantValue(type, parameter.Constant);
 			}
 			
 			if (parameter.ParameterType is Mono.Cecil.ArrayType) {
@@ -1329,23 +1775,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[CLSCompliant(false)]
-		public IField ReadField(FieldDefinition field, ITypeDefinition parentType)
+		public IUnresolvedField ReadField(FieldDefinition field, IUnresolvedTypeDefinition parentType)
 		{
 			if (field == null)
 				throw new ArgumentNullException("field");
 			if (parentType == null)
 				throw new ArgumentNullException("parentType");
 			
-			DefaultField f = new DefaultField(parentType, field.Name);
+			DefaultUnresolvedField f = new DefaultUnresolvedField(parentType, field.Name);
 			f.Accessibility = GetAccessibility(field.Attributes);
 			f.IsReadOnly = field.IsInitOnly;
 			f.IsStatic = field.IsStatic;
+			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field);
 			if (field.HasConstant) {
-				f.ConstantValue = ReadConstantValue(new CustomAttributeArgument(field.FieldType, field.Constant));
+				f.ConstantValue = new SimpleConstantValue(f.ReturnType, field.Constant);
 			}
 			AddAttributes(field, f);
 			
-			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field, entity: f);
 			RequiredModifierType modreq = field.FieldType as RequiredModifierType;
 			if (modreq != null && modreq.ModifierType.FullName == typeof(IsVolatile).FullName) {
 				f.IsVolatile = true;
@@ -1375,7 +1821,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Type Parameter Constraints
-		void AddConstraints(IEntity parentEntity, DefaultTypeParameter tp, GenericParameter g)
+		void AddConstraints(DefaultUnresolvedTypeParameter tp, GenericParameter g)
 		{
 			switch (g.Attributes & GenericParameterAttributes.VarianceMask) {
 				case GenericParameterAttributes.Contravariant:
@@ -1392,7 +1838,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			if (g.HasConstraints) {
 				foreach (TypeReference constraint in g.Constraints) {
-					tp.Constraints.Add(ReadTypeReference(constraint, entity: parentEntity));
+					tp.Constraints.Add(ReadTypeReference(constraint));
 				}
 			}
 		}
@@ -1400,23 +1846,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Property
 		[CLSCompliant(false)]
-		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType, EntityType propertyType = EntityType.Property)
+		public IUnresolvedProperty ReadProperty(PropertyDefinition property, IUnresolvedTypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
 			if (property == null)
 				throw new ArgumentNullException("property");
 			if (parentType == null)
 				throw new ArgumentNullException("parentType");
-			DefaultProperty p = new DefaultProperty(parentType, property.Name);
+			DefaultUnresolvedProperty p = new DefaultUnresolvedProperty(parentType, property.Name);
 			p.EntityType = propertyType;
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
-			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property, entity: p);
+			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property);
 			
 			p.Getter = ReadAccessor(property.GetMethod);
 			p.Setter = ReadAccessor(property.SetMethod);
 			
 			if (property.HasParameters) {
 				foreach (ParameterDefinition par in property.Parameters) {
-					p.Parameters.Add(ReadParameter(par, parentMember: p));
+					p.Parameters.Add(ReadParameter(par));
 				}
 			}
 			AddAttributes(property, p);
@@ -1425,17 +1871,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return p;
 		}
 		
-		IAccessor ReadAccessor(MethodDefinition accessorMethod)
+		IUnresolvedAccessor ReadAccessor(MethodDefinition accessorMethod)
 		{
 			if (accessorMethod != null && IsVisible(accessorMethod.Attributes)) {
 				Accessibility accessibility = GetAccessibility(accessorMethod.Attributes);
 				if (HasAnyAttributes(accessorMethod)) {
-					DefaultAccessor a = new DefaultAccessor();
+					DefaultUnresolvedAccessor a = new DefaultUnresolvedAccessor();
 					a.Accessibility = accessibility;
 					AddAttributes(accessorMethod, a.Attributes, a.ReturnTypeAttributes);
 					return a;
 				} else {
-					return DefaultAccessor.GetFromAccessibility(accessibility);
+					return DefaultUnresolvedAccessor.GetFromAccessibility(accessibility);
 				}
 			} else {
 				return null;
@@ -1445,16 +1891,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region Read Event
 		[CLSCompliant(false)]
-		public IEvent ReadEvent(EventDefinition ev, ITypeDefinition parentType)
+		public IUnresolvedEvent ReadEvent(EventDefinition ev, IUnresolvedTypeDefinition parentType)
 		{
 			if (ev == null)
 				throw new ArgumentNullException("ev");
 			if (parentType == null)
 				throw new ArgumentNullException("parentType");
 			
-			DefaultEvent e = new DefaultEvent(parentType, ev.Name);
+			DefaultUnresolvedEvent e = new DefaultUnresolvedEvent(parentType, ev.Name);
 			TranslateModifiers(ev.AddMethod, e);
-			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev, entity: e);
+			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev);
 			
 			e.AddAccessor = ReadAccessor(ev.AddMethod);
 			e.RemoveAccessor = ReadAccessor(ev.RemoveMethod);
@@ -1468,13 +1914,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		void FinishReadMember(AbstractMember member, object cecilDefinition)
+		void FinishReadMember(AbstractUnresolvedMember member, object cecilDefinition)
 		{
-			member.Freeze();
 			member.ApplyInterningProvider(this.InterningProvider);
+			member.Freeze();
 			if (HasCecilReferences)
 				typeSystemTranslationTable[member] = cecilDefinition;
-		}*/
+		}
 		
 		#region Type system translation table
 		Dictionary<object, object> typeSystemTranslationTable;

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -60,6 +61,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets if the member can be overridden. Returns true when the member is "abstract", "virtual" or "override" but not "sealed".
 		/// </summary>
 		bool IsOverridable { get; }
+		
+		IMember CreateResolved(ITypeResolveContext context);
 	}
 	
 	public interface IMemberReference

@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the region where the type parameter is defined.
 		/// </summary>
 		DomRegion Region { get; }
+		
+		ITypeParameter CreateResolvedTypeParameter(ITypeResolveContext context);
 	}
 	
 	/// <summary>

@@ -92,12 +92,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public new IEvent Resolve(ITypeResolveContext context)
-		{
-			return (IEvent)base.Resolve(context);
-		}
-		
-		protected override IEntity ResolveInternal(ITypeResolveContext context)
+		public override IMember CreateResolved(ITypeResolveContext context)
 		{
 			throw new NotImplementedException();
 		}

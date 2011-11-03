@@ -124,16 +124,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return b.ToString();
 		}
 		
-		public new IMethod Resolve(ITypeResolveContext context)
+		public override IMember CreateResolved(ITypeResolveContext context)
 		{
-			return (IMethod)base.Resolve(context);
+			return new DefaultResolvedMethod(this, context);
 		}
 		
-		protected override IEntity ResolveInternal(ITypeResolveContext context)
-		{
-			throw new NotImplementedException();
-		}
-		/*
 		public static DefaultUnresolvedMethod CreateDefaultConstructor(IUnresolvedTypeDefinition typeDefinition)
 		{
 			if (typeDefinition == null)
@@ -147,6 +142,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				Region = region,
 				ReturnType = typeDefinition
 			};
-		}*/
+		}
 	}
 }

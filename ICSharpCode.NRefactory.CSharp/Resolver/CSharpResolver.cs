@@ -59,12 +59,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("context");
 			this.compilation = context.Compilation;
 			this.conversions = Conversions.Get(compilation);
-			this.CurrentMember = context.CurrentEntity as IMember;
-			if (this.CurrentMember != null) {
-				this.CurrentTypeDefinition = this.CurrentMember.DeclaringTypeDefinition;
-			} else {
-				this.CurrentTypeDefinition = context.CurrentEntity as ITypeDefinition;
-			}
+			this.CurrentMember = context.CurrentMember;
+			this.CurrentTypeDefinition = context.CurrentTypeDefinition;
 		}
 		#endregion
 		
@@ -1789,9 +1785,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			OverloadResolution or = new OverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
 			MemberLookup lookup = CreateMemberLookup();
 			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(type);
-			var constructors = type.GetConstructors(m => lookup.IsAccessible(m, allowProtectedAccess));
+			var constructors = type.GetConstructors();
 			foreach (IMethod ctor in constructors) {
-				or.AddCandidate(ctor);
+				if (lookup.IsAccessible(ctor, allowProtectedAccess))
+					or.AddCandidate(ctor);
 			}
 			if (or.BestCandidate != null) {
 				return or.CreateResolveResult(null);
