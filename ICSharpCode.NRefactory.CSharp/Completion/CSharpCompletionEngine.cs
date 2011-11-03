@@ -44,7 +44,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Additional input properties
 		public CSharpFormattingOptions FormattingPolicy { get; set; }
+
 		public string EolMarker { get; set; }
+
 		public string IndentString { get; set; }
 		#endregion
 		
@@ -453,7 +455,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								continue;
 							contextList.AddMember (property);
 						}
-						foreach (var field in initalizerResult.Item1.Type.GetFields (ctx)){      
+						foreach (var field in initalizerResult.Item1.Type.GetFields (ctx)) {       
 							if (!field.IsPublic)
 								continue;
 							contextList.AddMember (field);
@@ -660,7 +662,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
 			
-			if (IsInSwitchContext(node)) {
+			if (IsInSwitchContext (node)) {
 				wrapper.AddCustom ("case"); 
 				wrapper.AddCustom ("default"); 
 			}
@@ -669,7 +671,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 		}
 		
-		static bool IsInSwitchContext(AstNode node)
+		static bool IsInSwitchContext (AstNode node)
 		{
 			var n = node;
 			while (n != null && !(n is MemberDeclaration)) {
@@ -697,7 +699,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				if (currentMember !=  null) {
+				if (currentMember != null) {
 					foreach (var member in currentType.Resolve (ctx).GetMembers (ctx)) {
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
@@ -751,8 +753,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var wrapper = new CompletionDataWrapper (this);
 				AddTypesAndNamespaces (wrapper, GetState (), null, t => false);
 				return wrapper.Result;
-				case "case":
-					return CreateCaseCompletionData (location);
+			case "case":
+				return CreateCaseCompletionData (location);
 //				case ",":
 //				case ":":
 //					if (result.ExpressionContext == ExpressionContext.InheritableType) {
@@ -1051,6 +1053,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return true;
 		}
+
 		string GetLineIndent (int lineNr)
 		{
 			var line = document.GetLineByNumber (lineNr);
@@ -1160,7 +1163,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (part == type)
 						continue;
 					for (int i = 0; i < methods.Count; i++) {
-						var curMethod = methods[i];
+						var curMethod = methods [i];
 						var method = GetImplementation (partialType, curMethod);
 						if (method != null && !method.BodyRegion.IsEmpty) {
 							methods.RemoveAt (i);
@@ -1184,7 +1187,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (cur.Name == method.Name && cur.Parameters.Count == method.Parameters.Count && !cur.BodyRegion.IsEmpty) {
 					bool equal = true;
 					for (int i = 0; i < cur.Parameters.Count; i++) {
-						if (!cur.Parameters[i].Type.Resolve (ctx).Equals (method.Parameters[i].Type.Resolve (ctx))) {
+						if (!cur.Parameters [i].Type.Resolve (ctx).Equals (method.Parameters [i].Type.Resolve (ctx))) {
 							equal = false;
 							break;
 						}
@@ -1195,7 +1198,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return null;
 		}
-		
 		
 		static string GetNameWithParamCount (IMember member)
 		{
@@ -1546,21 +1548,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
 				foreach (var member in type.GetMembers (ctx)) {
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
-	//					Console.WriteLine ("skip access: " + member.FullName);
+						//					Console.WriteLine ("skip access: " + member.FullName);
 						continue;
 					}
 					if (resolvedNode is BaseReferenceExpression && member.IsAbstract)
 						continue;
 					
 					if (!includeStaticMembers && member.IsStatic && !(resolveResult is TypeResolveResult)) {
-	//					Console.WriteLine ("skip static member: " + member.FullName);
+						//					Console.WriteLine ("skip static member: " + member.FullName);
 						continue;
 					}
 					if (!member.IsStatic && (resolveResult is TypeResolveResult)) {
-	//					Console.WriteLine ("skip non static member: " + member.FullName);
+						//					Console.WriteLine ("skip non static member: " + member.FullName);
 						continue;
 					}
-	//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
+					//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
 			}
@@ -1620,6 +1622,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 		}
+
 		IEnumerable<ICompletionData> CreateCaseCompletionData (TextLocation location)
 		{
 			var unit = ParseStub ("a: break;");
@@ -1677,7 +1680,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
 			
-			if (mref == null){
+			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)
 					mref = invoke.Target as MemberReferenceExpression;
@@ -1690,7 +1693,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				Expression tref = baseUnit.GetNodeAt<TypeReferenceExpression> (location); 
 				var memberType = tref != null ? ((TypeReferenceExpression)tref).Type as MemberType : null;
 				if (memberType == null) {
-					memberType =  baseUnit.GetNodeAt<MemberType> (location); 
+					memberType = baseUnit.GetNodeAt<MemberType> (location); 
 					if (memberType != null) {
 						tref = baseUnit.GetNodeAt<Expression> (location); 
 						if (tref == null)
@@ -1728,7 +1731,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				memberLocation = currentMember.Region.Begin;
 			} else if (currentType != null) {
 				memberLocation = currentType.Region.Begin;
-			} else  {
+			} else {
 				memberLocation = location;
 			}
 				
@@ -1808,7 +1811,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
 		}
-		
 		
 		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetNewExpressionAt (int offset)
 		{
@@ -1974,8 +1976,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var state = new CSharpResolver (ctx, System.Threading.CancellationToken.None);
 			
-			state.CurrentMember = CSharpParsedFile.GetMember (location);
-			state.CurrentTypeDefinition = CSharpParsedFile.GetInnermostTypeDefinition (location);
+			state.CurrentMember = currentMember;
+			state.CurrentTypeDefinition = currentType;
 			state.CurrentUsingScope = CSharpParsedFile.GetUsingScope (location);
 			if (state.CurrentMember != null) {
 				var node = Unit.GetNodeAt (location);
@@ -2052,25 +2054,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		#region Keywords
 		static string[] expressionLevelKeywords = new string [] { "as", "is", "else", "out", "ref", "null", "delegate", "default"};
-		
 		static string[] primitiveTypesKeywords = new string [] { "void", "object", "bool", "byte", "sbyte", "char", "short", "int", "long", "ushort", "uint", "ulong", "float", "double", "decimal", "string"};
-		
 		static string[] statementStartKeywords = new string [] { "base", "new", "sizeof", "this", 
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
 			"using", "while", "yield", "dynamic", "var" };
-		
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 
 			"class", "interface", "struct", "enum", "delegate",
 			"abstract", "sealed", "static", "unsafe", "partial"
 		};
-		
 		static string[] accessorModifierKeywords = new string [] {
 			"public", "internal", "protected", "private"
 		};
-		
 		static string[] typeLevelKeywords = new string [] {
 			"public", "internal", "protected", "private",
 			"class", "interface", "struct", "enum", "delegate",
