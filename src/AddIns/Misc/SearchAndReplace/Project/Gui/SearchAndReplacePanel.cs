@@ -85,66 +85,84 @@ namespace SearchAndReplace
 		
 		void FindNextButtonClicked(object sender, EventArgs e)
 		{
-			WritebackOptions();
-			var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
-			var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-			lastMatch = SearchManager.FindNext(strategy, location);
-			SearchManager.SelectResult(lastMatch);
-			Focus();
+			try {
+				WritebackOptions();
+				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+				lastMatch = SearchManager.FindNext(strategy, location);
+				SearchManager.SelectResult(lastMatch);
+				Focus();
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
+			}
 		}
 		
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
-			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
-			try {
-				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
-				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-				var results = SearchManager.FindAllParallel(strategy, location, monitor);
-				SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
-			} catch (OperationCanceledException) {}
+			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
+				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
+				try {
+					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
+					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+					var results = SearchManager.FindAllParallel(strategy, location, monitor);
+					SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
+				} catch (SearchPatternException ex) {
+					MessageService.ShowError(ex.Message);
+				} catch (OperationCanceledException) {}
+			}
 		}
 		
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
-			monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
-			try {
-				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
-				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-				var results = SearchManager.FindAllParallel(strategy, location, monitor);
-				SearchManager.MarkAll(results);
-			} catch (OperationCanceledException) {}
+			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
+				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
+				try {
+					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
+					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+					var results = SearchManager.FindAllParallel(strategy, location, monitor);
+					SearchManager.MarkAll(results);
+				} catch (SearchPatternException ex) {
+					MessageService.ShowError(ex.Message);
+				} catch (OperationCanceledException) {}
+			}
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
 			int count = -1;
-			AsynchronousWaitDialog.RunInCancellableWaitDialog(
-				StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}"), null,
-				monitor => {
-					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
-					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-					var results = SearchManager.FindAll(strategy, location, monitor);
-					count = SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
-				});
-			if (count != -1)
-				SearchManager.ShowReplaceDoneMessage(count);
+			try {
+				AsynchronousWaitDialog.RunInCancellableWaitDialog(
+					StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}"), null,
+					monitor => {
+						var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+						var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+						var results = SearchManager.FindAll(strategy, location, monitor);
+						count = SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
+					});
+				if (count != -1)
+					SearchManager.ShowReplaceDoneMessage(count);
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
+			}
 		}
 		
 		void ReplaceButtonClicked(object sender, EventArgs e)
 		{
-			WritebackOptions();
-			if (SearchManager.IsResultSelected(lastMatch))
-				SearchManager.Replace(lastMatch, SearchOptions.ReplacePattern);
-			var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
-			var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
-			lastMatch = SearchManager.FindNext(strategy, location);
-			SearchManager.SelectResult(lastMatch);
-			Focus();
+			try {
+				WritebackOptions();
+				if (SearchManager.IsResultSelected(lastMatch))
+					SearchManager.Replace(lastMatch, SearchOptions.ReplacePattern);
+				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+				lastMatch = SearchManager.FindNext(strategy, location);
+				SearchManager.SelectResult(lastMatch);
+				Focus();
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
+			}
 		}
 		
 		void WritebackOptions()
