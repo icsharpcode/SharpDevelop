@@ -53,11 +53,18 @@ namespace ICSharpCode.UnitTesting
 					if (testAttributeName.IsEqual(attribute)) {
 						return true;
 					}
-				}
-				if (c.DeclaringType != null)
-					return IsTestClass(c.DeclaringType);
+				}				
+			}
+			
+			while (c != null) {
+				if (HasTestMethod(c)) return true;
+				c = c.BaseClass;
 			}
 			return false;
+		}
+		
+		private bool HasTestMethod(IClass c) {
+			return GetTestMembersFor(c).Any();
 		}
 		
 		static StringComparer GetNameComparer(IClass c)

@@ -23,9 +23,12 @@ namespace UnitTesting.Tests.Project
 	/// 		{
 	/// 		}
 	/// 
+	/// 		[TestFixture]
 	/// 		public class InnerTestLevel2 {
 	/// 		}
 	/// 	}
+	/// 	
+	///		public class InnerBClass() {}
 	/// }
 	///
 	/// </summary>
@@ -45,6 +48,7 @@ namespace UnitTesting.Tests.Project
 
 			//Add inner class nested in test class
 			classNestedInInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest.InnerTestLevel2", "MyTests.A+InnerATest+InnerTestLevel2", innerClass);
+			classNestedInInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
 			innerClass.InnerClasses.Add(classNestedInInnerClass);
 		}
 		
@@ -61,11 +65,11 @@ namespace UnitTesting.Tests.Project
 		}
 
 		[Test]
-		public void InnerTestClassWithoutTestFixtureAttributeFound()
+		public void InnerNonTestClassWithoutWasNotMarkedAsTestClass()
 		{
-			AssertTestResultContainsClass(nonTestInnerClass);
+			AssertTestResultDoesNotContainClass(nonTestInnerClass);
 		}
-
+		
 		[Test]
 		public void InnerClassInInnerClassFound()
 		{
@@ -89,6 +93,13 @@ namespace UnitTesting.Tests.Project
 			var testClazz = TestClassRelatedTo(clazz);
 			if (testClazz == null)
 				throw new AssertionException(string.Format("Test result should contain class {0}.", clazz.FullyQualifiedName));
+		}
+
+		void AssertTestResultDoesNotContainClass(MockClass clazz)
+		{
+			var testClazz = TestClassRelatedTo(clazz);
+			if (testClazz != null)
+				throw new AssertionException(string.Format("Test result should not contain class {0}.", clazz.FullyQualifiedName));
 		}
 
 		TestClass TestClassRelatedTo(IClass clazz)
