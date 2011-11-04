@@ -110,7 +110,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					segmentEndVC = vl.GetVisualColumn(segmentEnd - vlStartOffset);
 				
 				TextLine lastTextLine = vl.TextLines.Last();
-				foreach (TextLine line in vl.TextLines) {
+				
+				for (int i = 0; i < vl.TextLines.Count; i++) {
+					TextLine line = vl.TextLines[i];
 					double y = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop);
 					int visualStartCol = vl.GetTextLineVisualStartColumn(line);
 					int visualEndCol = visualStartCol + line.Length;
@@ -129,6 +131,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						// We need to return a rectangle to ensure empty lines are still visible
 						double pos = line.GetDistanceFromCharacterHit(new CharacterHit(segmentStartVCInLine, 0));
 						pos -= scrollOffset.X;
+						// The following special cases are necessary to get rid of empty rectangles at the end of a TextLine if "Show Spaces" is active.
+						// If not excluded once, the same rectangle is calculated (and added) twice (since the offset could be mapped to two visual positions; end/start of line), if there is no trailing whitespace.
+						// Skip this TextLine segment, if it is at the end of this line and this line is not the last line of the VisualLine and the selection continues and there is no trailing whitespace.
+						if (segmentEndVCInLine == visualEndCol && i < vl.TextLines.Count - 1 && segmentEndVC > segmentEndVCInLine && line.TrailingWhitespaceLength == 0)
+							continue;
+						if (segmentStartVCInLine == visualStartCol && i > 0 && segmentStartVC < segmentStartVCInLine && vl.TextLines[i - 1].TrailingWhitespaceLength == 0)
+							continue;
 						yield return new Rect(pos, y, 1, line.Height);
 					} else {
 						foreach (TextBounds b in line.GetTextBounds(segmentStartVCInLine, segmentEndVCInLine - segmentStartVCInLine)) {
