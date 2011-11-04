@@ -199,6 +199,10 @@
     <Compile Include="CSharp\CodeCompletion\ObjectInitializerTests.cs" />
     <Compile Include="CSharp\CodeCompletion\VariableDeclarationStatementTests.cs" />
     <Compile Include="CSharp\CodeCompletion\PreProcessorTests.cs" />
+    <Compile Include="CSharp\ContextAction\UseVarKeywordTests.cs" />
+    <Compile Include="CSharp\ContextAction\TestRefactoringContext.cs" />
+    <Compile Include="CSharp\ContextAction\UseExplicitKeywordTests.cs" />
+    <Compile Include="CSharp\ContextAction\ContextActionTestBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
@@ -219,6 +223,7 @@
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\CodeCompletion\" />
+    <Folder Include="CSharp\ContextAction\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
