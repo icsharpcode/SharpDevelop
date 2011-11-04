@@ -94,7 +94,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 	/// So the overall runtime complexity stays the same with linear space,
 	/// albeit with a larger constant factor.
 	/// </summary>
-	public class MyersDiff
+	public class MyersDiffAlgorithm
 	{
 		/// <summary>
 		/// The list of edits found during the last call to <see cref="calculateEdits()"/>
@@ -116,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		/// </summary>
 		/// <param name="a">the text A which should be compared</param>
 		/// <param name="b">the text B which should be compared</param>
-		public MyersDiff(ISequence a, ISequence b)
+		public MyersDiffAlgorithm(ISequence a, ISequence b)
 		{
 			this.a = a;
 			this.b = b;
@@ -229,7 +229,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 			///
 			/// It is assumed that there is at least one edit in the range.
 			/// </summary>
-			// TODO: measure speed impact when this is synchronized
 			public Edit Calculate(int beginA, int endA, int beginB, int endB)
 			{
 				if (beginA == endA || beginB == endB)
