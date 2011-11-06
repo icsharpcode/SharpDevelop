@@ -149,7 +149,8 @@ namespace ICSharpCode.SharpDevelop
 					System.Windows.Forms.MethodInvoker action = delegate {
 						// Compile project to ensure interop library is generated
 						project.Save(); // project is not yet saved when ItemAdded fires, so save it here
-						TaskService.BuildMessageViewCategory.AppendText("\n${res:MainWindow.CompilerMessages.CreatingCOMInteropAssembly}\n");
+						string message = StringParser.Parse("\n${res:MainWindow.CompilerMessages.CreatingCOMInteropAssembly}\n");
+						TaskService.BuildMessageViewCategory.AppendText(message);
 						BuildCallback afterBuildCallback = delegate {
 							lock (callAfterAddComReference) {
 								if (callAfterAddComReference.Count > 0) {
