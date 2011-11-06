@@ -74,6 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			
 			GoCommand = new RelayCommand(ExecuteGo,CanExecuteGo);
 			DiscoverCommand = new RelayCommand(ExecuteDiscover,CanExecuteDiscover);
+			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand,CanExecuteAdvancedDialogCommand);
 			TwoValues = new ObservableCollection<TwoValue>();
 		}
 		
@@ -113,6 +114,25 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		private void ExecuteDiscover ()
 		{
 			MessageBox.Show ("<Discover> is not implemented at the Moment");
+		}
+			
+		#endregion
+		
+		#region AdvancedDialogCommand
+		
+		public System.Windows.Input.ICommand AdvancedDialogCommand {get;private set;}
+		
+		private bool CanExecuteAdvancedDialogCommand ()
+		{
+			return true;
+		}
+		
+		private void ExecuteAdvancedDialogCommand ()
+		{
+			var vm = new AdvancedServiceViewModel();
+			var view = new AdvancedServiceDialog();
+			view.DataContext = vm;
+			view.ShowDialog();
 		}
 			
 		#endregion

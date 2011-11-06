@@ -254,6 +254,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddServiceReferenceViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AdvancedServiceDialog.xaml.cs">
+      <DependentUpon>AdvancedServiceDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AdvancedServiceViewModel.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
@@ -838,6 +843,7 @@
     </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\AddServiceReferenceDialog.xaml" />
+    <Page Include="Src\Gui\Dialogs\ReferenceDialog\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />

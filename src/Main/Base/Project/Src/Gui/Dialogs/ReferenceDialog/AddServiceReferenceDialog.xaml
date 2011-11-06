@@ -128,25 +128,36 @@ http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
 		         Margin="4" Background="White"
 		         Text="{Binding DefaultNameSpace}">
 		</TextBox>
-		
-		<widgets:UniformGridWithSpacing
-			Columns="2"
-			Grid.Column="2"
-			Grid.Row="8"
-			HorizontalAlignment="Right"
-			Margin="0,4,12,12">
-			<Button
-				Content="{core:Localize Global.OKButtonText}"
-				IsDefault="True"
-				Name="okButton"
-				Style="{x:Static core:GlobalStyles.ButtonStyle}"
-				Click="okButtonClick" />
-			<Button
-				Content="{core:Localize Global.CancelButtonText}"
-				IsCancel="True"
-				Name="cancelButton"
-				Style="{x:Static core:GlobalStyles.ButtonStyle}"
-				Click="cancelButtonClick" />
-		</widgets:UniformGridWithSpacing>
+		<Grid Grid.Row="8">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"></ColumnDefinition>
+				<ColumnDefinition Width="2*"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<Button Content="Advanced..."
+			        Command="{Binding AdvancedDialogCommand}"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Margin="0,4,12,12">
+			</Button>
+			
+			<widgets:UniformGridWithSpacing
+				
+				Columns="2"
+				Grid.Column="2"
+				HorizontalAlignment="Right"
+				Margin="0,4,12,12">
+				<Button
+					Content="{core:Localize Global.OKButtonText}"
+					IsDefault="True"
+					Name="okButton"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Click="okButtonClick" />
+				<Button
+					Content="{core:Localize Global.CancelButtonText}"
+					IsCancel="True"
+					Name="cancelButton"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Click="cancelButtonClick" />
+			</widgets:UniformGridWithSpacing>
+		</Grid>
 	</Grid>
 </Window>
