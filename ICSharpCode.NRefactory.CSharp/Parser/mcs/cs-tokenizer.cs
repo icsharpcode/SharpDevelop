@@ -3350,7 +3350,7 @@ namespace Mono.CSharp
 					
 					if (ParsePreprocessingDirective (true))
 						continue;
-
+					sbag.StartComment (SpecialsBag.CommentType.Multi, false, line, col);
 					bool directive_expected = false;
 					while ((c = get_char ()) != -1) {
 						if (col == 1) {
@@ -3364,23 +3364,26 @@ namespace Mono.CSharp
 							continue;
 						}
 
-						if (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\v' )
+						if (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\v' ) {
+							sbag.PushCommentChar (c);
 							continue;
+						}
 
 						if (c == '#') {
 							if (ParsePreprocessingDirective (false))
 								break;
 						}
+						sbag.PushCommentChar (c);
 						directive_expected = false;
 					}
-
+					sbag.EndComment (line, col);
 					if (c != -1) {
 						tokens_seen = false;
 						continue;
 					}
 
 					return Token.EOF;
-				
+								
 				case '"':
 					return consume_string (false);
 
