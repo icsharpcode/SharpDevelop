@@ -1882,6 +1882,8 @@ namespace Mono.CSharp
 			int has_identifier_argument = (int)(cmd & PreprocessorDirective.RequiresArgument);
 
 			int pos = 0;
+			endLine = line;
+			endCol = col;
 
 			while (c != -1 && c != '\n' && c != '\r') {
 				if (c == '\\' && has_identifier_argument >= 0) {
@@ -1937,7 +1939,7 @@ namespace Mono.CSharp
 				arg = arg.Trim (simple_whitespaces);
 			}
 			if (position_stack.Count == 0)
-				sbag.AddPreProcessorDirective (startLine, startCol, endLine, endCol, cmd, arg);
+				sbag.AddPreProcessorDirective (startLine, startCol, endLine, endCol + 1, cmd, arg);
 
 			return cmd;
 		}
