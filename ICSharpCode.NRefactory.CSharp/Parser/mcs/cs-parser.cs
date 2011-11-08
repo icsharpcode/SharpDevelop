@@ -7922,7 +7922,7 @@ void case_797()
 void case_798()
 #line 5301 "cs-parser.jay"
 {
-		For f = new For ((Statement) yyVals[-2+yyTop], null, null, null, GetLocation (yyVals[-5+yyTop]));
+		For f = new For ((Statement) yyVals[-2+yyTop], ErrorExpression.Create (0, lexer.Location, "Syntax error"), null, null, GetLocation (yyVals[-5+yyTop]));
 		current_block.AddStatement (f);
 		
 		lbag.AddStatement (f, current_block.StartLocation, GetLocation (yyVals[-1+yyTop]));

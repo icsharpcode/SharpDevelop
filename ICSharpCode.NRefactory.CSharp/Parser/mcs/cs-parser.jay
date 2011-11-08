@@ -5299,7 +5299,7 @@ for_statement_cont
 	  }
 	| opt_for_initializer SEMICOLON error
 	  {
-		For f = new For ((Statement) $1, null, null, null, GetLocation ($-2));
+		For f = new For ((Statement) $1, ErrorExpression.Create (0, lexer.Location, "Syntax error"), null, null, GetLocation ($-2));
 		current_block.AddStatement (f);
 		
 		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2));

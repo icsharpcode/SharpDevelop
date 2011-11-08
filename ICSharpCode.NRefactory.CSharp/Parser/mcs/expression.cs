@@ -9168,10 +9168,11 @@ namespace Mono.CSharp
 		{
 		}
 		
-		ErrorExpression (int errorCode, Location location, string error) : base (InternalType.ErrorType)
+		ErrorExpression (int errorCode, Location location, string error)
+			: base (InternalType.ErrorType)
 		{
 			this.ErrorCode = errorCode;
-			this.loc = location;
+			base.loc = location;
 			this.Error = error;
 		}
 		
@@ -9200,6 +9201,11 @@ namespace Mono.CSharp
 
 		public override void Error_OperatorCannotBeApplied (ResolveContext rc, Location loc, string oper, TypeSpec t)
 		{
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 

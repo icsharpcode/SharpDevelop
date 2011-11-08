@@ -183,6 +183,11 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
+		
+		public virtual object Visit (ErrorExpression errorExpression)
+		{
+			return null;
+		}
 
 		public virtual object Visit (If ifStatement)
 		{
