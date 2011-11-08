@@ -1334,6 +1334,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new ICSharpCode.NRefactory.CSharp.EmptyExpression (Convert (emptyExpression.Location));
 			}
 			
+			public override object Visit (Mono.CSharp.ErrorExpression emptyExpression)
+			{
+				return new ICSharpCode.NRefactory.CSharp.ErrorExpression (Convert (emptyExpression.Location));
+			}
+			
 			public override object Visit (EmptyExpressionStatement emptyExpressionStatement)
 			{
 				return new EmptyExpression (Convert (emptyExpressionStatement.Location));

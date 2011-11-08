@@ -43,7 +43,7 @@ class MyTest
 	}
 }
 ");
-			Assert.IsTrue (provider == null || provider.Count == 0, "provider not found.");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
 		[Test()]
@@ -79,6 +79,27 @@ class MyTest
 ");
 			Assert.IsNotNull (provider.Find ("myTest"), "name proposal 'myTest' not found.");
 			Assert.IsNotNull (provider.Find ("test"), "name proposal 'test' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 1799 - [New Resolver] Invalid code completion when typing name of variable
+		/// </summary>
+		[Test()]
+		public void TestBug1799 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"
+class MyTest
+{
+	public void Test ()
+	{
+		for (int n=0;n<10;n++) {
+			$string d$
+		}
+	}
+}
+");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 	}
 }

@@ -308,6 +308,7 @@
     <Compile Include="Completion\ICompletionDataFactory.cs" />
     <Compile Include="Completion\IParameterCompletionDataFactory.cs" />
     <Compile Include="Ast\GeneralScope\PreProcessorDirective.cs" />
+    <Compile Include="Ast\Expressions\ErrorExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -319,4 +320,13 @@
   <ItemGroup>
     <Folder Include="Completion\" />
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>
