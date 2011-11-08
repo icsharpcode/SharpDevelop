@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
-	x:Class="ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.AddServiceReferenceDialog"
+	x:Class="ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference.AddServiceReferenceDialog"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
@@ -15,9 +15,9 @@
 	
 	<!--
 
- http://blogs.msdn.com/b/chkoenig/archive/2008/05/24/hierarchical-databinding-in-wpf.aspx
-http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
--->
+ 	http://blogs.msdn.com/b/chkoenig/archive/2008/05/24/hierarchical-databinding-in-wpf.aspx
+	http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
+	-->
 	
 	<Window.Resources>
 		<HierarchicalDataTemplate x:Key="HeaderTemplate"
@@ -110,10 +110,16 @@ http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
 				ItemsSource="{Binding Path=TwoValues}">
 				<ListView.View>
 					<GridView>
-						<GridViewColumn Header="" Width="150" DisplayMemberBinding="{Binding LeftValue}"></GridViewColumn>
-						<!-- 
-						<GridViewColumn Header="Value" Width="150" DisplayMemberBinding="{Binding RightValue}"></GridViewColumn>
-					-->
+						<GridViewColumn>
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<Image Width="16" Height="16" Source="{Binding Image}"/>
+									<TextBlock Text="{Binding Description}"/>
+								</StackPanel>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
 					</GridView>
 				</ListView.View>
 			</ListView>

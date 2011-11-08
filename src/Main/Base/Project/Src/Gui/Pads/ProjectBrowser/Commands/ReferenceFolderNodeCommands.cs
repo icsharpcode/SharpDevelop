@@ -8,9 +8,10 @@ using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
 
-using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog;
+using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands

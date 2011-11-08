@@ -19,16 +19,20 @@ using System.Runtime.Remoting.Messaging;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets;
+using ICSharpCode.SharpDevelop.Widgets.Resources;
 using Microsoft.Win32;
 
-namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
+namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	/// <summary>
 	/// Description of AddServiceReferenceViewModel.
@@ -44,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		string serviceDescriptionMessage;
 		string namespacePrefix = String.Empty;
 		
-		private  ObservableCollection<TwoValue> twoValues;
+		private  ObservableCollection<ImageAndDescription> twoValues;
 		
 		private List<string> mruServices = new List<string>();
 		private string selectedService;
@@ -75,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			GoCommand = new RelayCommand(ExecuteGo,CanExecuteGo);
 			DiscoverCommand = new RelayCommand(ExecuteDiscover,CanExecuteDiscover);
 			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand,CanExecuteAdvancedDialogCommand);
-			TwoValues = new ObservableCollection<TwoValue>();
+			TwoValues = new ObservableCollection<ImageAndDescription>();
 		}
 		
 		
@@ -351,7 +355,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 		}
 		
 		
-		public ObservableCollection<TwoValue> TwoValues {
+		public ObservableCollection<ImageAndDescription> TwoValues {
 			get { return twoValues; }
 			set {
 				twoValues = value;
@@ -359,26 +363,25 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 			}
 		}
 		
+		//http://mikehadlow.blogspot.com/2006/06/simple-wsdl-object.html
 		
 		void UpdateListView ()
 		{
 			ServiceDescription desc = null;
 			TwoValues.Clear();
-			string l = String.Empty;
-			string r;
 			if(ServiceItem.Tag is ServiceDescription) {
 				desc = (ServiceDescription)ServiceItem.Tag;
-				r = desc.RetrievalUrl;
-				var tv = new TwoValue(l,r);
+				var tv = new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),
+				                                 desc.RetrievalUrl);
 				TwoValues.Add(tv);
 			}
-			else if(ServiceItem.Tag is PortType) {
+			else if(ServiceItem.Tag is PortType)
+			{
 				PortType portType = (PortType)ServiceItem.Tag;
 				foreach (Operation op in portType.Operations)
-				{					
-					l = op.Name;
-					r = op.Documentation;
-					TwoValues.Add(new TwoValue(l,r));
+				{
+					TwoValues.Add(new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Method"),
+					                                      op.Name));
 				}
 			}
 		}
@@ -418,16 +421,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
 	}
 	
 	
-	public class TwoValue
+	public class ImageAndDescription
 	{
-		public TwoValue(string left,string right)
+		public ImageAndDescription(BitmapSource bitmapSource,string description)
 		{
-			LeftValue = left;
-			RightValue = right;
+			Image = bitmapSource;
+			Description = description;
 		}
 		
-		public string LeftValue {get;set;}
-		public string RightValue {get;set;}
+		public BitmapSource Image {get;set;}
+		public string Description {get;set;}
 	}
 	
 

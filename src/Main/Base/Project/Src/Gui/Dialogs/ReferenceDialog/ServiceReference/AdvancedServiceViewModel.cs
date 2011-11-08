@@ -12,7 +12,7 @@ using System.ComponentModel;
 
 using ICSharpCode.SharpDevelop.Widgets;
 
-namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
+namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	/// <summary>
 	/// Description of AdvancedServiceViewModel.

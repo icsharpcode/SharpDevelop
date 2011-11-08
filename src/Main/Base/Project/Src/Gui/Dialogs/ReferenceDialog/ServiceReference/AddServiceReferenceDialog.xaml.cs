@@ -16,7 +16,9 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog
+using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
+
+namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	/// <summary>
 	/// Interaction logic for AddServiceReferenceDialog.xaml
