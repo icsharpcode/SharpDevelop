@@ -338,7 +338,7 @@ namespace Mono.CSharp
 			return null;
 		}
 		
-		public virtual object Visit (InvalidExpressionStatement invalidExpressionStatement)
+		public virtual object Visit (InvalidStatementExpression invalidStatementExpression)
 		{
 			return null;
 		}

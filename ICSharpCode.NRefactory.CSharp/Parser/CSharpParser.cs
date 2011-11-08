@@ -1457,7 +1457,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override object Visit (InvalidExpressionStatement statementExpression)
+			public override object Visit (InvalidStatementExpression statementExpression)
 			{
 				var result = new ExpressionStatement ();
 				if (statementExpression.Expression == null)

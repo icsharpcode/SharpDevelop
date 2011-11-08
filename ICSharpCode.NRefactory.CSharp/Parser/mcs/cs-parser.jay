@@ -4967,6 +4967,20 @@ opt_local_variable_initializer
 		current_variable.Initializer = (Expression) $2;
 		lbag.AppendTo (current_variable, GetLocation ($1));
 	  }
+	| ASSIGN error
+	  {
+	  	if (yyToken == Token.OPEN_BRACKET_EXPR) {
+			report.Error (650, lexer.Location,
+				"Syntax error, bad array declarator. To declare a managed array the rank specifier precedes the variable's identifier. To declare a fixed size buffer field, use the fixed keyword before the field type");
+			current_variable.Initializer = ErrorExpression.Create (650, lexer.Location,
+					"Syntax error, bad array declarator. To declare a managed array the rank specifier precedes the variable's identifier. To declare a fixed size buffer field, use the fixed keyword before the field type");
+		} else {
+			Error_SyntaxError (yyToken);
+			current_variable.Initializer = ErrorExpression.Create (0, lexer.Location,
+					"Syntax error");
+		}
+		lbag.AppendTo (current_variable, GetLocation ($1));
+	  }
 	| error
 	  {
 	  	if (yyToken == Token.OPEN_BRACKET_EXPR) {
@@ -5092,7 +5106,7 @@ statement_expression
 		ExpressionStatement s = $1 as ExpressionStatement;
 		if (s == null) {
 			Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
-			$$ = new StatementExpression (new InvalidExpressionStatement ($1));
+			$$ = new InvalidStatementExpression ($1 as Expression);
 		} else {
 			$$ = new StatementExpression (s);
 		}
