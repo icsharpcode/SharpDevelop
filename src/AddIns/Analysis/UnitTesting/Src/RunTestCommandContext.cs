@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -58,6 +59,10 @@ namespace ICSharpCode.UnitTesting
 		
 		public IStatusBarService StatusBarService {
 			get { return statusBarService; }
+		}
+		
+		public Solution OpenSolution {
+			get { return ProjectService.OpenSolution; }
 		}
 	}
 }

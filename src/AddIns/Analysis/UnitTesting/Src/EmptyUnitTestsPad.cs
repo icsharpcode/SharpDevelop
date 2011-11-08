@@ -2,12 +2,25 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
 	public class EmptyUnitTestsPad : IUnitTestsPad
 	{
+		Solution solution;
+		
+		public EmptyUnitTestsPad()
+			: this(null)
+		{
+		}
+		
+		public EmptyUnitTestsPad(Solution solution)
+		{
+			this.solution = solution;
+		}
+		
 		public void UpdateToolbar()
 		{
 		}
@@ -22,6 +35,9 @@ namespace ICSharpCode.UnitTesting
 		
 		public IProject[] GetProjects()
 		{
+			if (solution != null) {
+				return solution.Projects.ToArray();
+			}
 			return new IProject[0];
 		}
 		
@@ -30,6 +46,8 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public void CollapseAll() { }
+		public void CollapseAll()
+		{
+		}
 	}
 }

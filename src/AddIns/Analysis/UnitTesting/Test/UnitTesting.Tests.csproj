@@ -93,9 +93,11 @@
     <Compile Include="Project\TestClassWithFieldsDefinedAsTestMembersByTestFrameworkTests.cs" />
     <Compile Include="Project\TestProjectUsesTestFrameworksTestFixture.cs" />
     <Compile Include="Project\TwoBaseClassesWithTestMethodsTestFixture.cs" />
+    <Compile Include="Tree\AbstractRunTestCommandTests.cs" />
     <Compile Include="Tree\AddNUnitReferenceToProjectTestFixture.cs" />
     <Compile Include="Tree\BuildErrorWhenRunningTestsTestFixture.cs" />
     <Compile Include="Tree\ClassTestFixtureSelectedTestFixture.cs" />
+    <Compile Include="Tree\EmptyUnitTestsPadTests.cs" />
     <Compile Include="Tree\GoToSelectedBaseClassMethodTestFixture.cs" />
     <Compile Include="Tree\GoToSelectedClassTestFixture.cs" />
     <Compile Include="Tree\GoToSelectedClassWithNoLocationTestFixture.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Tree\NonTestProjectNotAddedToTestTreeTestFixture.cs" />
     <Compile Include="Tree\NoOwnerForSelectedTestsTestFixture.cs" />
     <Compile Include="Tree\NoTestsRunWhenNoTestsSelectedTestFixture.cs" />
-    <Compile Include="Tree\NoTestsRunWhenUnitTestPadNotCreatedTestFixture.cs" />
     <Compile Include="Tree\RemoveSolutionFolderTestFixture.cs" />
     <Compile Include="Tree\RunAllTestsInPadTestFixture.cs" />
     <Compile Include="Tree\RunNUnitTestsForMethodTestFixture.cs" />

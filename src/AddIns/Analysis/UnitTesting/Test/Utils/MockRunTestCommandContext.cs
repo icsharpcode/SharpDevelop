@@ -5,104 +5,69 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 
 namespace UnitTesting.Tests.Utils
 {
 	public class MockRunTestCommandContext : IRunTestCommandContext
 	{
-		UnitTestingOptions options = new UnitTestingOptions(new Properties());
-		MockRegisteredTestFrameworks testFrameworks = new MockRegisteredTestFrameworks();
-		MockTestResultsMonitor testResultsMonitor = new MockTestResultsMonitor();
-		MockTaskService taskService = new MockTaskService();
-		MockUnitTestWorkbench workbench = new MockUnitTestWorkbench();
-		MockBuildProjectFactory buildProjectFactory = new MockBuildProjectFactory();
-		MockBuildOptions buildOptions = new MockBuildOptions();
-		MessageViewCategory unitTestCategory = new MessageViewCategory("Unit Tests");
-		MockUnitTestsPad unitTestsPad = new MockUnitTestsPad();
-		MockMessageService messageService = new MockMessageService();
-		MockSaveAllFilesCommand saveAllFilesCommand = new MockSaveAllFilesCommand();
-		MockStatusBarService statusBarService = new MockStatusBarService();
-		
-		public UnitTestingOptions UnitTestingOptions {
-			get { return options; }
-		}
+		public UnitTestingOptions UnitTestingOptions = new UnitTestingOptions(new Properties());
+		public MockRegisteredTestFrameworks MockRegisteredTestFrameworks = new MockRegisteredTestFrameworks();
+		public MockTestResultsMonitor MockTestResultsMonitor = new MockTestResultsMonitor();
+		public MockTaskService MockTaskService = new MockTaskService();
+		public MockUnitTestWorkbench MockUnitTestWorkbench = new MockUnitTestWorkbench();
+		public MockBuildProjectFactory MockBuildProjectFactory = new MockBuildProjectFactory();
+		public MockBuildOptions MockBuildOptions = new MockBuildOptions();
+		public MockUnitTestsPad MockUnitTestsPad = new MockUnitTestsPad();
+		public MockMessageService MockMessageService = new MockMessageService();
+		public MockSaveAllFilesCommand MockSaveAllFilesCommand = new MockSaveAllFilesCommand();
+		public MockStatusBarService MockStatusBarService = new MockStatusBarService();
+		public MessageViewCategory UnitTestMessageViewCategory = new MessageViewCategory("Unit Tests");
+		public Solution Solution;
 		
 		public IRegisteredTestFrameworks RegisteredTestFrameworks {
-			get { return testFrameworks; }
+			get { return MockRegisteredTestFrameworks; }
 		}
-		
-		public MockRegisteredTestFrameworks MockRegisteredTestFrameworks {
-			get { return testFrameworks; }
-		}
-		
-		public MockTestResultsMonitor MockTestResultsMonitor {
-			get { return testResultsMonitor; }
-		}
-		
+
 		public IUnitTestTaskService TaskService {
-			get { return taskService; }
-		}
-		
-		public MockTaskService MockTaskService {
-			get { return taskService; }
+			get { return MockTaskService; }
 		}
 		
 		public IUnitTestWorkbench Workbench {
-			get { return workbench; }
-		}
-		
-		public MockUnitTestWorkbench MockUnitTestWorkbench {
-			get { return workbench; }
+			get { return MockUnitTestWorkbench; }
 		}
 		
 		public IBuildProjectFactory BuildProjectFactory {
-			get { return buildProjectFactory; }
+			get { return MockBuildProjectFactory; }
 		}
-		
-		public MockBuildProjectFactory MockBuildProjectFactory {
-			get { return buildProjectFactory; }
-		}
-		
+
 		public IBuildOptions BuildOptions {
-			get { return buildOptions; }
-		}
-		
-		public MockBuildOptions MockBuildOptions {
-			get { return buildOptions; }
+			get { return MockBuildOptions; }
 		}
 		
 		public MessageViewCategory UnitTestCategory {
-			get { return unitTestCategory; }
+			get { return UnitTestMessageViewCategory; }
 		}
 		
 		public IUnitTestsPad OpenUnitTestsPad {
-			get { return unitTestsPad; }
-		}
-		
-		public MockUnitTestsPad MockUnitTestsPad {
-			get { return unitTestsPad; }
-			set { unitTestsPad = value; }
+			get { return MockUnitTestsPad; }
 		}
 		
 		public IUnitTestMessageService MessageService {
-			get { return messageService; }
+			get { return MockMessageService; }
 		}
-		
-		public MockMessageService MockMessageService {
-			get { return messageService; }
-		}
-		
+
 		public IUnitTestSaveAllFilesCommand SaveAllFilesCommand {
-			get { return saveAllFilesCommand; }
-		}
-		
-		public MockSaveAllFilesCommand MockSaveAllFilesCommand {
-			get { return saveAllFilesCommand; }
+			get { return MockSaveAllFilesCommand; }
 		}
 		
 		public IStatusBarService StatusBarService {
-			get { return statusBarService; }
+			get { return MockStatusBarService; }
+		}
+		
+		public Solution OpenSolution {
+			get { return Solution; }
 		}
 	}
 }

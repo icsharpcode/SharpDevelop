@@ -54,9 +54,9 @@ namespace ICSharpCode.UnitTesting
 		
 		public override void Run()
 		{
-			GetUnitTestsPad(context.OpenUnitTestsPad);
+			GetUnitTestsPad();
 			
-			selectedTests = new SelectedTests(Owner, this.unitTestsPad.GetProjects());
+			selectedTests = GetSelectedTests();
 			if (selectedTests.HasProjects) {
 				runningTestCommand = this;
 				BeforeRun();
@@ -64,13 +64,22 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		void GetUnitTestsPad(IUnitTestsPad unitTestsPad)
+		SelectedTests GetSelectedTests()
 		{
-			if (unitTestsPad != null) {
-				this.unitTestsPad = unitTestsPad;
-			} else {
-				this.unitTestsPad = new EmptyUnitTestsPad();
+			return new SelectedTests(Owner, unitTestsPad.GetProjects());
+		}
+		
+		void GetUnitTestsPad()
+		{
+			unitTestsPad = context.OpenUnitTestsPad;
+			if (unitTestsPad == null) {
+				unitTestsPad = CreateEmptyUnitTestsPad();
 			}
+		}
+		
+		EmptyUnitTestsPad CreateEmptyUnitTestsPad()
+		{
+			return new EmptyUnitTestsPad(context.OpenSolution);
 		}
 		
 		/// <summary>
@@ -167,8 +176,15 @@ namespace ICSharpCode.UnitTesting
 		
 		BuildProject CreateBuildProjectBeforeTestRun(SelectedTests selectedTests)
 		{
-			var projects = selectedTests.Projects.Where(p => context.RegisteredTestFrameworks.IsBuildNeededBeforeTestRunForProject(p));
+			IEnumerable<IProject> projects = GetProjectsRequiringBuildBeforeTestRun(selectedTests);
 			return context.BuildProjectFactory.CreateBuildProjectBeforeTestRun(projects);
+		}
+		
+		IEnumerable<IProject> GetProjectsRequiringBuildBeforeTestRun(SelectedTests selectedTests)
+		{
+			return selectedTests
+				.Projects
+				.Where(p => context.RegisteredTestFrameworks.IsBuildNeededBeforeTestRunForProject(p));
 		}
 		
 		/// <summary>
