@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			engine.ProjectContent = pctx;
 			engine.Unit = compilationUnit;
 			
-			return engine.GetParameterDataProvider (cursorPosition);
+			return engine.GetParameterDataProvider (cursorPosition, doc.GetCharAt (cursorPosition - 1));
 		}
 		
 		/// <summary>
