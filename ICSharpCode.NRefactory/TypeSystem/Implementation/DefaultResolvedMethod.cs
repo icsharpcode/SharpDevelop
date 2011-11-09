@@ -30,9 +30,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public DefaultResolvedMethod(IUnresolvedMethod unresolved, ITypeResolveContext parentContext)
 			: base(unresolved, parentContext)
 		{
-			this.Parameters = unresolved.Parameters.CreateResolvedParameters(this);
-			this.ReturnTypeAttributes = unresolved.ReturnTypeAttributes.CreateResolvedAttributes(this);
-			this.TypeParameters = unresolved.TypeParameters.CreateResolvedTypeParameters(this);
+			this.Parameters = unresolved.Parameters.CreateResolvedParameters(context);
+			this.ReturnTypeAttributes = unresolved.ReturnTypeAttributes.CreateResolvedAttributes(parentContext);
+			this.TypeParameters = unresolved.TypeParameters.CreateResolvedTypeParameters(context);
 		}
 		
 		public IList<IParameter> Parameters { get; private set; }

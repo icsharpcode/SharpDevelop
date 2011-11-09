@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			: base(unresolved, parentContext)
 		{
 			this.unresolved = unresolved;
-			this.parameters = unresolved.Parameters.CreateResolvedParameters(this);
+			this.parameters = unresolved.Parameters.CreateResolvedParameters(context);
 		}
 		
 		public IList<IParameter> Parameters {
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					LazyInit.ReadBarrier();
 					return result;
 				} else {
-					return LazyInit.GetOrSet(ref this.getter, unresolved.Getter.CreateResolvedAccessor(this));
+					return LazyInit.GetOrSet(ref this.getter, unresolved.Getter.CreateResolvedAccessor(context));
 				}
 			}
 		}
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					LazyInit.ReadBarrier();
 					return result;
 				} else {
-					return LazyInit.GetOrSet(ref this.setter, unresolved.Setter.CreateResolvedAccessor(this));
+					return LazyInit.GetOrSet(ref this.setter, unresolved.Setter.CreateResolvedAccessor(context));
 				}
 			}
 		}

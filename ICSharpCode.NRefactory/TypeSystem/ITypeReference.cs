@@ -71,6 +71,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the current member.
 		/// </summary>
 		IMember CurrentMember { get; }
+		
+		ITypeResolveContext WithCurrentTypeDefinition(ITypeDefinition typeDefinition);
+		ITypeResolveContext WithCurrentMember(IMember member);
 	}
 	
 	#if WITH_CONTRACTS

@@ -34,6 +34,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly KnownTypeCache knownTypeCache;
 		readonly IAssembly mainAssembly;
 		readonly IList<IAssembly> referencedAssemblies;
+		INamespace rootNamespace;
 		
 		public SimpleCompilation(IUnresolvedAssembly mainAssembly, params IAssemblyReference[] assemblyReferences)
 			: this(mainAssembly, (IEnumerable<IAssemblyReference>)assemblyReferences)
@@ -55,11 +56,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public IAssembly MainAssembly {
-			get { return mainAssembly; }
+			get {
+				if (mainAssembly == null)
+					throw new InvalidOperationException("Compilation isn't initialized yet");
+				return mainAssembly;
+			}
 		}
 		
 		public IList<IAssembly> ReferencedAssemblies {
-			get { return referencedAssemblies; }
+			get {
+				if (referencedAssemblies == null)
+					throw new InvalidOperationException("Compilation isn't initialized yet");
+				return referencedAssemblies;
+			}
 		}
 		
 		public ITypeResolveContext TypeResolveContext {
@@ -68,8 +77,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public INamespace RootNamespace {
 			get {
-				throw new NotImplementedException();
+				INamespace ns = this.rootNamespace;
+				if (ns != null) {
+					LazyInit.ReadBarrier();
+					return ns;
+				} else {
+					if (referencedAssemblies == null)
+						throw new InvalidOperationException("Compilation isn't initialized yet");
+					return LazyInit.GetOrSet(ref this.rootNamespace, CreateRootNamespace());
+				}
 			}
+		}
+		
+		protected virtual INamespace CreateRootNamespace()
+		{
+			INamespace[] namespaces = new INamespace[referencedAssemblies.Count + 1];
+			namespaces[0] = mainAssembly.RootNamespace;
+			for (int i = 0; i < referencedAssemblies.Count; i++) {
+				namespaces[i + 1] = referencedAssemblies[i].RootNamespace;
+			}
+			return new MergedNamespace(this, namespaces);
 		}
 		
 		public CacheManager CacheManager {
@@ -90,6 +117,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IType FindType(KnownTypeCode typeCode)
 		{
 			return knownTypeCache.FindType(typeCode);
+		}
+		
+		public StringComparer NameComparer {
+			get { return StringComparer.Ordinal; }
 		}
 	}
 }

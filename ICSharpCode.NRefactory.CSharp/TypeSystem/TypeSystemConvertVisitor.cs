@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	{
 		readonly CSharpParsedFile parsedFile;
 		UsingScope usingScope;
-		DefaultUnresolvedTypeDefinition currentTypeDefinition;
+		CSharpUnresolvedTypeDefinition currentTypeDefinition;
 		DefaultUnresolvedMethod currentMethod;
 		
 		IInterningProvider interningProvider = new SimpleInterningProvider();
@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		/// <param name="parsedFile">The parsed file to which members should be added.</param>
 		/// <param name="currentUsingScope">The current using scope.</param>
 		/// <param name="currentTypeDefinition">The current type definition.</param>
-		public TypeSystemConvertVisitor(CSharpParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultUnresolvedTypeDefinition currentTypeDefinition = null)
+		public TypeSystemConvertVisitor(CSharpParsedFile parsedFile, UsingScope currentUsingScope = null, CSharpUnresolvedTypeDefinition currentTypeDefinition = null)
 		{
 			if (parsedFile == null)
 				throw new ArgumentNullException("parsedFile");
@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			DomRegion region = MakeRegion(namespaceDeclaration);
 			UsingScope previousUsingScope = usingScope;
 			foreach (Identifier ident in namespaceDeclaration.Identifiers) {
-				usingScope = new UsingScope(usingScope, NamespaceDeclaration.BuildQualifiedName(usingScope.NamespaceName, ident.Name));
+				usingScope = new UsingScope(usingScope, ident.Name);
 				usingScope.Region = region;
 			}
 			base.VisitNamespaceDeclaration(namespaceDeclaration, data);
@@ -165,16 +165,16 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		#endregion
 		
 		#region Type Definitions
-		DefaultUnresolvedTypeDefinition CreateTypeDefinition(string name)
+		CSharpUnresolvedTypeDefinition CreateTypeDefinition(string name)
 		{
-			DefaultUnresolvedTypeDefinition newType;
+			CSharpUnresolvedTypeDefinition newType;
 			if (currentTypeDefinition != null) {
-				newType = new DefaultUnresolvedTypeDefinition(currentTypeDefinition, name);
+				newType = new CSharpUnresolvedTypeDefinition(currentTypeDefinition, name);
 				foreach (var typeParameter in currentTypeDefinition.TypeParameters)
 					newType.TypeParameters.Add(typeParameter);
 				currentTypeDefinition.NestedTypes.Add(newType);
 			} else {
-				newType = new DefaultUnresolvedTypeDefinition(usingScope.NamespaceName, name);
+				newType = new CSharpUnresolvedTypeDefinition(usingScope, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
 			}
 			newType.ParsedFile = parsedFile;
@@ -214,7 +214,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				member.AcceptVisitor(this, data);
 			}
 			
-			currentTypeDefinition = (DefaultUnresolvedTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
+			currentTypeDefinition = (CSharpUnresolvedTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			if (interningProvider != null) {
 				td.ApplyInterningProvider(interningProvider);
 			}
@@ -253,7 +253,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				}
 			}
 			
-			currentTypeDefinition = (DefaultUnresolvedTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
+			currentTypeDefinition = (CSharpUnresolvedTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			if (interningProvider != null) {
 				td.ApplyInterningProvider(interningProvider);
 			}

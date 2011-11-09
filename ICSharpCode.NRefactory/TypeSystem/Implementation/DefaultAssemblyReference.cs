@@ -55,6 +55,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return null;
 		}
 		
+		public override string ToString()
+		{
+			return shortName;
+		}
+		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
 			shortName = provider.Intern(shortName);

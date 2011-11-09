@@ -105,8 +105,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						yield return p;
 					}
 				}
-				throw new NotImplementedException();
-				/*DefaultProperty indexer = new DefaultProperty(arrayDef, "Items") {
+				/*DefaultUnresolvedProperty indexer = new DefaultUnresolvedProperty(arrayDef, "Items") {
 					EntityType = EntityType.Indexer,
 					ReturnType = elementType,
 					Accessibility = Accessibility.Public,
@@ -119,7 +118,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				indexer.Freeze();
 				if (filter == null || filter(indexer)) {
-					yield return indexer;
+					yield return indexer.CreateResolved(context);
 				}*/
 			}
 		}

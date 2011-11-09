@@ -45,7 +45,10 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 			
 			var parsedFile = cu.ToTypeSystem(fileName);
-			return new CSharpProjectContent().UpdateProjectContent(null, parsedFile).AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib });
+			return new CSharpProjectContent()
+				.UpdateProjectContent(null, parsedFile)
+				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
+				.SetAssemblyName(typeof(TypeSystemTests).Assembly.GetName().Name);
 		}
 	}
 	

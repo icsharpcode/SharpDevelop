@@ -159,9 +159,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			                parameterType.Resolve(compilation.TypeResolveContext).ReflectionName);
 			// now try with parent entity:
 			IMethod convertAll = compilation.FindType(typeof(List<>)).GetMethods(m => m.Name == "ConvertAll").Single();
-			throw new NotImplementedException();
-			//Assert.AreEqual("System.Converter`2[[`0],[``0]]",
-			//                parameterType.Resolve(convertAll.TypeResolveContext).ReflectionName);
+			Assert.AreEqual("System.Converter`2[[`0],[``0]]",
+			                parameterType.Resolve(new SimpleTypeResolveContext(convertAll)).ReflectionName);
 		}
 		
 		[Test]
@@ -182,7 +181,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void ParseOpenGenericReflectionName()
 		{
 			ITypeReference typeRef = ReflectionHelper.ParseReflectionName("System.Converter`2[[`0],[``0]]");
-			Assert.AreEqual("System.Converter`2[[?],[?]]", typeRef.Resolve(compilation.TypeResolveContext).ReflectionName);
+			Assert.AreEqual("System.Converter`2[[?],[?]]", typeRef.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).ReflectionName);
 			IMethod convertAll = compilation.FindType(typeof(List<>)).GetMethods(m => m.Name == "ConvertAll").Single();
 			Assert.AreEqual("System.Converter`2[[`0],[``0]]", typeRef.Resolve(new SimpleTypeResolveContext(convertAll)).ReflectionName);
 		}

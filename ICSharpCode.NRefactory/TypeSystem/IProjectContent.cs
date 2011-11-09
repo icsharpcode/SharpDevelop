@@ -54,6 +54,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ICompilation CreateCompilation();
 		
 		/// <summary>
+		/// Changes the assembly name of this project content.
+		/// </summary>
+		IProjectContent SetAssemblyName(string newAssemblyName);
+		
+		/// <summary>
 		/// Add assembly references to this project content.
 		/// </summary>
 		IProjectContent AddAssemblyReferences(IEnumerable<IAssemblyReference> references);

@@ -27,13 +27,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="ITypeDefinition"/>.
 	/// </summary>
-	public class DefaultResolvedTypeDefinition : ITypeDefinition, ITypeResolveContext
+	public class DefaultResolvedTypeDefinition : ITypeDefinition
 	{
 		readonly ITypeResolveContext parentContext;
 		readonly IUnresolvedTypeDefinition[] parts;
 		Accessibility accessibility = Accessibility.Internal;
 		List<IUnresolvedMember> unresolvedMembers = new List<IUnresolvedMember>();
-		ProjectedList<ITypeResolveContext, IUnresolvedMember, IMember> resolvedMembers;
+		ProjectedListWithContextPerElement<ITypeResolveContext, IUnresolvedMember, IMember> resolvedMembers;
 		bool isAbstract, isSealed, isShadowing;
 		bool isSynthetic = true; // true if all parts are synthetic
 		
@@ -45,12 +45,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentException("No parts were specified", "parts");
 			this.parentContext = parentContext;
 			this.parts = parts;
-			this.TypeParameters = parts[0].TypeParameters.CreateResolvedTypeParameters(this);
-			List<IUnresolvedAttribute> attributes = new List<IUnresolvedAttribute>();
+			ITypeResolveContext contextForTypeParameters = parts[0].CreateResolveContext(parentContext);
+			contextForTypeParameters = contextForTypeParameters.WithCurrentTypeDefinition(this);
+			this.TypeParameters = parts[0].TypeParameters.CreateResolvedTypeParameters(contextForTypeParameters);
+			List<IUnresolvedAttribute> unresolvedAttributes = new List<IUnresolvedAttribute>();
+			List<ITypeResolveContext> contextPerAttribute = new List<ITypeResolveContext>();
+			List<ITypeResolveContext> contextPerMember = new List<ITypeResolveContext>();
 			bool addDefaultConstructorIfRequired = false;
 			foreach (IUnresolvedTypeDefinition part in parts) {
-				attributes.AddRange(part.Attributes);
-				unresolvedMembers.AddRange(part.Members);
+				ITypeResolveContext parentContextForPart = part.CreateResolveContext(parentContext);
+				ITypeResolveContext contextForPart = parentContextForPart.WithCurrentTypeDefinition(this);
+				foreach (var attr in part.Attributes) {
+					unresolvedAttributes.Add(attr);
+					contextPerAttribute.Add(parentContextForPart);
+				}
+				foreach (var member in part.Members) {
+					unresolvedMembers.Add(member);
+					contextPerMember.Add(contextForPart);
+				}
 				
 				isAbstract  |= part.IsAbstract;
 				isSealed    |= part.IsSealed;
@@ -71,11 +83,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (kind == TypeKind.Class && !this.IsStatic && !unresolvedMembers.Any(m => m.EntityType == EntityType.Constructor && !m.IsStatic)
 				    || kind == TypeKind.Enum || kind == TypeKind.Struct)
 				{
+					contextPerMember.Add(parts[0].CreateResolveContext(parentContext).WithCurrentTypeDefinition(this));
 					unresolvedMembers.Add(DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]));
 				}
 			}
-			this.Attributes = attributes.CreateResolvedAttributes(parentContext);
-			this.resolvedMembers = new ProjectedList<ITypeResolveContext, IUnresolvedMember, IMember>(this, unresolvedMembers, (c, m) => m.CreateResolved(c));
+			this.Attributes = new ProjectedListWithContextPerElement<ITypeResolveContext, IUnresolvedAttribute, IAttribute>(contextPerAttribute, unresolvedAttributes, (c, a) => a.CreateResolvedAttribute(c));
+			this.resolvedMembers = new ProjectedListWithContextPerElement<ITypeResolveContext, IUnresolvedMember, IMember>(contextPerMember, unresolvedMembers, (c, m) => m.CreateResolved(c));
 		}
 		
 		public IList<ITypeParameter> TypeParameters { get; private set; }
@@ -104,8 +117,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				} else {
 					result = new List<ITypeDefinition>();
 					foreach (var part in parts) {
+						var context = part.CreateResolveContext(parentContext).WithCurrentTypeDefinition(this);
 						foreach (var nestedTypeRef in part.NestedTypes) {
-							ITypeDefinition nestedType = (ITypeDefinition)nestedTypeRef.Resolve(this);
+							ITypeDefinition nestedType = (ITypeDefinition)nestedTypeRef.Resolve(context);
 							if (!result.Contains(nestedType))
 								result.Add(nestedType);
 						}
@@ -187,11 +201,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				IType result = this.enumUnderlyingType;
 				if (result == null) {
 					if (this.Kind == TypeKind.Enum) {
-						result = this.Compilation.FindType(KnownTypeCode.Int32);
-						foreach (var baseTypeRef in parts.SelectMany(p => p.BaseTypes)) {
-							result = baseTypeRef.Resolve(this);
-							break;
-						}
+						
 					} else {
 						result = SpecialType.UnknownType;
 					}
@@ -201,10 +211,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IType DeclaringType {
-			get {
-				throw new NotImplementedException();
+		IType CalculateEnumUnderlyingType()
+		{
+			foreach (var part in parts) {
+				var context = part.CreateResolveContext(parentContext).WithCurrentTypeDefinition(this);
+				foreach (var baseTypeRef in part.BaseTypes) {
+					IType type = baseTypeRef.Resolve(context);
+					if (type.Kind != TypeKind.Unknown)
+						return type;
+				}
 			}
+			return this.Compilation.FindType(KnownTypeCode.Int32);
 		}
 		
 		public bool HasExtensionMethods {
@@ -249,8 +266,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					bool hasNonInterface = false;
 					if (this.Kind != TypeKind.Enum) {
 						foreach (var part in parts) {
+							var context = part.CreateResolveContext(parentContext).WithCurrentTypeDefinition(this);
 							foreach (var baseTypeRef in part.BaseTypes) {
-								IType baseType = baseTypeRef.Resolve(this);
+								IType baseType = baseTypeRef.Resolve(context);
 								if (!(baseType.Kind == TypeKind.Unknown || result.Contains(baseType))) {
 									result.Add(baseType);
 									if (baseType.Kind != TypeKind.Interface)
@@ -311,6 +329,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public ITypeDefinition DeclaringTypeDefinition {
+			get { return parentContext.CurrentTypeDefinition; }
+		}
+		
+		public IType DeclaringType {
 			get { return parentContext.CurrentTypeDefinition; }
 		}
 		
@@ -484,18 +506,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public bool Equals(IType other)
 		{
 			return this == other;
-		}
-		
-		IAssembly ITypeResolveContext.CurrentAssembly {
-			get { return parentContext.CurrentAssembly; }
-		}
-		
-		ITypeDefinition ITypeResolveContext.CurrentTypeDefinition {
-			get { return this; }
-		}
-		
-		IMember ITypeResolveContext.CurrentMember {
-			get { return null; }
 		}
 		
 		public override string ToString()

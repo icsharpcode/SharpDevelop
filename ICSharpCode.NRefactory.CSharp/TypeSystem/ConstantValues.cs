@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				throw new NotImplementedException();
 			} else {
 				// Resolve in current context.
-				return Resolve(new CSharpResolver(context));
+				return Resolve(new CSharpResolver((CSharpTypeResolveContext)context));
 			}
 		}
 		
@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
 			this.identifier = identifier;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
@@ -277,10 +277,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
 			unchecked {
-				int hashCode = identifier.GetHashCode();
-				if (typeArguments != null)
-					hashCode ^= typeArguments.GetHashCode();
-				return hashCode;
+				return identifier.GetHashCode() ^ typeArguments.GetHashCode();
 			}
 		}
 		
@@ -308,7 +305,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				throw new ArgumentNullException("memberName");
 			this.targetType = targetType;
 			this.memberName = memberName;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public ConstantMemberReference(ConstantExpression targetExpression, string memberName, IList<ITypeReference> typeArguments = null)
@@ -319,7 +316,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				throw new ArgumentNullException("memberName");
 			this.targetExpression = targetExpression;
 			this.memberName = memberName;
-			this.typeArguments = typeArguments;
+			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public override ResolveResult Resolve(CSharpResolver resolver)
@@ -349,8 +346,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 				else
 					hashCode = targetExpression.GetHashCode();
 				hashCode ^= memberName.GetHashCode();
-				if (typeArguments != null)
-					hashCode ^= typeArguments.GetHashCode();
+				hashCode ^= typeArguments.GetHashCode();
 				return hashCode;
 			}
 		}

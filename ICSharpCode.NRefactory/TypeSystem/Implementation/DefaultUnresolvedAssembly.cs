@@ -19,7 +19,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -29,49 +33,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	[Serializable]
 	public class DefaultUnresolvedAssembly : AbstractFreezable, IUnresolvedAssembly
 	{
-		#region FullNameAndTypeParameterCount
-		struct FullNameAndTypeParameterCount
-		{
-			public readonly string Namespace;
-			public readonly string Name;
-			public readonly int TypeParameterCount;
-			
-			public FullNameAndTypeParameterCount(string nameSpace, string name, int typeParameterCount)
-			{
-				this.Namespace = nameSpace;
-				this.Name = name;
-				this.TypeParameterCount = typeParameterCount;
-			}
-		}
-		
-		sealed class FullNameAndTypeParameterCountComparer : IEqualityComparer<FullNameAndTypeParameterCount>
-		{
-			public static readonly FullNameAndTypeParameterCountComparer Ordinal = new FullNameAndTypeParameterCountComparer(StringComparer.Ordinal);
-			
-			public readonly StringComparer NameComparer;
-			
-			public FullNameAndTypeParameterCountComparer(StringComparer nameComparer)
-			{
-				this.NameComparer = nameComparer;
-			}
-			
-			public bool Equals(FullNameAndTypeParameterCount x, FullNameAndTypeParameterCount y)
-			{
-				return x.TypeParameterCount == y.TypeParameterCount
-					&& NameComparer.Equals(x.Name, y.Name)
-					&& NameComparer.Equals(x.Namespace, y.Namespace);
-			}
-			
-			public int GetHashCode(FullNameAndTypeParameterCount obj)
-			{
-				return NameComparer.GetHashCode(obj.Name) ^ NameComparer.GetHashCode(obj.Namespace) ^ obj.TypeParameterCount;
-			}
-		}
-		#endregion
-		
 		string assemblyName;
-		IList<IUnresolvedAttribute> assemblyAttributes = new List<IUnresolvedAttribute>();
-		IList<IUnresolvedAttribute> moduleAttributes = new List<IUnresolvedAttribute>();
+		IList<IUnresolvedAttribute> assemblyAttributes;
+		IList<IUnresolvedAttribute> moduleAttributes;
 		Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition> typeDefinitions = new Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition>(FullNameAndTypeParameterCountComparer.Ordinal);
 		
 		protected override void FreezeInternal()
@@ -89,6 +53,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (assemblyName == null)
 				throw new ArgumentNullException("assemblyName");
 			this.assemblyName = assemblyName;
+			this.assemblyAttributes = new List<IUnresolvedAttribute>();
+			this.moduleAttributes = new List<IUnresolvedAttribute>();
 		}
 		
 		public string AssemblyName {
@@ -167,18 +133,95 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return "[" + GetType().Name + " " + assemblyName + "]";
 		}
 		
-		sealed class DefaultResolvedAssembly : IAssembly, ITypeResolveContext
+		//[NonSerialized]
+		//List<Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition>> cachedTypeDictionariesPerNameComparer;
+		
+		Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition> GetTypeDictionary(StringComparer nameComparer)
+		{
+			Debug.Assert(IsFrozen);
+			if (nameComparer == StringComparer.Ordinal)
+				return typeDefinitions;
+			else
+				throw new NotImplementedException();
+		}
+		
+		#region UnresolvedNamespace
+		sealed class UnresolvedNamespace
+		{
+			internal readonly string FullName;
+			internal readonly string Name;
+			internal readonly List<UnresolvedNamespace> Children = new List<UnresolvedNamespace>();
+			
+			public UnresolvedNamespace(string fullName, string name)
+			{
+				this.FullName = fullName;
+				this.Name = name;
+			}
+		}
+		
+		[NonSerialized]
+		List<KeyValuePair<StringComparer, UnresolvedNamespace>> unresolvedNamespacesPerNameComparer;
+		
+		UnresolvedNamespace GetUnresolvedRootNamespace(StringComparer nameComparer)
+		{
+			Debug.Assert(IsFrozen);
+			LazyInitializer.EnsureInitialized(ref unresolvedNamespacesPerNameComparer);
+			lock (unresolvedNamespacesPerNameComparer) {
+				foreach (var pair in unresolvedNamespacesPerNameComparer) {
+					if (pair.Key == nameComparer)
+						return pair.Value;
+				}
+				var root = new UnresolvedNamespace(string.Empty, string.Empty);
+				var dict = new Dictionary<string, UnresolvedNamespace>(nameComparer);
+				dict.Add(root.FullName, root);
+				foreach (var typeName in typeDefinitions.Keys) {
+					GetOrAddNamespace(dict, typeName.Namespace);
+				}
+				unresolvedNamespacesPerNameComparer.Add(new KeyValuePair<StringComparer, UnresolvedNamespace>(nameComparer, root));
+				return root;
+			}
+		}
+		
+		static UnresolvedNamespace GetOrAddNamespace(Dictionary<string, UnresolvedNamespace> dict, string fullName)
+		{
+			UnresolvedNamespace ns;
+			if (dict.TryGetValue(fullName, out ns))
+				return ns;
+			int pos = fullName.LastIndexOf('.');
+			UnresolvedNamespace parent;
+			string name;
+			if (pos < 0) {
+				parent = dict[string.Empty]; // root
+				name = fullName;
+			} else {
+				parent = GetOrAddNamespace(dict, fullName.Substring(0, pos));
+				name = fullName.Substring(pos + 1);
+			}
+			ns = new UnresolvedNamespace(fullName, name);
+			parent.Children.Add(ns);
+			dict.Add(fullName, ns);
+			return ns;
+		}
+		#endregion
+		
+		sealed class DefaultResolvedAssembly : IAssembly
 		{
 			readonly DefaultUnresolvedAssembly unresolved;
 			readonly ICompilation compilation;
+			readonly ITypeResolveContext context;
+			readonly Dictionary<FullNameAndTypeParameterCount, IUnresolvedTypeDefinition> unresolvedTypeDict;
 			readonly ConcurrentDictionary<IUnresolvedTypeDefinition, ITypeDefinition> typeDict = new ConcurrentDictionary<IUnresolvedTypeDefinition, ITypeDefinition>();
+			readonly INamespace rootNamespace;
 			
 			public DefaultResolvedAssembly(ICompilation compilation, DefaultUnresolvedAssembly unresolved)
 			{
 				this.compilation = compilation;
 				this.unresolved = unresolved;
-				this.AssemblyAttributes = unresolved.AssemblyAttributes.ToList().CreateResolvedAttributes(this);
-				this.ModuleAttributes = unresolved.ModuleAttributes.ToList().CreateResolvedAttributes(this);
+				this.unresolvedTypeDict = unresolved.GetTypeDictionary(compilation.NameComparer);
+				this.rootNamespace = new NS(this, unresolved.GetUnresolvedRootNamespace(compilation.NameComparer), null);
+				this.context = new SimpleTypeResolveContext(this);
+				this.AssemblyAttributes = unresolved.AssemblyAttributes.ToList().CreateResolvedAttributes(context);
+				this.ModuleAttributes = unresolved.ModuleAttributes.ToList().CreateResolvedAttributes(context);
 			}
 			
 			public IUnresolvedAssembly UnresolvedAssembly {
@@ -197,9 +240,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public IList<IAttribute> ModuleAttributes { get; private set; }
 			
 			public INamespace RootNamespace {
-				get {
-					throw new NotImplementedException();
-				}
+				get { return rootNamespace; }
 			}
 			
 			public ICompilation Compilation {
@@ -227,24 +268,79 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			{
 				if (unresolved.DeclaringTypeDefinition != null) {
 					ITypeDefinition declaringType = GetTypeDefinition(unresolved.DeclaringTypeDefinition);
-					return new DefaultResolvedTypeDefinition(new SimpleTypeResolveContext(declaringType), unresolved);
+					return new DefaultResolvedTypeDefinition(context.WithCurrentTypeDefinition(declaringType), unresolved);
 				} else if (unresolved.Name == "Void" && unresolved.Namespace == "System" && unresolved.TypeParameters.Count == 0) {
-					return new VoidTypeDefinition(this, unresolved);
+					return new VoidTypeDefinition(context, unresolved);
 				} else {
-					return new DefaultResolvedTypeDefinition(this, unresolved);
+					return new DefaultResolvedTypeDefinition(context, unresolved);
 				}
 			}
 			
-			IAssembly ITypeResolveContext.CurrentAssembly {
-				get { return this; }
-			}
-			
-			ITypeDefinition ITypeResolveContext.CurrentTypeDefinition {
-				get { return null; }
-			}
-			
-			IMember ITypeResolveContext.CurrentMember {
-				get { return null; }
+			sealed class NS : INamespace
+			{
+				readonly DefaultResolvedAssembly assembly;
+				readonly UnresolvedNamespace ns;
+				readonly INamespace parentNamespace;
+				readonly IList<NS> childNamespaces;
+				
+				public NS(DefaultResolvedAssembly assembly, UnresolvedNamespace ns, INamespace parentNamespace)
+				{
+					this.assembly = assembly;
+					this.ns = ns;
+					this.parentNamespace = parentNamespace;
+					this.childNamespaces = new ProjectedList<NS, UnresolvedNamespace, NS>(
+						this, ns.Children, (self, c) => new NS(self.assembly, c, self));
+				}
+				
+				string INamespace.ExternAlias {
+					get { return null; }
+				}
+				
+				string INamespace.FullName {
+					get { return ns.FullName; }
+				}
+				
+				string INamespace.Name {
+					get { return ns.Name; }
+				}
+				
+				INamespace INamespace.ParentNamespace {
+					get { return parentNamespace; }
+				}
+				
+				IEnumerable<INamespace> INamespace.ChildNamespaces {
+					get { return childNamespaces; }
+				}
+				
+				INamespace INamespace.GetChildNamespace(string name)
+				{
+					var nameComparer = assembly.compilation.NameComparer;
+					for (int i = 0; i < childNamespaces.Count; i++) {
+						if (nameComparer.Equals(name, ns.Children[i].Name))
+							return childNamespaces[i];
+					}
+					return null;
+				}
+				
+				ICompilation IResolved.Compilation {
+					get { return assembly.compilation; }
+				}
+				
+				IEnumerable<ITypeDefinition> INamespace.Types {
+					get {
+						throw new NotImplementedException();
+					}
+				}
+				
+				ITypeDefinition INamespace.GetTypeDefinition(string name, int typeParameterCount)
+				{
+					var key = new FullNameAndTypeParameterCount(ns.FullName, name, typeParameterCount);
+					IUnresolvedTypeDefinition unresolvedTypeDef;
+					if (assembly.unresolvedTypeDict.TryGetValue(key, out unresolvedTypeDef))
+						return assembly.GetTypeDefinition(unresolvedTypeDef);
+					else
+						return null;
+				}
 			}
 		}
 	}

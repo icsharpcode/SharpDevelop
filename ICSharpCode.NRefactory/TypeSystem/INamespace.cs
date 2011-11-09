@@ -66,12 +66,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets a direct child namespace by its short name.
 		/// Returns null when the namespace cannot be found.
 		/// </summary>
+		/// <remarks>
+		/// This method uses the compilation's current string comparer.
+		/// </remarks>
 		INamespace GetChildNamespace(string name);
 		
 		/// <summary>
 		/// Gets the type with the specified short name and type parameter count.
 		/// Returns null if the type cannot be found.
 		/// </summary>
+		/// <remarks>
+		/// This method uses the compilation's current string comparer.
+		/// </remarks>
 		ITypeDefinition GetTypeDefinition(string name, int typeParameterCount);
 	}
 }

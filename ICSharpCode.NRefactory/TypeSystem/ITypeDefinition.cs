@@ -35,6 +35,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		IList<IUnresolvedTypeDefinition> NestedTypes { get; }
 		IList<IUnresolvedMember> Members { get; }
+		
+		/// <summary>
+		/// Creates a type resolve context for this part of the type definition.
+		/// This method is used to add language-specific elements like the C# UsingScope
+		/// to the type resolve context.
+		/// </summary>
+		/// <param name="parentContext">The parent context (e.g. the parent assembly),
+		/// including the parent </param>
+		ITypeResolveContext CreateResolveContext(ITypeResolveContext parentContext);
 	}
 	
 	/// <summary>

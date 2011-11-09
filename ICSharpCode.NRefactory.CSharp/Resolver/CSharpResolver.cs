@@ -43,6 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		readonly ICompilation compilation;
 		internal readonly Conversions conversions;
+		CSharpTypeResolveContext context;
 		
 		#region Constructor
 		public CSharpResolver(ICompilation compilation)
@@ -51,16 +52,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("compilation");
 			this.compilation = compilation;
 			this.conversions = Conversions.Get(compilation);
+			this.context = new CSharpTypeResolveContext(compilation.MainAssembly);
 		}
 		
-		public CSharpResolver(ITypeResolveContext context)
+		public CSharpResolver(CSharpTypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.compilation = context.Compilation;
 			this.conversions = Conversions.Get(compilation);
-			this.CurrentMember = context.CurrentMember;
-			this.CurrentTypeDefinition = context.CurrentTypeDefinition;
+			this.context = context;
+			if (context.CurrentTypeDefinition != null)
+				currentTypeDefinitionCache = new TypeDefinitionCache(context.CurrentTypeDefinition);
+			if (context.CurrentUsingScope != null)
+				currentUsingScopeCache = new UsingScopeCache(context.CurrentUsingScope);
 		}
 		#endregion
 		
@@ -76,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the current type resolve context.
 		/// </summary>
 		public ITypeResolveContext CurrentTypeResolveContext {
-			get { throw new NotImplementedException(); }
+			get { return context; }
 		}
 		
 		/// <summary>
@@ -90,23 +95,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <remarks>Don't forget to also set CurrentTypeDefinition when setting CurrentMember;
 		/// setting one of the properties does not automatically set the other.</remarks>
-		public IMember CurrentMember { get; set; }
+		public IMember CurrentMember {
+			get { return context.CurrentMember; }
+			set {
+				context = context.WithCurrentMember(value);
+			}
+		}
 		#endregion
 		
 		#region Per-CurrentTypeDefinition Cache
-		TypeDefinitionCache currentTypeDefinition;
+		TypeDefinitionCache currentTypeDefinitionCache;
 		
 		/// <summary>
 		/// Gets/Sets the current type definition that is used to look up identifiers as simple members.
 		/// </summary>
 		public ITypeDefinition CurrentTypeDefinition {
-			get { return currentTypeDefinition != null ? currentTypeDefinition.TypeDefinition : null; }
+			get { return context.CurrentTypeDefinition; }
 			set {
+				context = context.WithCurrentTypeDefinition(value);
 				if (value == null) {
-					currentTypeDefinition = null;
+					currentTypeDefinitionCache = null;
 				} else {
-					if (currentTypeDefinition == null || currentTypeDefinition.TypeDefinition != value) {
-						currentTypeDefinition = new TypeDefinitionCache(value);
+					if (currentTypeDefinitionCache == null || currentTypeDefinitionCache.TypeDefinition != value) {
+						currentTypeDefinitionCache = new TypeDefinitionCache(value);
 					}
 				}
 			}
@@ -127,19 +138,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region CurrentUsingScope
-		UsingScopeCache currentUsingScope;
+		UsingScopeCache currentUsingScopeCache;
 		
 		/// <summary>
 		/// Gets/Sets the current using scope that is used to look up identifiers as class names.
 		/// </summary>
 		public UsingScope CurrentUsingScope {
-			get { return currentUsingScope != null ? currentUsingScope.UsingScope : null; }
+			get { return context.CurrentUsingScope; }
 			set {
+				context = context.WithUsingScope(value);
 				if (value == null) {
-					currentUsingScope = null;
+					currentUsingScopeCache = null;
 				} else {
-					if (currentUsingScope == null || currentUsingScope.UsingScope != value) {
-						currentUsingScope = new UsingScopeCache(value);
+					if (currentUsingScopeCache == null || currentUsingScopeCache.UsingScope != value) {
+						currentUsingScopeCache = new UsingScopeCache(value);
 					}
 				}
 			}
@@ -1214,19 +1226,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool parameterizeResultType = !(typeArguments.Count != 0 && typeArguments.All(t => t.Kind == TypeKind.UnboundTypeArgument));
 			
 			ResolveResult r = null;
-			if (currentTypeDefinition != null) {
+			if (currentTypeDefinitionCache != null) {
 				Dictionary<string, ResolveResult> cache = null;
 				bool foundInCache = false;
 				if (k == 0) {
 					switch (lookupMode) {
 						case SimpleNameLookupMode.Expression:
-							cache = currentTypeDefinition.SimpleNameLookupCacheExpression;
+							cache = currentTypeDefinitionCache.SimpleNameLookupCacheExpression;
 							break;
 						case SimpleNameLookupMode.InvocationTarget:
-							cache = currentTypeDefinition.SimpleNameLookupCacheInvocationTarget;
+							cache = currentTypeDefinitionCache.SimpleNameLookupCacheInvocationTarget;
 							break;
 						case SimpleNameLookupMode.Type:
-							cache = currentTypeDefinition.SimpleTypeLookupCache;
+							cache = currentTypeDefinitionCache.SimpleTypeLookupCache;
 							break;
 					}
 					if (cache != null) {
@@ -1244,11 +1256,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return r;
 			}
 			
-			if (currentUsingScope != null) {
+			if (currentUsingScopeCache != null) {
 				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
-					if (!currentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
+					if (!currentUsingScopeCache.ResolveCache.TryGetValue(identifier, out r)) {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
-						currentUsingScope.ResolveCache[identifier] = r;
+						currentUsingScopeCache.ResolveCache[identifier] = r;
 					}
 				} else {
 					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
@@ -1532,14 +1544,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		IList<List<IMethod>> GetAllExtensionMethods()
 		{
-			if (currentUsingScope == null)
+			if (currentUsingScopeCache == null)
 				return EmptyList<List<IMethod>>.Instance;
-			List<List<IMethod>> extensionMethodGroups = currentUsingScope.AllExtensionMethods;
+			List<List<IMethod>> extensionMethodGroups = currentUsingScopeCache.AllExtensionMethods;
 			if (extensionMethodGroups != null)
 				return extensionMethodGroups;
 			extensionMethodGroups = new List<List<IMethod>>();
 			List<IMethod> m;
-			for (UsingScope scope = currentUsingScope.UsingScope; scope != null; scope = scope.Parent) {
+			for (UsingScope scope = currentUsingScopeCache.UsingScope; scope != null; scope = scope.Parent) {
 				INamespace ns = scope.ResolveNamespace(compilation);
 				if (ns != null) {
 					m = GetExtensionMethods(ns).ToList();
@@ -1556,7 +1568,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (m.Count > 0)
 					extensionMethodGroups.Add(m);
 			}
-			currentUsingScope.AllExtensionMethods = extensionMethodGroups;
+			currentUsingScopeCache.AllExtensionMethods = extensionMethodGroups;
 			return extensionMethodGroups;
 		}
 		

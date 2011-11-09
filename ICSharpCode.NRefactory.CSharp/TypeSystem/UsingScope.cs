@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -34,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	{
 		readonly UsingScope parent;
 		DomRegion region;
-		string namespaceName = "";
+		string shortName = "";
 		IList<TypeOrNamespaceReference> usings;
 		IList<KeyValuePair<string, TypeOrNamespaceReference>> usingAliases;
 		IList<string> externAliases;
@@ -64,15 +65,15 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		/// Creates a new nested using scope.
 		/// </summary>
 		/// <param name="parent">The parent using scope.</param>
-		/// <param name="namespaceName">The full namespace name.</param>
-		public UsingScope(UsingScope parent, string namespaceName)
+		/// <param name="shortName">The short namespace name.</param>
+		public UsingScope(UsingScope parent, string shortName)
 		{
 			if (parent == null)
 				throw new ArgumentNullException("parent");
-			if (namespaceName == null)
-				throw new ArgumentNullException("namespaceName");
+			if (shortName == null)
+				throw new ArgumentNullException("shortName");
 			this.parent = parent;
-			this.namespaceName = namespaceName;
+			this.shortName = shortName;
 		}
 		
 		public UsingScope Parent {
@@ -87,14 +88,25 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 		}
 		
-		public string NamespaceName {
-			get { return namespaceName; }
-			set {
-				if (value == null)
-					throw new ArgumentNullException("NamespaceName");
-				FreezableHelper.ThrowIfFrozen(this);
-				namespaceName = value;
+		public string ShortNamespaceName {
+			get {
+				return shortName;
 			}
+		}
+		
+		public string NamespaceName {
+			get {
+				if (parent != null)
+					return NamespaceDeclaration.BuildQualifiedName(parent.NamespaceName, shortName);
+				else
+					return shortName;
+			}
+//			set {
+//				if (value == null)
+//					throw new ArgumentNullException("NamespaceName");
+//				FreezableHelper.ThrowIfFrozen(this);
+//				namespaceName = value;
+//			}
 		}
 		
 		public IList<TypeOrNamespaceReference> Usings {
@@ -149,7 +161,16 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		/// </summary>
 		public INamespace ResolveNamespace(ICompilation compilation)
 		{
-			throw new NotImplementedException();
+			if (parent != null) {
+				INamespace ns = parent.ResolveNamespace(compilation);
+				if (ns != null)
+					return ns.GetChildNamespace(shortName);
+				else
+					return null;
+			} else {
+				Debug.Assert(string.IsNullOrEmpty(shortName));
+				return compilation.RootNamespace;
+			}
 		}
 	}
 }

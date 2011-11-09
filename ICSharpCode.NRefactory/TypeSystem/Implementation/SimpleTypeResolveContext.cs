@@ -64,6 +64,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.currentMember = member;
 		}
 		
+		private SimpleTypeResolveContext(ICompilation compilation, IAssembly currentAssembly, ITypeDefinition currentTypeDefinition, IMember currentMember)
+		{
+			this.compilation = compilation;
+			this.currentAssembly = currentAssembly;
+			this.currentTypeDefinition = currentTypeDefinition;
+			this.currentMember = currentMember;
+		}
+		
 		public ICompilation Compilation {
 			get { return compilation; }
 		}
@@ -78,6 +86,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IMember CurrentMember {
 			get { return currentMember; }
+		}
+		
+		public ITypeResolveContext WithCurrentTypeDefinition(ITypeDefinition typeDefinition)
+		{
+			return new SimpleTypeResolveContext(compilation, currentAssembly, typeDefinition, currentMember);
+		}
+		
+		public ITypeResolveContext WithCurrentMember(IMember member)
+		{
+			return new SimpleTypeResolveContext(compilation, currentAssembly, currentTypeDefinition, member);
 		}
 	}
 }

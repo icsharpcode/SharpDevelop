@@ -95,6 +95,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		INamespace RootNamespace { get; }
 		
+		/// <summary>
+		/// Gets the type definition for a top-level type.
+		/// </summary>
+		/// <remarks>This method uses ordinal name comparison, not the compilation's name comparer.</remarks>
 		ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount);
 		
 		/// <summary>

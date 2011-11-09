@@ -17,45 +17,31 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
-	/// <summary>
-	/// Represents a reference which could point to a type or namespace.
-	/// </summary>
 	[Serializable]
-	public abstract class TypeOrNamespaceReference : ITypeReference
+	public class CSharpUnresolvedTypeDefinition : DefaultUnresolvedTypeDefinition
 	{
-		/// <summary>
-		/// Resolves the reference and returns the ResolveResult.
-		/// </summary>
-		public abstract ResolveResult Resolve(CSharpResolver resolver);
+		readonly UsingScope usingScope;
 		
-		/// <summary>
-		/// Returns the namespace that is referenced; or null if no such namespace is found.
-		/// </summary>
-		public INamespace ResolveNamespace(CSharpResolver resolver)
+		public CSharpUnresolvedTypeDefinition(UsingScope usingScope, string name)
+			: base(usingScope.NamespaceName, name)
 		{
-			NamespaceResolveResult nrr = Resolve(resolver) as NamespaceResolveResult;
-			return nrr != null ? nrr.Namespace : null;
+			this.usingScope = usingScope;
 		}
 		
-		/// <summary>
-		/// Returns the type that is referenced; or <see cref="SpecialTypes.UnknownType"/> if the type isn't found.
-		/// </summary>
-		public IType ResolveType(CSharpResolver resolver)
+		public CSharpUnresolvedTypeDefinition(CSharpUnresolvedTypeDefinition declaringTypeDefinition, string name)
+			: base(declaringTypeDefinition, name)
 		{
-			TypeResolveResult trr = Resolve(resolver) as TypeResolveResult;
-			return trr != null ? trr.Type : SpecialType.UnknownType;
+			this.usingScope = declaringTypeDefinition.usingScope;
 		}
 		
-		IType ITypeReference.Resolve(ITypeResolveContext context)
+		public override ITypeResolveContext CreateResolveContext(ITypeResolveContext parentContext)
 		{
-			// TODO: use the correct compilation
-			return ResolveType(new CSharpResolver((CSharpTypeResolveContext)context));
+			return new CSharpTypeResolveContext(parentContext.CurrentAssembly, usingScope, parentContext.CurrentTypeDefinition);
 		}
 	}
 }

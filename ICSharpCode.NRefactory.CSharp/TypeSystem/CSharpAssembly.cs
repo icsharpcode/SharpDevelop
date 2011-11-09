@@ -17,67 +17,251 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	public class CSharpAssembly : IAssembly
 	{
-		bool IAssembly.IsMainAssembly {
+		readonly ICompilation compilation;
+		readonly ITypeResolveContext context;
+		readonly CSharpProjectContent projectContent;
+		IList<IAttribute> assemblyAttributes;
+		IList<IAttribute> moduleAttributes;
+		
+		internal CSharpAssembly(ICompilation compilation, CSharpProjectContent projectContent)
+		{
+			this.compilation = compilation;
+			this.projectContent = projectContent;
+			this.context = new SimpleTypeResolveContext(this);
+		}
+		
+		public bool IsMainAssembly {
+			get { return compilation.MainAssembly == this; }
+		}
+		
+		public IUnresolvedAssembly UnresolvedAssembly {
+			get { return projectContent; }
+		}
+		
+		public string AssemblyName {
+			get { return projectContent.AssemblyName; }
+		}
+		
+		public IList<IAttribute> AssemblyAttributes {
 			get {
-				throw new NotImplementedException();
+				return GetAttributes(ref assemblyAttributes, true);
 			}
 		}
 		
-		IUnresolvedAssembly IAssembly.UnresolvedAssembly {
+		public IList<IAttribute> ModuleAttributes {
 			get {
-				throw new NotImplementedException();
+				return GetAttributes(ref moduleAttributes, false);
 			}
 		}
 		
-		string IAssembly.AssemblyName {
-			get {
-				throw new NotImplementedException();
+		IList<IAttribute> GetAttributes(ref IList<IAttribute> field, bool assemblyAttributes)
+		{
+			IList<IAttribute> result = field;
+			if (result != null) {
+				LazyInit.ReadBarrier();
+				return result;
+			} else {
+				result = new List<IAttribute>();
+				foreach (var parsedFile in projectContent.Files.OfType<CSharpParsedFile>()) {
+					var attributes = assemblyAttributes ? parsedFile.AssemblyAttributes : parsedFile.ModuleAttributes;
+					var context = new CSharpTypeResolveContext(this, parsedFile.RootUsingScope);
+					foreach (var unresolvedAttr in attributes) {
+						result.Add(unresolvedAttr.CreateResolvedAttribute(context));
+					}
+				}
+				return LazyInit.GetOrSet(ref field, result);
 			}
 		}
 		
-		System.Collections.Generic.IList<IAttribute> IAssembly.AssemblyAttributes {
+		NS rootNamespace;
+		
+		public INamespace RootNamespace {
 			get {
-				throw new NotImplementedException();
+				NS root = this.rootNamespace;
+				if (root != null) {
+					LazyInit.ReadBarrier();
+					return root;
+				} else {
+					root = new NS(this);
+					Dictionary<string, NS> dict = new Dictionary<string, NS>();
+					dict.Add(string.Empty, root);
+					foreach (var pair in GetTypes()) {
+						NS ns = GetOrAddNamespace(dict, pair.Key.Namespace);
+						ns.types[pair.Key] = pair.Value;
+					}
+					return LazyInit.GetOrSet(ref this.rootNamespace, root);
+				}
 			}
 		}
 		
-		System.Collections.Generic.IList<IAttribute> IAssembly.ModuleAttributes {
-			get {
-				throw new NotImplementedException();
+		static NS GetOrAddNamespace(Dictionary<string, NS> dict, string fullName)
+		{
+			NS ns;
+			if (dict.TryGetValue(fullName, out ns))
+				return ns;
+			int pos = fullName.LastIndexOf('.');
+			NS parent;
+			string name;
+			if (pos < 0) {
+				parent = dict[string.Empty]; // root
+				name = fullName;
+			} else {
+				parent = GetOrAddNamespace(dict, fullName.Substring(0, pos));
+				name = fullName.Substring(pos + 1);
 			}
+			ns = new NS(parent, fullName, name);
+			parent.childNamespaces.Add(ns);
+			dict.Add(fullName, ns);
+			return ns;
 		}
 		
-		INamespace IAssembly.RootNamespace {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		ICompilation IResolved.Compilation {
-			get {
-				throw new NotImplementedException();
-			}
+		public ICompilation Compilation {
+			get { return compilation; }
 		}
 		
 		bool IAssembly.InternalsVisibleTo(IAssembly assembly)
 		{
-			throw new NotImplementedException();
+			return this == assembly;
 		}
 		
-		ITypeDefinition IAssembly.GetTypeDefinition(string ns, string name, int typeParameterCount)
+		Dictionary<FullNameAndTypeParameterCount, DefaultResolvedTypeDefinition> typeDict;
+		
+		Dictionary<FullNameAndTypeParameterCount, DefaultResolvedTypeDefinition> GetTypes()
 		{
-			throw new NotImplementedException();
+			var dict = this.typeDict;
+			if (dict != null) {
+				LazyInit.ReadBarrier();
+				return dict;
+			} else {
+				var comparer = FullNameAndTypeParameterCountComparer.Ordinal;
+				dict = projectContent.TopLevelTypeDefinitions
+					.GroupBy(t => new FullNameAndTypeParameterCount(t.Namespace, t.Name, t.TypeParameters.Count), comparer)
+					.ToDictionary(g => g.Key, g => new DefaultResolvedTypeDefinition(context, g.ToArray()), comparer);
+				return LazyInit.GetOrSet(ref this.typeDict, dict);
+			}
 		}
 		
-		ITypeDefinition IAssembly.GetTypeDefinition(IUnresolvedTypeDefinition unresolved)
+		public ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount)
 		{
-			throw new NotImplementedException();
+			var key = new FullNameAndTypeParameterCount(ns, name, typeParameterCount);
+			DefaultResolvedTypeDefinition def;
+			if (GetTypes().TryGetValue(key, out def))
+				return def;
+			else
+				return null;
+		}
+		
+		Dictionary<IUnresolvedTypeDefinition, ITypeDefinition> nestedTypeDict = new Dictionary<IUnresolvedTypeDefinition, ITypeDefinition>();
+		
+		public ITypeDefinition GetTypeDefinition(IUnresolvedTypeDefinition unresolved)
+		{
+			if (unresolved.DeclaringTypeDefinition == null) {
+				return GetTypeDefinition(unresolved.Namespace, unresolved.Name, unresolved.TypeParameters.Count);
+			} else {
+				lock (nestedTypeDict) {
+					ITypeDefinition typeDef;
+					if (nestedTypeDict.TryGetValue(unresolved, out typeDef))
+						return typeDef;
+					
+					ITypeDefinition parentType = GetTypeDefinition(unresolved.DeclaringTypeDefinition);
+					if (parentType == null)
+						return null;
+					List<IUnresolvedTypeDefinition> parts = new List<IUnresolvedTypeDefinition>();
+					foreach (var parentPart in parentType.Parts) {
+						foreach (var nestedPart in parentPart.NestedTypes) {
+							if (nestedPart.Name == unresolved.Name && nestedPart.TypeParameters.Count == unresolved.TypeParameters.Count) {
+								parts.Add(nestedPart);
+							}
+						}
+					}
+					typeDef = new DefaultResolvedTypeDefinition(new SimpleTypeResolveContext(parentType), parts.ToArray());
+					foreach (var part in parts) {
+						nestedTypeDict.Add(part, typeDef);
+					}
+					return typeDef;
+				}
+			}
+		}
+		
+		sealed class NS : INamespace
+		{
+			readonly CSharpAssembly assembly;
+			readonly NS parentNamespace;
+			readonly string fullName;
+			readonly string name;
+			internal readonly List<NS> childNamespaces = new List<NS>();
+			internal readonly Dictionary<FullNameAndTypeParameterCount, ITypeDefinition> types;
+			
+			public NS(CSharpAssembly assembly)
+			{
+				this.assembly = assembly;
+				this.fullName = string.Empty;
+				this.name = string.Empty;
+				this.types = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(new FullNameAndTypeParameterCountComparer(assembly.compilation.NameComparer));
+			}
+			
+			public NS(NS parentNamespace, string fullName, string name)
+			{
+				this.assembly = parentNamespace.assembly;
+				this.parentNamespace = parentNamespace;
+				this.fullName = fullName;
+				this.name = name;
+				this.types = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(parentNamespace.types.Comparer);
+			}
+			
+			string INamespace.ExternAlias {
+				get { return null; }
+			}
+			
+			string INamespace.FullName {
+				get { return fullName; }
+			}
+			
+			string INamespace.Name {
+				get { return name; }
+			}
+			
+			INamespace INamespace.ParentNamespace {
+				get { return parentNamespace; }
+			}
+			
+			IEnumerable<INamespace> INamespace.ChildNamespaces {
+				get { return childNamespaces; }
+			}
+			
+			IEnumerable<ITypeDefinition> INamespace.Types {
+				get { return types.Values; }
+			}
+			
+			ICompilation IResolved.Compilation {
+				get { return assembly.Compilation; }
+			}
+			
+			INamespace INamespace.GetChildNamespace(string name)
+			{
+				var nameComparer = assembly.compilation.NameComparer;
+				foreach (NS childNamespace in childNamespaces) {
+					if (nameComparer.Equals(name, childNamespace.name))
+						return childNamespace;
+				}
+				return null;
+			}
+			
+			ITypeDefinition INamespace.GetTypeDefinition(string name, int typeParameterCount)
+			{
+				return assembly.GetTypeDefinition(this.fullName, name, typeParameterCount);
+			}
 		}
 	}
 }

@@ -24,15 +24,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Implementation of <see cref="IMember"/> that resolves an unresolved member.
 	/// </summary>
-	public abstract class AbstractResolvedMember : AbstractResolvedEntity, IMember, ITypeResolveContext
+	public abstract class AbstractResolvedMember : AbstractResolvedEntity, IMember
 	{
 		protected new readonly IUnresolvedMember unresolved;
+		protected readonly ITypeResolveContext context;
 		volatile IType returnType;
 		
 		protected AbstractResolvedMember(IUnresolvedMember unresolved, ITypeResolveContext parentContext)
 			: base(unresolved, parentContext)
 		{
 			this.unresolved = unresolved;
+			this.context = parentContext.WithCurrentMember(this);
 		}
 		
 		IMember IMember.MemberDefinition {
@@ -41,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IType ReturnType {
 			get {
-				return this.returnType ?? (this.returnType = unresolved.ReturnType.Resolve(this));
+				return this.returnType ?? (this.returnType = unresolved.ReturnType.Resolve(context));
 			}
 		}
 		
@@ -70,18 +72,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IMemberReference ToMemberReference()
 		{
 			throw new NotImplementedException();
-		}
-		
-		IAssembly ITypeResolveContext.CurrentAssembly {
-			get { return parentContext.CurrentAssembly; }
-		}
-		
-		ITypeDefinition ITypeResolveContext.CurrentTypeDefinition {
-			get { return parentContext.CurrentTypeDefinition; }
-		}
-		
-		IMember ITypeResolveContext.CurrentMember {
-			get { return this; }
 		}
 	}
 }

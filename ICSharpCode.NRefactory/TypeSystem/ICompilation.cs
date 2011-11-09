@@ -57,6 +57,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		IType FindType(KnownTypeCode typeCode);
 		
+		/// <summary>
+		/// Gets the name comparer for the language being compiled.
+		/// This is the string comparer used for the INamespace.GetTypeDefinition method.
+		/// </summary>
+		StringComparer NameComparer { get; }
+		
 		CacheManager CacheManager { get; }
 	}
 	

@@ -62,5 +62,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			TypeParameterReference r = other as TypeParameterReference;
 			return r != null && index == r.index && ownerType == r.ownerType;
 		}
+		
+		public override string ToString()
+		{
+			if (ownerType == EntityType.Method)
+				return "!!" + index.ToString();
+			else
+				return "!" + index.ToString();
+		}
 	}
 }

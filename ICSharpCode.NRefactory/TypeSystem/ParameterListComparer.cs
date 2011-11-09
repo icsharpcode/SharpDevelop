@@ -39,12 +39,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		// In order to compare the method signatures, we will normalize all method type parameters.
 		sealed class NormalizeMethodTypeParameters : TypeVisitor
 		{
-			//ITypeParameter[] normalTypeParameters = { new DefaultTypeParameter(EntityType.Method, 0, string.Empty) };
+			ITypeParameter[] normalTypeParameters = { new DefaultTypeParameter(EntityType.Method, 0) };
 			
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
-				throw new NotImplementedException();
-				/*if (type.OwnerType == EntityType.Method) {
+				if (type.OwnerType == EntityType.Method) {
 					ITypeParameter[] tps = this.normalTypeParameters;
 					while (type.Index >= tps.Length) {
 						// We don't have a normal type parameter for this index, so we need to extend our array.
@@ -53,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						ITypeParameter[] newTps = new ITypeParameter[type.Index + 1];
 						tps.CopyTo(newTps, 0);
 						for (int i = tps.Length; i < newTps.Length; i++) {
-							newTps[i] = new DefaultTypeParameter(EntityType.Method, i, string.Empty);
+							newTps[i] = new DefaultTypeParameter(EntityType.Method, i);
 						}
 						ITypeParameter[] oldTps = Interlocked.CompareExchange(ref normalTypeParameters, newTps, tps);
 						if (oldTps == tps) {
@@ -67,7 +66,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return tps[type.Index];
 				} else {
 					return base.VisitTypeParameter(type);
-				}*/
+				}
 			}
 		}
 		
