@@ -893,6 +893,39 @@ namespace MyNamespace
 		}
 		
 		/// <summary>
+		/// Bug 1932 - [new resolver] fields don't show up unless prefixed with 'this.'
+		/// </summary>
+		[Test()]
+		public void TestBug1932 ()
+		{
+			CombinedProviderTest (
+@"
+namespace MyNamespace
+{
+	partial class FormMain
+	{
+		int field1;
+		string field2;
+	}
+}
+
+namespace MyNamespace
+{
+	public partial class FormMain
+	{
+		private void Bar()
+		{
+			$f$
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("field1"), "field 'field1' not found.");
+				Assert.IsNotNull (provider.Find ("field2"), "field 'field2' not found.");
+			});
+		}
+		
+		/// <summary>
 		/// Bug 432434 - Code completion doesn't work with subclasses
 		/// </summary>
 		[Test()]
