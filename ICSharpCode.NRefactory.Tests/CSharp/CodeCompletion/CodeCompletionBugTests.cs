@@ -926,6 +926,40 @@ namespace MyNamespace
 		}
 		
 		/// <summary>
+		/// Bug 1967 - [new resolver] Intellisense doesn't work
+		/// </summary>
+		[Test()]
+		public void TestBug1967 ()
+		{
+			CombinedProviderTest (
+@"
+namespace MyNamespace
+{
+	partial class FormMain
+	{
+		FormMain field1;
+		string field2;
+	}
+}
+
+namespace MyNamespace
+{
+	public partial class FormMain
+	{
+		private void Bar()
+		{
+			$field1.$
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("field1"), "field 'field1' not found.");
+				Assert.IsNotNull (provider.Find ("field2"), "field 'field2' not found.");
+			});
+		}
+		
+		
+		/// <summary>
 		/// Bug 432434 - Code completion doesn't work with subclasses
 		/// </summary>
 		[Test()]
