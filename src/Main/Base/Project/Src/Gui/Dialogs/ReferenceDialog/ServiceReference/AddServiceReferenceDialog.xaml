@@ -22,7 +22,14 @@
 	<Window.Resources>
 		<HierarchicalDataTemplate x:Key="HeaderTemplate"
 			ItemsSource="{Binding SubItems}">
-			<TextBlock Grid.Row="0" Text="{Binding Path=Name}" />
+			<!--
+			<TextBlock Grid.Row="0" Text="{Binding Path=Description}" />-->
+			
+			<StackPanel Orientation="Horizontal">
+				<Image Width="16" Height="16" Source="{Binding Image}"/>
+				<TextBlock Text="{Binding Description}"/>
+			</StackPanel>
+		
 		</HierarchicalDataTemplate>
 	</Window.Resources>
 	
@@ -105,6 +112,7 @@
 				Grid.Row="1"
 				Grid.Column="0"
 				Width="2"/>
+		
 			<ListView
 				Grid.Column="1" Grid.Row="1"  Margin="4"
 				ItemsSource="{Binding Path=TwoValues}">

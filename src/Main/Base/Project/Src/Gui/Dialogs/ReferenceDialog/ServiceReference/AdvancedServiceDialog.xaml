@@ -129,23 +129,28 @@
 				
 				<ListView Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
 				          Margin="80,0,0,0" 
+				          SelectionMode="Multiple"
 				          ItemsSource="{Binding AssembliesToReference}"
 				          IsEnabled="{Binding ListViewEnable}">
-					<!--
+					
 					<ListView.View>
-						 
-						<GridView>
-							<GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-										
-										<CheckBox Tag="{Binding}" Name="Complete" IsThreeState="False"  />
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-						
-						</GridView>
-					</ListView.View>-->
+					<GridView>
+						<GridViewColumn>
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<CheckBox IsChecked="{Binding ItemChecked }">
+										<StackPanel Orientation="Horizontal">
+											<Image Source="{Binding Image}" Stretch="None" />
+											<TextBlock Margin="5,0,0,0" Text ="{Binding Description}"></TextBlock>
+										</StackPanel>
+									</CheckBox>
+								</StackPanel>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					</GridView>
+				</ListView.View>
 
 				</ListView>
 			
@@ -172,7 +177,6 @@
 					VerticalAlignment="Center"
 					Content="Add Web Reference..." Width="140">
 				</Button>
-			
 			</Grid>
 		
 		</GroupBox>

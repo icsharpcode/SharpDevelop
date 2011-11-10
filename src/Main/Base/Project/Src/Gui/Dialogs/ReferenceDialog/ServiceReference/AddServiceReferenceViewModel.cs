@@ -400,15 +400,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			List<ServiceItem> l = new List<ServiceItem>();
 			var name = ServiceReferenceHelper.GetServiceName(description);
-			var rootNode = new ServiceItem(name);
+			var rootNode = new ServiceItem(null,name);
 			rootNode.Tag = description;
 
 			foreach(Service service in description.Services) {
-				var serviceNode = new ServiceItem(service.Name);
+				var serviceNode = new ServiceItem(null,service.Name);
 				serviceNode.Tag = service;
 				l.Add(serviceNode);
 				foreach (PortType portType  in description.PortTypes) {
-					var portNode = new ServiceItem(portType.Name);
+					var portNode = new ServiceItem(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),portType.Name);
 					portNode.Tag = portType;
 					serviceNode.SubItems.Add(portNode);
 				}
@@ -435,17 +435,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	
 
 	
-	
-	public class ServiceItem
+	public class ServiceItem:ImageAndDescription
 	{
-		public ServiceItem (string name)
+		public ServiceItem (BitmapSource bitmapSource,string description):base(bitmapSource,description)
 		{
-			this.Name = name;
 			SubItems = new List<ServiceItem>();
 		}
-		
-		public string Name {get;set;}
 		public object Tag {get;set;}
 		public List<ServiceItem> SubItems {get;set;}
+	}
+	
+	public class CheckableImageAndDescription :ImageAndDescription
+	{
+		public CheckableImageAndDescription(BitmapSource bitmapSource,string description):base(bitmapSource,description)
+		{
+			
+		}
+		
+		private bool itemChecked;
+		
+		public bool ItemChecked {
+			get { return itemChecked; }
+			set { itemChecked = value;}
+//			base.RaisePropertyChanged(() =>IsChecked);}
+		}
+		
 	}
 }

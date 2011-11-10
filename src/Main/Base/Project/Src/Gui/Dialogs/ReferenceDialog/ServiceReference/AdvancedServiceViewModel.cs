@@ -10,6 +10,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
@@ -67,16 +68,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			Title ="Service Reference Settings";
 			UseReferencedAssemblies = true;
-			AssembliesToReference = new ObservableCollection <string>();
-			AssembliesToReference.Add("Microsoft.CSharp");
-			AssembliesToReference.Add("mscorlib");
-			AssembliesToReference.Add("System.Core");
-			AssembliesToReference.Add("System.Data");
-			AssembliesToReference.Add("System.Data.DataSetExtensions");
-			AssembliesToReference.Add("System.Runtime.Serialization");
-			AssembliesToReference.Add("System.ServiceModel");
-			AssembliesToReference.Add("System.Xml");
-			AssembliesToReference.Add("System.Xml.Linq");
+			var image = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
+			AssembliesToReference = new ObservableCollection <CheckableImageAndDescription>();
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"Microsoft.CSharp"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"mscorlib"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Core"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Data"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Data.DataSetExtensions"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Runtime.Serialization"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.ServiceModel"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Xml"));
+			AssembliesToReference.Add(new CheckableImageAndDescription(image,"System.Xml.Linq"));
 		}
 		
 		public string Title {get;set;}
@@ -182,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		
-		public ObservableCollection <string> AssembliesToReference {get;private set;}
+		public ObservableCollection <CheckableImageAndDescription> AssembliesToReference {get;private set;}
 		
 		
 		public string CompatibilityText 
