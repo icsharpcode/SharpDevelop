@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MSpec>
+	<run time="115" />
+	<assembly name="MSpecTest1" location="C:\Users\trecio\Documents\SharpDevelop Projects\MSpecTest\MSpecTest1\bin\Debug\MSpecTest1.dll" time="52">
+		<concern name="">
+			<context name="TestClass" type-name="Namespace.TestClass">
+				<specification name="PassedTest" field-name="Passed_Test" status="passed" />
+				<specification name="FailedTest" field-name="Failed_Test" status="failed">
+					<error>
+						<message>
+							<![CDATA[Test failure description.]]>
+						</message>
+						<stack-trace><![CDATA[Stack trace]]></stack-trace>
+					</error>
+				</specification>
+				<specification name="NotImplementedTest" field-name="Not_Implemented_Test" status="not-implemented" />
+				<specification name="IgnoredTest" field-name="Ignored_Test" status="ignored" />
+			</context>			
+		</concern>
+	</assembly>
+</MSpec>

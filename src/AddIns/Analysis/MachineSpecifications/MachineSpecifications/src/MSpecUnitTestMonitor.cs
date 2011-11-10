@@ -33,8 +33,6 @@ namespace ICSharpCode.MachineSpecifications
 
         public void Start()
         {
-            var filter = FileName;
-
             fileSystemWatcher = new FileSystemWatcher(Path.GetDirectoryName(FileName), Path.GetFileName(FileName));
             reportedResults = new HashSet<string>();
             if (File.Exists(FileName))
@@ -94,6 +92,10 @@ namespace ICSharpCode.MachineSpecifications
                 case "passed":
                     result.ResultType = TestResultType.Success;
                     break;
+				case "not-implemented":
+				case "ignored":
+					result.ResultType = TestResultType.Ignored;
+            		break;
             }
             var errorNode = node.SelectSingleNode("error");
             if (errorNode != null)
@@ -117,7 +119,7 @@ namespace ICSharpCode.MachineSpecifications
 		            }
         }
 
-        public long InitialFilePosition { get; set; }
+		public long InitialFilePosition { get; set; }
 
         public void Dispose()
         {

@@ -1,6 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+# SharpDevelop 4.2.0.8235-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineSpecifications", "MachineSpecifications\MachineSpecifications.csproj", "{D1DA3B8F-7313-4BDA-8880-461C5F007751}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineSpecifications.Tests", "MachineSpecifications.Tests\MachineSpecifications.Tests.csproj", "{172AE35D-2051-4977-AC13-0BF1B76374D5}"
@@ -67,6 +68,8 @@ Global
 		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Release|x86.ActiveCfg = Release|Any CPU
 		{1F261725-6318-4434-A1B1-6C70CE4CD324}.Release|x86.Build.0 = Release|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1DA3B8F-7313-4BDA-8880-461C5F007751}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
