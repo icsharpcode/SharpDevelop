@@ -30,22 +30,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="developwithpassion.specifications">
-      <HintPath>..\..\..\..\..\packages\developwithpassion.specifications.rhinomocks.0.4.13.0\lib\developwithpassion.specifications.dll</HintPath>
+      <HintPath>..\Libraries\developwithpassion.specifications.rhinomocks.0.4.13.0\developwithpassion.specifications.dll</HintPath>
     </Reference>
     <Reference Include="developwithpassion.specifications.rhinomocks">
-      <HintPath>..\..\..\..\..\packages\developwithpassion.specifications.rhinomocks.0.4.13.0\lib\developwithpassion.specifications.rhinomocks.dll</HintPath>
+      <HintPath>..\Libraries\developwithpassion.specifications.rhinomocks.0.4.13.0\developwithpassion.specifications.rhinomocks.dll</HintPath>
     </Reference>
     <Reference Include="Machine.Fakes">
-      <HintPath>..\..\..\..\..\packages\Machine.Fakes.0.2.3.3\lib\Machine.Fakes.dll</HintPath>
+      <HintPath>..\Libraries\Machine.Fakes\Machine.Fakes.dll</HintPath>
     </Reference>
     <Reference Include="Machine.Fakes.Adapters.RhinoMocks">
-      <HintPath>..\..\..\..\..\packages\Machine.Fakes.RhinoMocks.0.2.3.3\lib\Machine.Fakes.Adapters.RhinoMocks.dll</HintPath>
+      <HintPath>..\Libraries\Machine.Fakes\Machine.Fakes.Adapters.RhinoMocks.dll</HintPath>
     </Reference>
     <Reference Include="Machine.Specifications">
-      <HintPath>..\..\..\..\..\packages\Machine.Specifications.0.4.13.0\lib\Machine.Specifications.dll</HintPath>
+      <HintPath>..\..\..\..\Tools\Machine.Specifications\Machine.Specifications.dll</HintPath>
     </Reference>
     <Reference Include="Rhino.Mocks">
-      <HintPath>..\..\..\..\..\packages\RhinoMocks.3.6\lib\Rhino.Mocks.dll</HintPath>
+      <HintPath>..\Libraries\RhinoMocks.3.6\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

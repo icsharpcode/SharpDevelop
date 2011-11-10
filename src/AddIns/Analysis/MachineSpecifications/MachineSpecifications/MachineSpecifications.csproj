@@ -49,12 +49,51 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\CommandLine.dll">
+      <Link>Tools\Machine.Specifications\CommandLine.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\License.txt">
+      <Link>Tools\Machine.Specifications\License.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\Machine.Specifications.dll">
+      <Link>Tools\Machine.Specifications\Machine.Specifications.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\Machine.Specifications.Reporting.dll">
+      <Link>Tools\Machine.Specifications\Machine.Specifications.Reporting.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\mspec-clr4.exe">
+      <Link>Tools\Machine.Specifications\mspec-clr4.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\mspec-x86-clr4.exe">
+      <Link>Tools\Machine.Specifications\mspec-x86-clr4.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\mspec-x86.exe">
+      <Link>Tools\Machine.Specifications\mspec-x86.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\mspec.exe">
+      <Link>Tools\Machine.Specifications\mspec.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\Newtonsoft.Json.dll">
+      <Link>Tools\Machine.Specifications\Newtonsoft.Json.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\..\Tools\Machine.Specifications\Spark.dll">
+      <Link>Tools\Machine.Specifications\Spark.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="AddInWritingHelp.txt" />
     <None Include="MachineSpecifications.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -65,35 +104,6 @@
     <Compile Include="src\MSpecTestFramework.cs" />
     <Compile Include="src\MspecTestRunner.cs" />
     <Compile Include="src\MSpecUnitTestMonitor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="MSpecRunner\CommandLine.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\Machine.Specifications.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\Machine.Specifications.Reporting.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\mspec-clr4.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\mspec-x86-clr4.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\mspec-x86.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\mspec.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="MSpecRunner\Spark.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -116,6 +126,9 @@
       <Name>UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tools" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

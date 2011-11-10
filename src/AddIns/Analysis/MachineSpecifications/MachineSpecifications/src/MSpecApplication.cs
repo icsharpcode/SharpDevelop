@@ -92,7 +92,7 @@ namespace ICSharpCode.MachineSpecifications
 		string ExecutableFileName {
 			get {
 				var assemblyDirectory = Path.GetDirectoryName(new Uri(typeof(MSpecApplication).Assembly.CodeBase).LocalPath);
-				var runnerDirectory = Path.Combine(assemblyDirectory, "MSpecRunner");
+				var runnerDirectory = Path.Combine(assemblyDirectory, @"Tools\Machine.Specifications");
 
 				string executableName = "mspec";
 				if (TargetPlatformIs32Bit(project))
