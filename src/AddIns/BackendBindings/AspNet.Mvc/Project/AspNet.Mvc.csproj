@@ -47,6 +47,12 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.cs">
+      <DependentUpon>Empty.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.cs">
+      <DependentUpon>Empty.tt</DependentUpon>
+    </Compile>
     <Compile Include="Src\AddMvcControllerToProjectCommand.cs" />
     <Compile Include="Src\AddMvcControllerToProjectView.xaml.cs">
       <DependentUpon>AddMvcControllerToProjectView.xaml</DependentUpon>
@@ -186,9 +192,15 @@
     </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Empty.cs</LastGenOutput>
     </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Empty.cs</LastGenOutput>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1,17 +1,14 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
 <#@ output extension=".vbhtml" #>
-<#
-	mvcHost = DirectCast(Host, MvcTextTemplateHost)
-#>
-<# If mvcHost.IsPartialView Then #>
+<# If MvcHost.IsPartialView Then #>
 
-<# ElseIf mvcHost.IsContentPage Then #>
+<# ElseIf MvcHost.IsContentPage Then #>
 @Code
-	ViewData("Title") = "<#= mvcHost.ViewName #>"
-	Layout = "<#= mvcHost.MasterPageFile #>"
+	ViewData("Title") = "<#= MvcHost.ViewName #>"
+	Layout = "<#= MvcHost.MasterPageFile #>"
 End Code
 
-<h2><#= mvcHost.ViewName #></h2>
+<h2><#= MvcHost.ViewName #></h2>
 
 <# Else #>
 <#= GetModelDirective() #>
@@ -19,7 +16,7 @@ End Code
 <!DOCTYPE html>
 <html>
 	<head>
-		<title><#= mvcHost.ViewName #></title>
+		<title><#= MvcHost.ViewName #></title>
 	</head>
 	<body>
 		<div>
@@ -29,10 +26,14 @@ End Code
 </html>
 <# End If #>
 <#+
-	Private mvcHost As MvcTextTemplateHost
+	ReadOnly Property MvcHost As MvcTextTemplateHost
+		Get
+			Return DirectCast(Host, MvcTextTemplateHost)
+		End Get
+	End Property
 	
 	Function GetModelDirective() As String
-		Dim viewDataTypeName As String = mvcHost.ViewDataTypeName
+		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
 		If Not String.IsNullOrEmpty(viewDataTypeName) Then
 			Return String.Format("@ModelType {0}", viewDataTypeName)
 		End If

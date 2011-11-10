@@ -1,18 +1,16 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
-<#
-	mvcHost = DirectCast(Host, MvcTextTemplateHost)
-#>
-<# If mvcHost.IsPartialView Then #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<# If MvcHost.IsPartialView Then #>
 <%@ Control Language="VB" Inherits="System.Web.Mvc.ViewUserControl" %>
 
-<# ElseIf mvcHost.IsContentPage Then #>
-<%@ Page Language="VB" MasterPageFile="<#= mvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+<# ElseIf MvcHost.IsContentPage Then #>
+<%@ Page Language="VB" MasterPageFile="<#= MvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Title" runat="server">
-<#= mvcHost.ViewName #>
+<#= MvcHost.ViewName #>
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="<#= mvcHost.PrimaryContentPlaceHolderID #>" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="<#= MvcHost.PrimaryContentPlaceHolderID #>" runat="server">
 	
 </asp:Content>
 <# Else #>
@@ -21,7 +19,7 @@
 <!DOCTYPE html>
 <html>
 	<head runat="server">
-		<title><#= mvcHost.ViewName #></title>
+		<title><#= MvcHost.ViewName #></title>
 	</head>
 	<body>
 		<div>
@@ -31,10 +29,14 @@
 </html>
 <# End If #>
 <#+
-	Private mvcHost As MvcTextTemplateHost
+	ReadOnly Property MvcHost As MvcTextTemplateHost
+		Get
+			Return DirectCast(Host, MvcTextTemplateHost)
+		End Get
+	End Property
 	
-	Function GetViewPageType() As String
-		Dim viewDataTypeName As String = mvcHost.ViewDataTypeName
+	Public Function GetViewPageType() As String
+		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
 		If Not String.IsNullOrEmpty(viewDataTypeName) Then
 			Return String.Format("(Of {0})", viewDataTypeName)
 		End If

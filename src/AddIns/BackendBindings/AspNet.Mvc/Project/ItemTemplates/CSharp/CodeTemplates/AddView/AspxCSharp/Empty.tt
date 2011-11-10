@@ -1,18 +1,16 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
-<#
-	mvcHost = (MvcTextTemplateHost)Host;
-#>
-<# if (mvcHost.IsPartialView) { #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<# if (MvcHost.IsPartialView) { #>
 <%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
 
-<# } else if(mvcHost.IsContentPage) { #>
-<%@ Page Language="C#" MasterPageFile="<#= mvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+<# } else if(MvcHost.IsContentPage) { #>
+<%@ Page Language="C#" MasterPageFile="<#= MvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="Title" runat="server">
-<#= mvcHost.ViewName #>
+<#= MvcHost.ViewName #>
 </asp:Content>
 
-<asp:Content ID="Content2" ContentPlaceHolderID="<#= mvcHost.PrimaryContentPlaceHolderID #>" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="<#= MvcHost.PrimaryContentPlaceHolderID #>" runat="server">
 	
 </asp:Content>
 <# } else { #>
@@ -21,7 +19,7 @@
 <!DOCTYPE html>
 <html>
 	<head runat="server">
-		<title><#= mvcHost.ViewName #></title>
+		<title><#= MvcHost.ViewName #></title>
 	</head>
 	<body>
 		<div>
@@ -31,11 +29,13 @@
 </html>
 <# } #>
 <#+
-	MvcTextTemplateHost mvcHost;
+	MvcTextTemplateHost MvcHost {
+		get { return (MvcTextTemplateHost)Host; }
+	}
 	
-	string GetViewPageType()
+	public string GetViewPageType()
 	{
-		string viewDataTypeName = mvcHost.ViewDataTypeName;
+		string viewDataTypeName = MvcHost.ViewDataTypeName;
 		if (!String.IsNullOrEmpty(viewDataTypeName)) {
 			return String.Format("<{0}>", viewDataTypeName);
 		}

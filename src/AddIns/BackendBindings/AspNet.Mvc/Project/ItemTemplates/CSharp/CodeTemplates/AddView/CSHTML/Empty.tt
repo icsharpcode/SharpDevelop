@@ -1,17 +1,15 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
 <#@ output extension=".cshtml" #>
-<#
-	mvcHost = (MvcTextTemplateHost)Host;
-#>
-<# if (mvcHost.IsPartialView) { #>
+<# if (MvcHost.IsPartialView) { #>
 
-<# } else if (mvcHost.IsContentPage) { #>
+<# } else if (MvcHost.IsContentPage) { #>
 @{
-	ViewBag.Title = "<#= mvcHost.ViewName #>";
-	Layout = "<#= mvcHost.MasterPageFile #>";
+	ViewBag.Title = "<#= MvcHost.ViewName #>";
+	Layout = "<#= MvcHost.MasterPageFile #>";
 }
 
-<h2><#= mvcHost.ViewName #></h2>
+<h2><#= MvcHost.ViewName #></h2>
 
 <# } else { #>
 <#= GetModelDirective() #>
@@ -19,7 +17,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title><#= mvcHost.ViewName #></title>
+		<title><#= MvcHost.ViewName #></title>
 	</head>
 	<body>
 		<div>
@@ -29,11 +27,13 @@
 </html>
 <# } #>
 <#+
-	MvcTextTemplateHost mvcHost;
+	MvcTextTemplateHost MvcHost {
+		get { return (MvcTextTemplateHost)Host; }
+	}
 	
-	string GetModelDirective()
+	public string GetModelDirective()
 	{
-		string viewDataTypeName = mvcHost.ViewDataTypeName;
+		string viewDataTypeName = MvcHost.ViewDataTypeName;
 		if (!String.IsNullOrEmpty(viewDataTypeName)) {
 			return String.Format("@model {0}", viewDataTypeName);
 		}
