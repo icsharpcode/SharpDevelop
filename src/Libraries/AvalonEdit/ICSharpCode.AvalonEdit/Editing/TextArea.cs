@@ -421,6 +421,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
+		/// <summary>
+		/// Clears the current selection.
+		/// </summary>
 		public void ClearSelection()
 		{
 			this.Selection = emptySelection;

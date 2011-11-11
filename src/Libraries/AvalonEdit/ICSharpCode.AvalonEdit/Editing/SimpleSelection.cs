@@ -56,7 +56,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 						if (segmentsToDelete[i].Offset == SurroundingSegment.Offset && segmentsToDelete[i].Length == SurroundingSegment.Length) {
 							newText = AddSpacesIfRequired(newText, start);
 						}
+						int vc = textArea.Caret.VisualColumn;
 						textArea.Caret.Offset = segmentsToDelete[i].EndOffset;
+						if (string.IsNullOrEmpty(newText))
+							textArea.Caret.VisualColumn = vc;
 						textArea.Document.Replace(segmentsToDelete[i], newText);
 					} else {
 						textArea.Document.Remove(segmentsToDelete[i]);
@@ -89,8 +92,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("e");
 			return Selection.Create(
 				textArea,
-				e.GetNewOffset(startOffset, AnchorMovementType.Default),
-				e.GetNewOffset(endOffset, AnchorMovementType.Default)
+				new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.Default)), start.VisualColumn),
+				new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.Default)), end.VisualColumn)
 			);
 		}
 		

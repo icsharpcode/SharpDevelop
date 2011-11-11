@@ -81,11 +81,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		internal string AddSpacesIfRequired(string newText, TextViewPosition pos)
 		{
-			if (textArea.Options.EnableVirtualSpace) {
-				var vLine = textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(pos.Line));
+			if (textArea.Options.EnableVirtualSpace && !string.IsNullOrEmpty(newText)) {
+				var line = textArea.Document.GetLineByNumber(pos.Line);
+				string lineText = textArea.Document.GetText(line);
+				var vLine = textArea.TextView.GetOrConstructVisualLine(line);
 				int colDiff = pos.VisualColumn - vLine.VisualLength;
 				if (colDiff > 0) {
-					string additionalSpaces = new string(' ', colDiff);
+					string additionalSpaces = "";
+					if (!textArea.Options.ConvertTabsToSpaces && lineText.Trim('\t').Length == 0) {
+						int tabCount = (int)(colDiff / textArea.Options.IndentationSize);
+						additionalSpaces = new string('\t', tabCount);
+						colDiff -= tabCount * textArea.Options.IndentationSize;
+					}
+					additionalSpaces += new string(' ', colDiff);
 					return additionalSpaces + newText;
 				}
 			}
