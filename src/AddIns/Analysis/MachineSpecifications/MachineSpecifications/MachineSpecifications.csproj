@@ -81,10 +81,6 @@
       <Link>Tools\Machine.Specifications\mspec.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\..\Tools\Machine.Specifications\Newtonsoft.Json.dll">
-      <Link>Tools\Machine.Specifications\Newtonsoft.Json.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\..\..\Tools\Machine.Specifications\Spark.dll">
       <Link>Tools\Machine.Specifications\Spark.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
