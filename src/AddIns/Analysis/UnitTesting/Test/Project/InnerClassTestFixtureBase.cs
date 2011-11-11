@@ -16,6 +16,7 @@ namespace UnitTesting.Tests.Project
 	{
 		protected TestClass testClass;
 		protected MockClass innerClass;
+		protected MockClass nonTestInnerClass;
 		protected TestProject testProject;
 		protected MockProjectContent projectContent;
 		protected MockClass outerClass;
@@ -41,7 +42,7 @@ namespace UnitTesting.Tests.Project
 			outerClass.InnerClasses.Add(innerClass);
 			
 			// Add another inner class that is not a test class.
-			MockClass nonTestInnerClass = new MockClass(projectContent, "MyTests.A.InnerBClass", outerClass);
+			nonTestInnerClass = new MockClass(projectContent, "MyTests.A.InnerBClass", outerClass);
 			outerClass.InnerClasses.Add(nonTestInnerClass);
 
 			// Add another inner class with the same name as the InnerATest.

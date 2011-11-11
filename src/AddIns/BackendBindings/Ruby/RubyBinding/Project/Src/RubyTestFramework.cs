@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -13,10 +16,18 @@ namespace ICSharpCode.RubyBinding
 		public bool IsTestMember(IMember member)
 		{
 			var method = member as IMethod;
-			if (method != null) {
-				return method.Name.StartsWith("test");
-			}
+			if (method != null)
+				return IsTestMethod(method);
 			return false;
+		}
+		
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod).Select(method => new TestMember(method));
+		}
+
+		bool IsTestMethod(IMethod method)
+		{
+			return method.Name.StartsWith("test");
 		}
 		
 		public bool IsTestClass(IClass c)

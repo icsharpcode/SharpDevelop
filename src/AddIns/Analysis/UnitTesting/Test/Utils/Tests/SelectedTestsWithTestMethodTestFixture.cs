@@ -29,7 +29,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void SelectedTestsHasOneProjectSelected()
 		{
-			Assert.AreEqual(1, selectedTestsWithTestMethod.Projects.Count);
+			Assert.AreEqual(1, selectedTestsWithTestMethod.ProjectsCount);
 		}
 		
 		[Test]

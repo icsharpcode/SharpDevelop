@@ -11,20 +11,24 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestMember
 	{
+#if unused
 		string prefix = String.Empty;
+#endif
 		IMember member;
 		TestResultType testResultType = TestResultType.None;
 		
 		/// <summary>
 		/// Raised when the test result has changed.
 		/// </summary>
-		public event EventHandler ResultChanged;
+		public event EventHandler ResultChanged;		
 		
 		public TestMember(IMember member)
 		{
 			this.member = member;
+			this.DeclaringType = member.DeclaringType;
 		}
 		
+#if unused
 		/// <summary>
 		/// Creates a new TestMember instance.
 		/// </summary>
@@ -46,6 +50,13 @@ namespace ICSharpCode.UnitTesting
 			this.member = member;
 			this.prefix = prefix;
 		}
+#endif
+
+		public TestMember(IClass testClass, IMember member)
+		{
+			this.DeclaringType = testClass;
+			this.member = member;
+		}
 		
 		/// <summary>
 		/// Gets the underlying IMember for this TestMember.
@@ -53,6 +64,12 @@ namespace ICSharpCode.UnitTesting
 		public IMember Member {
 			get { return member; }
 		}
+
+		/// <summary>
+		/// Gets the class where the test member is actually declared.
+		/// In case of test member from base class it will be the base class not the 
+		/// </summary>
+		public IClass DeclaringType { get; private set; }
 		
 		/// <summary>
 		/// Updates the test member based on new information 
@@ -82,9 +99,11 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public string Name {
 			get {
+#if unused
 				if (prefix.Length > 0) {
 					return String.Concat(prefix, ".", member.Name);
 				}
+#endif
 				return member.Name;
 			}
 		}

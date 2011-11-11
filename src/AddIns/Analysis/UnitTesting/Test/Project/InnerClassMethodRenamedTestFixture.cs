@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -41,6 +42,11 @@ namespace UnitTesting.Tests.Project
 			method.Attributes.Add(new MockAttribute("Test"));
 			newInnerClass.Methods.Add(method);
 			outerClass.InnerClasses.Add(newInnerClass);
+			
+			MockClass innerClassInInnerClass = new MockClass(projectContent, "MyTests.A.InnerATest.InnerInnerTest", innerClass);
+			innerClassInInnerClass.SetDotNetName("MyTests.A+InnerATest+InnerInnerTest");
+			innerClassInInnerClass.Attributes.Add(new MockAttribute("TestFixture"));
+			newInnerClass.InnerClasses.Add(innerClassInInnerClass);
 		
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
@@ -59,6 +65,11 @@ namespace UnitTesting.Tests.Project
 		public void OldTestMethodRemoved()
 		{
 			Assert.AreEqual(1, innerTestClass.TestMembers.Count);
+		}
+		
+		[Test]
+		public void NewTestClassExists() {
+			CollectionAssert.Contains(testProject.TestClasses.Select(x => x.QualifiedName).ToList(), "MyTests.A+InnerATest+InnerInnerTest");
 		}
 	}
 }

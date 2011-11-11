@@ -24,19 +24,18 @@ namespace UnitTesting.Tests.Project
 		{
 			mockTestClass = MockClass.CreateMockClassWithoutAnyAttributes();
 			mockTestClass.FullyQualifiedName = "DerivedClass";
-			
 			testMethod = new MockMethod(mockTestClass, "myTestMethod");
 			mockTestClass.Methods.Add(testMethod);
-			baseClassTestMethod = new MockMethod(mockTestClass, "myBaseTestMethod");
+
+			mockBaseTestClass = MockClass.CreateMockClassWithoutAnyAttributes();
+			mockBaseTestClass.FullyQualifiedName = "BaseClass";
+			mockBaseTestClass.Methods.Add(baseClassTestMethod);
+			baseClassTestMethod = new MockMethod(mockBaseTestClass, "myBaseTestMethod");
 			
 			testFrameworks = new MockRegisteredTestFrameworks();
 			testFrameworks.AddTestMember(testMethod);
 			testFrameworks.AddTestMember(baseClassTestMethod);
 
-			mockBaseTestClass = MockClass.CreateMockClassWithoutAnyAttributes();
-			mockBaseTestClass.FullyQualifiedName = "BaseClass";
-			mockBaseTestClass.Methods.Add(baseClassTestMethod);
-			
 			mockTestClass.AddBaseClass(mockBaseTestClass);
 			
 			testClass = new TestClass(mockTestClass, testFrameworks);
@@ -51,8 +50,8 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TestClassHasBaseClassTestMethod()
 		{
-			BaseTestMethod baseTestMethod = testClass.TestMembers[1].Member as BaseTestMethod;
-			Assert.AreEqual(baseClassTestMethod, baseTestMethod.Method);
+			BaseTestMember baseTestMethod = testClass.TestMembers[1].Member as BaseTestMember;
+			Assert.AreEqual(baseClassTestMethod, baseTestMethod.Member);
 		}
 	}
 }

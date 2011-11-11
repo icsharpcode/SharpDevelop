@@ -38,6 +38,14 @@ namespace UnitTesting.Tests.Frameworks
 		}
 		
 		[Test]
+		public void IsTestClassReturnsFalseWhenClassHasTestFixtureAttributeAndIsAbstract() {
+			MockAttribute testAttribute = new MockAttribute("TestFixture");
+			MockClass mockClass = MockClass.CreateMockClassWithAttribute(testAttribute);
+			mockClass.Modifiers = mockClass.Modifiers | ModifierEnum.Abstract;
+			Assert.IsFalse(testFramework.IsTestClass(mockClass));
+		}
+		
+		[Test]
 		public void IsTestClassReturnsTrueHasClassHasTestFixtureAttribute()
 		{
 			MockAttribute testFixtureAttribute = new MockAttribute("TestFixtureAttribute");
