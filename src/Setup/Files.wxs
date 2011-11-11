@@ -953,6 +953,45 @@
 										<File Source="..\..\AddIns\Analysis\SourceAnalysis\SourceAnalysis.dll" Name="SourceAnalysis.dll" Id="SourceAnalysis.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="SourceAnalysis.dll" AssemblyManifest="SourceAnalysis.dll" />
 									</Component>
 								</Directory>
+								<Directory Id="MachineSpecifications" Name="MachineSpecifications">
+									<Component Id="MachineSpecificationsAddIn" Guid="03FD4FCC-670F-4298-8CEB-C957AD1BC7A8" DiskId="1">
+										<File Id="MachineSpecifications.addin" Name="MachineSpecifications.addin" Source="..\..\AddIns\Analysis\MachineSpecifications\MachineSpecifications.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="MachineSpecificationsDll" Guid="401F4543-20DD-4D0E-9875-ACBD94E512B3" DiskId="1">
+										<File Id="MachineSpecifications.dll" Name="MachineSpecifications.dll" Source="..\..\AddIns\Analysis\MachineSpecifications\MachineSpecifications.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="MachineSpecifications.dll" AssemblyManifest="MachineSpecifications.dll" />
+									</Component>
+									<Directory Id="MachineSpecificationsToolsFolder" Name="Tools">
+										<Directory Id="Tools.Machine.Specifications.Folder" Name="Machine.Specifications">
+											<Component Id="MachineSpecificationsCommandLineDll" Guid="CB6E136D-A654-4E2C-AB09-BCFE84C83E5A" DiskId="1">
+												<File Id="CommandLine.dll" Name="CommandLine.dll" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\CommandLine.dll" KeyPath="yes" />
+											</Component>
+											<Component Id="MachineSpecificationsLicenseTxt" Guid="6FFAE9EE-05D3-4982-9BD5-20637CBE7C88" DiskId="1">
+												<File Id="License.txt" Name="License.txt" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\License.txt" KeyPath="yes" />
+											</Component>
+											<Component Id="ToolsMachineSpecificationsDll" Guid="57E27B17-BA60-4B00-B890-6E46EAA5192B" DiskId="1">
+												<File Id="Machine.Specifications.dll" Name="Machine.Specifications.dll" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\Machine.Specifications.dll" KeyPath="yes" />
+											</Component>
+											<Component Id="MachineSpecificationsReportingDll" Guid="84FEA264-28A5-46E4-90C9-965E57D1E817" DiskId="1">
+												<File Id="Machine.Specifications.Reporting.dll" Name="Machine.Specifications.Reporting.dll" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\Machine.Specifications.Reporting.dll" KeyPath="yes" />
+											</Component>
+											<Component Id="Mspec_clr4Exe" Guid="D2718022-A14A-4685-9957-D9C6ED94446D" DiskId="1">
+												<File Id="mspec_clr4.exe" Name="mspec-clr4.exe" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\mspec-clr4.exe" KeyPath="yes" />
+											</Component>
+											<Component Id="Mspec_x86_clr4Exe" Guid="D98BECDC-04F6-4C97-B965-40662EA8B538" DiskId="1">
+												<File Id="mspec_x86_clr4.exe" Name="mspec-x86-clr4.exe" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\mspec-x86-clr4.exe" KeyPath="yes" />
+											</Component>
+											<Component Id="Mspec_x86Exe" Guid="95A9043B-2942-46C4-983C-E62B52FD1816" DiskId="1">
+												<File Id="mspec_x86.exe" Name="mspec-x86.exe" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\mspec-x86.exe" KeyPath="yes" />
+											</Component>
+											<Component Id="MspecExe" Guid="7999FE7B-9EBD-4BC0-9DA9-9035D36C3E54" DiskId="1">
+												<File Id="mspec.exe" Name="mspec.exe" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\mspec.exe" KeyPath="yes" />
+											</Component>
+											<Component Id="MachineSpecificationsSparkDll" Guid="BD2396DC-DE40-46C4-B00E-E13FEC899226" DiskId="1">
+												<File Id="Spark.dll" Name="Spark.dll" Source="..\..\AddIns\Analysis\MachineSpecifications\Tools\Machine.Specifications\Spark.dll" KeyPath="yes" />
+											</Component>
+										</Directory>
+									</Directory>
+								</Directory>
 							</Directory>
 							<Directory Id="BackendBindingsFolder" Name="BackendBindings">
 								<Directory Id="BooBindingFolder" Name="BooBinding">
