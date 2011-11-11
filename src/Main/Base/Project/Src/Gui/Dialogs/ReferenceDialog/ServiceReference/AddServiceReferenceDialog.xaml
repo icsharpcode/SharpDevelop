@@ -112,7 +112,20 @@
 				Grid.Row="1"
 				Grid.Column="0"
 				Width="2"/>
-		
+			<ListBox Grid.Column="1" Grid.Row="1"  Margin="4"
+			         ItemsSource="{Binding Path=TwoValues}">
+				
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal">
+							<Image Width="16" Height="16" Source="{Binding Image}"/>
+							<TextBlock Text="{Binding Description}"/>
+						</StackPanel>
+					</DataTemplate>
+				
+				</ListBox.ItemTemplate>
+			</ListBox>
+		<!-- 
 			<ListView
 				Grid.Column="1" Grid.Row="1"  Margin="4"
 				ItemsSource="{Binding Path=TwoValues}">
@@ -130,7 +143,7 @@
 					</GridViewColumn>
 					</GridView>
 				</ListView.View>
-			</ListView>
+			</ListView>-->
 		</Grid>
 		
 		<Border Grid.Row="5" Grid.ColumnSpan="3" Margin="4,0,4,0"  BorderThickness="2" BorderBrush="LightGray">

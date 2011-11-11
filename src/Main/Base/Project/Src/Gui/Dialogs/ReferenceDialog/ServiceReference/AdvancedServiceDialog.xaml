@@ -127,6 +127,25 @@
 				             Content="Reuse types in specified referenced assemblies">
 				</RadioButton>
 				
+				<ListBox Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
+				          Margin="80,0,0,0" 
+				          SelectionMode="Multiple"
+				          ItemsSource="{Binding AssembliesToReference}"
+				          IsEnabled="{Binding ListViewEnable}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<CheckBox IsChecked="{Binding ItemChecked, Mode=TwoWay}"/>
+								<StackPanel Orientation="Horizontal">
+									<Image Source="{Binding Image}" Margin="5,0,0,0"/>
+									<TextBlock Margin="20,0,0,0" Text ="{Binding Description}"></TextBlock>
+								</StackPanel>
+							</StackPanel>
+						</DataTemplate>
+					
+					</ListBox.ItemTemplate>
+				</ListBox>
+				<!-- 
 				<ListView Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
 				          Margin="80,0,0,0" 
 				          SelectionMode="Multiple"
@@ -153,7 +172,7 @@
 				</ListView.View>
 
 				</ListView>
-			
+			-->
 			</Grid>
 		</GroupBox>
 	
