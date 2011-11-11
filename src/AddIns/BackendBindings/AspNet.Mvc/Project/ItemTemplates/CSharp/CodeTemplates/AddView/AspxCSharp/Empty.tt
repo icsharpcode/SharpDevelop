@@ -1,7 +1,7 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
 <# if (MvcHost.IsPartialView) { #>
-<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl" %>
+<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<#= GetViewPageType() #>" %>
 
 <# } else if(MvcHost.IsContentPage) { #>
 <%@ Page Language="C#" MasterPageFile="<#= MvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>

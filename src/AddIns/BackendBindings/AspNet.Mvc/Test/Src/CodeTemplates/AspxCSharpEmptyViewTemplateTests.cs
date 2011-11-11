@@ -11,23 +11,23 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 	[TestFixture]
 	public class AspxCSharpEmptyViewTemplateTests
 	{
-		Empty emptyViewTemplate;
+		Empty templatePreprocessor;
 		TestableMvcTextTemplateHost mvcHost;
 		
-		void CreateEmptyViewTemplatePreprocessor()
+		void CreateTemplatePreprocessor()
 		{
 			mvcHost = new TestableMvcTextTemplateHost();
-			emptyViewTemplate = new Empty();
-			emptyViewTemplate.Host = mvcHost;
+			templatePreprocessor = new Empty();
+			templatePreprocessor.Host = mvcHost;
 		}
 		
 		[Test]
 		public void GetViewPageType_HostViewDataTypeNameIsMyAppMyModel_ReturnsMyAppMyModelSurroundedByAngleBrackets()
 		{
-			CreateEmptyViewTemplatePreprocessor();
+			CreateTemplatePreprocessor();
 			mvcHost.ViewDataTypeName = "MyApp.MyModel";
 			
-			string viewPageType = emptyViewTemplate.GetViewPageType();
+			string viewPageType = templatePreprocessor.GetViewPageType();
 			
 			Assert.AreEqual("<MyApp.MyModel>", viewPageType);
 		}
@@ -35,10 +35,10 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 		[Test]
 		public void GetViewPageType_HostViewDataTypeNameIsNull_ReturnsEmptyString()
 		{
-			CreateEmptyViewTemplatePreprocessor();
+			CreateTemplatePreprocessor();
 			mvcHost.ViewDataTypeName = null;
 			
-			string viewPageType = emptyViewTemplate.GetViewPageType();
+			string viewPageType = templatePreprocessor.GetViewPageType();
 			
 			Assert.AreEqual(String.Empty, viewPageType);
 		}
@@ -46,12 +46,44 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 		[Test]
 		public void GetViewPageType_HostViewDataTypeNameIsEmptyString_ReturnsEmptyString()
 		{
-			CreateEmptyViewTemplatePreprocessor();
+			CreateTemplatePreprocessor();
 			mvcHost.ViewDataTypeName = String.Empty;
 			
-			string viewPageType = emptyViewTemplate.GetViewPageType();
+			string viewPageType = templatePreprocessor.GetViewPageType();
 			
 			Assert.AreEqual(String.Empty, viewPageType);
+		}
+		
+		[Test]
+		public void TransformText_PartialViewUsingModel_ReturnsTypedUserControlUsingViewDataTypeName()
+		{
+			CreateTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			mvcHost.ViewDataTypeName = "MyNamespace.MyViewDataType";
+			
+			string output = templatePreprocessor.TransformText();
+			
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<MyNamespace.MyViewDataType>"" %>
+
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void TransformText_PartialViewWithoutModel_ReturnsUntypedUserControl()
+		{
+			CreateTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			mvcHost.ViewDataTypeName = null;
+			
+			string output = templatePreprocessor.TransformText();
+			
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl"" %>
+
+";
+			Assert.AreEqual(expectedOutput, output);
 		}
 	}
 }

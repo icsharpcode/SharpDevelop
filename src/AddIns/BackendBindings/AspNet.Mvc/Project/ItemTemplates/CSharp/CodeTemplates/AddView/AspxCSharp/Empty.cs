@@ -56,7 +56,19 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line hidden
             
             #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt"
-            this.Write("<%@ Control Language=\"C#\" Inherits=\"System.Web.Mvc.ViewUserControl\" %>\r\n\r\n");
+            this.Write("<%@ Control Language=\"C#\" Inherits=\"System.Web.Mvc.ViewUserControl");
+            
+            #line default
+            #line hidden
+            
+            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
+            
+            #line default
+            #line hidden
+            
+            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt"
+            this.Write("\" %>\r\n\r\n");
             
             #line default
             #line hidden
