@@ -30,7 +30,7 @@ namespace UnitTesting.Tests.Tree
 			int methodBeginColumn = 6; // 1 based.
 			baseClassMethod.Region = new DomRegion(methodBeginLine, methodBeginColumn);
 			
-			BaseTestMethod baseTestMethod = new BaseTestMethod(derivedClass, baseClassMethod);
+			BaseTestMember baseTestMethod = new BaseTestMember(derivedClass, baseClassMethod);
 			
 			treeView = new MockTestTreeView();
 			treeView.SelectedMember = baseTestMethod;

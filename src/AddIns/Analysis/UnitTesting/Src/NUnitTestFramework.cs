@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -42,6 +44,8 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public bool IsTestClass(IClass c)
 		{
+			if (c == null) return false;
+			if (c.IsAbstract) return false;
 			StringComparer nameComparer = GetNameComparer(c);
 			if (nameComparer != null) {
 				NUnitTestAttributeName testAttributeName = new NUnitTestAttributeName("TestFixture", nameComparer);
@@ -49,12 +53,21 @@ namespace ICSharpCode.UnitTesting
 					if (testAttributeName.IsEqual(attribute)) {
 						return true;
 					}
-				}
+				}				
+			}
+			
+			while (c != null) {
+				if (HasTestMethod(c)) return true;
+				c = c.BaseClass;
 			}
 			return false;
 		}
 		
-		StringComparer GetNameComparer(IClass c)
+		private bool HasTestMethod(IClass c) {
+			return GetTestMembersFor(c).Any();
+		}
+		
+		static StringComparer GetNameComparer(IClass c)
 		{
 			if (c != null) {
 				IProjectContent projectContent = c.ProjectContent;
@@ -82,7 +95,11 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
-		bool IsTestMethod(IMethod method)
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod).Select(member => new TestMember(member));
+		}
+		
+		static bool IsTestMethod(IMethod method)
 		{
 			var nameComparer = GetNameComparer(method.DeclaringType);
 			if (nameComparer != null) {

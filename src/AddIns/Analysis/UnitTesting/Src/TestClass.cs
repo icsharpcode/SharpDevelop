@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -35,6 +36,11 @@ namespace ICSharpCode.UnitTesting
 		public IClass Class {
 			get { return c; }
 		}
+
+		/// <summary>
+		/// Gets the list of other (e.g. base types) classes where from which test members included in this test class come from.
+		/// </summary>
+		private readonly ICollection<string> baseClassesFQNames = new List<string>();
 		
 		/// <summary>
 		/// Gets the test classes that exist in the specified namespace.
@@ -90,11 +96,16 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the name of the class.
 		/// </summary>
 		public string Name {
-			get { 
-				if (c.DeclaringType != null) {
-					return String.Concat(c.DeclaringType.Name, "+", c.Name);
+			get
+			{
+				var currentClass = c;
+				var name = c.Name;
+				while(currentClass.DeclaringType != null)
+				{
+					name = String.Concat(currentClass.DeclaringType.Name, "+", name);
+					currentClass = currentClass.DeclaringType;
 				}
-				return c.Name;
+				return name;
 			}
 		}
 		
@@ -109,11 +120,12 @@ namespace ICSharpCode.UnitTesting
 		/// Gets the namespace of this class.
 		/// </summary>
 		public string Namespace {
-			get { 	
-				if (c.DeclaringType != null) {
-					return c.DeclaringType.Namespace;
-				}
-				return c.Namespace;
+			get
+			{
+				var currentClass = c;
+				while (currentClass.DeclaringType != null)
+					currentClass = currentClass.DeclaringType;
+				return currentClass.Namespace;
 			}
 		}
 		
@@ -274,40 +286,36 @@ namespace ICSharpCode.UnitTesting
 		TestMemberCollection GetTestMembers(IClass c)
 		{
 			TestMemberCollection testMembers = new TestMemberCollection();
-			foreach (IMember member in c.AllMembers) {
-				if (IsTestMember(member)) {
-					if (!testMembers.Contains(member.Name)) {
-						testMembers.Add(new TestMember(member));
-					}
+			foreach (var member in testFrameworks.GetTestMembersFor(c))
+				if (!testMembers.Contains(member.Name)) {
+					testMembers.Add(member);
 				}
-			}
 			
 			// Add base class test members.
 			IClass declaringType = c;
-			while (c.BaseClass != null) {
-				foreach (IMethod method in c.BaseClass.Methods) {
-					if (IsTestMember(method)) {
-						BaseTestMethod baseTestMethod = new BaseTestMethod(declaringType, method);
-						TestMember testMethod = new TestMember(c.BaseClass.Name, baseTestMethod);
-						if (method.IsVirtual) {
-							if (!testMembers.Contains(method.Name)) {
-								testMembers.Add(testMethod);	
-							}
-						} else {
-							if (!testMembers.Contains(testMethod.Name)) {
-								testMembers.Add(testMethod);
-							}
+			while (c.BaseClass != null)
+			{
+				foreach (var testMember in testFrameworks.GetTestMembersFor(c.BaseClass)) {
+					BaseTestMember baseTestMethod = new BaseTestMember(declaringType, testMember.Member);
+					TestMember testMethod = new TestMember(c.BaseClass, baseTestMethod);
+					if (testMember.Member.IsVirtual) {
+						if (!testMembers.Contains(testMember.Name)) {
+							testMembers.Add(testMethod);
+						}
+					} else {
+						if (!testMembers.Contains(testMethod.Name)) {
+							testMembers.Add(testMethod);
 						}
 					}
 				}
 				c = c.BaseClass;
 			}
+
+			baseClassesFQNames.Clear();
+			foreach (var memberDeclaringClass in testMembers.Select(member => member.DeclaringType).Distinct())
+				if (memberDeclaringClass.CompareTo(declaringType) != 0)
+					baseClassesFQNames.Add(memberDeclaringClass.FullyQualifiedName);
 			return testMembers;
-		}
-		
-		bool IsTestMember(IMember member)
-		{
-			return testFrameworks.IsTestMember(member);
 		}
 		
 		/// <summary>
@@ -364,6 +372,11 @@ namespace ICSharpCode.UnitTesting
 				baseClass = baseClass.BaseClass;
 			}
 			return null;
+		}
+
+		public bool IsDerivedFrom(IClass c)
+		{
+			return baseClassesFQNames.Contains(c.FullyQualifiedName);
 		}
 	}
 }

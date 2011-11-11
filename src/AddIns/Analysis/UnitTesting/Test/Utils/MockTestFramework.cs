@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -29,6 +30,10 @@ namespace UnitTesting.Tests.Utils
 		{
 			isTestMemberParameterUsed = member;
 			return testMembers.Contains(member);
+		}
+		
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return testMembers.Where(member => member.DeclaringType == @class).Select(member => new TestMember(member));
 		}
 		
 		public IMember IsTestMemberParameterUsed {
