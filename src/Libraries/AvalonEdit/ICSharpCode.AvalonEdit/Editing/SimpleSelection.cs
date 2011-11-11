@@ -15,22 +15,25 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// </summary>
 	sealed class SimpleSelection : Selection
 	{
+		readonly TextViewPosition start, end;
 		readonly int startOffset, endOffset;
 		
 		/// <summary>
 		/// Creates a new SimpleSelection instance.
 		/// </summary>
-		internal SimpleSelection(TextArea textArea, int startOffset, int endOffset)
+		internal SimpleSelection(TextArea textArea, TextViewPosition start, TextViewPosition end)
 			: base(textArea)
 		{
-			this.startOffset = startOffset;
-			this.endOffset = endOffset;
+			this.start = start;
+			this.end = end;
+			this.startOffset = textArea.Document.GetOffset(start.Location);
+			this.endOffset = textArea.Document.GetOffset(end.Location);
 		}
 		
 		/// <inheritdoc/>
 		public override IEnumerable<SelectionSegment> Segments {
 			get {
-				return ExtensionMethods.Sequence<SelectionSegment>(new SelectionSegment(startOffset, endOffset));
+				return ExtensionMethods.Sequence<SelectionSegment>(new SelectionSegment(startOffset, start.VisualColumn, endOffset, end.VisualColumn, textArea.Options.EnableVirtualSpace));
 			}
 		}
 		
@@ -47,25 +50,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (newText == null)
 				throw new ArgumentNullException("newText");
 			using (textArea.Document.RunUpdate()) {
-				if (IsEmpty) {
-					if (newText.Length > 0) {
-						if (textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset)) {
-							textArea.Document.Insert(textArea.Caret.Offset, newText);
+				ISegment[] segmentsToDelete = textArea.GetDeletableSegments(this.SurroundingSegment);
+				for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
+					if (i == segmentsToDelete.Length - 1) {
+						if (segmentsToDelete[i].Offset == SurroundingSegment.Offset && segmentsToDelete[i].Length == SurroundingSegment.Length) {
+							newText = AddSpacesIfRequired(newText, start);
 						}
+						textArea.Caret.Offset = segmentsToDelete[i].EndOffset;
+						textArea.Document.Replace(segmentsToDelete[i], newText);
+					} else {
+						textArea.Document.Remove(segmentsToDelete[i]);
 					}
-				} else {
-					ISegment[] segmentsToDelete = textArea.GetDeletableSegments(this.SurroundingSegment);
-					for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
-						if (i == segmentsToDelete.Length - 1) {
-							textArea.Caret.Offset = segmentsToDelete[i].EndOffset;
-							textArea.Document.Replace(segmentsToDelete[i], newText);
-						} else {
-							textArea.Document.Remove(segmentsToDelete[i]);
-						}
-					}
-					if (segmentsToDelete.Length != 0) {
-						textArea.ClearSelection();
-					}
+				}
+				if (segmentsToDelete.Length != 0) {
+					textArea.ClearSelection();
 				}
 			}
 		}
@@ -111,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override Selection SetEndpoint(TextViewPosition endPosition)
 		{
-			return Create(textArea, startOffset, textArea.Document.GetOffset(endPosition));
+			return Create(textArea, start, endPosition);
 		}
 		
 		public override Selection StartSelectionOrSetEndpoint(TextViewPosition startPosition, TextViewPosition endPosition)
@@ -119,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			var document = textArea.Document;
 			if (document == null)
 				throw ThrowUtil.NoDocumentAssigned();
-			return Create(textArea, startOffset, document.GetOffset(endPosition));
+			return Create(textArea, start, endPosition);
 		}
 		
 		/// <inheritdoc/>
@@ -135,13 +133,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			SimpleSelection other = obj as SimpleSelection;
 			if (other == null) return false;
-			return this.startOffset == other.startOffset && this.endOffset == other.endOffset && this.textArea == other.textArea;
+			return this.start.Equals(other.start) && this.end.Equals(other.end) && this.textArea == other.textArea;
 		}
 		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[SimpleSelection Start=" + startOffset + " End=" + endOffset + "]";
+			return "[SimpleSelection Start=" + start + " End=" + end + "]";
 		}
 	}
 }

@@ -386,11 +386,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (value.textArea != this)
 					throw new ArgumentException("Cannot use a Selection instance that belongs to another text area.");
 				if (!object.Equals(selection, value)) {
-					//Debug.WriteLine("Selection change from " + selection + " to " + value);
+//					Debug.WriteLine("Selection change from " + selection + " to " + value);
 					if (textView != null) {
 						ISegment oldSegment = selection.SurroundingSegment;
 						ISegment newSegment = value.SurroundingSegment;
-						if (selection is SimpleSelection && value is SimpleSelection && oldSegment != null && newSegment != null) {
+						if (!Options.EnableVirtualSpace && (selection is SimpleSelection && value is SimpleSelection && oldSegment != null && newSegment != null)) {
 							// perf optimization:
 							// When a simple selection changes, don't redraw the whole selection, but only the changed parts.
 							int oldSegmentOffset = oldSegment.Offset;

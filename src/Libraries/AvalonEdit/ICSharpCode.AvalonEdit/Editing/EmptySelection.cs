@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			var document = textArea.Document;
 			if (document == null)
 				throw ThrowUtil.NoDocumentAssigned();
-			return Create(textArea, document.GetOffset(startPosition), document.GetOffset(endPosition));
+			return Create(textArea, startPosition, endPosition);
 		}
 		
 		public override IEnumerable<SelectionSegment> Segments {
@@ -50,6 +50,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (newText == null)
 				throw new ArgumentNullException("newText");
+			newText = AddSpacesIfRequired(newText, textArea.Caret.Position);
 			if (newText.Length > 0) {
 				if (textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset)) {
 					textArea.Document.Insert(textArea.Caret.Offset, newText);

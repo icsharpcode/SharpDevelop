@@ -11,16 +11,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// </summary>
 	public class SelectionSegment : ISegment
 	{
-		int startOffset, endOffset;
-		int startVC, endVC;
+		readonly int startOffset, endOffset;
+		readonly int startVC, endVC;
+		
+		public bool AllowVirtualSpace { get; private set; }
 		
 		public SelectionSegment(int startOffset, int endOffset)
 		{
 			this.startOffset = Math.Min(startOffset, endOffset);
 			this.endOffset = Math.Max(startOffset, endOffset);
+			this.startVC = this.endVC = -1;
 		}
 		
-		public SelectionSegment(int startOffset, int startVC, int endOffset, int endVC)
+		public SelectionSegment(int startOffset, int startVC, int endOffset, int endVC, bool allowVirtualSpace)
 		{
 			if (startOffset <= endOffset) {
 				this.startOffset = startOffset;
@@ -33,6 +36,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				this.endOffset = startOffset;
 				this.endVC = startVC;
 			}
+			this.AllowVirtualSpace = allowVirtualSpace;
 		}
 		
 		public int StartOffset {
@@ -58,6 +62,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public int Length {
 			get { return endOffset - startOffset; }
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[SelectionSegment StartOffset={0}, EndOffset={1}, StartVC={2}, EndVC={3}]", startOffset, endOffset, startVC, endVC);
 		}
 	}
 }

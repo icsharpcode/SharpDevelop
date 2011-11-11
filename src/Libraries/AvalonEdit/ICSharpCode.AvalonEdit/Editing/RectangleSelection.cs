@@ -131,7 +131,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				int baseOffset = vl.FirstDocumentLine.Offset;
 				int startOffset = baseOffset + vl.GetRelativeOffset(startVC);
 				int endOffset = baseOffset + vl.GetRelativeOffset(endVC);
-				segments.Add(new SelectionSegment(startOffset, startVC, endOffset, endVC));
+				segments.Add(new SelectionSegment(startOffset, startVC, endOffset, endVC, true));
 				
 				nextLine = vl.LastDocumentLine.NextLine;
 			} while (nextLine.LineNumber <= Math.Max(startLine, endLine));

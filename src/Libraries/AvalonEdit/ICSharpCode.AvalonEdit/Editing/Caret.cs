@@ -281,19 +281,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			int caretOffset = textView.Document.GetOffset(position);
 			int firstDocumentLineOffset = visualLine.FirstDocumentLine.Offset;
-			if (position.VisualColumn < 0) {
-				position.VisualColumn = visualLine.GetVisualColumn(caretOffset - firstDocumentLineOffset);
-			} else {
-				int offsetFromVisualColumn = visualLine.GetRelativeOffset(position.VisualColumn);
-				offsetFromVisualColumn += firstDocumentLineOffset;
-				if (offsetFromVisualColumn != caretOffset) {
-					position.VisualColumn = visualLine.GetVisualColumn(caretOffset - firstDocumentLineOffset);
-				} else {
-					if (position.VisualColumn > visualLine.VisualLength && !textArea.Options.EnableVirtualSpace) {
-						position.VisualColumn = visualLine.VisualLength;
-					}
-				}
-			}
+			position.VisualColumn = visualLine.ValidateVisualColumn(position, textArea.Options.EnableVirtualSpace);
+			
 			// search possible caret positions
 			int newVisualColumnForwards = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal);
 			// If position.VisualColumn was valid, we're done with validation.

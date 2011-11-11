@@ -560,12 +560,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		void ExtendSelectionToMouse(MouseEventArgs e)
 		{
-			int oldOffset = textArea.Caret.Offset;
 			TextViewPosition oldPosition = textArea.Caret.Position;
 			if (mode == SelectionMode.Normal || mode == SelectionMode.Rectangular) {
 				SetCaretOffsetToMousePosition(e);
 				if (mode == SelectionMode.Normal && textArea.Selection is RectangleSelection)
-					textArea.Selection = Selection.Create(textArea, oldOffset, textArea.Caret.Offset);
+					textArea.Selection = new SimpleSelection(textArea, oldPosition, textArea.Caret.Position);
 				else if (mode == SelectionMode.Rectangular && !(textArea.Selection is RectangleSelection))
 					textArea.Selection = new RectangleSelection(textArea, oldPosition, textArea.Caret.Position);
 				else

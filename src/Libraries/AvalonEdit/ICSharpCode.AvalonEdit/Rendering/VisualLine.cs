@@ -351,6 +351,26 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return ch.FirstCharacterIndex + ch.TrailingLength;
 		}
 		
+		public int ValidateVisualColumn(TextViewPosition position, bool allowVirtualSpace)
+		{
+			int offset = Document.GetOffset(position);
+			int firstDocumentLineOffset = this.FirstDocumentLine.Offset;
+			if (position.VisualColumn < 0) {
+				return GetVisualColumn(offset - firstDocumentLineOffset);
+			} else {
+				int offsetFromVisualColumn = GetRelativeOffset(position.VisualColumn);
+				offsetFromVisualColumn += firstDocumentLineOffset;
+				if (offsetFromVisualColumn != offset) {
+					return GetVisualColumn(offset - firstDocumentLineOffset);
+				} else {
+					if (position.VisualColumn > VisualLength && !allowVirtualSpace) {
+						return VisualLength;
+					}
+				}
+			}
+			return position.VisualColumn;
+		}
+		
 		/// <summary>
 		/// Gets the visual column from a document position (relative to top left of the document).
 		/// If the user clicks between two visual columns, returns the first of those columns.

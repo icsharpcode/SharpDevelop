@@ -26,7 +26,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (startOffset == endOffset)
 				return textArea.emptySelection;
 			else
-				return new SimpleSelection(textArea, startOffset, endOffset);
+				return new SimpleSelection(textArea,
+				                           new TextViewPosition(textArea.Document.GetLocation(startOffset)),
+				                           new TextViewPosition(textArea.Document.GetLocation(endOffset)));
+		}
+		
+		internal static Selection Create(TextArea textArea, TextViewPosition start, TextViewPosition end)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+			if (textArea.Document.GetOffset(start) == textArea.Document.GetOffset(end) && start.VisualColumn == end.VisualColumn)
+				return textArea.emptySelection;
+			else
+				return new SimpleSelection(textArea, start, end);
 		}
 		
 		/// <summary>
@@ -66,6 +78,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// Replaces the selection with the specified text.
 		/// </summary>
 		public abstract void ReplaceSelectionWithText(string newText);
+		
+		internal string AddSpacesIfRequired(string newText, TextViewPosition pos)
+		{
+			if (textArea.Options.EnableVirtualSpace) {
+				var vLine = textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(pos.Line));
+				int colDiff = pos.VisualColumn - vLine.VisualLength;
+				if (colDiff > 0) {
+					string additionalSpaces = new string(' ', colDiff);
+					return additionalSpaces + newText;
+				}
+			}
+			return newText;
+		}
 		
 		/// <summary>
 		/// Updates the selection when the document changes.

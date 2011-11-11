@@ -610,6 +610,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
+		/// Causes a known layer to redraw.
+		/// This method does not invalidate visual lines;
+		/// use the <see cref="Redraw()"/> method to do that.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "knownLayer",
+		                                                 Justification="This method is meant to invalidate only a specific layer - I just haven't figured out how to do that, yet.")]
+		public void InvalidateLayer(KnownLayer knownLayer, DispatcherPriority priority)
+		{
+			InvalidateMeasure(priority);
+		}
+		
+		/// <summary>
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// Does nothing if segment is null.
 		/// </summary>
