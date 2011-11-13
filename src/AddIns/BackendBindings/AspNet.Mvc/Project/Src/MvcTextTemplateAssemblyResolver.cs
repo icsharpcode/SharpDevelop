@@ -9,9 +9,13 @@ namespace ICSharpCode.AspNet.Mvc
 	[Serializable]
 	public class MvcTextTemplateAssemblyResolver : ITextTemplatingAssemblyResolver
 	{
-		public string Resolve(string assemblyReference)
+		public string ResolvePath(string assemblyReference)
 		{
 			return assemblyReference;
+		}
+		
+		public void Dispose()
+		{
 		}
 	}
 }

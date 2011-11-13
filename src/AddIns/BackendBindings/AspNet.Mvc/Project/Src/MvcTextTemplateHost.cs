@@ -22,7 +22,12 @@ namespace ICSharpCode.AspNet.Mvc
 			ITextTemplatingAppDomainFactory appDomainFactory,
 			ITextTemplatingAssemblyResolver assemblyResolver,
 			string applicationBase)
-			: base(appDomainFactory, assemblyResolver, applicationBase)
+			: this(new TextTemplatingHostContext(appDomainFactory, assemblyResolver, null, null), applicationBase)
+		{
+		}
+		
+		public MvcTextTemplateHost(TextTemplatingHostContext context, string applicationBase)
+			: base(context, applicationBase)
 		{
 			AddAssemblyReferenceForMvcHost();
 			AddImports();

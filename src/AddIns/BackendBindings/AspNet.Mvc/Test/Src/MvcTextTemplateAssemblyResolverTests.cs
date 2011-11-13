@@ -18,12 +18,12 @@ namespace AspNet.Mvc.Tests
 		}
 		
 		[Test]
-		public void Resolve_FullPathToAssemblyPassed_ReturnsFullPathToAssembly()
+		public void ResolvePath_FullPathToAssemblyPassed_ReturnsFullPathToAssembly()
 		{
 			CreateResolver();
 			string expectedAssemblyPath = @"d:\projects\MyProject\bin\debug\MyProject.dll";
 			
-			string resolvedAssemblyPath = resolver.Resolve(expectedAssemblyPath);
+			string resolvedAssemblyPath = resolver.ResolvePath(expectedAssemblyPath);
 			
 			Assert.AreEqual(expectedAssemblyPath, resolvedAssemblyPath);
 		}

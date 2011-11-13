@@ -27,7 +27,7 @@ namespace AspNet.Mvc.Tests.Helpers
 		public static TestableProject CreateProject(string fileName, string projectName)
 		{
 			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(null);
 			createInfo.ProjectName = projectName;
 			createInfo.OutputProjectFileName = fileName;
 			return new TestableProject(createInfo);
