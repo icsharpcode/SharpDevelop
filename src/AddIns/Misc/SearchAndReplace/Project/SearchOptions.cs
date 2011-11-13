@@ -2,19 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 
 namespace SearchAndReplace
 {
-	public enum SearchStrategyType {
-		Normal,
-		RegEx,
-		Wildcard
-	}
-	
 	public static class SearchOptions
 	{
-		const string searchPropertyKey = "SearchAndReplaceProperties";
+		const string searchPropertyKey = "SearchAndReplaceProperties2";
 		
 		static Properties properties;
 		
@@ -54,13 +49,10 @@ namespace SearchAndReplace
 		
 		public static string[] FindPatterns {
 			get {
-				if (!properties.Contains("FindPatterns")) {
-					return new string[] {};
-				}
-				return properties.Get("FindPatterns", "").Split('\xFF');
+				return properties.Get("FindPatterns", new string[0]);
 			}
 			set {
-				properties.Set("FindPatterns", String.Join("\xFF", value));
+				properties.Set("FindPatterns", value);
 			}
 		}
 		
@@ -85,14 +77,10 @@ namespace SearchAndReplace
 		
 		public static string[] ReplacePatterns {
 			get {
-				if (!properties.Contains("ReplacePatterns")) {
-					return new string[] {};
-				}
-				
-				return properties.Get("ReplacePatterns", "").Split('\xFF');
+				return properties.Get("ReplacePatterns", new string[0]);
 			}
 			set {
-				properties.Set("ReplacePatterns", String.Join("\xFF", value));
+				properties.Set("ReplacePatterns", value);
 			}
 		}
 		
@@ -113,7 +101,7 @@ namespace SearchAndReplace
 				properties.Set("IncludeSubdirectories", value);
 			}
 		}
-	
+		
 		public static bool MatchWholeWord {
 			get {
 				return properties.Get("MatchWholeWord", false);
@@ -121,7 +109,7 @@ namespace SearchAndReplace
 			set {
 				properties.Set("MatchWholeWord", value);
 			}
-		}		
+		}
 		
 		public static string LookIn {
 			get {
@@ -141,23 +129,21 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static DocumentIteratorType DocumentIteratorType {
+		public static SearchTarget SearchTarget {
 			get {
-				return properties.Get("DocumentIteratorType", DocumentIteratorType.CurrentDocument);
+				return properties.Get("SearchTarget", SearchTarget.CurrentDocument);
 			}
 			set {
-				if (!Enum.IsDefined(typeof(DocumentIteratorType), value))
-					throw new ArgumentException("invalid enum value");
-				properties.Set("DocumentIteratorType", value);
+				properties.Set("SearchTarget", value);
 			}
 		}
 		
-		public static SearchStrategyType SearchStrategyType {
+		public static SearchMode SearchMode {
 			get {
-				return properties.Get("SearchStrategyType", SearchStrategyType.Normal);
+				return properties.Get("SearchMode", SearchMode.Normal);
 			}
 			set {
-				properties.Set("SearchStrategyType", value);
+				properties.Set("SearchMode", value);
 			}
 		}
 		#endregion

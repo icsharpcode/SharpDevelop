@@ -5,6 +5,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -32,10 +33,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-		
+			
 			this.ReportModel = reportModel;
-			//this.Layouter = layouter;
-			this.Layouter = new Layouter();
+			
+			if (!ServiceContainer.Contains(typeof(ILayouter))) {
+				ServiceContainer.AddService<ILayouter>(new Layouter());
+			}
+			
 			this.Graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
@@ -43,36 +47,33 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Create and Init new page
 		
-		protected int AdjustPageHeader ()
-		{
-			int offset = 0;
-			if (this.SinglePage.Items.Count > 0) {
-				offset = this.SinglePage.SectionBounds.PageHeaderRectangle.Top;
-			} else {
-				offset = this.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
-			}
-			return offset;
-		}
-		
-		
-		protected ExporterPage InitNewPage ()
+		protected void InitNewPage ()
 		{
 			bool firstPage;
-			this.ReportModel.ReportSettings.LeftMargin = this.ReportModel.ReportSettings.LeftMargin;
+			
 			if (this.Pages.Count == 0) {
 				firstPage = true;
 			} else {
 				firstPage = false;
 			}
-			SectionBounds sectionBounds  = new SectionBounds (this.ReportModel.ReportSettings,firstPage);
-			ExporterPage sp = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
-			return sp;
+			
+			this.ReportModel.ReportSettings.LeftMargin = this.ReportModel.ReportSettings.LeftMargin;
+			var sectionBounds  = new SectionBounds (this.ReportModel.ReportSettings,firstPage);
+			
+			this.SinglePage = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
+			
+			if (this.EvaluatorFacade == null)
+			{
+				EvaluatorFacade = EvaluationHelper.CreateEvaluator(SinglePage,SinglePage.IDataNavigator);
+			}
+			EvaluatorFacade.SinglePage = this.SinglePage;
 		}
+		
 		
 		
 		protected virtual void BuildNewPage ()
 		{
-			this.SinglePage = this.InitNewPage();
+			InitNewPage();
 			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);
 			this.SinglePage.CalculatePageBounds(this.ReportModel);
 		}
@@ -81,48 +82,86 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		#region Converters
-		
-		
 		protected ExporterCollection ConvertSection (BaseSection section,int dataRow)
 		{
+			Point currentBottom = Point.Empty;
 			FireSectionRenderEvent (section ,dataRow);
+			PrintHelper.AdjustParent(section,section.Items);
+			PrintHelper.AdjustSectionLocation(section);
 			
-			PrintHelper.AdjustParent((BaseSection)section,section.Items);
+			var convertedSection = new ExporterCollection();
+			Offset = SectionBounds.Offset;
+			Point startOffset = Offset;
 			
-			ExporterCollection list = new ExporterCollection();
-			
-			if (section.Items.Count > 0) {
-				
-				Point offset = new Point(section.Location.X,section.SectionOffset);
-				
-				// Call layouter only once per section
-				Rectangle desiredRectangle = Layouter.Layout(this.Graphics,section);
-				Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
-				if (!sectionRectangle.Contains(desiredRectangle)) {
-					section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-				}
-				
-				foreach (BaseReportItem item in section.Items) {
-					
-					ISimpleContainer container = item as ISimpleContainer;
-					
-					if (container != null) {
+			if (section.Items.Count > 0)
+			{
+				Size sectionSize = section.Size;
 
-						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
+				Rectangle desiredRectangle = LayoutHelper.CalculateSectionLayout(this.Graphics,section);
+				LayoutHelper.FixSectionLayout(desiredRectangle,section);
+				section.Items.SortByLocation();
+				GapList gapCalculator = new GapList();
+				gapCalculator.CalculateGapList(section);
+				int i = 0;
+				
+				foreach (BaseReportItem item in section.Items)
+				{
+					ISimpleContainer simpleContainer = item as ISimpleContainer;
+					
+					if (simpleContainer != null)
+					{
+						Offset = new Point(Offset.X,Offset.Y + gapCalculator.GapBetweenItems[i] );
+						var containerSize = simpleContainer.Size;
 						
-						StandardPrinter.AdjustBackColor (container);
+						EvaluationHelper.EvaluateReportItems(EvaluatorFacade,simpleContainer.Items);
 						
-						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,offset);
+						var layouter = (ILayouter)ServiceContainer.GetService(typeof(ILayouter));
+						LayoutHelper.SetLayoutForRow(Graphics,layouter, simpleContainer);
+						/*
+						 * */
+
 						
-						exportContainer.Items.AddRange(clist);
-						list.Add(exportContainer);
-						
-					} else {
-						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
+						/*
+				section.Items.ForEach(delegate(BaseReportItem aitem)
+				                      {
+//				                      	Console.WriteLine(item.Location);
+				                      });
+				var h = section.Items.FindHighestElement();
+						 */
+						section.MeasureOverride(section.Size);
+						/** */
+						Offset = BaseConverter.ConvertContainer(convertedSection,simpleContainer,Offset.X,Offset);
+						simpleContainer.Size = containerSize;
 					}
+					else
+					{
+						var converteditem = ExportHelper.ConvertLineItem(item,Offset);
+						if (converteditem != null) {
+						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
+							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
+						}
+						
+						convertedSection.Add((BaseExportColumn)converteditem );
+							
+						}
+//						if (converteditem.StyleDecorator.DisplayRectangle.Bottom > currentBottom.Y) {
+//							currentBottom = new Point(converteditem.StyleDecorator.Location.X,converteditem.StyleDecorator.DisplayRectangle.Bottom);
+//						}
+//						
+//						convertedSection.Add((BaseExportColumn)converteditem );
+						
+					}
+					i ++;
+				}
+				Offset = new Point (Offset.X,Offset.Y + gapCalculator.LastGap);
+//				Offset = new Point (Offset.X,Offset.Y + 5);
+				
+				if (currentBottom.Y > Offset.Y) {
+					Offset = new Point (Offset.X,currentBottom.Y);
 				}
 			}
-			return list;
+			SectionBounds.Offset = Offset;
+			return convertedSection;
 		}
 		
 		
@@ -135,7 +174,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			debugRectangle.FrameColor = item.FrameColor;
 			return debugRectangle;
 		}
-		
 		
 		#endregion
 		
@@ -182,36 +220,30 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (this.Pages.Count == 0) {
 				return;
 			}
-			
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.SinglePage);
-			
-			foreach (ExporterPage p in this.pages)
+			foreach (ExporterPage page in this.pages)
 			{
-				p.TotalPages = this.Pages.Count;
-				p.IDataNavigator = dataNavigator;
-				evaluatorFacade.SinglePage = p;
-				EvaluateRecursive(evaluatorFacade,p.Items);
+				page.TotalPages = this.Pages.Count;
+				page.IDataNavigator = dataNavigator;
+				EvaluatorFacade.SinglePage = page;
+				EvaluateRecursive(EvaluatorFacade,page.Items);
 			}
 		}
-		 
+		
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
-			foreach (BaseExportColumn be in items) {
+			foreach (BaseExportColumn exportColumn in items) {
 				
-				IExportContainer ec = be as IExportContainer;
+				IExportContainer ec = exportColumn as IExportContainer;
 				if (ec != null)
 				{
 					if (ec.Items.Count > 0) {
 						EvaluateRecursive(evaluatorFassade,ec.Items);
 					}
 				}
-				ExportText et = be as ExportText;
-				
-				if (et != null) {
-					if (et.Text.StartsWith("=",StringComparison.InvariantCulture)) {
-						et.Text = evaluatorFassade.Evaluate(et.Text);
-					}
+				IReportExpression expressionItem = exportColumn as IReportExpression;
+				if (expressionItem != null) {
+					evaluatorFassade.Evaluate(expressionItem);
 				}
 			}
 		}
@@ -253,7 +285,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
-			
+		
 		protected void FirePageCreated(ExporterPage page)
 		{
 			EventHelper.Raise<PageCreatedEventArgs>(PageCreated,this,
@@ -262,15 +294,31 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#endregion
 		
 		
+		protected void DebugShowSections ()
+		{
+			Console.WriteLine("\toffset {0}",Offset);
+			Console.WriteLine("\treportheader {0}",SectionBounds.ReportHeaderRectangle);
+			Console.WriteLine("\tpageheader {0}",SectionBounds.PageHeaderRectangle);
+			Console.WriteLine("\tdetail {0}",SectionBounds.DetailArea);
+		}
+		
 		#region Property's
+		
+		protected Point Offset {get;set;}
 		
 		protected Graphics Graphics {get; private set;}
 		
-		public ILayouter Layouter {get; private set;}
+		protected IExpressionEvaluatorFacade EvaluatorFacade {get; private set;}
 		
-		public IReportModel ReportModel {get;set;}
+		public IReportModel ReportModel {get;private set;}
 
-		protected ExporterPage SinglePage {get;set;}
+		protected ExporterPage SinglePage {get;private set;}
+		
+		protected SectionBounds SectionBounds
+		{
+			get { return SinglePage.SectionBounds; }
+		}
+		
 		
 		public PagesCollection Pages
 		{
@@ -282,12 +330,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					return pages;
 				}
 			}
-		}
-		
-		
-		protected SectionBounds SectionBounds
-		{
-			get { return SinglePage.SectionBounds; }
 		}
 		
 		#endregion

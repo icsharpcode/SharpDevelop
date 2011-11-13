@@ -33,7 +33,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void SelectedMethodIsNull()
 		{
-			Assert.IsNull(runProjectTestsInPadCommand.SelectedMethod);
+			Assert.IsNull(runProjectTestsInPadCommand.SelectedMember);
 		}
 		
 		[Test]

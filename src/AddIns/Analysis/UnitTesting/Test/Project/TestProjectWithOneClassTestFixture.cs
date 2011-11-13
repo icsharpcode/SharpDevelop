@@ -274,16 +274,16 @@ namespace UnitTesting.Tests.Project
 			mockClass.SetCompoundClass(compoundClass);
 			
 			// Monitor test methods added.
-			List<TestMethod> methodsAdded = new List<TestMethod>();
-			testClass.TestMethods.TestMethodAdded += delegate(Object source, TestMethodEventArgs e)
-				{ methodsAdded.Add(e.TestMethod); };
+			List<TestMember> methodsAdded = new List<TestMember>();
+			testClass.TestMembers.TestMemberAdded += delegate(Object source, TestMemberEventArgs e)
+				{ methodsAdded.Add(e.TestMember); };
 
 			// Update TestProject's parse info.
 			testProject.UpdateParseInfo(oldUnit, newUnit);
 	
-			Assert.IsTrue(testClass.TestMethods.Contains("NewMethod"));
+			Assert.IsTrue(testClass.TestMembers.Contains("NewMethod"));
 			Assert.AreEqual(1, methodsAdded.Count);
-			Assert.AreSame(method, methodsAdded[0].Method);
+			Assert.AreSame(method, methodsAdded[0].Member);
 		}
 		
 		[Test]

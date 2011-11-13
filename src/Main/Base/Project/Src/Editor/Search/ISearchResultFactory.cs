@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
 {
@@ -12,5 +13,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	public interface ISearchResultFactory
 	{
 		ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches);
+		
+		ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches);
 	}
 }

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -19,5 +20,6 @@ namespace ICSharpCode.UnitTesting
 		IUnitTestMessageService MessageService { get; }
 		IUnitTestSaveAllFilesCommand SaveAllFilesCommand { get; }
 		IStatusBarService StatusBarService { get; }
+		Solution OpenSolution { get; }
 	}
 }

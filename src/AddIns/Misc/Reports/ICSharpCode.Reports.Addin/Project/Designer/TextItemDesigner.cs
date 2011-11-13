@@ -8,6 +8,8 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Dialogs;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Addin.Designer
 {
@@ -26,6 +28,12 @@ namespace ICSharpCode.Reports.Addin.Designer
 			base.Initialize(component);
 			GetService();
 			this.ctrl = (BaseTextItem) component;
+		}
+		
+		protected override void PostFilterProperties(System.Collections.IDictionary properties)
+		{
+			DesignerHelper.RemoveProperties(properties);
+			base.PostFilterProperties(properties);
 		}
 		
 		

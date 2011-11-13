@@ -398,9 +398,6 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Szukaj</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Szukaj...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Szukaj tylko w poprzednio znalezionych tematach</value>
   </data>
@@ -430,6 +427,9 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Użyj języka bieżącego Projektu</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Szukaj...</value>
   </data>
   <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
     <value>Dodaj do listy ignorowanych</value>
@@ -526,9 +526,6 @@ Musisz zainstalować .NET Framework SDK aby otrzymać system pomocy.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Plik</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Wiersz</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>O...</value>
@@ -2753,6 +2750,9 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Wiersz</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Akt&amp;ualizuj</value>
   </data>
@@ -2968,9 +2968,6 @@ Możesz również wybrać przechowywanie ustawienia w pliku użytkownika zamiast
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Końcowy Wiersz</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Wiersz</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Jeżeli NCover jest zainstalowane, proszę wskazać lokalizację aplikacji w opcjach Pokrywania Kodu.</value>
@@ -6459,15 +6456,6 @@ Błąd podczas uruchamiania:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Użytkownik:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Powinieneś często sprawdzać czy nie ma nowej wersji SharpDevelop oraz powiedzieć wszystkim znajomym jak dobry jest SharpDevelop oraz pisać w nim świetne programy w C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Okno szablonów uzupełniania można otworzyć przez Ctrl + J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Możesz pisać "? name=...;" (C#) lub "Dim name As ? = ..." (VB) a SharpDevelop podmieni znaki zapytania typem "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opcje buforowania</value>

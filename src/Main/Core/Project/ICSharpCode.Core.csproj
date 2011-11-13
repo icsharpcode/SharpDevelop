@@ -60,6 +60,7 @@
     <Compile Include="Src\AddInTree\AddIn\AddIn.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddInLoadException.cs" />
     <Compile Include="Src\AddInTree\AddIn\AssemblyLocator.cs" />
+    <Compile Include="Src\AddInTree\AddIn\BuildItemArgs.cs" />
     <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
     <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Src\AddInTree\TopologicalSort.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
     <Compile Include="Src\CoreException.cs" />
+    <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\Services\AnalyticsMonitor\AnalyticsMonitorService.cs" />
     <Compile Include="Src\Services\AnalyticsMonitor\IAnalyticsMonitor.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />

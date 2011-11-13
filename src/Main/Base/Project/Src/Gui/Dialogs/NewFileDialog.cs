@@ -460,7 +460,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					    || fileName.IndexOf(Path.AltDirectorySeparatorChar) >= 0
 					    || fileName.IndexOf(Path.DirectorySeparatorChar) >= 0)
 					{
-						MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", fileName}}));
+						MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new StringTagPair("FileName", fileName)));
 						return;
 					}
 					if (Path.GetExtension(fileName).Length == 0) {

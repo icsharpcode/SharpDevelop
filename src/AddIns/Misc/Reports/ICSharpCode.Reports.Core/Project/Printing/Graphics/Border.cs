@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This Class drwas a Border around an ReportItem
@@ -38,7 +39,7 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("graphics");
 			}
 			using (Pen p = baseline.CreatePen(baseline.Thickness)) {
-				Rectangle r = System.Drawing.Rectangle.Inflate(rectangle,1,1);
+//				Rectangle r = System.Drawing.Rectangle.Inflate(rectangle,1,1);
 				graphics.DrawRectangle (p,rectangle);
 			}
 		}

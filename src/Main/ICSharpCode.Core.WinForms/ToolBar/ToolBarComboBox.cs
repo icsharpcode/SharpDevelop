@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -12,6 +13,7 @@ namespace ICSharpCode.Core.WinForms
 		Codon  codon;
 		string description   = String.Empty;
 		IComboBoxCommand menuCommand = null;
+		IEnumerable<ICondition> conditions;
 		
 		public object Caller {
 			get {
@@ -34,7 +36,7 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public ToolBarComboBox(Codon codon, object caller)
+		public ToolBarComboBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -43,6 +45,7 @@ namespace ICSharpCode.Core.WinForms
 			
 			this.caller  = caller;
 			this.codon   = codon;
+			this.conditions = conditions;
 			
 			menuCommand = (IComboBoxCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			menuCommand.ComboBox = this;
@@ -76,7 +79,7 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
@@ -92,7 +95,7 @@ namespace ICSharpCode.Core.WinForms
 		{
 			bool isVisible = base.Visible;
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				isVisible &= failedAction != ConditionFailedAction.Exclude;
 			}
 			if (base.Visible != isVisible) {

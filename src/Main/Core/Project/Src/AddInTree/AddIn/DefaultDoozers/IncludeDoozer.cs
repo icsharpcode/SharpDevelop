@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.Core
 {
@@ -32,46 +33,48 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public bool HandleConditions {
 			get {
-				return false;
+				return true;
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
+			Codon codon = args.Codon;
 			string item = codon.Properties["item"];
 			string path = codon.Properties["path"];
 			if (item != null && item.Length > 0) {
 				// include item
-				return AddInTree.BuildItem(item, caller);
+				return AddInTree.BuildItem(item, args.Caller, args.Conditions);
 			} else if (path != null && path.Length > 0) {
 				// include path (=multiple items)
-				return new IncludeReturnItem(caller, path);
+				return new IncludeReturnItem(args.Caller, path, args.Conditions);
 			} else {
-				MessageService.ShowMessage("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
-				return null;
+				throw new CoreException("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
 			}
 		}
 		
-		class IncludeReturnItem : IBuildItemsModifier
+		sealed class IncludeReturnItem : IBuildItemsModifier
 		{
 			string path;
 			object caller;
+			IEnumerable<ICondition> additionalConditions;
 			
-			public IncludeReturnItem(object caller, string path)
+			public IncludeReturnItem(object caller, string path, IEnumerable<ICondition> additionalConditions)
 			{
 				this.caller = caller;
 				this.path = path;
+				this.additionalConditions = additionalConditions;
 			}
 			
 			public void Apply(IList items)
 			{
 				AddInTreeNode node = AddInTree.GetTreeNode(path, false);
 				if (node != null) {
-					foreach (object o in node.BuildChildItems(caller)) {
+					foreach (object o in node.BuildChildItems<object>(caller, additionalConditions)) {
 						items.Add(o);
 					}
 				} else {
-					MessageService.ShowError("IncludeDoozer: AddinTree-Path not found: " + path);
+					throw new CoreException("IncludeDoozer: AddinTree-Path not found: " + path);
 				}
 			}
 		}

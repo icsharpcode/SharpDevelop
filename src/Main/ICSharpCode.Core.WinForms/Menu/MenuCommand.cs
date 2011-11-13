@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -13,6 +15,7 @@ namespace ICSharpCode.Core.WinForms
 		Codon codon;
 		ICommand menuCommand = null;
 		string description = "";
+		IEnumerable<ICondition> conditions;
 		
 		public string Description {
 			get {
@@ -66,7 +69,8 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public MenuCommand(Codon codon, object caller) : this(codon, caller, false)
+		public MenuCommand(Codon codon, object caller, IEnumerable<ICondition> conditions)
+			: this(codon, caller, false, conditions)
 		{
 			
 		}
@@ -87,11 +91,12 @@ namespace ICSharpCode.Core.WinForms
 			return shortCut;
 		}
 		
-		public MenuCommand(Codon codon, object caller, bool createCommand)
+		public MenuCommand(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
-			this.caller        = caller;
-			this.codon         = codon;
+			this.caller      = caller;
+			this.codon       = codon;
+			this.conditions  = conditions;
 			
 			if (createCommand) {
 				CreateCommand();
@@ -114,6 +119,7 @@ namespace ICSharpCode.Core.WinForms
 			this.codon  = null;
 			this.caller = null;
 			Text = StringParser.Parse(label);
+			this.conditions = Enumerable.Empty<ICondition>();
 		}
 		
 		protected override void OnClick(System.EventArgs e)
@@ -142,7 +148,7 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
 				if (menuCommand != null && menuCommand is IMenuCommand) {
@@ -157,7 +163,7 @@ namespace ICSharpCode.Core.WinForms
 			if (codon == null)
 				return true;
 			else
-				return codon.GetFailedAction(caller) != ConditionFailedAction.Exclude;
+				return Condition.GetFailedAction(conditions, caller) != ConditionFailedAction.Exclude;
 		}
 		
 		public virtual void UpdateStatus()

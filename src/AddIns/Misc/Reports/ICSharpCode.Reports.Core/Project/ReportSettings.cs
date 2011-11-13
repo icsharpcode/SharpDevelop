@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Core.Dialogs;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core{
 	/// <summary>
@@ -43,7 +44,8 @@ namespace ICSharpCode.Reports.Core{
 		
 		private string reportName;
 		private string fileName;
-	
+		
+		private SqlParameterCollection sqlParameters;
 		private ParameterCollection parameterCollection;
 		private AvailableFieldsCollection availableFields;
 		private GroupColumnCollection groupingsCollection;
@@ -103,6 +105,7 @@ namespace ICSharpCode.Reports.Core{
 			this.availableFields = new AvailableFieldsCollection();
 			this.groupingsCollection = new GroupColumnCollection();
 			this.sortingCollection = new SortColumnCollection();
+			this.sqlParameters = new SqlParameterCollection();
 			this.parameterCollection = new ParameterCollection();
 			this.NoDataMessage = "No Data for this Report";
 		}
@@ -122,7 +125,6 @@ namespace ICSharpCode.Reports.Core{
 				}
 			}
 		}
-		
 		
 		
 		#region BaseSettings
@@ -247,6 +249,15 @@ namespace ICSharpCode.Reports.Core{
 		public ParameterCollection ParameterCollection
 		{
 			get{return parameterCollection;}
+		}
+		
+		[Category("Parameters")]
+		[EditorAttribute ( typeof(ParameterCollectionEditor),
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		
+		public SqlParameterCollection SqlParameters
+		{
+			get { return sqlParameters; }
 		}
 		
 		#endregion

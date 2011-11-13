@@ -212,15 +212,14 @@ namespace ICSharpCode.Core.Presentation
 			
 			switch (type) {
 				case "Separator":
-					return new ConditionalSeparator(codon, descriptor.Caller, false);
+					return new ConditionalSeparator(codon, descriptor.Caller, false, descriptor.Conditions);
 				case "CheckBox":
-					return "CheckBox";
-					//return new MenuCheckBox(codon, descriptor.Caller);
+					return new MenuCheckBox(context.InputBindingOwner, codon, descriptor.Caller, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Caller, createCommand, context.ActivationMethod);
+					return new MenuCommand(context.InputBindingOwner, codon, descriptor.Caller, createCommand, context.ActivationMethod, descriptor.Conditions);
 				case "Menu":
-					var item = new CoreMenuItem(codon, descriptor.Caller) {
+					var item = new CoreMenuItem(codon, descriptor.Caller, descriptor.Conditions) {
 						ItemsSource = new object[1],
 						SetEnabled = true
 					};

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -34,8 +35,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PullData;
-//			base.ReportModel.ReportSettings.AvailableFieldsCollection.AddRange(base.ReportStructure.AvailableFieldsCollection);
-//			base.ReportModel.ReportSettings.ParameterCollection.AddRange(base.ReportStructure.SqlQueryParameters);
 			base.GenerateReport();
 		
 			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");

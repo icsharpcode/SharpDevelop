@@ -25,7 +25,7 @@ namespace SharpRefactoring.Gui
 		
 		public PropertyOrFieldWrapper(IMember member)
 		{
-			if (member == null || member.ReturnType == null)
+			if (member == null)
 				throw new ArgumentNullException("member");
 			if (!(member is IField || member is IProperty))
 				throw new ArgumentException("member must be IField or IProperty");
@@ -73,21 +73,11 @@ namespace SharpRefactoring.Gui
 			}
 		}
 		
-		bool isSelected;
-		public bool IsSelected {
-			get { return isSelected; }
-			set {
-				isSelected = value;
-				OnPropertyChanged("IsSelected");
-			}
-		}
-		
 		bool addCheckForNull;
 		public bool AddCheckForNull {
 			get { return addCheckForNull; }
 			set {
 				addCheckForNull = value;
-				if (value) IsSelected = true;
 			}
 		}
 		
@@ -96,7 +86,6 @@ namespace SharpRefactoring.Gui
 			get { return addRangeCheck; }
 			set {
 				addRangeCheck = value;
-				if (value) IsSelected = true;
 			}
 		}
 		

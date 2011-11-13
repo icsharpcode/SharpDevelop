@@ -59,13 +59,13 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseBaseTestMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("BaseBaseTestFixture.BaseBaseTest"));
+			Assert.IsTrue(testClass.TestMembers.Contains("BaseBaseTestFixture.BaseBaseTest"));
 		}
 
 		[Test]
 		public void BaseMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("BaseTestFixture.BaseTest"));
+			Assert.IsTrue(testClass.TestMembers.Contains("BaseTestFixture.BaseTest"));
 		}
 		
 		/// <summary>
@@ -77,8 +77,8 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseBaseMethodDeclaringTypeIsDerivedClass()
 		{
-			TestMethod method = testClass.TestMethods["BaseBaseTestFixture.BaseBaseTest"];
-			Assert.AreEqual(c, method.Method.DeclaringType);
+			TestMember method = testClass.TestMembers["BaseBaseTestFixture.BaseBaseTest"];
+			Assert.AreEqual(c, method.Member.DeclaringType);
 		}
 	
 		[Test]

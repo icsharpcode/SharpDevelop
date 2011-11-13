@@ -33,27 +33,40 @@ namespace HexEditor.View
 		public HexEditContainer()
 		{
 			InitializeComponent();
-			
-			tbSizeToFit.Text = StringParser.Parse(tbSizeToFit.Text);
-			
-			ToolStripControlHost bytesPerLine = new ToolStripControlHost(tSTBCharsPerLine);
-			this.toolStrip1.Items.Insert(1, bytesPerLine);
-			
-			ToolStripControlHost viewMode = new ToolStripControlHost(tCBViewMode);
-			this.toolStrip1.Items.Insert(3, viewMode);
-			
-			tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
-			this.hexEditControl.ContextMenuStrip = MenuService.CreateContextMenu(this.hexEditControl, "/AddIns/HexEditor/Editor/ContextMenu");
-			tCBViewMode.SelectedIndex = 0;
-			
-			tSTBCharsPerLine.Value = Settings.BytesPerLine;
-			tCBViewMode.SelectedItem = Settings.ViewMode.ToString();
-			hexEditControl.ViewMode = Settings.ViewMode;
-			hexEditControl.BytesPerLine = Settings.BytesPerLine;
-			tbSizeToFit.Checked = hexEditControl.FitToWindowWidth = Settings.FitToWidth;
-			tSTBCharsPerLine.Enabled = !Settings.FitToWidth;
-			
-			hexEditControl.Invalidate();
+		}
+		
+		bool loaded = false;
+		
+		void Init(object sender, EventArgs e)
+		{
+			try {
+				hexEditControl.Initializing = true;
+				if (loaded)
+					return;
+				loaded = true;
+				
+				tbSizeToFit.Text = StringParser.Parse(tbSizeToFit.Text);
+				
+				ToolStripControlHost bytesPerLine = new ToolStripControlHost(tSTBCharsPerLine);
+				this.toolStrip1.Items.Insert(1, bytesPerLine);
+				
+				ToolStripControlHost viewMode = new ToolStripControlHost(tCBViewMode);
+				this.toolStrip1.Items.Insert(3, viewMode);
+				
+				hexEditControl.BytesPerLine = Settings.BytesPerLine;
+				tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
+				this.hexEditControl.ContextMenuStrip = MenuService.CreateContextMenu(this.hexEditControl, "/AddIns/HexEditor/Editor/ContextMenu");
+				tCBViewMode.SelectedIndex = 0;
+				
+				tCBViewMode.SelectedItem = Settings.ViewMode.ToString();
+				hexEditControl.ViewMode = Settings.ViewMode;
+				tbSizeToFit.Checked = hexEditControl.FitToWindowWidth = Settings.FitToWidth;
+				tSTBCharsPerLine.Enabled = !Settings.FitToWidth;
+				
+				hexEditControl.Invalidate();
+			} finally {
+				hexEditControl.Initializing = false;
+			}
 		}
 
 		void TbSizeToFitClick(object sender, EventArgs e)
@@ -144,6 +157,7 @@ namespace HexEditor.View
 
 		void HexEditContainer_Resize(object sender, EventArgs e)
 		{
+			Init(sender, e);
 			if (this.tbSizeToFit.Checked) tSTBCharsPerLine.Text = hexEditControl.BytesPerLine.ToString();
 		}
 	}

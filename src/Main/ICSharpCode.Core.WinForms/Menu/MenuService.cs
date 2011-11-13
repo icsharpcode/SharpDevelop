@@ -39,14 +39,14 @@ namespace ICSharpCode.Core.WinForms
 			
 			switch (type) {
 				case "Separator":
-					return new MenuSeparator(codon, descriptor.Caller);
+					return new MenuSeparator(codon, descriptor.Caller, descriptor.Conditions);
 				case "CheckBox":
-					return new MenuCheckBox(codon, descriptor.Caller);
+					return new MenuCheckBox(codon, descriptor.Caller, descriptor.Conditions);
 				case "Item":
 				case "Command":
-					return new MenuCommand(codon, descriptor.Caller, createCommand);
+					return new MenuCommand(codon, descriptor.Caller, createCommand, descriptor.Conditions);
 				case "Menu":
-					return new Menu(codon, descriptor.Caller, ConvertSubItems(descriptor.SubItems));
+					return new Menu(codon, descriptor.Caller, ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:

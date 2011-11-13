@@ -54,13 +54,13 @@ namespace ICSharpCode.Core.Presentation
 			
 			switch (type) {
 				case "Separator":
-					return new ConditionalSeparator(codon, caller, true);
+					return new ConditionalSeparator(codon, caller, true, descriptor.Conditions);
 				case "CheckBox":
-					return new ToolBarCheckBox(codon, caller);
+					return new ToolBarCheckBox(codon, caller, descriptor.Conditions);
 				case "Item":
-					return new ToolBarButton(inputBindingOwner, codon, caller, createCommand);
+					return new ToolBarButton(inputBindingOwner, codon, caller, createCommand, descriptor.Conditions);
 				case "ComboBox":
-					return new ToolBarComboBox(codon, caller);
+					return new ToolBarComboBox(codon, caller, descriptor.Conditions);
 				case "TextBox":
 					return "TextBox";
 					//return new ToolBarTextBox(codon, caller);
@@ -71,12 +71,12 @@ namespace ICSharpCode.Core.Presentation
 					return new ToolBarDropDownButton(
 						codon, caller, MenuService.CreateUnexpandedMenuItems(
 							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
-							descriptor.SubItems));
+							descriptor.SubItems), descriptor.Conditions);
 				case "SplitButton":
 					return new ToolBarSplitButton(
 						codon, caller, MenuService.CreateUnexpandedMenuItems(
 							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
-							descriptor.SubItems));
+							descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
 					object result = codon.AddIn.CreateObject(codon.Properties["class"]);
 					if (result is IToolBarItemBuilder)

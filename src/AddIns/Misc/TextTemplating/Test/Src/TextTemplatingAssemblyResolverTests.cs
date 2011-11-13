@@ -14,67 +14,45 @@ namespace TextTemplating.Tests
 	public class TextTemplatingAssemblyResolverTests
 	{
 		TextTemplatingAssemblyResolver resolver;
-		IProject project;
+		FakeTextTemplatingAssemblyPathResolver fakeAssemblyPathResolver;
+		FakeTextTemplatingHostAppDomainAssemblyResolver fakeHostAppDomainAssemblyResolver;
 		
 		void CreateResolver()
 		{
-			project = ProjectHelper.CreateProject();
-			resolver = new TextTemplatingAssemblyResolver(project);
-		}
-		
-		ReferenceProjectItem AddReferenceToProject(string referenceName)
-		{
-			ReferenceProjectItem projectItem = new ReferenceProjectItem(project, referenceName);
-			ProjectService.AddProjectItem(project, projectItem);
-			return projectItem;
-		}
-
-		[Test]
-		public void Resolve_ProjectHasNoReferences_ReturnsAssemblyReferencePassedToMethod()
-		{
-			CreateResolver();
-			string result = resolver.Resolve("Test");
-			
-			Assert.AreEqual("Test", result);
+			fakeAssemblyPathResolver = new FakeTextTemplatingAssemblyPathResolver();
+			fakeHostAppDomainAssemblyResolver = new FakeTextTemplatingHostAppDomainAssemblyResolver();
+			resolver = new TextTemplatingAssemblyResolver(
+				fakeAssemblyPathResolver,
+				fakeHostAppDomainAssemblyResolver);
 		}
 		
 		[Test]
-		public void Resolve_ProjectHasOneReferenceToTestAssemblyWithHintPathSet_ReturnsFullPathToTestAssembly()
+		public void ResolvePath_PathPassed_PathPassedToAssemblyPathResolver()
 		{
 			CreateResolver();
-			ReferenceProjectItem reference = AddReferenceToProject("test");
-			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.HintPath = expectedFileName;
+			resolver.ResolvePath("Test");
 			
-			string result = resolver.Resolve("Test");
-			
-			Assert.AreEqual(expectedFileName, result);
-		}
-
-		[Test]
-		public void Resolve_AssemblyReferenceNameIsInDifferentCase_ReturnsFullPathToTestAssembly()
-		{
-			CreateResolver();
-			ReferenceProjectItem reference = AddReferenceToProject("test");
-			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.HintPath = expectedFileName;
-			
-			string result = resolver.Resolve("TEST");
-			
-			Assert.AreEqual(expectedFileName, result);
+			Assert.AreEqual("Test", fakeAssemblyPathResolver.AssemblyReferencePassedToResolvePath);
 		}
 		
 		[Test]
-		public void Resolve_ProjectHasOneReferenceToTestAssemblyWithFileNameSet_ReturnsFullPathToTestAssembly()
+		public void ResolvePath_PathPassed_ReturnAssemblyPathFromAssemblyPathResolver()
 		{
 			CreateResolver();
-			ReferenceProjectItem reference = AddReferenceToProject("Test");
-			string expectedFileName = @"d:\projects\MyProject\lib\Test.dll";
-			reference.FileName = expectedFileName;
+			string expectedPath = @"d:\test\MyAssembly.dll";
+			fakeAssemblyPathResolver.ResolvePathReturnValue = expectedPath;
+			string path = resolver.ResolvePath("Test");
 			
-			string result = resolver.Resolve("Test");
+			Assert.AreEqual(expectedPath, path);
+		}
+		
+		[Test]
+		public void Dispose_DisposeCalled_DisposesHostAppDomainAssemblyResolver()
+		{
+			CreateResolver();
+			resolver.Dispose();
 			
-			Assert.AreEqual(expectedFileName, result);
+			Assert.IsTrue(fakeHostAppDomainAssemblyResolver.IsDisposeCalled);
 		}
 	}
 }

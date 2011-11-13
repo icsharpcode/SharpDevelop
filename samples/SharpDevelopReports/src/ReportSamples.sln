@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.1.0.7014
+# SharpDevelop 4.2.0.7716-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpReportSamples", "SharpReportSamples\SharpReportSamples.csproj", "{BB5D34DA-3561-48B1-894A-46765C2A18C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Reports.Core", "..\..\..\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj", "{4B2239FF-8FD6-431D-9D22-1B8049BA6917}"

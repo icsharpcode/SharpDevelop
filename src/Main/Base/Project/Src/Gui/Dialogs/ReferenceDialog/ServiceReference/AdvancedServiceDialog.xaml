@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference.AdvancedServiceDialog" 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	Width="700" Height="600"
+	Title="{Binding Title}">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="Auto"></RowDefinition>
+			<RowDefinition
+				Height="Auto"></RowDefinition>
+		<RowDefinition
+				Height="Auto"></RowDefinition>
+		<RowDefinition	Height="40"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition ></ColumnDefinition>
+			<ColumnDefinition ></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		
+		<GroupBox
+			Header="Client"
+			Grid.ColumnSpan="2">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition
+						Height="30"></RowDefinition>
+					<RowDefinition
+						Height="30"></RowDefinition>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				
+				<TextBlock Margin="25,0,0,0"
+					Text="Access level for generated classes:"></TextBlock>
+				<ComboBox
+					Grid.Column="1 " Margin="4"
+					gui:EnumBinding.EnumType="{x:Type local:Modifyers}"  SelectedValue="{Binding SelectedModifyer}">
+				</ComboBox>
+				
+				<CheckBox
+					Grid.Row="1" Margin="25,0,0,0"
+					VerticalAlignment="Center"
+					IsChecked="{Binding GenerateAsyncOperations}"
+					Content="Generate asynchronous operations"></CheckBox>
+			</Grid>
+		</GroupBox>
+		
+		<GroupBox
+			Header="Data Type"
+			Grid.Row="1"
+			Grid.ColumnSpan="2">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition
+						Height="30"></RowDefinition>
+					<RowDefinition
+						Height="30"></RowDefinition>
+					<RowDefinition
+						Height="30"></RowDefinition>
+				<RowDefinition
+						Height="30"></RowDefinition>
+				<RowDefinition
+						Height="30"></RowDefinition>
+					<RowDefinition
+						Height="30"></RowDefinition>
+				<RowDefinition
+						Height="130"></RowDefinition>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				<CheckBox
+					Margin="25,0,0,0"
+					VerticalAlignment="Center"
+					IsChecked="{Binding GenerateMessageContract}"
+					Content="Allways generate message contracts"></CheckBox>
+				<TextBlock
+					Margin="25,0,0,0"
+					Grid.Row="1"
+					VerticalAlignment="Center"
+					Text="Collection type:"></TextBlock>
+				<ComboBox
+					Grid.Row="1" Grid.Column="2" Margin="4"
+					gui:EnumBinding.EnumType="{x:Type local:CollectionTypes}"
+					SelectedValue="{Binding CollectionType}">
+					</ComboBox>
+				<TextBlock
+					Grid.Row="2"
+					Margin="25,0,0,0"
+					VerticalAlignment="Center"
+					Text="Dictionary collection type:"></TextBlock>
+				<ComboBox
+					Grid.Row="2"
+					Grid.Column="1" Margin="4"
+					gui:EnumBinding.EnumType="{x:Type local:DictionaryCollectionTypes}"
+					SelectedValue="{Binding DictionaryCollectionType}">
+				</ComboBox>
+				
+				<CheckBox
+					VerticalAlignment="Center" Grid.Row="3"
+					Margin="25,0,0,0"
+					IsChecked="{Binding UseReferencedAssemblies}"
+					Content="Reuse types in referenced assemblies">
+				</CheckBox>
+				
+				<RadioButton Grid.Row="4"  Margin="45,0,0,0"
+				             VerticalAlignment="Center"
+				            GroupName="ReferenceType"
+				             IsChecked="{Binding ReuseTypes}"
+				             Content="Reuse types in all referenced assemblies">
+				</RadioButton>
+				
+				<RadioButton Grid.Row="5" Margin="45,0,0,0"
+				             VerticalAlignment="Center"
+				              GroupName="ReferenceType"
+				             IsChecked="{Binding ReuseReferencedTypes}"
+				             Content="Reuse types in specified referenced assemblies">
+				</RadioButton>
+				
+				<ListBox Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
+				          Margin="80,0,0,0" 
+				          SelectionMode="Multiple"
+				          ItemsSource="{Binding AssembliesToReference}"
+				          IsEnabled="{Binding ListViewEnable}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<CheckBox IsChecked="{Binding ItemChecked, Mode=TwoWay}"/>
+								<StackPanel Orientation="Horizontal">
+									<Image Source="{Binding Image}" Margin="5,0,0,0"/>
+									<TextBlock Margin="20,0,0,0" Text ="{Binding Description}"></TextBlock>
+								</StackPanel>
+							</StackPanel>
+						</DataTemplate>
+					
+					</ListBox.ItemTemplate>
+				</ListBox>
+				<!-- 
+				<ListView Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
+				          Margin="80,0,0,0" 
+				          SelectionMode="Multiple"
+				          ItemsSource="{Binding AssembliesToReference}"
+				          IsEnabled="{Binding ListViewEnable}">
+					
+					<ListView.View>
+					<GridView>
+						<GridViewColumn>
+						<GridViewColumn.CellTemplate>
+							<DataTemplate>
+								<StackPanel Orientation="Horizontal">
+									<CheckBox IsChecked="{Binding ItemChecked }">
+										<StackPanel Orientation="Horizontal">
+											<Image Source="{Binding Image}" Stretch="None" />
+											<TextBlock Margin="5,0,0,0" Text ="{Binding Description}"></TextBlock>
+										</StackPanel>
+									</CheckBox>
+								</StackPanel>
+							</DataTemplate>
+						</GridViewColumn.CellTemplate>
+					</GridViewColumn>
+					</GridView>
+				</ListView.View>
+
+				</ListView>
+			-->
+			</Grid>
+		</GroupBox>
+	
+		<GroupBox Grid.Row="2"  Grid.ColumnSpan="2"
+		          Header="Compatibility">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition
+						Height="Auto"></RowDefinition>
+					<RowDefinition
+						Height="Auto"></RowDefinition>
+				</Grid.RowDefinitions>
+				<TextBox
+					Margin="25,0,0,0"
+					Text="{Binding CompatibilityText, Mode=OneWay}"
+					Height="50" TextWrapping="Wrap"></TextBox>
+				<Button
+					Grid.Row="2"
+					Margin="25,0,0,0"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Center"
+					Content="Add Web Reference..." Width="140">
+				</Button>
+			</Grid>
+		
+		</GroupBox>
+		
+		<widgets:UniformGridWithSpacing
+			Grid.Row="3" Grid.Column="1"
+			Columns="2"
+			
+			HorizontalAlignment="Right"
+			Margin="0,4,12,12">
+			<Button
+				Content="{core:Localize Global.OKButtonText}"
+				IsDefault="True"
+				Name="okButton"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				Click="okButtonClick" />
+			<Button
+				Content="{core:Localize Global.CancelButtonText}"
+				IsCancel="True"
+				Name="cancelButton"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				Click="cancelButtonClick" />
+		</widgets:UniformGridWithSpacing>
+	
+	</Grid>
+</Window>

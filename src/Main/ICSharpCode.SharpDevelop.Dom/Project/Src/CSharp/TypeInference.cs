@@ -332,7 +332,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			ConstructedReturnType CV = V.CastToConstructedReturnType();
 			if (CU != null && CV != null
 			    && object.Equals(CU.UnboundType, CV.UnboundType)
-			    && CU.TypeArgumentCount == CV.TypeArgumentCount)
+			    && CU.TypeArgumentCount == CV.TypeArgumentCount
+			    && CU.TypeArguments.Count == CU.TypeArgumentCount
+			    && CV.TypeArguments.Count == CV.TypeArgumentCount)
 			{
 				for (int i = 0; i < CU.TypeArgumentCount; i++) {
 					MakeExactInference(CU.TypeArguments[i], CV.TypeArguments[i]);
@@ -397,7 +399,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					ConstructedReturnType CU2 = U2.CastToConstructedReturnType();
 					if (CU2 != null &&
 					    object.Equals(CU2.UnboundType, CV.UnboundType) &&
-					    CU2.TypeArgumentCount == CV.TypeArgumentCount)
+					    CU2.TypeArgumentCount == CV.TypeArgumentCount
+					    && CU2.TypeArguments.Count == CU2.TypeArgumentCount // unfortunately these might not be the same...
+					    && CV.TypeArguments.Count == CV.TypeArgumentCount)
 					{
 						for (int i = 0; i < CU2.TypeArgumentCount; i++) {
 							MakeExactInference(CU2.TypeArguments[i], CV.TypeArguments[i]);

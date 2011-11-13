@@ -25,11 +25,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return pad.IsZoomControlVisible; }
 			set { pad.IsZoomControlVisible = value; }
 		}
-		
-		public override void Run()
-		{
-			IsChecked = !IsChecked;
-		}
 	}
 	
 	public sealed class ToggleMethodViewCommand : AbstractCheckableMenuCommand
@@ -49,11 +44,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public override bool IsChecked {
 			get { return pad.IsMethodView; }
 			set { pad.IsMethodView = value; }
-		}
-		
-		public override void Run()
-		{
-			IsChecked = !IsChecked;
 		}
 	}
 	

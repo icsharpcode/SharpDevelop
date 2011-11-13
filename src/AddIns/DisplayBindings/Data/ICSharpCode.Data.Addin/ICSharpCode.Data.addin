@@ -21,7 +21,8 @@
     <FileFilter id="EntityFramework"
                 insertbefore="AllFiles"
                 name="Entity Framework Files (*.edmx)"
-                extensions="*.edmx" />
+                extensions="*.edmx"
+                mimeType="text/xml"/>
   </Path>
 
   <Path name="/SharpDevelop/Workbench/Pads">

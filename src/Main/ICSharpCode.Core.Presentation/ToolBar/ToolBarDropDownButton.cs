@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,13 +16,15 @@ namespace ICSharpCode.Core.Presentation
 	{
 		readonly Codon codon;
 		readonly object caller;
+		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarDropDownButton(Codon codon, object caller, IList subMenu)
+		public ToolBarDropDownButton(Codon codon, object caller, IList subMenu, IEnumerable<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
+			this.conditions = conditions;
 
 			this.Content = ToolBarService.CreateToolBarItemContent(codon);
 			if (codon.Properties.Contains("name")) {
@@ -40,7 +43,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void UpdateStatus()
 		{
-			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+			if (Condition.GetFailedAction(conditions, caller) == ConditionFailedAction.Exclude)
 				this.Visibility = Visibility.Collapsed;
 			else
 				this.Visibility = Visibility.Visible;

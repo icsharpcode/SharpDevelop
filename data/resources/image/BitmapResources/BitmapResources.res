@@ -60,6 +60,7 @@ Icons.16x16.ClosedReferenceFolder                 = ProjectBrowserIcons\GhostFol
 Icons.16x16.OpenResourceFolder                    = ProjectBrowserIcons\PropertyFolder.Open.png
 Icons.16x16.ClosedResourceFolder                  = ProjectBrowserIcons\PropertyFolder.Closed.png
 
+Icons.22x22.Browser			= BitmapResources-data\Icons.22x22.Browser.png
 
 Icons.16x16.ArrowLeftRight = BitmapResources-data\Icons.16x16.ArrowLeftRight.png
 Icons.16x16.ArrowDown      = BitmapResources-data\Icons.16x16.ArrowDown.png

@@ -3,23 +3,39 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler.ILAst;
+using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Project;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
+	// Dummy class to avoid the build errors after updating the ICSharpCode.Decompiler version.
+	// TODO: get rid of this & fix debugging decompiled files
+	public class DecompileInformation {
+		public dynamic LocalVariables;
+		public dynamic CodeMappings;
+	}
+	
 	/// <summary>
 	/// Stores the decompilation information.
 	/// </summary>
 	public class DebuggerDecompilerService : IDebuggerDecompilerService
 	{
+		ILSpyAssemblyResolver resolver;
+		
 		static DebuggerDecompilerService()
 		{
 			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
+			ProjectService.SolutionClosed += delegate {
+				DebugInformation.Clear();
+				GC.Collect();
+			};
 		}
 		
 		internal static IDebuggerDecompilerService Instance { get; private set; }
@@ -64,9 +80,10 @@ namespace ICSharpCode.ILSpyAddIn
 				DecompilerContext context = new DecompilerContext(type.Module);
 				AstBuilder astBuilder = new AstBuilder(context);
 				astBuilder.AddType(type);
-				astBuilder.GenerateCode(new PlainTextOutput());
+				DebuggerTextOutput output = new DebuggerTextOutput(new PlainTextOutput());
+				astBuilder.GenerateCode(output);
 				
-				int token = type.MetadataToken.ToInt32();
+				/*int token = type.MetadataToken.ToInt32();
 				var info = new DecompileInformation {
 					CodeMappings = astBuilder.CodeMappings,
 					LocalVariables = astBuilder.LocalVariables,
@@ -74,7 +91,7 @@ namespace ICSharpCode.ILSpyAddIn
 				};
 				
 				// save the data
-				DebugInformation.AddOrUpdate(token, info, (k, v) => info);
+				DebugInformation.AddOrUpdate(token, info, (k, v) => info);*/
 			} catch {
 				return;
 			}
@@ -95,7 +112,7 @@ namespace ICSharpCode.ILSpyAddIn
 				if (instruction == null)
 					continue;
 				
-				ilRanges = new [] { instruction.ILInstructionOffset.From, instruction.ILInstructionOffset.To };
+				ilRanges = new int[] { instruction.ILInstructionOffset.From, instruction.ILInstructionOffset.To };
 				memberToken = instruction.MemberMapping.MetadataToken;
 				return true;
 			}
@@ -165,6 +182,21 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 			
 			return null;
+		}
+		
+		public IAssemblyResolver GetAssemblyResolver(string assemblyFile)
+		{
+			if (string.IsNullOrEmpty(assemblyFile))
+				throw new ArgumentException("assemblyFile is null or empty");
+			
+			string folderPath = Path.GetDirectoryName(assemblyFile);
+			if (resolver == null)
+				return (resolver = new ILSpyAssemblyResolver(folderPath));
+			
+			if (string.Compare(folderPath, resolver.FolderPath, StringComparison.OrdinalIgnoreCase) != 0)
+				return (resolver = new ILSpyAssemblyResolver(folderPath));
+			
+			return resolver;
 		}
 	}
 }

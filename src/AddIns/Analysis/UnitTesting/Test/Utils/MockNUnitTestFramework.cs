@@ -49,8 +49,12 @@ namespace UnitTesting.Tests.Utils
 			this.messageService = messageService;
 		}
 		
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
+			throw new NotImplementedException();
+		}
+		
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
 			throw new NotImplementedException();
 		}
 		

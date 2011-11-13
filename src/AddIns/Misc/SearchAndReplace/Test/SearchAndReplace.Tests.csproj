@@ -47,6 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -68,9 +73,6 @@
       <Name>SearchAndReplace</Name>
     </ProjectReference>
     <Compile Include="FindNextWithCursorAtEndTestFixture.cs" />
-    <Compile Include="ForwardIteratorWithEmptyTextBufferTestFixture.cs" />
-    <Compile Include="ForwardTextIteratorPositionIsEndOffsetTestFixture.cs" />
-    <Compile Include="MockCurrentDocumentIterator.cs" />
     <Compile Include="MockDocument.cs" />
   </ItemGroup>
 </Project>

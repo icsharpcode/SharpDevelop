@@ -24,7 +24,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void SolutionLoadedAfterTreeDisposedDoesNotThrowNullReferenceException()
 		{
-			Solution solution = new Solution();
+			Solution solution = new Solution(new MockProjectChangeWatcher());
 			Assert.DoesNotThrow(delegate { pad.CallSolutionLoaded(solution); });
 		}
 	}

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,15 +19,17 @@ namespace ICSharpCode.Core.Presentation
 		readonly Codon codon;
 		readonly object caller;
 		readonly string inputGestureText;
+		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand)
+		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand, conditions);
 			this.Content = ToolBarService.CreateToolBarItemContent(codon);
+			this.conditions = conditions;
 
 			if (codon.Properties.Contains("name")) {
 				this.Name = codon.Properties["name"];
@@ -73,7 +76,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void UpdateStatus()
 		{
-			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+			if (Condition.GetFailedAction(conditions, caller) == ConditionFailedAction.Exclude)
 				this.Visibility = Visibility.Collapsed;
 			else
 				this.Visibility = Visibility.Visible;

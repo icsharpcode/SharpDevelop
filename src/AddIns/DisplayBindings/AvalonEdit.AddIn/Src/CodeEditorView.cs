@@ -8,6 +8,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -17,18 +18,17 @@ using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Commands;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Refactoring;
-using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -233,20 +233,33 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			Debug.Assert(sender == this);
 			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(this.Adapter);
-			var pos = GetPositionFromPoint(e.GetPosition(this));
+			var pos = this.TextArea.TextView.GetPositionFloor(e.GetPosition(this.TextArea.TextView) + this.TextArea.TextView.ScrollOffset);
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
 				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
 			}
 			
-			TextMarkerService textMarkerService = this.Adapter.GetService(typeof(ITextMarkerService)) as TextMarkerService;
-			if (args.InDocument && textMarkerService != null) {
-				var markersAtOffset = textMarkerService.GetMarkersAtOffset(args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column));
+			if (args.InDocument) {
+				int offset = args.Editor.Document.PositionToOffset(args.LogicalPosition.Line, args.LogicalPosition.Column);
 				
-				ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
+				FoldingManager foldings = this.Adapter.GetService(typeof(FoldingManager)) as FoldingManager;
+				if (foldings != null) {
+					var foldingsAtOffset = foldings.GetFoldingsAt(offset);
+					FoldingSection collapsedSection = foldingsAtOffset.FirstOrDefault(section => section.IsFolded);
+					
+					if (collapsedSection != null) {
+						args.SetToolTip(GetTooltipTextForCollapsedSection(collapsedSection));
+					}
+				}
 				
-				if (markerWithToolTip != null) {
-					args.SetToolTip(markerWithToolTip.ToolTip);
+				TextMarkerService textMarkerService = this.Adapter.GetService(typeof(ITextMarkerService)) as TextMarkerService;
+				if (textMarkerService != null) {
+					var markersAtOffset = textMarkerService.GetMarkersAtOffset(offset);
+					ITextMarker markerWithToolTip = markersAtOffset.FirstOrDefault(marker => marker.ToolTip != null);
+					
+					if (markerWithToolTip != null) {
+						args.SetToolTip(markerWithToolTip.ToolTip);
+					}
 				}
 			}
 			
@@ -383,6 +396,70 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			popup = null;
 		}
+		
+		#region GetTooltipTextForCollapsedSection
+		string GetTooltipTextForCollapsedSection(FoldingSection foldingSection)
+		{
+			// This fixes SD-1394:
+			// Each line is checked for leading indentation whitespaces. If
+			// a line has the same or more indentation than the first line,
+			// it is reduced. If a line is less indented than the first line
+			// the indentation is removed completely.
+			//
+			// See the following example:
+			// 	line 1
+			// 		line 2
+			// 			line 3
+			//  line 4
+			//
+			// is reduced to:
+			// line 1
+			// 	line 2
+			// 		line 3
+			// line 4
+			
+			const int maxLineCount = 15;
+			
+			TextDocument document = this.Document;
+			int startOffset = foldingSection.StartOffset;
+			int endOffset = foldingSection.EndOffset;
+			
+			DocumentLine startLine = document.GetLineByOffset(startOffset);
+			DocumentLine endLine = document.GetLineByOffset(endOffset);
+			StringBuilder builder = new StringBuilder();
+			
+			DocumentLine current = startLine;
+			ISegment startIndent = TextUtilities.GetLeadingWhitespace(document, startLine);
+			int lineCount = 0;
+			while (current != endLine.NextLine && lineCount < maxLineCount) {
+				ISegment currentIndent = TextUtilities.GetLeadingWhitespace(document, current);
+				
+				if (current == startLine && current == endLine)
+					builder.Append(document.GetText(startOffset, endOffset - startOffset));
+				else if (current == startLine) {
+					if (current.EndOffset - startOffset > 0)
+						builder.AppendLine(document.GetText(startOffset, current.EndOffset - startOffset).TrimStart());
+				} else if (current == endLine) {
+					if (startIndent.Length <= currentIndent.Length)
+						builder.Append(document.GetText(current.Offset + startIndent.Length, endOffset - current.Offset - startIndent.Length));
+					else
+						builder.Append(document.GetText(current.Offset + currentIndent.Length, endOffset - current.Offset - currentIndent.Length));
+				} else {
+					if (startIndent.Length <= currentIndent.Length)
+						builder.AppendLine(document.GetText(current.Offset + startIndent.Length, current.Length - startIndent.Length));
+					else
+						builder.AppendLine(document.GetText(current.Offset + currentIndent.Length, current.Length - currentIndent.Length));
+				}
+				
+				current = current.NextLine;
+				lineCount++;
+			}
+			if (current != endLine.NextLine)
+				builder.Append("...");
+			
+			return builder.ToString();
+		}
+		#endregion
 		#endregion
 		
 		#region Ctrl+Click Go To Definition
@@ -409,25 +486,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
 				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
 				e.Handled = true;
-			}
-		}
-		#endregion
-		
-		#region CTRL+W extend selection
-		protected override void OnKeyUp(KeyEventArgs e)
-		{
-			base.OnKeyUp(e);
-			if (e.Handled) return;
-			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
-				CodeManipulation.ExtendSelection(this.Adapter);
-			}
-			if (e.SystemKey == Key.Up && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-				// Left Alt + Up (probably will have different shortcut)
-				CodeManipulation.MoveStatementUp(this.Adapter);
-			}
-			if (e.SystemKey == Key.Down && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-				// Left Alt + Down (probably will have different shortcut)
-				CodeManipulation.MoveStatementDown(this.Adapter);
 			}
 		}
 		#endregion

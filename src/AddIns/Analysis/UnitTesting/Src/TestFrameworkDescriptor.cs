@@ -57,6 +57,14 @@ namespace ICSharpCode.UnitTesting
 		
 		public bool IsSupportedProject(IProject project)
 		{
+			if (IsSupportedProjectFileExtension(project)) {
+				return IsSupportedByTestFramework(project);
+			}
+			return false;
+		}
+		
+		bool IsSupportedProjectFileExtension(IProject project)
+		{
 			string extension = GetProjectFileExtension(project);
 			return IsSupportedProjectFileExtension(extension);
 		}
@@ -73,5 +81,10 @@ namespace ICSharpCode.UnitTesting
 		{
 			return supportedProjectFileExtensions.Contains(extension);
 		}
-	}
+		
+		bool IsSupportedByTestFramework(IProject project)
+		{
+			return TestFramework.IsTestProject(project);
+		}
+	}		
 }

@@ -31,16 +31,18 @@ namespace ICSharpCode.Reports.Core
 			this.stringFormat = StringFormat.GenericTypographic;
 			this.contentAlignment = ContentAlignment.TopLeft;
 			this.stringTrimming = StringTrimming.None;
+			VisibleInReport = true;
 		}
 		
 		#endregion
 		
 		#region IExportColumnBuilder  implementation
 		
-		public virtual BaseExportColumn CreateExportColumn(){
+		public virtual IBaseExportColumn CreateExportColumn(){
 			TextStyleDecorator st = this.CreateItemStyle();
-			ExportText item = new ExportText(st,false);
+			ExportText item = new ExportText(st);
 			item.Text = this.text;
+			item.Expression = this.Expression;
 			return item;
 		}
 		
@@ -65,6 +67,7 @@ namespace ICSharpCode.Reports.Core
 			style.ContentAlignment = this.contentAlignment;
 			style.FormatString = this.formatString;
 			style.DataType = this.dataType;
+			style.RightToLeft = this.RTL;
 			
 			return style;
 		}
@@ -112,16 +115,12 @@ namespace ICSharpCode.Reports.Core
 				throw new ArgumentNullException("rpea");
 			}
 			
-			
 			TextDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,
 			                      toPrint,this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      rectangle,
-			                      this.stringTrimming,this.contentAlignment);
+			                      this.StringFormat);
 			
-			
-			
-			//TextDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,toPrint,CreateItemStyle());
 			                      
 			rpea.LocationAfterDraw = new Point (this.Location.X + this.Size.Width,
 			                                    this.Location.Y + this.Size.Height);
@@ -150,11 +149,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		///<summary>
-		/// Formatstring like in MSDN
-		/// </summary>
-
 		
 		
 		public virtual string FormatString {
@@ -189,9 +183,16 @@ namespace ICSharpCode.Reports.Core
 
 		public virtual StringFormat StringFormat {
 			get {
-				return TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);                                       
+				var sf = TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);
+				if (this.RTL == System.Windows.Forms.RightToLeft.Yes) {
+					sf.FormatFlags = sf.FormatFlags | StringFormatFlags.DirectionRightToLeft;
+				}
+				return sf;
 			}
 		}
+		
+		
+		public System.Windows.Forms.RightToLeft RTL {get;set;}
 		
 		#region IExpression
 		

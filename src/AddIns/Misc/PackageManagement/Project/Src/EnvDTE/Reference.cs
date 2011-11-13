@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Reference
+	public class Reference : MarshalByRefObject
 	{
 		ReferenceProjectItem referenceProjectItem;
 		Project project;

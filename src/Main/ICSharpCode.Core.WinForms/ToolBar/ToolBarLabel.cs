@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -11,6 +13,7 @@ namespace ICSharpCode.Core.WinForms
 		object caller;
 		Codon  codon;
 		ICommand menuCommand = null;
+		IEnumerable<ICondition> conditions;
 		
 		public object Caller {
 			get {
@@ -18,11 +21,12 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 		
-		public ToolBarLabel(Codon codon, object caller)
+		public ToolBarLabel(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
-			this.RightToLeft = RightToLeft.Inherit;			
+			this.RightToLeft = RightToLeft.Inherit;
 			this.caller  = caller;
 			this.codon   = codon;
+			this.conditions = conditions;
 
 			if (codon.Properties.Contains("class"))
 			{
@@ -33,16 +37,16 @@ namespace ICSharpCode.Core.WinForms
 			UpdateText();
 			UpdateStatus();
 		}
-				
+		
 		public override bool Enabled {
 			get {
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
-								
+				
 				return isEnabled;
 			}
 		}
@@ -51,7 +55,7 @@ namespace ICSharpCode.Core.WinForms
 		{
 			if (codon != null)
 			{
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				this.Enabled = failedAction != ConditionFailedAction.Disable;
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 			}

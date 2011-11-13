@@ -12,6 +12,8 @@ namespace ICSharpCode.Core.WinForms
 	/// </summary>
 	public static class ClipboardWrapper
 	{
+		[Obsolete("Avoid using this property: it is problematic because it requires exclusive clipboard access. " +
+		          "The Clipboard.ContainsText() implementation in WPF is much better than the one in WinForms.")]
 		public static bool ContainsText {
 			get {
 				try {

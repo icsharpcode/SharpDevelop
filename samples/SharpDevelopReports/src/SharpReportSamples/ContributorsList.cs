@@ -41,6 +41,7 @@ namespace SharpReportSamples
 			list.Add(new Contributor("Nathan","Allen",""));
 			list.Add(new Contributor("Troy","Simpson","Prg."));
 			list.Add(new Contributor("David","Alpert","Prg."));
+			list.Add(new Contributor("Fred","Flintstone",null));
 			return list;
 		}
 	}

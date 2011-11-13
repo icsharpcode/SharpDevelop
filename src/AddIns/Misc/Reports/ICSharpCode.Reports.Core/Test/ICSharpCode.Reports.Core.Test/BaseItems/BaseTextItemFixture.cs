@@ -91,8 +91,8 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		[Test]
 		public void ExportColumnIsNotNull ()
 		{
-			BaseTextItem bt = new BaseTextItem();
-			BaseExportColumn bec = bt.CreateExportColumn();
+			var bt = new BaseTextItem();
+			var bec = bt.CreateExportColumn();
 			Assert.IsNotNull(bec);
 		}
 		
@@ -100,8 +100,8 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		[Test]
 		public void TypeofExportShouldBeExportText ()
 		{
-			BaseTextItem bt = new BaseTextItem();
-			BaseExportColumn bec = bt.CreateExportColumn();
+			var bt = new BaseTextItem();
+			var bec = bt.CreateExportColumn();
 			Type t = typeof(ExportText);
 			Assert.AreEqual(t,bec.GetType(),"Type should be 'ExportText");
 		}

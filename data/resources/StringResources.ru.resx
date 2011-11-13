@@ -434,9 +434,6 @@
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Поиск</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Искать..</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Искать только в ранее найденых темах</value>
   </data>
@@ -645,6 +642,9 @@
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Старт с профайлером</value>
   </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Искать..</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Извлечь в отдельный метод</value>
   </data>
@@ -756,9 +756,6 @@
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' был удалён из чёрного списка.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Держать старое решение открытым</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Заблокировать</value>
   </data>
@@ -785,9 +782,6 @@
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Показывать вкладку истории для файлов управления версиями</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Перезагрузить решение</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Переместить</value>
@@ -910,9 +904,6 @@
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Файл</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Строка</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>О программе</value>
@@ -3265,6 +3256,9 @@
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Старт</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Строка</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Перерисовать</value>
   </data>
@@ -3522,9 +3516,6 @@
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Конец строки</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Строка</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
     <value>Цвета сокрытия кода</value>
@@ -4460,6 +4451,12 @@
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Загрузка ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Держать старое решение открытым</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Перезагрузить решение</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Преобразовать выбранные проекты в:</value>
@@ -7396,15 +7393,6 @@ SharpDevelop 2 иначе компилировал ресурсы: имя рес
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Пользователь:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Вам следует следить за новыми версиями SharpDevelop и рассказывать всем своим друзьям, как классно создавать в нём программы на C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Окно шаблонов можно открыть, нажав Ctrl-J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Что вы можете ввести "? name = ...;" (C#) или "Dim name As ? = ..." (VB) и SharpDevelop заменит вопросительный знак на тип "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Параметры</value>

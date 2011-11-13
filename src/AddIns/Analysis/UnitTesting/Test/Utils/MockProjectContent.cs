@@ -70,7 +70,7 @@ namespace UnitTesting.Tests.Utils
 		
 		public string GetXmlDocumentation(string memberTag)
 		{
-			throw new NotImplementedException();
+			return string.Empty;
 		}
 		
 		public void AddClassToNamespaceList(IClass addClass)

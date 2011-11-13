@@ -6,7 +6,7 @@ using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Solution
+	public class Solution : MarshalByRefObject
 	{
 		SD.Solution solution;
 		

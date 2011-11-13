@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Utils;
 
@@ -28,6 +29,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		{
 			this.CloseAutomatically = true;
 			AttachEvents();
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnSourceInitialized(EventArgs e)
+		{
+			base.OnSourceInitialized(e);
+			
+			Rect caret = this.TextArea.Caret.CalculateCaretRectangle();
+			Point pointOnScreen = this.TextArea.TextView.PointToScreen(caret.Location - this.TextArea.TextView.ScrollOffset);
+			Rect workingArea = System.Windows.Forms.Screen.FromPoint(pointOnScreen.ToSystemDrawing()).WorkingArea.ToWpf().TransformFromDevice(this);
+			
+			MaxHeight = workingArea.Height;
+			MaxWidth = Math.Min(workingArea.Width, Math.Max(1000, workingArea.Width * 0.6));
 		}
 		
 		/// <summary>
@@ -61,6 +75,20 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 					Close();
 				}
 			}
+		}
+	}
+	
+	/// <summary>
+	/// TemplateSelector for InsightWindow to replace plain string content by a TextBlock with TextWrapping.
+	/// </summary>
+	internal sealed class InsightWindowTemplateSelector : DataTemplateSelector
+	{
+		public override DataTemplate SelectTemplate(object item, DependencyObject container)
+		{
+			if (item is string)
+				return (DataTemplate)((FrameworkElement)container).FindResource("TextBlockTemplate");
+			
+			return null;
 		}
 	}
 }

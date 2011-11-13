@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICSharpCode.CodeQualityAnalysis</RootNamespace>
     <AssemblyName>CodeQualityAnalysis</AssemblyName>
@@ -113,6 +113,7 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Controls\DependencyColorizer.cs" />
     <Compile Include="Src\Controls\DependencyEdge.cs" />
     <Compile Include="Src\Controls\DependencyGraph.cs" />
     <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
@@ -120,17 +121,19 @@
     <Compile Include="Src\Controls\DependencyMatrix.cs" />
     <Compile Include="Src\Controls\DependencyVertex.cs" />
     <Compile Include="Src\Controls\DependencyIconVertexConverter.cs" />
-    <Compile Include="Src\Controls\Matrix.cs" />
     <Compile Include="Src\Controls\MatrixControl.cs" />
     <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
-      <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
       <SubType>Code</SubType>
+      <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\DependencyGraphCommand.cs" />
+    <Compile Include="Src\DependencyTreeNode.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
     <Compile Include="Src\INode.cs" />
     <Compile Include="Src\Instruction.cs" />
+    <Compile Include="Src\IValue.cs" />
+    <Compile Include="Src\MainWindowModel.cs" />
     <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
@@ -139,6 +142,15 @@
     <Compile Include="Src\Relationship.cs" />
     <Compile Include="Src\RelationshipType.cs" />
     <Compile Include="Src\Type.cs" />
+    <Compile Include="Src\Utility\ComboBoxWithCommand.cs" />
+    <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
+    <Compile Include="Src\Utility\IColorizer.cs" />
+    <Compile Include="Src\Utility\Helper.cs" />
+    <Compile Include="Src\Utility\Localizeable\EnumToFriendlyNameConverter.cs" />
+    <Compile Include="Src\Utility\Localizeable\LocalizableDescriptionAttribute.cs" />
+    <Compile Include="Src\Utility\Matrix.cs" />
+    <Compile Include="Src\Utility\VisibleMatrix.cs" />
+    <Page Include="Resources\GridSplitterTemplate.xaml" />
     <Page Include="Resources\GraphTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -210,6 +222,10 @@
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -237,13 +253,20 @@
       <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+    <ProjectReference Include="TreeMaps\TreeMaps.csproj">
+      <Project>{3ED2897F-1A8A-4106-89D2-4D342860D480}</Project>
+      <Name>TreeMaps</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeQualityAnalysis.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Src\Utility" />
+    <Folder Include="Src\Utility\Localizeable" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

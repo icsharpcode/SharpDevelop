@@ -5,8 +5,8 @@ using System;
 
 namespace ICSharpCode.TextTemplating
 {
-	public interface ITextTemplatingAssemblyResolver
+	public interface ITextTemplatingAssemblyResolver : IDisposable
 	{
-		string Resolve(string assemblyReference);
+		string ResolvePath(string assemblyReference);
 	}
 }

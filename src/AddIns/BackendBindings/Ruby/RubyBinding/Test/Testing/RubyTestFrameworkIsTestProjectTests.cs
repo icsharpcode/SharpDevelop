@@ -39,7 +39,7 @@ namespace RubyBinding.Tests.Testing
 		public void IsTestProjectWhenPassedRubyPythonProjectReturnsTrue()
 		{
 			ProjectCreateInformation createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			createInfo.OutputProjectFileName = @"C:\projects\test.rbproj";
 			RubyProject project = new RubyProject(createInfo);
 			

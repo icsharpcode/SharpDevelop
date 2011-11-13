@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This class build a TableLayout

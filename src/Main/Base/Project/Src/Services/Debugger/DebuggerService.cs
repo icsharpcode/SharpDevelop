@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Windows;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -31,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			ProjectService.SolutionLoaded += delegate {
 				ClearDebugMessages();
 			};
+			
+			ProjectService.BeforeSolutionClosing += OnBeforeSolutionClosing;
 			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
@@ -226,22 +226,52 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
+		static void OnBeforeSolutionClosing(object sender, SolutionCancelEventArgs e)
 		{
+			if (currentDebugger == null)
+				return;
+			
+			if (currentDebugger.IsDebugging) {
+				string caption = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Stop}");
+				string message = StringParser.Parse("${res:MainWindow.Windows.Debug.StopDebugging.Message}");
+				string[] buttonLabels = new string[] { StringParser.Parse("${res:Global.Yes}"), StringParser.Parse("${res:Global.No}") };
+				int result = MessageService.ShowCustomDialog(caption,
+				                                             message,
+				                                             0, // yes
+				                                             1, // no
+				                                             buttonLabels);
+				
+				if (result == 0) {
+					currentDebugger.Stop();
+				} else {
+					e.Cancel = true;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Toggles a breakpoint bookmark.
+		/// </summary>
+		/// <param name="editor">Text editor where the bookmark is toggled.</param>
+		/// <param name="lineNumber">Line number.</param>
+		/// <param name="breakpointType">Type of breakpoint bookmark.</param>
+		/// <param name="parameters">Optional constructor parameters.</param>
+		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber, Type breakpointType, object[] parameters = null)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			
+			if (breakpointType == null)
+				throw new ArgumentNullException("breakpointType");
+			
+			if (!typeof(BreakpointBookmark).IsAssignableFrom(breakpointType))
+				throw new ArgumentException("breakpointType is not a BreakpointBookmark");
+			
 			BookmarkManager.ToggleBookmark(
 				editor, lineNumber,
 				b => b.CanToggle && b is BreakpointBookmark,
-				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""));
-		}
-		
-		public static void ToggleBreakpointAt(MemberReference memberReference, ITextEditor editor, int lineNumber)
-		{
-			// no bookmark on the line: create a new breakpoint
-			BookmarkManager.ToggleBookmark(
-				editor, lineNumber,
-				b => b.CanToggle,
-				location => new DecompiledBreakpointBookmark(
-					memberReference, 0, 0, editor.FileName, location, BreakpointAction.Break, "", ""));
+				location => (BreakpointBookmark)Activator.CreateInstance(breakpointType, 
+				                                                         parameters ?? new object[] { editor.FileName, location, BreakpointAction.Break, "", ""}));
 		}
 		
 		/* TODO: reimplement this stuff
@@ -278,13 +308,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return;
 			Location logicPos = e.LogicalPosition;
 			var doc = e.Editor.Document;
-			string fileName;
-			if (!File.Exists(e.Editor.FileName)) {
-				dynamic viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-				fileName = string.Format("decompiled/{0}.cs", viewContent.FullTypeName);
-			} else {
-				fileName = e.Editor.FileName;
-			}
+			FileName fileName = e.Editor.FileName;
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null)
@@ -485,5 +509,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// Gets the local variable index.
 		/// </summary>
 		object GetLocalVariableIndex(int typeToken, int memberToken, string name);
+		
+		/// <summary>
+		/// Gets an implementation of an assembly resolver.
+		/// </summary>
+		/// <param name="assemblyFile">Assembly file path.</param>
+		/// <returns>An <see cref="IAssemblyResolver"/>.</returns>
+		IAssemblyResolver GetAssemblyResolver(string assemblyFile);
 	}
 }

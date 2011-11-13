@@ -14,11 +14,13 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -126,8 +128,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.errorPainter.UpdateErrors();
 					}
-					changeWatcher.Initialize(this.DocumentAdapter);
-					
+					if (changeWatcher != null) {
+						changeWatcher.Initialize(this.DocumentAdapter);
+					}
 					FetchParseInformation();
 				}
 			}
@@ -154,8 +157,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textMarkerService = new TextMarkerService(this);
 			iconBarManager = new IconBarManager();
-			changeWatcher = new DefaultChangeWatcher();
-			
+			if (CodeEditorOptions.Instance.EnableChangeMarkerMargin) {
+				changeWatcher = new DefaultChangeWatcher();
+			}
 			primaryTextEditor = CreateTextEditor();
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
@@ -204,6 +208,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			codeEditorView.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
 			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
+			codeEditorView.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(codeEditorView.TextArea));
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
@@ -214,7 +219,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
-			codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			if (changeWatcher != null) {
+				codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
+			}
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
@@ -291,12 +298,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (UseFixedEncoding) {
 				using (StreamReader reader = new StreamReader(stream, primaryTextEditor.Encoding, detectEncodingFromByteOrderMarks: false)) {
-					primaryTextEditor.Text = reader.ReadToEnd();
+					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
 				}
 			} else {
 				// do encoding auto-detection
 				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? FileService.DefaultFileEncoding.GetEncoding())) {
-					primaryTextEditor.Text = reader.ReadToEnd();
+					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
@@ -304,6 +311,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (LoadedFileContent != null)
 				LoadedFileContent(this, EventArgs.Empty);
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
+		}
+		
+		void ReloadDocument(TextDocument document, string newContent)
+		{
+			var diff = new MyersDiffAlgorithm(new StringSequence(document.Text), new StringSequence(newContent));
+			document.Replace(0, document.TextLength, newContent, diff.GetEdits().ToOffsetChangeMap());
+			document.UndoStack.ClearAll();
 		}
 		
 		public event EventHandler LoadedFileContent;
@@ -577,7 +591,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					quickClassBrowser = null;
 				}
 			}
-			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
+			iconBarManager.UpdateClassMemberBookmarks(parseInfo, document);
 			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);

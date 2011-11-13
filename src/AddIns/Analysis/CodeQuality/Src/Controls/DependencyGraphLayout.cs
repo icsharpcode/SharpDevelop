@@ -366,7 +366,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 				New = @new;
 				Old = old;
 			}
-
 		}
 	}
 }

@@ -434,9 +434,6 @@
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>查找</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>查找...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>仅在前面找到的结果中查找</value>
   </data>
@@ -649,6 +646,9 @@
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>运行探查器</value>
   </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>查找...</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>提取方法</value>
   </data>
@@ -779,9 +779,6 @@
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>忽略列表中删除了'{0}'。</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>保持原解决方案打开</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>锁定</value>
   </data>
@@ -808,13 +805,6 @@
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>查看版本控制文件的历史列表(&amp;H)</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>重新加载解决方案</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop 检测到项目文件有更新。
-您需要重新加载解决方案。</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>重新定位</value>
@@ -964,9 +954,6 @@
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>文件</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>行</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>关于</value>
@@ -3403,6 +3390,9 @@
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>开始</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>行</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>更新(&amp;U)</value>
   </data>
@@ -3678,9 +3668,6 @@
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>末行</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>行</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>无法找到NCover程序进行转换.
@@ -4700,6 +4687,12 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>加载${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>保持原解决方案打开</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>重新加载解决方案</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>将选中的项目转换到(&amp;P):</value>
@@ -7775,15 +7768,6 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>用户：</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>获取SharpDevelop的最新版本，告诉你的朋友，用它可以写出精彩的C#程序！</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>你知道可以使用Ctrl+J打开模板完成窗口吗？</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>您可以输入"? name = ...;" (C#) 或 "Dim name As ? = ..." (VB), SharpDevelop会自动用"..."的内容替换问号.</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>代码区选项</value>

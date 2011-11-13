@@ -603,7 +603,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (!String.IsNullOrEmpty(type.Namespace))
 				return type.Namespace;
 			
-			return "-";
+			return "(no namespace)";
 		}
 	}
 }

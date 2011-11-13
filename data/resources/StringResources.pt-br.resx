@@ -433,9 +433,6 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Pesquisar</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Pesquisar...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Pesquisar somente nos tópicos encontrados anteriormente</value>
   </data>
@@ -646,6 +643,9 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Executar com perfil</value>
   </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Pesquisar...</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrair método.</value>
   </data>
@@ -775,9 +775,6 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0} foi removido da lista ignorar.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Manter a solução antiga aberta</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Obter trava</value>
   </data>
@@ -804,12 +801,6 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Exibir aba do &amp;historico para arquivos de versão controlada</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Recarregar solução</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop verificou que a operação de controle de versão mudou os arquivos do projeto.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Realocar</value>
@@ -969,9 +960,6 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Arquivo</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Sobre</value>
@@ -3466,6 +3454,9 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Iniciar</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linha</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Atualizar</value>
   </data>
@@ -3741,9 +3732,6 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Linha Final</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Linha</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Se NCover estiver instalado, favor especificar a localização da aplicação nas opções do Code Coverage.</value>
@@ -4603,6 +4591,12 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Carregando ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Manter a solução antiga aberta</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Recarregar solução</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Ambiente corrente não encontrado. Va para 'Opções-&gt;Estilo Visual' e mude o idioma corrente.</value>
@@ -6991,15 +6985,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Usuário:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Que você deveria buscar novas versões do SharpDevelop e contar como é bom escrever aplicativos com ele!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Que você pode abrir a janela do Assistente de Modelos (templates) com Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Voce pode digitar "? name = ...;" (C#) ou "Dim name As ? = ..." (VB) e o SharpDevelop substituirá a interrogação com o tipo de "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opções</value>

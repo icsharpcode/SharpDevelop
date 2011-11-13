@@ -51,6 +51,7 @@
     <Compile Include="ClassInheritanceTreeTests.cs" />
     <Compile Include="CodeSnippetConverterTests.cs" />
     <Compile Include="CSharpAmbienceTests.cs" />
+    <Compile Include="DefaultClassTests.cs" />
     <Compile Include="ImplementInterfaceTests.cs" />
     <Compile Include="IndexBeforeTextFinderTests.cs" />
     <Compile Include="NRefactoryAstConverterTests.cs" />

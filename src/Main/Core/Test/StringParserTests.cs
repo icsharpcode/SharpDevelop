@@ -43,7 +43,7 @@ namespace ICSharpCode.Core.Tests
 		[Test]
 		public void CustomInput()
 		{
-			Assert.AreEqual("12", StringParser.Parse("${a}${b}", new string[,] {{"a", "1"}, {"b", "2"}}));
+			Assert.AreEqual("12", StringParser.Parse("${a}${b}", new StringTagPair("a", "1"),  new StringTagPair("b", "2")));
 		}
 		
 		[Test]

@@ -42,21 +42,21 @@ namespace ICSharpCode.Core.WinForms
 			
 			switch (type) {
 				case "Separator":
-					return new ToolBarSeparator(codon, caller);
+					return new ToolBarSeparator(codon, caller, descriptor.Conditions);
 				case "CheckBox":
-					return new ToolBarCheckBox(codon, caller);
+					return new ToolBarCheckBox(codon, caller, descriptor.Conditions);
 				case "Item":
-					return new ToolBarCommand(codon, caller, createCommand);
+					return new ToolBarCommand(codon, caller, createCommand, descriptor.Conditions);
 				case "ComboBox":
-					return new ToolBarComboBox(codon, caller);
+					return new ToolBarComboBox(codon, caller, descriptor.Conditions);
 				case "TextBox":
-					return new ToolBarTextBox(codon, caller);
+					return new ToolBarTextBox(codon, caller, descriptor.Conditions);
 				case "Label":
-					return new ToolBarLabel(codon, caller);
+					return new ToolBarLabel(codon, caller, descriptor.Conditions);
 				case "DropDownButton":
-					return new ToolBarDropDownButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems));
+					return new ToolBarDropDownButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "SplitButton":
-					return new ToolBarSplitButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems));
+					return new ToolBarSplitButton(codon, caller, MenuService.ConvertSubItems(descriptor.SubItems), descriptor.Conditions);
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:
