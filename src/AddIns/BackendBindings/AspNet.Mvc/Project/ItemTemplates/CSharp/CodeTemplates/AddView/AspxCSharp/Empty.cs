@@ -194,6 +194,8 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         
         private global::System.Collections.Generic.Stack<int> indents;
         
+        private bool endsWithNewline;
+        
         private ToStringInstanceHelper _toStringHelper = new ToStringInstanceHelper();
         
         public virtual global::System.Collections.Generic.IDictionary<string, object> Session {
@@ -278,22 +280,73 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         }
         
         public void Write(string textToAppend) {
-            this.GenerationEnvironment.Append(textToAppend);
+            if (string.IsNullOrEmpty(textToAppend)) {
+                return;
+            }
+            if ((((this.GenerationEnvironment.Length == 0) 
+                        || this.endsWithNewline) 
+                        && (this.CurrentIndent.Length > 0))) {
+                this.GenerationEnvironment.Append(this.CurrentIndent);
+            }
+            this.endsWithNewline = false;
+            char last = textToAppend[(textToAppend.Length - 1)];
+            if (((last == '\n') 
+                        || (last == '\r'))) {
+                this.endsWithNewline = true;
+            }
+            if ((this.CurrentIndent.Length == 0)) {
+                this.GenerationEnvironment.Append(textToAppend);
+                return;
+            }
+            int lastNewline = 0;
+            for (int i = 0; (i 
+                        < (textToAppend.Length - 1)); i = (i + 1)) {
+                char c = textToAppend[i];
+                if ((c == '\r')) {
+                    if ((textToAppend[(i + 1)] == '\n')) {
+                        i = (i + 1);
+                        if ((i 
+                                    == (textToAppend.Length - 1))) {
+                            goto breakLoop;
+                        }
+                    }
+                }
+                else {
+                    if ((c != '\n')) {
+                        goto continueLoop;
+                    }
+                }
+                i = (i + 1);
+                int len = (i - lastNewline);
+                if ((len > 0)) {
+                    this.GenerationEnvironment.Append(textToAppend, lastNewline, (i - lastNewline));
+                }
+                this.GenerationEnvironment.Append(this.CurrentIndent);
+                lastNewline = i;
+            continueLoop:
+                ;
+            }
+        breakLoop:
+            if ((lastNewline > 0)) {
+                this.GenerationEnvironment.Append(textToAppend, lastNewline, (textToAppend.Length - lastNewline));
+            }
+            else {
+                this.GenerationEnvironment.Append(textToAppend);
+            }
         }
         
         public void Write(string format, params object[] args) {
-            this.GenerationEnvironment.AppendFormat(format, args);
+            this.Write(string.Format(format, args));
         }
         
         public void WriteLine(string textToAppend) {
-            this.GenerationEnvironment.Append(this.currentIndent);
-            this.GenerationEnvironment.AppendLine(textToAppend);
+            this.Write(textToAppend);
+            this.GenerationEnvironment.AppendLine();
+            this.endsWithNewline = true;
         }
         
         public void WriteLine(string format, params object[] args) {
-            this.GenerationEnvironment.Append(this.currentIndent);
-            this.GenerationEnvironment.AppendFormat(format, args);
-            this.GenerationEnvironment.AppendLine();
+            this.WriteLine(string.Format(format, args));
         }
         
         public class ToStringInstanceHelper {

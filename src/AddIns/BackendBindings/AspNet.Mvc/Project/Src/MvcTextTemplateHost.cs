@@ -74,6 +74,7 @@ namespace ICSharpCode.AspNet.Mvc
 				}
 				return viewDataType;
 			}
+			set { viewDataType = value; }
 		}
 		
 		Type GetViewDataType()

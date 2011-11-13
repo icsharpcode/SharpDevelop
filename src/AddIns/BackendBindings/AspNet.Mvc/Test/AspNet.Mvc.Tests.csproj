@@ -85,7 +85,9 @@
     <Compile Include="Src\AddMvcViewToProjectCommandTests.cs" />
     <Compile Include="Src\AddMvcViewToProjectViewModelTests.cs" />
     <Compile Include="Src\BooleanToVisibilityConverterTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpCreateViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
@@ -132,6 +134,7 @@
   <ItemGroup>
     <Folder Include="Helpers" />
     <Folder Include="Src\CodeTemplates" />
+    <Folder Include="Src\CodeTemplates\Models" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
