@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		
-		#region Go
+		#region Go Command
 		
 		public System.Windows.Input.ICommand GoCommand {get; private set;}
 		
@@ -254,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				                                          discoveryUri);
 				DefaultNameSpace =  GetDefaultNamespace();
 				FillItems (serviceDescriptionCollection);
-				var referenceName = GetReferenceName(discoveryUri);
+				var referenceName = ServiceReferenceHelper.GetReferenceName(discoveryUri);
 			}
 		}
 		
@@ -271,19 +271,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return String.Empty;
 		}
 		
-		
-		static string GetReferenceName(Uri uri)
-		{
-			if (uri != null) {
-				return uri.Host;
-			}
-			return String.Empty;
-		}
-
 		#endregion
-		
-		
-		#region new binding
 		
 		public string Title
 		{
@@ -323,7 +311,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public List <ServiceItem> ServiceItems {
 			get {return items; }
-			
 			set {
 				items = value;
 				base.RaisePropertyChanged(() =>ServiceItems);
@@ -398,7 +385,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void Add(ServiceDescription description)
 		{
-			List<ServiceItem> l = new List<ServiceItem>();
+			List<ServiceItem> items = new List<ServiceItem>();
 			var name = ServiceReferenceHelper.GetServiceName(description);
 			var rootNode = new ServiceItem(null,name);
 			rootNode.Tag = description;
@@ -406,18 +393,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			foreach(Service service in description.Services) {
 				var serviceNode = new ServiceItem(null,service.Name);
 				serviceNode.Tag = service;
-				l.Add(serviceNode);
+				items.Add(serviceNode);
 				foreach (PortType portType  in description.PortTypes) {
 					var portNode = new ServiceItem(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),portType.Name);
 					portNode.Tag = portType;
 					serviceNode.SubItems.Add(portNode);
 				}
 			}
-			ServiceItems = l;
+			ServiceItems = items;
 		}
-
-		
-		#endregion
 	}
 	
 	

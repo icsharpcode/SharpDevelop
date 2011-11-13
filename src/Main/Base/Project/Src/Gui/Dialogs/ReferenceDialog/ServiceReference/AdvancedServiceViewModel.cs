@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	{
 		private string compatibilityText ="Add a web Reference instead of a Service Reference. ";
 		private string c_2 ="thios will generate code base on .NET Framework 2.0  Web services technology";
-		
+		private string accesslevel = "Access level for generated classes:";
 		public AdvancedServiceViewModel()
 		{
 			Title ="Service Reference Settings";
@@ -82,6 +82,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		public string Title {get;set;}
+		
+		public string AccessLevel {
+			get {return accesslevel;}
+		}
 		
 		private Modifyers selectedModifyer;
 		

@@ -40,7 +40,7 @@
 				</Grid.ColumnDefinitions>
 				
 				<TextBlock Margin="25,0,0,0"
-					Text="Access level for generated classes:"></TextBlock>
+					Text="{Binding AccessLevel}"></TextBlock>
 				<ComboBox
 					Grid.Column="1 " Margin="4"
 					gui:EnumBinding.EnumType="{x:Type local:Modifyers}"  SelectedValue="{Binding SelectedModifyer}">

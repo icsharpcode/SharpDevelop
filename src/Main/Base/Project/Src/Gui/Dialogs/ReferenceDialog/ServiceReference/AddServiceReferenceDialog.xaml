@@ -22,9 +22,6 @@
 	<Window.Resources>
 		<HierarchicalDataTemplate x:Key="HeaderTemplate"
 			ItemsSource="{Binding SubItems}">
-			<!--
-			<TextBlock Grid.Row="0" Text="{Binding Path=Description}" />-->
-			
 			<StackPanel Orientation="Horizontal">
 				<Image Width="16" Height="16" Source="{Binding Image}"/>
 				<TextBlock Text="{Binding Description}"/>
@@ -125,25 +122,7 @@
 				
 				</ListBox.ItemTemplate>
 			</ListBox>
-		<!-- 
-			<ListView
-				Grid.Column="1" Grid.Row="1"  Margin="4"
-				ItemsSource="{Binding Path=TwoValues}">
-				<ListView.View>
-					<GridView>
-						<GridViewColumn>
-						<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<StackPanel Orientation="Horizontal">
-									<Image Width="16" Height="16" Source="{Binding Image}"/>
-									<TextBlock Text="{Binding Description}"/>
-								</StackPanel>
-							</DataTemplate>
-						</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-					</GridView>
-				</ListView.View>
-			</ListView>-->
+		
 		</Grid>
 		
 		<Border Grid.Row="5" Grid.ColumnSpan="3" Margin="4,0,4,0"  BorderThickness="2" BorderBrush="LightGray">
@@ -167,7 +146,6 @@
 			</Button>
 			
 			<widgets:UniformGridWithSpacing
-				
 				Columns="2"
 				Grid.Column="2"
 				HorizontalAlignment="Right"
