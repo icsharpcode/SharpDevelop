@@ -1152,5 +1152,19 @@ $$
 			Assert.IsNotNull (provider.Find ("ObsoleteAttribute"), "attribute 'ObsoleteAttribute' not found.");
 		}
 		
+		// 'from' in comment activates linq context
+		[Test()]
+		public void TestBreakingComment ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (@"
+using System;
+// from
+class Test {
+$$
+}");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found.");
+		}
+		
 	}
 }

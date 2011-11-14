@@ -245,7 +245,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(resolverBeforeDict.ContainsKey(node));
 			// Don't store results twice.
 			Debug.Assert(!resolveResultCache.ContainsKey(node));
-			resolveResultCache.Add(node, result);
+			resolveResultCache[node] = result;
 			if (navigator != null)
 				navigator.Resolved(node, result);
 		}
