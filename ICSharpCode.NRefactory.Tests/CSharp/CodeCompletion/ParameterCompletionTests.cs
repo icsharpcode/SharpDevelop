@@ -435,5 +435,27 @@ class TestClass
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);
-		}}
+		}
+		
+		
+		/// Bug 599 - Regression: No intellisense over Func delegate
+		[Test()]
+		public void TestBug599 ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Core;
+
+class TestClass
+{
+	void A (Func<int, int> f)
+	{
+		$f ($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+	
+	}
 }

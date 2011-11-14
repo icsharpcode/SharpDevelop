@@ -98,21 +98,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					return factory.CreateConstructorProvider (attribute.Item1.Type);
 				}
-				
 				var invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
-				
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
 					return null;
 				resolveResult = invocationExpression.Item1;
 				if (resolveResult is MethodGroupResolveResult)
 					return factory.CreateMethodDataProvider (resolveResult as MethodGroupResolveResult);
 				if (resolveResult is MemberResolveResult) {
-					if (resolveResult.Type.Kind == TypeKind.Delegate)
-						return factory.CreateDelegateDataProvider (resolveResult.Type);
 					var mr = resolveResult as MemberResolveResult;
 					if (mr.Member is IMethod)
 						return factory.CreateMethodDataProvider ((IMethod)mr.Member);
 				}
+				
+				if (resolveResult.Type.Kind == TypeKind.Delegate)
+					return factory.CreateDelegateDataProvider (resolveResult.Type);
 				
 //				
 //				if (result.ExpressionContext == ExpressionContext.BaseConstructorCall) {

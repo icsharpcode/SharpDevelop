@@ -168,6 +168,54 @@ class Test
 			Assert.IsNotNull (provider.Find ("as"), "keyword 'as' not found.");
 			});
 		}
+		
+		[Test()]
+		public void PublicClassContextTest ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"$c$",
+provider => {
+				Assert.IsNotNull (provider.Find ("class"), "keyword 'class' not found.");
+				Assert.IsNotNull (provider.Find ("static"), "keyword 'static' not found.");
+				Assert.IsNotNull (provider.Find ("sealed"), "keyword 'sealed' not found.");
+				
+			});
+		}
+		
+		[Ignore()]
+		[Test()]
+		public void PublicClassContextTest2 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"public $c$",
+provider => {
+				Assert.IsNotNull (provider.Find ("class"), "keyword 'class' not found.");
+				Assert.IsNotNull (provider.Find ("static"), "keyword 'static' not found.");
+				Assert.IsNotNull (provider.Find ("sealed"), "keyword 'sealed' not found.");
+				
+			});
+		}
+		
+		[Ignore()]
+		[Test()]
+		public void PublicClassContextTestContinuation1 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"public static $c$",
+provider => {
+				Assert.IsNotNull (provider.Find ("class"), "keyword 'class' not found.");
+				
+			});
+		}
+		
+		[Ignore()]
+		[Test()]
+		public void PublicClassContextTestContinuation2 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (@"public sealed $c$",
+provider => {
+				Assert.IsNotNull (provider.Find ("class"), "keyword 'class' not found.");
+				
+			});
+		}
+		
 	}
 }
 
