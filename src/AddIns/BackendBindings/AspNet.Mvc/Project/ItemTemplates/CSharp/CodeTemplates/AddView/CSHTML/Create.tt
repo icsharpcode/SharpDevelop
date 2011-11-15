@@ -1,0 +1,66 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ output extension=".cshtml" #>
+<#= GetModelDirective() #>
+
+<# 
+	if (MvcHost.IsPartialView) {
+		// Do nothing.
+	} else if (MvcHost.IsContentPage) {
+#>
+@{
+	ViewBag.Title = "<#= MvcHost.ViewName #>";
+	Layout = "<#= MvcHost.MasterPageFile #>";
+}
+
+<h2><#= MvcHost.ViewName #></h2>
+
+<#
+	} else {
+#>
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><#= MvcHost.ViewName #></title>
+	</head>
+	<body>
+<#
+		PushIndent("\t\t");
+	}
+#>
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+	<fieldset>
+		<legend><#= MvcHost.ViewDataType.Name #></legend>
+		
+		<p>
+			<input type="submit" value="Create"/>
+		</p>
+	</fieldset>
+}
+<div>
+	@Html.ActionLink("Back", "Index")
+</div>
+<# 
+	if (MvcHost.IsPartialView) {
+		// Do nothing.
+	} else if (!MvcHost.IsContentPage) {
+		PopIndent();
+#>
+	</body>
+</html>
+<# } #>
+<#+
+	MvcTextTemplateHost MvcHost {
+		get { return (MvcTextTemplateHost)Host; }
+	}
+	
+	public string GetModelDirective()
+	{
+		string viewDataTypeName = MvcHost.ViewDataTypeName;
+		if (!String.IsNullOrEmpty(viewDataTypeName)) {
+			return String.Format("@model {0}", viewDataTypeName);
+		}
+		return String.Empty;
+	}
+#>

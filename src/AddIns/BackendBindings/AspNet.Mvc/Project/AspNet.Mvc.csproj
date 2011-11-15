@@ -54,6 +54,10 @@
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.cs">
       <DependentUpon>Empty.tt</DependentUpon>
     </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.cs">
+      <DependentUpon>Create.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.cs">
       <DependentUpon>Empty.tt</DependentUpon>
     </Compile>
@@ -205,6 +209,12 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
       <LastGenOutput>Empty.cs</LastGenOutput>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <LastGenOutput>Create.cs</LastGenOutput>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
     </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
