@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -46,9 +47,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				throw new ArgumentNullException("attributeType");
 			this.attributeType = attributeType;
 			this.region = region;
-			this.positionalArguments = positionalArguments;
-			this.namedCtorArguments = namedCtorArguments;
-			this.namedArguments = namedArguments;
+			this.positionalArguments = positionalArguments ?? EmptyList<IConstantValue>.Instance;
+			this.namedCtorArguments = namedCtorArguments ?? EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+			this.namedArguments = namedArguments ?? EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
 		}
 		
 		public DomRegion Region {
@@ -61,18 +62,18 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public IAttribute CreateResolvedAttribute(ITypeResolveContext context)
 		{
-			return new CSharpResolvedAttribute(context, this);
+			return new CSharpResolvedAttribute((CSharpTypeResolveContext)context, this);
 		}
 		
 		sealed class CSharpResolvedAttribute : IAttribute
 		{
-			readonly ITypeResolveContext context;
+			readonly CSharpTypeResolveContext context;
 			readonly CSharpAttribute unresolved;
 			readonly IType attributeType;
 			
 			IList<KeyValuePair<IMember, ResolveResult>> namedArguments;
 			
-			public CSharpResolvedAttribute(ITypeResolveContext context, CSharpAttribute unresolved)
+			public CSharpResolvedAttribute(CSharpTypeResolveContext context, CSharpAttribute unresolved)
 			{
 				this.context = context;
 				this.unresolved = unresolved;
@@ -89,15 +90,61 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				get { return attributeType; }
 			}
 			
-			IMethod IAttribute.Constructor {
-				get {
-					throw new NotImplementedException();
+			ResolveResult ctorInvocation;
+			
+			InvocationResolveResult GetCtorInvocation()
+			{
+				ResolveResult rr = this.ctorInvocation;
+				if (rr != null) {
+					LazyInit.ReadBarrier();
+					return rr as InvocationResolveResult;
+				} else {
+					CSharpResolver resolver = new CSharpResolver(context);
+					int totalArgumentCount = unresolved.positionalArguments.Count + unresolved.namedCtorArguments.Count;
+					ResolveResult[] arguments = new ResolveResult[totalArgumentCount];
+					string[] argumentNames = new string[totalArgumentCount];
+					int i = 0;
+					while (i < unresolved.positionalArguments.Count) {
+						IConstantValue cv = unresolved.positionalArguments[i];
+						arguments[i] = cv.Resolve(context);
+						i++;
+					}
+					foreach (var pair in unresolved.namedCtorArguments) {
+						argumentNames[i] = pair.Key;
+						arguments[i] = pair.Value.Resolve(context);
+						i++;
+					}
+					rr = resolver.ResolveObjectCreation(attributeType, arguments, argumentNames);
+					return LazyInit.GetOrSet(ref this.ctorInvocation, rr) as InvocationResolveResult;
 				}
 			}
 			
+			IMethod IAttribute.Constructor {
+				get {
+					var invocation = GetCtorInvocation();
+					if (invocation != null)
+						return invocation.Member as IMethod;
+					else
+						return null;
+				}
+			}
+			
+			IList<ResolveResult> positionalArguments;
+			
 			IList<ResolveResult> IAttribute.PositionalArguments {
 				get {
-					throw new NotImplementedException();
+					var result = this.positionalArguments;
+					if (result != null) {
+						LazyInit.ReadBarrier();
+						return result;
+					} else {
+						var invocation = GetCtorInvocation();
+						if (invocation != null)
+							result = invocation.GetArgumentsForCall();
+						else
+							result = EmptyList<ResolveResult>.Instance;
+						return LazyInit.GetOrSet(ref this.positionalArguments, result);
+					}
 				}
 			}
 			

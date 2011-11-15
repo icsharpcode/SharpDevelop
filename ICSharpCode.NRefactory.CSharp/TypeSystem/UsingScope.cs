@@ -23,6 +23,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
@@ -159,18 +160,16 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		/// <summary>
 		/// Resolves the namespace represented by this using scope.
 		/// </summary>
-		public INamespace ResolveNamespace(ICompilation compilation)
+		public ResolvedUsingScope Resolve(ITypeResolveContext context)
 		{
-			if (parent != null) {
-				INamespace ns = parent.ResolveNamespace(compilation);
-				if (ns != null)
-					return ns.GetChildNamespace(shortName);
-				else
-					return null;
-			} else {
-				Debug.Assert(string.IsNullOrEmpty(shortName));
-				return compilation.RootNamespace;
+			ICompilation compilation = context.Compilation;
+			CacheManager cache = compilation.CacheManager;
+			ResolvedUsingScope resolved = (ResolvedUsingScope)cache.GetShared(this);
+			if (resolved == null) {
+				var csContext = new CSharpTypeResolveContext(compilation.MainAssembly, parent != null ? parent.Resolve(context) : null);
+				resolved = (ResolvedUsingScope)cache.GetOrAddShared(this, new ResolvedUsingScope(csContext, this));
 			}
+			return resolved;
 		}
 	}
 }

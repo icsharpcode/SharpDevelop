@@ -46,27 +46,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			compilation = project.CreateCompilation();
 		}
 		
-		protected UsingScope MakeUsingScope(string namespaceName)
-		{
-			UsingScope u = new UsingScope();
-			if (!string.IsNullOrEmpty(namespaceName)) {
-				foreach (string element in namespaceName.Split('.')) {
-					u = new UsingScope(u, string.IsNullOrEmpty(u.NamespaceName) ? element : u.NamespaceName + "." + element);
-				}
-			}
-			return u;
-		}
-		
-		protected TypeOrNamespaceReference MakeReference(string namespaceName)
-		{
-			string[] nameParts = namespaceName.Split('.');
-			TypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], SimpleNameLookupMode.TypeInUsingDeclaration);
-			for (int i = 1; i < nameParts.Length; i++) {
-				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0]);
-			}
-			return r;
-		}
-		
 		protected IType ResolveType(Type type)
 		{
 			IType t = compilation.FindType(type);

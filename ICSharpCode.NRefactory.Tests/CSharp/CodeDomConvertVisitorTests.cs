@@ -33,11 +33,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			base.SetUp();
 			resolver = new CSharpResolver(compilation);
-			resolver.CurrentUsingScope = new UsingScope();
+			throw new NotImplementedException();
+			/*resolver.CurrentUsingScope = new UsingScope();
 			resolver.CurrentUsingScope.Usings.Add(MakeReference("System"));
 			resolver.CurrentUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
 			resolver.CurrentUsingScope.Usings.Add(MakeReference("System.Linq"));
-			
+			*/
 			convertVisitor = new CodeDomConvertVisitor();
 			convertVisitor.UseFullyQualifiedTypeNames = true;
 		}

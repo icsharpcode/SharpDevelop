@@ -302,6 +302,7 @@
     <Compile Include="TypeSystem\CSharpParsedFile.cs" />
     <Compile Include="TypeSystem\CSharpUnresolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\CSharpTypeResolveContext.cs" />
+    <Compile Include="TypeSystem\ResolvedUsingScope.cs" />
     <Compile Include="TypeSystem\TypeOrNamespaceReference.cs" />
     <Compile Include="TypeSystem\MemberTypeOrNamespaceReference.cs" />
     <Compile Include="TypeSystem\SimpleTypeOrNamespaceReference.cs" />

@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Semantics
 	public abstract class InvocationResolveResult : MemberResolveResult
 	{
 		/// <summary>
-		/// Gets the arguments that are being passed to the method.
+		/// Gets the arguments that are being passed to the method, in the order the arguments are being evaluated.
 		/// </summary>
 		public readonly IList<ResolveResult> Arguments;
 		
@@ -43,6 +43,15 @@ namespace ICSharpCode.NRefactory.Semantics
 		
 		public new IParameterizedMember Member {
 			get { return (IParameterizedMember)base.Member; }
+		}
+		
+		/// <summary>
+		/// Gets the arguments in the order they are being passed to the method.
+		/// For parameter arrays (params), this will return an ArrayCreateResolveResult.
+		/// </summary>
+		public virtual IList<ResolveResult> GetArgumentsForCall()
+		{
+			return Arguments;
 		}
 		
 		public override IEnumerable<ResolveResult> GetChildResults()

@@ -121,9 +121,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		internal List<List<IMethod>> extensionMethods;
 		
-		// Resolver+UsingScope are used to fetch extension methods on demand
+		// the resolver is used to fetch extension methods on demand
 		internal CSharpResolver resolver;
-		internal UsingScope usingScope;
 		
 		/// <summary>
 		/// Gets all candidate extension methods.
@@ -141,14 +140,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolver != null) {
 				Debug.Assert(extensionMethods == null);
-				UsingScope oldUsingScope = resolver.CurrentUsingScope;
 				try {
-					resolver.CurrentUsingScope = usingScope;
 					extensionMethods = resolver.GetExtensionMethods(this.TargetType, methodName, typeArguments);
 				} finally {
-					resolver.CurrentUsingScope = oldUsingScope;
 					resolver = null;
-					usingScope = null;
 				}
 			}
 			return extensionMethods ?? EmptyList<List<IMethod>>.Instance;

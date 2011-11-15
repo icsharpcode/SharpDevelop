@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override ITypeResolveContext CreateResolveContext(ITypeResolveContext parentContext)
 		{
-			return new CSharpTypeResolveContext(parentContext.CurrentAssembly, usingScope, parentContext.CurrentTypeDefinition);
+			return new CSharpTypeResolveContext(parentContext.CurrentAssembly, usingScope.Resolve(parentContext), parentContext.CurrentTypeDefinition);
 		}
 	}
 }

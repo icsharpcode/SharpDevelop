@@ -158,11 +158,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (resolver != null) {
 				// Look if there's an alias to the target type
-				for (UsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 					foreach (var pair in usingScope.UsingAliases) {
-						IType type = pair.Value.ResolveType(resolver);
-						if (TypeMatches(type, typeDef, typeArguments))
-							return new SimpleType(pair.Key);
+						if (pair.Value is TypeResolveResult) {
+							if (TypeMatches(pair.Value.Type, typeDef, typeArguments))
+								return new SimpleType(pair.Key);
+						}
 					}
 				}
 				
@@ -249,11 +250,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (resolver != null) {
 				// Look if there's an alias to the target namespace
-				for (UsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
+				for (ResolvedUsingScope usingScope = resolver.CurrentUsingScope; usingScope != null; usingScope = usingScope.Parent) {
 					foreach (var pair in usingScope.UsingAliases) {
-						// maybe add some caching? we're resolving all aliases N times when converting a namespace name with N parts
-						INamespace nrr = pair.Value.ResolveNamespace(resolver);
-						if (nrr != null && nrr.FullName == ns)
+						NamespaceResolveResult nrr = pair.Value as NamespaceResolveResult;
+						if (nrr != null && nrr.NamespaceName == ns)
 							return new SimpleType(pair.Key);
 					}
 				}

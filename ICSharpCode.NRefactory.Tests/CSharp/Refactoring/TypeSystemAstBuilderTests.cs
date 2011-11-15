@@ -76,9 +76,10 @@ namespace OtherNS {
 		
 		TypeSystemAstBuilder CreateBuilder(ITypeDefinition currentTypeDef = null)
 		{
+			UsingScope usingScope = currentTypeDef != null ? parsedFile.GetUsingScope(currentTypeDef.Region.Begin) : parsedFile.RootUsingScope;
 			return new TypeSystemAstBuilder(
 				new CSharpResolver(compilation) {
-					CurrentUsingScope = currentTypeDef != null ? parsedFile.GetUsingScope(currentTypeDef.Region.Begin) : parsedFile.RootUsingScope,
+					CurrentUsingScope = usingScope.Resolve(compilation.TypeResolveContext),
 					CurrentTypeDefinition = currentTypeDef
 				});
 		}

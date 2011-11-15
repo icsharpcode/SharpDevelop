@@ -64,8 +64,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.context = context;
 			if (context.CurrentTypeDefinition != null)
 				currentTypeDefinitionCache = new TypeDefinitionCache(context.CurrentTypeDefinition);
-			if (context.CurrentUsingScope != null)
-				currentUsingScopeCache = new UsingScopeCache(context.CurrentUsingScope);
 		}
 		#endregion
 		
@@ -80,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the current type resolve context.
 		/// </summary>
-		public ITypeResolveContext CurrentTypeResolveContext {
+		public CSharpTypeResolveContext CurrentTypeResolveContext {
 			get { return context; }
 		}
 		
@@ -99,6 +97,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return context.CurrentMember; }
 			set {
 				context = context.WithCurrentMember(value);
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the current using scope that is used to look up identifiers as class names.
+		/// </summary>
+		public ResolvedUsingScope CurrentUsingScope {
+			get { return context.CurrentUsingScope; }
+			set {
+				context = context.WithUsingScope(value);
 			}
 		}
 		#endregion
@@ -133,44 +141,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public TypeDefinitionCache(ITypeDefinition typeDefinition)
 			{
 				this.TypeDefinition = typeDefinition;
-			}
-		}
-		#endregion
-		
-		#region CurrentUsingScope
-		UsingScopeCache currentUsingScopeCache;
-		
-		/// <summary>
-		/// Gets/Sets the current using scope that is used to look up identifiers as class names.
-		/// </summary>
-		public UsingScope CurrentUsingScope {
-			get { return context.CurrentUsingScope; }
-			set {
-				context = context.WithUsingScope(value);
-				if (value == null) {
-					currentUsingScopeCache = null;
-				} else {
-					if (currentUsingScopeCache == null || currentUsingScopeCache.UsingScope != value) {
-						currentUsingScopeCache = new UsingScopeCache(value);
-					}
-				}
-			}
-		}
-		
-		/// <summary>
-		/// There is one cache instance per using scope; and it might be shared between multiple resolvers
-		/// that are on different threads, so it must be thread-safe.
-		/// </summary>
-		sealed class UsingScopeCache
-		{
-			public readonly UsingScope UsingScope;
-			public readonly Dictionary<string, ResolveResult> ResolveCache = new Dictionary<string, ResolveResult>();
-			
-			public List<List<IMethod>> AllExtensionMethods;
-			
-			public UsingScopeCache(UsingScope usingScope)
-			{
-				this.UsingScope = usingScope;
 			}
 		}
 		#endregion
@@ -1256,11 +1226,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return r;
 			}
 			
-			if (currentUsingScopeCache != null) {
+			if (context.CurrentUsingScope != null) {
 				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
-					if (!currentUsingScopeCache.ResolveCache.TryGetValue(identifier, out r)) {
+					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
-						currentUsingScopeCache.ResolveCache[identifier] = r;
+						r = context.CurrentUsingScope.ResolveCache.GetOrAdd(identifier, r);
 					}
 				} else {
 					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
@@ -1313,9 +1283,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			int k = typeArguments.Count;
 			// look in current namespace definitions
-			UsingScope currentUsingScope = this.CurrentUsingScope;
-			for (UsingScope u = currentUsingScope; u != null; u = u.Parent) {
-				INamespace n = u.ResolveNamespace(compilation);
+			ResolvedUsingScope currentUsingScope = this.CurrentUsingScope;
+			for (ResolvedUsingScope u = currentUsingScope; u != null; u = u.Parent) {
+				INamespace n = u.Namespace;
 				// first look for a namespace
 				if (k == 0 && n != null) {
 					INamespace childNamespace = n.GetChildNamespace(identifier);
@@ -1347,7 +1317,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (!(isInUsingDeclaration && u == currentUsingScope)) {
 						foreach (var pair in u.UsingAliases) {
 							if (pair.Key == identifier) {
-								return pair.Value.Resolve(this);
+								return pair.Value;
 							}
 						}
 					}
@@ -1355,19 +1325,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// finally, look in the imported namespaces:
 				if (!(isInUsingDeclaration && u == currentUsingScope)) {
 					IType firstResult = null;
-					foreach (var import in u.Usings) {
-						INamespace importedNamespace = import.ResolveNamespace(this);
-						if (importedNamespace != null) {
-							ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, k);
-							if (def != null) {
-								if (firstResult == null) {
-									if (parameterizeResultType && k > 0)
-										firstResult = new ParameterizedType(def, typeArguments);
-									else
-										firstResult = def;
-								} else {
-									return new AmbiguousTypeResolveResult(firstResult);
-								}
+					foreach (var importedNamespace in u.Usings) {
+						ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, k);
+						if (def != null) {
+							if (firstResult == null) {
+								if (parameterizeResultType && k > 0)
+									firstResult = new ParameterizedType(def, typeArguments);
+								else
+									firstResult = def;
+							} else {
+								return new AmbiguousTypeResolveResult(firstResult);
 							}
 						}
 					}
@@ -1387,13 +1354,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (identifier == "global")
 				return new NamespaceResolveResult(compilation.RootNamespace);
 			
-			for (UsingScope n = this.CurrentUsingScope; n != null; n = n.Parent) {
+			for (ResolvedUsingScope n = this.CurrentUsingScope; n != null; n = n.Parent) {
 				if (n.ExternAliases.Contains(identifier)) {
 					return ResolveExternAlias(identifier);
 				}
 				foreach (var pair in n.UsingAliases) {
 					if (pair.Key == identifier) {
-						return (pair.Value.Resolve(this) as NamespaceResolveResult) ?? ErrorResult;
+						return (pair.Value as NamespaceResolveResult) ?? ErrorResult;
 					}
 				}
 			}
@@ -1437,8 +1404,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (mgrr != null) {
 					Debug.Assert(mgrr.extensionMethods == null);
 					// set the values that are necessary to make MethodGroupResolveResult.GetExtensionMethods() work
-					mgrr.usingScope = this.CurrentUsingScope;
-					mgrr.resolver = this;
+					mgrr.resolver = this.Clone();
 				}
 			}
 			return result;
@@ -1544,15 +1510,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		IList<List<IMethod>> GetAllExtensionMethods()
 		{
-			if (currentUsingScopeCache == null)
+			var currentUsingScope = context.CurrentUsingScope;
+			if (currentUsingScope == null)
 				return EmptyList<List<IMethod>>.Instance;
-			List<List<IMethod>> extensionMethodGroups = currentUsingScopeCache.AllExtensionMethods;
-			if (extensionMethodGroups != null)
+			List<List<IMethod>> extensionMethodGroups = currentUsingScope.AllExtensionMethods;
+			if (extensionMethodGroups != null) {
+				LazyInit.ReadBarrier();
 				return extensionMethodGroups;
+			}
 			extensionMethodGroups = new List<List<IMethod>>();
 			List<IMethod> m;
-			for (UsingScope scope = currentUsingScopeCache.UsingScope; scope != null; scope = scope.Parent) {
-				INamespace ns = scope.ResolveNamespace(compilation);
+			for (ResolvedUsingScope scope = currentUsingScope; scope != null; scope = scope.Parent) {
+				INamespace ns = scope.Namespace;
 				if (ns != null) {
 					m = GetExtensionMethods(ns).ToList();
 					if (m.Count > 0)
@@ -1560,16 +1529,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				m = scope.Usings
-					.Select(u => u.ResolveNamespace(this))
-					.Where(importedNamespace => importedNamespace != null)
 					.Distinct()
 					.SelectMany(importedNamespace => GetExtensionMethods(importedNamespace))
 					.ToList();
 				if (m.Count > 0)
 					extensionMethodGroups.Add(m);
 			}
-			currentUsingScopeCache.AllExtensionMethods = extensionMethodGroups;
-			return extensionMethodGroups;
+			return LazyInit.GetOrSet(ref currentUsingScope.AllExtensionMethods, extensionMethodGroups);
 		}
 		
 		IEnumerable<IMethod> GetExtensionMethods(INamespace ns)

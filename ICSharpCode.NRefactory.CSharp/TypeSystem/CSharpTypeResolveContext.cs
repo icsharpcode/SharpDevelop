@@ -24,11 +24,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	public sealed class CSharpTypeResolveContext : ITypeResolveContext
 	{
 		readonly IAssembly assembly;
-		readonly UsingScope currentUsingScope;
+		readonly ResolvedUsingScope currentUsingScope;
 		readonly ITypeDefinition currentTypeDefinition;
 		readonly IMember currentMember;
 		
-		public CSharpTypeResolveContext(IAssembly assembly, UsingScope usingScope = null, ITypeDefinition typeDefinition = null, IMember member = null)
+		public CSharpTypeResolveContext(IAssembly assembly, ResolvedUsingScope usingScope = null, ITypeDefinition typeDefinition = null, IMember member = null)
 		{
 			if (assembly == null)
 				throw new ArgumentNullException("assembly");
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			this.currentMember = member;
 		}
 		
-		public UsingScope CurrentUsingScope {
+		public ResolvedUsingScope CurrentUsingScope {
 			get { return currentUsingScope; }
 		}
 		
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			return WithCurrentMember(member);
 		}
 		
-		public CSharpTypeResolveContext WithUsingScope(UsingScope usingScope)
+		public CSharpTypeResolveContext WithUsingScope(ResolvedUsingScope usingScope)
 		{
 			return new CSharpTypeResolveContext(assembly, usingScope, currentTypeDefinition, currentMember);
 		}

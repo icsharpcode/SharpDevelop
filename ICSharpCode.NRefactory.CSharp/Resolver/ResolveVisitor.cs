@@ -465,10 +465,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Track UsingScope
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitCompilationUnit(CompilationUnit unit, object data)
 		{
-			UsingScope previousUsingScope = resolver.CurrentUsingScope;
+			ResolvedUsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
 				if (parsedFile != null)
-					resolver.CurrentUsingScope = parsedFile.RootUsingScope;
+					resolver.CurrentUsingScope = parsedFile.RootUsingScope.Resolve(resolver.CurrentTypeResolveContext);
 				ScanChildren(unit);
 				return voidResult;
 			} finally {
@@ -478,17 +478,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
-			UsingScope previousUsingScope = resolver.CurrentUsingScope;
+			ResolvedUsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
 				if (parsedFile != null) {
-					resolver.CurrentUsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
+					resolver.CurrentUsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.CurrentTypeResolveContext);
 				}
 				ScanChildren(namespaceDeclaration);
 				// merge undecided lambdas before leaving the using scope so that
 				// the resolver can make better use of its cache
 				MergeUndecidedLambdas();
-				if (resolver.CurrentUsingScope != null && resolverEnabled)
-					return new NamespaceResolveResult(resolver.CurrentUsingScope.ResolveNamespace(resolver.Compilation));
+				if (resolver.CurrentUsingScope != null && resolver.CurrentUsingScope.Namespace != null && resolverEnabled)
+					return new NamespaceResolveResult(resolver.CurrentUsingScope.Namespace);
 				else
 					return null;
 			} finally {
@@ -512,7 +512,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				} else if (resolver.CurrentUsingScope != null) {
-					INamespace ns = resolver.CurrentUsingScope.ResolveNamespace(resolver.Compilation);
+					INamespace ns = resolver.CurrentUsingScope.Namespace;
 					if (ns != null)
 						newTypeDefinition = ns.GetTypeDefinition(name, typeParameterCount);
 				}

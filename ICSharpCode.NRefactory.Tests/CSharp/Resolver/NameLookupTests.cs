@@ -37,17 +37,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			base.SetUp();
 			resolver = new CSharpResolver(compilation);
-			resolver.CurrentUsingScope = new UsingScope();
+			resolver.CurrentUsingScope = MakeUsingScope(string.Empty);
 		}
 		
-		void AddUsing(string namespaceName)
+		TypeOrNamespaceReference MakeReference(string namespaceName)
 		{
-			resolver.CurrentUsingScope.Usings.Add(MakeReference(namespaceName));
+			string[] nameParts = namespaceName.Split('.');
+			TypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], SimpleNameLookupMode.TypeInUsingDeclaration);
+			for (int i = 1; i < nameParts.Length; i++) {
+				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0]);
+			}
+			return r;
 		}
 		
-		void AddUsingAlias(string alias, string namespaceName)
+		ResolvedUsingScope MakeUsingScope(string namespaceName = "", string[] usings = null, KeyValuePair<string, string>[] usingAliases = null)
 		{
-			resolver.CurrentUsingScope.UsingAliases.Add(new KeyValuePair<string, TypeOrNamespaceReference>(alias, MakeReference(namespaceName)));
+			UsingScope usingScope = new UsingScope();
+			if (!string.IsNullOrEmpty(namespaceName)) {
+				foreach (string element in namespaceName.Split('.')) {
+					usingScope = new UsingScope(usingScope, string.IsNullOrEmpty(usingScope.NamespaceName) ? element : usingScope.NamespaceName + "." + element);
+				}
+			}
+			if (usings != null) {
+				foreach (string u in usings)
+					usingScope.Usings.Add(MakeReference(u));
+			}
+			if (usingAliases != null) {
+				foreach (var pair in usingAliases)
+					usingScope.UsingAliases.Add(new KeyValuePair<string, TypeOrNamespaceReference>(pair.Key, MakeReference(pair.Value)));
+			}
+			return usingScope.Resolve(resolver.CurrentTypeResolveContext);
 		}
 		
 		[Test]
@@ -77,14 +96,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void NamespacesAreNotImported()
 		{
-			AddUsing("System");
+			resolver.CurrentUsingScope = MakeUsingScope(usings: new [] { "System" });
 			Assert.IsTrue(resolver.ResolveSimpleName("Collections", new IType[0]).IsError);
 		}
 		
 		[Test]
 		public void ImportedType()
 		{
-			AddUsing("System");
+			resolver.CurrentUsingScope = MakeUsingScope(usings: new [] { "System" });
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("String", new IType[0]);
 			Assert.AreEqual("System.String", trr.Type.FullName);
 		}
@@ -113,8 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void AliasToImportedType()
 		{
-			AddUsing("System");
-			AddUsingAlias("x", "String");
+			resolver.CurrentUsingScope = MakeUsingScope(usings: new [] { "System" }, usingAliases: new [] { new KeyValuePair<string, string>( "x", "String" )});
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
 			// Unknown type (as String isn't looked up in System)
 			Assert.AreSame(SpecialType.UnknownType, trr.Type);
@@ -123,9 +141,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void AliasToImportedType2()
 		{
-			AddUsing("System");
-			resolver.CurrentUsingScope = new UsingScope(resolver.CurrentUsingScope, "SomeNamespace");
-			AddUsingAlias("x", "String");
+			UsingScope mainUsingScope = new UsingScope();
+			mainUsingScope.Usings.Add(MakeReference("System"));
+			UsingScope nestedUsingScope = new UsingScope(mainUsingScope, "SomeNamespace");
+			nestedUsingScope.UsingAliases.Add(new KeyValuePair<string, TypeOrNamespaceReference>("x", MakeReference("String")));
+			resolver.CurrentUsingScope = nestedUsingScope.Resolve(compilation.TypeResolveContext);
+			
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
 			Assert.AreEqual("System.String", trr.Type.FullName);
 		}
@@ -133,14 +154,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void AliasOperatorOnTypeAlias()
 		{
-			AddUsingAlias("x", "System.String");
+			resolver.CurrentUsingScope = MakeUsingScope(usingAliases: new [] { new KeyValuePair<string, string>( "x", "System.String" )});
 			Assert.IsTrue(resolver.ResolveAlias("x").IsError);
 		}
 		
 		[Test]
 		public void AliasOperatorOnNamespaceAlias()
 		{
-			AddUsingAlias("x", "System.Collections.Generic");
+			resolver.CurrentUsingScope = MakeUsingScope(usingAliases: new [] { new KeyValuePair<string, string>( "x", "System.Collections.Generic" )});
 			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveAlias("x");
 			Assert.AreEqual("System.Collections.Generic", nrr.NamespaceName);
 		}
