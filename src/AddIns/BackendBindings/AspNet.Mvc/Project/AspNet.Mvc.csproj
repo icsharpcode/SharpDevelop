@@ -215,6 +215,9 @@
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Create.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
