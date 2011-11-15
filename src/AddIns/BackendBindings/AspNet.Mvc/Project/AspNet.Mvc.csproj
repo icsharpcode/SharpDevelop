@@ -233,6 +233,9 @@
     </None>
     <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
     <EmbeddedResource Include="Resources\VisualBasicRazor.xshd" />
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
