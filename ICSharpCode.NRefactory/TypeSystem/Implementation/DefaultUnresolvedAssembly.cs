@@ -282,6 +282,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				readonly UnresolvedNamespace ns;
 				readonly INamespace parentNamespace;
 				readonly IList<NS> childNamespaces;
+				IEnumerable<ITypeDefinition> types;
 				
 				public NS(DefaultResolvedAssembly assembly, UnresolvedNamespace ns, INamespace parentNamespace)
 				{
@@ -328,7 +329,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				
 				IEnumerable<ITypeDefinition> INamespace.Types {
 					get {
-						throw new NotImplementedException();
+						var result = this.types;
+						if (result != null) {
+							LazyInit.ReadBarrier();
+							return result;
+						} else {
+							var hashSet = new HashSet<ITypeDefinition>();
+							foreach (IUnresolvedTypeDefinition typeDef in assembly.UnresolvedAssembly.TopLevelTypeDefinitions) {
+								if (typeDef.Namespace == ns.FullName)
+									hashSet.Add(assembly.GetTypeDefinition(typeDef));
+							}
+							return LazyInit.GetOrSet(ref this.types, hashSet.ToArray());
+						}
 					}
 				}
 				

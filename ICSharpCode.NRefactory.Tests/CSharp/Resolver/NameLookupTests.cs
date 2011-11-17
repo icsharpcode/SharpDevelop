@@ -133,9 +133,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void AliasToImportedType()
 		{
 			resolver.CurrentUsingScope = MakeUsingScope(usings: new [] { "System" }, usingAliases: new [] { new KeyValuePair<string, string>( "x", "String" )});
-			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
-			// Unknown type (as String isn't looked up in System)
-			Assert.AreSame(SpecialType.UnknownType, trr.Type);
+			UnknownIdentifierResolveResult rr = (UnknownIdentifierResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
+			// Unknown identifier (as String isn't looked up in System)
+			Assert.AreEqual("String", rr.Identifier);
 		}
 		
 		[Test]

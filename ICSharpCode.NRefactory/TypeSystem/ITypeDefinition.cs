@@ -37,6 +37,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IUnresolvedMember> Members { get; }
 		
 		/// <summary>
+		/// Gets whether the type definition contains extension methods.
+		/// Returns null when the type definition needs to be resolved in order to determine whether
+		/// methods are extension methods.
+		/// </summary>
+		bool? HasExtensionMethods { get; }
+		
+		/// <summary>
 		/// Creates a type resolve context for this part of the type definition.
 		/// This method is used to add language-specific elements like the C# UsingScope
 		/// to the type resolve context.

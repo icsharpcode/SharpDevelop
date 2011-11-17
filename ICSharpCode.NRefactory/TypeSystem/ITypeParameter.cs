@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Type parameter of a generic class/method.
 	/// </summary>
-	public interface ITypeParameter : IType, IResolved
+	public interface ITypeParameter : IType
 	{
 		/// <summary>
 		/// Get the type of this type parameter's owner.

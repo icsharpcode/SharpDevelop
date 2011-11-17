@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	public abstract class AbstractTypeParameter : ITypeParameter
 	{
+		readonly ICompilation compilation;
 		readonly EntityType ownerType;
 		readonly IEntity owner;
 		readonly int index;
@@ -39,6 +40,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (owner == null)
 				throw new ArgumentNullException("owner");
 			this.owner = owner;
+			this.compilation = owner.Compilation;
 			this.ownerType = owner.EntityType;
 			this.index = index;
 			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString());
@@ -47,8 +49,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.variance = variance;
 		}
 		
-		protected AbstractTypeParameter(EntityType ownerType, int index, string name, VarianceModifier variance, IList<IAttribute> attributes, DomRegion region)
+		protected AbstractTypeParameter(ICompilation compilation, EntityType ownerType, int index, string name, VarianceModifier variance, IList<IAttribute> attributes, DomRegion region)
 		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			this.compilation = compilation;
 			this.ownerType = ownerType;
 			this.index = index;
 			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString());
@@ -82,7 +87,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public ICompilation Compilation {
-			get { return owner.Compilation; }
+			get { return compilation; }
 		}
 		
 		volatile IType effectiveBaseClass;
@@ -311,6 +316,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual bool Equals(IType other)
 		{
 			return this == other; // use reference equality for type parameters
+		}
+		
+		public override string ToString()
+		{
+			return this.ReflectionName;
 		}
 	}
 }

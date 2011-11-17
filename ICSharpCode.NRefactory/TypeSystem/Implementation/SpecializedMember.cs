@@ -330,6 +330,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public object ConstantValue {
 				get { return originalParameter.ConstantValue; }
 			}
+			
+			public override string ToString()
+			{
+				return DefaultParameter.ToString(this);
+			}
 		}
 	}
 }

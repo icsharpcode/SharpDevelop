@@ -32,7 +32,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		IList<IUnresolvedTypeParameter> TypeParameters { get; }
 		
-		bool IsExtensionMethod { get; }
 		bool IsConstructor { get; }
 		bool IsDestructor { get; }
 		bool IsOperator { get; }

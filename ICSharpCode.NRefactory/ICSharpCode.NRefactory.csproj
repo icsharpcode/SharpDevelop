@@ -125,11 +125,13 @@
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractUnresolvedEntity.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractUnresolvedMember.cs" />
+    <Compile Include="TypeSystem\Implementation\AnonymousType.cs" />
     <Compile Include="TypeSystem\Implementation\BaseTypeCollector.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAssemblyReference.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultMemberReference.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedAccessor.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultResolvedEvent.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedField.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedMethod.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedProperty.cs" />
@@ -145,6 +147,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedTypeParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DummyTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\FullNameAndTypeParameterCount.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />

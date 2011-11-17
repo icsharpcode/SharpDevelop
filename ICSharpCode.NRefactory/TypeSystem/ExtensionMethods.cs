@@ -178,6 +178,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region GetType/Member
+		public static IEnumerable<IUnresolvedTypeDefinition> GetAllTypeDefinitions (this IParsedFile file)
+		{
+			return TreeTraversal.PreOrder(file.TopLevelTypeDefinitions, t => t.NestedTypes);
+		}
+		
 		/// <summary>
 		/// Gets the type (potentially a nested type) defined at the specified location.
 		/// Returns null if no type is defined at that location.

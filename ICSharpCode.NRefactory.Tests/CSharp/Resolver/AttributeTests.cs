@@ -108,8 +108,8 @@ enum E { A, B }
 		{
 			string program = @"using System;
 class Flags {
-	[Flags]
-	enum $Test$ { }
+	$[Flags]
+	enum Test { }$
 }";
 			TypeResolveResult result = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("Flags.Test", result.Type.FullName);

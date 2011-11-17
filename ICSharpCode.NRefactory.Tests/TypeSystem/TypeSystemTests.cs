@@ -528,24 +528,63 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]]]", field3.Type.ReflectionName);
 		}
 		
-		[Test]
-		public void ParamsAttributeTest()
+		ResolveResult GetParamsAttributeArgument(int index)
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute)).GetDefinition();
 			var arr = (ArrayCreateResolveResult)type.Attributes.Single().PositionalArguments.Single();
-			Assert.AreEqual(4, arr.InitializerElements.Length);
-			
-			Assert.AreEqual("System.Int32", arr.InitializerElements[0].Type.FullName);
-			Assert.AreEqual(1, arr.InitializerElements[0].ConstantValue);
-			
-			Assert.AreEqual("System.StringComparison", arr.InitializerElements[1].Type.FullName);
-			Assert.AreEqual((int)StringComparison.CurrentCulture, arr.InitializerElements[1].ConstantValue);
-			
-			Assert.AreEqual("System.String", arr.InitializerElements[2].Type.FullName);
-			Assert.IsNull(arr.InitializerElements[2].ConstantValue);
-			
-			Assert.AreEqual("System.Double", arr.InitializerElements[3].Type.FullName);
-			Assert.AreEqual(4.0, arr.InitializerElements[3].ConstantValue);
+			Assert.AreEqual(5, arr.InitializerElements.Length);
+			return arr.InitializerElements[index];
+		}
+		
+		ResolveResult Unbox(ResolveResult resolveResult)
+		{
+			ConversionResolveResult crr = (ConversionResolveResult)resolveResult;
+			Assert.AreEqual(TypeKind.Class, crr.Type.Kind);
+			Assert.AreEqual("System.Object", crr.Type.FullName);
+			Assert.AreEqual(Conversion.BoxingConversion, crr.Conversion);
+			return crr.Input;
+		}
+		
+		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		public void ParamsAttribute_Integer()
+		{
+			ResolveResult rr = Unbox(GetParamsAttributeArgument(0));
+			Assert.AreEqual("System.Int32", rr.Type.FullName);
+			Assert.AreEqual(1, rr.ConstantValue);
+		}
+		
+		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		public void ParamsAttribute_Enum()
+		{
+			ResolveResult rr = Unbox(GetParamsAttributeArgument(1));
+			Assert.AreEqual("System.StringComparison", rr.Type.FullName);
+			Assert.AreEqual((int)StringComparison.CurrentCulture, rr.ConstantValue);
+		}
+		
+		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		public void ParamsAttribute_NullReference()
+		{
+			ResolveResult rr = GetParamsAttributeArgument(2);
+			Assert.AreEqual("System.Object", rr.Type.FullName);
+			Assert.IsTrue(rr.IsCompileTimeConstant);
+			Assert.IsNull(rr.ConstantValue);
+		}
+		
+		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		public void ParamsAttribute_Double()
+		{
+			ResolveResult rr = Unbox(GetParamsAttributeArgument(3));
+			Assert.AreEqual("System.Double", rr.Type.FullName);
+			Assert.AreEqual(4.0, rr.ConstantValue);
+		}
+		
+		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		public void ParamsAttribute_String()
+		{
+			ConversionResolveResult rr = (ConversionResolveResult)GetParamsAttributeArgument(4);
+			Assert.AreEqual("System.Object", rr.Type.FullName);
+			Assert.AreEqual("System.String", rr.Input.Type.FullName);
+			Assert.AreEqual("Test", rr.Input.ConstantValue);
 		}
 	}
 }

@@ -56,6 +56,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.EntityType = EntityType.Property;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
+			if (declaringType != null)
+				this.ParsedFile = declaringType.ParsedFile;
 		}
 		
 		public bool IsIndexer {

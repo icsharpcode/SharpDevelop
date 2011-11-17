@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public TypeTestAttribute(int a1, Type a2, Type a3) {}
 	}
 	
-	[Params(1, StringComparison.CurrentCulture, null, 4.0)]
+	[Params(1, StringComparison.CurrentCulture, null, 4.0, "Test")]
 	public class ParamsAttribute : Attribute
 	{
 		public ParamsAttribute(params object[] x) {}

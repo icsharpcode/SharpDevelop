@@ -52,6 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.DeclaringTypeDefinition = declaringTypeDefinition;
 			this.namespaceName = declaringTypeDefinition.Namespace;
 			this.Name = name;
+			this.ParsedFile = declaringTypeDefinition.ParsedFile;
 		}
 		
 		public TypeKind Kind {
@@ -67,6 +68,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			set {
 				ThrowIfFrozen();
 				flags[FlagAddDefaultConstructorIfRequired] = value;
+			}
+		}
+		
+		public bool? HasExtensionMethods {
+			get {
+				if (flags[FlagHasExtensionMethods])
+					return true;
+				else if (flags[FlagHasNoExtensionMethods])
+					return false;
+				else
+					return null;
+			}
+			set {
+				ThrowIfFrozen();
+				flags[FlagHasExtensionMethods] = (value == true);
+				flags[FlagHasNoExtensionMethods] = (value == false);
 			}
 		}
 		

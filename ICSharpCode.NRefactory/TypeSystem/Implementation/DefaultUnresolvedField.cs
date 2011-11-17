@@ -50,6 +50,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.EntityType = EntityType.Field;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
+			if (declaringType != null)
+				this.ParsedFile = declaringType.ParsedFile;
 		}
 		
 		public bool IsConst {

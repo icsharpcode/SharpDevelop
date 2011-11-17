@@ -54,6 +54,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.EntityType = EntityType.Event;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
+			if (declaringType != null)
+				this.ParsedFile = declaringType.ParsedFile;
 		}
 		
 		public bool CanAdd {
@@ -94,7 +96,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override IMember CreateResolved(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			return new DefaultResolvedEvent(this, context);
 		}
 	}
 }

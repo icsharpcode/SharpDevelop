@@ -47,6 +47,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IType SearchType(KnownTypeCode typeCode)
 		{
 			KnownTypeReference typeRef = KnownTypeReference.Get(typeCode);
+			if (typeRef == null)
+				return SpecialType.UnknownType;
 			ITypeDefinition typeDef;
 			foreach (IAssembly asm in compilation.ReferencedAssemblies) {
 				typeDef = asm.GetTypeDefinition(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);

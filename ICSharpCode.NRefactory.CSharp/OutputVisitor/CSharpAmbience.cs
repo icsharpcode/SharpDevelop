@@ -76,6 +76,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				writer.Write((node is IndexerDeclaration) ? ']' : ')');
 			}
+			if ((ConversionFlags & ConversionFlags.ShowBody) == ConversionFlags.ShowBody) {
+				IProperty property = member as IProperty;
+				if (property != null) {
+					writer.Write(" { ");
+					if (property.CanGet)
+						writer.Write("get; ");
+					if (property.CanSet)
+						writer.Write("set; ");
+					writer.Write('}');
+				} else {
+					writer.Write(';');
+				}
+			}
 		}
 
 		TypeSystemAstBuilder CreateAstBuilder()

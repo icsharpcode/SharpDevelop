@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -31,39 +32,66 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		EntityType entityType;
 		ITypeReference typeReference;
 		string name;
+		int typeParameterCount;
+		IList<ITypeReference> parameterTypes;
 		
-		public DefaultMemberReference(EntityType entityType, ITypeReference typeReference, string name)
+		public DefaultMemberReference(EntityType entityType, ITypeReference typeReference, string name, int typeParameterCount = 0, IList<ITypeReference> parameterTypes = null)
 		{
 			if (typeReference == null)
 				throw new ArgumentNullException("typeReference");
 			if (name == null)
 				throw new ArgumentNullException("name");
+			if (typeParameterCount != 0 && entityType != EntityType.Method)
+				throw new ArgumentException("Type parameter count > 0 is only supported for methods.");
 			this.entityType = entityType;
 			this.typeReference = typeReference;
 			this.name = name;
+			this.typeParameterCount = typeParameterCount;
+			this.parameterTypes = parameterTypes ?? EmptyList<ITypeReference>.Instance;
 		}
 		
 		public IMember Resolve(ITypeResolveContext context)
 		{
 			IType type = typeReference.Resolve(context);
-			return type.GetMembers(m => m.Name == name && m.EntityType == entityType, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+			IEnumerable<IMember> members;
+			if (entityType == EntityType.Method) {
+				members = type.GetMethods(
+					m => m.Name == name && m.EntityType == EntityType.Method && m.TypeParameters.Count == typeParameterCount,
+					GetMemberOptions.IgnoreInheritedMembers);
+			} else {
+				members = type.GetMembers(
+					m => m.Name == name && m.EntityType == entityType,
+					GetMemberOptions.IgnoreInheritedMembers);
+			}
+			var resolvedParameterTypes = parameterTypes.Resolve(context);
+			foreach (IMember member in members) {
+				IParameterizedMember parameterizedMember = member as IParameterizedMember;
+				if (parameterTypes.Count == 0) {
+					if (parameterizedMember == null || parameterizedMember.Parameters.Count == 0)
+						return member;
+				} else if (parameterTypes.Count == parameterizedMember.Parameters.Count) {
+					
+				}
+			}
+			return null;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
 			typeReference = provider.Intern(typeReference);
 			name = provider.Intern(name);
+			parameterTypes = provider.InternList(parameterTypes);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return (int)entityType ^ typeReference.GetHashCode() ^ name.GetHashCode();
+			return (int)entityType ^ typeReference.GetHashCode() ^ name.GetHashCode() ^ parameterTypes.GetHashCode();
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			DefaultMemberReference o = other as DefaultMemberReference;
-			return o != null && entityType == o.entityType && typeReference == o.typeReference && name == o.name;
+			return o != null && entityType == o.entityType && typeReference == o.typeReference && name == o.name && parameterTypes == o.parameterTypes;
 		}
 	}
 }

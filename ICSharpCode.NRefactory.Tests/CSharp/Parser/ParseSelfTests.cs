@@ -54,7 +54,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					cu = parser.Parse(fs);
 				}
-				pc = pc.UpdateProjectContent(null, cu.ToTypeSystem(fileName));
+				var parsedFile = cu.ToTypeSystem(fileName);
+				foreach (var td in parsedFile.GetAllTypeDefinitions()) {
+					Assert.AreSame(parsedFile, td.ParsedFile);
+					foreach (var member in td.Members) {
+						Assert.AreSame(parsedFile, member.ParsedFile);
+						Assert.AreSame(td, member.DeclaringTypeDefinition);
+					}
+				}
+				pc = pc.UpdateProjectContent(null, parsedFile);
 			}
 		}
 		

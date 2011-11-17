@@ -793,7 +793,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			Log.WriteCollection("GetBestCommonType() for ", expressions);
 			try {
-				DummyTypeParameter tp = new DummyTypeParameter(compilation);
+				ITypeParameter tp = DummyTypeParameter.GetMethodTypeParameter(0);
 				this.typeParameters = new TP[1] { new TP(tp) };
 				foreach (ResolveResult r in expressions) {
 					MakeOutputTypeInference(r, tp);
@@ -802,81 +802,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return typeParameters[0].FixedTo ?? SpecialType.UnknownType;
 			} finally {
 				Reset();
-			}
-		}
-		
-		sealed class DummyTypeParameter : AbstractType, ITypeParameter
-		{
-			readonly ICompilation compilation;
-			
-			public DummyTypeParameter(ICompilation compilation)
-			{
-				this.compilation = compilation;
-			}
-			
-			ICompilation IResolved.Compilation {
-				get { return compilation; }
-			}
-			
-			public override string Name {
-				get { return "X"; }
-			}
-			
-			public override bool? IsReferenceType {
-				get { return null; }
-			}
-			
-			public override TypeKind Kind {
-				get { return TypeKind.TypeParameter; }
-			}
-			
-			public override ITypeReference ToTypeReference()
-			{
-				throw new NotSupportedException();
-			}
-			
-			int ITypeParameter.Index {
-				get { return 0; }
-			}
-			
-			IList<IAttribute> ITypeParameter.Attributes {
-				get { return EmptyList<IAttribute>.Instance; }
-			}
-			
-			EntityType ITypeParameter.OwnerType {
-				get { return EntityType.Method; }
-			}
-			
-			VarianceModifier ITypeParameter.Variance {
-				get { return VarianceModifier.Invariant; }
-			}
-			
-			DomRegion ITypeParameter.Region {
-				get { return DomRegion.Empty; }
-			}
-			
-			IEntity ITypeParameter.Owner {
-				get { return null; }
-			}
-			
-			IType ITypeParameter.EffectiveBaseClass {
-				get { return SpecialType.UnknownType; }
-			}
-			
-			IList<IType> ITypeParameter.EffectiveInterfaceSet {
-				get { return EmptyList<IType>.Instance; }
-			}
-			
-			bool ITypeParameter.HasDefaultConstructorConstraint {
-				get { return false; }
-			}
-			
-			bool ITypeParameter.HasReferenceTypeConstraint {
-				get { return false; }
-			}
-			
-			bool ITypeParameter.HasValueTypeConstraint {
-				get { return false; }
 			}
 		}
 		#endregion

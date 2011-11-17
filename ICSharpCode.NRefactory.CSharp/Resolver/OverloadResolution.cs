@@ -42,6 +42,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			/// </summary>
 			public readonly bool IsExpandedForm;
 			
+			/// <summary>
+			/// Gets the parameter types. In the first step, these are the types without any substition.
+			/// After type inference, substitutions will be performed.
+			/// </summary>
 			public readonly IType[] ParameterTypes;
 			
 			/// <summary>
@@ -60,6 +64,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			/// Gets the original member parameters (before any substitution!)
 			/// </summary>
 			public readonly IList<IParameter> Parameters;
+			
+			/// <summary>
+			/// Gets the original method type parameters (before any substitution!)
+			/// </summary>
+			public readonly IList<ITypeParameter> TypeParameters;
 			
 			/// <summary>
 			/// Conversions applied to the arguments.
@@ -92,11 +101,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.Member = member;
 				this.IsExpandedForm = isExpanded;
-				if (this.IsGenericMethod) {
+				IMethod method = member as IMethod;
+				if (method != null && method.TypeParameters.Count > 0) {
 					// For generic methods, go back to the original parameters
 					// (without any type parameter substitution, not even class type parameters)
 					// We'll re-substitute them as part of RunTypeInference().
-					this.Parameters = ((IParameterizedMember)member.MemberDefinition).Parameters;
+					method = (IMethod)method.MemberDefinition;
+					this.Parameters = method.Parameters;
+					this.TypeParameters = method.TypeParameters;
 				} else {
 					this.Parameters = member.Parameters;
 				}
@@ -364,7 +376,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				TypeInference ti = new TypeInference(compilation, conversions);
 				bool success;
-				candidate.InferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, candidate.ParameterTypes, out success, classTypeArguments);
+				candidate.InferredTypes = ti.InferTypeArguments(candidate.TypeParameters, arguments, candidate.ParameterTypes, out success, classTypeArguments);
 				if (!success)
 					candidate.AddError(OverloadResolutionErrors.TypeInferenceFailed);
 			}

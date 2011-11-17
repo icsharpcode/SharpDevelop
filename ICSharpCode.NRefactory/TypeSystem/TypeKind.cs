@@ -73,6 +73,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>A managed reference type</summary>
 		/// <see cref="ByReferenceType"/>
 		ByReference,
+		/// <summary>An anonymous type</summary>
+		/// <see cref="AnonymousType"/>
+		Anonymous,
 		
 		/// <summary>Intersection of several types</summary>
 		/// <see cref="IntersectionType"/>

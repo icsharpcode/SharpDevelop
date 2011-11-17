@@ -208,6 +208,42 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 	}
 	
 	[Serializable]
+	public sealed class TypeOfConstantExpression : ConstantExpression, ISupportsInterning
+	{
+		ITypeReference type;
+		
+		public ITypeReference Type {
+			get { return type; }
+		}
+		
+		public TypeOfConstantExpression(ITypeReference type)
+		{
+			this.type = type;
+		}
+		
+		public override ResolveResult Resolve(CSharpResolver resolver)
+		{
+			return resolver.ResolveTypeOf(type.Resolve(resolver.CurrentTypeResolveContext));
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			type = provider.Intern(type);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return type.GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			TypeOfConstantExpression o = other as TypeOfConstantExpression;
+			return o != null && type == o.type;
+		}
+	}
+	
+	[Serializable]
 	public sealed class ConstantCast : ConstantExpression, ISupportsInterning
 	{
 		ITypeReference targetType;

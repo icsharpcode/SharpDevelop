@@ -724,7 +724,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		CSharpOperators.BinaryOperatorMethod PointerArithmeticOperator(IType resultType, IType inputType1, IType inputType2)
 		{
-			throw new NotImplementedException();
+			return new CSharpOperators.BinaryOperatorMethod(compilation) {
+				ReturnType = resultType,
+				Parameters = {
+					new DefaultParameter(inputType1, string.Empty),
+					new DefaultParameter(inputType2, string.Empty)
+				}
+			};
 		}
 		#endregion
 		
@@ -2000,5 +2006,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return new ArrayCreateResolveResult(arrayType, sizeArguments, initializerElements);
 		}
 		#endregion
+		
+		public ResolveResult ResolveTypeOf(IType referencedType)
+		{
+			return new TypeOfResolveResult(compilation.FindType(KnownTypeCode.Type), referencedType);
+		}
 	}
 }

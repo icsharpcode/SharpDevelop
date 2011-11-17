@@ -51,19 +51,23 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			IType t1 = withoutSuffix.Resolve(context);
 			IType t2 = withSuffix.Resolve(context);
+			return PreferAttributeTypeWithSuffix(t1, t2, context.Compilation) ? t2 : t1;
+		}
+		
+		internal static bool PreferAttributeTypeWithSuffix(IType t1, IType t2, ICompilation compilation)
+		{
+			if (t2.Kind == TypeKind.Unknown) return false;
+			if (t1.Kind == TypeKind.Unknown) return true;
 			
-			if (t2.Kind == TypeKind.Unknown) return t1;
-			if (t1.Kind == TypeKind.Unknown) return t2;
-			
-			var attrTypeDef = KnownTypeReference.Attribute.Resolve(context).GetDefinition();
+			var attrTypeDef = compilation.FindType(KnownTypeCode.Attribute).GetDefinition();
 			if (attrTypeDef != null) {
 				bool t1IsAttribute = (t1.GetDefinition() != null && t1.GetDefinition().IsDerivedFrom(attrTypeDef));
 				bool t2IsAttribute = (t2.GetDefinition() != null && t2.GetDefinition().IsDerivedFrom(attrTypeDef));
 				if (t2IsAttribute && !t1IsAttribute)
-					return t2;
+					return true;
 				// If both types exist and are attributes, C# considers that to be an ambiguity, but we are less strict.
 			}
-			return t1;
+			return false;
 		}
 		
 		public override string ToString()

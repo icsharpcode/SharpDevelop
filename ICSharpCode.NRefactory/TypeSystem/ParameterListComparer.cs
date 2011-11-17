@@ -37,40 +37,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		// We want to consider the parameter lists "Method<T>(T a)" and "Method<S>(S b)" as equal.
 		// However, the parameter types are not considered equal, as T is a different type parameter than S.
 		// In order to compare the method signatures, we will normalize all method type parameters.
-		sealed class NormalizeMethodTypeParameters : TypeVisitor
+		sealed class NormalizeMethodTypeParametersVisitor : TypeVisitor
 		{
-			ITypeParameter[] normalTypeParameters = { new DefaultTypeParameter(EntityType.Method, 0) };
-			
 			public override IType VisitTypeParameter(ITypeParameter type)
 			{
 				if (type.OwnerType == EntityType.Method) {
-					ITypeParameter[] tps = this.normalTypeParameters;
-					while (type.Index >= tps.Length) {
-						// We don't have a normal type parameter for this index, so we need to extend our array.
-						// Because the array can be used concurrently from multiple threads, we have to use
-						// Interlocked.CompareExchange.
-						ITypeParameter[] newTps = new ITypeParameter[type.Index + 1];
-						tps.CopyTo(newTps, 0);
-						for (int i = tps.Length; i < newTps.Length; i++) {
-							newTps[i] = new DefaultTypeParameter(EntityType.Method, i);
-						}
-						ITypeParameter[] oldTps = Interlocked.CompareExchange(ref normalTypeParameters, newTps, tps);
-						if (oldTps == tps) {
-							// exchange successful
-							tps = newTps;
-						} else {
-							// exchange not successful
-							tps = oldTps;
-						}
-					}
-					return tps[type.Index];
+					return DummyTypeParameter.GetMethodTypeParameter(type.Index);
 				} else {
 					return base.VisitTypeParameter(type);
 				}
 			}
 		}
 		
-		readonly NormalizeMethodTypeParameters normalization = new NormalizeMethodTypeParameters();
+		readonly NormalizeMethodTypeParametersVisitor normalization = new NormalizeMethodTypeParametersVisitor();
+		
+		/// <summary>
+		/// Replaces all occurrences of method type parameters in the given type
+		/// by normalized type parameters. This allows comparing parameter types from different
+		/// generic methods.
+		/// </summary>
+		public IType NormalizeMethodTypeParameters(IType type)
+		{
+			return type.AcceptVisitor(normalization);
+		}
 		
 		public bool Equals(IList<IParameter> x, IList<IParameter> y)
 		{

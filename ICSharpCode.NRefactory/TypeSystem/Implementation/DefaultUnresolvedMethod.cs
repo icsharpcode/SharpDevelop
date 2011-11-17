@@ -60,6 +60,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.EntityType = EntityType.Method;
 			this.DeclaringTypeDefinition = declaringType;
 			this.Name = name;
+			if (declaringType != null)
+				this.ParsedFile = declaringType.ParsedFile;
 		}
 		
 		public IList<IUnresolvedAttribute> ReturnTypeAttributes {

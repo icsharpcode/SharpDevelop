@@ -62,6 +62,7 @@ namespace OtherNS {
 		public void SetUp()
 		{
 			pc = new CSharpProjectContent();
+			pc = pc.SetAssemblyName("MyAssembly");
 			parsedFile = new CSharpParser().Parse(new StringReader(program)).ToTypeSystem("program.cs");
 			pc = pc.UpdateProjectContent(null, parsedFile);
 			pc = pc.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib });
@@ -71,7 +72,7 @@ namespace OtherNS {
 			baseClass = compilation.RootNamespace.GetTypeDefinition("Base", 1);
 			nestedClass = baseClass.NestedTypes.Single();
 			derivedClass = compilation.RootNamespace.GetTypeDefinition("Derived", 2);
-			systemClass = compilation.FindType("NS.System").GetDefinition();
+			systemClass = compilation.FindType("NS.System, MyAssembly").GetDefinition();
 		}
 		
 		TypeSystemAstBuilder CreateBuilder(ITypeDefinition currentTypeDef = null)
@@ -207,7 +208,7 @@ namespace OtherNS {
 		public void AmbiguousType()
 		{
 			Assert.AreEqual("System.Array", TypeToString(compilation.FindType(typeof(Array))));
-			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.FindType("OtherNS.Array")));
+			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.FindType("OtherNS.Array, MyAssembly")));
 		}
 	}
 }

@@ -592,7 +592,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				: base(operators.compilation)
 			{
 				this.canEvaluateAtCompileTime = p1 == TypeCode.String && p2 == TypeCode.String;
-				this.ReturnType = KnownTypeReference.String.Resolve(operators.compilation.TypeResolveContext);
+				this.ReturnType = operators.compilation.FindType(KnownTypeCode.String);
 				this.Parameters.Add(operators.MakeParameter(p1));
 				this.Parameters.Add(operators.MakeParameter(p2));
 			}
@@ -766,7 +766,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return ops;
 				} else {
 					return LazyInit.GetOrSet(ref equalityOperators, Lift(
-						equalityOperatorsFor.Select(c => new EqualityOperatorMethod(this, c, true)).ToArray()
+						equalityOperatorsFor.Select(c => new EqualityOperatorMethod(this, c, false)).ToArray()
 					));
 				}
 			}
@@ -782,7 +782,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return ops;
 				} else {
 					return LazyInit.GetOrSet(ref inequalityOperators, Lift(
-						equalityOperatorsFor.Select(c => new EqualityOperatorMethod(this, c, false)).ToArray()
+						equalityOperatorsFor.Select(c => new EqualityOperatorMethod(this, c, true)).ToArray()
 					));
 				}
 			}
@@ -801,6 +801,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.Parameters.Add(operators.MakeParameter(Type.GetTypeCode(typeof(T1))));
 				this.Parameters.Add(operators.MakeParameter(Type.GetTypeCode(typeof(T2))));
 				this.func = func;
+			}
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return true; }
 			}
 			
 			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)

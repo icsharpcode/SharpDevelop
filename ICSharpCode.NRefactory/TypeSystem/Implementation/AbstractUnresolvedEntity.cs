@@ -52,6 +52,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal const ushort FlagStatic    = 0x0020;
 		// flags for DefaultUnresolvedTypeDefinition
 		internal const ushort FlagAddDefaultConstructorIfRequired = 0x0040;
+		internal const ushort FlagHasExtensionMethods = 0x0080;
+		internal const ushort FlagHasNoExtensionMethods = 0x0100;
 		// flags for AbstractUnresolvedMember:
 		internal const ushort FlagExplicitInterfaceImplementation = 0x0040;
 		internal const ushort FlagVirtual = 0x0080;
@@ -130,17 +132,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public DomRegion Region {
 			get { return rareFields != null ? rareFields.region : DomRegion.Empty; }
-			set { WriteRareFields().region = value; }
+			set {
+				if (value != DomRegion.Empty || rareFields != null)
+					WriteRareFields().region = value;
+			}
 		}
 		
 		public DomRegion BodyRegion {
 			get { return rareFields != null ? rareFields.bodyRegion : DomRegion.Empty; }
-			set { WriteRareFields().bodyRegion = value; }
+			set {
+				if (value != DomRegion.Empty || rareFields != null)
+					WriteRareFields().bodyRegion = value;
+			}
 		}
 		
 		public IParsedFile ParsedFile {
 			get { return rareFields != null ? rareFields.parsedFile : null; }
-			set { WriteRareFields().parsedFile = value; }
+			set {
+				if (value != null || rareFields != null)
+					WriteRareFields().parsedFile = value;
+			}
 		}
 		
 		public IUnresolvedTypeDefinition DeclaringTypeDefinition {

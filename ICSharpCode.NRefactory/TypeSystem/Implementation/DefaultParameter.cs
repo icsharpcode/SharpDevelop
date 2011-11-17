@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -99,6 +100,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public object ConstantValue {
 			get { return defaultValue; }
+		}
+		
+		public override string ToString()
+		{
+			return ToString(this);
+		}
+		
+		public static string ToString(IParameter p)
+		{
+			StringBuilder b = new StringBuilder();
+			if (p.IsRef)
+				b.Append("ref ");
+			if (p.IsOut)
+				b.Append("out ");
+			if (p.IsParams)
+				b.Append("params ");
+			b.Append(p.Name);
+			b.Append(':');
+			b.Append(p.Type.ToString());
+			if (p.IsOptional) {
+				b.Append(" = ");
+				if (p.ConstantValue != null)
+					b.Append(p.ConstantValue.ToString());
+				else
+					b.Append("null");
+			}
+			return b.ToString();
 		}
 	}
 }

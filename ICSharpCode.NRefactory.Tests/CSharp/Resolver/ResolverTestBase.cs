@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[SetUp]
 		public virtual void SetUp()
 		{
-			project = new CSharpProjectContent().AddAssemblyReferences(new [] { mscorlib });
+			project = new CSharpProjectContent().AddAssemblyReferences(new [] { mscorlib, CecilLoaderTests.SystemCore });
 			compilation = project.CreateCompilation();
 		}
 		

@@ -181,6 +181,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get {
 				KnownTypeCode result = this.knownTypeCode;
 				if (result == (KnownTypeCode)(-1)) {
+					result = KnownTypeCode.None;
 					for (int i = 0; i < KnownTypeReference.KnownTypeCodeCount; i++) {
 						KnownTypeReference r = KnownTypeReference.Get((KnownTypeCode)i);
 						if (r != null && r.Resolve(parentContext) == this) {
@@ -201,7 +202,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				IType result = this.enumUnderlyingType;
 				if (result == null) {
 					if (this.Kind == TypeKind.Enum) {
-						
+						result = CalculateEnumUnderlyingType();
 					} else {
 						result = SpecialType.UnknownType;
 					}
@@ -224,10 +225,37 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this.Compilation.FindType(KnownTypeCode.Int32);
 		}
 		
+		volatile byte hasExtensionMethods; // 0 = unknown, 1 = true, 2 = false
+		
 		public bool HasExtensionMethods {
 			get {
-				throw new NotImplementedException();
+				byte val = this.hasExtensionMethods;
+				if (val == 0) {
+					if (CalculateHasExtensionMethods())
+						val = 1;
+					else
+						val = 2;
+					this.hasExtensionMethods = val;
+				}
+				return val == 1;
 			}
+		}
+		
+		bool CalculateHasExtensionMethods()
+		{
+			bool noExtensionMethods = true;
+			foreach (var part in parts) {
+				// Return true if any part has extension methods
+				if (part.HasExtensionMethods == true)
+					return true;
+				if (part.HasExtensionMethods == null)
+					noExtensionMethods = false;
+			}
+			// Return false if all parts are known to have no extension methods
+			if (noExtensionMethods)
+				return false;
+			// If unsure, look at the resolved methods.
+			return Methods.Any(m => m.IsExtensionMethod);
 		}
 		
 		public bool? IsReferenceType {

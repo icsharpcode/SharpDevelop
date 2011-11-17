@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public bool IsOut { get; internal set; }
 			public bool IsParams { get; internal set; }
 			public bool IsOptional { get { return true; } }
-			public bool IsConst { get { return false; } }
+			bool IVariable.IsConst { get { return false; } }
 			
 			ResolveResult resolvedDefaultValue;
 			
@@ -243,6 +243,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						return LazyInit.GetOrSet(ref this.resolvedDefaultValue, rr).ConstantValue;
 					}
 				}
+			}
+			
+			public override string ToString()
+			{
+				return DefaultParameter.ToString(this);
 			}
 		}
 	}

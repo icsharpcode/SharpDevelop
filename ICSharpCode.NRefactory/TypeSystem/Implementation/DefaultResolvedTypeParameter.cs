@@ -32,8 +32,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly IList<IType> constraints;
 		
 		public DefaultTypeParameter(
-			IEntity owner, int index,
-			string name = null,
+			IEntity owner,
+			int index, string name = null,
 			VarianceModifier variance = VarianceModifier.Invariant,
 			IList<IAttribute> attributes = null,
 			DomRegion region = default(DomRegion),
@@ -48,14 +48,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public DefaultTypeParameter(
-			EntityType ownerType, int index,
-			string name = null,
+			ICompilation compilation, EntityType ownerType,
+			int index, string name = null,
 			VarianceModifier variance = VarianceModifier.Invariant,
 			IList<IAttribute> attributes = null,
 			DomRegion region = default(DomRegion),
 			bool hasValueTypeConstraint = false, bool hasReferenceTypeConstraint = false, bool hasDefaultConstructorConstraint = false,
 			IList<IType> constraints = null)
-			: base(ownerType, index, name, variance, attributes, region)
+			: base(compilation, ownerType, index, name, variance, attributes, region)
 		{
 			this.hasValueTypeConstraint = hasValueTypeConstraint;
 			this.hasReferenceTypeConstraint = hasReferenceTypeConstraint;

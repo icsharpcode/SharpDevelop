@@ -70,21 +70,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			else
 				navigator = new NodeListResolveVisitorNavigator(new[] { resolvableNode });
 			
-			throw new NotImplementedException();
-			/*
-			using (var ctx = context.Synchronize()) {
-				CSharpResolver resolver = new CSharpResolver(ctx, cancellationToken);
-				ResolveVisitor v = new ResolveVisitor(resolver, parsedFile, navigator);
-				v.Scan(cu);
-				
-				// Prefer the RR from the token itself, if it was assigned a ResolveResult
-				// (this can happen with the identifiers in various nodes such as catch clauses or foreach statements)
-				ResolveResult rr = v.GetResolveResult(node) ?? v.GetResolveResult(resolvableNode);
-				if (rr is MethodGroupResolveResult && parentInvocation != null)
-					return v.GetResolveResult(parentInvocation);
-				else
-					return rr;
-			}*/
+			CSharpResolver resolver = new CSharpResolver(compilation);
+			ResolveVisitor v = new ResolveVisitor(resolver, parsedFile, navigator);
+			v.Scan(cu);
+			
+			// Prefer the RR from the token itself, if it was assigned a ResolveResult
+			// (this can happen with the identifiers in various nodes such as catch clauses or foreach statements)
+			ResolveResult rr = v.GetResolveResult(node) ?? v.GetResolveResult(resolvableNode);
+			if (rr is MethodGroupResolveResult && parentInvocation != null)
+				return v.GetResolveResult(parentInvocation);
+			else
+				return rr;
 		}
 	}
 }

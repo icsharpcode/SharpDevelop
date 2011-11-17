@@ -1451,6 +1451,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			InitNestedTypes(typeDefinition, td); // nested types can be initialized only after generic parameters were created
 			AddAttributes(typeDefinition, td);
+			td.HasExtensionMethods = HasExtensionAttribute(typeDefinition);
 			
 			// set base classes
 			if (typeDefinition.IsEnum) {

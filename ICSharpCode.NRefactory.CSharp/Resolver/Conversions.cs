@@ -625,7 +625,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.GetTypeArgument(0));
 				}
 				// conversion from any array to System.Array and the interfaces it implements:
-				IType systemArray = KnownTypeReference.Array.Resolve(compilation.TypeResolveContext);
+				IType systemArray = compilation.FindType(KnownTypeCode.Array);
 				return systemArray.Kind != TypeKind.Unknown && (systemArray.Equals(toType) || ImplicitReferenceConversion(systemArray, toType));
 			}
 			

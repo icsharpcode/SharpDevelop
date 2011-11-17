@@ -27,21 +27,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class DefaultResolvedMethod : AbstractResolvedMember, IMethod
 	{
-		public DefaultResolvedMethod(IUnresolvedMethod unresolved, ITypeResolveContext parentContext)
+		public DefaultResolvedMethod(DefaultUnresolvedMethod unresolved, ITypeResolveContext parentContext)
+			: this(unresolved, parentContext, unresolved.IsExtensionMethod)
+		{
+		}
+		
+		public DefaultResolvedMethod(IUnresolvedMethod unresolved, ITypeResolveContext parentContext, bool isExtensionMethod)
 			: base(unresolved, parentContext)
 		{
 			this.Parameters = unresolved.Parameters.CreateResolvedParameters(context);
 			this.ReturnTypeAttributes = unresolved.ReturnTypeAttributes.CreateResolvedAttributes(parentContext);
 			this.TypeParameters = unresolved.TypeParameters.CreateResolvedTypeParameters(context);
+			this.IsExtensionMethod = isExtensionMethod;
 		}
 		
 		public IList<IParameter> Parameters { get; private set; }
 		public IList<IAttribute> ReturnTypeAttributes { get; private set; }
 		public IList<ITypeParameter> TypeParameters { get; private set; }
 		
-		public bool IsExtensionMethod {
-			get { return ((IUnresolvedMethod)unresolved).IsExtensionMethod; }
-		}
+		public bool IsExtensionMethod { get; private set; }
 		
 		public bool IsConstructor {
 			get { return ((IUnresolvedMethod)unresolved).IsConstructor; }

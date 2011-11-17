@@ -515,10 +515,10 @@ class Test {
 			var irr = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.IsFalse(irr.IsError);
 			Assert.IsTrue(irr.IsLiftedOperatorInvocation);
+			Assert.IsTrue(irr.Member is OverloadResolution.ILiftedOperator);
 			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
-			// even though we're calling the lifted operator, trr.Member should be the original operator method
-			Assert.AreEqual("S", irr.Member.ReturnType.ReflectionName);
 			Assert.AreEqual("System.Nullable`1[[S]]", irr.Type.ReflectionName);
+			Assert.AreEqual("System.Nullable`1[[S]]", irr.Member.ReturnType.ReflectionName);
 			
 			Conversion lhsConv = ((ConversionResolveResult)irr.Arguments[0]).Conversion;
 			Conversion rhsConv = ((ConversionResolveResult)irr.Arguments[1]).Conversion;
