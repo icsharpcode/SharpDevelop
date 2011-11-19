@@ -1,0 +1,62 @@
+﻿<#@ template language="VB" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ import namespace="Microsoft.VisualBasic.Constants" #>
+<#@ output extension=".vbhtml" #>
+<#= GetModelDirective() #>
+
+<# 
+	If MvcHost.IsPartialView Then
+		' Do nothing.
+	ElseIf MvcHost.IsContentPage Then
+#>
+@Code
+	ViewData("Title") = "<#= MvcHost.ViewName #>"
+	Layout = "<#= MvcHost.MasterPageFile #>"
+End Code
+
+<h2><#= MvcHost.ViewName #></h2>
+
+<#
+	Else
+#>
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><#= MvcHost.ViewName #></title>
+	</head>
+	<body>
+<#
+		PushIndent(vbTab & vbTab)
+	End If
+#>
+<fieldset>
+	<legend><#= MvcHost.ViewDataType.Name #></legend>
+</fieldset>
+<p>
+	@Html.ActionLink("Edit", "Edit") |
+	@Html.ActionLink("Back", "Index")
+</p>
+<# 
+	If MvcHost.IsPartialView Then
+		' Do nothing.
+	ElseIf Not MvcHost.IsContentPage Then
+		PopIndent()
+#>
+	</body>
+</html>
+<# End If #>
+<#+
+	ReadOnly Property MvcHost As MvcTextTemplateHost
+		Get
+			Return DirectCast(Host, MvcTextTemplateHost)
+		End Get
+	End Property
+	
+	Function GetModelDirective() As String
+		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
+		If Not String.IsNullOrEmpty(viewDataTypeName) Then
+			Return String.Format("@ModelType {0}", viewDataTypeName)
+		End If
+		Return String.Empty
+	End Function
+#>

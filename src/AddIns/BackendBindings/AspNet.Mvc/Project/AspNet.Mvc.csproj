@@ -252,12 +252,18 @@
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Create.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Details.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
     <EmbeddedResource Include="Resources\VisualBasicRazor.xshd" />
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Details.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt">
