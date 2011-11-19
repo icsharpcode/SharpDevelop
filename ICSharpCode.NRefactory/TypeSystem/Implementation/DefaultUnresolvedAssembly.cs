@@ -249,7 +249,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public bool InternalsVisibleTo(IAssembly assembly)
 			{
-				throw new NotImplementedException();
+				return assembly == this;
 			}
 			
 			public ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount)
@@ -273,6 +273,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					return new VoidTypeDefinition(context, unresolved);
 				} else {
 					return new DefaultResolvedTypeDefinition(context, unresolved);
+				}
+			}
+			
+			public IEnumerable<ITypeDefinition> TopLevelTypeDefinitions {
+				get {
+					return unresolved.TopLevelTypeDefinitions.Select(t => GetTypeDefinition(t));
 				}
 			}
 			

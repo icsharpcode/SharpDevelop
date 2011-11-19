@@ -28,23 +28,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <remarks>
 	/// <para>
 	/// A type is potentially
-	/// - a type definition (<see cref="ITypeDefiniton"/>, i.e. a class, struct, interface, delegate, or built-in primitive type)
+	/// - a type definition (<see cref="ITypeDefinition"/>, i.e. a class, struct, interface, delegate, or built-in primitive type)
 	/// - a parameterized type (<see cref="ParameterizedType"/>, e.g. List&lt;int>)
 	/// - a type parameter (<see cref="ITypeParameter"/>, e.g. T)
 	/// - an array (<see cref="ArrayType"/>)
 	/// - a pointer (<see cref="PointerType"/>)
 	/// - a managed reference (<see cref="ByReferenceType"/>)
-	/// - one of the special types (<see cref="SharedTypes.UnknownType"/>, <see cref="SharedTypes.Null"/>,
-	///      <see cref="SharedTypes.Dynamic"/>, <see cref="SharedTypes.UnboundTypeArgument"/>)
+	/// - one of the special types (<see cref="SpecialType.UnknownType"/>, <see cref="SpecialType.NullType"/>,
+	///      <see cref="SpecialType.Dynamic"/>, <see cref="SpecialType.UnboundTypeArgument"/>)
 	/// 
 	/// The <see cref="IType.Kind"/> property can be used to switch on the kind of a type.
 	/// </para>
 	/// <para>
-	/// IType uses the null object pattern: <see cref="SharedTypes.UnknownType"/> serves as the null object.
+	/// IType uses the null object pattern: <see cref="SpecialType.UnknownType"/> serves as the null object.
 	/// Methods or properties returning IType never return null unless documented otherwise.
 	/// </para>
 	/// <para>
-	/// Types should be compared for equality using the <see cref="IType.Equals(IType)"/> method.
+	/// Types should be compared for equality using the <see cref="IEquatable{IType}.Equals(IType)"/> method.
 	/// Identical types do not necessarily use the same object reference.
 	/// </para>
 	/// </remarks>
@@ -117,10 +117,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which types to return.
 		/// The filter is tested on the original type definitions (before parameterization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// <para>
 		/// If the nested type is generic, this method will return a parameterized type,
-		/// where the additional type parameters are set to <see cref="SharedType.UnboundTypeArgument"/>.
+		/// where the additional type parameters are set to <see cref="SpecialType.UnboundTypeArgument"/>.
 		/// </para>
 		/// <para>
 		/// Type parameters belonging to the outer class will have the value copied from the outer type
@@ -160,6 +161,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="typeArguments">The type arguments passed to the inner class</param>
 		/// <param name="filter">The filter used to select which types to return.
 		/// The filter is tested on the original type definitions (before parameterization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// Type parameters belonging to the outer class will have the value copied from the outer type
 		/// if it is a parameterized type. Otherwise, those existing type parameters will be self-parameterized,
@@ -173,11 +175,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which constructors to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// <para>The result does not include constructors in base classes or static constructors.</para>
 		/// <para>
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
-		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
+		/// and the appropriate <see cref="Implementation.SpecializedMethod"/> will be returned.
 		/// </para>
 		/// </remarks>
 		IEnumerable<IMethod> GetConstructors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers);
@@ -187,13 +190,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which methods to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// <para>
 		/// The result does not include constructors.
 		/// </para>
 		/// <para>
 		/// For methods on parameterized types, type substitution will be performed on the method signature,
-		/// and the appropriate <see cref="SpecializedMethod"/> will be returned.
+		/// and the appropriate <see cref="Implementation.SpecializedMethod"/> will be returned.
 		/// </para>
 		/// <para>
 		/// If the method being returned is generic, and this type is a parameterized type where the type
@@ -214,10 +218,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="typeArguments">The type arguments used for the method call.</param>
 		/// <param name="filter">The filter used to select which methods to return.
 		/// The filter is tested on the original method definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// <para>The result does not include constructors.</para>
 		/// <para>
-		/// Type substitution will be performed on the method signature, creating a <see cref="SpecializedMethod"/>
+		/// Type substitution will be performed on the method signature, creating a <see cref="Implementation.SpecializedMethod"/>
 		/// with the specified type arguments.
 		/// </para>
 		/// <para>
@@ -233,9 +238,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which properties to return.
 		/// The filter is tested on the original property definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// For properties on parameterized types, type substitution will be performed on the property signature,
-		/// and the appropriate <see cref="SpecializedProperty"/> will be returned.
+		/// and the appropriate <see cref="Implementation.SpecializedProperty"/> will be returned.
 		/// </remarks>
 		IEnumerable<IProperty> GetProperties(Predicate<IUnresolvedProperty> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
@@ -244,9 +250,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which constructors to return.
 		/// The filter is tested on the original field definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// For fields on parameterized types, type substitution will be performed on the field's return type,
-		/// and the appropriate <see cref="SpecializedField"/> will be returned.
+		/// and the appropriate <see cref="Implementation.SpecializedField"/> will be returned.
 		/// </remarks>
 		IEnumerable<IField> GetFields(Predicate<IUnresolvedField> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
@@ -255,9 +262,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which events to return.
 		/// The filter is tested on the original event definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// For fields on parameterized types, type substitution will be performed on the event's return type,
-		/// and the appropriate <see cref="SpecializedEvent"/> will be returned.
+		/// and the appropriate <see cref="Implementation.SpecializedEvent"/> will be returned.
 		/// </remarks>
 		IEnumerable<IEvent> GetEvents(Predicate<IUnresolvedEvent> filter = null, GetMemberOptions options = GetMemberOptions.None);
 		
@@ -266,6 +274,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="filter">The filter used to select which members to return.
 		/// The filter is tested on the original member definitions (before specialization).</param>
+		/// <param name="options">Specified additional options for the GetMembers() operation.</param>
 		/// <remarks>
 		/// <para>
 		/// The resulting list is the union of GetFields(), GetProperties(), GetMethods() and GetEvents().
@@ -274,7 +283,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </para>
 		/// <para>
 		/// For generic methods, the remarks about ambiguous signatures from the
-		/// <see cref="GetMethods(ITypeResolveContext, Predicate{IMethod})"/> method apply here as well.
+		/// <see cref="GetMethods(Predicate{IUnresolvedMethod}, GetMemberOptions)"/> method apply here as well.
 		/// </para>
 		/// </remarks>
 		IEnumerable<IMember> GetMembers(Predicate<IUnresolvedMember> filter = null, GetMemberOptions options = GetMemberOptions.None);

@@ -41,10 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			CompilationUnit cu;
 			using (Stream s = typeof(TypeSystemTests).Assembly.GetManifestResourceStream(typeof(TypeSystemTests), fileName)) {
-				cu = parser.Parse(s);
+				cu = parser.Parse(s, fileName);
 			}
 			
-			var parsedFile = cu.ToTypeSystem(fileName);
+			var parsedFile = cu.ToTypeSystem();
 			return new CSharpProjectContent()
 				.UpdateProjectContent(null, parsedFile)
 				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })

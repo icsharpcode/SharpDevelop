@@ -50,11 +50,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		INamespace GetNamespaceForExternAlias(string alias);
 		
-		/// <summary>
-		/// Gets all type defininitions in this compilation, including nested types.
-		/// </summary>
-		IEnumerable<ITypeDefinition> GetAllTypeDefinitions();
-		
 		IType FindType(KnownTypeCode typeCode);
 		
 		/// <summary>

@@ -30,8 +30,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Resolves the value of this constant.
 		/// </summary>
-		/// <param name="compilation">Compilation context where the constant value will be used.</param>
-		/// <returns>Resolve result representing the constant value.</returns>
+		/// <param name="context">Context where the constant value will be used.</param>
+		/// <returns>Resolve result representing the constant value.
+		/// This method never returns null; in case of errors, an ErrorResolveResult will be returned.</returns>
 		ResolveResult Resolve(ITypeResolveContext context);
 	}
 }

@@ -78,12 +78,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
-		public CSharpParsedFile Convert(AstNode node)
-		{
-			node.AcceptVisitor(this, null);
-			return parsedFile;
-		}
-		
 		public CSharpParsedFile ParsedFile {
 			get { return parsedFile; }
 		}

@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <returns>
 		/// Returns the resolved type.
-		/// In case of an error, returns <see cref="SharedTypes.UnknownType"/>.
+		/// In case of an error, returns <see cref="SpecialType.UnknownType"/>.
 		/// Never returns null.
 		/// </returns>
 		IType Resolve(ITypeResolveContext context);

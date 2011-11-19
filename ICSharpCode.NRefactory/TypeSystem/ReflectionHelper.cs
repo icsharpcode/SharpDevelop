@@ -68,7 +68,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Creates a reference to the specified type.
 		/// </summary>
 		/// <param name="type">The type to be converted.</param>
-		/// <param name="entity">The parent entity, used to fetch the ITypeParameter for generic types.</param>
 		/// <returns>Returns the type reference.</returns>
 		public static ITypeReference ToTypeReference(this Type type)
 		{
@@ -195,8 +194,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Parses a reflection name into a type reference.
 		/// </summary>
 		/// <param name="reflectionTypeName">The reflection name of the type.</param>
-		/// <param name="parentEntity">Parent entity, used to find the type parameters for open types.
-		/// If no entity is provided, type parameters are converted to <see cref="SharedTypes.UnknownType"/>.</param>
 		/// <exception cref="ReflectionNameParseException">The syntax of the reflection type name is invalid</exception>
 		/// <returns>A type reference that represents the reflection name.</returns>
 		public static ITypeReference ParseReflectionName(string reflectionTypeName)

@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// A type used for unbound type arguments in partially parameterized types.
 		/// </summary>
-		/// <see cref="IType.GetNestedTypes"/>
+		/// <see cref="IType.GetNestedTypes(Predicate{ITypeDefinition}, GetMemberOptions)"/>
 		public readonly static SpecialType UnboundTypeArgument = new SpecialType(TypeKind.UnboundTypeArgument, "", isReferenceType: null);
 		
 		readonly TypeKind kind;

@@ -151,14 +151,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected ResolveResult Resolve(string code)
 		{
-			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
+			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "code.cs");
 			
 			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
 			
 			SetUp();
 			
-			CSharpParsedFile parsedFile = cu.ToTypeSystem("code.cs");
+			CSharpParsedFile parsedFile = cu.ToTypeSystem();
 			project = project.UpdateProjectContent(null, parsedFile);
 			compilation = project.CreateCompilation();
 			
@@ -169,10 +169,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.WriteLine(new string('=', 70));
 			Debug.WriteLine("Starting new resolver for " + fnv.ResultNode);
 			
-			var navigator = new NodeListResolveVisitorNavigator(new[] { fnv.ResultNode });
-			ResolveVisitor rv = new ResolveVisitor(new CSharpResolver(compilation), parsedFile, navigator);
-			rv.Scan(cu);
-			ResolveResult rr = rv.GetResolveResult(fnv.ResultNode);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
+			ResolveResult rr = resolver.Resolve(fnv.ResultNode);
 			Assert.IsNotNull(rr, "ResolveResult is null - did something go wrong while navigating to the target node?");
 			Debug.WriteLine("ResolveResult is " + rr);
 			return rr;
@@ -212,14 +210,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected ResolveResult ResolveAtLocation(string code)
 		{
-			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
+			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "test.cs");
 			
 			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(1, dollars.Length, "Expected 1 dollar signs marking the location");
 			
 			SetUp();
 			
-			CSharpParsedFile parsedFile = cu.ToTypeSystem("test.cs");
+			CSharpParsedFile parsedFile = cu.ToTypeSystem();
 			project = project.UpdateProjectContent(null, parsedFile);
 			compilation = project.CreateCompilation();
 			

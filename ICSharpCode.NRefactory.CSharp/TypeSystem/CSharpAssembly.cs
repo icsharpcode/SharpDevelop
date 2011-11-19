@@ -194,6 +194,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 		}
 		
+		public IEnumerable<ITypeDefinition> TopLevelTypeDefinitions {
+			get {
+				return GetTypes().Values;
+			}
+		}
+		
 		sealed class NS : INamespace
 		{
 			readonly CSharpAssembly assembly;

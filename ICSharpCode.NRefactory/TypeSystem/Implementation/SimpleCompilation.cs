@@ -107,13 +107,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return null;
 		}
-		
-		public IEnumerable<ITypeDefinition> GetAllTypeDefinitions()
-		{
-			return TreeTraversal.PreOrder(this.RootNamespace, ns => ns.ChildNamespaces)
-				.SelectMany(ns => TreeTraversal.PreOrder(ns.Types, t => t.NestedTypes));
-		}
-		
 		public IType FindType(KnownTypeCode typeCode)
 		{
 			return knownTypeCache.FindType(typeCode);

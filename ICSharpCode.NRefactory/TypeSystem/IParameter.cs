@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets whether this parameter is optional.
-		/// The default value is given by the <see cref="ConstantValue"/> property.
+		/// The default value is given by the <see cref="IVariable.ConstantValue"/> property.
 		/// </summary>
 		bool IsOptional { get; }
 	}

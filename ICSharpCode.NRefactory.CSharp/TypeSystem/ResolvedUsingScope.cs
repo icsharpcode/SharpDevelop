@@ -35,7 +35,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	{
 		readonly CSharpTypeResolveContext parentContext;
 		readonly UsingScope usingScope;
-		readonly CSharpResolver resolver;
 		
 		internal readonly ConcurrentDictionary<string, ResolveResult> ResolveCache = new ConcurrentDictionary<string, ResolveResult>();
 		internal List<List<IMethod>> AllExtensionMethods;

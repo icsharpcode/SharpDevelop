@@ -58,37 +58,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(1, resolvedC.GetMethods(m => m.Name == "ToString").Count());
 		}
 		
-		[Test, Ignore]
-		public void ArrayType()
-		{
-			IType arrayType = compilation.FindType(typeof(string[]));
-			// Array inherits ToString() from System.Object
-			Assert.AreEqual("System.Object.ToString", arrayType.GetMethods(m => m.Name == "ToString").Single().FullName);
-			Assert.AreEqual("System.Array.GetLowerBound", arrayType.GetMethods(m => m.Name == "GetLowerBound").Single().FullName);
-			Assert.AreEqual("System.Array.Length", arrayType.GetProperties(p => p.Name == "Length").Single().FullName);
-			
-			// test indexer
-			IProperty indexer = arrayType.GetProperties(p => p.IsIndexer).Single();
-			Assert.AreEqual("System.Array.Items", indexer.FullName);
-			Assert.AreEqual("System.String", indexer.ReturnType.ReflectionName);
-			Assert.AreEqual(1, indexer.Parameters.Count);
-			Assert.AreEqual("System.Int32", indexer.Parameters[0].Type.ReflectionName);
-		}
-		
-		[Test, Ignore]
-		public void MultidimensionalArrayType()
-		{
-			IType arrayType = compilation.FindType(typeof(string[,][]));
-			
-			// test indexer
-			IProperty indexer = arrayType.GetProperties(p => p.IsIndexer).Single();
-			Assert.AreEqual("System.Array.Items", indexer.FullName);
-			Assert.AreEqual("System.String[]", indexer.ReturnType.ReflectionName);
-			Assert.AreEqual(2, indexer.Parameters.Count);
-			Assert.AreEqual("System.Int32", indexer.Parameters[0].Type.ReflectionName);
-			Assert.AreEqual("System.Int32", indexer.Parameters[1].Type.ReflectionName);
-		}
-		
 		[Test]
 		public void GetNestedTypesOfUnboundGenericClass()
 		{

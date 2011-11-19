@@ -96,10 +96,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		abstract class SearchScope : IResolveVisitorNavigator, IFindReferenceSearchScope
 		{
 			protected string searchTerm;
+			internal ICompilation compilation;
 			internal Accessibility accessibility;
 			internal ITypeDefinition topLevelTypeDefinition;
 			
 			FoundReferenceCallback callback;
+			
+			ICompilation IFindReferenceSearchScope.Compilation {
+				get { return compilation; }
+			}
 			
 			IResolveVisitorNavigator IFindReferenceSearchScope.GetNavigator(FoundReferenceCallback callback)
 			{
@@ -203,10 +208,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			if (scope.accessibility == Accessibility.None)
 				scope.accessibility = effectiveAccessibility;
+			scope.compilation = entity.Compilation;
 			scope.topLevelTypeDefinition = topLevelTypeDefinition;
 			if (additionalScope != null) {
 				if (additionalScope.accessibility == Accessibility.None)
 					additionalScope.accessibility = effectiveAccessibility;
+				additionalScope.compilation = entity.Compilation;
 				additionalScope.topLevelTypeDefinition = topLevelTypeDefinition;
 				return new[] { scope, additionalScope };
 			} else {
@@ -277,7 +284,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="context">The type resolve context to use for resolving the file.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
 		public void FindReferencesInFile(IFindReferenceSearchScope searchScope, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
-		                                  FoundReferenceCallback callback, CancellationToken cancellationToken)
+		                                 FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (searchScope == null)
 				throw new ArgumentNullException("searchScope");
@@ -290,8 +297,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="searchScopes">The search scopes for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
-		/// <param name="context">The type resolve context to use for resolving the file.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
+		/// <param name="cancellationToken">Cancellation token.</param>
 		public void FindReferencesInFile(IList<IFindReferenceSearchScope> searchScopes, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
 		                                 FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
@@ -301,24 +308,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("parsedFile");
 			if (compilationUnit == null)
 				throw new ArgumentNullException("compilationUnit");
-			throw new NotImplementedException();
-			/*
-			if (context == null)
-				throw new ArgumentNullException("context");
 			
 			if (searchScopes.Count == 0)
 				return;
-			using (var ctx = context.Synchronize()) {
-				IResolveVisitorNavigator navigator;
-				if (searchScopes.Count == 1)
-					navigator = searchScopes[0].GetNavigator(callback);
-				else
-					navigator = new CompositeResolveVisitorNavigator(searchScopes.Select(s => s.GetNavigator(callback)).ToArray());
-				navigator = new DetectSkippableNodesNavigator(navigator, compilationUnit);
-				CSharpResolver resolver = new CSharpResolver(ctx, this.CancellationToken);
-				ResolveVisitor v = new ResolveVisitor(resolver, parsedFile, navigator);
-				v.Scan(compilationUnit);
-			}*/
+			ICompilation compilation = searchScopes[0].Compilation;
+			IResolveVisitorNavigator navigator;
+			if (searchScopes.Count == 1) {
+				navigator = searchScopes[0].GetNavigator(callback);
+			} else {
+				IResolveVisitorNavigator[] navigators = new IResolveVisitorNavigator[searchScopes.Count];
+				for (int i = 0; i < navigators.Length; i++) {
+					if (searchScopes[i].Compilation != compilation)
+						throw new InvalidOperationException("All search scopes must belong to the same compilation");
+					navigators[i] = searchScopes[i].GetNavigator(callback);
+				}
+				navigator = new CompositeResolveVisitorNavigator(navigators);
+			}
+			
+			navigator = new DetectSkippableNodesNavigator(navigator, compilationUnit);
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
+			resolver.ApplyNavigator(navigator);
 		}
 		#endregion
 		

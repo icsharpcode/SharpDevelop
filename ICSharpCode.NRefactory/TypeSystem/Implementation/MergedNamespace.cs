@@ -38,6 +38,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <summary>
 		/// Creates a new merged root namespace.
 		/// </summary>
+		/// <param name="compilation">The main compilation.</param>
 		/// <param name="namespaces">The individual namespaces being merged.</param>
 		/// <param name="externAlias">The extern alias for this namespace.</param>
 		public MergedNamespace(ICompilation compilation, INamespace[] namespaces, string externAlias = null)

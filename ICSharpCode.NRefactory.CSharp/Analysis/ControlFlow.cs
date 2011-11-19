@@ -169,7 +169,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			throw new NotImplementedException();
 		}
 		
-		public IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ResolveVisitor resolveVisitor)
+		internal IList<ControlFlowNode> BuildControlFlowGraph(Statement statement, ResolveVisitor resolveVisitor)
 		{
 			if (statement == null)
 				throw new ArgumentNullException("statement");

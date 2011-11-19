@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Moreover, there is the <c>ResolveAll</c> mode - it works similar to resolving mode, but will not switch back to scanning mode.
 	/// The whole subtree will be resolved without notifying the navigator.
 	/// </remarks>
-	public sealed class ResolveVisitor : IAstVisitor<object, ResolveResult>
+	sealed class ResolveVisitor : IAstVisitor<object, ResolveResult>
 	{
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
@@ -359,7 +359,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult GetResolveResult(AstNode node)
 		{
-			if (IsUnresolvableNode(node))
+			if (CSharpAstResolver.IsUnresolvableNode(node))
 				return null;
 			
 			MergeUndecidedLambdas();
@@ -395,14 +395,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return result;
 			else
 				return null;
-		}
-		
-		/// <summary>
-		/// Gets whether the specified node is unresolvable.
-		/// </summary>
-		public static bool IsUnresolvableNode(AstNode node)
-		{
-			return (node.NodeType == NodeType.Whitespace || node is ArraySpecifier || node is NamedArgumentExpression);
 		}
 		
 		/// <summary>

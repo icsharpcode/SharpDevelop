@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets all base types.
 		/// </summary>
-		/// <remarks>This is the reflexive and transitive closure of <see cref="IType.GetBaseTypes"/>.
+		/// <remarks>This is the reflexive and transitive closure of <see cref="IType.DirectBaseTypes"/>.
 		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance
 		/// (and undesirable for covariance as the list could become very large).
 		/// 
@@ -181,6 +181,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static IEnumerable<IUnresolvedTypeDefinition> GetAllTypeDefinitions (this IParsedFile file)
 		{
 			return TreeTraversal.PreOrder(file.TopLevelTypeDefinitions, t => t.NestedTypes);
+		}
+		
+		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this IAssembly assembly)
+		{
+			return TreeTraversal.PreOrder(assembly.TopLevelTypeDefinitions, t => t.NestedTypes);
+		}
+		
+		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this ICompilation compilation)
+		{
+			return compilation.MainAssembly.GetAllTypeDefinitions()
+				.Concat(compilation.ReferencedAssemblies.SelectMany(a => a.GetAllTypeDefinitions()));
 		}
 		
 		/// <summary>

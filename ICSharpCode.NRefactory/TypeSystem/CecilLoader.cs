@@ -152,7 +152,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Loads a type from Cecil.
 		/// </summary>
 		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>
-		/// <param name="projectContent">The project content used as parent for the new type.</param>
 		/// <returns>ITypeDefinition representing the Cecil type.</returns>
 		[CLSCompliant(false)]
 		public IUnresolvedTypeDefinition LoadType(TypeDefinition typeDefinition)
@@ -234,8 +233,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// a type system type reference.</param>
 		/// <param name="typeAttributes">Attributes associated with the Cecil type reference.
 		/// This is used to support the 'dynamic' type.</param>
-		/// <param name="entity">The entity that owns this type reference.
-		/// Used for generic type references.</param>
 		[CLSCompliant(false)]
 		public ITypeReference ReadTypeReference(TypeReference type, ICustomAttributeProvider typeAttributes = null)
 		{
