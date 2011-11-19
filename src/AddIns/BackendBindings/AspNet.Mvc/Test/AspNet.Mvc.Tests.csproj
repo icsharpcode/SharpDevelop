@@ -86,6 +86,7 @@
     <Compile Include="Src\AddMvcViewToProjectViewModelTests.cs" />
     <Compile Include="Src\BooleanToVisibilityConverterTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpCreateViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpDetailsViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpCreateViewTemplateTests.cs" />
