@@ -62,6 +62,14 @@
       <DependentUpon>Create.tt</DependentUpon>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.cs">
+      <DependentUpon>Details.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.txt">
+      <DependentUpon>Details.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.cs">
       <DependentUpon>Empty.tt</DependentUpon>
     </Compile>
@@ -225,6 +233,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <LastGenOutput>Create.cs</LastGenOutput>
       <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Details.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

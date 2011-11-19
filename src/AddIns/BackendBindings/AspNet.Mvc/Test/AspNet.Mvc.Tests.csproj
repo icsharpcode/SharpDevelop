@@ -90,6 +90,7 @@
     <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpCreateViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpDetailsViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
