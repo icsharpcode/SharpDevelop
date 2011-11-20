@@ -51,6 +51,10 @@
       <DependentUpon>Create.tt</DependentUpon>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.cs">
+      <DependentUpon>Delete.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Details.cs">
       <DependentUpon>Details.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -68,6 +72,10 @@
     </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.cs">
       <DependentUpon>Create.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.cs">
+      <DependentUpon>Delete.tt</DependentUpon>
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.cs">
@@ -232,6 +240,12 @@
       <LastGenOutput>Create.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Delete.cs</LastGenOutput>
+    </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Details.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
@@ -261,6 +275,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <LastGenOutput>Create.cs</LastGenOutput>
       <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+    </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Delete.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
@@ -292,6 +312,9 @@
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Create.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Delete.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Details.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -307,6 +330,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Delete.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Details.tt">
