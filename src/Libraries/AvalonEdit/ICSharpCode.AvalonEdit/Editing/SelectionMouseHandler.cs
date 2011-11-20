@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -454,11 +454,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			pos += textView.ScrollOffset;
 			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
 			if (line != null) {
-				int visualColumn = line.GetVisualColumn(pos);
-				int wordStartVC = line.GetNextCaretPosition(visualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.WordStartOrSymbol);
+				int visualColumn = line.GetVisualColumn(pos, textArea.Selection.EnableVirtualSpace);
+				int wordStartVC = line.GetNextCaretPosition(visualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.WordStartOrSymbol, textArea.Selection.EnableVirtualSpace);
 				if (wordStartVC == -1)
 					wordStartVC = 0;
-				int wordEndVC = line.GetNextCaretPosition(wordStartVC, LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol);
+				int wordEndVC = line.GetNextCaretPosition(wordStartVC, LogicalDirection.Forward, CaretPositioningMode.WordBorderOrSymbol, textArea.Selection.EnableVirtualSpace);
 				if (wordEndVC == -1)
 					wordEndVC = line.VisualLength;
 				int relOffset = line.FirstDocumentLine.Offset;
@@ -507,7 +507,27 @@ namespace ICSharpCode.AvalonEdit.Editing
 				pos.Y = textView.DocumentHeight - ExtensionMethods.Epsilon;
 			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
 			if (line != null) {
-				visualColumn = line.GetVisualColumn(pos);
+				visualColumn = line.GetVisualColumn(pos, textArea.Selection.EnableVirtualSpace);
+				return line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
+			}
+			return -1;
+		}
+		
+		int GetOffsetFromMousePositionFirstTextLineOnly(Point positionRelativeToTextView, out int visualColumn)
+		{
+			visualColumn = 0;
+			TextView textView = textArea.TextView;
+			Point pos = positionRelativeToTextView;
+			if (pos.Y < 0)
+				pos.Y = 0;
+			if (pos.Y > textView.ActualHeight)
+				pos.Y = textView.ActualHeight;
+			pos += textView.ScrollOffset;
+			if (pos.Y > textView.DocumentHeight)
+				pos.Y = textView.DocumentHeight - ExtensionMethods.Epsilon;
+			VisualLine line = textView.GetVisualLineFromVisualTop(pos.Y);
+			if (line != null) {
+				visualColumn = line.GetVisualColumn(line.TextLines.First(), positionRelativeToTextView.X, textArea.Selection.EnableVirtualSpace);
 				return line.GetRelativeOffset(visualColumn) + line.FirstDocumentLine.Offset;
 			}
 			return -1;
@@ -548,7 +568,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		void SetCaretOffsetToMousePosition(MouseEventArgs e, ISegment allowedSegment)
 		{
 			int visualColumn;
-			int offset = GetOffsetFromMousePosition(e, out visualColumn);
+			int offset;
+			if (mode == SelectionMode.Rectangular)
+				offset = GetOffsetFromMousePositionFirstTextLineOnly(e.GetPosition(textArea.TextView), out visualColumn);
+			else
+				offset = GetOffsetFromMousePosition(e, out visualColumn);
 			if (allowedSegment != null) {
 				offset = offset.CoerceValue(allowedSegment.Offset, allowedSegment.EndOffset);
 			}

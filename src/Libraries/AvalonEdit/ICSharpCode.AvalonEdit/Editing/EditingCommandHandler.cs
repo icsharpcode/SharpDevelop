@@ -398,7 +398,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 						if (textArea.ReadOnlySectionProvider.CanInsert(currentLine.Offset)) {
 							textArea.Document.Insert(currentLine.Offset, text);
 						}
-					} else if (rectangular && textArea.Selection.IsEmpty) {
+					} else if (rectangular && textArea.Selection.IsEmpty && !(textArea.Selection is RectangleSelection)) {
 						if (!RectangleSelection.PerformRectangularPaste(textArea, textArea.Caret.Position, text, false))
 							textArea.ReplaceSelectionWithText(text);
 					} else {

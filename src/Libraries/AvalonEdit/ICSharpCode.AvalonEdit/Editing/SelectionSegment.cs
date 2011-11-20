@@ -14,8 +14,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		readonly int startOffset, endOffset;
 		readonly int startVC, endVC;
 		
-		public bool AllowVirtualSpace { get; private set; }
-		
+		/// <summary>
+		/// Creates a SelectionSegment from two offsets.
+		/// </summary>
 		public SelectionSegment(int startOffset, int endOffset)
 		{
 			this.startOffset = Math.Min(startOffset, endOffset);
@@ -23,9 +24,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.startVC = this.endVC = -1;
 		}
 		
-		public SelectionSegment(int startOffset, int startVC, int endOffset, int endVC, bool allowVirtualSpace)
+		/// <summary>
+		/// Creates a SelectionSegment from two offsets and visual columns.
+		/// </summary>
+		public SelectionSegment(int startOffset, int startVC, int endOffset, int endVC)
 		{
-			if (startOffset <= endOffset) {
+			if (startOffset < endOffset || (startOffset == endOffset && startVC <= endVC)) {
 				this.startOffset = startOffset;
 				this.startVC = startVC;
 				this.endOffset = endOffset;
@@ -36,25 +40,37 @@ namespace ICSharpCode.AvalonEdit.Editing
 				this.endOffset = startOffset;
 				this.endVC = startVC;
 			}
-			this.AllowVirtualSpace = allowVirtualSpace;
 		}
 		
+		/// <summary>
+		/// Gets the start offset.
+		/// </summary>
 		public int StartOffset {
 			get { return startOffset; }
 		}
 		
+		/// <summary>
+		/// Gets the end offset.
+		/// </summary>
 		public int EndOffset {
 			get { return endOffset; }
 		}
 		
+		/// <summary>
+		/// Gets the start visual column.
+		/// </summary>
 		public int StartVisualColumn {
 			get { return startVC; }
 		}
 		
+		/// <summary>
+		/// Gets the end visual column.
+		/// </summary>
 		public int EndVisualColumn {
 			get { return endVC; }
 		}
 		
+		/// <inheritdoc/>
 		int ISegment.Offset {
 			get { return startOffset; }
 		}
@@ -64,6 +80,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get { return endOffset - startOffset; }
 		}
 		
+		/// <inheritdoc/>
 		public override string ToString()
 		{
 			return string.Format("[SelectionSegment StartOffset={0}, EndOffset={1}, StartVC={2}, EndVC={3}]", startOffset, endOffset, startVC, endVC);

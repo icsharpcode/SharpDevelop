@@ -124,7 +124,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				
 				int segmentEndVC;
 				if (segmentEnd > vlEndOffset)
-					segmentEndVC = extendToFullWidthAtLineEnd ? int.MaxValue : vl.VisualLength;
+					segmentEndVC = extendToFullWidthAtLineEnd ? int.MaxValue : vl.VisualLengthWithEndOfLineMarker;
 				else
 					segmentEndVC = vl.ValidateVisualColumn(end, extendToFullWidthAtLineEnd);
 				
@@ -170,8 +170,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 								lastRect = new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
 							}
 						}
-						if (segmentEndVC >= vl.VisualLength) {
-							double left = (segmentStartVC > vl.VisualLength ? vl.GetTextLineVisualXPosition(lastTextLine, segmentStartVC) : line.Width) - scrollOffset.X;
+						if (segmentEndVC >= vl.VisualLengthWithEndOfLineMarker) {
+							double left = (segmentStartVC > vl.VisualLengthWithEndOfLineMarker ? vl.GetTextLineVisualXPosition(lastTextLine, segmentStartVC) : line.Width) - scrollOffset.X;
 							double right = ((segmentEndVC == int.MaxValue || line != lastTextLine) ? Math.Max(((IScrollInfo)textView).ExtentWidth, ((IScrollInfo)textView).ViewportWidth) : vl.GetTextLineVisualXPosition(lastTextLine, segmentEndVC)) - scrollOffset.X;
 							Rect extendSelection = new Rect(Math.Min(left, right), y, Math.Abs(right - left), line.Height);
 							if (!lastRect.IsEmpty) {

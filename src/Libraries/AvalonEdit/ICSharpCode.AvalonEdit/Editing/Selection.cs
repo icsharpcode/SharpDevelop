@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		internal string AddSpacesIfRequired(string newText, TextViewPosition pos)
 		{
-			if (textArea.Options.EnableVirtualSpace && !string.IsNullOrEmpty(newText)) {
+			if (EnableVirtualSpace && !string.IsNullOrEmpty(newText) && newText != "\r\n" && newText != "\n" && newText != "\r") {
 				var line = textArea.Document.GetLineByNumber(pos.Line);
 				string lineText = textArea.Document.GetText(line);
 				var vLine = textArea.TextView.GetOrConstructVisualLine(line);
@@ -110,6 +110,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public virtual bool IsEmpty {
 			get { return Length == 0; }
+		}
+		
+		public virtual bool EnableVirtualSpace {
+			get { return textArea.Options.EnableVirtualSpace; }
 		}
 		
 		/// <summary>

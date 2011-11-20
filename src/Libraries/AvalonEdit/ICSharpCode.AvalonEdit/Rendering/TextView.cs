@@ -263,7 +263,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#endregion
 		
 		#region Builtin ElementGenerators
-		NewLineElementGenerator newLineElementGenerator;
+//		NewLineElementGenerator newLineElementGenerator;
 		SingleCharacterElementGenerator singleCharacterElementGenerator;
 		LinkElementGenerator linkElementGenerator;
 		MailLinkElementGenerator mailLinkElementGenerator;
@@ -272,7 +272,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			TextEditorOptions options = this.Options;
 			
-			AddRemoveDefaultElementGeneratorOnDemand(ref newLineElementGenerator, options.ShowEndOfLine);
+//			AddRemoveDefaultElementGeneratorOnDemand(ref newLineElementGenerator, options.ShowEndOfLine);
 			AddRemoveDefaultElementGeneratorOnDemand(ref singleCharacterElementGenerator, options.ShowBoxForControlCharacters || options.ShowSpaces || options.ShowTabs);
 			AddRemoveDefaultElementGeneratorOnDemand(ref linkElementGenerator, options.EnableHyperlinks);
 			AddRemoveDefaultElementGeneratorOnDemand(ref mailLinkElementGenerator, options.EnableEmailHyperlinks);
@@ -1013,7 +1013,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			var textLines = new List<TextLine>();
 			paragraphProperties.indent = 0;
 			paragraphProperties.firstLineInParagraph = true;
-			while (textOffset <= visualLine.VisualLength) {
+			while (textOffset <= visualLine.VisualLengthWithEndOfLineMarker) {
 				TextLine textLine = formatter.FormatLine(
 					textSource,
 					textOffset,
@@ -1025,7 +1025,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				textOffset += textLine.Length;
 				
 				// exit loop so that we don't do the indentation calculation if there's only a single line
-				if (textOffset >= visualLine.VisualLength)
+				if (textOffset >= visualLine.VisualLengthWithEndOfLineMarker)
 					break;
 				
 				if (paragraphProperties.firstLineInParagraph) {

@@ -378,6 +378,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <summary>
 		/// Gets/Sets the selection in this text area.
 		/// </summary>
+		
 		public Selection Selection {
 			get { return selection; }
 			set {
@@ -390,7 +391,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					if (textView != null) {
 						ISegment oldSegment = selection.SurroundingSegment;
 						ISegment newSegment = value.SurroundingSegment;
-						if (!Options.EnableVirtualSpace && (selection is SimpleSelection && value is SimpleSelection && oldSegment != null && newSegment != null)) {
+						if (!Selection.EnableVirtualSpace && (selection is SimpleSelection && value is SimpleSelection && oldSegment != null && newSegment != null)) {
 							// perf optimization:
 							// When a simple selection changes, don't redraw the whole selection, but only the changed parts.
 							int oldSegmentOffset = oldSegment.Offset;
@@ -870,19 +871,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		internal void RemoveSelectedText()
-		{
-			if (this.Document == null)
-				throw ThrowUtil.NoDocumentAssigned();
-			selection.ReplaceSelectionWithText(string.Empty);
-			#if DEBUG
-			if (!selection.IsEmpty) {
-				foreach (ISegment s in selection.Segments) {
-					Debug.Assert(this.ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
-				}
-			}
-			#endif
+internal void RemoveSelectedText()
+{
+	if (this.Document == null)
+		throw ThrowUtil.NoDocumentAssigned();
+	selection.ReplaceSelectionWithText(string.Empty);
+	#if DEBUG
+	if (!selection.IsEmpty) {
+		foreach (ISegment s in selection.Segments) {
+			Debug.Assert(this.ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
 		}
+	}
+	#endif
+}
 		
 		internal void ReplaceSelectionWithText(string newText)
 		{

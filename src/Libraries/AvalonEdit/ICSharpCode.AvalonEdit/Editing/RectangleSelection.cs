@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Media.TextFormatting;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -42,8 +43,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			InitDocument();
 			this.startLine = start.Line;
 			this.endLine = end.Line;
-			this.startXPos = GetXPos(start);
-			this.endXPos = GetXPos(end);
+			this.startXPos = GetXPos(textArea, start);
+			this.endXPos = GetXPos(textArea, end);
 			this.startOffset = document.GetOffset(start);
 			this.endOffset = document.GetOffset(end);
 			CalculateSegments();
@@ -56,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.startLine = startLine;
 			this.endLine = end.Line;
 			this.startXPos = startXPos;
-			this.endXPos = GetXPos(end);
+			this.endXPos = GetXPos(textArea, end);
 			this.startOffset = startOffset;
 			this.endOffset = document.GetOffset(end);
 			CalculateSegments();
@@ -68,19 +69,26 @@ namespace ICSharpCode.AvalonEdit.Editing
 			InitDocument();
 			this.startLine = start.Line;
 			this.endLine = endLine;
-			this.startXPos = GetXPos(start);
+			this.startXPos = GetXPos(textArea, start);
 			this.endXPos = endXPos;
 			this.startOffset = document.GetOffset(start);
 			this.endOffset = endOffset;
 			CalculateSegments();
 		}
 		
-		double GetXPos(TextViewPosition pos)
+		static double GetXPos(TextArea textArea, TextViewPosition pos)
 		{
-			DocumentLine documentLine = document.GetLineByNumber(pos.Line);
+			DocumentLine documentLine = textArea.Document.GetLineByNumber(pos.Line);
 			VisualLine visualLine = textArea.TextView.GetOrConstructVisualLine(documentLine);
-			TextLine textLine = visualLine.GetTextLine(pos.VisualColumn);
-			return visualLine.GetTextLineVisualXPosition(textLine, pos.VisualColumn);
+			int vc = visualLine.ValidateVisualColumn(pos, true);
+			TextLine textLine = visualLine.GetTextLine(vc);
+			return visualLine.GetTextLineVisualXPosition(textLine, vc);
+		}
+		
+		int GetVisualColumnFromXPos(int line, double xPos)
+		{
+			var vl = textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(line));
+			return vl.GetVisualColumn(new Point(xPos, 0), true);
 		}
 		
 		/// <inheritdoc/>
@@ -109,6 +117,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <inheritdoc/>
+		public override bool EnableVirtualSpace {
+			get { return true; }
+		}
+		
+		/// <inheritdoc/>
 		public override ISegment SurroundingSegment {
 			get {
 				return new SimpleSegment(Math.Min(startOffset, endOffset), Math.Abs(endOffset - startOffset));
@@ -119,6 +132,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public override IEnumerable<SelectionSegment> Segments {
 			get { return segments; }
 		}
+		
 		
 		void CalculateSegments()
 		{
@@ -131,10 +145,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 				int baseOffset = vl.FirstDocumentLine.Offset;
 				int startOffset = baseOffset + vl.GetRelativeOffset(startVC);
 				int endOffset = baseOffset + vl.GetRelativeOffset(endVC);
-				segments.Add(new SelectionSegment(startOffset, startVC, endOffset, endVC, true));
+				segments.Add(new SelectionSegment(startOffset, startVC, endOffset, endVC));
 				
 				nextLine = vl.LastDocumentLine.NextLine;
-			} while (nextLine.LineNumber <= Math.Max(startLine, endLine));
+			} while (nextLine != null && nextLine.LineNumber <= Math.Max(startLine, endLine));
 		}
 		
 		/// <inheritdoc/>
@@ -156,97 +170,81 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override Selection SetEndpoint(TextViewPosition endPosition)
 		{
-			return new RectangleSelection(textArea, startLine, startXPos, startOffset, endPosition);
+			var r = new RectangleSelection(textArea, startLine, startXPos, startOffset, endPosition);
+			return r;
 		}
 		
 		/// <inheritdoc/>
 		public override Selection UpdateOnDocumentChange(DocumentChangeEventArgs e)
 		{
-			throw new NotImplementedException();
-//			return new RectangleSelection(textArea,
-//			                              e.GetNewOffset(StartOffset, AnchorMovementType.AfterInsertion),
-//			                              e.GetNewOffset(EndOffset, AnchorMovementType.BeforeInsertion));
+			TextLocation newStartLocation = textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion));
+			TextLocation newEndLocation = textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.BeforeInsertion));
+			
+			return new RectangleSelection(textArea,
+			                              new TextViewPosition(newStartLocation, GetVisualColumnFromXPos(newStartLocation.Line, startXPos)),
+			                              new TextViewPosition(newEndLocation, GetVisualColumnFromXPos(newEndLocation.Line, endXPos)));
 		}
 		
 		/// <inheritdoc/>
 		public override void ReplaceSelectionWithText(string newText)
 		{
-			throw new NotImplementedException(); /*
 			if (newText == null)
 				throw new ArgumentNullException("newText");
 			using (textArea.Document.RunUpdate()) {
-				TextLocation start = document.GetLocation(StartOffset);
-				TextLocation end = document.GetLocation(EndOffset);
-				int editColumn = Math.Min(start.Column, end.Column);
+				TextViewPosition start = new TextViewPosition(document.GetLocation(startOffset), GetVisualColumnFromXPos(startLine, startXPos));
+				TextViewPosition end = new TextViewPosition(document.GetLocation(endOffset), GetVisualColumnFromXPos(endLine, endXPos));
+				int insertionLength;
+				int totalInsertionLength = 0;
+				int firstInsertionLength = 0;
+				int editOffset = Math.Min(startOffset, endOffset);
 				if (NewLineFinder.NextNewLine(newText, 0) == SimpleSegment.Invalid) {
 					// insert same text into every line
-					foreach (ISegment lineSegment in this.Segments.Reverse()) {
-						ReplaceSingleLineText(textArea, lineSegment, newText);
+					foreach (SelectionSegment lineSegment in this.Segments.Reverse()) {
+						ReplaceSingleLineText(textArea, lineSegment, newText, out insertionLength);
+						totalInsertionLength += insertionLength;
+						firstInsertionLength = insertionLength;
 					}
 					
-					TextLocation newStart = new TextLocation(start.Line, editColumn + newText.Length);
-					TextLocation newEnd = new TextLocation(end.Line, editColumn + newText.Length);
-					textArea.Caret.Location = newEnd;
-					textArea.Selection = new RectangleSelection(document, document.GetOffset(newStart), document.GetOffset(newEnd));
+					int newEndOffset = editOffset + totalInsertionLength;
+					TextViewPosition pos = new TextViewPosition(document.GetLocation(editOffset + firstInsertionLength));
+					
+					textArea.Selection = new RectangleSelection(textArea, pos, Math.Max(startLine, endLine), GetXPos(textArea, pos), newEndOffset);
+					textArea.Caret.Position = textArea.TextView.GetPosition(new Point(GetXPos(textArea, pos), textArea.TextView.GetVisualTopByDocumentLine(Math.Max(startLine, endLine)))).GetValueOrDefault();
 				} else {
-					// convert all segment start/ends to anchors
-					var segments = this.Segments.Select(s => new AnchorSegment(this.document, s)).ToList();
-					SimpleSegment ds = NewLineFinder.NextNewLine(newText, 0);
-					// we'll check whether all lines have the same length. If so, we can continue using a rectangular selection.
-					int commonLength = -1;
-					// now insert lines into rectangular selection
-					int lastDelimiterEnd = 0;
-					bool isAtEnd = false;
-					int i;
-					for (i = 0; i < segments.Count; i++) {
-						string lineText;
-						if (ds == SimpleSegment.Invalid || (i == segments.Count - 1)) {
-							lineText = newText.Substring(lastDelimiterEnd);
-							isAtEnd = true;
-							// if we have more lines to insert than this selection is long, we cannot continue using a rectangular selection
-							if (ds != SimpleSegment.Invalid)
-								commonLength = -1;
-						} else {
-							lineText = newText.Substring(lastDelimiterEnd, ds.Offset - lastDelimiterEnd);
-						}
-						if (i == 0) {
-							commonLength = lineText.Length;
-						} else if (commonLength != lineText.Length) {
-							commonLength = -1;
-						}
-						ReplaceSingleLineText(textArea, segments[i], lineText);
-						if (isAtEnd)
-							break;
-						lastDelimiterEnd = ds.EndOffset;
-						ds = NewLineFinder.NextNewLine(newText, lastDelimiterEnd);
+					string[] lines = newText.Split(new[] { "\r\n", "\r", "\n" }, segments.Count, StringSplitOptions.None);
+					int line = Math.Min(startLine, endLine);
+					for (int i = lines.Length - 1; i >= 0; i--) {
+						ReplaceSingleLineText(textArea, segments[i], lines[i], out insertionLength);
+						firstInsertionLength = insertionLength;
 					}
-					if (commonLength >= 0) {
-						TextLocation newStart = new TextLocation(start.Line, editColumn + commonLength);
-						TextLocation newEnd = new TextLocation(start.Line + i, editColumn + commonLength);
-						textArea.Selection = new RectangleSelection(document, document.GetOffset(newStart), document.GetOffset(newEnd));
-					} else {
-						textArea.Selection = Selection.Empty;
-					}
+					TextViewPosition pos = new TextViewPosition(document.GetLocation(editOffset + firstInsertionLength));
+					textArea.ClearSelection();
+					textArea.Caret.Position = textArea.TextView.GetPosition(new Point(GetXPos(textArea, pos), textArea.TextView.GetVisualTopByDocumentLine(Math.Max(startLine, endLine)))).GetValueOrDefault();
 				}
-			}*/
+			}
 		}
 		
-		static void ReplaceSingleLineText(TextArea textArea, ISegment lineSegment, string newText)
+		void ReplaceSingleLineText(TextArea textArea, SelectionSegment lineSegment, string newText, out int insertionLength)
 		{
 			if (lineSegment.Length == 0) {
-				if (newText.Length > 0 && textArea.ReadOnlySectionProvider.CanInsert(lineSegment.Offset)) {
-					textArea.Document.Insert(lineSegment.Offset, newText);
+				if (newText.Length > 0 && textArea.ReadOnlySectionProvider.CanInsert(lineSegment.StartOffset)) {
+					newText = AddSpacesIfRequired(newText, new TextViewPosition(document.GetLocation(lineSegment.StartOffset), lineSegment.StartVisualColumn));
+					textArea.Document.Insert(lineSegment.StartOffset, newText);
 				}
 			} else {
 				ISegment[] segmentsToDelete = textArea.GetDeletableSegments(lineSegment);
 				for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
 					if (i == segmentsToDelete.Length - 1) {
+						if (segmentsToDelete[i].Offset == SurroundingSegment.Offset && segmentsToDelete[i].Length == SurroundingSegment.Length) {
+							newText = AddSpacesIfRequired(newText, new TextViewPosition(document.GetLocation(lineSegment.StartOffset), lineSegment.StartVisualColumn));
+						}
 						textArea.Document.Replace(segmentsToDelete[i], newText);
 					} else {
 						textArea.Document.Remove(segmentsToDelete[i]);
 					}
 				}
 			}
+			insertionLength = newText.Length;
 		}
 		
 		/// <summary>
@@ -258,12 +256,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 				throw new ArgumentNullException("textArea");
 			if (text == null)
 				throw new ArgumentNullException("text");
-			int newLineCount = text.Count(c => c == '\n');
+			int newLineCount = text.Count(c => c == '\n'); // TODO might not work in all cases, but single \r line endings are really rare today.
 			TextLocation endLocation = new TextLocation(startPosition.Line + newLineCount, startPosition.Column);
 			if (endLocation.Line <= textArea.Document.LineCount) {
 				int endOffset = textArea.Document.GetOffset(endLocation);
-				if (textArea.Document.GetLocation(endOffset) == endLocation) {
-					RectangleSelection rsel = new RectangleSelection(textArea, startPosition, new TextViewPosition(endLocation));
+				if (textArea.Selection.EnableVirtualSpace || textArea.Document.GetLocation(endOffset) == endLocation) {
+					RectangleSelection rsel = new RectangleSelection(textArea, startPosition, endLocation.Line, GetXPos(textArea, startPosition), endOffset);
 					rsel.ReplaceSelectionWithText(text);
 					if (selectInsertedText && textArea.Selection is RectangleSelection) {
 						RectangleSelection sel = (RectangleSelection)textArea.Selection;
@@ -296,7 +294,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			// It's possible that ToString() gets called on old (invalid) selections, e.g. for "change from... to..." debug message
 			// make sure we don't crash even when the desired locations don't exist anymore.
-			return "[RectangleSelection " + startOffset + " to " + endOffset + "]";
+			return string.Format("[RectangleSelection {0} {1} {2} to {3} {4} {5}]", startLine, startOffset, startXPos, endLine, endOffset, endXPos);
 		}
 	}
 }

@@ -262,7 +262,6 @@
     </Compile>
     <Compile Include="Rendering\LinkElementGenerator.cs" />
     <Compile Include="Rendering\MouseHoverLogic.cs" />
-    <Compile Include="Rendering\NewLineElementGenerator.cs" />
     <Compile Include="Rendering\SimpleTextSource.cs">
       <DependentUpon>FormattedTextElement.cs</DependentUpon>
     </Compile>
@@ -340,7 +339,9 @@
     </Compile>
     <Compile Include="TextViewPosition.cs" />
     <Compile Include="Utils\Boxes.cs" />
-    <Compile Include="Utils\BusyManager.cs" />
+    <Compile Include="Utils\BusyManager.cs">
+      <DependentUpon>ObserveAddRemoveCollection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\CharRope.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />

@@ -281,14 +281,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			int caretOffset = textView.Document.GetOffset(position);
 			int firstDocumentLineOffset = visualLine.FirstDocumentLine.Offset;
-			position.VisualColumn = visualLine.ValidateVisualColumn(position, textArea.Options.EnableVirtualSpace);
+			position.VisualColumn = visualLine.ValidateVisualColumn(position, textArea.Selection.EnableVirtualSpace);
 			
 			// search possible caret positions
-			int newVisualColumnForwards = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal);
+			int newVisualColumnForwards = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal, textArea.Selection.EnableVirtualSpace);
 			// If position.VisualColumn was valid, we're done with validation.
 			if (newVisualColumnForwards != position.VisualColumn) {
 				// also search backwards so that we can pick the better match
-				int newVisualColumnBackwards = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal);
+				int newVisualColumnBackwards = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal, textArea.Selection.EnableVirtualSpace);
 				
 				if (newVisualColumnForwards < 0 && newVisualColumnBackwards < 0)
 					throw ThrowUtil.NoValidCaretPosition();
