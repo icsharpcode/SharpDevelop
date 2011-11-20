@@ -62,6 +62,10 @@
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.cs">
       <DependentUpon>Empty.tt</DependentUpon>
     </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.cs">
+      <DependentUpon>List.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.cs">
       <DependentUpon>Create.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -80,6 +84,10 @@
     </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.cs">
       <DependentUpon>Empty.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\List.cs">
+      <DependentUpon>List.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Src\AddMvcControllerToProjectCommand.cs" />
     <Compile Include="Src\AddMvcControllerToProjectView.xaml.cs">
@@ -242,6 +250,12 @@
       <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
       <LastGenOutput>Empty.cs</LastGenOutput>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>List.cs</LastGenOutput>
+    </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -266,6 +280,12 @@
       <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
       <LastGenOutput>Empty.cs</LastGenOutput>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\List.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>List.cs</LastGenOutput>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -283,6 +303,9 @@
     </None>
     <EmbeddedResource Include="Resources\CSharpRazor.xshd" />
     <EmbeddedResource Include="Resources\VisualBasicRazor.xshd" />
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\List.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -293,6 +316,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\List.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
