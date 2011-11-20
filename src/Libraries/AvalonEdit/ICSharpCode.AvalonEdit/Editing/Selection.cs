@@ -35,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (textArea == null)
 				throw new ArgumentNullException("textArea");
-			if (textArea.Document.GetOffset(start) == textArea.Document.GetOffset(end) && start.VisualColumn == end.VisualColumn)
+			if (textArea.Document.GetOffset(start.Location) == textArea.Document.GetOffset(end.Location) && start.VisualColumn == end.VisualColumn)
 				return textArea.emptySelection;
 			else
 				return new SimpleSelection(textArea, start, end);
@@ -112,6 +112,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get { return Length == 0; }
 		}
 		
+		/// <summary>
+		/// Gets whether virtual space is enabled for this selection.
+		/// </summary>
 		public virtual bool EnableVirtualSpace {
 			get { return textArea.Options.EnableVirtualSpace; }
 		}
@@ -128,8 +131,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public abstract Selection SetEndpoint(TextViewPosition endPosition);
 		
 		/// <summary>
-		/// If this selection is empty, starts a new selection from <paramref name="startOffset"/> to
-		/// <paramref name="newEndOffset"/>, otherwise, changes the endpoint of this selection.
+		/// If this selection is empty, starts a new selection from <paramref name="startPosition"/> to
+		/// <paramref name="endPosition"/>, otherwise, changes the endpoint of this selection.
 		/// </summary>
 		public abstract Selection StartSelectionOrSetEndpoint(TextViewPosition startPosition, TextViewPosition endPosition);
 		

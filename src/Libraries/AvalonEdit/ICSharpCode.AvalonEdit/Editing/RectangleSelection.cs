@@ -45,8 +45,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.endLine = end.Line;
 			this.startXPos = GetXPos(textArea, start);
 			this.endXPos = GetXPos(textArea, end);
-			this.startOffset = document.GetOffset(start);
-			this.endOffset = document.GetOffset(end);
+			this.startOffset = document.GetOffset(start.Location);
+			this.endOffset = document.GetOffset(end.Location);
 			CalculateSegments();
 		}
 		
@@ -59,7 +59,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.startXPos = startXPos;
 			this.endXPos = GetXPos(textArea, end);
 			this.startOffset = startOffset;
-			this.endOffset = document.GetOffset(end);
+			this.endOffset = document.GetOffset(end.Location);
 			CalculateSegments();
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.endLine = endLine;
 			this.startXPos = GetXPos(textArea, start);
 			this.endXPos = endXPos;
-			this.startOffset = document.GetOffset(start);
+			this.startOffset = document.GetOffset(start.Location);
 			this.endOffset = endOffset;
 			CalculateSegments();
 		}

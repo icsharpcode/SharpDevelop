@@ -65,6 +65,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int VisualLength { get; private set; }
 		
+		/// <summary>
+		/// Length in visual line coordinates including the end of line marker, if TextEditorOptions.ShowEndOfLine is enabled.
+		/// </summary>
 		public int VisualLengthWithEndOfLineMarker {
 			get {
 				int length = VisualLength;
@@ -346,11 +349,19 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return GetVisualColumn(point, textView.Options.EnableVirtualSpace);
 		}
 		
+		/// <summary>
+		/// Gets the visual column from a document position (relative to top left of the document).
+		/// If the user clicks between two visual columns, rounds to the nearest column.
+		/// </summary>
 		public int GetVisualColumn(Point point, bool allowVirtualSpace)
 		{
 			return GetVisualColumn(GetTextLineByVisualYPosition(point.Y), point.X, allowVirtualSpace);
 		}
 		
+		/// <summary>
+		/// Gets the visual column from a document position (relative to top left of the document).
+		/// If the user clicks between two visual columns, rounds to the nearest column.
+		/// </summary>
 		public int GetVisualColumn(TextLine textLine, double xPos, bool allowVirtualSpace)
 		{
 			if (xPos > textLine.WidthIncludingTrailingWhitespace) {
@@ -363,11 +374,17 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return ch.FirstCharacterIndex + ch.TrailingLength;
 		}
 		
+		/// <summary>
+		/// Validates the visual column and returns the correct one.
+		/// </summary>
 		public int ValidateVisualColumn(TextViewPosition position, bool allowVirtualSpace)
 		{
-			return ValidateVisualColumn(Document.GetOffset(position), position.VisualColumn, allowVirtualSpace);
+			return ValidateVisualColumn(Document.GetOffset(position.Location), position.VisualColumn, allowVirtualSpace);
 		}
 		
+		/// <summary>
+		/// Validates the visual column and returns the correct one.
+		/// </summary>
 		public int ValidateVisualColumn(int offset, int visualColumn, bool allowVirtualSpace)
 		{
 			int firstDocumentLineOffset = this.FirstDocumentLine.Offset;
@@ -396,6 +413,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return GetVisualColumnFloor(point, textView.Options.EnableVirtualSpace);
 		}
 		
+		/// <summary>
+		/// Gets the visual column from a document position (relative to top left of the document).
+		/// If the user clicks between two visual columns, returns the first of those columns.
+		/// </summary>
 		public int GetVisualColumnFloor(Point point, bool allowVirtualSpace)
 		{
 			TextLine textLine = GetTextLineByVisualYPosition(point.Y);

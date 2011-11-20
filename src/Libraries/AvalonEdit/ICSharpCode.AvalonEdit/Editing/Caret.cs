@@ -102,7 +102,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public TextLocation Location {
 			get {
-				return position;
+				return position.Location;
 			}
 			set {
 				this.Position = new TextViewPosition(value);
@@ -174,7 +174,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (document == null) {
 					return 0;
 				} else {
-					return document.GetOffset(position);
+					return document.GetOffset(position.Location);
 				}
 			}
 			set {
@@ -279,7 +279,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			// mark column as validated
 			visualColumnValid = true;
 			
-			int caretOffset = textView.Document.GetOffset(position);
+			int caretOffset = textView.Document.GetOffset(position.Location);
 			int firstDocumentLineOffset = visualLine.FirstDocumentLine.Offset;
 			position.VisualColumn = visualLine.ValidateVisualColumn(position, textArea.Selection.EnableVirtualSpace);
 			
