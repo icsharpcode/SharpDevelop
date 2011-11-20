@@ -87,10 +87,12 @@
     <Compile Include="Src\BooleanToVisibilityConverterTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpCreateViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpDetailsViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\AspxCSharpEditViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpCreateViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpDetailsViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\RazorCSharpEditViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />

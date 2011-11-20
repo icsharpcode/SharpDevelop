@@ -1,0 +1,70 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<# if (MvcHost.IsPartialView) { #>
+<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<#= GetViewPageType() #>" %>
+
+<# } else if (MvcHost.IsContentPage) { #>
+<%@ Page Language="C#" MasterPageFile="<#= MvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="Title" runat="server">
+<#= MvcHost.ViewName #>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="<#= MvcHost.PrimaryContentPlaceHolderID #>" runat="server">
+<#
+		PushIndent("\t");
+	} else {
+#>
+<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><#= MvcHost.ViewName #></title>
+	</head>
+	<body>
+<# 
+		PushIndent("\t\t");
+	} 
+#>
+<% using (Html.BeginForm()) { %>
+	<%: Html.ValidationSummary(true) %>
+	<fieldset>
+		<legend><#= MvcHost.ViewDataType.Name #></legend>
+		
+		<p>
+			<input type="submit" value="Save"/>
+		</p>
+	</fieldset>
+<% } %>
+<div>
+	<%: Html.ActionLink("Back", "Index") %>
+</div>
+<#
+	if (MvcHost.IsPartialView) {
+		// Do nothing.
+	} else if (MvcHost.IsContentPage) {
+		PopIndent();
+#>
+</asp:Content>
+<#
+	} else { 
+		PopIndent();
+#>
+	</body>
+</html>
+<# } #>
+<#+
+	MvcTextTemplateHost MvcHost {
+		get { return (MvcTextTemplateHost)Host; }
+	}
+	
+	public string GetViewPageType()
+	{
+		string viewDataTypeName = MvcHost.ViewDataTypeName;
+		if (!String.IsNullOrEmpty(viewDataTypeName)) {
+			return String.Format("<{0}>", viewDataTypeName);
+		}
+		return String.Empty;
+	}
+#>

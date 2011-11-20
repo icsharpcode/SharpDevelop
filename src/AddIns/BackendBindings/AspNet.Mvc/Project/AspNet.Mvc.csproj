@@ -55,6 +55,10 @@
       <DependentUpon>Details.tt</DependentUpon>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.cs">
+      <DependentUpon>Edit.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.cs">
       <DependentUpon>Empty.tt</DependentUpon>
     </Compile>
@@ -68,6 +72,10 @@
     </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.txt">
       <DependentUpon>Details.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.cs">
+      <DependentUpon>Edit.tt</DependentUpon>
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.cs">
@@ -222,6 +230,12 @@
       <LastGenOutput>Details.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.AspxCSharp</CustomToolNamespace>
+      <LastGenOutput>Edit.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Generator>TextTemplatingFilePreprocessor</Generator>
@@ -240,6 +254,12 @@
       <LastGenOutput>Details.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>ICSharpCode.AspNet.Mvc.CSHtml</CustomToolNamespace>
+      <LastGenOutput>Edit.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Generator>TextTemplatingFilePreprocessor</Generator>
@@ -255,6 +275,9 @@
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Details.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Edit.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -264,6 +287,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Details.tt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Edit.tt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt">
