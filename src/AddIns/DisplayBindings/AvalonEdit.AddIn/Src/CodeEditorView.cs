@@ -236,7 +236,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var pos = this.TextArea.TextView.GetPositionFloor(e.GetPosition(this.TextArea.TextView) + this.TextArea.TextView.ScrollOffset);
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
 			}
 			
 			if (args.InDocument) {
@@ -484,7 +484,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (position == null)
 					return;
 				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
-				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
+				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value.Location));
 				e.Handled = true;
 			}
 		}

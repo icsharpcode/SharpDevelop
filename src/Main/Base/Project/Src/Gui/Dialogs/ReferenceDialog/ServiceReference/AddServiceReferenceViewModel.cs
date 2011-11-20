@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public AddServiceReferenceViewModel(IProject project)
 		{
-			project = project;
+			this.project = project;
 			discoverButtonContend = "Disvover";
 			HeadLine = header1 + header2;
 			

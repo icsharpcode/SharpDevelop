@@ -81,7 +81,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			var pos = adapter.TextEditor.GetPositionFromPoint(e.GetPosition(this));
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
 			}
 			
 			if (!args.Handled) {
