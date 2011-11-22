@@ -25,13 +25,26 @@ namespace Debugger.AddIn.Options
 		public DebuggingOptionsPanel()
 		{
 			InitializeComponent();
+			ChbStepOverAllProperties_CheckedChanged(null, null);
 		}
 		
+		/// <summary>
+		/// If stepOverAllProperties is true when the panel is opened then the CheckChanged event is 
+		/// fired during the InitializeComponent method call before the remaining check boxes are created. 
+		/// So check if the remaining check boxes have been created.
+		/// </summary>
 		void ChbStepOverAllProperties_CheckedChanged(object sender, RoutedEventArgs e)
 		{
-			bool stepOverAllProperties = chbStepOverAllProperties.IsChecked.GetValueOrDefault(false);
-			chbStepOverSingleLineProperties.IsEnabled = !stepOverAllProperties;
-			chbStepOverFieldAccessProperties.IsEnabled = !stepOverAllProperties;
+			if (IsPanelInitialized()) {
+				bool stepOverAllProperties = chbStepOverAllProperties.IsChecked.GetValueOrDefault(false);
+				chbStepOverSingleLineProperties.IsEnabled = !stepOverAllProperties;
+				chbStepOverFieldAccessProperties.IsEnabled = !stepOverAllProperties;
+			}
+		}
+		
+		bool IsPanelInitialized()
+		{
+			return chbStepOverSingleLineProperties != null;
 		}
 		
 		public override bool SaveOptions()
