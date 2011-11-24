@@ -130,6 +130,21 @@ class Test
 		}
 		
 		[Test()]
+		public void GetSetKeywordTestAfterModifier ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"class Test
+{
+	public int MyProperty {
+		internal $g$
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("get"), "keyword 'get' not found.");
+				Assert.IsNotNull (provider.Find ("set"), "keyword 'set' not found.");
+			});
+		}
+		
+		[Test()]
 		public void AddRemoveKeywordTest ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
