@@ -219,9 +219,6 @@
   <ItemGroup>
     <Folder Include="CSharp\" />
     <Folder Include="CSharp\Parser\" />
-    <Folder Include="CSharp\Parser\" />
-    <Folder Include="CSharp\Parser\" />
-    <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\CodeCompletion\" />
     <Folder Include="CSharp\ContextAction\" />
   </ItemGroup>

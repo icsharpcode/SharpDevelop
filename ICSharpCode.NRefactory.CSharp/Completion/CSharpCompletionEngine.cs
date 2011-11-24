@@ -609,7 +609,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			location = document.GetLocation (offset);
 			var xp = GetExpressionAtCursor ();
-			
 			AstNode node;
 			Tuple<ResolveResult, CSharpResolver> rr;
 			if (xp != null) {
@@ -1762,13 +1761,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			if (expr == null) {
 				var forStmt = tmpUnit.GetNodeAt<ForStatement> (location.Line, location.Column - 3); 
-				if (forStmt != null && forStmt.Condition is ErrorExpression) {
+				if (forStmt != null && forStmt.EmbeddedStatement.IsNull) {
 					expr = forStmt;
-					if (forStmt.EmbeddedStatement.IsNull) {
-						var id = new IdentifierExpression ("stub");
-						forStmt.EmbeddedStatement = new BlockStatement () { Statements = { new ExpressionStatement (id) }};
-						expr = id;
-					}
+					var id = new IdentifierExpression ("stub");
+					forStmt.EmbeddedStatement = new BlockStatement () { Statements = { new ExpressionStatement (id) }};
+					expr = id;
 					baseUnit = tmpUnit;
 				}
 			}

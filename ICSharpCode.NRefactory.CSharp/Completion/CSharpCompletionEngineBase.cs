@@ -321,8 +321,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				memberLocation = new TextLocation (1, 1);
 			}
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
+				try {
 				var parser = new CSharpParser ();
 				return parser.Parse (stream, wrapInClass ? memberLocation.Line - 2 : 0);
+				} catch (Exception){
+					Console.WriteLine ("------");
+					Console.WriteLine ("------");
+					Console.WriteLine ("------");
+					Console.WriteLine ("------");
+					Console.WriteLine ("------");
+					Console.WriteLine (wrapper);
+					Console.WriteLine ("------");
+					Console.WriteLine ("------");
+					Console.WriteLine ("------");
+					throw;
+				}
 			}
 		}
 		

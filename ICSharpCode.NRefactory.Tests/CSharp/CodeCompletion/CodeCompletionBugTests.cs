@@ -28,6 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 using NUnit.Framework;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Completion;
@@ -36,6 +38,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using System.Diagnostics;
+using System.Text;
 
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
@@ -217,49 +220,38 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				AutoSelect = engine.AutoSelect,
 				DefaultCompletionString = engine.DefaultCompletionString
 			};
-			/*
+		}
+		
+		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent (string text, CompilationUnit compilationUnit)
+		{
+			var doc = new ReadOnlyDocument (text);
+			var pctx = new SimpleProjectContent ();
+			var parsedFile = new TypeSystemConvertVisitor (pctx, "program.cs").Convert (compilationUnit);
+			pctx.UpdateProjectContent (null, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, new TestFactory ());
 			
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			TestViewContent sev = new TestViewContent ();
-			DotNetProject project = new DotNetAssemblyProject ("C#");
-			project.FileName = GetTempFile (".csproj");
+			var ctx = new CompositeTypeResolveContext ( new [] { pctx, CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			engine.ctx = ctx;
+			engine.EolMarker = Environment.NewLine;
+			engine.FormattingPolicy = new CSharpFormattingOptions ();
+			engine.CSharpParsedFile = parsedFile;
+			engine.ProjectContent = pctx;
+			engine.Unit = compilationUnit;
+			return Tuple.Create (doc, engine);
+		}
+		
+		static CompletionDataList CreateProvider (string text, CompilationUnit compilationUnit, CSharpCompletionEngine engine, ReadOnlyDocument doc, TextLocation loc)
+		{
+			var cursorPosition = doc.GetOffset (loc);
 			
-			string file = GetTempFile (".cs");
-			project.AddFile (file);
+			var data = engine.GetCompletionData (cursorPosition, true);
 			
-			TypeSystemService.Load (project);
-			var dom = TypeSystemService.GetContext (project);
-			TypeSystemService.ForceUpdate (dom);
-			var content = TypeSystemService.GetProjectContext (project);
-			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
-			((SimpleProjectContent)content).UpdateProjectContent (null, parsedDocument);
-			
-			sev.Project = project;
-			sev.ContentName = file;
-			sev.Text = editorText;
-			sev.CursorPosition = cursorPosition;
-			tww.ViewContent = sev;
-			TestDocument doc = new TestDocument (tww);
-			doc.HiddenParsedDocument = parsedDocument;
-			doc.HiddenProjectContent = content;
-			doc.HiddenContext        = dom;
-			foreach (var e in doc.ParsedDocument.Errors)
-				Console.WriteLine (e);
-			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
-			int triggerWordLength = 1;
-			CodeCompletionContext completionContext = new CodeCompletionContext ();
-			textEditorCompletion.CompletionWidget = new TestCompletionWidget (doc.Editor) {
-				CurrentCodeCompletionContext = completionContext
+			return new CompletionDataList () {
+				Data = data,
+				AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch,
+				AutoSelect = engine.AutoSelect,
+				DefaultCompletionString = engine.DefaultCompletionString
 			};
-			completionContext.TriggerOffset = sev.CursorPosition;
-			int line, column;
-			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
-			completionContext.TriggerLine = line;
-			completionContext.TriggerLineOffset = column - 1;
-			TypeSystemService.Unload (project);
-			if (isCtrlSpace)
-				return textEditorCompletion.CodeCompletionCommand (completionContext) as CompletionDataList;
-			return textEditorCompletion.HandleCodeCompletion (completionContext, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;*/
 		}
 		
 		public static void CheckObjectMembers (CompletionDataList provider)
@@ -282,6 +274,65 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsNotNull (provider.Find ("ReferenceEquals"), "Method 'System.Object.ReferenceEquals' not found.");
 		}
 		
+		class TestLocVisitor : ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor<object, object>
+		{
+			public List<Tuple<TextLocation, string>> output = new List<Tuple<TextLocation, string>> ();
+			
+			public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				output.Add (Tuple.Create (memberReferenceExpression.MemberNameToken.StartLocation, memberReferenceExpression.MemberName));
+				return base.VisitMemberReferenceExpression (memberReferenceExpression, data);
+			}
+			
+			public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+			{
+				output.Add (Tuple.Create (identifierExpression.StartLocation, identifierExpression.Identifier));
+				return base.VisitIdentifierExpression (identifierExpression, data);
+			}
+		}
+		
+		[Ignore("TODO")]
+		[Test()]
+		public void TestLoadAllTests ()
+		{
+			int found = 0;
+			int missing = 0;
+			int exceptions = 0;
+			int i = 0;
+			foreach (var file in Directory.EnumerateFiles ("/Users/mike/work/mono/mcs/tests", "*.cs")) {
+				if  (i++>2)
+					break;
+				if (i <= 2)
+					continue;
+				var text = File.ReadAllText (file, Encoding.Default);
+				try {
+					var unit = new CSharpParser ().Parse (text);
+					
+					var cnt = GetContent (text, unit);
+					
+					var visitor = new TestLocVisitor ();
+					unit.AcceptVisitor (visitor);
+					foreach (var loc in visitor.output) {
+						var provider = CreateProvider (text, unit, cnt.Item2, cnt.Item1, loc.Item1);
+						if (provider.Find (loc.Item2) != null) {
+							found++;
+						} else {
+							missing++;
+						}
+					}
+				} catch (Exception e) {
+					Console.WriteLine ("Exception in:" +file);
+					exceptions++;
+				}
+			}
+			Console.WriteLine ("Found:" + found);
+			Console.WriteLine ("Missing:" + missing);
+			Console.WriteLine ("Exceptions:" + exceptions);
+			if (missing > 0)
+				Assert.Fail ();
+		}
+		
+			
 		[Test()]
 		public void TestSimpleCodeCompletion ()
 		{

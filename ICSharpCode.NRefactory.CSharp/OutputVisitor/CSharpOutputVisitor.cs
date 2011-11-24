@@ -1375,22 +1375,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteModifiers (typeDeclaration.ModifierTokens);
 			BraceStyle braceStyle;
 			switch (typeDeclaration.ClassType) {
-				case ClassType.Enum:
-					WriteKeyword ("enum");
-					braceStyle = policy.EnumBraceStyle;
-					break;
-				case ClassType.Interface:
-					WriteKeyword ("interface");
-					braceStyle = policy.InterfaceBraceStyle;
-					break;
-				case ClassType.Struct:
-					WriteKeyword ("struct");
-					braceStyle = policy.StructBraceStyle;
-					break;
-				default:
-					WriteKeyword ("class");
-					braceStyle = policy.ClassBraceStyle;
-					break;
+			case ClassType.Enum:
+				WriteKeyword ("enum");
+				braceStyle = policy.EnumBraceStyle;
+				break;
+			case ClassType.Interface:
+				WriteKeyword ("interface");
+				braceStyle = policy.InterfaceBraceStyle;
+				break;
+			case ClassType.Struct:
+				WriteKeyword ("struct");
+				braceStyle = policy.StructBraceStyle;
+				break;
+			default:
+				WriteKeyword ("class");
+				braceStyle = policy.ClassBraceStyle;
+				break;
 			}
 			WriteIdentifier (typeDeclaration.Name);
 			WriteTypeParameters (typeDeclaration.TypeParameters);
@@ -1406,6 +1406,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			OpenBrace (braceStyle);
 			if (typeDeclaration.ClassType == ClassType.Enum) {
 				bool first = true;
+				if (!typeDeclaration.LBraceToken.IsNull) { 
+				}
+					
 				foreach (var member in typeDeclaration.Members) {
 					if (first) {
 						first = false;
