@@ -9832,12 +9832,6 @@ namespace Mono.CSharp
 			this.initializers = initializers;
 			this.loc = loc;
 		}
-
-		public IList<Expression> Initializers {
-			get {
-				return initializers;
-			}
-		}
 		
 		public bool IsEmpty {
 			get {
@@ -9848,6 +9842,12 @@ namespace Mono.CSharp
 		public bool IsCollectionInitializer {
 			get {
 				return is_collection_initialization;
+			}
+		}
+
+		public IList<Expression> Initializers {
+			get {
+				return initializers;
 			}
 		}
 

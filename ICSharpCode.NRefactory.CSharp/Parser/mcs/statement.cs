@@ -623,7 +623,7 @@ namespace Mono.CSharp {
 				target.Iterator = Iterator.Clone (clonectx);
 			target.Statement = Statement.Clone (clonectx);
 		}
-		
+
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
