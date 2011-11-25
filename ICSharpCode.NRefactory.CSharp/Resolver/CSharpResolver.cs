@@ -1297,7 +1297,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					INamespace childNamespace = n.GetChildNamespace(identifier);
 					if (childNamespace != null) {
 						if (u.HasAlias(identifier))
-							return new AmbiguousTypeResolveResult(SpecialType.UnknownType);
+							return new AmbiguousTypeResolveResult(new UnknownType(null, identifier));
 						return new NamespaceResolveResult(childNamespace);
 					}
 				}
@@ -1644,7 +1644,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					// argument might be a lambda or delegate type, so we have to try to guess the delegate type
 					IType type = arguments[i].Type;
-					if (SpecialType.NullType.Equals(type) || SpecialType.UnknownType.Equals(type)) {
+					if (type.Kind == TypeKind.Null || type.Kind == TypeKind.Unknown) {
 						list.Add(new DefaultParameter(compilation.FindType(KnownTypeCode.Object), argumentNames[i]));
 					} else {
 						list.Add(new DefaultParameter(type, argumentNames[i]));
@@ -1672,7 +1672,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (vrr != null)
 				return MakeParameterName(vrr.Variable.Name);
 			
-			if (rr.Type != SpecialType.UnknownType && !string.IsNullOrEmpty(rr.Type.Name)) {
+			if (rr.Type.Kind != TypeKind.Unknown && !string.IsNullOrEmpty(rr.Type.Name)) {
 				return MakeParameterName(rr.Type.Name);
 			} else {
 				return "parameter";
@@ -1903,7 +1903,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		bool HasType(ResolveResult r)
 		{
-			return !(SpecialType.UnknownType.Equals(r.Type) || SpecialType.NullType.Equals(r.Type));
+			return r.Type.Kind != TypeKind.Unknown && r.Type.Kind != TypeKind.Null;
 		}
 		#endregion
 		

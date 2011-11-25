@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (typeDef != null)
 				return typeDef;
 			else
-				return SpecialType.UnknownType;
+				return new UnknownType(typeRef.Namespace, typeRef.Name, typeRef.TypeParameterCount);
 		}
 	}
 }

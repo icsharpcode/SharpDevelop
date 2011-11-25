@@ -892,7 +892,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			KnownTypeCode typeCode = GetTypeCodeForPrimitiveType(keyword);
 			if (typeCode == KnownTypeCode.None)
-				return SpecialType.UnknownType;
+				return new UnknownType(null, keyword);
 			else
 				return KnownTypeReference.Get(typeCode);
 		}

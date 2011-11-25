@@ -67,7 +67,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IList<IAttribute> Attributes { get; private set; }
 		
 		public virtual string Documentation {
-			get { return string.Empty; }
+			get {
+				IDocumentationProvider provider = FindDocumentation(parentContext);
+				if (provider != null)
+					return provider.GetDocumentation(this);
+				else
+					return null;
+			}
+		}
+		
+		internal static IDocumentationProvider FindDocumentation(ITypeResolveContext context)
+		{
+			IAssembly asm = context.CurrentAssembly;
+			if (asm != null)
+				return asm.UnresolvedAssembly as IDocumentationProvider;
+			else
+				return null;
 		}
 		
 		public bool IsStatic { get { return unresolved.IsStatic; } }

@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (asm != null) {
 				type = asm.GetTypeDefinition(nameSpace, name, typeParameterCount);
 			}
-			return type ?? SpecialType.UnknownType;
+			return type ?? new UnknownType(nameSpace, name, typeParameterCount);
 		}
 		
 		public override string ToString()

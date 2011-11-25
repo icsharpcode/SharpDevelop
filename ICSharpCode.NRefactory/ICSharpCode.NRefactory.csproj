@@ -168,6 +168,7 @@
     <Compile Include="TypeSystem\Implementation\TypeParameterReference.cs" />
     <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
+    <Compile Include="TypeSystem\Implementation\UnknownType.cs" />
     <Compile Include="TypeSystem\Implementation\VoidTypeDefinition.cs" />
     <Compile Include="TypeSystem\INamedElement.cs" />
     <Compile Include="TypeSystem\INamespace.cs" />

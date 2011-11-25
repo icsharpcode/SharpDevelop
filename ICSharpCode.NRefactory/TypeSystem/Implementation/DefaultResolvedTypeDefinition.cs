@@ -368,9 +368,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parentContext.CurrentAssembly; }
 		}
 		
-		public string Documentation {
+		public virtual string Documentation {
 			get {
-				throw new NotImplementedException();
+				IDocumentationProvider provider = AbstractResolvedEntity.FindDocumentation(parentContext);
+				if (provider != null)
+					return provider.GetDocumentation(this);
+				else
+					return null;
 			}
 		}
 		
