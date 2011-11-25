@@ -6161,4 +6161,35 @@ namespace Mono.CSharp {
 			return visitor.Visit (this);
 		}
 	}
+	
+	public class StatementErrorExpression : Statement
+	{
+		readonly Expression expr;
+		
+		public Expression Expression {
+			get {
+				return expr;
+			}
+		}
+		
+		public StatementErrorExpression (Expression expr)
+		{
+			this.expr = expr;
+		}
+		
+		protected override void DoEmit (EmitContext ec)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		protected override void CloneTo (CloneContext clonectx, Statement target)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
+	}
 }

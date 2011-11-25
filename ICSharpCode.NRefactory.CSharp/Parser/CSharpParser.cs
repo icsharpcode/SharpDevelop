@@ -1461,6 +1461,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
+			public override object Visit (StatementErrorExpression statementErrorExpression)
+			{
+				var result = new ExpressionStatement ();
+				var expr = statementErrorExpression.Expression.Accept (this) as Expression;
+				if (expr != null)
+					result.AddChild ((Expression)expr, ExpressionStatement.Roles.Expression);
+				return result;
+			}
+			
 			public override object Visit (InvalidStatementExpression statementExpression)
 			{
 				var result = new ExpressionStatement ();
