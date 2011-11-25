@@ -89,6 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public void ApplyNavigator(IResolveVisitorNavigator navigator, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (navigator == null)
+				throw new ArgumentNullException("navigator");
 			if (resolveVisitor != null)
 				throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
 			resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile, navigator);
@@ -101,6 +103,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult Resolve(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
+			if (node == null || node.IsNull)
+				return ErrorResolveResult.UnknownError;
 			if (resolveVisitor == null) {
 				resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
 				resolveVisitor.Scan(rootNode);

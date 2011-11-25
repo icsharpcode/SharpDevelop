@@ -1236,7 +1236,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					default:
 						throw new NotSupportedException();
 				}
-				throw new NotImplementedException();
 			}
 			
 			IType ReadType()
@@ -1246,8 +1245,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				IType typeInCurrentAssembly = typeReference.Resolve(new SimpleTypeResolveContext(currentResolvedAssembly));
 				if (typeInCurrentAssembly.Kind != TypeKind.Unknown)
 					return typeInCurrentAssembly;
+				
 				// look for the type in mscorlib
-				throw new NotImplementedException();
+				ITypeDefinition systemObject = currentResolvedAssembly.Compilation.FindType(KnownTypeCode.Object).GetDefinition();
+				if (systemObject != null) {
+					return typeReference.Resolve(new SimpleTypeResolveContext(systemObject.ParentAssembly));
+				} else {
+					// couldn't find corlib - return the unknown IType for the current assembly
+					return typeInCurrentAssembly;
+				}
 			}
 		}
 		#endregion

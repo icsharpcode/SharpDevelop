@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override ITypeReference ToTypeReference()
 		{
-			throw new NotSupportedException();
+			return new TypeParameterReference(ownerType, index);
 		}
 		
 		public int Index {

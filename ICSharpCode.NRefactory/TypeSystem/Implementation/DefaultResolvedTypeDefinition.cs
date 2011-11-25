@@ -435,7 +435,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public ITypeReference ToTypeReference()
 		{
-			throw new NotImplementedException();
+			ITypeDefinition declTypeDef = this.DeclaringTypeDefinition;
+			if (declTypeDef != null) {
+				return new NestedTypeReference(declTypeDef.ToTypeReference(), this.Name, this.TypeParameterCount - declTypeDef.TypeParameterCount);
+			} else {
+				IAssembly asm = this.ParentAssembly;
+				IAssemblyReference asmRef;
+				if (asm != null)
+					asmRef = new DefaultAssemblyReference(asm.AssemblyName);
+				else
+					asmRef = DefaultAssemblyReference.CurrentAssembly;
+				return new GetClassTypeReference(asmRef, this.Namespace, this.Name, this.TypeParameterCount);
+			}
 		}
 		
 		public IEnumerable<IType> GetNestedTypes(Predicate<ITypeDefinition> filter = null, GetMemberOptions options = GetMemberOptions.None)

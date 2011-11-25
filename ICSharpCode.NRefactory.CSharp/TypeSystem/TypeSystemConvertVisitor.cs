@@ -494,11 +494,19 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		IMemberReference ConvertInterfaceImplementation(AstType interfaceType, AbstractUnresolvedMember unresolvedMember)
 		{
 			ITypeReference interfaceTypeReference = ConvertType(interfaceType);
-			if (unresolvedMember.EntityType == EntityType.Method || unresolvedMember.EntityType == EntityType.Indexer) {
-				throw new NotImplementedException();
-			} else {
-				return new DefaultMemberReference(unresolvedMember.EntityType, ConvertType(interfaceType), unresolvedMember.Name);
+			int typeParameterCount = 0;
+			IList<ITypeReference> parameterTypes = null;
+			if (unresolvedMember.EntityType == EntityType.Method) {
+				typeParameterCount = ((IUnresolvedMethod)unresolvedMember).TypeParameters.Count;
 			}
+			IUnresolvedParameterizedMember parameterizedMember = unresolvedMember as IUnresolvedParameterizedMember;
+			if (parameterizedMember != null) {
+				parameterTypes = new ITypeReference[parameterizedMember.Parameters.Count];
+				for (int i = 0; i < parameterTypes.Count; i++) {
+					parameterTypes[i] = parameterizedMember.Parameters[i].Type;
+				}
+			}
+			return new DefaultMemberReference(unresolvedMember.EntityType, ConvertType(interfaceType), unresolvedMember.Name, typeParameterCount, parameterTypes);
 		}
 		#endregion
 		

@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -220,6 +221,73 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			Assert.AreEqual(DefiniteAssignmentStatus.DefinitelyAssigned, da.GetStatusBefore(loop.Iterators.Single()));
 			Assert.AreEqual(DefiniteAssignmentStatus.DefinitelyAssigned, da.GetStatusAfter(loop.Iterators.Single()));
 			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusAfter(loop));
+		}
+		
+		[Test]
+		public void SwitchWithGotoDefault()
+		{
+			SwitchStatement @switch = new SwitchStatement {
+				SwitchSections = {
+					new SwitchSection { // case 0:
+						CaseLabels = { new CaseLabel(new PrimitiveExpression(0)) },
+						Statements = { new GotoDefaultStatement() }
+					},
+					new SwitchSection { // default:
+						CaseLabels = { new CaseLabel() },
+						Statements = {
+							new ExpressionStatement(new AssignmentExpression(new IdentifierExpression("a"), new PrimitiveExpression(1))),
+							new BreakStatement()
+						}
+					}
+				}};
+			
+			SwitchSection case0 = @switch.SwitchSections.ElementAt(0);
+			SwitchSection defaultSection = @switch.SwitchSections.ElementAt(1);
+			
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(@switch);
+			da.Analyze("a");
+			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(@switch));
+			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(case0.Statements.First()));
+			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(defaultSection.Statements.First()));
+			Assert.AreEqual(DefiniteAssignmentStatus.DefinitelyAssigned, da.GetStatusBefore(defaultSection.Statements.Last()));
+			Assert.AreEqual(DefiniteAssignmentStatus.CodeUnreachable, da.GetStatusAfter(defaultSection.Statements.Last()));
+			Assert.AreEqual(DefiniteAssignmentStatus.DefinitelyAssigned, da.GetStatusAfter(@switch));
+		}
+		
+		[Test]
+		public void SwitchWithGotoCase()
+		{
+			SwitchStatement @switch = new SwitchStatement {
+				Expression = new PrimitiveExpression(1),
+				SwitchSections = {
+					new SwitchSection { // case 0:
+						CaseLabels = { new CaseLabel(new PrimitiveExpression(0)) },
+						Statements = { new BreakStatement() }
+					},
+					new SwitchSection { // case 1:
+						CaseLabels = { new CaseLabel(new PrimitiveExpression(1)) },
+						Statements = {
+							new ExpressionStatement(new AssignmentExpression(new IdentifierExpression("a"), new PrimitiveExpression(0))),
+							new GotoCaseStatement { LabelExpression = new PrimitiveExpression(2) }
+						}
+					},
+					new SwitchSection { // case 2:
+						CaseLabels = { new CaseLabel(new PrimitiveExpression(2)) },
+						Statements = { new BreakStatement() }
+					}
+				}};
+			
+			SwitchSection case0 = @switch.SwitchSections.ElementAt(0);
+			SwitchSection case1 = @switch.SwitchSections.ElementAt(1);
+			SwitchSection case2 = @switch.SwitchSections.ElementAt(2);
+			
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(@switch);
+			da.Analyze("a");
+			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(@switch));
+			Assert.AreEqual(DefiniteAssignmentStatus.CodeUnreachable, da.GetStatusBefore(case0.Statements.First()));
+			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(case1.Statements.First()));
+			Assert.AreEqual(DefiniteAssignmentStatus.DefinitelyAssigned, da.GetStatusBefore(case2.Statements.First()));
+			Assert.AreEqual(DefiniteAssignmentStatus.DefinitelyAssigned, da.GetStatusAfter(@switch));
 		}
 	}
 }

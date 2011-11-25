@@ -21,9 +21,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Analysis
@@ -429,7 +429,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					foreach (CaseLabel label in section.CaseLabels) {
 						if (label.Expression.IsNull) {
 							defaultSection = section;
-						} else if (constant != null) {
+						} else if (constant != null && constant.IsCompileTimeConstant) {
 							ResolveResult labelConstant = builder.EvaluateConstant(label.Expression);
 							if (builder.AreEqualConstants(constant, labelConstant))
 								sectionMatchedByConstant = section;
@@ -440,17 +440,22 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					sectionMatchedByConstant = defaultSection;
 				
 				int gotoCaseOrDefaultInOuterScope = gotoCaseOrDefault.Count;
+				List<ControlFlowNode> sectionStartNodes = new List<ControlFlowNode>();
 				
 				ControlFlowNode end = builder.CreateEndNode(switchStatement, addToNodeList: false);
 				breakTargets.Push(end);
 				foreach (SwitchSection section in switchStatement.SwitchSections) {
-					if (constant == null || section == sectionMatchedByConstant) {
+					int sectionStartNodeID = builder.nodes.Count;
+					if (constant == null || !constant.IsCompileTimeConstant || section == sectionMatchedByConstant) {
 						HandleStatementList(section.Statements, data);
 					} else {
 						// This section is unreachable: pass null to HandleStatementList.
 						HandleStatementList(section.Statements, null);
 					}
 					// Don't bother connecting the ends of the sections: the 'break' statement takes care of that.
+					
+					// Store the section start node for 'goto case' statements.
+					sectionStartNodes.Add(sectionStartNodeID < builder.nodes.Count ? builder.nodes[sectionStartNodeID] : null);
 				}
 				breakTargets.Pop();
 				if (defaultSection == null && sectionMatchedByConstant == null) {
@@ -459,7 +464,38 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				
 				if (gotoCaseOrDefault.Count > gotoCaseOrDefaultInOuterScope) {
 					// Resolve 'goto case' statements:
-					throw new NotImplementedException();
+					for (int i = gotoCaseOrDefaultInOuterScope; i < gotoCaseOrDefault.Count; i++) {
+						ControlFlowNode gotoCaseNode = gotoCaseOrDefault[i];
+						GotoCaseStatement gotoCaseStatement = gotoCaseNode.NextStatement as GotoCaseStatement;
+						ResolveResult gotoCaseConstant = null;
+						if (gotoCaseStatement != null) {
+							gotoCaseConstant = builder.EvaluateConstant(gotoCaseStatement.LabelExpression);
+						}
+						int targetSectionIndex = -1;
+						int currentSectionIndex = 0;
+						foreach (SwitchSection section in switchStatement.SwitchSections) {
+							foreach (CaseLabel label in section.CaseLabels) {
+								if (gotoCaseStatement != null) {
+									// goto case
+									if (!label.Expression.IsNull) {
+										ResolveResult labelConstant = builder.EvaluateConstant(label.Expression);
+										if (builder.AreEqualConstants(gotoCaseConstant, labelConstant))
+											targetSectionIndex = currentSectionIndex;
+									}
+								} else {
+									// goto default
+									if (label.Expression.IsNull)
+										targetSectionIndex = currentSectionIndex;
+								}
+							}
+							currentSectionIndex++;
+						}
+						if (targetSectionIndex >= 0 && sectionStartNodes[targetSectionIndex] != null)
+							Connect(gotoCaseNode, sectionStartNodes[targetSectionIndex], ControlFlowEdgeType.Jump);
+						else
+							Connect(gotoCaseNode, end, ControlFlowEdgeType.Jump);
+					}
+					gotoCaseOrDefault.RemoveRange(gotoCaseOrDefaultInOuterScope, gotoCaseOrDefault.Count - gotoCaseOrDefaultInOuterScope);
 				}
 				
 				builder.nodes.Add(end);
