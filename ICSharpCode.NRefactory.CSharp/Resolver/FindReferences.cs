@@ -806,19 +806,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="variable">The variable for which to look.</param>
 		/// <param name="parsedFile">The type system representation of the file being searched.</param>
 		/// <param name="compilationUnit">The compilation unit of the file being searched.</param>
-		/// <param name="context">The type resolve context to use for resolving the file.</param>
+		/// <param name="compilation">The compilation.</param>
 		/// <param name="callback">Callback used to report the references that were found.</param>
+		/// <param name="cancellationToken">Cancellation token that may be used to cancel the operation.</param>
 		public void FindLocalReferences(IVariable variable, CSharpParsedFile parsedFile, CompilationUnit compilationUnit,
-		                                FoundReferenceCallback callback, CancellationToken cancellationToken)
+		                                ICompilation compilation, FoundReferenceCallback callback, CancellationToken cancellationToken)
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
-			FindReferencesInFile(new FindLocalReferencesNavigator(variable), parsedFile, compilationUnit, callback, cancellationToken);
+			var navigator = new FindLocalReferencesNavigator(variable);
+			navigator.compilation = compilation;
+			FindReferencesInFile(navigator, parsedFile, compilationUnit, callback, cancellationToken);
 		}
 		
 		class FindLocalReferencesNavigator : SearchScope
 		{
-			IVariable variable;
+			readonly IVariable variable;
 			
 			public FindLocalReferencesNavigator(IVariable variable)
 			{

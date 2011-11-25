@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
@@ -105,12 +106,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (node == null || node.IsNull)
 				return ErrorResolveResult.UnknownError;
+			InitResolver(node);
+			lock (resolveVisitor) {
+				ResolveResult rr = resolveVisitor.GetResolveResult(node);
+				Debug.Assert(rr != null);
+				return rr;
+			}
+		}
+		
+		void InitResolver(AstNode firstNodeToResolve)
+		{
 			if (resolveVisitor == null) {
-				resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
+				resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile, new NodeListResolveVisitorNavigator(firstNodeToResolve));
 				resolveVisitor.Scan(rootNode);
 			}
-			lock (resolveVisitor)
-				return resolveVisitor.GetResolveResult(node);
+		}
+		
+		public CSharpResolver GetResolverStateBefore(AstNode node)
+		{
+			if (node == null || node.IsNull)
+				throw new ArgumentNullException("node");
+			InitResolver(node);
+			lock (resolveVisitor) {
+				CSharpResolver resolver = resolveVisitor.GetResolverStateBefore(node);
+				Debug.Assert(resolver != null);
+				return resolver;
+			}
 		}
 		
 		/// <summary>

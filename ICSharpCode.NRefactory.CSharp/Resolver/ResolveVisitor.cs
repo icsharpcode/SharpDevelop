@@ -381,7 +381,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResetContext(
 				storedResolver.Clone(),
 				delegate {
-					navigator = new NodeListResolveVisitorNavigator(nodeToResolve);
+					navigator = new NodeListResolveVisitorNavigator(node, nodeToResolve);
 					if (parent == nodeToResolve) {
 						Resolve(nodeToResolve);
 					} else {

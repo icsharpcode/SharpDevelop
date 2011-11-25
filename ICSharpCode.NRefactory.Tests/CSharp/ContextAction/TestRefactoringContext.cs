@@ -60,13 +60,10 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		
 		public override AstType CreateShortType (IType fullType)
 		{
-			throw new NotImplementedException();
-			/*var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			csResolver.CurrentMember = file.GetMember (Location);
-			csResolver.CurrentTypeDefinition = file.GetInnermostTypeDefinition (Location);
-			csResolver.CurrentUsingScope = file.GetUsingScope (Location);
+			AstNode node = Unit.GetNodeAt(Location);
+			CSharpResolver csResolver = resolver.GetResolverStateBefore(node);
 			var builder = new TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);*/
+			return builder.ConvertType (fullType);
 		}
 		
 		public override void ReplaceReferences (IMember member, MemberDeclaration replaceWidth)
