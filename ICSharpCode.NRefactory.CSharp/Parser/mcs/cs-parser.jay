@@ -151,7 +151,6 @@ namespace Mono.CSharp
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> attributeArgumentCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
-		List<Location> enumCommas = new List<Location> ();
 		
 		object lastYYVal;
 		
@@ -2544,9 +2543,6 @@ enum_declaration
 	: opt_attributes
 	  opt_modifiers
 	  ENUM
-	  {
-		enumCommas.Add (GetLocation ($3));
-	  }
 	  type_declaration_name
 	  opt_enum_base
 	  {
@@ -2557,14 +2553,18 @@ enum_declaration
 	  {
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
-		enumCommas.Add (GetLocation ($8));
 
-		MemberName name = (MemberName) $5;
+		MemberName name = (MemberName) $4;
 		if (name.IsGeneric) {
 			report.Error (1675, name.Location, "Enums cannot have type parameters");
 		}
 		
-		push_current_class (new Enum (current_namespace, current_class, (TypeExpression) $6, (Modifiers) $2, MakeName (name), (Attributes) $1), null);
+		push_current_class (new Enum (current_namespace, current_class, (TypeExpression) $5, (Modifiers) $2, MakeName (name), (Attributes) $1), null);
+		if ($5 != null) {
+			lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), savedLocation, GetLocation ($7));
+		} else {
+			lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7));
+		}
 	  }
 	  opt_enum_member_declarations
 	  {
@@ -2574,16 +2574,16 @@ enum_declaration
 	  }
 	  CLOSE_BRACE opt_semicolon
 	  {
-		enumCommas.Add (GetLocation ($12));
-		if ($13 != null)
-			current_class.OptionalSemicolon = GetLocation ($13);
+		lbag.AppendToMember (current_class, GetLocation ($11));
+		if ($12 != null) {
+			current_class.OptionalSemicolon = GetLocation ($12);
+			lbag.AppendToMember (current_class, GetLocation ($12));
+		}
 		if (doc_support)
 			current_class.DocComment = enumTypeComment;
 			
 		--lexer.parsing_declaration;
 
-		lbag.AddMember (current_class, GetModifierLocations (), enumCommas);
-		enumCommas.Clear ();
 		$$ = pop_current_class ();
 	  }
 	;
@@ -2597,7 +2597,7 @@ opt_enum_base
 			Enum.Error_1008 (GetLocation ($2), report);
 			$$ = null;
 		} else {
-			enumCommas.Add (GetLocation ($1));
+			savedLocation = GetLocation ($1);
 			$$ = $2;
 		}
 	 }
@@ -2613,7 +2613,7 @@ opt_enum_member_declarations
 	| enum_member_declarations
 	| enum_member_declarations COMMA
 	  {
-	  	enumCommas.Add (GetLocation ($2));
+		lbag.AppendToMember (current_class, GetLocation ($2));
 	  }
 	;
 
@@ -2621,7 +2621,7 @@ enum_member_declarations
 	: enum_member_declaration
 	| enum_member_declarations COMMA enum_member_declaration
 	  {
-	  	enumCommas.Add (GetLocation ($2));
+		lbag.AppendToMember (current_class, GetLocation ($2));
 	  	$$ = $3;
 	  }
 	;
@@ -4718,6 +4718,16 @@ statement
 		current_block.AddStatement ((Statement) $1);
 	  }
 	| labeled_statement
+// WORKAROUND:Remove that rule, if it is >really< fixed.
+	| IDENTIFIER error
+	{
+		Error_SyntaxError (yyToken);
+		var lt =(Tokenizer.LocatedToken) $1;
+		var sn = new SimpleName (lt.Value, lt.Location);
+		current_block.AddStatement(new StatementErrorExpression (sn));
+		$$ = null;
+	}
+////////
 	| error
 	  {
 		Error_SyntaxError (yyToken);
