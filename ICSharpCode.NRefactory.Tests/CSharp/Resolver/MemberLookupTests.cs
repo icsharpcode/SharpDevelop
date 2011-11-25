@@ -209,5 +209,57 @@ public class Test {
 			var mrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("Foo`1+TestFoo[[Test]]", mrr.Type.ReflectionName);
 		}
+		
+		[Test]
+		public void ProtectedBaseMethodCall()
+		{
+			string program = @"using System;
+public class Base {
+	protected virtual void M() {}
+}
+public class Test : Base {
+	protected override void M() {
+		$base.M()$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("Base.M", rr.Member.FullName);
+		}
+		
+		[Test]
+		public void ProtectedBaseFieldAccess()
+		{
+			string program = @"using System;
+public class Base {
+	protected int Field;
+}
+public class Test : Base {
+	public new int Field;
+	protected override void M() {
+		$base.Field$ = 1;
+	}
+}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("Base.Field", rr.Member.FullName);
+		}
+		
+		[Test]
+		public void ThisHasSameTypeAsFieldInGenericClass()
+		{
+			string program = @"using System;
+public struct C<T> {
+	public C(C<T> other) {
+		$M(this, other)$;
+	}
+	static void M<T>(T a, T b) {}
+}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("C`1[[`0]]", rr.Arguments[0].Type.ReflectionName);
+			Assert.AreEqual("C`1[[`0]]", rr.Arguments[1].Type.ReflectionName);
+		}
 	}
 }

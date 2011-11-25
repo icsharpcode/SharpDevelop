@@ -236,7 +236,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			bool targetIsTypeParameter = targetResolveResult.Type.Kind == TypeKind.TypeParameter;
 			
-			bool allowProtectedAccess = IsProtectedAccessAllowed(targetResolveResult.Type);
+			bool allowProtectedAccess = (targetResolveResult is ThisResolveResult || IsProtectedAccessAllowed(targetResolveResult.Type));
 			Predicate<ITypeDefinition> nestedTypeFilter = delegate(ITypeDefinition entity) {
 				return entity.Name == name && IsAccessible(entity, allowProtectedAccess);
 			};

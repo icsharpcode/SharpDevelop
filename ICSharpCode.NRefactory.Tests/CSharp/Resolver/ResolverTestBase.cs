@@ -190,7 +190,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveResult rr = Resolve(code);
 			Assert.IsNotNull(rr);
-			Assert.IsTrue(rr.GetType() == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
+			if (typeof(T) == typeof(LambdaResolveResult)) {
+				Assert.IsTrue(rr is LambdaResolveResult, "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
+			} else {
+				Assert.IsTrue(rr.GetType() == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
+			}
 			return (T)rr;
 		}
 		

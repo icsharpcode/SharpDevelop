@@ -380,6 +380,18 @@ class TestClass {
 			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", crr.Type.ReflectionName);
 		}
 		
+		[Test]
+		public void AnonymousMethodWithoutParameterList()
+		{
+			string program = @"using System;
+class TestClass {
+	event EventHandler Ev = $delegate {}$;
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsFalse(rr.HasParameterList);
+		}
+		
 		/* TODO write test for this
 class A
 {

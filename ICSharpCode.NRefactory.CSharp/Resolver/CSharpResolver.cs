@@ -1830,7 +1830,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ITypeDefinition t = CurrentTypeDefinition;
 			if (t != null) {
-				return new ResolveResult(t);
+				if (t.TypeParameterCount != 0) {
+					// Self-parameterize the type
+					return new ThisResolveResult(new ParameterizedType(t, t.TypeParameters));
+				} else {
+					return new ThisResolveResult(t);
+				}
 			}
 			return ErrorResult;
 		}
@@ -1844,7 +1849,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (t != null) {
 				foreach (IType baseType in t.DirectBaseTypes) {
 					if (baseType.Kind != TypeKind.Unknown && baseType.Kind != TypeKind.Interface) {
-						return new ResolveResult(baseType);
+						return new ThisResolveResult(baseType);
 					}
 				}
 			}

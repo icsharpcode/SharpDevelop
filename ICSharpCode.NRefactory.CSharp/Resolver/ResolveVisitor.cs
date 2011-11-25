@@ -743,6 +743,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				IParameterizedMember pm = resolver.CurrentMember as IParameterizedMember;
+				if (pm == null && resolver.CurrentTypeDefinition != null) {
+					// Also consider delegate parameters:
+					pm = resolver.CurrentTypeDefinition.GetDelegateInvokeMethod();
+					// pm will be null if the current type isn't a delegate
+				}
 				if (pm != null) {
 					foreach (IParameter p in pm.Parameters) {
 						if (p.Name == name) {
@@ -750,6 +755,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
+				
 				return errorResult;
 			} else {
 				return null;
@@ -1653,7 +1659,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AstNodeCollection<ParameterDeclaration> parameterDeclarations,
 			AstNode body, bool isAnonymousMethod, bool hasParameterList, bool isAsync)
 		{
-			List<IParameter> parameters = new List<IParameter>();
+			List<IParameter> parameters = (hasParameterList || parameterDeclarations.Any()) ? new List<IParameter>() : null;
 			resolver.PushBlock();
 			bool oldIsWithinLambdaExpression = resolver.IsWithinLambdaExpression;
 			resolver.IsWithinLambdaExpression = true;
@@ -3019,6 +3025,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!resolverEnabled)
 				return null;
 			KnownTypeCode typeCode = TypeSystemConvertVisitor.GetTypeCodeForPrimitiveType(primitiveType.Keyword);
+			if (typeCode == KnownTypeCode.None && primitiveType.Parent is Constraint && primitiveType.Role == Constraint.BaseTypeRole) {
+				switch (primitiveType.Keyword) {
+					case "class":
+					case "struct":
+					case "new":
+						return voidResult;
+				}
+			}
 			IType type = resolver.Compilation.FindType(typeCode);
 			return new TypeResolveResult(type);
 		}
