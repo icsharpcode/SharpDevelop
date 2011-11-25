@@ -575,7 +575,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> HandleEnumContext ()
 		{
-			var cu = ParseStub ("enumMefwefwefwember", false);
+			var cu = ParseStub ("a", false);
 			if (cu == null)
 				return null;
 			var member = cu.GetNodeAt<EnumMemberDeclaration> (location);

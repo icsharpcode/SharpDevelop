@@ -77,5 +77,23 @@ enum Name {
 				Assert.IsNotNull (provider.Find ("Name"), "type 'Name' not found.");
 			});
 		}
+		
+		
+		[Test()]
+		public void TestEnumInitializerContinuation ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+[Flags]
+enum Name {
+	Flag1,
+	Flag2,
+	Combined $= Name.$
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Flag1"), "value 'Flag1' not found.");
+				Assert.IsNotNull (provider.Find ("Flag2"), "value 'Flag2' not found.");
+			});
+		}
 	}
 }

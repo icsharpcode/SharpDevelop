@@ -312,15 +312,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.Append ('}');
 			
 			TextLocation memberLocation;
-			if (currentMember != null) {
+			if (currentMember != null && currentType.Kind != TypeKind.Enum) {
 				memberLocation = currentMember.Region.Begin;
 			} else if (currentType != null) {
 				memberLocation = currentType.Region.Begin;
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			Console.WriteLine ("--");
-			Console.WriteLine (wrapper);
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
