@@ -743,9 +743,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			m.IsShadowing = (modifiers & Modifiers.New) != 0;
 			m.IsStatic = (modifiers & Modifiers.Static) != 0;
 			m.IsVirtual = (modifiers & Modifiers.Virtual) != 0;
-			m.IsPartial = (modifiers & Modifiers.Partial) != 0;
-			
-			
+			//m.IsPartial = (modifiers & Modifiers.Partial) != 0;
 		}
 		
 		static Accessibility? GetAccessibility(Modifiers modifiers)

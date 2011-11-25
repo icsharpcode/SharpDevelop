@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TestRefactoringContext.cs
 //  
 // Author:
@@ -25,30 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.FormattingTests;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.FormattingTests;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
 	class TestRefactoringContext : RefactoringContext
 	{
 		internal IDocument doc;
-		CSharpParsedFile file;
-		SimpleProjectContent ctx = new SimpleProjectContent ();
-		
-		public override ITypeResolveContext TypeResolveContext {
-			get {
-				return ctx;
-			}
-		}
+		CSharpParsedFile parsedFile;
+		ICompilation compilation;
+		CSharpAstResolver resolver;
 		
 		public override bool HasCSharp3Support {
 			get {
@@ -65,12 +60,13 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		
 		public override AstType CreateShortType (IType fullType)
 		{
-			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
+			throw new NotImplementedException();
+			/*var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
 			csResolver.CurrentMember = file.GetMember (Location);
 			csResolver.CurrentTypeDefinition = file.GetInnermostTypeDefinition (Location);
 			csResolver.CurrentUsingScope = file.GetUsingScope (Location);
 			var builder = new TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
+			return builder.ConvertType (fullType);*/
 		}
 		
 		public override void ReplaceReferences (IMember member, MemberDeclaration replaceWidth)
@@ -135,12 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		#region Resolving
 		public override ResolveResult Resolve (AstNode node)
 		{
-			var csResolver = new CSharpResolver (TypeResolveContext, System.Threading.CancellationToken.None);
-			var navigator = new NodeListResolveVisitorNavigator (new[] { node });
-			
-			var visitor = new ICSharpCode.NRefactory.CSharp.Resolver.ResolveVisitor (csResolver, file, navigator);
-			visitor.Scan (Unit);
-			return visitor.GetResolveResult (node);
+			return resolver.Resolve(node);
 		}		
 		#endregion
 		
@@ -153,12 +144,18 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				content = content.Substring (0, idx) + content.Substring (idx + 1);
 			doc = new ReadOnlyDocument (content);
 			var parser = new CSharpParser ();
-			Unit = parser.Parse (content);
+			Unit = parser.Parse (content, "program.cs");
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));
 			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
-			file = new TypeSystemConvertVisitor (ctx, "program.cs").Convert (Unit);
-			ctx.UpdateProjectContent (null, file);
+			parsedFile = Unit.ToTypeSystem();
+			
+			IProjectContent pc = new CSharpProjectContent();
+			pc = pc.UpdateProjectContent(null, parsedFile);
+			pc = pc.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			
+			compilation = pc.CreateCompilation();
+			resolver = new CSharpAstResolver(compilation, Unit, parsedFile);
 			if (idx >= 0)
 				Location = doc.GetLocation (idx);
 		}
