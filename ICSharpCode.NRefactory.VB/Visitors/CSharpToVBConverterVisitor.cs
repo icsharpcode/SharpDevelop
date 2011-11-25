@@ -2037,16 +2037,22 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return EndNode(primitiveType, new PrimitiveType(typeName));
 		}
 		
-		public AstNode VisitComment(CSharp.Comment comment, object data)
+		public AstNode VisitComment (CSharp.Comment comment, object data)
 		{
-			var c = new Comment(comment.Content, comment.CommentType == CSharp.CommentType.Documentation);
+			var c = new Comment (comment.Content, comment.CommentType == CSharp.CommentType.Documentation);
 			
 			if (comment.CommentType == CSharp.CommentType.MultiLine)
-				throw new NotImplementedException();
+				throw new NotImplementedException ();
 			
-			return EndNode(comment, c);
+			return EndNode (comment, c);
 		}
 		
+		public AstNode VisitPreProcessorDirective (CSharp.PreProcessorDirective preProcessorDirective, object data)
+		{
+			// TODO
+			return null;
+		}
+
 		public AstNode VisitTypeParameterDeclaration(CSharp.TypeParameterDeclaration typeParameterDeclaration, object data)
 		{
 			var param = new TypeParameterDeclaration() {

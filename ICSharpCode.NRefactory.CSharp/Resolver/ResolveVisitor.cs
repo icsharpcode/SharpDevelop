@@ -231,7 +231,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Assert(resolverBeforeDict.ContainsKey(node));
 			// Don't store results twice.
 			Debug.Assert(!resolveResultCache.ContainsKey(node));
-			resolveResultCache.Add(node, result);
+			resolveResultCache[node] = result;
 			if (navigator != null)
 				navigator.Resolved(node, result);
 		}
@@ -3590,11 +3590,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
-		ResolveResult IAstVisitor<object, ResolveResult>.VisitComment(Comment comment, object data)
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitComment (Comment comment, object data)
 		{
 			return null;
 		}
 		
+		ResolveResult IAstVisitor<object, ResolveResult>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, object data)
+		{
+			return null;
+		}
+
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode, object data)
 		{
 			return null;

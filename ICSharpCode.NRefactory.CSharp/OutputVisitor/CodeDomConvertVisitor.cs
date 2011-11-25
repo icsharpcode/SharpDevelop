@@ -1242,9 +1242,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			return new CodeTypeReference(keyword);
 		}
 		
-		CodeObject IAstVisitor<object, CodeObject>.VisitComment(Comment comment, object data)
+		CodeObject IAstVisitor<object, CodeObject>.VisitComment (Comment comment, object data)
 		{
-			return new CodeComment(comment.Content, comment.CommentType == CommentType.Documentation);
+			return new CodeComment (comment.Content, comment.CommentType == CommentType.Documentation);
+		}
+		
+		CodeObject IAstVisitor<object, CodeObject>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, object data)
+		{
+			return new CodeComment ("#" + preProcessorDirective.Type.ToString ().ToLower ());
 		}
 		
 		CodeObject IAstVisitor<object, CodeObject>.VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)

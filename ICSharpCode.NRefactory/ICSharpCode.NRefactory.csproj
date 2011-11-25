@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -17,7 +17,7 @@
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1026;-Microsoft.Security#CA2104</CodeAnalysisRules>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <DocumentationFile>bin\Release\ICSharpCode.NRefactory.xml</DocumentationFile>

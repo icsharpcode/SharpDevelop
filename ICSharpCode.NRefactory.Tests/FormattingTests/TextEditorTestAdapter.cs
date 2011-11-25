@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 	{
 		static IActionFactory factory = new TestFactory ();
 		
-		class TestTextReplaceAction : TextReplaceAction
+		internal class TestTextReplaceAction : TextReplaceAction
 		{
 			public TestTextReplaceAction (int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
 			{
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			}
 		}
 		
-		static string ApplyChanges (string text, List<TextReplaceAction> changes)
+		public static string ApplyChanges (string text, List<TextReplaceAction> changes)
 		{
 			changes.Sort ((x, y) => y.Offset.CompareTo (x.Offset));
 			StringBuilder b = new StringBuilder(text);
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (input), "test.cs");
 			compilationUnit.AcceptVisitor (visitor, null);
 			
-			return new ReadOnlyDocument(ApplyChanges (input, visitor.Changes));
+			return new ReadOnlyDocument (ApplyChanges (input, visitor.Changes));
 		}
 		
 		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput)

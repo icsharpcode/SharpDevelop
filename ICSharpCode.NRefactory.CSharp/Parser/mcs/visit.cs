@@ -183,6 +183,11 @@ namespace Mono.CSharp
 		{
 			return null;
 		}
+		
+		public virtual object Visit (ErrorExpression errorExpression)
+		{
+			return null;
+		}
 
 		public virtual object Visit (If ifStatement)
 		{
@@ -334,6 +339,11 @@ namespace Mono.CSharp
 		}
 
 		public virtual object Visit (YieldBreak yieldBreakStatement)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (InvalidStatementExpression invalidStatementExpression)
 		{
 			return null;
 		}
@@ -633,6 +643,11 @@ namespace Mono.CSharp
 		}
 
 		public virtual object Visit (Await awaitExpr)
+		{
+			return null;
+		}
+		
+		public virtual object Visit (StatementErrorExpression statementErrorExpression)
 		{
 			return null;
 		}

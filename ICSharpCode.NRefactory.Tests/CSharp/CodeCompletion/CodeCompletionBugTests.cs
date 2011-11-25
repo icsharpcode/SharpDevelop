@@ -28,6 +28,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+
 using NUnit.Framework;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.CSharp.Completion;
@@ -36,6 +38,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using System.Diagnostics;
+using System.Text;
 
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
@@ -53,6 +56,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		public static CompletionDataList CreateCtrlSpaceProvider (string text)
 		{
 			return CreateProvider (text, true);
+		}
+		
+		public static void CombinedProviderTest (string text, Action<CompletionDataList> act)
+		{
+			var provider = CreateProvider (text);
+			Assert.IsNotNull (provider, "provider == null");
+			act (provider);
+			
+			provider = CreateCtrlSpaceProvider (text);
+			Assert.IsNotNull (provider, "provider == null");
+			act (provider);
 		}
 		
 		class TestFactory : ICompletionDataFactory
@@ -158,6 +172,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return Enumerable.Empty<ICompletionData> ();
 			}
+			
+			public IEnumerable<ICompletionData> CreatePreProcessorDefinesCompletionData ()
+			{
+				yield return new CompletionData ("DEBUG");
+				yield return new CompletionData ("TEST");
+			}
 			#endregion
 		}
 		
@@ -200,49 +220,38 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				AutoSelect = engine.AutoSelect,
 				DefaultCompletionString = engine.DefaultCompletionString
 			};
-			/*
+		}
+		
+		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent (string text, CompilationUnit compilationUnit)
+		{
+			var doc = new ReadOnlyDocument (text);
+			var pctx = new SimpleProjectContent ();
+			var parsedFile = new TypeSystemConvertVisitor (pctx, "program.cs").Convert (compilationUnit);
+			pctx.UpdateProjectContent (null, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, new TestFactory ());
 			
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
-			TestViewContent sev = new TestViewContent ();
-			DotNetProject project = new DotNetAssemblyProject ("C#");
-			project.FileName = GetTempFile (".csproj");
+			var ctx = new CompositeTypeResolveContext ( new [] { pctx, CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			engine.ctx = ctx;
+			engine.EolMarker = Environment.NewLine;
+			engine.FormattingPolicy = new CSharpFormattingOptions ();
+			engine.CSharpParsedFile = parsedFile;
+			engine.ProjectContent = pctx;
+			engine.Unit = compilationUnit;
+			return Tuple.Create (doc, engine);
+		}
+		
+		static CompletionDataList CreateProvider (string text, CompilationUnit compilationUnit, CSharpCompletionEngine engine, ReadOnlyDocument doc, TextLocation loc)
+		{
+			var cursorPosition = doc.GetOffset (loc);
 			
-			string file = GetTempFile (".cs");
-			project.AddFile (file);
+			var data = engine.GetCompletionData (cursorPosition, true);
 			
-			TypeSystemService.Load (project);
-			var dom = TypeSystemService.GetContext (project);
-			TypeSystemService.ForceUpdate (dom);
-			var content = TypeSystemService.GetProjectContext (project);
-			var parsedDocument = TypeSystemService.ParseFile (content, file, "text/x-csharp", parsedText);
-			((SimpleProjectContent)content).UpdateProjectContent (null, parsedDocument);
-			
-			sev.Project = project;
-			sev.ContentName = file;
-			sev.Text = editorText;
-			sev.CursorPosition = cursorPosition;
-			tww.ViewContent = sev;
-			TestDocument doc = new TestDocument (tww);
-			doc.HiddenParsedDocument = parsedDocument;
-			doc.HiddenProjectContent = content;
-			doc.HiddenContext        = dom;
-			foreach (var e in doc.ParsedDocument.Errors)
-				Console.WriteLine (e);
-			var textEditorCompletion = new CSharpCompletionTextEditorExtension (doc);
-			int triggerWordLength = 1;
-			CodeCompletionContext completionContext = new CodeCompletionContext ();
-			textEditorCompletion.CompletionWidget = new TestCompletionWidget (doc.Editor) {
-				CurrentCodeCompletionContext = completionContext
+			return new CompletionDataList () {
+				Data = data,
+				AutoCompleteEmptyMatch = engine.AutoCompleteEmptyMatch,
+				AutoSelect = engine.AutoSelect,
+				DefaultCompletionString = engine.DefaultCompletionString
 			};
-			completionContext.TriggerOffset = sev.CursorPosition;
-			int line, column;
-			sev.GetLineColumnFromPosition (sev.CursorPosition, out line, out column);
-			completionContext.TriggerLine = line;
-			completionContext.TriggerLineOffset = column - 1;
-			TypeSystemService.Unload (project);
-			if (isCtrlSpace)
-				return textEditorCompletion.CodeCompletionCommand (completionContext) as CompletionDataList;
-			return textEditorCompletion.HandleCodeCompletion (completionContext, editorText[cursorPosition - 1] , ref triggerWordLength) as CompletionDataList;*/
 		}
 		
 		public static void CheckObjectMembers (CompletionDataList provider)
@@ -265,6 +274,65 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsNotNull (provider.Find ("ReferenceEquals"), "Method 'System.Object.ReferenceEquals' not found.");
 		}
 		
+		class TestLocVisitor : ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor<object, object>
+		{
+			public List<Tuple<TextLocation, string>> output = new List<Tuple<TextLocation, string>> ();
+			
+			public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				output.Add (Tuple.Create (memberReferenceExpression.MemberNameToken.StartLocation, memberReferenceExpression.MemberName));
+				return base.VisitMemberReferenceExpression (memberReferenceExpression, data);
+			}
+			
+			public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+			{
+				output.Add (Tuple.Create (identifierExpression.StartLocation, identifierExpression.Identifier));
+				return base.VisitIdentifierExpression (identifierExpression, data);
+			}
+		}
+		
+		[Ignore("TODO")]
+		[Test()]
+		public void TestLoadAllTests ()
+		{
+			int found = 0;
+			int missing = 0;
+			int exceptions = 0;
+			int i = 0;
+			foreach (var file in Directory.EnumerateFiles ("/Users/mike/work/mono/mcs/tests", "*.cs")) {
+				if  (i++>2)
+					break;
+				if (i <= 2)
+					continue;
+				var text = File.ReadAllText (file, Encoding.Default);
+				try {
+					var unit = new CSharpParser ().Parse (text);
+					
+					var cnt = GetContent (text, unit);
+					
+					var visitor = new TestLocVisitor ();
+					unit.AcceptVisitor (visitor);
+					foreach (var loc in visitor.output) {
+						var provider = CreateProvider (text, unit, cnt.Item2, cnt.Item1, loc.Item1);
+						if (provider.Find (loc.Item2) != null) {
+							found++;
+						} else {
+							missing++;
+						}
+					}
+				} catch (Exception e) {
+					Console.WriteLine ("Exception in:" +file);
+					exceptions++;
+				}
+			}
+			Console.WriteLine ("Found:" + found);
+			Console.WriteLine ("Missing:" + missing);
+			Console.WriteLine ("Exceptions:" + exceptions);
+			if (missing > 0)
+				Assert.Fail ();
+		}
+		
+			
 		[Test()]
 		public void TestSimpleCodeCompletion ()
 		{
@@ -874,6 +942,73 @@ namespace MyNamespace
 			Assert.IsNotNull (provider.Find ("Blah"), "method 'Blah' not found.");
 			Assert.IsNotNull (provider.Find ("Bar"), "method 'Bar' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 1932 - [new resolver] fields don't show up unless prefixed with 'this.'
+		/// </summary>
+		[Test()]
+		public void TestBug1932 ()
+		{
+			CombinedProviderTest (
+@"
+namespace MyNamespace
+{
+	partial class FormMain
+	{
+		int field1;
+		string field2;
+	}
+}
+
+namespace MyNamespace
+{
+	public partial class FormMain
+	{
+		private void Bar()
+		{
+			$f$
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("field1"), "field 'field1' not found.");
+				Assert.IsNotNull (provider.Find ("field2"), "field 'field2' not found.");
+			});
+		}
+		
+		/// <summary>
+		/// Bug 1967 - [new resolver] Intellisense doesn't work
+		/// </summary>
+		[Test()]
+		public void TestBug1967 ()
+		{
+			CombinedProviderTest (
+@"
+namespace MyNamespace
+{
+	partial class FormMain
+	{
+		FormMain field1;
+		string field2;
+	}
+}
+
+namespace MyNamespace
+{
+	public partial class FormMain
+	{
+		private void Bar()
+		{
+			$field1.$
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("field1"), "field 'field1' not found.");
+				Assert.IsNotNull (provider.Find ("field2"), "field 'field2' not found.");
+			});
+		}
+		
 		
 		/// <summary>
 		/// Bug 432434 - Code completion doesn't work with subclasses
@@ -1569,57 +1704,7 @@ public class SomeControl : Control
 			Assert.IsNull (provider.Find ("Right"), "enum 'Right' found");
 		}
 		
-		/// <summary>
-		/// Bug 487236 - Object initializer completion uses wrong type
-		/// </summary>
-		[Test()]
-		public void TestBug487236 ()
-		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
-@"
-public class A
-{
-	public string Name { get; set; }
-}
-
-class MyTest
-{
-	public void Test ()
-	{
-		$var x = new A () { $
-	}
-}
-");
-			Assert.IsNotNull (provider, "provider not found.");
-			
-			Assert.IsNotNull (provider.Find ("Name"), "property 'Name' not found.");
-		}
 		
-		/// <summary>
-		/// Bug 487236 - Object initializer completion uses wrong type
-		/// </summary>
-		[Test()]
-		public void TestBug487236B ()
-		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
-@"
-public class A
-{
-	public string Name { get; set; }
-}
-
-class MyTest
-{
-	public void Test ()
-	{
-		$A x = new NotExists () { $
-	}
-}
-");
-			Assert.IsNotNull (provider, "provider not found.");
-			
-			Assert.IsNull (provider.Find ("Name"), "property 'Name' found, but shouldn't'.");
-		}
 		
 		/// <summary>
 		/// Bug 487228 - No intellisense for implicit arrays
@@ -1918,49 +2003,6 @@ public class Program
 		}
 		
 			
-		/// <summary>
-		/// Bug 526667 - wrong code completion in object initialisation (new O() {...};)
-		/// </summary>
-		[Test()]
-		public void TestBug526667 ()
-		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
-@"
-using System;
-using System.Collections.Generic;
-
-public class O
-{
-	public string X {
-		get;
-		set;
-	}
-	public string Y {
-		get;
-		set;
-	}
-	public List<string> Z {
-		get;
-		set;
-	}
-
-	public static O A ()
-	{
-		return new O {
-			X = ""x"",
-			Z = new List<string> (new string[] {
-				""abc"",
-				""def""
-			})
-			$, $
-		};
-	}
-}
-");
-			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("Y"), "property 'Y' not found.");
-		}
-		
 		
 			
 		/// <summary>
@@ -2686,7 +2728,7 @@ class MyTest
 		[Test()]
 		public void TestBug534680 ()
 		{
-				CompletionDataList provider = CreateProvider (
+				CompletionDataList provider = CreateCtrlSpaceProvider (
 @"
 class Foo
 {
@@ -3218,6 +3260,24 @@ class Foo
 		}
 		
 		/// <summary>
+		/// Bug 675956 - Completion in for loops is broken
+		/// </summary>
+		[Test()]
+		public void TestBug675956Case2 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class Test
+{
+    public static void Main (string[] args)
+    {
+        $for (int i = 0; i$
+    }
+}
+");
+			Assert.IsNotNull (provider.Find ("i"), "variable 'i' not found.");
+		}
+		
+		/// <summary>
 		/// Bug 676311 - auto completion too few proposals in fluent API (Moq)
 		/// </summary>
 		[Test()]
@@ -3577,5 +3637,107 @@ public class Test
 			Assert.IsNotNull (provider.Find ("B"), "class 'B' not found.");
 			Assert.IsNotNull (provider.Find ("C"), "class 'C' not found.");
 		}
+		
+		/// <summary>
+		/// Bug 1744 - [New Resolver] Issues while typing a property
+		/// </summary>
+		[Test()]
+		public void Test1744 ()
+		{
+			var provider = CreateProvider (
+@"
+public class Test
+{
+	$public $
+}
+
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("void"), "class 'void' not found.");
+			Assert.IsNotNull (provider.Find ("Test"), "class 'Test' not found.");
+			Assert.IsNotNull (provider.Find ("System"), "namespace 'System' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 1747 - [New Resolver] Code completion issues when declaring a generic dictionary
+		/// </summary>
+		[Test()]
+		public void Test1747 ()
+		{
+			var provider = CreateProvider (
+@"public class Test
+{
+	$Dictionary<int, string> field = new $
+}
+");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("Dictionary<int, string>"), "type 'Dictionary<int, string>' not found.");
+			Assert.AreEqual ("Dictionary<int, string>", provider.DefaultCompletionString);
+		}
+		
+		[Test()]
+		public void Test1747Case2 ()
+		{
+			var provider = CreateProvider (
+@"public class Test
+{
+	$Dictionary<int, string> d$
+}
+");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider not empty.");
+			
+			provider = CreateCtrlSpaceProvider (
+@"public class Test
+{
+	$Dictionary<int, string> $
+}
+");
+			Assert.IsFalse (provider == null || provider.Count == 0, "provider not found.");
+			
+		}
+		
+		[Test()]
+		public void TestCompletionInTryCatch ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class Test { public void TM1 () {} public void TM2 () {} public int TF1; }
+class CCTest {
+void TestMethod ()
+{
+	Test t;
+	try {
+		$t.$
+}
+}
+");
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("TM1"));
+			Assert.IsNotNull (provider.Find ("TM2"));
+			Assert.IsNotNull (provider.Find ("TF1"));
+		}
+		
+
+		[Test()]
+		public void TestPartialCompletionData ()
+		{
+			var provider = CreateProvider (
+@"
+public partial class TestMe
+{
+	partial void MyMethod ();
+	partial void Implemented ();
+}
+
+public partial class TestMe
+{
+	$partial $
+
+	partial void Implemented () { }
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			Assert.IsNotNull (provider.Find ("MyMethod"), "method 'MyMethod' not found.");
+			Assert.IsNull (provider.Find ("Implemented"), "method 'Implemented'  found.");
+		}		
 	}
 }
