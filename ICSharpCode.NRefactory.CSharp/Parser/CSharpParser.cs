@@ -36,7 +36,6 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class CSharpParser
 	{
-		
 		class ConversionVisitor : StructuralVisitor
 		{
 			CompilationUnit unit = new CompilationUnit ();
@@ -622,11 +621,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				EnumMemberDeclaration newField = new EnumMemberDeclaration ();
 				AddAttributeSection (newField, em);
 				newField.AddChild (Identifier.Create (em.Name, Convert (em.Location)), AstNode.Roles.Identifier);
-				
 				if (em.Initializer != null) {
 					newField.AddChild (new CSharpTokenNode (Convert (em.Initializer.Location), 1), EnumMemberDeclaration.Roles.Assign);
 					newField.AddChild ((Expression)em.Initializer.Accept (this), EnumMemberDeclaration.InitializerRole);
 				}
+				Console.WriteLine (newField.StartLocation +"-" + newField.EndLocation);
 				
 				typeStack.Peek ().AddChild (newField, TypeDeclaration.MemberRole);
 			}

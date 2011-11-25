@@ -230,7 +230,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var bracketStack = GetBracketStack (memberText);
 			bool didAppendSemicolon = !appendSemicolon;
-			
 			char lastBracket = '\0';
 			while (bracketStack.Count > 0) {
 				var t = bracketStack.Pop ();
@@ -320,20 +319,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
+			Console.WriteLine ("--");
+			Console.WriteLine (wrapper);
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
-				var parser = new CSharpParser ();
-				return parser.Parse (stream, wrapInClass ? memberLocation.Line - 2 : 0);
+					var parser = new CSharpParser ();
+					return parser.Parse (stream, wrapInClass ? memberLocation.Line - 2 : 0);
 				} catch (Exception){
 					Console.WriteLine ("------");
-					Console.WriteLine ("------");
-					Console.WriteLine ("------");
-					Console.WriteLine ("------");
-					Console.WriteLine ("------");
 					Console.WriteLine (wrapper);
-					Console.WriteLine ("------");
-					Console.WriteLine ("------");
-					Console.WriteLine ("------");
 					throw;
 				}
 			}
@@ -349,7 +343,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		protected Tuple<string, bool> GetMemberTextToCaret ()
 		{
 			int startOffset;
-			if (currentMember != null) {
+			if (currentMember != null && currentType.Kind != TypeKind.Enum) {
 				startOffset = document.GetOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
 			} else if (currentType != null) {
 				startOffset = document.GetOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);

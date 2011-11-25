@@ -89,7 +89,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ICSharpCode.NRefactory.GtkDemo\ICSharpCode.NRefactory.GtkDemo.csproj
+		StartupItem = ICSharpCode.NRefactory.Demo\ICSharpCode.NRefactory.Demo.csproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
