@@ -13,7 +13,7 @@ using RadioBinding = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDe
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class DebugOptions : AbstractXmlFormsProjectOptionPanel
+	public class aaDebugOptions : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

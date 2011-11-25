@@ -13,9 +13,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public partial class WebProjectOptionsPanel : UserControl
 	{
-		private readonly DebugOptions parentPanel;
+		private readonly aaDebugOptions parentPanel;
 		
-		public WebProjectOptionsPanel(DebugOptions parentPanel)
+		public WebProjectOptionsPanel(aaDebugOptions parentPanel)
 		{
 			InitializeComponent();
 			
