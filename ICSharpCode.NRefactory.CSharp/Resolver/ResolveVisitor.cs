@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolver == null)
 				throw new ArgumentNullException("resolver");
-			this.resolver = resolver;
+			this.resolver = resolver.Clone();
 			this.parsedFile = parsedFile;
 			this.navigator = navigator ?? new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Skip, null);
 			this.voidResult = new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
@@ -461,7 +461,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolvedUsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
 				if (parsedFile != null)
-					resolver.CurrentUsingScope = parsedFile.RootUsingScope.Resolve(resolver.CurrentTypeResolveContext);
+					resolver.CurrentUsingScope = parsedFile.RootUsingScope.Resolve(resolver.Compilation);
 				ScanChildren(unit);
 				return voidResult;
 			} finally {
@@ -474,7 +474,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolvedUsingScope previousUsingScope = resolver.CurrentUsingScope;
 			try {
 				if (parsedFile != null) {
-					resolver.CurrentUsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.CurrentTypeResolveContext);
+					resolver.CurrentUsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.Compilation);
 				}
 				ScanChildren(namespaceDeclaration);
 				// merge undecided lambdas before leaving the using scope so that

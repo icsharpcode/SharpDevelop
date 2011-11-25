@@ -80,7 +80,7 @@ namespace OtherNS {
 			UsingScope usingScope = currentTypeDef != null ? parsedFile.GetUsingScope(currentTypeDef.Region.Begin) : parsedFile.RootUsingScope;
 			return new TypeSystemAstBuilder(
 				new CSharpResolver(compilation) {
-					CurrentUsingScope = usingScope.Resolve(compilation.TypeResolveContext),
+					CurrentUsingScope = usingScope.Resolve(compilation),
 					CurrentTypeDefinition = currentTypeDef
 				});
 		}

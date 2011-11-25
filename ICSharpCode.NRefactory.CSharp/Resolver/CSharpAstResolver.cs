@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Threading;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -74,12 +75,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
+		/// Gets the type resolve context for the root resolver.
+		/// </summary>
+		public CSharpTypeResolveContext TypeResolveContext {
+			get { return initialResolverState.CurrentTypeResolveContext; }
+		}
+		
+		/// <summary>
 		/// Applies a resolver navigator. This will resolve the nodes requested by the navigator, and will inform the
 		/// navigator of the results.
 		/// This method must be called as the first operation on the CSharpAstResolver, it is invalid to apply a navigator
 		/// after a portion of the file was already resolved.
 		/// </summary>
-		public void ApplyNavigator(IResolveVisitorNavigator navigator)
+		public void ApplyNavigator(IResolveVisitorNavigator navigator, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (resolveVisitor != null)
 				throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
@@ -91,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Resolves the specified node.
 		/// </summary>
-		public ResolveResult Resolve(AstNode node)
+		public ResolveResult Resolve(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (resolveVisitor == null) {
 				resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
@@ -104,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the expected type for the specified node. This is the type being that a node is being converted to.
 		/// </summary>
-		public IType GetExpectedType(Expression expr)
+		public IType GetExpectedType(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotImplementedException();
 		}
@@ -112,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the conversion that is being applied to the specified expression.
 		/// </summary>
-		public Conversion GetConversion(Expression expr)
+		public Conversion GetConversion(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			throw new NotImplementedException();
 		}

@@ -40,16 +40,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			resolver.CurrentUsingScope = MakeUsingScope(string.Empty);
 		}
 		
-		TypeOrNamespaceReference MakeReference(string namespaceName)
-		{
-			string[] nameParts = namespaceName.Split('.');
-			TypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], SimpleNameLookupMode.TypeInUsingDeclaration);
-			for (int i = 1; i < nameParts.Length; i++) {
-				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0]);
-			}
-			return r;
-		}
-		
 		ResolvedUsingScope MakeUsingScope(string namespaceName = "", string[] usings = null, KeyValuePair<string, string>[] usingAliases = null)
 		{
 			UsingScope usingScope = new UsingScope();
@@ -66,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var pair in usingAliases)
 					usingScope.UsingAliases.Add(new KeyValuePair<string, TypeOrNamespaceReference>(pair.Key, MakeReference(pair.Value)));
 			}
-			return usingScope.Resolve(resolver.CurrentTypeResolveContext);
+			return usingScope.Resolve(resolver.Compilation);
 		}
 		
 		[Test]
@@ -145,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			mainUsingScope.Usings.Add(MakeReference("System"));
 			UsingScope nestedUsingScope = new UsingScope(mainUsingScope, "SomeNamespace");
 			nestedUsingScope.UsingAliases.Add(new KeyValuePair<string, TypeOrNamespaceReference>("x", MakeReference("String")));
-			resolver.CurrentUsingScope = nestedUsingScope.Resolve(compilation.TypeResolveContext);
+			resolver.CurrentUsingScope = nestedUsingScope.Resolve(compilation);
 			
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
 			Assert.AreEqual("System.String", trr.Type.FullName);

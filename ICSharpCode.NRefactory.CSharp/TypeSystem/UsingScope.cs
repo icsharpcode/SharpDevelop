@@ -160,13 +160,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		/// <summary>
 		/// Resolves the namespace represented by this using scope.
 		/// </summary>
-		public ResolvedUsingScope Resolve(ITypeResolveContext context)
+		public ResolvedUsingScope Resolve(ICompilation compilation)
 		{
-			ICompilation compilation = context.Compilation;
 			CacheManager cache = compilation.CacheManager;
 			ResolvedUsingScope resolved = (ResolvedUsingScope)cache.GetShared(this);
 			if (resolved == null) {
-				var csContext = new CSharpTypeResolveContext(compilation.MainAssembly, parent != null ? parent.Resolve(context) : null);
+				var csContext = new CSharpTypeResolveContext(compilation.MainAssembly, parent != null ? parent.Resolve(compilation) : null);
 				resolved = (ResolvedUsingScope)cache.GetOrAddShared(this, new ResolvedUsingScope(csContext, this));
 			}
 			return resolved;

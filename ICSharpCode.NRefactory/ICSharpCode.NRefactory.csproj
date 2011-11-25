@@ -154,7 +154,7 @@
     <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
     <Compile Include="TypeSystem\Implementation\KnownTypeCache.cs" />
     <Compile Include="TypeSystem\Implementation\MergedNamespace.cs" />
-    <Compile Include="TypeSystem\Implementation\MinimalResolveContext.cs" />
+    <Compile Include="TypeSystem\Implementation\MinimalCorlib.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleCompilation.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleConstantValue.cs" />

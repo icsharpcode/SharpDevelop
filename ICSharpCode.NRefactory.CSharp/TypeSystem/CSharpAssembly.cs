@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				result = new List<IAttribute>();
 				foreach (var parsedFile in projectContent.Files.OfType<CSharpParsedFile>()) {
 					var attributes = assemblyAttributes ? parsedFile.AssemblyAttributes : parsedFile.ModuleAttributes;
-					var context = new CSharpTypeResolveContext(this, parsedFile.RootUsingScope.Resolve(new CSharpTypeResolveContext(this)));
+					var context = new CSharpTypeResolveContext(this, parsedFile.RootUsingScope.Resolve(compilation));
 					foreach (var unresolvedAttr in attributes) {
 						result.Add(unresolvedAttr.CreateResolvedAttribute(context));
 					}

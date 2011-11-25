@@ -18,7 +18,10 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Analysis
@@ -26,6 +29,12 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 	[TestFixture]
 	public class DefiniteAssignmentTests
 	{
+		DefiniteAssignmentAnalysis CreateDefiniteAssignmentAnalysis(Statement rootStatement)
+		{
+			var resolver = new CSharpAstResolver(new CSharpResolver(new SimpleCompilation(CecilLoaderTests.Mscorlib)), rootStatement);
+			return new DefiniteAssignmentAnalysis(rootStatement, resolver, CancellationToken.None);
+		}
+		
 		[Test]
 		public void TryFinally()
 		{
@@ -55,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 			Statement stmt5 = tryCatchStatement.FinallyBlock.Statements.Single();
 			LabelStatement label = (LabelStatement)block.Statements.ElementAt(1);
 			
-			DefiniteAssignmentAnalysis da = new DefiniteAssignmentAnalysis(block, CecilLoaderTests.Mscorlib);
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(block);
 			da.Analyze("i");
 			Assert.AreEqual(0, da.UnassignedVariableUses.Count);
 			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(tryCatchStatement));
@@ -105,7 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				TrueStatement = new BlockStatement(),
 				FalseStatement = new BlockStatement()
 			};
-			DefiniteAssignmentAnalysis da = new DefiniteAssignmentAnalysis(ifStmt, CecilLoaderTests.Mscorlib);
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(ifStmt);
 			da.Analyze("i");
 			Assert.AreEqual(0, da.UnassignedVariableUses.Count);
 			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(ifStmt));
@@ -136,7 +145,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 				TrueStatement = new BlockStatement(),
 				FalseStatement = new BlockStatement()
 			};
-			DefiniteAssignmentAnalysis da = new DefiniteAssignmentAnalysis(ifStmt, CecilLoaderTests.Mscorlib);
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(ifStmt);
 			da.Analyze("i");
 			Assert.AreEqual(0, da.UnassignedVariableUses.Count);
 			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(ifStmt));
@@ -155,7 +164,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					new BreakStatement()
 				}
 			};
-			DefiniteAssignmentAnalysis da = new DefiniteAssignmentAnalysis(loop, CecilLoaderTests.Mscorlib);
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(loop);
 			da.Analyze("i");
 			Assert.AreEqual(0, da.UnassignedVariableUses.Count);
 			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(loop));
@@ -187,7 +196,7 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					new AssignmentExpression(new IdentifierExpression("j"), new IdentifierExpression("i"))
 				)};
 			
-			DefiniteAssignmentAnalysis da = new DefiniteAssignmentAnalysis(loop, CecilLoaderTests.Mscorlib);
+			DefiniteAssignmentAnalysis da = CreateDefiniteAssignmentAnalysis(loop);
 			da.Analyze("i");
 			Assert.AreEqual(0, da.UnassignedVariableUses.Count);
 			Assert.AreEqual(DefiniteAssignmentStatus.PotentiallyAssigned, da.GetStatusBefore(loop));

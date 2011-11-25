@@ -123,22 +123,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		static readonly KnownTypeReference[] knownTypeReferences = new KnownTypeReference[KnownTypeCodeCount] {
 			null, // None
-			new KnownTypeReference(KnownTypeCode.Object,   "System", "Object"),
+			new KnownTypeReference(KnownTypeCode.Object,   "System", "Object", baseType: KnownTypeCode.None),
 			new KnownTypeReference(KnownTypeCode.DBNull,   "System", "DBNull"),
-			new KnownTypeReference(KnownTypeCode.Boolean,  "System", "Boolean"),
-			new KnownTypeReference(KnownTypeCode.Char,     "System", "Char"),
-			new KnownTypeReference(KnownTypeCode.SByte,    "System", "SByte"),
-			new KnownTypeReference(KnownTypeCode.Byte,     "System", "Byte"),
-			new KnownTypeReference(KnownTypeCode.Int16,    "System", "Int16"),
-			new KnownTypeReference(KnownTypeCode.UInt16,   "System", "UInt16"),
-			new KnownTypeReference(KnownTypeCode.Int32,    "System", "Int32"),
-			new KnownTypeReference(KnownTypeCode.UInt32,   "System", "UInt32"),
-			new KnownTypeReference(KnownTypeCode.Int64,    "System", "Int64"),
-			new KnownTypeReference(KnownTypeCode.UInt64,   "System", "UInt64"),
-			new KnownTypeReference(KnownTypeCode.Single,   "System", "Single"),
-			new KnownTypeReference(KnownTypeCode.Double,   "System", "Double"),
-			new KnownTypeReference(KnownTypeCode.Decimal,  "System", "Decimal"),
-			new KnownTypeReference(KnownTypeCode.DateTime, "System", "DateTime"),
+			new KnownTypeReference(KnownTypeCode.Boolean,  "System", "Boolean",  baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Char,     "System", "Char",     baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.SByte,    "System", "SByte",    baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Byte,     "System", "Byte",     baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Int16,    "System", "Int16",    baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.UInt16,   "System", "UInt16",   baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Int32,    "System", "Int32",    baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.UInt32,   "System", "UInt32",   baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Int64,    "System", "Int64",    baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.UInt64,   "System", "UInt64",   baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Single,   "System", "Single",   baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Double,   "System", "Double",   baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.Decimal,  "System", "Decimal",  baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.DateTime, "System", "DateTime", baseType: KnownTypeCode.ValueType),
 			null,
 			new KnownTypeReference(KnownTypeCode.String,    "System", "String"),
 			new KnownTypeReference(KnownTypeCode.Void,      "System", "Void"),
@@ -146,21 +146,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			new KnownTypeReference(KnownTypeCode.Array,     "System", "Array"),
 			new KnownTypeReference(KnownTypeCode.Attribute, "System", "Attribute"),
 			new KnownTypeReference(KnownTypeCode.ValueType, "System", "ValueType"),
-			new KnownTypeReference(KnownTypeCode.Enum,      "System", "Enum"),
+			new KnownTypeReference(KnownTypeCode.Enum,      "System", "Enum", baseType: KnownTypeCode.ValueType),
 			new KnownTypeReference(KnownTypeCode.Delegate,  "System", "Delegate"),
-			new KnownTypeReference(KnownTypeCode.MulticastDelegate, "System", "MulticastDelegate"),
+			new KnownTypeReference(KnownTypeCode.MulticastDelegate, "System", "MulticastDelegate", baseType: KnownTypeCode.Delegate),
 			new KnownTypeReference(KnownTypeCode.Exception, "System", "Exception"),
-			new KnownTypeReference(KnownTypeCode.IntPtr,    "System", "IntPtr"),
-			new KnownTypeReference(KnownTypeCode.UIntPtr,   "System", "UIntPtr"),
+			new KnownTypeReference(KnownTypeCode.IntPtr,    "System", "IntPtr", baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.UIntPtr,   "System", "UIntPtr", baseType: KnownTypeCode.ValueType),
 			new KnownTypeReference(KnownTypeCode.IEnumerable,    "System.Collections", "IEnumerable"),
 			new KnownTypeReference(KnownTypeCode.IEnumerator,    "System.Collections", "IEnumerator"),
 			new KnownTypeReference(KnownTypeCode.IEnumerableOfT, "System.Collections.Generic", "IEnumerable", 1),
 			new KnownTypeReference(KnownTypeCode.IEnumeratorOfT, "System.Collections.Generic", "IEnumerator", 1),
 			new KnownTypeReference(KnownTypeCode.IListOfT,       "System.Collections.Generic", "IList", 1),
 			new KnownTypeReference(KnownTypeCode.Task,        "System.Threading.Tasks", "Task"),
-			new KnownTypeReference(KnownTypeCode.TaskOfT,     "System.Threading.Tasks", "Task", 1),
-			new KnownTypeReference(KnownTypeCode.NullableOfT, "System", "Nullable", 1),
-			new KnownTypeReference(KnownTypeCode.IDisposable, "System", "IDispoable"),
+			new KnownTypeReference(KnownTypeCode.TaskOfT,     "System.Threading.Tasks", "Task", 1, baseType: KnownTypeCode.Task),
+			new KnownTypeReference(KnownTypeCode.NullableOfT, "System", "Nullable", 1, baseType: KnownTypeCode.ValueType),
+			new KnownTypeReference(KnownTypeCode.IDisposable, "System", "IDisposable"),
 		};
 		
 		/// <summary>
@@ -366,13 +366,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		readonly string namespaceName;
 		readonly string name;
 		readonly int typeParameterCount;
+		internal readonly KnownTypeCode baseType;
 		
-		private KnownTypeReference(KnownTypeCode knownTypeCode, string namespaceName, string name, int typeParameterCount = 0)
+		private KnownTypeReference(KnownTypeCode knownTypeCode, string namespaceName, string name, int typeParameterCount = 0, KnownTypeCode baseType = KnownTypeCode.Object)
 		{
 			this.knownTypeCode = knownTypeCode;
 			this.namespaceName = namespaceName;
 			this.name = name;
 			this.typeParameterCount = typeParameterCount;
+			this.baseType = baseType;
 		}
 		
 		public KnownTypeCode KnownTypeCode {

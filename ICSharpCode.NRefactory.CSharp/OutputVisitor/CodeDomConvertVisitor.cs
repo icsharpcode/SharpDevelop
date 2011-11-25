@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CodeDomConvertVisitor : IAstVisitor<object, CodeObject>
 	{
 		//ICompilation compilation = MinimalResolveContext.Instance;
-		ResolveVisitor resolveVisitor;
+		CSharpAstResolver resolver;
 		bool useFullyQualifiedTypeNames;
 		
 		/// <summary>
@@ -60,23 +60,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <remarks>
 		/// This conversion process requires a resolver because it needs to distinguish field/property/event references etc.
 		/// </remarks>
-		public CodeCompileUnit Convert(CompilationUnit compilationUnit, ICompilation compilation)
+		public CodeCompileUnit Convert(ICompilation compilation, CompilationUnit compilationUnit, CSharpParsedFile parsedFile)
 		{
 			if (compilationUnit == null)
 				throw new ArgumentNullException("compilationUnit");
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			
-			throw new NotImplementedException();
-			/*
-			using (var ctx = context.Synchronize()) {
-				ResolveVisitor resolveVisitor = new ResolveVisitor(new CSharpResolver(ctx), parsedFile);
-				resolveVisitor.Scan(compilationUnit);
-				return (CodeCompileUnit)Convert(compilationUnit, resolveVisitor);
-			}*/
+			CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
+			return (CodeCompileUnit)Convert(compilationUnit, resolver);
 		}
 		
-		/*
 		/// <summary>
 		/// Converts a C# AST node to CodeDom.
 		/// </summary>
@@ -87,29 +81,26 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <remarks>
 		/// This conversion process requires a resolver because it needs to distinguish field/property/event references etc.
 		/// </remarks>
-		public CodeObject Convert(AstNode node, ResolveVisitor resolveVisitor)
+		public CodeObject Convert(AstNode node, CSharpAstResolver resolver)
 		{
 			if (node == null)
 				throw new ArgumentNullException("node");
-			if (resolveVisitor == null)
-				throw new ArgumentNullException("resolveVisitor");
+			if (resolver == null)
+				throw new ArgumentNullException("resolver");
 			try {
-				this.resolveVisitor = resolveVisitor;
-				this.context = resolveVisitor.TypeResolveContext;
+				this.resolver = resolver;
 				return node.AcceptVisitor(this);
 			} finally {
-				this.resolveVisitor = null;
-				this.context = MinimalResolveContext.Instance;
+				this.resolver = null;
 			}
 		}
-		*/
 		
 		ResolveResult Resolve(AstNode node)
 		{
-			if (resolveVisitor == null)
+			if (resolver == null)
 				return ErrorResolveResult.UnknownError;
 			else
-				return resolveVisitor.GetResolveResult(node);
+				return resolver.Resolve(node);
 		}
 		
 		CodeExpression Convert(Expression expr)

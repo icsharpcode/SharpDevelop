@@ -17,8 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.IO;
+using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using Microsoft.CSharp;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -27,33 +34,31 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CodeDomConvertVisitorTests : ResolverTestBase
 	{
 		CodeDomConvertVisitor convertVisitor;
-		CSharpResolver resolver;
+		CSharpParsedFile parsedFile;
 		
 		public override void SetUp()
 		{
 			base.SetUp();
-			resolver = new CSharpResolver(compilation);
-			throw new NotImplementedException();
-			/*resolver.CurrentUsingScope = new UsingScope();
-			resolver.CurrentUsingScope.Usings.Add(MakeReference("System"));
-			resolver.CurrentUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
-			resolver.CurrentUsingScope.Usings.Add(MakeReference("System.Linq"));
-			*/
+			parsedFile = new CSharpParsedFile("test.cs", new UsingScope());
+			parsedFile.RootUsingScope.Usings.Add(MakeReference("System"));
+			parsedFile.RootUsingScope.Usings.Add(MakeReference("System.Collections.Generic"));
+			parsedFile.RootUsingScope.Usings.Add(MakeReference("System.Linq"));
+			
 			convertVisitor = new CodeDomConvertVisitor();
 			convertVisitor.UseFullyQualifiedTypeNames = true;
 		}
 		
 		string Convert(Expression expr)
 		{
-			throw new NotImplementedException();
-			/*
-			ResolveVisitor rv = new ResolveVisitor(resolver, null);
-			rv.Scan(expr);
-			var codeExpr = (CodeExpression)convertVisitor.Convert(expr, rv);
+			CSharpResolver resolver = new CSharpResolver(compilation);
+			resolver.CurrentUsingScope = parsedFile.RootUsingScope.Resolve(compilation);
+			resolver.CurrentTypeDefinition = compilation.FindType(KnownTypeCode.Object).GetDefinition();
+			var codeExpr = (CodeExpression)convertVisitor.Convert(expr, new CSharpAstResolver(resolver, expr, parsedFile));
+			
 			StringWriter writer = new StringWriter();
 			writer.NewLine = " ";
 			new CSharpCodeProvider().GenerateCodeFromExpression(codeExpr, writer, new CodeGeneratorOptions { IndentString = " " });
-			return Regex.Replace(writer.ToString(), @"\s+", " ");*/
+			return Regex.Replace(writer.ToString(), @"\s+", " ");
 		}
 		
 		[Test]
