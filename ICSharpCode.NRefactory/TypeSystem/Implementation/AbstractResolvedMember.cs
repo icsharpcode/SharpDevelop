@@ -69,9 +69,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return unresolved.IsOverridable; }
 		}
 		
-		public IMemberReference ToMemberReference()
+		public virtual IMemberReference ToMemberReference()
 		{
-			throw new NotImplementedException();
+			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
 		}
 	}
 }

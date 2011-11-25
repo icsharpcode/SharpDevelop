@@ -339,7 +339,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				else
 					return new DefaultValueExpression(ConvertType(type));
 			} else if (type.Kind == TypeKind.Enum) {
-				throw new NotImplementedException();
+				return new CastExpression(ConvertType(type), ConvertConstantValue(type.GetDefinition().EnumUnderlyingType, constantValue));
 			} else {
 				return new PrimitiveExpression(constantValue);
 			}

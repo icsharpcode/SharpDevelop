@@ -180,10 +180,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region AddCandidate
 		public OverloadResolutionErrors AddCandidate(IParameterizedMember member)
 		{
+			return AddCandidate(member, OverloadResolutionErrors.None);
+		}
+		
+		public OverloadResolutionErrors AddCandidate(IParameterizedMember member, OverloadResolutionErrors additionalErrors)
+		{
 			if (member == null)
 				throw new ArgumentNullException("member");
 			
 			Candidate c = new Candidate(member, false);
+			if (additionalErrors != OverloadResolutionErrors.None)
+				c.AddError(additionalErrors);
 			if (CalculateCandidate(c)) {
 				//candidates.Add(c);
 			}
@@ -192,6 +199,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			    && member.Parameters[member.Parameters.Count - 1].IsParams)
 			{
 				Candidate expandedCandidate = new Candidate(member, true);
+				if (additionalErrors != OverloadResolutionErrors.None)
+					expandedCandidate.AddError(additionalErrors);
 				// consider expanded form only if it isn't obviously wrong
 				if (CalculateCandidate(expandedCandidate)) {
 					//candidates.Add(expandedCandidate);

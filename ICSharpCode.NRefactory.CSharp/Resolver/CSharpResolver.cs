@@ -1760,19 +1760,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <param name="argumentNames">
 		/// The argument names. Pass the null string for positional arguments.
 		/// </param>
+		/// <param name="allowProtectedAccess">
+		/// Whether to allow calling protected constructors.
+		/// This should be false except when resolving constructor initializers.
+		/// </param>
 		/// <returns>InvocationResolveResult or ErrorResolveResult</returns>
-		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null)
+		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null, bool allowProtectedAccess = false)
 		{
 			if (type.Kind == TypeKind.Delegate && arguments.Length == 1) {
 				return Convert(arguments[0], type);
 			}
 			OverloadResolution or = new OverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
 			MemberLookup lookup = CreateMemberLookup();
-			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(type);
-			var constructors = type.GetConstructors();
-			foreach (IMethod ctor in constructors) {
+			foreach (IMethod ctor in type.GetConstructors()) {
 				if (lookup.IsAccessible(ctor, allowProtectedAccess))
 					or.AddCandidate(ctor);
+				else
+					or.AddCandidate(ctor, OverloadResolutionErrors.Inaccessible);
 			}
 			if (or.BestCandidate != null) {
 				return or.CreateResolveResult(null);

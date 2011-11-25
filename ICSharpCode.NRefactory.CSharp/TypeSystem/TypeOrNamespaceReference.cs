@@ -54,8 +54,13 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		IType ITypeReference.Resolve(ITypeResolveContext context)
 		{
-			// TODO: use the correct compilation
-			return ResolveType(new CSharpResolver((CSharpTypeResolveContext)context));
+			if (context.CurrentAssembly != context.Compilation.MainAssembly) {
+				// The type needs to be resolved in a different compilation.
+				throw new NotImplementedException();
+			} else {
+				// Resolve in current context.
+				return ResolveType(new CSharpResolver((CSharpTypeResolveContext)context));
+			}
 		}
 	}
 }

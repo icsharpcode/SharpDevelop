@@ -95,6 +95,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return null;
 		}
 		
+		public override IMemberReference ToMemberReference()
+		{
+			if (this.TypeParameters.Count == 0)
+				return base.ToMemberReference();
+			// TODO: Implement SpecializedMethod.ToMemberReference()
+			throw new NotImplementedException();
+		}
+		
 		/// <summary>
 		/// Gets the type arguments passed to this method.
 		/// </summary>

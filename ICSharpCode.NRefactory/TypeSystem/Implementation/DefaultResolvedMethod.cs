@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -57,6 +58,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool IsOperator {
 			get { return ((IUnresolvedMethod)unresolved).IsOperator; }
+		}
+		
+		public override IMemberReference ToMemberReference()
+		{
+			return new DefaultMemberReference(
+				this.EntityType, this.DeclaringType.ToTypeReference(), this.Name, this.TypeParameters.Count,
+				this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 		}
 	}
 }

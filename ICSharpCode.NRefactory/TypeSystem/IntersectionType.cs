@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override ITypeReference ToTypeReference()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 		
 		public override IEnumerable<IMethod> GetMethods(Predicate<IUnresolvedMethod> filter, GetMemberOptions options)

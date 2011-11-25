@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -78,6 +79,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool IsIndexer {
 			get { return unresolved.IsIndexer; }
+		}
+		
+		public override IMemberReference ToMemberReference()
+		{
+			return new DefaultMemberReference(
+				this.EntityType, this.DeclaringType.ToTypeReference(), this.Name, 0,
+				this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 		}
 	}
 }

@@ -2419,6 +2419,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (navigator.Scan(foreachStatement.VariableType) == ResolveVisitorNavigationMode.Resolve) {
 					IType collectionType = Resolve(foreachStatement.InExpression).Type;
 					IType elementType = GetElementType(collectionType, resolver.Compilation, false);
+					StoreCurrentState(foreachStatement.VariableType);
 					StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
 					v = MakeVariable(elementType, foreachStatement.VariableNameToken);
 				} else {
@@ -3562,7 +3563,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			string[] argumentNames;
 			ResolveResult[] arguments = GetArguments(constructorInitializer.Arguments, out argumentNames);
-			ResolveResult rr = resolver.ResolveObjectCreation(target.Type, arguments, argumentNames);
+			ResolveResult rr = resolver.ResolveObjectCreation(target.Type, arguments, argumentNames, allowProtectedAccess: true);
 			ProcessConversionsInInvocation(null, constructorInitializer.Arguments, rr as CSharpInvocationResolveResult);
 			return rr;
 		}

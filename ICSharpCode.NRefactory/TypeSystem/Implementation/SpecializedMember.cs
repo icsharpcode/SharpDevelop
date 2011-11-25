@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -49,7 +50,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IMemberReference ToMemberReference()
 		{
-			throw new NotImplementedException();
+			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
 		}
 		
 		internal static TypeVisitor GetSubstitution(IType declaringType)
@@ -259,6 +260,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IParameter> Parameters {
 			get { return parameters; }
+		}
+		
+		public override IMemberReference ToMemberReference()
+		{
+			return new DefaultMemberReference(
+				this.EntityType, this.DeclaringType.ToTypeReference(), this.Name, 0,
+				this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 		}
 		
 		public override string ToString()

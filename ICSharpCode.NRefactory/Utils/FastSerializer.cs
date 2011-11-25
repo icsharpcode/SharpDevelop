@@ -353,7 +353,7 @@ namespace ICSharpCode.NRefactory.Utils
 			bool isArray = type.IsArray;
 			if (isArray) {
 				if (type.GetArrayRank() != 1)
-					throw new NotImplementedException();
+					throw new NotSupportedException();
 				type = type.GetElementType();
 				if (!type.IsValueType) {
 					return delegate (SerializationContext context, object array) {
@@ -538,7 +538,7 @@ namespace ICSharpCode.NRefactory.Utils
 			bool isArray = type.IsArray;
 			if (isArray) {
 				if (type.GetArrayRank() != 1)
-					throw new NotImplementedException();
+					throw new NotSupportedException();
 				type = type.GetElementType();
 				if (!type.IsValueType) {
 					return delegate (SerializationContext context, object array) {
@@ -1011,7 +1011,7 @@ namespace ICSharpCode.NRefactory.Utils
 			bool isArray = type.IsArray;
 			if (isArray) {
 				if (type.GetArrayRank() != 1)
-					throw new NotImplementedException();
+					throw new NotSupportedException();
 				type = type.GetElementType();
 				if (!type.IsValueType) {
 					return delegate (DeserializationContext context, object arrayInstance) {
