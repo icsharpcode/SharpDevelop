@@ -10,6 +10,8 @@
 
 namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
     using ICSharpCode.AspNet.Mvc;
+    using System.Collections.Generic;
+    using System.Reflection;
     using System;
     
     
@@ -18,10 +20,15 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         private global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost hostValue;
         
         
-        #line 53 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+        #line 64 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 	MvcTextTemplateHost MvcHost {
 		get { return (MvcTextTemplateHost)Host; }
+	}
+	
+	public class ModelProperty
+	{
+		public string Name { get; set; }
 	}
 	
 	public string GetViewPageType()
@@ -31,6 +38,20 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
 			return String.Format("<{0}>", viewDataTypeName);
 		}
 		return String.Empty;
+	}
+	
+	public IEnumerable<ModelProperty> GetModelProperties()
+	{
+		var properties = new List<ModelProperty>();
+		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
+			properties.Add(CreateModelProperty(propertyInfo));
+		}
+		return properties;
+	}
+	
+	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	{
+		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 
         #line default
@@ -49,92 +70,92 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         public virtual string TransformText() {
             this.GenerationEnvironment = null;
             
-            #line 3 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 5 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
  if (MvcHost.IsPartialView) { 
             
             #line default
             #line hidden
             
-            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 6 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("<%@ Control Language=\"C#\" Inherits=\"System.Web.Mvc.ViewUserControl");
             
             #line default
             #line hidden
             
-            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 6 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
-            
-            #line default
-            #line hidden
-            
-            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
-            this.Write("\" %>\r\n\r\n");
             
             #line default
             #line hidden
             
             #line 6 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write("\" %>\r\n\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 8 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
  } else if (MvcHost.IsContentPage) { 
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("<%@ Page Language=\"C#\" MasterPageFile=\"");
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.MasterPageFile ));
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\" Inherits=\"System.Web.Mvc.ViewPage");
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\" %>\r\n\r\n<asp:Content ID=\"Content1\" ContentPlaceHolderID=\"Title\" runat=\"server\">\r\n" +
                     "");
             
             #line default
             #line hidden
             
-            #line 10 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 12 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.ViewName ));
             
             #line default
             #line hidden
             
-            #line 10 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 12 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\r\n</asp:Content>\r\n\r\n<asp:Content ID=\"Content2\" ContentPlaceHolderID=\"");
             
             #line default
             #line hidden
             
-            #line 13 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 15 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.PrimaryContentPlaceHolderID ));
             
             #line default
             #line hidden
             
-            #line 13 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 15 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\" runat=\"server\">\r\n");
             
             #line default
             #line hidden
             
-            #line 14 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 16 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 		PushIndent("\t");
 	} else {
@@ -143,37 +164,37 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 18 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 20 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("<%@ Page Language=\"C#\" Inherits=\"System.Web.Mvc.ViewPage");
             
             #line default
             #line hidden
             
-            #line 18 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 20 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
             
             #line default
             #line hidden
             
-            #line 18 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 20 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\" %>\r\n\r\n<!DOCTYPE html>\r\n<html>\r\n\t<head runat=\"server\">\r\n\t\t<title>");
             
             #line default
             #line hidden
             
-            #line 23 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 25 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.ViewName ));
             
             #line default
             #line hidden
             
-            #line 23 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 25 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("</title>\r\n\t</head>\r\n\t<body>\r\n");
             
             #line default
             #line hidden
             
-            #line 26 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 28 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
  
 		PushIndent("\t\t");
 	} 
@@ -182,27 +203,75 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 30 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 32 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("<fieldset>\r\n\t<legend>");
             
             #line default
             #line hidden
             
-            #line 31 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 33 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.ViewDataType.Name ));
             
             #line default
             #line hidden
             
-            #line 31 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
-            this.Write("</legend>\r\n</fieldset>\r\n<% using (Html.BeginForm()) { %>\r\n\t<p>\r\n\t\t<input type=\"su" +
-                    "bmit\" value=\"Delete\"/> |\r\n\t\t<%: Html.ActionLink(\"Back\", \"Index\") %>\r\n\t</p>\r\n<% }" +
-                    " %>\r\n");
+            #line 33 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write("</legend>\r\n");
             
             #line default
             #line hidden
             
-            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 34 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+ foreach (ModelProperty modelProperty in GetModelProperties()) { 
+            
+            #line default
+            #line hidden
+            
+            #line 35 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write("\t\r\n\t<div class=\"display-label\">\r\n\t\t<%: Html.LabelFor(model => model.");
+            
+            #line default
+            #line hidden
+            
+            #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
+            
+            #line default
+            #line hidden
+            
+            #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write(") %>\r\n\t</div>\r\n\t<div class=\"display-field\">\r\n\t\t<%: Html.DisplayFor(model => model" +
+                    ".");
+            
+            #line default
+            #line hidden
+            
+            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
+            
+            #line default
+            #line hidden
+            
+            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write(") %>\r\n\t</div>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 42 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+ } 
+            
+            #line default
+            #line hidden
+            
+            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            this.Write("</fieldset>\r\n<% using (Html.BeginForm()) { %>\r\n\t<p>\r\n\t\t<input type=\"submit\" value" +
+                    "=\"Delete\"/> |\r\n\t\t<%: Html.ActionLink(\"Back\", \"Index\") %>\r\n\t</p>\r\n<% } %>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 	if (MvcHost.IsPartialView) {
 		// Do nothing.
@@ -213,13 +282,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 45 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 56 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("</asp:Content>\r\n");
             
             #line default
             #line hidden
             
-            #line 46 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 	} else { 
 		PopIndent();
@@ -228,13 +297,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 61 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\t</body>\r\n</html>\r\n");
             
             #line default
             #line hidden
             
-            #line 52 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 63 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
  } 
             
             #line default

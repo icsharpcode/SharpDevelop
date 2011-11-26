@@ -1,5 +1,7 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
 <#@ output extension=".cshtml" #>
 <#= GetModelDirective() #>
 
@@ -30,6 +32,15 @@
 #>
 <fieldset>
 	<legend><#= MvcHost.ViewDataType.Name #></legend>
+<# foreach (ModelProperty modelProperty in GetModelProperties()) { #>
+	
+	<div class="display-label">
+		@Html.LabelFor(model => model.<#= modelProperty.Name #>)
+	</div>
+	<div class="display-field">
+		@Html.DisplayFor(model => model.<#= modelProperty.Name #>)
+	</div>
+<# } #>
 </fieldset>
 @using (Html.BeginForm()) {
 	<p>
@@ -51,6 +62,11 @@
 		get { return (MvcTextTemplateHost)Host; }
 	}
 	
+	public class ModelProperty
+	{
+		public string Name { get; set; }
+	}
+	
 	public string GetModelDirective()
 	{
 		string viewDataTypeName = MvcHost.ViewDataTypeName;
@@ -58,5 +74,19 @@
 			return String.Format("@model {0}", viewDataTypeName);
 		}
 		return String.Empty;
+	}
+	
+	public IEnumerable<ModelProperty> GetModelProperties()
+	{
+		var properties = new List<ModelProperty>();
+		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
+			properties.Add(CreateModelProperty(propertyInfo));
+		}
+		return properties;
+	}
+	
+	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	{
+		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 #>

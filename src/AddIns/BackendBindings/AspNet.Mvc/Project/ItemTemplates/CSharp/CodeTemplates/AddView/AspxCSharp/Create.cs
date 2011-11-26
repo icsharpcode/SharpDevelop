@@ -223,7 +223,7 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line hidden
             
             #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Create.tt"
- foreach (var modelProperty in GetModelProperties()) { 
+ foreach (ModelProperty modelProperty in GetModelProperties()) { 
             
             #line default
             #line hidden

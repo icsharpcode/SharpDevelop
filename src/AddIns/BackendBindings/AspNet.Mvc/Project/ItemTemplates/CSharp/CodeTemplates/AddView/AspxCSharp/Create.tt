@@ -34,7 +34,7 @@
 	<fieldset>
 		<legend><#= MvcHost.ViewDataType.Name #></legend>
 		
-<# foreach (var modelProperty in GetModelProperties()) { #>
+<# foreach (ModelProperty modelProperty in GetModelProperties()) { #>
 		<div class="editor-label">
 			<%: Html.LabelFor(model => model.<#= modelProperty.Name #>) %>
 		</div>
