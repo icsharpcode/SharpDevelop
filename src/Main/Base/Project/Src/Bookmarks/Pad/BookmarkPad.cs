@@ -154,14 +154,15 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void BookmarkManagerAdded(object sender, BookmarkEventArgs e)
 		{
-			AddMark((SDBookmark)e.Bookmark);
+			AddMark(e.Bookmark);
 		}
 		
 		void BookmarkManagerRemoved(object sender, BookmarkEventArgs e)
 		{
 			if (ShowBookmarkInThisPad(e.Bookmark)) {
 				var model = listView.Remove(e.Bookmark);
-				model.PropertyChanged -= OnModelPropertyChanged;
+				if (model != null)
+					model.PropertyChanged -= OnModelPropertyChanged;
 			}
 		}
 		
