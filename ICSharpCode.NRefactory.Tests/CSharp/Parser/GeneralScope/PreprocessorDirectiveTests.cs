@@ -35,15 +35,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
 			Assert.AreEqual(0, ns.Members.Count);
-			Assert.AreEqual(7, ns.Children.Count());
 			
-			Assert.AreEqual(AstNode.Roles.Keyword, ns.Children.ElementAt(0).Role);
-			Assert.AreEqual(AstNode.Roles.Identifier, ns.Children.ElementAt(1).Role);
-			Assert.AreEqual(AstNode.Roles.LBrace, ns.Children.ElementAt(2).Role);
-			Assert.AreEqual(AstNode.Roles.PreProcessorDirective, ns.Children.ElementAt(3).Role);
-			Assert.AreEqual(AstNode.Roles.Comment, ns.Children.ElementAt(4).Role);
-			Assert.AreEqual(AstNode.Roles.PreProcessorDirective, ns.Children.ElementAt(5).Role);
-			Assert.AreEqual(AstNode.Roles.RBrace, ns.Children.ElementAt(6).Role);
+			Assert.AreEqual(new Role[] {
+			                	AstNode.Roles.Keyword,
+			                	AstNode.Roles.Identifier,
+			                	AstNode.Roles.LBrace,
+			                	AstNode.Roles.PreProcessorDirective,
+			                	AstNode.Roles.Comment,
+			                	AstNode.Roles.PreProcessorDirective,
+			                	AstNode.Roles.RBrace
+			                }, ns.Children.Select(c => c.Role).ToArray());
 			
 			var pp = ns.GetChildrenByRole(AstNode.Roles.PreProcessorDirective);
 			
@@ -53,16 +54,25 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(new TextLocation(2, 2), pp.First().StartLocation);
 			Assert.AreEqual(new TextLocation(2, 15), pp.First().EndLocation);
 			
-			var c = ns.GetChildByRole(AstNode.Roles.Comment);
-			Assert.AreEqual(CommentType.InactiveCode, c.CommentType);
-			Assert.AreEqual(new TextLocation(3, 1), c.StartLocation);
-			Assert.AreEqual(new TextLocation(4, 2), c.EndLocation);
-			Assert.AreEqual("\tclass A {}\n\t", c.Content.Replace("\r", ""));
+			var comment = ns.GetChildByRole(AstNode.Roles.Comment);
+			Assert.AreEqual(CommentType.InactiveCode, comment.CommentType);
+			Assert.AreEqual(new TextLocation(3, 1), comment.StartLocation);
+			Assert.AreEqual(new TextLocation(4, 2), comment.EndLocation);
+			Assert.AreEqual("\tclass A {}\n\t", comment.Content.Replace("\r", ""));
 			
 			Assert.AreEqual(PreProcessorDirectiveType.Endif, pp.Last().Type);
 			Assert.AreEqual(string.Empty, pp.Last().Argument);
 			Assert.AreEqual(new TextLocation(4, 2), pp.First().StartLocation);
 			Assert.AreEqual(new TextLocation(4, 8), pp.First().EndLocation);
+		}
+		
+		[Test]
+		public void PragmaWarning()
+		{
+			string program = "#pragma warning disable 809";
+			var ppd = ParseUtilCSharp.ParseGlobal<PreProcessorDirective>(program);
+			Assert.AreEqual(PreProcessorDirectiveType.Pragma, ppd.Type);
+			Assert.AreEqual("warning disable 809", ppd.Argument);
 		}
 	}
 }

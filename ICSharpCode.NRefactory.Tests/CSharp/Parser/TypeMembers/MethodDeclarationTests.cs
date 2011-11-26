@@ -167,6 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 ",
 				new TypeDeclaration {
 					ClassType = ClassType.Interface,
+					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
 							ReturnType = new SimpleType("T"),
@@ -192,6 +193,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 ",
 				new TypeDeclaration {
 					ClassType = ClassType.Interface,
+					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
 							ReturnType = new PrimitiveType("void"),

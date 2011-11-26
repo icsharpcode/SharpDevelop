@@ -197,7 +197,7 @@
     <Compile Include="TypeSystem\IVariable.cs" />
     <Compile Include="TypeSystem\PointerType.cs" />
     <Compile Include="TypeSystem\ReflectionHelper.cs" />
-    <Compile Include="TypeSystem\SharedTypes.cs" />
+    <Compile Include="TypeSystem\SpecialType.cs" />
     <Compile Include="Utils\7BitEncodedInts.cs" />
     <Compile Include="Utils\BitVector16.cs" />
     <Compile Include="Utils\BusyManager.cs" />
