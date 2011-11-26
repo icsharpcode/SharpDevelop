@@ -297,11 +297,37 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test]
+		public void EnumWithInitializerAndWindowsNewline()
+		{
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { Val1 = 10\r\n}");
+			EnumMemberDeclaration member = (EnumMemberDeclaration)td.Members.Single();
+			Assert.AreEqual("Val1", member.Name);
+			Assert.AreEqual(10, ((PrimitiveExpression)member.Initializer).Value);
+			Assert.AreEqual("10", ((PrimitiveExpression)member.Initializer).LiteralValue);
+		}
+		
+		[Test]
 		public void EnumWithBaseType()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum : short { }");
 			Assert.AreEqual("MyEnum", td.Name);
 			Assert.AreEqual("short", ((PrimitiveType)td.BaseTypes.Single()).Keyword);
+		}
+		
+		[Test]
+		public void EnumWithIncorrectNewlineAfterIntegerLiteral()
+		{
+			ParseUtilCSharp.AssertGlobal(
+				"enum DisplayFlags { D = 4\r\r\n}",
+				new TypeDeclaration {
+					ClassType = ClassType.Enum,
+					Name = "DisplayFlags",
+					Members = {
+						new EnumMemberDeclaration {
+							Name = "D",
+							Initializer = new PrimitiveExpression(4)
+						}
+					}});
 		}
 	}
 }

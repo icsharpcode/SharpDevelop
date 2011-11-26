@@ -75,11 +75,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public void OpenBrace(BraceStyle style)
 		{
+			bool isAtStartOfLine = needsIndent;
 			switch (style) {
 			case BraceStyle.DoNotChange:
 			case BraceStyle.EndOfLine:
 				WriteIndentation();
-				textWriter.Write(' ');
+				if (!isAtStartOfLine)
+					textWriter.Write(' ');
 				textWriter.Write('{');
 				break;
 			case BraceStyle.EndOfLineWithoutSpace:
@@ -87,7 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				textWriter.Write('{');
 				break;
 			case BraceStyle.NextLine:
-				NewLine ();
+				if (!isAtStartOfLine)
+					NewLine();
 				WriteIndentation();
 				textWriter.Write('{');
 				break;

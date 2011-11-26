@@ -25,18 +25,18 @@ namespace ICSharpCode.NRefactory.CSharp
 	[TestFixture]
 	public class CSharpOutputVisitorTests
 	{
-		void AssertOutput(string expected, Expression expr, CSharpFormattingOptions policy = null)
+		void AssertOutput(string expected, AstNode node, CSharpFormattingOptions policy = null)
 		{
 			if (policy == null)
-				policy = new CSharpFormattingOptions();;
+				policy = new CSharpFormattingOptions();
 			StringWriter w = new StringWriter();
 			w.NewLine = "\n";
-			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "\t" }, policy), null);
+			node.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "$" }, policy), null);
 			Assert.AreEqual(expected.Replace("\r", ""), w.ToString());
 		}
 		
-		[Test, Ignore("Incorrect whitespace")]
-		public void AssignmentInCollectionInitialize()
+		[Test]
+		public void AssignmentInCollectionInitializer()
 		{
 			Expression expr = new ObjectCreateExpression {
 				Type = new SimpleType("List"),
@@ -47,7 +47,23 @@ namespace ICSharpCode.NRefactory.CSharp
 				)
 			};
 			
-			AssertOutput("new List {\n  {\n    a = 1\n  }\n}", expr);
+			AssertOutput("new List {\n${\n$$a = 1\n$}\n}", expr);
+		}
+		
+		[Test]
+		public void EnumDeclarationWithInitializers()
+		{
+			TypeDeclaration type = new TypeDeclaration {
+				ClassType = ClassType.Enum,
+				Name = "DisplayFlags",
+				Members = {
+					new EnumMemberDeclaration {
+						Name = "D",
+						Initializer = new PrimitiveExpression(4)
+					}
+				}};
+			
+			AssertOutput("enum DisplayFlags\n{\n$D = 4\n}\n", type);
 		}
 	}
 }
