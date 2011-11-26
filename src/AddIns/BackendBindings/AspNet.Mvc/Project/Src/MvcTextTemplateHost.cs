@@ -67,6 +67,11 @@ namespace ICSharpCode.AspNet.Mvc
 			set { viewDataTypeAssemblyLocation = UseEmptyStringIfNull(value); }
 		}
 		
+		public PropertyInfo[] GetViewDataTypeProperties()
+		{
+			return ViewDataType.GetProperties();
+		}
+		
 		public Type ViewDataType {
 			get {
 				if (viewDataType == null) {

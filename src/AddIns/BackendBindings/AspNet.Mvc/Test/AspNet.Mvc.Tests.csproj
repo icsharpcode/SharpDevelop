@@ -92,6 +92,7 @@
     <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpListViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithOneProperty.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpCreateViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpDeleteViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpDetailsViewTemplateTests.cs" />

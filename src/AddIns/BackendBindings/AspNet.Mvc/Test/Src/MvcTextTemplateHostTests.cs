@@ -2,6 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using System.Reflection;
+
+using AspNet.Mvc.Tests.CodeTemplates.Models;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc;
 using NUnit.Framework;
@@ -171,6 +175,17 @@ namespace AspNet.Mvc.Tests
 			type = host.ViewDataType;
 			
 			Assert.IsNull(host.FileNamePassedToLoadAssemblyFrom);
+		}
+		
+		[Test]
+		public void GetViewDataTypeProperties_ViewDataTypeIsModelWithOnePropertyCalledName_ReturnsOnePropertyCalledName()
+		{
+			CreateHost();
+			host.ViewDataType = typeof(ModelWithOneProperty);
+			
+			PropertyInfo propertyInfo = host.GetViewDataTypeProperties().First();
+			
+			Assert.AreEqual("Name", propertyInfo.Name);
 		}
 	}
 }
