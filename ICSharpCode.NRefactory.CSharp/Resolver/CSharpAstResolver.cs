@@ -122,7 +122,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public CSharpResolver GetResolverStateBefore(AstNode node)
+		public CSharpResolver GetResolverStateBefore(AstNode node, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (node == null || node.IsNull)
 				throw new ArgumentNullException("node");

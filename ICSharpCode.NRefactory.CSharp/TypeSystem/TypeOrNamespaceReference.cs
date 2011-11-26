@@ -54,13 +54,27 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		IType ITypeReference.Resolve(ITypeResolveContext context)
 		{
-			if (context.CurrentAssembly != context.Compilation.MainAssembly) {
-				// The type needs to be resolved in a different compilation.
-				throw new NotImplementedException();
-			} else {
-				// Resolve in current context.
-				return ResolveType(new CSharpResolver((CSharpTypeResolveContext)context));
-			}
+			// Strictly speaking, we might have to resolve the type in a nested compilation, similar
+			// to what we're doing with ConstantExpression.
+			// However, in almost all cases this will work correctly - if the resulting type is only available in the
+			// nested compilation and not in this, we wouldn't be able to map it anyways.
+			return ResolveType(new CSharpResolver((CSharpTypeResolveContext)context));
+			
+			// A potential issue might be this scenario:
+			
+			// Assembly 1:
+			//  class A { public class Nested {} }
+			
+			// Assembly 2: (references asm 1)
+			//  class B : A {}
+			
+			// Assembly 3: (references asm 1 and 2)
+			//  class C { public B.Nested Field; }
+			
+			// Assembly 4: (references asm 1 and 3, but not 2):
+			//  uses C.Field;
+			
+			// Here we would not be able to resolve 'B.Nested' in the compilation of assembly 4, as type B is missing there.
 		}
 	}
 }

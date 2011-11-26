@@ -17,54 +17,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public interface ICompilation
+	/// <summary>
+	/// Represents a snapshot of the whole solution (multiple compilations).
+	/// </summary>
+	public interface ISolutionSnapshot
 	{
 		/// <summary>
-		/// Gets the current assembly.
+		/// Gets the compilation for the specified project.
 		/// </summary>
-		IAssembly MainAssembly { get; }
-		
-		/// <summary>
-		/// Gets the type resolve context that specifies this compilation and no current assembly or entity.
-		/// </summary>
-		ITypeResolveContext TypeResolveContext { get; }
-		
-		/// <summary>
-		/// Gets the referenced assemblies.
-		/// This list does not include the current assembly.
-		/// </summary>
-		IList<IAssembly> ReferencedAssemblies { get; }
-		
-		/// <summary>
-		/// Gets the root namespace of this compilation.
-		/// </summary>
-		INamespace RootNamespace { get; }
-		
-		/// <summary>
-		/// Gets the root namespace for a given extern alias.
-		/// </summary>
-		INamespace GetNamespaceForExternAlias(string alias);
-		
-		IType FindType(KnownTypeCode typeCode);
-		
-		/// <summary>
-		/// Gets the name comparer for the language being compiled.
-		/// This is the string comparer used for the INamespace.GetTypeDefinition method.
-		/// </summary>
-		StringComparer NameComparer { get; }
-		
-		ISolutionSnapshot SolutionSnapshot { get; }
-		
-		CacheManager CacheManager { get; }
-	}
-	
-	public interface IResolved
-	{
-		ICompilation Compilation { get; }
+		ICompilation GetCompilation(IProjectContent project);
 	}
 }

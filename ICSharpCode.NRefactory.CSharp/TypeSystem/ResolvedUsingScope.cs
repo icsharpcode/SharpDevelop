@@ -56,6 +56,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 		}
 		
+		public UsingScope UnresolvedUsingScope {
+			get { return usingScope; }
+		}
+		
 		INamespace @namespace;
 		
 		public INamespace Namespace {

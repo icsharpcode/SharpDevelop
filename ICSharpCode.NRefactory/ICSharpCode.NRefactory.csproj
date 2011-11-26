@@ -139,6 +139,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultResolvedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultSolutionSnapshot.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAccessor.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAssembly.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAttribute.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="TypeSystem\IParsedFile.cs" />
     <Compile Include="TypeSystem\IProjectContent.cs" />
     <Compile Include="TypeSystem\IProperty.cs" />
+    <Compile Include="TypeSystem\ISolutionSnapshot.cs" />
     <Compile Include="TypeSystem\ISupportsInterning.cs" />
     <Compile Include="TypeSystem\IType.cs" />
     <Compile Include="TypeSystem\ITypeDefinition.cs" />

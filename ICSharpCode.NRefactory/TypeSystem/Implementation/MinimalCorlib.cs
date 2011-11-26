@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public ICompilation CreateCompilation()
 		{
-			return new SimpleCompilation(this);
+			return new SimpleCompilation(new DefaultSolutionSnapshot(), this);
 		}
 		
 		private MinimalCorlib() : base("corlib")

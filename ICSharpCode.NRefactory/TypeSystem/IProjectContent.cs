@@ -47,11 +47,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <remarks>
 		/// An ICompilation is immutable, it operates on a snapshot of this project.
-		/// 
-		/// If the project hasn't changed since the last CreateCompilation() call, the previous compilation
-		/// might be reused.
 		/// </remarks>
 		ICompilation CreateCompilation();
+		
+		/// <summary>
+		/// Creates a new <see cref="ICompilation"/> that allows resolving within this project.
+		/// </summary>
+		/// <param name="solutionSnapshot">The parent solution snapshot to use for the compilation.</param>
+		/// <remarks>
+		/// An ICompilation is immutable, it operates on a snapshot of this project.
+		/// </remarks>
+		ICompilation CreateCompilation(ISolutionSnapshot solutionSnapshot);
 		
 		/// <summary>
 		/// Changes the assembly name of this project content.

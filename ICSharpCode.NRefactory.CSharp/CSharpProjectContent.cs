@@ -89,7 +89,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public ICompilation CreateCompilation()
 		{
-			return new SimpleCompilation(this, assemblyReferences);
+			var solutionSnapshot = new DefaultSolutionSnapshot();
+			ICompilation compilation = new SimpleCompilation(solutionSnapshot, this, assemblyReferences);
+			solutionSnapshot.AddCompilation(this, compilation);
+			return compilation;
+		}
+		
+		public ICompilation CreateCompilation(ISolutionSnapshot solutionSnapshot)
+		{
+			return new SimpleCompilation(solutionSnapshot, this, assemblyReferences);
 		}
 		
 		public IProjectContent SetAssemblyName(string newAssemblyName)

@@ -38,13 +38,33 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues
 		
 		public ResolveResult Resolve(ITypeResolveContext context)
 		{
+			var csContext = (CSharpTypeResolveContext)context;
 			if (context.CurrentAssembly != context.Compilation.MainAssembly) {
 				// The constant needs to be resolved in a different compilation.
-				throw new NotImplementedException();
-			} else {
-				// Resolve in current context.
-				return Resolve(new CSharpResolver((CSharpTypeResolveContext)context));
+				IProjectContent pc = context.CurrentAssembly as IProjectContent;
+				if (pc != null) {
+					ICompilation nestedCompilation = context.Compilation.SolutionSnapshot.GetCompilation(pc);
+					if (nestedCompilation != null) {
+						var nestedContext = MapToNestedCompilation(csContext, nestedCompilation);
+						ResolveResult rr = Resolve(new CSharpResolver(nestedContext));
+						return MapToNewContext(rr, context);
+					}
+				}
 			}
+			// Resolve in current context.
+			return Resolve(new CSharpResolver(csContext));
+		}
+		
+		CSharpTypeResolveContext MapToNestedCompilation(CSharpTypeResolveContext context, ICompilation nestedCompilation)
+		{
+			var nestedContext = new CSharpTypeResolveContext(nestedCompilation.MainAssembly);
+			if (context.CurrentUsingScope != null) {
+				nestedContext = nestedContext.WithUsingScope(context.CurrentUsingScope.UnresolvedUsingScope.Resolve(nestedCompilation));
+			}
+			if (context.CurrentTypeDefinition != null) {
+				nestedContext = nestedContext.WithCurrentTypeDefinition(context.CurrentTypeDefinition.ToTypeReference().Resolve(nestedContext).GetDefinition());
+			}
+			return nestedContext;
 		}
 		
 		static ResolveResult MapToNewContext(ResolveResult rr, ITypeResolveContext newContext)
