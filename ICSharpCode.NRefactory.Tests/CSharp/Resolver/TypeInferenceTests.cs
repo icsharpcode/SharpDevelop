@@ -90,6 +90,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				                      out success));
 			Assert.IsTrue(success);
 		}
+		
+		[Test]
+		public void InferFromObjectAndFromNullLiteral()
+		{
+			// M<T>(T a, T b);
+			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			
+			// M(new object(), null);
+			bool success;
+			Assert.AreEqual(
+				new [] { compilation.FindType(KnownTypeCode.Object) },
+				ti.InferTypeArguments(new [] { tp },
+				                      new [] { new ResolveResult(compilation.FindType(KnownTypeCode.Object)), new ResolveResult(SpecialType.NullType) },
+				                      new [] { tp, tp },
+				                      out success));
+			Assert.IsTrue(success);
+		}
 		#endregion
 		
 		#region Inference with Method Groups

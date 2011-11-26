@@ -475,5 +475,23 @@ class A {
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("ILeft.Method", rr.Member.FullName);
 		}
+		
+		[Test]
+		public void AcceptVisitor()
+		{
+			string program = @"
+interface IVisitor<in T, out S> { }
+class Test : IVisitor<object, object> {
+	void M() {
+		$Accept(this, null)$;
+	}
+	S Accept<T, S>(IVisitor<T, S> v, T input) { }
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			var typeArguments = ((SpecializedMethod)rr.Member).TypeArguments;
+			Assert.AreEqual("System.Object", typeArguments[0].ReflectionName);
+			Assert.AreEqual("System.Object", typeArguments[1].ReflectionName);
+		}
 	}
 }

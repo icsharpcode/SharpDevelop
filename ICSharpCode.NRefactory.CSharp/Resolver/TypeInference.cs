@@ -271,8 +271,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				IType U = Ei.Type;
-				if (U != SpecialType.UnknownType) {
+				if (IsValidType(Ei.Type)) {
 					if (Ti is ByReferenceType) {
 						MakeExactInference(Ei.Type, Ti);
 					} else {
@@ -280,6 +279,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
+		}
+		
+		static bool IsValidType(IType type)
+		{
+			return type.Kind != TypeKind.Unknown && type.Kind != TypeKind.Null;
 		}
 		
 		bool PhaseTwo()
@@ -516,7 +520,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return;
 			}
 			// Otherwise, if E is an expression with type U, then a lower-bound inference is made from U to T.
-			if (e.Type != SpecialType.UnknownType) {
+			if (IsValidType(e.Type)) {
 				MakeLowerBoundInference(e.Type, t);
 			}
 		}

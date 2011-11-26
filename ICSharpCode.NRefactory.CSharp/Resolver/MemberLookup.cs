@@ -86,28 +86,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return false;
 				case Accessibility.Private:
 					// check for members of outer classes (private members of outer classes can be accessed)
-					var lookupTypeDefinition = currentTypeDefinition;
-					while (lookupTypeDefinition != null) {
-						if (entity.DeclaringTypeDefinition.Equals (lookupTypeDefinition))
+					for (var t = currentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
+						if (t.Equals(entity.DeclaringTypeDefinition))
 							return true;
-						lookupTypeDefinition = lookupTypeDefinition.DeclaringTypeDefinition;
 					}
 					return false;
 				case Accessibility.Public:
 					return true;
 				case Accessibility.Protected:
-					// For static members and type definitions, we do not require the qualifying reference
-					// to be derived from the current class (allowProtectedAccess).
-					return (allowProtectedAccess || entity.IsStatic || entity.EntityType == EntityType.TypeDefinition)
-						&& IsProtectedAccessible(entity.DeclaringTypeDefinition);
+					return IsProtectedAccessible(allowProtectedAccess, entity);
 				case Accessibility.Internal:
 					return IsInternalAccessible(entity.ParentAssembly);
 				case Accessibility.ProtectedOrInternal:
-					return (allowProtectedAccess && IsProtectedAccessible(entity.DeclaringTypeDefinition))
-						|| IsInternalAccessible(entity.ParentAssembly);
+					return IsInternalAccessible(entity.ParentAssembly) || IsProtectedAccessible(allowProtectedAccess, entity);
 				case Accessibility.ProtectedAndInternal:
-					return (allowProtectedAccess && IsProtectedAccessible(entity.DeclaringTypeDefinition))
-						&& IsInternalAccessible(entity.ParentAssembly);
+					return IsInternalAccessible(entity.ParentAssembly) && IsProtectedAccessible(allowProtectedAccess, entity);
 				default:
 					throw new Exception("Invalid value for Accessibility");
 			}
@@ -118,13 +111,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return assembly != null && currentAssembly != null && assembly.InternalsVisibleTo(currentAssembly);
 		}
 		
-		bool IsProtectedAccessible(ITypeDefinition declaringType)
+		bool IsProtectedAccessible(bool allowProtectedAccess, IEntity entity)
 		{
-			if (declaringType.Equals (currentTypeDefinition))
-				return true;
-			// PERF: this might hurt performance as this method is called several times (once for each member)
-			// make sure resolving base types is cheap (caches?) or cache within the MemberLookup instance
-			return currentTypeDefinition != null && currentTypeDefinition.IsDerivedFrom(declaringType);
+			// For static members and type definitions, we do not require the qualifying reference
+			// to be derived from the current class (allowProtectedAccess).
+			if (entity.IsStatic || entity.EntityType == EntityType.TypeDefinition)
+				allowProtectedAccess = true;
+			
+			for (var t = currentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
+				if (t.Equals(entity.DeclaringTypeDefinition))
+					return true;
+				
+				// PERF: this might hurt performance as this method is called several times (once for each member)
+				// make sure resolving base types is cheap (caches?) or cache within the MemberLookup instance
+				if (allowProtectedAccess && currentTypeDefinition.IsDerivedFrom(entity.DeclaringTypeDefinition))
+					return true;
+			}
+			return false;
 		}
 		#endregion
 		
