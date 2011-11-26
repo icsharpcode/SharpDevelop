@@ -329,5 +329,14 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 						}
 					}});
 		}
+		
+		[Test]
+		public void EnumWithCommaAtEnd()
+		{
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A, B, }");
+			Assert.AreEqual(2, td.Members.Count);
+			Assert.AreEqual(AstNode.Roles.RBrace, td.LastChild.Role);
+			Assert.AreEqual(AstNode.Roles.Comma, td.LastChild.PrevSibling.Role);
+		}
 	}
 }

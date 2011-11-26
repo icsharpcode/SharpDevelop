@@ -86,6 +86,7 @@
     <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\NamespaceDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\GeneralScope\PreprocessorDirectiveTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\TypeDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\UsingDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\ParseSelfTests.cs" />

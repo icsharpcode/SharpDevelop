@@ -175,6 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				case CommentType.SingleLine:
 					textWriter.Write("//");
 					textWriter.WriteLine(content);
+					needsIndent = true;
 					break;
 				case CommentType.MultiLine:
 					textWriter.Write("/*");
@@ -184,6 +185,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				case CommentType.Documentation:
 					textWriter.Write("///");
 					textWriter.WriteLine(content);
+					needsIndent = true;
+					break;
+				default:
+					textWriter.Write(content);
 					break;
 			}
 		}

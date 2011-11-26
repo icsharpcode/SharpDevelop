@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteSpecials (AstNode start, AstNode end)
 		{
 			for (AstNode pos = start; pos != end; pos = pos.NextSibling) {
-				if (pos.Role == AstNode.Roles.Comment) {
+				if (pos.Role == AstNode.Roles.Comment || pos.Role == AstNode.Roles.PreProcessorDirective) {
 					pos.AcceptVisitor (this, null);
 				}
 			}
@@ -154,12 +154,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void WriteSpecialsUpToRole (Role role)
 		{
+			WriteSpecialsUpToRole (role, null);
+		}
+		
+		void WriteSpecialsUpToRole (Role role, AstNode nextNode)
+		{
 			if (positionStack.Count == 0)
 				return;
-			for (AstNode pos = positionStack.Peek(); pos != null; pos = pos.NextSibling) {
+			// Look for the role between the current position and the nextNode.
+			for (AstNode pos = positionStack.Peek(); pos != null && pos != nextNode; pos = pos.NextSibling) {
 				if (pos.Role == role) {
 					WriteSpecials (positionStack.Pop (), pos);
-					positionStack.Push (pos);
+					// Push the next sibling because the node matching the role is not a special,
+					// and should be considered to be already handled.
+					positionStack.Push (pos.NextSibling);
+					// This is necessary for OptionalComma() to work correctly.
 					break;
 				}
 			}
@@ -176,21 +185,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			for (AstNode pos = positionStack.Peek(); pos != null; pos = pos.NextSibling) {
 				if (pos == node) {
 					WriteSpecials (positionStack.Pop (), pos);
-					positionStack.Push (pos);
-					break;
-				}
-			}
-		}
-		
-		void WriteSpecialsUpToRole (Role role, AstNode nextNode)
-		{
-			if (positionStack.Count == 0)
-				return;
-			// Look for the role between the current position and the nextNode.
-			for (AstNode pos = positionStack.Peek(); pos != null && pos != nextNode; pos = pos.NextSibling) {
-				if (pos.Role == AstNode.Roles.Comma) {
-					WriteSpecials (positionStack.Pop (), pos);
-					positionStack.Push (pos);
+					// Push the next sibling because the node itself is not a special,
+					// and should be considered to be already handled.
+					positionStack.Push (pos.NextSibling);
+					// This is necessary for OptionalComma() to work correctly.
 					break;
 				}
 			}
@@ -210,6 +208,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			formatter.WriteToken (",");
 			lastWritten = LastWritten.Other;
 			Space (!noSpaceAfterComma && policy.SpaceAfterBracketComma); // TODO: Comma policy has changed.
+		}
+		
+		/// <summary>
+		/// Writes an optional comma, e.g. at the end of an enum declaration
+		/// </summary>
+		void OptionalComma()
+		{
+			// Look for the role between the current position and the nextNode.
+			for (AstNode pos = positionStack.Peek(); pos != null; pos = pos.NextSibling) {
+				if (pos.Role == AstNode.Roles.Comma) {
+					Comma(null, noSpaceAfterComma: true);
+					break;
+				} else if (pos.NodeType != NodeType.Whitespace) {
+					// only skip over whitespace and comma nodes
+					break;
+				}
+			}
 		}
 		
 		void WriteCommaSeparatedList (IEnumerable<AstNode> list)
@@ -1375,22 +1390,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteModifiers (typeDeclaration.ModifierTokens);
 			BraceStyle braceStyle;
 			switch (typeDeclaration.ClassType) {
-			case ClassType.Enum:
-				WriteKeyword ("enum");
-				braceStyle = policy.EnumBraceStyle;
-				break;
-			case ClassType.Interface:
-				WriteKeyword ("interface");
-				braceStyle = policy.InterfaceBraceStyle;
-				break;
-			case ClassType.Struct:
-				WriteKeyword ("struct");
-				braceStyle = policy.StructBraceStyle;
-				break;
-			default:
-				WriteKeyword ("class");
-				braceStyle = policy.ClassBraceStyle;
-				break;
+				case ClassType.Enum:
+					WriteKeyword ("enum");
+					braceStyle = policy.EnumBraceStyle;
+					break;
+				case ClassType.Interface:
+					WriteKeyword ("interface");
+					braceStyle = policy.InterfaceBraceStyle;
+					break;
+				case ClassType.Struct:
+					WriteKeyword ("struct");
+					braceStyle = policy.StructBraceStyle;
+					break;
+				default:
+					WriteKeyword ("class");
+					braceStyle = policy.ClassBraceStyle;
+					break;
 			}
 			WriteIdentifier (typeDeclaration.Name);
 			WriteTypeParameters (typeDeclaration.TypeParameters);
@@ -1406,9 +1421,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			OpenBrace (braceStyle);
 			if (typeDeclaration.ClassType == ClassType.Enum) {
 				bool first = true;
-				if (!typeDeclaration.LBraceToken.IsNull) { 
-				}
-					
 				foreach (var member in typeDeclaration.Members) {
 					if (first) {
 						first = false;
@@ -1418,6 +1430,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					member.AcceptVisitor (this, data);
 				}
+				OptionalComma();
 				NewLine ();
 			} else {
 				foreach (var member in typeDeclaration.Members) {
@@ -2263,9 +2276,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				// "1.0 / /*comment*/a", then we need to insert a space in front of the comment.
 				formatter.Space ();
 			}
-			formatter.StartNode( comment);
+			formatter.StartNode(comment);
 			formatter.WriteComment (comment.CommentType, comment.Content);
-			formatter.EndNode( comment);
+			formatter.EndNode(comment);
 			lastWritten = LastWritten.Whitespace;
 			return null;
 		}
@@ -2278,7 +2291,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				formatter.Space ();
 			}
 			formatter.StartNode (preProcessorDirective);
-			formatter.WriteIdentifier ("#" + preProcessorDirective.Type.ToString ().ToLower ());
+			formatter.WriteToken ("#" + preProcessorDirective.Type.ToString ().ToLower ());
+			if (!string.IsNullOrEmpty(preProcessorDirective.Argument)) {
+				formatter.Space();
+				formatter.WriteToken(preProcessorDirective.Argument);
+			}
+			formatter.NewLine();
 			formatter.EndNode (preProcessorDirective);
 			lastWritten = LastWritten.Whitespace;
 			return null;
