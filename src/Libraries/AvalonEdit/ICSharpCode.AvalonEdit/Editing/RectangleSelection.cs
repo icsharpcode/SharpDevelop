@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		TextDocument document;
 		readonly int startLine, endLine;
 		readonly double startXPos, endXPos;
-		readonly int startOffset, endOffset;
+		readonly int topLeftOffset, bottomRightOffset;
 		
 		readonly List<SelectionSegment> segments = new List<SelectionSegment>();
 		
@@ -45,12 +45,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.endLine = end.Line;
 			this.startXPos = GetXPos(textArea, start);
 			this.endXPos = GetXPos(textArea, end);
-			this.startOffset = document.GetOffset(start.Location);
-			this.endOffset = document.GetOffset(end.Location);
 			CalculateSegments();
+			this.topLeftOffset = this.segments.First().StartOffset;
+			this.bottomRightOffset = this.segments.Last().EndOffset;
 		}
 		
-		private RectangleSelection(TextArea textArea, int startLine, double startXPos, int startOffset, TextViewPosition end)
+		private RectangleSelection(TextArea textArea, int startLine, double startXPos, TextViewPosition end)
 			: base(textArea)
 		{
 			InitDocument();
@@ -58,12 +58,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.endLine = end.Line;
 			this.startXPos = startXPos;
 			this.endXPos = GetXPos(textArea, end);
-			this.startOffset = startOffset;
-			this.endOffset = document.GetOffset(end.Location);
 			CalculateSegments();
+			this.topLeftOffset = this.segments.First().StartOffset;
+			this.bottomRightOffset = this.segments.Last().EndOffset;
 		}
 		
-		private RectangleSelection(TextArea textArea, TextViewPosition start, int endLine, double endXPos, int endOffset)
+		private RectangleSelection(TextArea textArea, TextViewPosition start, int endLine, double endXPos)
 			: base(textArea)
 		{
 			InitDocument();
@@ -71,9 +71,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.endLine = endLine;
 			this.startXPos = GetXPos(textArea, start);
 			this.endXPos = endXPos;
-			this.startOffset = document.GetOffset(start.Location);
-			this.endOffset = endOffset;
 			CalculateSegments();
+			this.topLeftOffset = this.segments.First().StartOffset;
+			this.bottomRightOffset = this.segments.Last().EndOffset;
 		}
 		
 		static double GetXPos(TextArea textArea, TextViewPosition pos)
@@ -124,7 +124,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override ISegment SurroundingSegment {
 			get {
-				return new SimpleSegment(Math.Min(startOffset, endOffset), Math.Abs(endOffset - startOffset));
+				return new SimpleSegment(topLeftOffset, bottomRightOffset - topLeftOffset);
 			}
 		}
 		
@@ -156,7 +156,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			RectangleSelection r = obj as RectangleSelection;
 			return r != null && r.textArea == this.textArea
-				&& r.startOffset == this.startOffset && r.endOffset == this.endOffset
+				&& r.topLeftOffset == this.topLeftOffset && r.bottomRightOffset == this.bottomRightOffset
 				&& r.startLine == this.startLine && r.endLine == this.endLine
 				&& r.startXPos == this.startXPos && r.endXPos == this.endXPos;
 		}
@@ -164,21 +164,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <inheritdoc/>
 		public override int GetHashCode()
 		{
-			return startOffset ^ endOffset;
+			return topLeftOffset ^ bottomRightOffset;
 		}
 		
 		/// <inheritdoc/>
 		public override Selection SetEndpoint(TextViewPosition endPosition)
 		{
-			var r = new RectangleSelection(textArea, startLine, startXPos, startOffset, endPosition);
-			return r;
+			return new RectangleSelection(textArea, startLine, startXPos, endPosition);
 		}
 		
 		/// <inheritdoc/>
 		public override Selection UpdateOnDocumentChange(DocumentChangeEventArgs e)
 		{
-			TextLocation newStartLocation = textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.AfterInsertion));
-			TextLocation newEndLocation = textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.BeforeInsertion));
+			TextLocation newStartLocation = textArea.Document.GetLocation(e.GetNewOffset(topLeftOffset, AnchorMovementType.AfterInsertion));
+			TextLocation newEndLocation = textArea.Document.GetLocation(e.GetNewOffset(bottomRightOffset, AnchorMovementType.BeforeInsertion));
 			
 			return new RectangleSelection(textArea,
 			                              new TextViewPosition(newStartLocation, GetVisualColumnFromXPos(newStartLocation.Line, startXPos)),
@@ -191,12 +190,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (newText == null)
 				throw new ArgumentNullException("newText");
 			using (textArea.Document.RunUpdate()) {
-				TextViewPosition start = new TextViewPosition(document.GetLocation(startOffset), GetVisualColumnFromXPos(startLine, startXPos));
-				TextViewPosition end = new TextViewPosition(document.GetLocation(endOffset), GetVisualColumnFromXPos(endLine, endXPos));
+				TextViewPosition start = new TextViewPosition(document.GetLocation(topLeftOffset), GetVisualColumnFromXPos(startLine, startXPos));
+				TextViewPosition end = new TextViewPosition(document.GetLocation(bottomRightOffset), GetVisualColumnFromXPos(endLine, endXPos));
 				int insertionLength;
 				int totalInsertionLength = 0;
 				int firstInsertionLength = 0;
-				int editOffset = Math.Min(startOffset, endOffset);
+				int editOffset = Math.Min(topLeftOffset, bottomRightOffset);
+				TextViewPosition pos;
 				if (NewLineFinder.NextNewLine(newText, 0) == SimpleSegment.Invalid) {
 					// insert same text into every line
 					foreach (SelectionSegment lineSegment in this.Segments.Reverse()) {
@@ -206,10 +206,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 					}
 					
 					int newEndOffset = editOffset + totalInsertionLength;
-					TextViewPosition pos = new TextViewPosition(document.GetLocation(editOffset + firstInsertionLength));
+					pos = new TextViewPosition(document.GetLocation(editOffset + firstInsertionLength));
 					
-					textArea.Selection = new RectangleSelection(textArea, pos, Math.Max(startLine, endLine), GetXPos(textArea, pos), newEndOffset);
-					textArea.Caret.Position = textArea.TextView.GetPosition(new Point(GetXPos(textArea, pos), textArea.TextView.GetVisualTopByDocumentLine(Math.Max(startLine, endLine)))).GetValueOrDefault();
+					textArea.Selection = new RectangleSelection(textArea, pos, Math.Max(startLine, endLine), GetXPos(textArea, pos));
 				} else {
 					string[] lines = newText.Split(new[] { "\r\n", "\r", "\n" }, segments.Count, StringSplitOptions.None);
 					int line = Math.Min(startLine, endLine);
@@ -217,10 +216,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 						ReplaceSingleLineText(textArea, segments[i], lines[i], out insertionLength);
 						firstInsertionLength = insertionLength;
 					}
-					TextViewPosition pos = new TextViewPosition(document.GetLocation(editOffset + firstInsertionLength));
+					pos = new TextViewPosition(document.GetLocation(editOffset + firstInsertionLength));
 					textArea.ClearSelection();
-					textArea.Caret.Position = textArea.TextView.GetPosition(new Point(GetXPos(textArea, pos), textArea.TextView.GetVisualTopByDocumentLine(Math.Max(startLine, endLine)))).GetValueOrDefault();
 				}
+				textArea.Caret.Position = textArea.TextView.GetPosition(new Point(GetXPos(textArea, pos), textArea.TextView.GetVisualTopByDocumentLine(Math.Max(startLine, endLine)))).GetValueOrDefault();
 			}
 		}
 		
@@ -261,11 +260,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (endLocation.Line <= textArea.Document.LineCount) {
 				int endOffset = textArea.Document.GetOffset(endLocation);
 				if (textArea.Selection.EnableVirtualSpace || textArea.Document.GetLocation(endOffset) == endLocation) {
-					RectangleSelection rsel = new RectangleSelection(textArea, startPosition, endLocation.Line, GetXPos(textArea, startPosition), endOffset);
+					RectangleSelection rsel = new RectangleSelection(textArea, startPosition, endLocation.Line, GetXPos(textArea, startPosition));
 					rsel.ReplaceSelectionWithText(text);
 					if (selectInsertedText && textArea.Selection is RectangleSelection) {
 						RectangleSelection sel = (RectangleSelection)textArea.Selection;
-						textArea.Selection = new RectangleSelection(textArea, startPosition, sel.endLine, sel.endXPos, sel.endOffset);
+						textArea.Selection = new RectangleSelection(textArea, startPosition, sel.endLine, sel.endXPos);
 					}
 					return true;
 				}
@@ -294,7 +293,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			// It's possible that ToString() gets called on old (invalid) selections, e.g. for "change from... to..." debug message
 			// make sure we don't crash even when the desired locations don't exist anymore.
-			return string.Format("[RectangleSelection {0} {1} {2} to {3} {4} {5}]", startLine, startOffset, startXPos, endLine, endOffset, endXPos);
+			return string.Format("[RectangleSelection {0} {1} {2} to {3} {4} {5}]", startLine, topLeftOffset, startXPos, endLine, bottomRightOffset, endXPos);
 		}
 	}
 }

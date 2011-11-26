@@ -136,7 +136,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			SimpleSelection other = obj as SimpleSelection;
 			if (other == null) return false;
-			return this.start.Equals(other.start) && this.end.Equals(other.end) && this.textArea == other.textArea;
+			return this.start.Equals(other.start) && this.end.Equals(other.end)
+				&& this.startOffset == other.startOffset && this.endOffset == other.endOffset
+				&& this.textArea == other.textArea;
 		}
 		
 		/// <inheritdoc/>
