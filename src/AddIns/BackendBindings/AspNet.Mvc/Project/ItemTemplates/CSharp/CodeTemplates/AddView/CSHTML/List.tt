@@ -1,5 +1,7 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
 <#@ output extension=".cshtml" #>
 <#= GetModelDirective() #>
 
@@ -32,15 +34,41 @@
 	@Html.ActionLink("Create", "Create")
 </p>
 <table>
-	@foreach (var item in Model) {
-		<tr>
-			<td>
-				@Html.ActionLink("Edit", "Edit") |
-				@Html.ActionLink("Details", "Details") |
-				@Html.ActionLink("Delete", "Delete")
-			</td>
-		</tr>
+<#
+	if (ModelHasProperties) {
+		foreach (ModelProperty modelProperty in ModelProperties) {
+#>
+	<tr>
+		<th>
+			@Html.LabelFor(model => model.<#= modelProperty.Name #>)
+		</th>
+		<th></th>
+	</tr>
+	
+<#
+		}
+	} 
+#>
+@foreach (var item in Model) {
+	<tr>
+<#
+	if (ModelHasProperties) {
+		foreach (ModelProperty modelProperty in ModelProperties) {
+#>
+		<td>
+			@Html.DisplayFor(model => model.<#= modelProperty.Name #>)
+		</td>
+<#
+		}
 	}
+#>
+		<td>
+			@Html.ActionLink("Edit", "Edit") |
+			@Html.ActionLink("Details", "Details") |
+			@Html.ActionLink("Delete", "Delete")
+		</td>
+	</tr>
+}
 </table>
 <# 
 	if (MvcHost.IsPartialView) {
@@ -56,6 +84,11 @@
 		get { return (MvcTextTemplateHost)Host; }
 	}
 	
+	public class ModelProperty
+	{
+		public string Name { get; set; }
+	}
+	
 	public string GetModelDirective()
 	{
 		string viewDataTypeName = MvcHost.ViewDataTypeName;
@@ -63,5 +96,34 @@
 			return String.Format("@model IEnumerable<{0}>", viewDataTypeName);
 		}
 		return String.Empty;
+	}
+	
+	List<ModelProperty> modelProperties;
+	
+	List<ModelProperty> ModelProperties {
+		get {
+			if (modelProperties == null) {
+				modelProperties = new List<ModelProperty>(GetModelProperties());
+			}
+			return modelProperties;
+		}
+	}
+	
+	bool ModelHasProperties {
+		get { return ModelProperties.Count > 0; }
+	}
+	
+	public IEnumerable<ModelProperty> GetModelProperties()
+	{
+		var properties = new List<ModelProperty>();
+		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
+			properties.Add(CreateModelProperty(propertyInfo));
+		}
+		return properties;
+	}
+	
+	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	{
+		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 #>

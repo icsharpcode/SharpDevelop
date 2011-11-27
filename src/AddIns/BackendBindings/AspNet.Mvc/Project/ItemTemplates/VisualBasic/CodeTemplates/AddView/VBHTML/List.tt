@@ -1,6 +1,8 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
 <#@ import namespace="Microsoft.VisualBasic.Constants" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
 <#@ output extension=".vbhtml" #>
 <#= GetModelDirective() #>
 
@@ -33,15 +35,41 @@ End Code
 	@Html.ActionLink("Create", "Create")
 </p>
 <table>
-	@For Each item in Model
-		@<tr>
-			<td>
-				@Html.ActionLink("Edit", "Edit") |
-				@Html.ActionLink("Details", "Details") |
-				@Html.ActionLink("Delete", "Delete")
-			</td>
-		</tr>
-	Next
+<#
+	If ModelHasProperties Then
+		For Each modelProperty As ModelProperty in ModelProperties
+#>
+	<tr>
+		<th>
+			@Html.LabelFor(Function(model) model.<#= modelProperty.Name #>)
+		</th>
+		<th></th>
+	</tr>
+	
+<#
+		Next
+	End If 
+#>
+@For Each item in Model
+	@<tr>
+<#
+	If ModelHasProperties Then
+		For Each modelProperty As ModelProperty in ModelProperties
+#>
+		<td>
+			@Html.DisplayFor(model => model.<#= modelProperty.Name #>)
+		</td>
+<#
+		Next
+	End If
+#>
+		<td>
+			@Html.ActionLink("Edit", "Edit") |
+			@Html.ActionLink("Details", "Details") |
+			@Html.ActionLink("Delete", "Delete")
+		</td>
+	</tr>
+Next
 </table>
 <# 
 	If MvcHost.IsPartialView Then
@@ -59,11 +87,44 @@ End Code
 		End Get
 	End Property
 	
+	Public Class ModelProperty
+		Public Property Name As String
+	End Class
+	
 	Function GetModelDirective() As String
 		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
 		If Not String.IsNullOrEmpty(viewDataTypeName) Then
 			Return String.Format("@ModelType IEnumerable(Of {0})", viewDataTypeName)
 		End If
 		Return String.Empty
+	End Function
+	
+	Private modelPropertiesList As List(Of ModelProperty)
+	
+	ReadOnly Property ModelProperties As List(Of ModelProperty)
+		Get
+			If modelPropertiesList Is Nothing Then
+				modelPropertiesList = New List(Of ModelProperty)(GetModelProperties())
+			End If
+			Return modelPropertiesList
+		End Get
+	End Property
+	
+	ReadOnly Property ModelHasProperties As Integer
+		Get
+			Return ModelProperties.Count > 0
+		End Get
+	End Property
+	
+	Public Function GetModelProperties() As IEnumerable(Of ModelProperty)
+		Dim properties = New List(Of ModelProperty)()
+		For Each propertyInfo As PropertyInfo In MvcHost.GetViewDataTypeProperties()
+			properties.Add(CreateModelProperty(propertyInfo))
+		Next
+		Return properties
+	End Function
+	
+	Function CreateModelProperty(ByVal propertyInfo As PropertyInfo) As ModelProperty
+		Return New ModelProperty() With { .Name = propertyInfo.Name }
 	End Function
 #>

@@ -10,6 +10,8 @@
 
 namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
     using ICSharpCode.AspNet.Mvc;
+    using System.Collections.Generic;
+    using System.Reflection;
     using System;
     
     
@@ -18,10 +20,15 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         private global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost hostValue;
         
         
-        #line 58 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+        #line 86 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
 
 	MvcTextTemplateHost MvcHost {
 		get { return (MvcTextTemplateHost)Host; }
+	}
+	
+	public class ModelProperty
+	{
+		public string Name { get; set; }
 	}
 	
 	public string GetViewPageType()
@@ -31,6 +38,35 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
 			return String.Format("<{0}>", viewDataTypeName);
 		}
 		return String.Empty;
+	}
+	
+	List<ModelProperty> modelProperties;
+	
+	List<ModelProperty> ModelProperties {
+		get {
+			if (modelProperties == null) {
+				modelProperties = new List<ModelProperty>(GetModelProperties());
+			}
+			return modelProperties;
+		}
+	}
+	
+	bool ModelHasProperties {
+		get { return ModelProperties.Count > 0; }
+	}
+	
+	public IEnumerable<ModelProperty> GetModelProperties()
+	{
+		var properties = new List<ModelProperty>();
+		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
+			properties.Add(CreateModelProperty(propertyInfo));
+		}
+		return properties;
+	}
+	
+	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	{
+		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 
         #line default
@@ -49,92 +85,92 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         public virtual string TransformText() {
             this.GenerationEnvironment = null;
             
-            #line 3 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 5 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
  if (MvcHost.IsPartialView) { 
             
             #line default
             #line hidden
             
-            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 6 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("<%@ Control Language=\"C#\" Inherits=\"System.Web.Mvc.ViewUserControl<IEnumerable");
             
             #line default
             #line hidden
             
-            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 6 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
-            
-            #line default
-            #line hidden
-            
-            #line 4 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
-            this.Write(">\" %>\r\n\r\n");
             
             #line default
             #line hidden
             
             #line 6 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write(">\" %>\r\n\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 8 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
  } else if (MvcHost.IsContentPage) { 
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("<%@ Page Language=\"C#\" MasterPageFile=\"");
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.MasterPageFile ));
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("\" Inherits=\"System.Web.Mvc.ViewPage<IEnumerable");
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
             
             #line default
             #line hidden
             
-            #line 7 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 9 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(">\" %>\r\n\r\n<asp:Content ID=\"Content1\" ContentPlaceHolderID=\"Title\" runat=\"server\">\r" +
                     "\n");
             
             #line default
             #line hidden
             
-            #line 10 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 12 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.ViewName ));
             
             #line default
             #line hidden
             
-            #line 10 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 12 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("\r\n</asp:Content>\r\n\r\n<asp:Content ID=\"Content2\" ContentPlaceHolderID=\"");
             
             #line default
             #line hidden
             
-            #line 13 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 15 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.PrimaryContentPlaceHolderID ));
             
             #line default
             #line hidden
             
-            #line 13 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 15 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("\" runat=\"server\">\r\n");
             
             #line default
             #line hidden
             
-            #line 14 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 16 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
 
 		PushIndent("\t");
 	} else {
@@ -143,37 +179,37 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 18 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 20 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("<%@ Page Language=\"C#\" Inherits=\"System.Web.Mvc.ViewPage<IEnumerable");
             
             #line default
             #line hidden
             
-            #line 18 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 20 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( GetViewPageType() ));
             
             #line default
             #line hidden
             
-            #line 18 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 20 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(">\" %>\r\n\r\n<!DOCTYPE html>\r\n<html>\r\n\t<head runat=\"server\">\r\n\t\t<title>");
             
             #line default
             #line hidden
             
-            #line 23 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 25 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( MvcHost.ViewName ));
             
             #line default
             #line hidden
             
-            #line 23 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 25 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("</title>\r\n\t</head>\r\n\t<body>\r\n");
             
             #line default
             #line hidden
             
-            #line 26 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 28 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
  
 		PushIndent("\t\t");
 	} 
@@ -182,27 +218,99 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 30 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
-            this.Write(@"<p>
-	<%: Html.ActionLink(""Create"", ""Create"") %>
-</p>
-<table>
-	<% foreach (var item in Model) { %>
-	<tr>
-		<td>
-			<%: Html.ActionLink(""Edit"", ""Edit"") %> |
-			<%: Html.ActionLink(""Details"", ""Details"") %> |
-			<%: Html.ActionLink(""Delete"", ""Delete"") %>
-		</td>
-	</tr>
-	<% } %>
-</table>
-");
+            #line 32 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write("<p>\r\n\t<%: Html.ActionLink(\"Create\", \"Create\") %>\r\n</p>\r\n<table>\r\n");
             
             #line default
             #line hidden
             
-            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 36 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+
+	if (ModelHasProperties) {
+		foreach (ModelProperty modelProperty in ModelProperties) {
+
+            
+            #line default
+            #line hidden
+            
+            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write("\t<tr>\r\n\t\t<th>\r\n\t\t\t<%: Html.LabelFor(model => model.");
+            
+            #line default
+            #line hidden
+            
+            #line 42 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
+            
+            #line default
+            #line hidden
+            
+            #line 42 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write(") %>\r\n\t\t</th>\r\n\t\t<th></th>\r\n\t</tr>\r\n\t\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 47 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+
+		}
+	} 
+
+            
+            #line default
+            #line hidden
+            
+            #line 51 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write("<% foreach (var item in Model) { %>\r\n\t<tr>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 53 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+
+	if (ModelHasProperties) {
+		foreach (ModelProperty modelProperty in ModelProperties) {
+
+            
+            #line default
+            #line hidden
+            
+            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write("\t\t<td>\r\n\t\t\t<%: Html.DisplayFor(model => model.");
+            
+            #line default
+            #line hidden
+            
+            #line 58 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
+            
+            #line default
+            #line hidden
+            
+            #line 58 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write(") %>\r\n\t\t</td>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 60 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+
+		}
+	}
+
+            
+            #line default
+            #line hidden
+            
+            #line 64 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            this.Write("\t\t<td>\r\n\t\t\t<%: Html.ActionLink(\"Edit\", \"Edit\") %> |\r\n\t\t\t<%: Html.ActionLink(\"Deta" +
+                    "ils\", \"Details\") %> |\r\n\t\t\t<%: Html.ActionLink(\"Delete\", \"Delete\") %>\r\n\t\t</td>\r\n\t" +
+                    "</tr>\r\n<% } %>\r\n</table>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 72 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
 
 	if (MvcHost.IsPartialView) {
 		// Do nothing.
@@ -213,13 +321,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 78 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("</asp:Content>\r\n");
             
             #line default
             #line hidden
             
-            #line 51 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 79 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
 
 	} else { 
 		PopIndent();
@@ -228,13 +336,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 55 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 83 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
             this.Write("\t</body>\r\n</html>\r\n");
             
             #line default
             #line hidden
             
-            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
+            #line 85 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt"
  } 
             
             #line default

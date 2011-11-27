@@ -2,10 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using AspNet.Mvc.Tests.CodeTemplates.Models;
 using AspNet.Mvc.Tests.Helpers;
-using AspxCSharp = ICSharpCode.AspNet.Mvc.AspxCSharp;
 using NUnit.Framework;
+using AspxCSharp = ICSharpCode.AspNet.Mvc.AspxCSharp;
 
 namespace AspNet.Mvc.Tests.CodeTemplates
 {
@@ -20,6 +23,16 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			mvcHost = new TestableMvcTextTemplateHost();
 			templatePreprocessor = new AspxCSharp.List();
 			templatePreprocessor.Host = mvcHost;
+		}
+		
+		IEnumerable<AspxCSharp.List.ModelProperty> GetModelProperties()
+		{
+			return templatePreprocessor.GetModelProperties();
+		}
+		
+		AspxCSharp.List.ModelProperty GetFirstModelProperty()
+		{
+			return GetModelProperties().First();
 		}
 		
 		[Test]
@@ -79,7 +92,7 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			<%: Html.ActionLink(""Create"", ""Create"") %>
 		</p>
 		<table>
-			<% foreach (var item in Model) { %>
+		<% foreach (var item in Model) { %>
 			<tr>
 				<td>
 					<%: Html.ActionLink(""Edit"", ""Edit"") %> |
@@ -87,7 +100,7 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 					<%: Html.ActionLink(""Delete"", ""Delete"") %>
 				</td>
 			</tr>
-			<% } %>
+		<% } %>
 		</table>
 	</body>
 </html>
@@ -114,7 +127,7 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 	<%: Html.ActionLink(""Create"", ""Create"") %>
 </p>
 <table>
-	<% foreach (var item in Model) { %>
+<% foreach (var item in Model) { %>
 	<tr>
 		<td>
 			<%: Html.ActionLink(""Edit"", ""Edit"") %> |
@@ -122,7 +135,7 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			<%: Html.ActionLink(""Delete"", ""Delete"") %>
 		</td>
 	</tr>
-	<% } %>
+<% } %>
 </table>
 ";
 			Assert.AreEqual(expectedOutput, output);
@@ -154,7 +167,7 @@ MyView
 		<%: Html.ActionLink(""Create"", ""Create"") %>
 	</p>
 	<table>
-		<% foreach (var item in Model) { %>
+	<% foreach (var item in Model) { %>
 		<tr>
 			<td>
 				<%: Html.ActionLink(""Edit"", ""Edit"") %> |
@@ -162,9 +175,63 @@ MyView
 				<%: Html.ActionLink(""Delete"", ""Delete"") %>
 			</td>
 		</tr>
-		<% } %>
+	<% } %>
 	</table>
 </asp:Content>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasOnePropertyCalledName_ReturnsModelPropertyCalledName()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithOneProperty);
+			
+			AspxCSharp.List.ModelProperty modelProperty = GetFirstModelProperty();
+			
+			Assert.AreEqual("Name", modelProperty.Name);
+		}
+		
+		[Test]
+		public void TransformText_ModelHasOnePropertyAndIsPartialView_ReturnsControlWithFormAndHtmlHelpersForModelProperty()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithOneProperty);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<IEnumerable<AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithOneProperty>>"" %>
+
+<p>
+	<%: Html.ActionLink(""Create"", ""Create"") %>
+</p>
+<table>
+	<tr>
+		<th>
+			<%: Html.LabelFor(model => model.Name) %>
+		</th>
+		<th></th>
+	</tr>
+	
+<% foreach (var item in Model) { %>
+	<tr>
+		<td>
+			<%: Html.DisplayFor(model => model.Name) %>
+		</td>
+		<td>
+			<%: Html.ActionLink(""Edit"", ""Edit"") %> |
+			<%: Html.ActionLink(""Details"", ""Details"") %> |
+			<%: Html.ActionLink(""Delete"", ""Delete"") %>
+		</td>
+	</tr>
+<% } %>
+</table>
 ";
 			Assert.AreEqual(expectedOutput, output);
 		}
