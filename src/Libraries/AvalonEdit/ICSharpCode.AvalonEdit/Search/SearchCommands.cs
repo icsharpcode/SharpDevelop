@@ -75,6 +75,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				panel = new SearchPanel();
 				panel.Attach(TextArea);
 			}
+			panel.SearchPattern = TextArea.Selection.GetText();
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Input, (Action)delegate { panel.Reactivate(); });
 		}
 		
