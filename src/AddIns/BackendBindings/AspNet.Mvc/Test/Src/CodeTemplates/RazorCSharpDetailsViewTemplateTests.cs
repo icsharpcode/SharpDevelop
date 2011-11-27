@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using AspNet.Mvc.Tests.CodeTemplates.Models;
 using AspNet.Mvc.Tests.Helpers;
 using ICSharpCode.AspNet.Mvc.CSHtml;
@@ -20,6 +23,16 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			mvcHost = new TestableMvcTextTemplateHost();
 			templatePreprocessor = new Details();
 			templatePreprocessor.Host = mvcHost;
+		}
+		
+		IEnumerable<Details.ModelProperty> GetModelProperties()
+		{
+			return templatePreprocessor.GetModelProperties();
+		}
+		
+		Details.ModelProperty GetFirstModelProperty()
+		{
+			return GetModelProperties().First();
 		}
 		
 		[Test]
@@ -140,6 +153,50 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 
 <fieldset>
 	<legend>ModelWithNoProperties</legend>
+</fieldset>
+<p>
+	@Html.ActionLink(""Edit"", ""Edit"") |
+	@Html.ActionLink(""Back"", ""Index"")
+</p>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasOnePropertyCalledName_ReturnsModelPropertyCalledName()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithOneProperty);
+			
+			Details.ModelProperty modelProperty = GetFirstModelProperty();
+			
+			Assert.AreEqual("Name", modelProperty.Name);
+		}
+		
+		[Test]
+		public void TransformText_ModelHasOnePropertyAndIsPartialView_ReturnsControlWithHtmlHelperForModelProperty()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithOneProperty);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"@model AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithOneProperty
+
+<fieldset>
+	<legend>ModelWithOneProperty</legend>
+	
+	<div class=""display-label"">
+		@Html.LabelFor(model => model.Name)
+	</div>
+	<div class=""display-field"">
+		@Html.DisplayFor(model => model.Name)
+	</div>
 </fieldset>
 <p>
 	@Html.ActionLink(""Edit"", ""Edit"") |

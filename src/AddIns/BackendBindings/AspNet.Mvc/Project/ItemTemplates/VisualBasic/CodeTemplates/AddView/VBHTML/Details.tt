@@ -1,6 +1,8 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
 <#@ import namespace="Microsoft.VisualBasic.Constants" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
 <#@ output extension=".vbhtml" #>
 <#= GetModelDirective() #>
 
@@ -31,6 +33,15 @@ End Code
 #>
 <fieldset>
 	<legend><#= MvcHost.ViewDataType.Name #></legend>
+<# For Each modelProperty As ModelProperty in GetModelProperties() #>
+	
+	<div class="display-label">
+		@Html.LabelFor(Function(model) model.<#= modelProperty.Name #>)
+	</div>
+	<div class="display-field">
+		@Html.DisplayFor(Function(model) model.<#= modelProperty.Name #>)
+	</div>
+<# Next #>
 </fieldset>
 <p>
 	@Html.ActionLink("Edit", "Edit") |
@@ -52,11 +63,27 @@ End Code
 		End Get
 	End Property
 	
+	Public Class ModelProperty
+		Public Property Name As String
+	End Class
+	
 	Function GetModelDirective() As String
 		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
 		If Not String.IsNullOrEmpty(viewDataTypeName) Then
 			Return String.Format("@ModelType {0}", viewDataTypeName)
 		End If
 		Return String.Empty
+	End Function
+	
+	Public Function GetModelProperties() As IEnumerable(Of ModelProperty)
+		Dim properties = New List(Of ModelProperty)()
+		For Each propertyInfo As PropertyInfo In MvcHost.GetViewDataTypeProperties()
+			properties.Add(CreateModelProperty(propertyInfo))
+		Next
+		Return properties
+	End Function
+	
+	Function CreateModelProperty(ByVal propertyInfo As PropertyInfo) As ModelProperty
+		Return New ModelProperty() With { .Name = propertyInfo.Name }
 	End Function
 #>
