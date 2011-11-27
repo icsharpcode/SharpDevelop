@@ -235,5 +235,54 @@ MyView
 ";
 			Assert.AreEqual(expectedOutput, output);
 		}
+	
+		[Test]
+		public void TransformText_ModelHasTwoPropertiesAndIsPartialView_ReturnsControlWithFormAndHtmlHelpersForModelProperty()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithTwoProperties);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<IEnumerable<AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithTwoProperties>>"" %>
+
+<p>
+	<%: Html.ActionLink(""Create"", ""Create"") %>
+</p>
+<table>
+	<tr>
+		<th>
+			<%: Html.LabelFor(model => model.FirstName) %>
+		</th>
+		<th>
+			<%: Html.LabelFor(model => model.LastName) %>
+		</th>
+		<th></th>
+	</tr>
+	
+<% foreach (var item in Model) { %>
+	<tr>
+		<td>
+			<%: Html.DisplayFor(model => model.FirstName) %>
+		</td>
+		<td>
+			<%: Html.DisplayFor(model => model.LastName) %>
+		</td>
+		<td>
+			<%: Html.ActionLink(""Edit"", ""Edit"") %> |
+			<%: Html.ActionLink(""Details"", ""Details"") %> |
+			<%: Html.ActionLink(""Delete"", ""Delete"") %>
+		</td>
+	</tr>
+<% } %>
+</table>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
 	}
 }

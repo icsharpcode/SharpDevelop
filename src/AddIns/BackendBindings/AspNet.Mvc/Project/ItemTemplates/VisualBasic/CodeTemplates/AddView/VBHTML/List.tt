@@ -37,17 +37,21 @@ End Code
 <table>
 <#
 	If ModelHasProperties Then
-		For Each modelProperty As ModelProperty in ModelProperties
 #>
 	<tr>
+<#
+		For Each modelProperty As ModelProperty in ModelProperties
+#>
 		<th>
 			@Html.LabelFor(Function(model) model.<#= modelProperty.Name #>)
 		</th>
+<#
+		Next
+#>
 		<th></th>
 	</tr>
 	
 <#
-		Next
 	End If 
 #>
 @For Each item in Model
