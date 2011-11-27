@@ -141,6 +141,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		List<Reference> FindReferencesInCurrentFile(ResolveResult resolveResult)
 		{
+			if (resolveResult == null)
+				return null;
 			var cancellationTokenSource = new CancellationTokenSource();
 			using (new Timer(
 				delegate {
