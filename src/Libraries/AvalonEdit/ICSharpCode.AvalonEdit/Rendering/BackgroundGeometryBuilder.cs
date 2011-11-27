@@ -96,6 +96,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			int segmentStart = segment.Offset;
 			int segmentEnd = segment.Offset + segment.Length;
 			
+			segmentStart = segmentStart.CoerceValue(0, textView.Document.TextLength);
+			segmentEnd = segmentEnd.CoerceValue(0, textView.Document.TextLength);
+			
 			TextViewPosition start;
 			TextViewPosition end;
 			
