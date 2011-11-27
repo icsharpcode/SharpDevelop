@@ -230,5 +230,53 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 ";
 			Assert.AreEqual(expectedOutput, output);
 		}
+		
+		[Test]
+		public void TransformText_ModelHasTwoPropertiesAndIsPartialView_ReturnsControlWithHtmlEditorsForModelProperties()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithTwoProperties);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"@model AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithTwoProperties
+
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+	<fieldset>
+		<legend>ModelWithTwoProperties</legend>
+		
+		<div class=""editor-label"">
+			@Html.LabelFor(model => model.FirstName)
+		</div>
+		<div class=""editor-field"">
+			@Html.EditorFor(model => model.FirstName)
+			@Html.ValidationMessageFor(model => model.FirstName)
+		</div>
+		
+		<div class=""editor-label"">
+			@Html.LabelFor(model => model.LastName)
+		</div>
+		<div class=""editor-field"">
+			@Html.EditorFor(model => model.LastName)
+			@Html.ValidationMessageFor(model => model.LastName)
+		</div>
+		
+		<p>
+			<input type=""submit"" value=""Create""/>
+		</p>
+	</fieldset>
+}
+<div>
+	@Html.ActionLink(""Back"", ""Index"")
+</div>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
 	}
 }

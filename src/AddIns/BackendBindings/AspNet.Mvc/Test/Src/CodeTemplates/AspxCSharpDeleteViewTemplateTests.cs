@@ -212,5 +212,47 @@ MyView
 ";
 			Assert.AreEqual(expectedOutput, output);
 		}
+		
+		[Test]
+		public void TransformText_ModelHasTwoPropertiesAndIsPartialView_ReturnsControlWithHtmlHelpersForModelProperties()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithTwoProperties);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithTwoProperties>"" %>
+
+<fieldset>
+	<legend>ModelWithTwoProperties</legend>
+	
+	<div class=""display-label"">
+		<%: Html.LabelFor(model => model.FirstName) %>
+	</div>
+	<div class=""display-field"">
+		<%: Html.DisplayFor(model => model.FirstName) %>
+	</div>
+	
+	<div class=""display-label"">
+		<%: Html.LabelFor(model => model.LastName) %>
+	</div>
+	<div class=""display-field"">
+		<%: Html.DisplayFor(model => model.LastName) %>
+	</div>
+</fieldset>
+<% using (Html.BeginForm()) { %>
+	<p>
+		<input type=""submit"" value=""Delete""/> |
+		<%: Html.ActionLink(""Back"", ""Index"") %>
+	</p>
+<% } %>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
 	}
 }
