@@ -1,6 +1,8 @@
 ﻿<#@ template language="VB" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
 <#@ import namespace="Microsoft.VisualBasic.Constants" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
 <# If MvcHost.IsPartialView Then #>
 <%@ Control Language="VB" Inherits="System.Web.Mvc.ViewUserControl<#= GetViewPageType() #>" %>
 
@@ -32,6 +34,16 @@
 	<%: Html.ValidationSummary(True) %>
 	<fieldset>
 		<legend><#= MvcHost.ViewDataType.Name #></legend>
+<# For Each modelProperty As ModelProperty in GetModelProperties() #>
+	
+		<div class="editor-label">
+			<%: Html.LabelFor(Function(model) model.<#= modelProperty.Name #>) %>
+		</div>
+		<div class="editor-field">
+			<%: Html.EditorFor(Function(model) model.<#= modelProperty.Name #>) %>
+			<%: Html.ValidationMessageFor(Function(model) model.<#= modelProperty.Name #>) %>
+		</div>
+<# Next #>
 		
 		<p>
 			<input type="submit" value="Save"/>
@@ -62,11 +74,27 @@
 		End Get
 	End Property
 	
+	Public Class ModelProperty
+		Public Property Name As String
+	End Class
+	
 	Public Function GetViewPageType() As String
 		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
 		If Not String.IsNullOrEmpty(viewDataTypeName) Then
 			Return String.Format("(Of {0})", viewDataTypeName)
 		End If
 		Return String.Empty
+	End Function
+	
+	Public Function GetModelProperties() As IEnumerable(Of ModelProperty)
+		Dim properties = New List(Of ModelProperty)()
+		For Each propertyInfo As PropertyInfo In MvcHost.GetViewDataTypeProperties()
+			properties.Add(CreateModelProperty(propertyInfo))
+		Next
+		Return properties
+	End Function
+	
+	Function CreateModelProperty(ByVal propertyInfo As PropertyInfo) As ModelProperty
+		Return New ModelProperty() With { .Name = propertyInfo.Name }
 	End Function
 #>

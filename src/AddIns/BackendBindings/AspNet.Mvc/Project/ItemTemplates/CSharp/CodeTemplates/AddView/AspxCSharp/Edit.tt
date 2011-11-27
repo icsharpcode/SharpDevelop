@@ -1,5 +1,7 @@
 ﻿<#@ template language="C#" HostSpecific="true" #>
 <#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
 <# if (MvcHost.IsPartialView) { #>
 <%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<#= GetViewPageType() #>" %>
 
@@ -31,6 +33,16 @@
 	<%: Html.ValidationSummary(true) %>
 	<fieldset>
 		<legend><#= MvcHost.ViewDataType.Name #></legend>
+<# foreach (ModelProperty modelProperty in GetModelProperties()) { #>
+		
+		<div class="editor-label">
+			<%: Html.LabelFor(model => model.<#= modelProperty.Name#>) %>
+		</div>
+		<div class="editor-field">
+			<%: Html.EditorFor(model => model.<#= modelProperty.Name#>) %>
+			<%: Html.ValidationMessageFor(model => model.<#= modelProperty.Name#>) %>
+		</div>
+<# } #>
 		
 		<p>
 			<input type="submit" value="Save"/>
@@ -59,6 +71,11 @@
 		get { return (MvcTextTemplateHost)Host; }
 	}
 	
+	public class ModelProperty
+	{
+		public string Name { get; set; }
+	}
+	
 	public string GetViewPageType()
 	{
 		string viewDataTypeName = MvcHost.ViewDataTypeName;
@@ -66,5 +83,19 @@
 			return String.Format("<{0}>", viewDataTypeName);
 		}
 		return String.Empty;
+	}
+	
+	public IEnumerable<ModelProperty> GetModelProperties()
+	{
+		var properties = new List<ModelProperty>();
+		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
+			properties.Add(CreateModelProperty(propertyInfo));
+		}
+		return properties;
+	}
+	
+	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	{
+		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 #>
