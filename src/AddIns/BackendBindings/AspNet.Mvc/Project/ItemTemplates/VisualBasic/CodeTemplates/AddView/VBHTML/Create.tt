@@ -36,7 +36,10 @@ End Code
 	@<fieldset>
 		<legend><#= MvcHost.ViewDataType.Name #></legend>
 		
-<# For Each modelProperty As ModelProperty in GetModelProperties() #>
+<#
+	For Each modelProperty As ModelProperty in GetModelProperties()
+		If Not modelProperty.IsPrimaryKey Then
+#>
 		<div class="editor-label">
 			@Html.LabelFor(Function(model) model.<#= modelProperty.Name #>)
 		</div>
@@ -45,7 +48,10 @@ End Code
 			@Html.ValidationMessageFor(Function(model) model.<#= modelProperty.Name #>)
 		</div>
 		
-<# Next #>
+<#
+		End If
+	Next
+#>
 		<p>
 			<input type="submit" value="Create"/>
 		</p>
@@ -71,7 +77,21 @@ End Using
 	End Property
 	
 	Public Class ModelProperty
-		Public Property Name As String
+		Public Property Name() As String
+		Public Property IsPrimaryKey() As Boolean
+		
+		Public Sub New(ByVal propertyInfo As PropertyInfo)
+			Me.Name = propertyInfo.Name
+			Me.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo)
+		End Sub
+		
+		Function IsPrimaryKeyProperty(ByVal propertyInfo As PropertyInfo) As Boolean
+			Return IsMatchIgnoringCase(propertyInfo.Name, "id")
+		End Function
+		
+		Shared Function IsMatchIgnoringCase(ByVal a As String, ByVal b as String) As Boolean
+			Return String.Equals(a, b, StringComparison.OrdinalIgnoreCase)
+		End Function
 	End Class
 	
 	Function GetModelDirective() As String
@@ -85,12 +105,8 @@ End Using
 	Public Function GetModelProperties() As IEnumerable(Of ModelProperty)
 		Dim properties = New List(Of ModelProperty)()
 		For Each propertyInfo As PropertyInfo In MvcHost.GetViewDataTypeProperties()
-			properties.Add(CreateModelProperty(propertyInfo))
+			properties.Add(New ModelProperty(propertyInfo))
 		Next
 		Return properties
-	End Function
-	
-	Function CreateModelProperty(ByVal propertyInfo As PropertyInfo) As ModelProperty
-		Return New ModelProperty() With { .Name = propertyInfo.Name }
 	End Function
 #>

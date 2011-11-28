@@ -35,6 +35,11 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			return GetModelProperties().First();
 		}
 		
+		Create.ModelProperty GetModelProperty(string name)
+		{
+			return GetModelProperties().Single(p => p.Name == name);
+		}
+		
 		[Test]
 		public void GetViewPageType_HostViewDataTypeNameIsMyAppMyModel_ReturnsMyAppMyModelSurroundedByAngleBrackets()
 		{
@@ -276,6 +281,79 @@ MyView
 </div>
 ";
 			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void TransformText_ModelHasIdPropertyAndIsPartialView_ReturnsControlWithFormAndHtmlEditorForNonIdProperty()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithIdProperty);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithIdProperty>"" %>
+
+<% using (Html.BeginForm()) { %>
+	<%: Html.ValidationSummary(true) %>
+	<fieldset>
+		<legend>ModelWithIdProperty</legend>
+		
+		<div class=""editor-label"">
+			<%: Html.LabelFor(model => model.Name) %>
+		</div>
+		<div class=""editor-field"">
+			<%: Html.EditorFor(model => model.Name) %>
+			<%: Html.ValidationMessageFor(model => model.Name) %>
+		</div>
+		
+		<p>
+			<input type=""submit"" value=""Create""/>
+		</p>
+	</fieldset>
+<% } %>
+<div>
+	<%: Html.ActionLink(""Back"", ""Index"") %>
+</div>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdAndNameProperty_IdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			Create.ModelProperty modelProperty = GetModelProperty("Id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdAndNameProperty_NamePropertyIsNotMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			Create.ModelProperty modelProperty = GetModelProperty("Name");
+			
+			Assert.IsFalse(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdPropertyInLowerCase_IdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdPropertyInLowerCase);
+			
+			Create.ModelProperty modelProperty = GetModelProperty("id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
 		}
 	}
 }

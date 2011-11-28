@@ -91,6 +91,8 @@
     <Compile Include="Src\CodeTemplates\AspxCSharpEditViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\AspxCSharpListViewTemplateTests.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithIdProperty.cs" />
+    <Compile Include="Src\CodeTemplates\Models\ModelWithIdPropertyInLowerCase.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithNoProperties.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithOneProperty.cs" />
     <Compile Include="Src\CodeTemplates\Models\ModelWithTwoProperties.cs" />
