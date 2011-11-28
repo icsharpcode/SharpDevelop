@@ -35,6 +35,11 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			return GetModelProperties().First();
 		}
 		
+		Delete.ModelProperty GetModelProperty(string name)
+		{
+			return GetModelProperties().Single(p => p.Name == name);
+		}
+		
 		[Test]
 		public void GetViewPageType_HostViewDataTypeNameIsMyAppMyModel_ReturnsMyAppMyModelSurroundedByAngleBrackets()
 		{
@@ -253,6 +258,74 @@ MyView
 <% } %>
 ";
 			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void TransformText_ModelHasIdPropertyAndIsPartialView_NoHtmlHelpersGeneratedForModelIdProperty()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithIdProperty);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithIdProperty>"" %>
+
+<fieldset>
+	<legend>ModelWithIdProperty</legend>
+	
+	<div class=""display-label"">
+		<%: Html.LabelFor(model => model.Name) %>
+	</div>
+	<div class=""display-field"">
+		<%: Html.DisplayFor(model => model.Name) %>
+	</div>
+</fieldset>
+<% using (Html.BeginForm()) { %>
+	<p>
+		<input type=""submit"" value=""Delete""/> |
+		<%: Html.ActionLink(""Back"", ""Index"") %>
+	</p>
+<% } %>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdAndNameProperty_IdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			Delete.ModelProperty modelProperty = GetModelProperty("Id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdAndNameProperty_NamePropertyIsNotMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			Delete.ModelProperty modelProperty = GetModelProperty("Name");
+			
+			Assert.IsFalse(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdPropertyInLowerCase_IdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdPropertyInLowerCase);
+			
+			Delete.ModelProperty modelProperty = GetModelProperty("id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
 		}
 	}
 }

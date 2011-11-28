@@ -20,7 +20,7 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
         private global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost hostValue;
         
         
-        #line 60 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+        #line 66 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
 
 	MvcTextTemplateHost MvcHost {
 		get { return (MvcTextTemplateHost)Host; }
@@ -29,6 +29,23 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
 	public class ModelProperty
 	{
 		public string Name { get; set; }
+		public bool IsPrimaryKey { get; set; }
+		
+		public ModelProperty(PropertyInfo propertyInfo)
+		{
+			this.Name = propertyInfo.Name;
+			this.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo);
+		}
+		
+		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
+		{
+			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 	
 	public string GetModelDirective()
@@ -44,14 +61,9 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
 	{
 		var properties = new List<ModelProperty>();
 		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
-			properties.Add(CreateModelProperty(propertyInfo));
+			properties.Add(new ModelProperty(propertyInfo));
 		}
 		return properties;
-	}
-	
-	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
-	{
-		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 
         #line default
@@ -188,55 +200,61 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
             #line hidden
             
             #line 35 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
- foreach (ModelProperty modelProperty in GetModelProperties()) { 
+
+	foreach (ModelProperty modelProperty in GetModelProperties()) {
+		if (!modelProperty.IsPrimaryKey) {
+
             
             #line default
             #line hidden
             
-            #line 36 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write("\t\r\n\t<div class=\"display-label\">\r\n\t\t@Html.LabelFor(model => model.");
             
             #line default
             #line hidden
             
-            #line 38 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 41 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
             
             #line default
             #line hidden
             
-            #line 38 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 41 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write(")\r\n\t</div>\r\n\t<div class=\"display-field\">\r\n\t\t@Html.DisplayFor(model => model.");
             
             #line default
             #line hidden
             
-            #line 41 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
             
             #line default
             #line hidden
             
-            #line 41 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write(")\r\n\t</div>\r\n");
             
             #line default
             #line hidden
             
-            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
- } 
+            #line 46 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+
+		}
+	}
+
             
             #line default
             #line hidden
             
-            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write("</fieldset>\r\n@using (Html.BeginForm()) {\r\n\t<p>\r\n\t\t<input type=\"submit\" value=\"Del" +
                     "ete\"/> |\r\n\t\t@Html.ActionLink(\"Back\", \"Index\")\r\n\t</p>\r\n}\r\n");
             
             #line default
             #line hidden
             
-            #line 51 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
  
 	if (MvcHost.IsPartialView) {
 		// Do nothing.
@@ -247,13 +265,13 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
             #line default
             #line hidden
             
-            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 63 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
             this.Write("\t</body>\r\n</html>\r\n");
             
             #line default
             #line hidden
             
-            #line 59 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
+            #line 65 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt"
  } 
             
             #line default

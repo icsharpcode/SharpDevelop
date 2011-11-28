@@ -20,7 +20,7 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         private global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost hostValue;
         
         
-        #line 64 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+        #line 70 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 	MvcTextTemplateHost MvcHost {
 		get { return (MvcTextTemplateHost)Host; }
@@ -29,6 +29,23 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
 	public class ModelProperty
 	{
 		public string Name { get; set; }
+		public bool IsPrimaryKey { get; set; }
+		
+		public ModelProperty(PropertyInfo propertyInfo)
+		{
+			this.Name = propertyInfo.Name;
+			this.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo);
+		}
+		
+		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
+		{
+			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 	
 	public string GetViewPageType()
@@ -44,14 +61,9 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
 	{
 		var properties = new List<ModelProperty>();
 		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
-			properties.Add(CreateModelProperty(propertyInfo));
+			properties.Add(new ModelProperty(propertyInfo));
 		}
 		return properties;
-	}
-	
-	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
-	{
-		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 
         #line default
@@ -222,56 +234,62 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line hidden
             
             #line 34 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
- foreach (ModelProperty modelProperty in GetModelProperties()) { 
+
+	foreach (ModelProperty modelProperty in GetModelProperties()) {
+		if (!modelProperty.IsPrimaryKey) {
+
             
             #line default
             #line hidden
             
-            #line 35 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 38 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\t\r\n\t<div class=\"display-label\">\r\n\t\t<%: Html.LabelFor(model => model.");
             
             #line default
             #line hidden
             
-            #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
             
             #line default
             #line hidden
             
-            #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(") %>\r\n\t</div>\r\n\t<div class=\"display-field\">\r\n\t\t<%: Html.DisplayFor(model => model" +
                     ".");
             
             #line default
             #line hidden
             
-            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
             
             #line default
             #line hidden
             
-            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write(") %>\r\n\t</div>\r\n");
             
             #line default
             #line hidden
             
-            #line 42 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
- } 
+            #line 45 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+
+		}
+	}
+
             
             #line default
             #line hidden
             
-            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 49 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("</fieldset>\r\n<% using (Html.BeginForm()) { %>\r\n\t<p>\r\n\t\t<input type=\"submit\" value" +
                     "=\"Delete\"/> |\r\n\t\t<%: Html.ActionLink(\"Back\", \"Index\") %>\r\n\t</p>\r\n<% } %>\r\n");
             
             #line default
             #line hidden
             
-            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 56 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 	if (MvcHost.IsPartialView) {
 		// Do nothing.
@@ -282,13 +300,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 56 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 62 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("</asp:Content>\r\n");
             
             #line default
             #line hidden
             
-            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 63 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
 
 	} else { 
 		PopIndent();
@@ -297,13 +315,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 61 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 67 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
             this.Write("\t</body>\r\n</html>\r\n");
             
             #line default
             #line hidden
             
-            #line 63 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
+            #line 69 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt"
  } 
             
             #line default

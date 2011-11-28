@@ -32,7 +32,10 @@
 #>
 <fieldset>
 	<legend><#= MvcHost.ViewDataType.Name #></legend>
-<# foreach (ModelProperty modelProperty in GetModelProperties()) { #>
+<#
+	foreach (ModelProperty modelProperty in GetModelProperties()) {
+		if (!modelProperty.IsPrimaryKey) {
+#>
 	
 	<div class="display-label">
 		@Html.LabelFor(model => model.<#= modelProperty.Name #>)
@@ -40,7 +43,10 @@
 	<div class="display-field">
 		@Html.DisplayFor(model => model.<#= modelProperty.Name #>)
 	</div>
-<# } #>
+<#
+		}
+	}
+#>
 </fieldset>
 @using (Html.BeginForm()) {
 	<p>
@@ -65,6 +71,23 @@
 	public class ModelProperty
 	{
 		public string Name { get; set; }
+		public bool IsPrimaryKey { get; set; }
+		
+		public ModelProperty(PropertyInfo propertyInfo)
+		{
+			this.Name = propertyInfo.Name;
+			this.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo);
+		}
+		
+		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
+		{
+			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 	
 	public string GetModelDirective()
@@ -80,13 +103,8 @@
 	{
 		var properties = new List<ModelProperty>();
 		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
-			properties.Add(CreateModelProperty(propertyInfo));
+			properties.Add(new ModelProperty(propertyInfo));
 		}
 		return properties;
-	}
-	
-	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
-	{
-		return new ModelProperty() { Name = propertyInfo.Name };
 	}
 #>
