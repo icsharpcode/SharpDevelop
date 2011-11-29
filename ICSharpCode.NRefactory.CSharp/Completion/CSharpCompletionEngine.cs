@@ -708,7 +708,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddTypesAndNamespaces (CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Predicate<IType> typePred = null, Predicate<IMember> memberPred = null)
 		{
-			var currentMember = this.currentMember;
+			var currentMember = ctx.CurrentMember;
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
@@ -721,7 +721,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				if (currentMember != null) {
-					foreach (var member in currentType.Resolve (ctx).GetMembers ()) {
+					foreach (var member in ctx.CurrentTypeDefinition.GetMembers ()) {
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
@@ -730,18 +730,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter (p);
 				}
 			}
-			Console.WriteLine ("-----");
+			
 			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
-				Console.WriteLine ("n:" + n.Namespace.FullName);
 				foreach (var pair in n.UsingAliases) {
 					wrapper.AddNamespace (pair.Key);
 				}
 				foreach (var u in n.Usings) {
-					Console.WriteLine ("u:" + u.FullName + "/" + u.Types.Count ());
 					foreach (var type in u.Types) {
 						if (typePred == null || typePred (type)) {
 							string name = type.Name;
-							Console.WriteLine ("2" + name);
 							if (node is Attribute && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 								name = name.Substring (0, name.Length - "Attribute".Length);
 							wrapper.AddType (type, name);
@@ -750,10 +747,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var type in n.Namespace.Types) {
-					Console.WriteLine (type.Name);
-					if (typePred == null || typePred (type)) {
+					if (typePred == null || typePred (type))
 						wrapper.AddType (type, type.Name);
-					}
 				}
 				
 				foreach (var curNs in n.Namespace.ChildNamespaces) {
@@ -1558,6 +1553,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
+			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
 				foreach (var member in type.GetMembers ()) {
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {

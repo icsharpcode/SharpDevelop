@@ -228,10 +228,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			rctx = rctx.WithUsingScope (parsedFile.GetUsingScope (loc).Resolve (cmp));
 			var curDef = parsedFile.GetInnermostTypeDefinition (loc);
 			if (curDef != null) {
-				rctx = rctx.WithCurrentTypeDefinition (curDef.Resolve (rctx).GetDefinition ());
-				var curMember = parsedFile.GetMember (loc);
+				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
+				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
+				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
 				if (curMember != null)
-					rctx = rctx.WithCurrentMember (curMember.CreateResolved (rctx));
+					rctx = rctx.WithCurrentMember (curMember);
 			}
 			engine.ctx = rctx;
 				
@@ -614,10 +615,11 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (6, provider.Count);
 			CodeCompletionBugTests.CheckObjectMembers (provider); // 4 from System.Object
 			Assert.IsNotNull (provider.Find ("A"), "field 'A' not found.");
 			Assert.IsNotNull (provider.Find ("B"), "field 'B' not found.");
+			Assert.IsNull (provider.Find ("C"), "field 'C' found, but shouldn't.");
+			Assert.IsNull (provider.Find ("D"), "field 'D' found, but shouldn't.");
 		}
 
 		/// <summary>
