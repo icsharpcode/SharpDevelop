@@ -171,7 +171,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				if (expr.Item2 is AstType)
 					return CreateTypeAndNamespaceCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
-				
 				return CreateCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
 			case '#':
 				if (IsInsideCommentOrString ())
@@ -668,8 +667,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			Predicate<IType> typePred = null;
 			if (node is Attribute) {
-				var attribute = ProjectContent.CreateCompilation ().MainAssembly.GetTypeDefinition ("System", "Attribute", 0);
-				typePred = t => t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
+				var attribute = Compilation.FindType (typeof (System.Attribute));
+				typePred = t => {
+					return t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
+				};
 			}
 			AddTypesAndNamespaces (wrapper, state, node, typePred);
 			
@@ -729,17 +730,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter (p);
 				}
 			}
-			
-			/* TODO !!!!!!!!!
-				
+			Console.WriteLine ("-----");
 			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
+				Console.WriteLine ("n:" + n.Namespace.FullName);
 				foreach (var pair in n.UsingAliases) {
-					wrapper.AddNamespace ("", pair.Key);
+					wrapper.AddNamespace (pair.Key);
 				}
 				foreach (var u in n.Usings) {
-					foreach (var type in ctx.GetTypes (u.FullName, StringComparer.Ordinal)) {
+					Console.WriteLine ("u:" + u.FullName + "/" + u.Types.Count ());
+					foreach (var type in u.Types) {
 						if (typePred == null || typePred (type)) {
 							string name = type.Name;
+							Console.WriteLine ("2" + name);
 							if (node is Attribute && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 								name = name.Substring (0, name.Length - "Attribute".Length);
 							wrapper.AddType (type, name);
@@ -747,16 +749,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				
-				foreach (var type in ctx.GetTypes (n.NamespaceName, StringComparer.Ordinal)) {
+				foreach (var type in n.Namespace.Types) {
+					Console.WriteLine (type.Name);
 					if (typePred == null || typePred (type)) {
 						wrapper.AddType (type, type.Name);
 					}
 				}
 				
-				foreach (var curNs in ctx.GetNamespaces ().Where (sn => sn.StartsWith (n.NamespaceName) && sn != n.NamespaceName)) {
-					wrapper.AddNamespace (n.NamespaceName, curNs);
+				foreach (var curNs in n.Namespace.ChildNamespaces) {
+					wrapper.AddNamespace (curNs.Name);
 				}
-			}*/
+			}
 		}
 		
 		IEnumerable<ICompletionData> HandleKeywordCompletion (int wordStart, string word)
@@ -1093,7 +1096,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			Predicate<IType> pred = null;
 			if (hintType != null) {
 				if (hintType.Kind != TypeKind.Unknown) {
-					var lookup = new MemberLookup (currentType.Resolve (ctx).GetDefinition (), ProjectContent.CreateCompilation ().MainAssembly);
+					var lookup = new MemberLookup (currentType.Resolve (ctx).GetDefinition (), Compilation.MainAssembly);
 					pred = t => {
 						// check if type is in inheritance tree.
 						if (hintType.GetDefinition () != null && !t.GetDefinition ().IsDerivedFrom (hintType.GetDefinition ()))
@@ -1144,7 +1147,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				addedVirtuals = true;
 			}
 			if (!addedVirtuals)
-				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, ProjectContent.CreateCompilation ().MainAssembly.GetTypeDefinition ("System", "Object", 0), declarationBegin);
+				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, Compilation.FindType(typeof(object)).GetDefinition (), declarationBegin);
 			return wrapper.Result;
 		}
 		
@@ -1403,21 +1406,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult == null || resolveResult.IsError)
 				return null;
 			var result = new CompletionDataWrapper (this);
-/* TODO:			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				foreach (var cl in ctx.GetTypes (nr.NamespaceName, StringComparer.Ordinal)) {
+				foreach (var cl in nr.Namespace.Types) {
 					result.AddType (cl, cl.Name);
 				}
-				foreach (var ns in ctx.GetNamespaces ().Where (n => n.Length > nr.NamespaceName.Length && n.StartsWith (nr.NamespaceName))) {
-					result.AddNamespace (nr.NamespaceName, ns);
+				foreach (var ns in nr.Namespace.ChildNamespaces) {
+					result.AddNamespace (ns.Name);
 				}
 			} else if (resolveResult is TypeResolveResult) {
-				var type = resolveResult.Type.Resolve (ctx);
-				foreach (var nested in type.GetNestedTypes (ctx)) {
+				var type = resolveResult.Type;
+				foreach (var nested in type.GetNestedTypes ()) {
 					result.AddType (nested, nested.Name);
 				}
-			}*/
+			}
 			return result.Result;
 		}
 		
@@ -1505,16 +1507,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (resolveResult == null /*|| resolveResult.IsError*/)
 				return null;
+			
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
 				var namespaceContents = new CompletionDataWrapper (this);
-/*TODO:				foreach (var cl in ctx.GetTypes (nr.NamespaceName, StringComparer.Ordinal)) {
+				
+				foreach (var cl in nr.Namespace.Types) {
 					namespaceContents.AddType (cl, cl.Name);
 				}
-				foreach (var ns in ctx.GetNamespaces ().Where (n => n.Length > nr.NamespaceName.Length && n.StartsWith (nr.NamespaceName))) {
-					namespaceContents.AddNamespace (nr.NamespaceName, ns);
+				
+				foreach (var ns in nr.Namespace.ChildNamespaces) {
+					namespaceContents.AddNamespace (ns.Name);
 				}
-				*/
 				return namespaceContents.Result;
 			}
 			
@@ -1583,7 +1587,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 			} else {
 				var baseTypes = new List<IType> (type.GetAllBaseTypes ());
-				var conv = new Conversions (ProjectContent.CreateCompilation ());
+				var conv = new Conversions (Compilation);
 				for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
 					AddExtensionMethods (result, conv, baseTypes, n.Namespace.FullName);
 					foreach (var u in n.Usings) {

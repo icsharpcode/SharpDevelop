@@ -64,20 +64,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 		HashSet<string> usedNamespaces = new HashSet<string> ();
 			
-		public void AddNamespace (string curNamespace, string fullNamespace)
+		public void AddNamespace (string name)
 		{
-			string name;
-			// crop prefix
-			if (!string.IsNullOrEmpty (curNamespace)) {
-				name = fullNamespace.Substring (curNamespace.Length + 1);
-			} else {
-				name = fullNamespace;
-			}
-				
-			// crop suffix
-			int idx = name.IndexOf (".");
-			if (idx >= 0)
-				name = name.Substring (0, idx);
 			if (string.IsNullOrEmpty (name) || usedNamespaces.Contains (name))
 				return;
 			usedNamespaces.Add (name);

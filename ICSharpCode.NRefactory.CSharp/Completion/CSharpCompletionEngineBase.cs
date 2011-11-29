@@ -57,6 +57,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public CSharpParsedFile CSharpParsedFile { get; set; }
 
 		public IProjectContent ProjectContent { get; set; }
+		
+		ICompilation compilation;
+		protected ICompilation Compilation {
+			get {
+				if (compilation == null)
+					compilation = ProjectContent.Resolve (ctx).Compilation;
+				return compilation;
+			}
+		}
+		
 		#endregion
 		
 		protected void SetOffset (int offset)

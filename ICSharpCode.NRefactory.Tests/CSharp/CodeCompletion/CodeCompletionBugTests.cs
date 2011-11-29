@@ -213,16 +213,28 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument (editorText);
 			
 			var engine = new CSharpCompletionEngine (doc, new TestFactory ());
-			var pctx = new CSharpProjectContent ();
-			pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			IProjectContent pctx = new CSharpProjectContent ();
+			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
 			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
 			
 			var parsedFile = compilationUnit.ToTypeSystem ();
-			pctx.UpdateProjectContent (null, parsedFile);
-			var cmp = pctx.CreateCompilation ();
+			pctx = pctx.UpdateProjectContent (null, parsedFile);
 			
-			engine.ctx = new CSharpTypeResolveContext (cmp.MainAssembly);
+			var cmp = pctx.CreateCompilation ();
+			var loc = doc.GetLocation (cursorPosition);
+			
+			var rctx = new CSharpTypeResolveContext (cmp.MainAssembly);
+			rctx = rctx.WithUsingScope (parsedFile.GetUsingScope (loc).Resolve (cmp));
+			var curDef = parsedFile.GetInnermostTypeDefinition (loc);
+			if (curDef != null) {
+				rctx = rctx.WithCurrentTypeDefinition (curDef.Resolve (rctx).GetDefinition ());
+				var curMember = parsedFile.GetMember (loc);
+				if (curMember != null)
+					rctx = rctx.WithCurrentMember (curMember.CreateResolved (rctx));
+			}
+			engine.ctx = rctx;
+				
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = new CSharpFormattingOptions ();
 			engine.CSharpParsedFile = parsedFile;
@@ -242,14 +254,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent (string text, CompilationUnit compilationUnit)
 		{
 			var doc = new ReadOnlyDocument (text);
-			var pctx = new CSharpProjectContent ();
+			IProjectContent pctx = new CSharpProjectContent ();
+			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			var parsedFile = compilationUnit.ToTypeSystem ();
-			pctx.UpdateProjectContent (null, parsedFile);
-			pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			
+			pctx = pctx.UpdateProjectContent (null, parsedFile);
 			var cmp = pctx.CreateCompilation ();
 			
 			var engine = new CSharpCompletionEngine (doc, new TestFactory ());
-			
 			engine.ctx = new CSharpTypeResolveContext (cmp.MainAssembly);
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = new CSharpFormattingOptions ();

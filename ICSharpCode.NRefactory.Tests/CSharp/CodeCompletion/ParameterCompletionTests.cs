@@ -161,18 +161,29 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			var doc = new ReadOnlyDocument (editorText);
 			
-			
-			var pctx = new CSharpProjectContent ();
-			pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			IProjectContent pctx = new CSharpProjectContent ();
+			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
 			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
 			
 			var parsedFile = compilationUnit.ToTypeSystem ();
-			pctx.UpdateProjectContent (null, parsedFile);
+			pctx = pctx.UpdateProjectContent (null, parsedFile);
 			var cmp = pctx.CreateCompilation ();
+			var loc = doc.GetLocation (cursorPosition);
+			
 			var engine = new CSharpParameterCompletionEngine (doc, new TestFactory (pctx));
 			
-			engine.ctx = new CSharpTypeResolveContext (cmp.MainAssembly);
+			var rctx = new CSharpTypeResolveContext (cmp.MainAssembly);
+			rctx = rctx.WithUsingScope (parsedFile.GetUsingScope (loc).Resolve (cmp));
+			var curDef = parsedFile.GetInnermostTypeDefinition (loc);
+			if (curDef != null) {
+				rctx = rctx.WithCurrentTypeDefinition (curDef.Resolve (rctx).GetDefinition ());
+				var curMember = parsedFile.GetMember (loc);
+				if (curMember != null)
+					rctx = rctx.WithCurrentMember (curMember.CreateResolved (rctx));
+			}
+			engine.ctx = rctx;
+			
 			engine.CSharpParsedFile = parsedFile;
 			engine.ProjectContent = pctx;
 			engine.Unit = compilationUnit;
