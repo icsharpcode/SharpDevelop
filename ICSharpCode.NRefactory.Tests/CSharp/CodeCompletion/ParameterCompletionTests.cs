@@ -107,6 +107,34 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				#endregion
 			}
 			
+			
+			
+			class ArrayProvider : IParameterDataProvider
+			{
+				#region IParameterDataProvider implementation
+				public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+				{
+					return "";
+				}
+
+				public string GetParameterMarkup (int overload, int paramIndex)
+				{
+					return "";
+				}
+
+				public int GetParameterCount (int overload)
+				{
+					return 1;
+				}
+
+				public int OverloadCount {
+					get {
+						return 1;
+					}
+				}
+				#endregion
+			}
+			
 			#region IParameterCompletionDataFactory implementation
 			public IParameterDataProvider CreateConstructorProvider (ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
@@ -139,6 +167,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			
 			public IParameterDataProvider CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
 			{
+				if (type.Kind == TypeKind.Array)
+					return new ArrayProvider ();
 				return new IndexerProvider () {
 					Data = type.GetProperties (p => p.IsIndexer)
 				};

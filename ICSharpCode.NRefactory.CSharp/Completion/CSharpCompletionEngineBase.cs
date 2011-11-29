@@ -471,15 +471,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			
+//			var newContent = ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
+			
 			var csResolver = new CSharpResolver (ctx);
+			
 			var navigator = new NodeListResolveVisitorNavigator (new[] { resolveNode });
-			ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
-			var visitor = new ResolveVisitor (csResolver, file, navigator);
+			var visitor = new ResolveVisitor (csResolver, CSharpParsedFile, navigator);
 			
 			visitor.Scan (unit);
 			var state = visitor.GetResolverStateBefore (resolveNode);
 			var result = visitor.GetResolveResult (resolveNode);
-			ProjectContent.UpdateProjectContent (file, CSharpParsedFile);
 			return Tuple.Create (result, state);
 		}
 		

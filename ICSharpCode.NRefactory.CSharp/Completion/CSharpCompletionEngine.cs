@@ -307,7 +307,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
 					if (resolveResult == null)
 						return null;
-					
 					if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 						var wrapper = new CompletionDataWrapper (this);
 						AddContextCompletion (wrapper, resolveResult.Item2, expressionOrVariableDeclaration.Item2);
@@ -651,8 +650,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
-			if (currentMember is IParameterizedMember) {
-				var param = (IParameterizedMember)currentMember;
+			if (ctx.CurrentMember is IParameterizedMember) {
+				var param = (IParameterizedMember)ctx.CurrentMember;
 				foreach (var p in param.Parameters) {
 					wrapper.AddVariable (p);
 				}
@@ -683,6 +682,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
+			var prop = currentMember as IUnresolvedProperty;
+			if (prop != null && prop.Setter.Region.IsInside (location))
+				wrapper.AddCustom ("value"); 
+			if (currentMember is IUnresolvedEvent)
+				wrapper.AddCustom ("value"); 
 			
 			if (IsInSwitchContext (node)) {
 				wrapper.AddCustom ("case"); 
@@ -1090,17 +1094,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var state = GetState ();
 			Predicate<IType> pred = null;
 			if (hintType != null) {
+				
 				if (hintType.Kind != TypeKind.Unknown) {
-					var lookup = new MemberLookup (currentType.Resolve (ctx).GetDefinition (), Compilation.MainAssembly);
+					Console.WriteLine ("hint!");
+					var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 					pred = t => {
 						// check if type is in inheritance tree.
 						if (hintType.GetDefinition () != null && !t.GetDefinition ().IsDerivedFrom (hintType.GetDefinition ()))
 							return false;
+						
 						// check for valid constructors
-						if (t.GetMethods ().Count (m => m.IsConstructor) == 0)
+						if (t.GetConstructors ().Count () == 0)
 							return true;
+						Console.WriteLine ("check!");
 						bool isProtectedAllowed = currentType != null ? currentType.Resolve (ctx).GetDefinition ().IsDerivedFrom (t.GetDefinition ()) : false;
-						return t.GetMethods ().Any (m => m.IsConstructor && lookup.IsAccessible (m, isProtectedAllowed));
+						return t.GetConstructors ().Any (m => lookup.IsAccessible (m, isProtectedAllowed));
 					};
 					DefaultCompletionString = GetShortType (hintType, GetState ());
 					wrapper.AddType (hintType, DefaultCompletionString);
@@ -1420,12 +1428,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> CreateTypeList ()
 		{
-			var compilation = ProjectContent.CreateCompilation ();
-			foreach (var cl in compilation.RootNamespace.Types) {
+			foreach (var cl in Compilation.RootNamespace.Types) {
 				yield return factory.CreateTypeCompletionData (cl, cl.Name);
 			}
 			
-			foreach (var ns in compilation.RootNamespace.ChildNamespaces) {
+			foreach (var ns in Compilation.RootNamespace.ChildNamespaces) {
 				yield return factory.CreateNamespaceCompletionData (ns.Name);
 			}
 		}
@@ -1519,7 +1526,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			IType type = resolveResult.Type;
 			var typeDef = resolveResult.Type.GetDefinition ();
-			var lookup = new MemberLookup (typeDef, ProjectContent.CreateCompilation ().MainAssembly);
+			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			var result = new CompletionDataWrapper (this);
 			bool isProtectedAllowed = false;
 			bool includeStaticMembers = false;
@@ -1549,8 +1556,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
 			}
 			
-//			Console.WriteLine ("type:" + type +"/"+type.GetType ());
-//			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
+			Console.WriteLine ("type:" + type +"/"+type.GetType ());
+			Console.WriteLine ("IS PROT ALLOWED:" + isProtectedAllowed);
 //			Console.WriteLine (resolveResult);
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
@@ -1618,16 +1625,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		void AddExtensionMethods (CompletionDataWrapper result, Conversions conv, List<IType> baseTypes, string namespaceName)
 		{
-			/* TODO:
-			foreach (var typeDefinition in ctx.GetTypes (namespaceName, StringComparer.Ordinal).Where (t => t.IsStatic && t.HasExtensionMethods)) {
-				foreach (var m in typeDefinition.Methods.Where (m => m.IsExtensionMethod )) {
-					var pt = m.Parameters.First ().Type.Resolve (ctx);
+			if (ctx.CurrentUsingScope == null || ctx.CurrentUsingScope.AllExtensionMethods == null)
+				return;
+			foreach (var meths in ctx.CurrentUsingScope.AllExtensionMethods) {
+				foreach (var m in meths) {
+					var pt = m.Parameters.First ().Type;
 					string reflectionName = pt is ParameterizedType ? ((ParameterizedType)pt).GetDefinition ().ReflectionName : pt.ReflectionName;
 					if (baseTypes.Any (bt => (bt is ParameterizedType ? ((ParameterizedType)bt).GetDefinition ().ReflectionName : bt.ReflectionName) == reflectionName)) {
 						result.AddMember (m);
 					}
 				}
-			}*/
+			}
 		}
 
 		IEnumerable<ICompletionData> CreateCaseCompletionData (TextLocation location)

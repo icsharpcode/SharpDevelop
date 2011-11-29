@@ -166,7 +166,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var indexerExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
 				if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError)
 					return null;
-				
 				return factory.CreateIndexerParameterDataProvider (indexerExpression.Item1.Type, invoke.Item2);
 			}
 			return null;
