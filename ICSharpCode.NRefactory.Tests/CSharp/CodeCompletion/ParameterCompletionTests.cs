@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
@@ -43,9 +44,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	{
 		class TestFactory : IParameterCompletionDataFactory
 		{
-			ITypeResolveContext ctx;
+			IProjectContent ctx;
 			
-			public TestFactory (ITypeResolveContext ctx)
+			public TestFactory (IProjectContent ctx)
 			{
 				this.ctx = ctx;
 			}
@@ -111,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				
 				return new Provider () {
-					Data = type.GetConstructors (ctx, m => m.Accessibility == Accessibility.Public)
+					Data = type.GetConstructors (m => m.Accessibility == Accessibility.Public)
 				};
 			}
 
@@ -139,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			public IParameterDataProvider CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
 			{
 				return new IndexerProvider () {
-					Data = type.GetProperties (ctx, p => p.IsIndexer)
+					Data = type.GetProperties (p => p.IsIndexer)
 				};
 			}
 			#endregion
@@ -161,17 +162,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument (editorText);
 			
 			
-			var pctx = new SimpleProjectContent ();
+			var pctx = new CSharpProjectContent ();
+			pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilationUnit = new CSharpParser ().Parse (parsedText);
+			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
 			
-			var parsedFile = new TypeSystemConvertVisitor (pctx, "program.cs").Convert (compilationUnit);
+			var parsedFile = compilationUnit.ToTypeSystem ();
 			pctx.UpdateProjectContent (null, parsedFile);
-
-			var ctx = new CompositeTypeResolveContext ( new [] { pctx, CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			var cmp = pctx.CreateCompilation ();
+			var engine = new CSharpParameterCompletionEngine (doc, new TestFactory (pctx));
 			
-			var engine = new CSharpParameterCompletionEngine (doc, new TestFactory (ctx));
-			engine.ctx = ctx;
+			engine.ctx = new CSharpTypeResolveContext (cmp.MainAssembly);
 			engine.CSharpParsedFile = parsedFile;
 			engine.ProjectContent = pctx;
 			engine.Unit = compilationUnit;

@@ -312,6 +312,10 @@
     <Compile Include="TypeSystem\UsingScope.cs" />
     <Compile Include="Ast\GeneralScope\PreProcessorDirective.cs" />
     <Compile Include="Ast\Expressions\ErrorExpression.cs" />
+    <Compile Include="Completion\CompletionDataWrapper.cs" />
+    <Compile Include="Completion\CSharpCompletionEngine.cs" />
+    <Compile Include="Completion\CSharpCompletionEngineBase.cs" />
+    <Compile Include="Completion\CSharpParameterCompletionEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -322,7 +326,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Folder Include="Completion\" />
-    <Folder Include="TypeSystem" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

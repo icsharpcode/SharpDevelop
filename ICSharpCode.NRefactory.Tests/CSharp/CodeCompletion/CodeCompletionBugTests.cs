@@ -39,6 +39,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using System.Diagnostics;
 using System.Text;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
@@ -133,6 +134,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (text);
 			}
 
+			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedEntity entity)
+			{
+				return new CompletionData (entity.Name);
+			}
+			
+			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedEntity entity, string text)
+			{
+				return new CompletionData (text);
+			}
+
+			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition type, string shortType)
+			{
+				return new CompletionData (shortType);
+			}
+
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, string shortType)
 			{
 				return new CompletionData (shortType);
@@ -153,17 +169,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (variable.Name);
 			}
 
-			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.ITypeParameter parameter)
+			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeParameter parameter)
 			{
 				return new CompletionData (parameter.Name);
 			}
 
-			public ICompletionData CreateEventCreationCompletionData (string varName, ICSharpCode.NRefactory.TypeSystem.IType delegateType, ICSharpCode.NRefactory.TypeSystem.IEvent evt, string parameterDefinition, ICSharpCode.NRefactory.TypeSystem.IMember currentMember, ICSharpCode.NRefactory.TypeSystem.ITypeDefinition currentType)
+			public ICompletionData CreateEventCreationCompletionData (string varName, ICSharpCode.NRefactory.TypeSystem.IType delegateType, ICSharpCode.NRefactory.TypeSystem.IEvent evt, string parameterDefinition, ICSharpCode.NRefactory.TypeSystem.IUnresolvedMember currentMember, ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition currentType)
 			{
 				return new CompletionData (varName);
 			}
 
-			public ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ICSharpCode.NRefactory.TypeSystem.ITypeDefinition type, ICSharpCode.NRefactory.TypeSystem.IMember m)
+			public ICompletionData CreateNewOverrideCompletionData (int declarationBegin, ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition type, ICSharpCode.NRefactory.TypeSystem.IMember m)
 			{
 				return new CompletionData (m.Name);
 			}
@@ -197,15 +213,16 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument (editorText);
 			
 			var engine = new CSharpCompletionEngine (doc, new TestFactory ());
-			var pctx = new SimpleProjectContent ();
+			var pctx = new CSharpProjectContent ();
+			pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilationUnit = new CSharpParser ().Parse (parsedText);
+			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
 			
-			var parsedFile = new TypeSystemConvertVisitor (pctx, "program.cs").Convert (compilationUnit);
+			var parsedFile = compilationUnit.ToTypeSystem ();
 			pctx.UpdateProjectContent (null, parsedFile);
-
-			var ctx = new CompositeTypeResolveContext ( new [] { pctx, CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			engine.ctx = ctx;
+			var cmp = pctx.CreateCompilation ();
+			
+			engine.ctx = new CSharpTypeResolveContext (cmp.MainAssembly);
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = new CSharpFormattingOptions ();
 			engine.CSharpParsedFile = parsedFile;
@@ -225,13 +242,15 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent (string text, CompilationUnit compilationUnit)
 		{
 			var doc = new ReadOnlyDocument (text);
-			var pctx = new SimpleProjectContent ();
-			var parsedFile = new TypeSystemConvertVisitor (pctx, "program.cs").Convert (compilationUnit);
+			var pctx = new CSharpProjectContent ();
+			var parsedFile = compilationUnit.ToTypeSystem ();
 			pctx.UpdateProjectContent (null, parsedFile);
+			pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			var cmp = pctx.CreateCompilation ();
+			
 			var engine = new CSharpCompletionEngine (doc, new TestFactory ());
 			
-			var ctx = new CompositeTypeResolveContext ( new [] { pctx, CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			engine.ctx = ctx;
+			engine.ctx = new CSharpTypeResolveContext (cmp.MainAssembly);
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = new CSharpFormattingOptions ();
 			engine.CSharpParsedFile = parsedFile;
@@ -306,7 +325,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					continue;
 				var text = File.ReadAllText (file, Encoding.Default);
 				try {
-					var unit = new CSharpParser ().Parse (text);
+					var unit = new CSharpParser ().Parse (text, file);
 					
 					var cnt = GetContent (text, unit);
 					
