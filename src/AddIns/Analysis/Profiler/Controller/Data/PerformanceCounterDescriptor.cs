@@ -130,9 +130,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			try {
 				this.Values.Add(counter.NextValue());
-			} catch (Exception e) {
 				#if DEBUG
+			} catch (Exception e) {
 				Console.WriteLine(e.ToString());
+				#else
+			} catch (Exception) {
 				#endif
 				this.Values.Add(defaultValue);
 			}
