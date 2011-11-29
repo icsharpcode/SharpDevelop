@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -151,6 +152,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return members;
 			}
 		}
+		
+		public IEnumerable<IUnresolvedMethod> Methods {
+			get {
+				return Members.OfType<IUnresolvedMethod> ();
+			}
+		}
+		
+		public IEnumerable<IUnresolvedProperty> Properties {
+			get {
+				return Members.OfType<IUnresolvedProperty> ();
+			}
+		}
+		
+		public IEnumerable<IUnresolvedField> Fields {
+			get {
+				return Members.OfType<IUnresolvedField> ();
+			}
+		}
+		
+		public IEnumerable<IUnresolvedEvent> Events {
+			get {
+				return Members.OfType<IUnresolvedEvent> ();
+			}
+		}
+		
 		
 		public IType Resolve(ITypeResolveContext context)
 		{

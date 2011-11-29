@@ -36,6 +36,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IUnresolvedTypeDefinition> NestedTypes { get; }
 		IList<IUnresolvedMember> Members { get; }
 		
+		IEnumerable<IUnresolvedMethod> Methods { get; }
+		IEnumerable<IUnresolvedProperty> Properties { get; }
+		IEnumerable<IUnresolvedField> Fields { get; }
+		IEnumerable<IUnresolvedEvent> Events { get; }
+		
 		/// <summary>
 		/// Gets whether the type definition contains extension methods.
 		/// Returns null when the type definition needs to be resolved in order to determine whether
