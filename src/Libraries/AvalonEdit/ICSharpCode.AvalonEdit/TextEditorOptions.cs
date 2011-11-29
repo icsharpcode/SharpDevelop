@@ -342,7 +342,7 @@ namespace ICSharpCode.AvalonEdit
 			set {
 				if (enableRectangularSelection != value) {
 					enableRectangularSelection = value;
-					OnPropertyChanged("AllowRectangularSelection");
+					OnPropertyChanged("EnableRectangularSelection");
 				}
 			}
 		}
@@ -358,7 +358,7 @@ namespace ICSharpCode.AvalonEdit
 			set {
 				if (enableTextDragDrop != value) {
 					enableTextDragDrop = value;
-					OnPropertyChanged("EnableTextDrag");
+					OnPropertyChanged("EnableTextDragDrop");
 				}
 			}
 		}
