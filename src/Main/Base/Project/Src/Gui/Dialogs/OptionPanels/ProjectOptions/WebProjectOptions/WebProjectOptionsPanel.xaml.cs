@@ -15,9 +15,21 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	{
 		private readonly aaDebugOptions parentPanel;
 		
-		public WebProjectOptionsPanel(aaDebugOptions parentPanel)
+		public WebProjectOptionsPanel()
 		{
 			InitializeComponent();
+			
+//			this.parentPanel = parentPanel;
+			
+			if (CurrentProjectDebugData == null)
+				CurrentProjectDebugData = new WebProjectDebugData();
+			
+			Loaded += OnLoaded;
+		}
+		
+		public WebProjectOptionsPanel(aaDebugOptions parentPanel):this()
+		{
+//			InitializeComponent();
 			
 			this.parentPanel = parentPanel;
 			

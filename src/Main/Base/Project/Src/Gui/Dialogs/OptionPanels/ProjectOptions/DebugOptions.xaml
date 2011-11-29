@@ -4,28 +4,29 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
-xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+>
 	
 	<optionpanels:ProjectOptionPanel.Resources>
 		<local:StorageLocationConverter x:Key="converter"/>
 	</optionpanels:ProjectOptionPanel.Resources>
 
-	<Grid ShowGridLines="True">
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="130"></RowDefinition>
-			<RowDefinition Height="130"></RowDefinition>
-		
+			<RowDefinition Height="100"></RowDefinition>
+			<RowDefinition ></RowDefinition>
 		</Grid.RowDefinitions>
 		
 		<GroupBox Height="120"
-		          Margin="0,15,0,0"
+		          Margin="0,5,0,0"
 		          Header="Start Action"
 		          VerticalAlignment="Top"
 		          Grid.Column="0"
 		          Grid.Row="0"
 		          Grid.ColumnSpan="3"
 		          HorizontalAlignment="Stretch">
-			<Grid ShowGridLines="True" Background="AliceBlue">
+			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition></RowDefinition>
 					<RowDefinition></RowDefinition>
@@ -50,14 +51,17 @@ xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
 					</optionpanels:StorageLocationPicker.Location>
 				</optionpanels:StorageLocationPicker>
 			
-				<RadioButton Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" Content="Start Project"></RadioButton>					            						
+				<RadioButton IsChecked="True"
+				             Grid.Column="1" VerticalAlignment="Center"
+				             Margin="4,0,0,0" Content="Start Project">
+				</RadioButton>
 				
-				<RadioButton
+				<RadioButton x:Name="startexternal"
 					Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0"
 					Content="Start external program:">
 				</RadioButton>
 				
-				<RadioButton
+				<RadioButton x:Name="startUrl"
 					Grid.Row="2" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0"
 					Content="Start browser in URL:">
 				</RadioButton>
@@ -86,9 +90,9 @@ xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
 		          Grid.Column="0"
 		          Grid.Row="1"
 		          Grid.ColumnSpan="3"
-		           Margin="0,15,0,0"
+		           Margin="0,5,0,0"
 		          HorizontalAlignment="Stretch">
-			<Grid ShowGridLines="True" Background="AliceBlue">
+			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition></RowDefinition>
 					<RowDefinition></RowDefinition>
@@ -123,9 +127,15 @@ xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels">
 				         Text="{Binding StartWorkingDirectory.Value, UpdateSourceTrigger=PropertyChanged}">
 				</TextBox>
 			
-				<Button  Grid.Row="1" Grid.Column="3" Margin="5" Content="..."></Button>
-
+				<Button  Grid.Row="1" Grid.Column="3" Margin="5" 
+				        Click="BrwoseForFolder_Click"
+				        Content="...">
+				</Button>
 			</Grid>
 		</GroupBox>
+		
+		<local:WebProjectOptionsPanel Grid.Row="2" Margin="5"
+			Visibility="{Binding IsWebProject}" >
+		</local:WebProjectOptionsPanel>
 	</Grid>
 </optionpanels:ProjectOptionPanel>
