@@ -103,26 +103,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void HighlightBrackets(object sender, EventArgs e)
 		{
-			if (CodeEditorOptions.Instance.HighlightBrackets) {
-				/*
-				 * Special case: ITextEditor.Language guarantees that it never returns null.
-				 * In this case however it can be null, since this code may be called while the document is loaded.
-				 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
-				 * loading of the document has finished.
-				 * */
-				if (this.Adapter.Language != null) {
+			/*
+			 * Special case: ITextEditor.Language guarantees that it never returns null.
+			 * In this case however it can be null, since this code may be called while the document is loaded.
+			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
+			 * loading of the document has finished.
+			 * */
+			if (this.Adapter.Language != null) {
+				if (CodeEditorOptions.Instance.HighlightBrackets || CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 					var bracketSearchResult = this.Adapter.Language.BracketSearcher.SearchBracket(this.Adapter.Document, this.TextArea.Caret.Offset);
-					this.bracketRenderer.SetHighlight(bracketSearchResult);
-					
+					if (CodeEditorOptions.Instance.HighlightBrackets) {
+						this.bracketRenderer.SetHighlight(bracketSearchResult);
+					} else {
+						this.bracketRenderer.SetHighlight(null);
+					}
 					if (CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 						this.hiddenDefinitionRenderer.BracketSearchResult = bracketSearchResult;
 						this.hiddenDefinitionRenderer.Show();
 					} else {
 						this.hiddenDefinitionRenderer.ClosePopup();
 					}
+				} else {
+					this.bracketRenderer.SetHighlight(null);
+					this.hiddenDefinitionRenderer.ClosePopup();
 				}
-			} else {
-				this.bracketRenderer.SetHighlight(null);
 			}
 		}
 		#endregion
