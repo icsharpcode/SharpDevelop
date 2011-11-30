@@ -32,7 +32,10 @@
 #>
 <fieldset>
 	<legend><#= MvcHost.ViewDataType.Name #></legend>
-<# For Each modelProperty As ModelProperty in GetModelProperties() #>
+<#
+	For Each modelProperty As ModelProperty in ModelProperties
+		If Not modelProperty.IsPrimaryKey Then
+#>
 	
 	<div class="display-label">
 		<%: Html.LabelFor(Function(model) model.<#= modelProperty.Name #>) %>
@@ -40,10 +43,17 @@
 	<div class="display-field">
 		<%: Html.DisplayFor(Function(model) model.<#= modelProperty.Name #>) %>
 	</div>
-<# Next #>
+<#
+		End If
+	Next
+#>
 </fieldset>
 <p>
+<# If ModelHasPrimaryKey Then #>
+	<%: Html.ActionLink("Edit", "Edit", New With { .id = Model.<#= ModelPrimaryKeyName #> }) %> |
+<# Else #>
 	<%: Html.ActionLink("Edit", "Edit") %> |
+<# End If #>
 	<%: Html.ActionLink("Back", "Index") %>
 </p>
 <#
@@ -68,7 +78,21 @@
 	End Property
 	
 	Public Class ModelProperty
-		Public Property Name As String
+		Public Property Name() As String
+		Public Property IsPrimaryKey() As Boolean
+		
+		Public Sub New(ByVal propertyInfo As PropertyInfo)
+			Me.Name = propertyInfo.Name
+			Me.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo)
+		End Sub
+		
+		Function IsPrimaryKeyProperty(ByVal propertyInfo As PropertyInfo) As Boolean
+			Return IsMatchIgnoringCase(propertyInfo.Name, "id")
+		End Function
+		
+		Shared Function IsMatchIgnoringCase(ByVal a As String, ByVal b as String) As Boolean
+			Return String.Equals(a, b, StringComparison.OrdinalIgnoreCase)
+		End Function
 	End Class
 	
 	Public Function GetViewPageType() As String
@@ -79,15 +103,48 @@
 		Return String.Empty
 	End Function
 	
+	Private modelPropertiesList As List(Of ModelProperty)
+	
+	ReadOnly Property ModelProperties() As List(Of ModelProperty)
+		Get
+			If modelPropertiesList Is Nothing Then
+				modelPropertiesList = New List(Of ModelProperty)(GetModelProperties())
+			End If
+			Return modelPropertiesList
+		End Get
+	End Property
+	
 	Public Function GetModelProperties() As IEnumerable(Of ModelProperty)
 		Dim properties = New List(Of ModelProperty)()
 		For Each propertyInfo As PropertyInfo In MvcHost.GetViewDataTypeProperties()
-			properties.Add(CreateModelProperty(propertyInfo))
+			properties.Add(new ModelProperty(propertyInfo))
 		Next
 		Return properties
 	End Function
 	
-	Function CreateModelProperty(ByVal propertyInfo As PropertyInfo) As ModelProperty
-		Return New ModelProperty() With { .Name = propertyInfo.Name }
+	ReadOnly Property ModelHasPrimaryKey As Boolean
+		Get
+			Return ModelPrimaryKeyName.Length > 0
+		End Get
+	End Property
+
+	Private modelPrimaryKeyNameValue As String
+	
+	ReadOnly Property ModelPrimaryKeyName() As String
+		Get
+			If modelPrimaryKeyNameValue Is Nothing Then
+				modelPrimaryKeyNameValue = GetModelPrimaryKeyName()
+			End If
+			Return modelPrimaryKeyNameValue
+		End Get
+	End Property
+	
+	Public Function GetModelPrimaryKeyName() As String
+		For Each modelProperty As ModelProperty in ModelProperties
+			If modelProperty.IsPrimaryKey Then
+				Return modelProperty.Name
+			End If
+		Next
+		Return ""
 	End Function
 #>
