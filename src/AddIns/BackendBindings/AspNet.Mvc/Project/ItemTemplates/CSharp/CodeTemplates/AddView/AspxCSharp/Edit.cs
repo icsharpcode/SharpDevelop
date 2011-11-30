@@ -20,7 +20,7 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
         private global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost hostValue;
         
         
-        #line 69 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+        #line 79 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
 
 	MvcTextTemplateHost MvcHost {
 		get { return (MvcTextTemplateHost)Host; }
@@ -29,6 +29,23 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
 	public class ModelProperty
 	{
 		public string Name { get; set; }
+		public bool IsPrimaryKey { get; set; }
+		
+		public ModelProperty(PropertyInfo propertyInfo)
+		{
+			this.Name = propertyInfo.Name;
+			this.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo);
+		}
+		
+		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
+		{
+			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 	
 	public string GetViewPageType()
@@ -40,18 +57,49 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
 		return String.Empty;
 	}
 	
+	List<ModelProperty> modelProperties;
+	
+	List<ModelProperty> ModelProperties {
+		get {
+			if (modelProperties == null) {
+				modelProperties = new List<ModelProperty>(GetModelProperties());
+			}
+			return modelProperties;
+		}
+	}
+	
 	public IEnumerable<ModelProperty> GetModelProperties()
 	{
 		var properties = new List<ModelProperty>();
 		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
-			properties.Add(CreateModelProperty(propertyInfo));
+			properties.Add(new ModelProperty(propertyInfo));
 		}
 		return properties;
 	}
 	
-	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	bool ModelHasPrimaryKey {
+		get { return ModelPrimaryKeyName.Length > 0; }
+	}
+	
+	string modelPrimaryKeyName;
+	
+	string ModelPrimaryKeyName {
+		get {
+			if (modelPrimaryKeyName == null) {
+				modelPrimaryKeyName = GetModelPrimaryKeyName();
+			}
+			return modelPrimaryKeyName;
+		}
+	}
+	
+	public string GetModelPrimaryKeyName()
 	{
-		return new ModelProperty() { Name = propertyInfo.Name };
+		foreach (ModelProperty modelProperty in ModelProperties) {
+			if (modelProperty.IsPrimaryKey) {
+				return modelProperty.Name;
+			}
+		}
+		return "";
 	}
 
         #line default
@@ -223,68 +271,92 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line hidden
             
             #line 36 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
- foreach (ModelProperty modelProperty in GetModelProperties()) { 
+ if (ModelHasPrimaryKey) { 
             
             #line default
             #line hidden
             
             #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            this.Write("\t\t\r\n\t\t<%: Html.HiddenFor(model => model.Id) %>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+ } 
+            
+            #line default
+            #line hidden
+            
+            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+
+	foreach (ModelProperty modelProperty in ModelProperties) {
+		if (!modelProperty.IsPrimaryKey) {
+
+            
+            #line default
+            #line hidden
+            
+            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write("\t\t\r\n\t\t<div class=\"editor-label\">\r\n\t\t\t<%: Html.LabelFor(model => model.");
             
             #line default
             #line hidden
             
-            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
+            #line 46 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
             
             #line default
             #line hidden
             
-            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 46 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write(") %>\r\n\t\t</div>\r\n\t\t<div class=\"editor-field\">\r\n\t\t\t<%: Html.EditorFor(model => mode" +
                     "l.");
             
             #line default
             #line hidden
             
-            #line 42 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
+            #line 49 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
             
             #line default
             #line hidden
             
-            #line 42 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 49 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write(") %>\r\n\t\t\t<%: Html.ValidationMessageFor(model => model.");
             
             #line default
             #line hidden
             
-            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name));
+            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
             
             #line default
             #line hidden
             
-            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write(") %>\r\n\t\t</div>\r\n");
             
             #line default
             #line hidden
             
-            #line 45 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
- } 
+            #line 52 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+
+		}
+	}
+
             
             #line default
             #line hidden
             
-            #line 46 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 56 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write("\t\t\r\n\t\t<p>\r\n\t\t\t<input type=\"submit\" value=\"Save\"/>\r\n\t\t</p>\r\n\t</fieldset>\r\n<% } %>\r" +
                     "\n<div>\r\n\t<%: Html.ActionLink(\"Back\", \"Index\") %>\r\n</div>\r\n");
             
             #line default
             #line hidden
             
-            #line 55 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 65 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
 
 	if (MvcHost.IsPartialView) {
 		// Do nothing.
@@ -295,13 +367,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 61 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 71 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write("</asp:Content>\r\n");
             
             #line default
             #line hidden
             
-            #line 62 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 72 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
 
 	} else { 
 		PopIndent();
@@ -310,13 +382,13 @@ namespace ICSharpCode.AspNet.Mvc.AspxCSharp {
             #line default
             #line hidden
             
-            #line 66 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 76 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
             this.Write("\t</body>\r\n</html>\r\n");
             
             #line default
             #line hidden
             
-            #line 68 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
+            #line 78 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt"
  } 
             
             #line default

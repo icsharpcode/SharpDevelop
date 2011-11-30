@@ -20,7 +20,7 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
         private global::Microsoft.VisualStudio.TextTemplating.ITextTemplatingEngineHost hostValue;
         
         
-        #line 65 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+        #line 75 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
 
 	MvcTextTemplateHost MvcHost {
 		get { return (MvcTextTemplateHost)Host; }
@@ -29,6 +29,23 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
 	public class ModelProperty
 	{
 		public string Name { get; set; }
+		public bool IsPrimaryKey { get; set; }
+		
+		public ModelProperty(PropertyInfo propertyInfo)
+		{
+			this.Name = propertyInfo.Name;
+			this.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo);
+		}
+		
+		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
+		{
+			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 	
 	public string GetModelDirective()
@@ -40,18 +57,49 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
 		return String.Empty;
 	}
 	
+	List<ModelProperty> modelProperties;
+	
+	List<ModelProperty> ModelProperties {
+		get {
+			if (modelProperties == null) {
+				modelProperties = new List<ModelProperty>(GetModelProperties());
+			}
+			return modelProperties;
+		}
+	}
+	
 	public IEnumerable<ModelProperty> GetModelProperties()
 	{
 		var properties = new List<ModelProperty>();
 		foreach (PropertyInfo propertyInfo in MvcHost.GetViewDataTypeProperties()) {
-			properties.Add(CreateModelProperty(propertyInfo));
+			properties.Add(new ModelProperty(propertyInfo));
 		}
 		return properties;
 	}
 	
-	ModelProperty CreateModelProperty(PropertyInfo propertyInfo)
+	bool ModelHasPrimaryKey {
+		get { return ModelPrimaryKeyName.Length > 0; }
+	}
+	
+	string modelPrimaryKeyName;
+	
+	string ModelPrimaryKeyName {
+		get {
+			if (modelPrimaryKeyName == null) {
+				modelPrimaryKeyName = GetModelPrimaryKeyName();
+			}
+			return modelPrimaryKeyName;
+		}
+	}
+	
+	public string GetModelPrimaryKeyName()
 	{
-		return new ModelProperty() { Name = propertyInfo.Name };
+		foreach (ModelProperty modelProperty in ModelProperties) {
+			if (modelProperty.IsPrimaryKey) {
+				return modelProperty.Name;
+			}
+		}
+		return "";
 	}
 
         #line default
@@ -189,67 +237,103 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
             #line hidden
             
             #line 37 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
- foreach (ModelProperty modelProperty in GetModelProperties()) { 
+ if (ModelHasPrimaryKey) { 
             
             #line default
             #line hidden
             
             #line 38 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write("\t\t\r\n\t\t<div class=\"editor-label\">\r\n\t\t\t@Html.LabelFor(model => model.");
+            this.Write("\t\t\r\n\t\t@Html.HiddenFor(model => model.");
+            
+            #line default
+            #line hidden
+            
+            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( ModelPrimaryKeyName ));
+            
+            #line default
+            #line hidden
+            
+            #line 39 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(")\r\n");
             
             #line default
             #line hidden
             
             #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
-            
-            #line default
-            #line hidden
-            
-            #line 40 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write(")\r\n\t\t</div>\r\n\t\t<div class=\"editor-field\">\r\n\t\t\t@Html.EditorFor(model => model.");
-            
-            #line default
-            #line hidden
-            
-            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
-            
-            #line default
-            #line hidden
-            
-            #line 43 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write(")\r\n\t\t\t@Html.ValidationMessageFor(model => model.");
-            
-            #line default
-            #line hidden
-            
-            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
-            
-            #line default
-            #line hidden
-            
-            #line 44 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
-            this.Write(")\r\n\t\t</div>\r\n");
-            
-            #line default
-            #line hidden
-            
-            #line 46 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
  } 
             
             #line default
             #line hidden
             
+            #line 41 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+
+	foreach (ModelProperty modelProperty in ModelProperties) {
+		if (!modelProperty.IsPrimaryKey) {
+
+            
+            #line default
+            #line hidden
+            
+            #line 45 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write("\t\t\r\n\t\t<div class=\"editor-label\">\r\n\t\t\t@Html.LabelFor(model => model.");
+            
+            #line default
+            #line hidden
+            
             #line 47 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
+            
+            #line default
+            #line hidden
+            
+            #line 47 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(")\r\n\t\t</div>\r\n\t\t<div class=\"editor-field\">\r\n\t\t\t@Html.EditorFor(model => model.");
+            
+            #line default
+            #line hidden
+            
+            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
+            
+            #line default
+            #line hidden
+            
+            #line 50 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(")\r\n\t\t\t@Html.ValidationMessageFor(model => model.");
+            
+            #line default
+            #line hidden
+            
+            #line 51 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture( modelProperty.Name ));
+            
+            #line default
+            #line hidden
+            
+            #line 51 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            this.Write(")\r\n\t\t</div>\r\n");
+            
+            #line default
+            #line hidden
+            
+            #line 53 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+
+		}
+	}
+
+            
+            #line default
+            #line hidden
+            
+            #line 57 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
             this.Write("\t\t\r\n\t\t<p>\r\n\t\t\t<input type=\"submit\" value=\"Save\"/>\r\n\t\t</p>\r\n\t</fieldset>\r\n}\r\n<div>" +
                     "\r\n\t@Html.ActionLink(\"Back\", \"Index\")\r\n</div>\r\n");
             
             #line default
             #line hidden
             
-            #line 56 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            #line 66 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
  
 	if (MvcHost.IsPartialView) {
 		// Do nothing.
@@ -260,13 +344,13 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
             #line default
             #line hidden
             
-            #line 62 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            #line 72 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
             this.Write("\t</body>\r\n</html>\r\n");
             
             #line default
             #line hidden
             
-            #line 64 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
+            #line 74 "D:\projects\dotnet\SharpDevelop.AspNetMvc\src\AddIns\BackendBindings\AspNet.Mvc\Project\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt"
  } 
             
             #line default
