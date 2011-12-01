@@ -144,5 +144,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertType(typeof(long), resolver.ResolveConditional(
 				MakeConstant(true), MakeConstant(1), MakeResult(typeof(long))));
 		}
+		
+		[Test]
+		public void EnumAndZeroLiteral()
+		{
+			AssertType(typeof(StringComparison), resolver.ResolveConditional(
+				MakeResult(typeof(bool)), MakeResult(typeof(StringComparison)), MakeConstant(0)));
+		}
 	}
 }

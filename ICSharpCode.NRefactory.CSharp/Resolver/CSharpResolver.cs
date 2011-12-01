@@ -1868,8 +1868,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				resultType = SpecialType.Dynamic;
 				isValid = TryConvert(ref trueExpression, resultType) & TryConvert(ref falseExpression, resultType);
 			} else if (HasType(trueExpression) && HasType(falseExpression)) {
-				Conversion t2f = conversions.ImplicitConversion(trueExpression.Type, falseExpression.Type);
-				Conversion f2t = conversions.ImplicitConversion(falseExpression.Type, trueExpression.Type);
+				Conversion t2f = conversions.ImplicitConversion(trueExpression, falseExpression.Type);
+				Conversion f2t = conversions.ImplicitConversion(falseExpression, trueExpression.Type);
 				// The operator is valid:
 				// a) if there's a conversion in one direction but not the other
 				// b) if there are conversions in both directions, and the types are equivalent
