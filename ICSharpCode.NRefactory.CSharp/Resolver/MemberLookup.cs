@@ -50,11 +50,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ITypeDefinition currentTypeDefinition;
 		IAssembly currentAssembly;
+		bool isInEnumMemberInitializer;
 		
-		public MemberLookup(ITypeDefinition currentTypeDefinition, IAssembly currentAssembly)
+		public MemberLookup(ITypeDefinition currentTypeDefinition, IAssembly currentAssembly, bool isInEnumMemberInitializer = false)
 		{
 			this.currentTypeDefinition = currentTypeDefinition;
 			this.currentAssembly = currentAssembly;
+			this.isInEnumMemberInitializer = isInEnumMemberInitializer;
 		}
 		
 		#region IsAccessible
@@ -566,6 +568,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (lookupGroups.Count > 1) {
 				return new AmbiguousMemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			} else {
+				if (isInEnumMemberInitializer) {
+					IField field = resultGroup.NonMethod as IField;
+					if (field != null && field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum) {
+						return new MemberResolveResult(
+							targetResolveResult, field,
+							field.DeclaringTypeDefinition.EnumUnderlyingType,
+							field.IsConst, field.ConstantValue);
+					}
+				}
 				return new MemberResolveResult(targetResolveResult, resultGroup.NonMethod);
 			}
 		}

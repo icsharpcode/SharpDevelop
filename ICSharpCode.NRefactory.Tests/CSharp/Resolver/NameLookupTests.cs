@@ -899,5 +899,34 @@ class B
 			var result = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("Test.Base", result.Type.FullName);
 		}
+		
+		[Test]
+		public void EnumMembersHaveUnderlyingTypeWithinInitializers_MemberFromSameEnum()
+		{
+			string program = @"enum E { A = 0, B = $A$ + 1 }";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("E.A", result.Member.FullName);
+			Assert.AreEqual("System.Int32", result.Type.ReflectionName);
+			Assert.AreEqual("E", result.Member.ReturnType.ReflectionName);
+		}
+		
+		[Test]
+		public void EnumMembersHaveUnderlyingTypeWithinInitializers_MemberFromOtherEnum()
+		{
+			string program = @"enum A : ushort { X = 1 } enum B { Y = $A.X$ }";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("A.X", result.Member.FullName);
+			Assert.AreEqual("System.UInt16", result.Type.ReflectionName);
+			Assert.AreEqual("A", result.Member.ReturnType.ReflectionName);
+		}
+		
+		[Test]
+		public void EnumMembersHaveUnderlyingTypeWithinInitializers_RuleDoesNotApplyToAttributes()
+		{
+			string program = @"enum A { X = 1, [SomeAttribute($X$)] Y }";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("A.X", result.Member.FullName);
+			Assert.AreEqual("A", result.Type.ReflectionName);
+		}
 	}
 }

@@ -273,6 +273,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void ProcessConversion(Expression expr, ResolveResult rr, Conversion conversion, IType targetType)
 		{
+			if (expr == null || expr.IsNull)
+				return;
 			if (conversion.IsAnonymousFunctionConversion) {
 				Log.WriteLine("Processing conversion of anonymous function to " + targetType + "...");
 				AnonymousFunctionConversionData data = conversion.data as AnonymousFunctionConversionData;
@@ -287,7 +289,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					Log.WriteLine("  Data not found.");
 				}
 			}
-			if (expr != null && !expr.IsNull && conversion != Conversion.IdentityConversion)
+			if (conversion != Conversion.IdentityConversion)
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
 		}
 		
@@ -296,6 +298,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		void ProcessConversion(Expression expr, ResolveResult rr, IType targetType)
 		{
+			if (expr == null || expr.IsNull)
+				return;
 			ProcessConversion(expr, rr, resolver.conversions.ImplicitConversion(rr, targetType), targetType);
 		}
 		
@@ -791,14 +795,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
 		{
 			try {
+				// Scan enum member attributes before setting resolver.CurrentMember, so that
+				// enum values used as attribute arguments have the correct type.
+				// (which an enum member, all other enum members are treated as having their underlying type)
+				foreach (var attributeSection in enumMemberDeclaration.Attributes)
+					Scan(attributeSection);
+				
 				resolver.CurrentMember = GetMemberFromLocation(enumMemberDeclaration.StartLocation);
 				
-				ScanChildren(enumMemberDeclaration);
-				
-				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember);
-				else
+				if (resolverEnabled && resolver.CurrentTypeDefinition != null) {
+					ResolveAndProcessConversion(enumMemberDeclaration.Initializer, resolver.CurrentTypeDefinition.EnumUnderlyingType);
+					if (resolverEnabled && resolver.CurrentMember != null)
+						return new MemberResolveResult(null, resolver.CurrentMember);
+					else
+						return errorResult;
+				} else {
+					Scan(enumMemberDeclaration.Initializer);
 					return errorResult;
+				}
 			} finally {
 				resolver.CurrentMember = null;
 			}

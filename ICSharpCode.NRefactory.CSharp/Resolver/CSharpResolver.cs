@@ -1255,6 +1255,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
+			MemberLookup lookup = CreateMemberLookup();
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1272,7 +1273,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					continue;
 				}
 				
-				MemberLookup lookup = new MemberLookup(t, t.ParentAssembly);
 				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
 					r = lookup.Lookup(new TypeResolveResult(t), identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
@@ -1451,7 +1451,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public MemberLookup CreateMemberLookup()
 		{
-			return new MemberLookup(this.CurrentTypeDefinition, this.Compilation.MainAssembly);
+			bool isInEnumMemberInitializer = this.CurrentMember != null && this.CurrentMember.EntityType == EntityType.Field
+				&& this.CurrentTypeDefinition != null && this.CurrentTypeDefinition.Kind == TypeKind.Enum;
+			return new MemberLookup(this.CurrentTypeDefinition, this.Compilation.MainAssembly, isInEnumMemberInitializer);
 		}
 		#endregion
 		
