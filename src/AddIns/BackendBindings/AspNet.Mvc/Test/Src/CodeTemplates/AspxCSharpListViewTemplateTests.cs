@@ -35,6 +35,11 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 			return GetModelProperties().First();
 		}
 		
+		AspxCSharp.List.ModelProperty GetModelProperty(string name)
+		{
+			return GetModelProperties().First(p => p.Name == name);
+		}
+		
 		[Test]
 		public void GetViewPageType_HostViewDataTypeNameIsMyAppMyModel_ReturnsMyAppMyModelSurroundedByAngleBrackets()
 		{
@@ -283,6 +288,115 @@ MyView
 </table>
 ";
 			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void TransformText_ModelHasIdPropertyAndIsPartialView_UsesIdPropertyInActionLinksOnTableRow()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.IsPartialView = true;
+			Type modelType = typeof(ModelWithIdProperty);
+			mvcHost.ViewDataType = modelType;
+			mvcHost.ViewDataTypeName = modelType.FullName;
+			mvcHost.ViewName = "MyView";
+			
+			string output = templatePreprocessor.TransformText();
+		
+			string expectedOutput = 
+@"<%@ Control Language=""C#"" Inherits=""System.Web.Mvc.ViewUserControl<IEnumerable<AspNet.Mvc.Tests.CodeTemplates.Models.ModelWithIdProperty>>"" %>
+
+<p>
+	<%: Html.ActionLink(""Create"", ""Create"") %>
+</p>
+<table>
+	<tr>
+		<th>
+			<%: Html.LabelFor(model => model.Name) %>
+		</th>
+		<th></th>
+	</tr>
+	
+<% foreach (var item in Model) { %>
+	<tr>
+		<td>
+			<%: Html.DisplayFor(model => model.Name) %>
+		</td>
+		<td>
+			<%: Html.ActionLink(""Edit"", ""Edit"", new { id = item.Id }) %> |
+			<%: Html.ActionLink(""Details"", ""Details"", new { id = item.Id }) %> |
+			<%: Html.ActionLink(""Delete"", ""Delete"", new { id = item.Id }) %>
+		</td>
+	</tr>
+<% } %>
+</table>
+";
+			Assert.AreEqual(expectedOutput, output);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdAndNameProperty_IdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			AspxCSharp.List.ModelProperty modelProperty = GetModelProperty("Id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdAndNameProperty_NamePropertyIsNotMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			AspxCSharp.List.ModelProperty modelProperty = GetModelProperty("Name");
+			
+			Assert.IsFalse(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasIdPropertyInLowerCase_IdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdPropertyInLowerCase);
+			
+			AspxCSharp.List.ModelProperty modelProperty = GetModelProperty("id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelPrimaryKeyName_ModelHasIdAndNameProperty_ReturnsId()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdProperty);
+			
+			string primaryKeyName = templatePreprocessor.GetModelPrimaryKeyName();
+			
+			Assert.AreEqual("Id", primaryKeyName);
+		}
+		
+		[Test]
+		public void GetModelPrimaryKeyName_ModelHasIdPropertyInLowerCase_ReturnsLowercaseId()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithIdPropertyInLowerCase);
+			
+			string primaryKeyName = templatePreprocessor.GetModelPrimaryKeyName();
+			
+			Assert.AreEqual("id", primaryKeyName);
+		}
+		
+		[Test]
+		public void GetModelPrimaryKeyName_ModelHasNameProperty_ReturnsEmptyString()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithOneProperty);
+			
+			string primaryKeyName = templatePreprocessor.GetModelPrimaryKeyName();
+			
+			Assert.AreEqual(String.Empty, primaryKeyName);
 		}
 	}
 }
