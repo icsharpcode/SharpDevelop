@@ -261,5 +261,21 @@ public struct C<T> {
 			Assert.AreEqual("C`1[[`0]]", rr.Arguments[0].Type.ReflectionName);
 			Assert.AreEqual("C`1[[`0]]", rr.Arguments[1].Type.ReflectionName);
 		}
+		
+		[Test]
+		public void ProtectedFieldInOuterClass()
+		{
+			string program = @"using System;
+class Base {
+  protected int X;
+}
+class Derived : Base {
+  class Inner {
+     public int M(Derived d) { return $d.X$; }
+}}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("Base.X", rr.Member.FullName);
+		}
 	}
 }
