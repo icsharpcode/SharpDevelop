@@ -348,5 +348,16 @@ MyView
 			
 			Assert.AreEqual(String.Empty, primaryKeyName);
 		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasPrefixedIdPropertyInLowerCase_PrefixedIdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithPrefixedIdPropertyInLowerCase);
+			
+			Details.ModelProperty modelProperty = GetModelProperty("modelwithprefixedidpropertyinlowercaseid");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
+		}
 	}
 }

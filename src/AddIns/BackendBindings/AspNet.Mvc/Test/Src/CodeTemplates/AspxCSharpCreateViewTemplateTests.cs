@@ -37,7 +37,7 @@ namespace AspNet.Mvc.Tests.CodeTemplates
 		
 		Create.ModelProperty GetModelProperty(string name)
 		{
-			return GetModelProperties().Single(p => p.Name == name);
+			return GetModelProperties().First(p => p.Name == name);
 		}
 		
 		[Test]
@@ -352,6 +352,17 @@ MyView
 			mvcHost.ViewDataType = typeof(ModelWithIdPropertyInLowerCase);
 			
 			Create.ModelProperty modelProperty = GetModelProperty("id");
+			
+			Assert.IsTrue(modelProperty.IsPrimaryKey);
+		}
+		
+		[Test]
+		public void GetModelProperties_ModelHasPrefixedIdPropertyInLowerCase_PrefixedIdPropertyIsMarkedAsPrimaryKey()
+		{
+			CreateViewTemplatePreprocessor();
+			mvcHost.ViewDataType = typeof(ModelWithPrefixedIdPropertyInLowerCase);
+			
+			Create.ModelProperty modelProperty = GetModelProperty("modelwithprefixedidpropertyinlowercaseid");
 			
 			Assert.IsTrue(modelProperty.IsPrimaryKey);
 		}

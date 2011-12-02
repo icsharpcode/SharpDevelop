@@ -90,7 +90,17 @@ End Using
 		End Sub
 		
 		Function IsPrimaryKeyProperty(ByVal propertyInfo As PropertyInfo) As Boolean
+			Return IsIdProperty(propertyInfo) Or _
+				IsIdPropertyPrefixedWithClassName(propertyInfo)
+		End Function
+		
+		Function IsIdProperty(ByVal propertyInfo As PropertyInfo) As Boolean
 			Return IsMatchIgnoringCase(propertyInfo.Name, "id")
+		End Function
+		
+		Function IsIdPropertyPrefixedWithClassName(ByVal propertyInfo As PropertyInfo) As Boolean
+			Dim prefixedIdPropertyName As String = propertyInfo.DeclaringType.Name + "id"
+			Return IsMatchIgnoringCase(propertyInfo.Name, prefixedIdPropertyName)
 		End Function
 		
 		Shared Function IsMatchIgnoringCase(ByVal a As String, ByVal b as String) As Boolean

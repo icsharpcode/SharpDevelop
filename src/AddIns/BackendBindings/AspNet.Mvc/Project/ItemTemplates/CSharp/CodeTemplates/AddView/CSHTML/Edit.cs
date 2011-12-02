@@ -39,7 +39,20 @@ namespace ICSharpCode.AspNet.Mvc.CSHtml {
 		
 		bool IsPrimaryKeyProperty(PropertyInfo propertyInfo)
 		{
+			return
+				IsIdProperty(propertyInfo) ||
+				IsIdPropertyPrefixedWithClassName(propertyInfo);
+		}
+		
+		bool IsIdProperty(PropertyInfo propertyInfo)
+		{
 			return IsMatchIgnoringCase(propertyInfo.Name, "id");
+		}
+		
+		bool IsIdPropertyPrefixedWithClassName(PropertyInfo propertyInfo)
+		{
+			string prefixedIdPropertyName = propertyInfo.DeclaringType.Name + "id";
+			return IsMatchIgnoringCase(propertyInfo.Name, prefixedIdPropertyName);
 		}
 		
 		static bool IsMatchIgnoringCase(string a, string b)
