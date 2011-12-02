@@ -63,32 +63,23 @@
 				ItemsSource="{Binding Path=ViewEngines}"
 				ItemTemplate="{StaticResource ViewEngineTemplate}"
 				SelectedItem="{Binding Path=SelectedViewEngine}"/>
-			
+						
 			<Label
 				Grid.Row="2"
-				Content="Partial View:"/>
-			<CheckBox
-				Grid.Column="1"
-				Grid.Row="2"
-				Margin="0, 6, 0, 0"
-				IsChecked="{Binding Path=IsPartialView}"/>
-			
-			<Label
-				Grid.Row="3"
 				Margin="0, 20, 0, 0"
 				Content="Strongly Typed:"/>
 			<CheckBox
 				Grid.Column="1"
-				Grid.Row="3"
+				Grid.Row="2"
 				Margin="0, 28, 0, 0"
 				IsChecked="{Binding Path=IsStronglyTypedView}"/>
 			
 			<Label
-				Grid.Row="4"
+				Grid.Row="3"
 				IsEnabled="{Binding Path=IsStronglyTypedView}"
 				Content="Model:"/>
 			<ComboBox
-				Grid.Row="4"
+				Grid.Row="3"
 				Grid.Column="1"
 				Margin="0, 2, 0, 0"
 				IsEditable="True"
@@ -98,11 +89,11 @@
 				SelectedItem="{Binding Path=SelectedModelClass}"/>
 			
 			<Label
-				Grid.Row="5"
+				Grid.Row="4"
 				IsEnabled="{Binding Path=IsViewTemplateEnabled}"
 				Content="Template:"/>
 			<ComboBox
-				Grid.Row="5"
+				Grid.Row="4"
 				Grid.Column="1"
 				Margin="0, 2, 0, 0"
 				IsEnabled="{Binding Path=IsViewTemplateEnabled}"
@@ -111,36 +102,36 @@
 				SelectedItem="{Binding Path=SelectedViewTemplate}"/>
 			
 			<Label
-				Grid.Row="6"
+				Grid.Row="5"
 				Margin="0, 20, 0, 0"
 				IsEnabled="{Binding Path=IsContentPageEnabled}"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				Content="Use Master Page:"/>
 			<Label
-				Grid.Row="6"
+				Grid.Row="5"
 				Margin="0, 20, 0, 0"
 				IsEnabled="{Binding Path=IsContentPageEnabled}"
 				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				Content="Use Layout:"/>
 			<CheckBox
 				Grid.Column="1"
-				Grid.Row="6"
+				Grid.Row="5"
 				Margin="0, 28, 0, 0"
 				IsEnabled="{Binding Path=IsContentPageEnabled}"
 				IsChecked="{Binding Path=IsContentPage}"/>
 			
 			<Label
-				Grid.Row="7"
+				Grid.Row="6"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Content="Master Page:"/>
 			<Label
-				Grid.Row="7"
+				Grid.Row="6"
 				Visibility="{Binding Path=IsRazorViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Content="Layout:"/>
 			<Grid 
-				Grid.Row="7"
+				Grid.Row="6"
 				Grid.Column="1"
 				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}">
 				<Grid.ColumnDefinitions>
@@ -162,17 +153,27 @@
 			</Grid>
 			
 			<Label
-				Grid.Row="8"
+				Grid.Row="7"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Content="Main Content ID:"/>
 			<TextBox
-				Grid.Row="8"
+				Grid.Row="7"
 				Grid.Column="1"
 				Visibility="{Binding Path=IsAspxViewEngineSelected, Converter={StaticResource BoolToVisibility}}"
 				IsEnabled="{Binding Path=IsContentPagePropertiesEnabled}"
 				Text="{Binding Path=PrimaryContentPlaceHolderId}"/>
 			
+			<Label
+				Grid.Row="8"
+				Margin="0, 20, 0, 0"
+				Content="Partial View:"/>
+			<CheckBox
+				Grid.Column="1"
+				Grid.Row="8"
+				Margin="0, 28, 0, 0"
+				IsChecked="{Binding Path=IsPartialView}"/>
+
 			<StackPanel
 				Orientation="Horizontal"
 				HorizontalAlignment="Right"
