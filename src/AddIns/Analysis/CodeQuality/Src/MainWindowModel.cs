@@ -199,6 +199,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public ICommand ShowTreeMap {get;private set;}
 		
+		
 		bool CanActivateTreemap()
 		{
 			return metricsIsActive;

@@ -140,11 +140,13 @@
 						Background="LightBlue" />
 				</Grid>
 			</TabItem>
+			
 			<TabItem
 				Header="{Binding TabDependencyMatrix}">
 				<Graph:TreeMatrixControl
 					x:Name="matrixControl"></Graph:TreeMatrixControl>
 			</TabItem>
+			
 			<TabItem
 				Header="{Binding TabMetrics}"
 				IsEnabled="{Binding MetrixTabEnable}">
@@ -274,6 +276,7 @@
 						<ColumnDefinition
 							Width="*" />
 					</Grid.ColumnDefinitions>
+					
 					<ToolBarTray
 						Background="White"
 						Grid.Row="0"
@@ -291,6 +294,8 @@
 							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
 								ItemsSource="{Binding Source={StaticResource Metrics}}"
 								Command="{Binding ShowTreeMap}">
+
+								
 								<util:ComboBoxWithCommand.ItemTemplate>
 									<DataTemplate>
 										<Label  Content="{Binding   Path=.,Mode=OneWay,
@@ -311,6 +316,7 @@
 					<t:TreeMaps 
 						Grid.Row="1" 
 						Grid.Column="0"
+						Loaded="TreeMaps_Loaded"
 						ItemsSource="{Binding Nodes}"
 						Background="LightGray"
 						ItemTemplate="{StaticResource TreeMapDataTemplate}"
@@ -318,8 +324,8 @@
 					</t:TreeMaps>
 				</Grid>
 			</TabItem>
-		
 		</TabControl>
+		
 		<StatusBar
 			Grid.Row="2">
 			<StatusBarItem
@@ -393,5 +399,6 @@
 				</StackPanel>
 			</StatusBarItem>
 		</StatusBar>
+	
 	</Grid>
 </Window>

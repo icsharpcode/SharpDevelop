@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -283,5 +284,27 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
+		//http://social.msdn.microsoft.com/Forums/en-MY/wpf/thread/798e100e-249d-413f-a501-50d1db680b94
+		
+		void TreeMaps_Loaded(object sender, RoutedEventArgs e)
+		{
+			ItemsControl itemsControl = sender as ItemsControl;
+			
+			if (itemsControl!=null)
+			{
+				itemsControl.ItemContainerGenerator.StatusChanged += new EventHandler(ItemContainerGenerator_StatusChanged);
+			}
+		}
+		
+		void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+		{
+			ItemContainerGenerator icg = sender as ItemContainerGenerator;
+			if (icg!=null&&icg.Status==GeneratorStatus.ContainersGenerated)
+			{
+				//Do what you want
+				Mouse.OverrideCursor = Cursors.Wait;
+				icg.StatusChanged -= ItemContainerGenerator_StatusChanged;
+			}
+		}
 	}
 }
