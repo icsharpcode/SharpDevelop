@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace TreeMaps.Controls
 {
@@ -92,7 +93,16 @@ namespace TreeMaps.Controls
 
       return constraint;
     }
+    
+    
+    protected override void OnRender(System.Windows.Media.DrawingContext dc)
+    {
+    	Mouse.OverrideCursor = Cursors.Wait;
+    	base.OnRender(dc);
+    	Mouse.OverrideCursor = Cursors.Arrow;
+    }
 
+    
     protected virtual void ComputeBounds()
     {
       this.ComputeTreeMaps(this.ManagedItems);
