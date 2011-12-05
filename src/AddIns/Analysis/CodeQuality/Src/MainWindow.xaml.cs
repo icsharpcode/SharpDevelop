@@ -2,10 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -58,9 +56,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
-			
-			var dataContext = this.DataContext as MainWindowViewModel;
-			
 			var fileDialog = new OpenFileDialog
 			{
 				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
@@ -71,6 +66,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
 			
+			var dataContext = this.DataContext as MainWindowViewModel;
 			dataContext.ProgressbarVisible = Visibility.Visible;
 			dataContext.AssemblyStatsVisible = Visibility.Hidden;
 			dataContext.FileName = System.IO.Path.GetFileName(fileDialog.FileName);
@@ -214,7 +210,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				encoder.Save(outStream);
 			}
 		}
-
+/*
 		private void MetricLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var comboBoxItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
@@ -240,7 +236,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			
 		}
 
-		
+		*/
+		/*
 		private void Metrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var levelItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
@@ -283,6 +280,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 					treemap.ItemDefinition.ValuePath = "Variables";
 			}
 		}
+		*/
+		
 		
 		//http://social.msdn.microsoft.com/Forums/en-MY/wpf/thread/798e100e-249d-413f-a501-50d1db680b94
 		
@@ -305,6 +304,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 				Mouse.OverrideCursor = Cursors.Wait;
 				icg.StatusChanged -= ItemContainerGenerator_StatusChanged;
 			}
+		}
+		
+		void MenuClose_Click(object sender, RoutedEventArgs e)
+		{
+			this.Close();
 		}
 	}
 }

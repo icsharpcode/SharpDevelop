@@ -12,12 +12,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
-using ICSharpCode.SharpDevelop.Widgets;
-using ICSharpCode.CodeQualityAnalysis.Controls;
-using ICSharpCode.CodeQualityAnalysis.Utility;
+
 using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
-using Microsoft.Win32;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
@@ -51,6 +48,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public MainWindowViewModel():base()
 		{
 			this.FrmTitle = "Code Quality Analysis";
+			//ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.Server");
 			this.btnOpenAssembly = "Open Assembly";
 			
 			#region MainTab
@@ -207,10 +205,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		void ShowTreemapExecute()
 		{
+			
 			var r  = from ns in MainModule.Namespaces
 				from type in ns.Types
 				from method in type.Methods
-				select method;
+				select method;	
+			
 			Nodes = new ObservableCollection<INode>(r);
 			
 			switch (selectedMetrics)

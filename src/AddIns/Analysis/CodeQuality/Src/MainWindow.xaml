@@ -14,6 +14,7 @@
 	xmlns:t="clr-namespace:TreeMaps.Controls;assembly=TreeMaps"
 	xmlns:loc ="clr-namespace:ICSharpCode.CodeQualityAnalysis.Utility.Localizeable"
 	xmlns:util="clr-namespace:ICSharpCode.CodeQualityAnalysis.Utility"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	Title="{Binding FrmTitle}"
 	x:Name="root">
 	
@@ -40,6 +41,7 @@
 			<RowDefinition
 				Height="Auto" />
 		</Grid.RowDefinitions>
+		<!--
 		<ToolBarTray
 			Background="White"
 			Grid.Row="0">
@@ -50,7 +52,17 @@
 					Click="btnOpenAssembly_Click"
 					Margin="0 0 5 0"></Button>
 			</ToolBar>
-		</ToolBarTray>
+		</ToolBarTray>-->
+		<Menu>
+			<MenuItem Header="File">
+				<MenuItem Header="{Binding btnOpenAssembly}"
+				          Click="btnOpenAssembly_Click">
+				</MenuItem>
+				<MenuItem Header="{core:Localize Global.CloseButtonText}" Click="MenuClose_Click">
+				</MenuItem>
+			</MenuItem>
+		
+		</Menu>
 		<TabControl
 			Grid.Row="1"
 			IsEnabled="{Binding MainTabEnable}">
@@ -147,6 +159,7 @@
 					x:Name="matrixControl"></Graph:TreeMatrixControl>
 			</TabItem>
 			
+			<!-- Initial version of Thomaz 
 			<TabItem
 				Header="{Binding TabMetrics}"
 				IsEnabled="{Binding MetrixTabEnable}">
@@ -222,7 +235,8 @@
 					</datavis:TreeMap>
 				</Grid>
 			</TabItem>
-			
+			-->
+
 			<TabItem
 				Header="{Binding TabMetrics}"
 				IsEnabled="{Binding MetrixTabEnable}">
@@ -293,9 +307,8 @@
 							
 							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
 								ItemsSource="{Binding Source={StaticResource Metrics}}"
+								SelectedItem="{Binding SelectedMetrics}"
 								Command="{Binding ShowTreeMap}">
-
-								
 								<util:ComboBoxWithCommand.ItemTemplate>
 									<DataTemplate>
 										<Label  Content="{Binding   Path=.,Mode=OneWay,
