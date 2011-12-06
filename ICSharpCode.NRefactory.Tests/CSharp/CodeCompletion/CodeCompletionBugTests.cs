@@ -1524,6 +1524,80 @@ class A
 		}
 		
 		/// <summary>
+		/// Bug 2061 - Typing 'new' in a method all does not offer valid completion
+		/// </summary>
+		[Test()]
+		public void TestBug2061 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	void CallTest(A a)
+	{
+	}
+	public void Test()
+	{
+		$CallTest(new $
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+				Assert.AreEqual ("A", provider.DefaultCompletionString);
+			});
+		}
+	
+		[Test()]
+		public void TestBug2061Case2 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	void CallTest(int i, string s, A a)
+	{
+	}
+
+	public void Test()
+	{
+		$CallTest(5, """", new $
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+				Assert.AreEqual ("A", provider.DefaultCompletionString);
+			});
+		}
+		
+		[Test()]
+		public void TestNewInConstructor ()
+		{
+			CombinedProviderTest (
+@"
+class CallTest
+{
+	public CallTest(int i, string s, A a)
+	{
+
+	}
+}
+
+class A
+{
+
+
+	public void Test()
+	{
+		$new CallTest(5, """", new $
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+				Assert.AreEqual ("A", provider.DefaultCompletionString);
+			});
+		}		
+		
+		/// <summary>
 		/// Bug 473686 - Constants are not included in code completion
 		/// </summary>
 		[Test()]
