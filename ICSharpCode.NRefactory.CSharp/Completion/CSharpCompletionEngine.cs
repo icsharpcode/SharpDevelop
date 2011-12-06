@@ -431,12 +431,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				// Do not pop up completion on identifier identifier (should be handled by keyword completion).
 				tokenIndex = offset - 1;
 				token = GetPreviousToken (ref tokenIndex, false);
-				if (identifierStart == null && !string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex))) {
+				int prevTokenIndex = tokenIndex;
+				var prevToken2 = GetPreviousToken (ref prevTokenIndex, false);
+				if (identifierStart == null && !string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex)) && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
+					Console.WriteLine ("!");
 					char last = token [token.Length - 1];
 					if (char.IsLetterOrDigit (last) || last == '_' || token == ">") {
 						return HandleKeywordCompletion (tokenIndex, token);
-						
-						//return controlSpace ? DefaultControlSpaceItems () : null;
 					}
 				}
 				if (identifierStart == null)
@@ -622,6 +623,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<ICompletionData> DefaultControlSpaceItems ()
 		{
 			var wrapper = new CompletionDataWrapper (this);
+			if (offset >= document.TextLength)
+				offset = document.TextLength - 1;
 			while (offset > 1 && char.IsWhiteSpace (document.GetCharAt (offset))) {
 				offset--;
 			}
@@ -674,10 +677,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AddTypesAndNamespaces (wrapper, state, node, typePred);
 			
 			wrapper.Result.Add (factory.CreateLiteralCompletionData ("global"));
-			if (state.CurrentMember != null) {
+			if (currentMember != null) {
 				AddKeywords (wrapper, statementStartKeywords);
 				AddKeywords (wrapper, expressionLevelKeywords);
-			} else if (state.CurrentTypeDefinition != null) {
+			} else if (currentType != null) {
 				AddKeywords (wrapper, typeLevelKeywords);
 			} else {
 				AddKeywords (wrapper, globalLevelKeywords);
@@ -2082,7 +2085,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
-			"using", "while", "yield", "dynamic", "var" };
+			"using", "while", "yield", "dynamic", "var", "dynamic"
+		};
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 
 			"class", "interface", "struct", "enum", "delegate",
