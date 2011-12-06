@@ -436,7 +436,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				int prevTokenIndex = tokenIndex;
 				var prevToken2 = GetPreviousToken (ref prevTokenIndex, false);
 				if (identifierStart == null && !string.IsNullOrEmpty (token) && !(IsInsideComment (tokenIndex) || IsInsideString (tokenIndex)) && (prevToken2 == ";" || prevToken2 == "{" || prevToken2 == "}")) {
-					Console.WriteLine ("!");
 					char last = token [token.Length - 1];
 					if (char.IsLetterOrDigit (last) || last == '_' || token == ">") {
 						return HandleKeywordCompletion (tokenIndex, token);
@@ -981,6 +980,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					newParentNode = expressionOrVariableDeclaration.Item2.Parent;
 					if (newParentNode is VariableInitializer)
 						newParentNode = newParentNode.Parent;
+				}
+				
+				if (newParentNode is AssignmentExpression) {
+					var assign = (AssignmentExpression)newParentNode;
+					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, assign.Left, expressionOrVariableDeclaration.Item3);
+					if (resolved != null) {
+						hintType = resolved.Item1.Type;
+					}
 				}
 				
 				if (newParentNode is VariableDeclarationStatement) {

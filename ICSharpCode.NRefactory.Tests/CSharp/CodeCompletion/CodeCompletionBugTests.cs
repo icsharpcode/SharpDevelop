@@ -1496,8 +1496,31 @@ class A
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			
+			Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+			Assert.AreEqual ("A", provider.DefaultCompletionString);
 			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn'tj.");
+		}
+		
+		/// <summary>
+		/// Bug 2295 - [New Resolver] 'new' completion doesn't select the correct class name 
+		/// </summary>
+		[Test()]
+		public void TestBug2295 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	public void Test()
+	{
+		A a;
+		$a = new $
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
+				Assert.AreEqual ("A", provider.DefaultCompletionString);
+			});
 		}
 		
 		/// <summary>
