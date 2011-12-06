@@ -683,7 +683,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AddKeywords (wrapper, globalLevelKeywords);
 			}
 			var prop = currentMember as IUnresolvedProperty;
-			if (prop != null && prop.Setter.Region.IsInside (location))
+			if (prop != null && prop.Setter != null && prop.Setter.Region.IsInside (location))
 				wrapper.AddCustom ("value"); 
 			if (currentMember is IUnresolvedEvent)
 				wrapper.AddCustom ("value"); 
