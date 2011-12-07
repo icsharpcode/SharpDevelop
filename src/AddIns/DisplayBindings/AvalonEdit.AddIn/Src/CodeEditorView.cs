@@ -504,7 +504,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Focus();
 			
 			if (CodeEditorOptions.Instance.EnableAnimations)
-				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
+				Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
 		}
 		
 		void DisplayCaretHighlightAnimation()
@@ -515,6 +515,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
+			
+			if (layer == null)
+				return;
+			
 			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			
