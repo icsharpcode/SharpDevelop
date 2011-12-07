@@ -42,6 +42,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Identifier = identifier;
 		}
 		
+		public SimpleType (Identifier identifier)
+		{
+			this.IdentifierToken = identifier;
+		}
+		
 		public SimpleType(string identifier, TextLocation location)
 		{
 			SetChildByRole (Roles.Identifier, CSharp.Identifier.Create (identifier, location));
