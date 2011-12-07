@@ -115,14 +115,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 					}});
 		}
 		
-		[Test, Ignore ("Mono parser bug.")]
-		public void ComplexGenericClassTypeDeclarationTest()
+		[Test]
+		public void ComplexGenericInterfaceTypeDeclarationTest()
 		{
 			ParseUtilCSharp.AssertGlobal(
-				"public class Generic<in T, out S> : System.IComparable where S : G<T[]>, new() where  T : MyNamespace.IMyInterface",
+				"public interface Generic<in T, out S> : System.IComparable where S : G<T[]>, new() where  T : MyNamespace.IMyInterface {}",
 				new TypeDeclaration {
 					Modifiers = Modifiers.Public,
-					ClassType = ClassType.Class,
+					ClassType = ClassType.Interface,
 					Name = "Generic",
 					TypeParameters = {
 						new TypeParameterDeclaration { Variance = VarianceModifier.Contravariant, Name = "T" },
