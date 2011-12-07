@@ -103,6 +103,9 @@
     <Compile Include="Src\CodeTemplates\RazorCSharpEditViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpListViewTemplateTests.cs" />
+    <Compile Include="Src\Folding\HtmlElementFoldTests.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlFoldParserTests.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlReaderTests.cs" />
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -124,6 +127,10 @@
     <Compile Include="Src\SelectedMvcViewFolderTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -149,6 +156,7 @@
     <Folder Include="Helpers" />
     <Folder Include="Src\CodeTemplates" />
     <Folder Include="Src\CodeTemplates\Models" />
+    <Folder Include="Src\Folding" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

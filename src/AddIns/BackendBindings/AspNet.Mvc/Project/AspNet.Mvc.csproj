@@ -115,6 +115,11 @@
     <Compile Include="Src\CurrentAppDomainFactory.cs" />
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\FileSystem.cs" />
+    <Compile Include="Src\Folding\CharacterReader.cs" />
+    <Compile Include="Src\Folding\HtmlElementFold.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlFoldParser.cs" />
+    <Compile Include="Src\Folding\HtmlNode.cs" />
+    <Compile Include="Src\Folding\SimpleWebFormsHtmlReader.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
     <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\IMvcModelClassLocator.cs" />
@@ -198,8 +203,14 @@
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddController" />
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML" />
     <Folder Include="Resources" />
+    <Folder Include="Src\Folding" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
