@@ -210,7 +210,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 					
 					textArea.Selection = new RectangleSelection(textArea, pos, Math.Max(startLine, endLine), GetXPos(textArea, pos));
 				} else {
-					string[] lines = newText.Split(new[] { "\r\n", "\r", "\n" }, segments.Count, StringSplitOptions.None);
+					string[] lines = newText.Split(NewLineFinder.NewlineStrings, segments.Count, StringSplitOptions.None);
 					int line = Math.Min(startLine, endLine);
 					for (int i = lines.Length - 1; i >= 0; i--) {
 						ReplaceSingleLineText(textArea, segments[i], lines[i], out insertionLength);
