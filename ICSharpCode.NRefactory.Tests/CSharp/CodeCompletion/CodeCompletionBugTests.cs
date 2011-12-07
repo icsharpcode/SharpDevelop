@@ -3771,6 +3771,51 @@ public partial class TestMe
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("MyMethod"), "method 'MyMethod' not found.");
 			Assert.IsNull (provider.Find ("Implemented"), "method 'Implemented'  found.");
-		}		
+		}
+		
+		/// <summary>
+		/// Bug 224 - Code completion cannot handle lambdas properly. 
+		/// </summary>
+		[Test()]
+		public void TestBug224 ()
+		{
+			CombinedProviderTest (
+@"
+using System;
+
+public sealed class CrashEventArgs : EventArgs
+{
+	public int ArgsNum { get; set; }
+
+	public CrashEventArgs ()
+	{
+		
+	}
+}
+
+interface ICrashMonitor
+{
+	event EventHandler<CrashEventArgs> CrashDetected;
+
+	void StartMonitoring ();
+
+	void StopMonitoring ();
+}
+
+namespace ConsoleProject
+{
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			ICrashMonitor mon;
+			$mon.CrashDetected += (sender, e) => e.$
+		}
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("ArgsNum"), "property 'ArgsNum' not found.");
+			});
+		}	
 	}
 }
