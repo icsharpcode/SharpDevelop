@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public ITypeDefinition GetTypeDefinition(string ns, string name, int typeParameterCount)
 		{
-			var key = new FullNameAndTypeParameterCount(ns, name, typeParameterCount);
+			var key = new FullNameAndTypeParameterCount(ns ?? string.Empty, name, typeParameterCount);
 			DefaultResolvedTypeDefinition def;
 			if (GetTypes().TryGetValue(key, out def))
 				return def;
