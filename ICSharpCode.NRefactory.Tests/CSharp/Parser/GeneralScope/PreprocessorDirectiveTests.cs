@@ -62,8 +62,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			
 			Assert.AreEqual(PreProcessorDirectiveType.Endif, pp.Last().Type);
 			Assert.AreEqual(string.Empty, pp.Last().Argument);
-			Assert.AreEqual(new TextLocation(4, 2), pp.First().StartLocation);
-			Assert.AreEqual(new TextLocation(4, 8), pp.First().EndLocation);
+			Assert.AreEqual(new TextLocation(4, 2), pp.Last().StartLocation);
+			Assert.AreEqual(new TextLocation(4, 8), pp.Last().EndLocation);
 		}
 		
 		[Test]
