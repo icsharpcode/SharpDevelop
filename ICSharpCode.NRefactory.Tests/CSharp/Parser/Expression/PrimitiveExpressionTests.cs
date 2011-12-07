@@ -215,12 +215,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckLiteral(@"'\U00000041'", '\U00000041');
 		}
 		
-		[Test, Ignore(@"Parser includes \r in integer literal")]
+		[Test]
 		public void TestPositionOfIntegerAtEndOfLine()
 		{
 			var pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("0\r\n");
 			Assert.AreEqual(new TextLocation(1, 1), pe.StartLocation);
 			Assert.AreEqual(new TextLocation(1, 2), pe.EndLocation);
+			Assert.AreEqual("0", pe.LiteralValue);
 		}
 	}
 }
