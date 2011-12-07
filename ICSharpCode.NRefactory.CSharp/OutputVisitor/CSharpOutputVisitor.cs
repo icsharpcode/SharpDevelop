@@ -2357,7 +2357,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (constraint);
 			Space ();
 			WriteKeyword ("where");
-			WriteIdentifier (constraint.TypeParameter);
+			WriteIdentifier (constraint.TypeParameter.Identifier);
 			Space ();
 			WriteToken (":", Constraint.ColonRole);
 			Space ();

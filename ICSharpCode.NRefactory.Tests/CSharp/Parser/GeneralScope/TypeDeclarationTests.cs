@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 					TypeParameters = { new TypeParameterDeclaration { Name = "T" } },
 					Constraints = {
 						new Constraint {
-							TypeParameter = "T",
+							TypeParameter = new SimpleType ("T"),
 							BaseTypes = { new SimpleType("IMyInterface") }
 						}
 					}});
@@ -136,7 +136,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 					},
 					Constraints = {
 						new Constraint {
-							TypeParameter = "S",
+							TypeParameter = new SimpleType ("S"),
 							BaseTypes = {
 								new SimpleType {
 									Identifier = "G",
@@ -146,7 +146,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 							}
 						},
 						new Constraint {
-							TypeParameter = "T",
+							TypeParameter = new SimpleType ("T"),
 							BaseTypes = {
 								new MemberType {
 									Target = new SimpleType("MyNamespace"),
@@ -240,7 +240,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 					},
 					Constraints = {
 						new Constraint {
-							TypeParameter = "where",
+							TypeParameter = new SimpleType ("where"),
 							BaseTypes = {
 								new SimpleType {
 									Identifier = "partial",
