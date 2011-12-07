@@ -141,8 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void TestUnaryMinusCheckedOverflow()
 		{
-			resolver.CheckForOverflow = true;
-			AssertError(typeof(int), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(-2147483648)));
+			AssertError(typeof(int), resolver.WithCheckForOverflow(true).ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(-2147483648)));
 		}
 		
 		[Test]
