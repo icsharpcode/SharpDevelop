@@ -485,6 +485,7 @@ namespace Mono.CSharp
 				}
 #else
 				var args = new PermissionSet[3];
+#pragma warning disable 618
 				declarative_security.TryGetValue (SecurityAction.RequestMinimum, out args[0]);
 				declarative_security.TryGetValue (SecurityAction.RequestOptional, out args[1]);
 				declarative_security.TryGetValue (SecurityAction.RequestRefuse, out args[2]);

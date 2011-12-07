@@ -836,7 +836,6 @@ namespace Mono.CSharp
 			}
 
 			return res;
-			return res;
 		}
 
 		static PreprocessorDirective GetPreprocessorDirective (char[] id, int id_len)

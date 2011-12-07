@@ -154,18 +154,6 @@ namespace Mono.CSharp
 		List<Location> attributeArgumentCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
 		
-		object lastYYVal;
-		
-		// Can be used for code completion to get the last valid expression before an error.
-		// needs a hack in yyparse to make it work add 
-		// lastYYVal = yyVal;
-		// after the big switch/case (somewhere around line 3915)
-		public object LastYYVal {
-			get {
-				return lastYYVal;
-			}
-		}
-		
 #line default
 
   /** error output stream.
