@@ -5207,11 +5207,12 @@ namespace Mono.CSharp {
 			this.Block = block;
 			this.Specific = catch_clauses;
 			this.inside_try_finally = inside_try_finally;
-
-			Catch c = catch_clauses [0];
-			if (c.IsGeneral) {
-				this.General = c;			
-				catch_clauses.RemoveAt (0);
+			if (catch_clauses != null) {
+				Catch c = catch_clauses [0];
+				if (c.IsGeneral) {
+					this.General = c;
+					catch_clauses.RemoveAt (0);
+				}
 			}
 		}
 
