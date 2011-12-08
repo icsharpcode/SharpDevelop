@@ -51,6 +51,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 		
 		protected static IDocument GetResult (CSharpFormattingOptions policy, string input)
 		{
+			input = NormalizeNewlines(input);
 			var adapter = new ReadOnlyDocument (input);
 			var visitor = new AstFormattingVisitor (policy, adapter, factory);
 			visitor.EolMarker = "\n";
@@ -62,6 +63,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 		
 		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput)
 		{
+			expectedOutput = NormalizeNewlines(expectedOutput);
 			IDocument doc = GetResult(policy, input);
 			if (expectedOutput != doc.Text) {
 				Console.WriteLine (doc.Text);
@@ -69,9 +71,15 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			Assert.AreEqual (expectedOutput, doc.Text);
 			return doc;
 		}
+		
+		protected static string NormalizeNewlines(string input)
+		{
+			return input.Replace("\r\n", "\n");
+		}
 
 		protected static void Continue (CSharpFormattingOptions policy, IDocument document, string expectedOutput)
 		{
+			expectedOutput = NormalizeNewlines(expectedOutput);
 			var visitior = new AstFormattingVisitor (policy, document, factory);
 			visitior.EolMarker = "\n";
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (document.Text), "test.cs");
