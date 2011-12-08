@@ -97,6 +97,23 @@ class MyTest
 			Assert.IsNotNull (provider.Find ("test"), "name proposal 'test' not found.");
 		}
 		
+		[Test()]
+		public void TestNameProposalForeach ()
+		{
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+@"
+class MyTest
+{
+	public void Test ()
+	{
+		$foreach (MyTest $
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("myTest"), "name proposal 'myTest' not found.");
+			Assert.IsNotNull (provider.Find ("test"), "name proposal 'test' not found.");
+		}
+		
 		/// <summary>
 		/// Bug 1799 - [New Resolver] Invalid code completion when typing name of variable
 		/// </summary>

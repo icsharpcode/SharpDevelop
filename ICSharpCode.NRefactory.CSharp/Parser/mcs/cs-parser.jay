@@ -5408,6 +5408,27 @@ foreach_statement
 		lbag.AddStatement (f, GetLocation ($2), GetLocation ($5), GetLocation ($7));
 		$$ = end_block (GetLocation ($7));
 	  }
+	| FOREACH open_parens_any type identifier_inside_body error
+	  {
+		start_block (GetLocation ($2));
+		current_block.IsCompilerGenerated = true;
+		var lt = $4 as Tokenizer.LocatedToken;
+		var li = lt != null ? new LocalVariable (current_block, lt.Value, LocalVariable.Flags.ForeachVariable | LocalVariable.Flags.Used, lt.Location) : null;
+		
+		Foreach f = new Foreach ((Expression) $3, li, null, null, GetLocation ($1));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, GetLocation ($2));
+		$$ = end_block (GetLocation ($5));
+	  }
+	| FOREACH open_parens_any type error
+	  {
+		Foreach f = new Foreach ((Expression) $3, null, null, null, GetLocation ($1));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, GetLocation ($2));
+		$$ = f;
+	  }
 	;
 
 jump_statement
