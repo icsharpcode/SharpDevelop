@@ -901,6 +901,19 @@ class B
 		}
 		
 		[Test]
+		public void InnerClassInheritingFromProtectedBaseInnerClassShouldNotCauseStackOverflow()
+		{
+			string program = @"class Base {
+  protected class NestedBase {}
+}
+class Derived : Base {
+  class NestedDerived : $NestedBase$ { }
+}";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Base.NestedBase", result.Type.FullName);
+		}
+		
+		[Test]
 		public void EnumMembersHaveUnderlyingTypeWithinInitializers_MemberFromSameEnum()
 		{
 			string program = @"enum E { A = 0, B = $A$ + 1 }";

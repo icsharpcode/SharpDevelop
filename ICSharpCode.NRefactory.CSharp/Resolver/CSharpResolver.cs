@@ -393,7 +393,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					break;
 				case UnaryOperatorType.BitNot:
 					if (type.Kind == TypeKind.Enum) {
-						if (expression.IsCompileTimeConstant && !isNullable) {
+						if (expression.IsCompileTimeConstant && !isNullable && expression.ConstantValue != null) {
 							// evaluate as (E)(~(U)x);
 							var U = compilation.FindType(expression.ConstantValue.GetType());
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
@@ -1325,7 +1325,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult LookInCurrentType(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode, bool parameterizeResultType)
 		{
 			int k = typeArguments.Count;
-			MemberLookup lookup = CreateMemberLookup();
+			MemberLookup lookup;
+			if (lookupMode == SimpleNameLookupMode.BaseTypeReference && this.CurrentTypeDefinition != null) {
+				// When looking up a base type reference, treat us as being outside the current type definition
+				// for accessibility purposes.
+				// This avoids a stack overflow when referencing a protected class nested inside the base class
+				// of a parent class. (NameLookupTests.InnerClassInheritingFromProtectedBaseInnerClassShouldNotCauseStackOverflow)
+				lookup = new MemberLookup(this.CurrentTypeDefinition.DeclaringTypeDefinition, this.Compilation.MainAssembly, false);
+			} else {
+				lookup = CreateMemberLookup();
+			}
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1376,7 +1385,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					ITypeDefinition def = n.GetTypeDefinition(identifier, k);
 					if (def != null) {
 						IType result = def;
-						if (parameterizeResultType) {
+						if (parameterizeResultType && k > 0) {
 							result = new ParameterizedType(def, typeArguments);
 						}
 						if (u.HasAlias(identifier))
@@ -1521,9 +1530,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public MemberLookup CreateMemberLookup()
 		{
+			ITypeDefinition currentTypeDefinition = this.CurrentTypeDefinition;
 			bool isInEnumMemberInitializer = this.CurrentMember != null && this.CurrentMember.EntityType == EntityType.Field
-				&& this.CurrentTypeDefinition != null && this.CurrentTypeDefinition.Kind == TypeKind.Enum;
-			return new MemberLookup(this.CurrentTypeDefinition, this.Compilation.MainAssembly, isInEnumMemberInitializer);
+				&& currentTypeDefinition != null && currentTypeDefinition.Kind == TypeKind.Enum;
+			return new MemberLookup(currentTypeDefinition, this.Compilation.MainAssembly, isInEnumMemberInitializer);
 		}
 		#endregion
 		

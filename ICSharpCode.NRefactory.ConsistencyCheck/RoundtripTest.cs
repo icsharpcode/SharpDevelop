@@ -25,6 +25,10 @@ using ICSharpCode.NRefactory.PatternMatching;
 
 namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
+	/// <summary>
+	/// Tests parser + output visitor by roundtripping code.
+	/// Everything but whitespace must be preserved.
+	/// </summary>
 	public class RoundtripTest
 	{
 		public static void RunTest(CSharpFile file)

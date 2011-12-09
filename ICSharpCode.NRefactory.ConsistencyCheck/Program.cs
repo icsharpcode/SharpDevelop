@@ -36,27 +36,34 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public const string TempPath = @"C:\temp";
 		
+		static Solution solution;
+		
 		public static void Main(string[] args)
 		{
-			Solution sln;
 			using (new Timer("Loading solution... ")) {
-				sln = new Solution(Path.GetFullPath("../../../NRefactory.sln"));
+				solution = new Solution(Path.GetFullPath("../../../NRefactory.sln"));
 			}
 			
 			Console.WriteLine("Loaded {0} lines of code ({1:f1} MB) in {2} files in {3} projects.",
-			                  sln.AllFiles.Sum(f => f.LinesOfCode),
-			                  sln.AllFiles.Sum(f => f.Content.TextLength) / 1024.0 / 1024.0,
-			                  sln.AllFiles.Count(),
-			                  sln.Projects.Count);
+			                  solution.AllFiles.Sum(f => f.LinesOfCode),
+			                  solution.AllFiles.Sum(f => f.Content.TextLength) / 1024.0 / 1024.0,
+			                  solution.AllFiles.Count(),
+			                  solution.Projects.Count);
 			
-			using (new Timer("Roundtripping tests... ")) {
-				foreach (var file in sln.AllFiles) {
-					RoundtripTest.RunTest(file);
-				}
-			}
+			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
+			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
+		}
+		
+		static void RunTestOnAllFiles(string title, Action<CSharpFile> runTest)
+		{
+			using (new Timer(title + "... ")) {
+				foreach (var file in solution.AllFiles) {
+					runTest(file);
+				}
+			}
 		}
 		
 		static ConcurrentDictionary<string, IUnresolvedAssembly> assemblyDict = new ConcurrentDictionary<string, IUnresolvedAssembly>(Platform.FileNameComparer);
