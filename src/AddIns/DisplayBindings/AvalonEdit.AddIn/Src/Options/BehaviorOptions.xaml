@@ -42,6 +42,9 @@
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CtrlClickGoToDefinition}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.AutoInsertBlockEnd}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>

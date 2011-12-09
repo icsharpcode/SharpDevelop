@@ -229,6 +229,18 @@
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>未知文件格式:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>错误：</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>查找下一个</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>查找上一个</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>使用正则表达式</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>显示类图</value>
   </data>
@@ -297,6 +309,15 @@
   </data>
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>数字进制</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>十进制</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>十六进制</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>八进制</value>
   </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>调整以适应当前的宽度</value>
@@ -648,6 +669,9 @@
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>查找...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>创建属性</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>提取方法</value>
@@ -2878,7 +2902,7 @@
     <value>Intel64位处理器</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>AMD64位处理器</value>
+    <value>AMD/Intel 64位处理器</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>32位Intel兼容处理器</value>
@@ -4694,6 +4718,9 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
     <value>重新加载解决方案</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>该解决方案已被外部更改。</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>将选中的项目转换到(&amp;P):</value>
   </data>
@@ -4776,6 +4803,30 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   </data>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>无法运行单元测试。找不到文件'{0}'。</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>应用程序已经存在。</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>创建应用程序或虚拟目录</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>禁用web服务器选项</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>本机没有找到IIS或IIS Express。</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>服务器端口：</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>项目Url：</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Web服务器</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>调试器无法附加到进程。</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>添加扩展</value>
@@ -4909,6 +4960,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.DesktopFolder" xml:space="preserve">
     <value>桌面</value>
   </data>
+  <data name="ICSharpCode.WixBinding.WixDirectoryElement.FavoritesFolder" xml:space="preserve">
+    <value>收藏夹</value>
+  </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.FontsFolder" xml:space="preserve">
     <value>字体</value>
   </data>
@@ -4944,6 +4998,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.System64Folder" xml:space="preserve">
     <value>系统(x64)</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixDirectoryElement.SystemFolder" xml:space="preserve">
+    <value>系统目录</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.TempFolder" xml:space="preserve">
     <value>临时(文件夹)</value>
@@ -5161,6 +5218,24 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>XSLT输出</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>在指定位置没有找到ILSpy，或SharpDevelop无权访问。</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>尚未设定ILSpy路径。</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>打开ILSpy</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>此功能需要ILSpy支持，如果您需要，可以在这里免费下载：</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>ILSpy.exe 路径</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>设置ILSpy路径</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>无法读取扩展工具配置文件</value>
   </data>
@@ -5338,6 +5413,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>显示扩展方法</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>显示行号</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>显示模块的名称</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Break" xml:space="preserve">
     <value>中断</value>
   </data>
@@ -5470,6 +5551,15 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>静态成员</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>没有找到地址{0} ！</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>跳转到地址：</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>刷新当前地址</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>已装载的模块</value>
   </data>
@@ -5505,6 +5595,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>设置当前声明</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>你要停止调试？</value>
   </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>从进程中分离或结束它？</value>
@@ -5869,11 +5962,17 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation" xml:space="preserve">
     <value>从XML注释中生成文档</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
+    <value>XML文件不存在，您需要编译该项目。</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound" xml:space="preserve">
     <value>请先安装Sandcastle帮助文件生成器，才能根据XML备注信息生成对应的文档。</value>
   </data>
   <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
     <value>HTML输出(&amp;X)</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.IncludeFileInProject" xml:space="preserve">
+    <value>包括在项目中</value>
   </data>
   <data name="ProjectComponent.ContextMenu.IncludeMenu.InCompile" xml:space="preserve">
     <value>成功</value>
@@ -5896,6 +5995,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>新解决方案的目录(&amp;F)</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>该项目不是一个Web项目。</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>打开(&amp;P)</value>
   </data>
@@ -5916,6 +6018,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>设为启动项目(&amp;A)</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>在浏览器中查看</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>新文件夹</value>
@@ -6633,6 +6738,15 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>报表类型</value>
   </data>
+  <data name="SharpReport.Wizard.Layout.ListLayout" xml:space="preserve">
+    <value>列表布局</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ReportLayout" xml:space="preserve">
+    <value>报表布局</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.TableLayout" xml:space="preserve">
+    <value>表格布局</value>
+  </data>
   <data name="SharpReport.Wizard.PullModel" xml:space="preserve">
     <value>拉数据模式(Pull Data Model)</value>
   </data>
@@ -6771,6 +6885,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>空文件</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>新建一个异常处理类。</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>异常</value>
   </data>
@@ -6902,6 +7019,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web窗体</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>创建一个代码分离的ASP.NET页面。</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET网页处理程序</value>
@@ -7229,6 +7349,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>移除所有断点</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>运行最后一次成功生成</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>运行(不调试)(&amp;W)</value>

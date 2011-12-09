@@ -668,6 +668,18 @@ En option, vous pouvez spécifer un répertoire de travail et des arguments en l
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Recherche...</value>
   </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Ajouter accesseur 'set'</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Selectionner les champs pour créér vos propriétés:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>Implémente INotifyPropertyChanged</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Crééer les propriétés</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraire la méthode</value>
   </data>
@@ -2666,6 +2678,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Couper ou Copier toute la ligne si rien n'est sélectionné</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Activer la sélection hors-texte</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Cac&amp;her le curseur lors de la frappe</value>

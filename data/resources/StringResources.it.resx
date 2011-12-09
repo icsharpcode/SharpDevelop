@@ -668,6 +668,18 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Ricerca...</value>
   </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Aggiungi Set</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Seleziona i campi per i quali creare le proprietà:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>Implementa INotifyPropertyChanged</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Crea proprietà</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Estrai metodo</value>
   </data>
@@ -2671,6 +2683,9 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Taglia o Copia l'intera linea quando nulla è selezionato</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Attiva spazio virtuale</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Nasconde i&amp;l cursore mentre si digita</value>

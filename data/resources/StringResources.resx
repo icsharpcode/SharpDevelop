@@ -2758,6 +2758,9 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Cut or Copy entire line when nothing is selected</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Enable virtual space</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>&amp;Hide mouse cursor while typing</value>
   </data>

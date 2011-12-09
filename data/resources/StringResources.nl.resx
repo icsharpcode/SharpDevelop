@@ -668,6 +668,18 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Zoekende...</value>
   </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Een setter toevoegen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Selecteer de velden waarvoor u eigenschappen wilt maken:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>INotifyPropertyChanged implementeren</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Eigenschappen aanmaken.</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Onttrekken</value>
   </data>
@@ -2673,6 +2685,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Knip of kopieer hele regel, als er niets geselecteerd is</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Virtuele ruimte inschakelen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Cursor &amp;verbergen tijdens typen</value>
