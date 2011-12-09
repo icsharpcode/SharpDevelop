@@ -63,6 +63,12 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				Files.Add(new CSharpFile(this, Path.Combine(p.DirectoryPath, item.EvaluatedInclude)));
 			}
 			List<IAssemblyReference> references = new List<IAssemblyReference>();
+			string mscorlib = FindAssembly(Program.AssemblySearchPaths, "mscorlib");
+			if (mscorlib != null) {
+				references.Add(Program.LoadAssembly(mscorlib));
+			} else {
+				Console.WriteLine("Could not find mscorlib");
+			}
 			foreach (var item in p.GetItems("Reference")) {
 				string assemblyFileName = null;
 				if (item.HasMetadata("HintPath")) {
