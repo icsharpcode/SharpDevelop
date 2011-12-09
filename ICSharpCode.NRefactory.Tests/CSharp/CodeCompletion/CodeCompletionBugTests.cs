@@ -3940,5 +3940,32 @@ namespace ConsoleProject
 				Assert.IsNotNull (provider.Find ("ArgsNum"), "property 'ArgsNum' not found.");
 			});
 		}	
+		
+		[Test()]
+		public void TestParameterContext ()
+		{
+			var provider = CreateProvider (
+@"
+public class TestMe
+{
+	$void TestMe (TestClassParameter t$
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider was not empty.");
+		}
+		
+		[Test()]
+		public void TestParameterContextNameProposal ()
+		{
+			var provider = CreateCtrlSpaceProvider (
+@"
+public class TestMe
+{
+	$void TestMe (TestClassParameter t$
+}");
+			Assert.IsTrue (provider == null, "provider not found.");
+			Assert.IsNotNull (provider.Find ("testClassParameter"), "'testClassParameter' not found.");
+			Assert.IsNotNull (provider.Find ("classParameter"), "'classParameter' not found.");
+			Assert.IsNotNull (provider.Find ("parameter"), "'parameter' not found.");
+		}
 	}
 }
