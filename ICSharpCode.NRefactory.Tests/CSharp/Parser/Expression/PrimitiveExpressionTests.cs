@@ -46,12 +46,19 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>(code);
 			Assert.AreEqual(value.GetType(), pe.Value.GetType());
 			Assert.AreEqual(value, pe.Value);
+			Assert.AreEqual(code, pe.LiteralValue);
 		}
 		
 		[Test]
-		public void DoubleTest1()
+		public void DoubleWithLeadingDot()
 		{
 			CheckLiteral(".5e-06", .5e-06);
+		}
+		
+		[Test]
+		public void FloatWithLeadingDot()
+		{
+			CheckLiteral(".5e-06f", .5e-06f);
 		}
 		
 		[Test]
