@@ -415,12 +415,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpOperators.UnaryOperatorMethod m = (CSharpOperators.UnaryOperatorMethod)builtinOperatorOR.BestCandidate;
 			IType resultType = m.ReturnType;
 			if (builtinOperatorOR.BestCandidateErrors != OverloadResolutionErrors.None) {
-				// If there are any user-defined operators, prefer those over the built-in operators.
-				// It'll be a more informative error.
-				if (userDefinedOperatorOR.BestCandidate != null)
+				if (userDefinedOperatorOR.BestCandidate != null) {
+					// If there are any user-defined operators, prefer those over the built-in operators.
+					// It'll be a more informative error.
 					return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR);
-				else
+				} else if (builtinOperatorOR.BestCandidateAmbiguousWith != null) {
+					// If the best candidate is ambiguous, just use the input type instead
+					// of picking one of the ambiguous overloads.
+					return new ErrorResolveResult(expression.Type);
+				} else {
 					return new ErrorResolveResult(resultType);
+				}
 			} else if (expression.IsCompileTimeConstant && m.CanEvaluateAtCompileTime) {
 				object val;
 				try {

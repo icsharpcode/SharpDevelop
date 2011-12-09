@@ -1394,6 +1394,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				Expression expr = unaryOperatorExpression.Expression;
 				ResolveResult input = Resolve(expr);
+				ITypeDefinition inputTypeDef = input.Type.GetDefinition();
+				if (input.IsCompileTimeConstant && expr is PrimitiveExpression && inputTypeDef != null) {
+					// Special cases for int.MinValue and long.MinValue
+					if (inputTypeDef.KnownTypeCode == KnownTypeCode.UInt32 && 2147483648.Equals(input.ConstantValue)) {
+						return new ConstantResolveResult(resolver.Compilation.FindType(KnownTypeCode.Int32), -2147483648);
+					} else if (inputTypeDef.KnownTypeCode == KnownTypeCode.UInt64 && 9223372036854775808.Equals(input.ConstantValue)) {
+						return new ConstantResolveResult(resolver.Compilation.FindType(KnownTypeCode.Int64), -9223372036854775808);
+					}
+				}
 				ResolveResult rr = resolver.ResolveUnaryOperator(unaryOperatorExpression.Operator, input);
 				OperatorResolveResult uorr = rr as OperatorResolveResult;
 				if (uorr != null && uorr.Operands.Count == 1) {
@@ -3082,6 +3091,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			var typeArguments = GetTypeArguments(simpleType.TypeArguments);
 			Identifier identifier = simpleType.IdentifierToken;
+			if (string.IsNullOrEmpty(identifier.Name))
+				return new TypeResolveResult(SpecialType.UnboundTypeArgument);
 			ResolveResult rr = resolver.LookupSimpleNameOrTypeName(identifier.Name, typeArguments, currentTypeLookupMode);
 			if (simpleType.Parent is Attribute && !identifier.IsVerbatim) {
 				var withSuffix = resolver.LookupSimpleNameOrTypeName(identifier.Name + "Attribute", typeArguments, currentTypeLookupMode);

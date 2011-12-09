@@ -67,10 +67,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckLiteral("'\\u0356'", '\u0356');
 		}
 		
-		[Test, Ignore("this special case isn't implemented yet")]
+		[Test]
 		public void IntMinValueTest()
 		{
-			CheckLiteral("-2147483648", -2147483648);
+			ParseUtilCSharp.AssertExpression(
+				"-2147483648",
+				new UnaryOperatorExpression(UnaryOperatorType.Minus, new PrimitiveExpression(-2147483648)));
 		}
 		
 		[Test]
@@ -80,10 +82,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckLiteral("2147483648", 2147483648); // uint
 		}
 		
-		[Test, Ignore("this special case isn't implemented yet")]
+		[Test]
 		public void LongMinValueTest()
 		{
-			CheckLiteral("-9223372036854775808", -9223372036854775808);
+			ParseUtilCSharp.AssertExpression(
+				"-9223372036854775808",
+				new UnaryOperatorExpression(UnaryOperatorType.Minus, new PrimitiveExpression(9223372036854775808)));
 		}
 		
 		[Test]
