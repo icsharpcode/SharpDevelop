@@ -10,7 +10,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
@@ -78,6 +77,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 				dataContext.ProgressbarVisible = Visibility.Hidden;
 				dataContext.AssemblyStatsVisible = Visibility.Visible;
 				dataContext.MainTabEnable = true;
+				
+				if (args.Error != null) {
+					ICSharpCode.Core.MessageService.ShowException(args.Error);
+					return;
+				}
 
 				Helper.FillTree(definitionTree, metricsReader.MainModule);
 				dataContext.MainModule = metricsReader.MainModule;
