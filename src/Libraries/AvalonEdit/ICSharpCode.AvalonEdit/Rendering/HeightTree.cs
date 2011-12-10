@@ -446,7 +446,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					// i.e. at the end of the document, or due to rounding errors in previous loop iterations.
 					
 					// If node.lineNode isn't collapsed, return that.
-					if (node.lineNode.TotalHeight > 0)
+					// Also return node.lineNode if there is no previous node that we could return instead.
+					if (node.lineNode.TotalHeight > 0 || node.left == null)
 						return node;
 					// Otherwise, descend into left (find the last non-collapsed node)
 					node = node.left;
