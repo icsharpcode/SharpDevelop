@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.1.0.8000
+# SharpDevelop 4.2.0.8299-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet.Mvc", "Project\AspNet.Mvc.csproj", "{D781721F-C2A7-4E95-B76F-247170AC3B13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet.Mvc.Tests", "Test\AspNet.Mvc.Tests.csproj", "{0B12A079-B2DB-42B9-8A8E-AA5CBC2B3225}"
@@ -25,6 +25,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Widgets", "..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj", "{8035765F-D51F-4A0C-A746-2FD100E19419}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextTemplating", "..\..\Misc\TextTemplating\Project\TextTemplating.csproj", "{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj", "{0162E499-42D0-409B-AA25-EED21F75336B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,5 +128,13 @@ Global
 		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Release|x86.ActiveCfg = Release|x86
 		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Release|Any CPU.Build.0 = Release|x86
 		{B5D8C3E6-42EC-4D4B-AD05-3644B32563EF}.Release|Any CPU.ActiveCfg = Release|x86
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|x86.Build.0 = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|x86.Build.0 = Release|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|x86.ActiveCfg = Release|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

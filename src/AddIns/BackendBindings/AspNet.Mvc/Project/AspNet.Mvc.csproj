@@ -116,10 +116,23 @@
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\Folding\CharacterReader.cs" />
+    <Compile Include="Src\Folding\FoldGenerationTimer.cs" />
     <Compile Include="Src\Folding\HtmlElementFold.cs" />
+    <Compile Include="Src\Folding\IFoldGenerationTimer.cs" />
+    <Compile Include="Src\Folding\IFoldParser.cs" />
+    <Compile Include="Src\Folding\ITextEditorWithParseInformationFolding.cs" />
+    <Compile Include="Src\Folding\ITextEditorWithParseInformationFoldingFactory.cs" />
+    <Compile Include="Src\Folding\IFoldGenerator.cs" />
+    <Compile Include="Src\Folding\IWebFormsFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\ScheduledFoldGenerator.cs" />
+    <Compile Include="Src\Folding\TextEditorWithParseInformationFolding.cs" />
+    <Compile Include="Src\Folding\TextEditorWithParseInformationFoldingFactory.cs" />
+    <Compile Include="Src\Folding\FoldGenerator.cs" />
+    <Compile Include="Src\Folding\WebFormsFoldGeneratorFactory.cs" />
     <Compile Include="Src\Folding\WebFormsHtmlFoldParser.cs" />
     <Compile Include="Src\Folding\HtmlNode.cs" />
     <Compile Include="Src\Folding\SimpleWebFormsHtmlReader.cs" />
+    <Compile Include="Src\Folding\WebFormsLanguageBinding.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
     <Compile Include="Src\IFileSystem.cs" />
     <Compile Include="Src\IMvcModelClassLocator.cs" />
@@ -229,6 +242,11 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
+      <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>
+      <Name>AvalonEdit.AddIn</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Misc\TextTemplating\Project\TextTemplating.csproj">

@@ -8,7 +8,7 @@ using ICSharpCode.AvalonEdit.Folding;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class WebFormsHtmlFoldParser
+	public class WebFormsHtmlFoldParser : IFoldParser
 	{
 		List<HtmlElementFold> folds = new List<HtmlElementFold>();
 		Stack<HtmlElementFold> foldStack = new Stack<HtmlElementFold>();

@@ -85,4 +85,11 @@
 			name="VB Razor Files (*.vbhtml)"
 			extensions="*.vbhtml"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding
+			id="WebForms"
+			class="ICSharpCode.AspNet.Mvc.Folding.WebFormsLanguageBinding"
+			extensions=".aspx;.ascx;.master;.html;.htm" />
+	</Path>
 </AddIn>
