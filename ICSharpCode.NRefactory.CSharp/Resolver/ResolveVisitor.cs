@@ -1055,11 +1055,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			if (resolverEnabled) {
-				ResolveResult left = Resolve(assignmentExpression.Left);
-				ResolveResult right = Resolve(assignmentExpression.Right);
-				ProcessConversion(assignmentExpression.Right, right, left.Type);
-				var op = AssignmentExpression.GetLinqNodeType(assignmentExpression.Operator, resolver.CheckForOverflow);
-				return new OperatorResolveResult(left.Type, op, left, right);
+				Expression left = assignmentExpression.Left;
+				Expression right = assignmentExpression.Right;
+				ResolveResult leftResult = Resolve(left);
+				ResolveResult rightResult = Resolve(right);
+				ResolveResult rr = resolver.ResolveAssignment(assignmentExpression.Operator, leftResult, rightResult);
+				ProcessConversionsInBinaryOperatorResult(left, right, rr);
+				return rr;
 			} else {
 				ScanChildren(assignmentExpression);
 				return null;
@@ -1084,22 +1086,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult leftResult = Resolve(left);
 				ResolveResult rightResult = Resolve(right);
 				ResolveResult rr = resolver.ResolveBinaryOperator(binaryOperatorExpression.Operator, leftResult, rightResult);
-				OperatorResolveResult orr = rr as OperatorResolveResult;
-				if (orr != null && orr.Operands.Count == 2) {
-					ProcessConversionResult(left, orr.Operands[0] as ConversionResolveResult);
-					ProcessConversionResult(right, orr.Operands[1] as ConversionResolveResult);
-				} else {
-					InvocationResolveResult irr = rr as InvocationResolveResult;
-					if (irr != null && irr.Arguments.Count == 2) {
-						ProcessConversionResult(left, irr.Arguments[0] as ConversionResolveResult);
-						ProcessConversionResult(right, irr.Arguments[1] as ConversionResolveResult);
-					}
-				}
+				ProcessConversionsInBinaryOperatorResult(left, right, rr);
 				return rr;
 			} else {
 				ScanChildren(binaryOperatorExpression);
 				return null;
 			}
+		}
+		
+		ResolveResult ProcessConversionsInBinaryOperatorResult(Expression left, Expression right, ResolveResult rr)
+		{
+			OperatorResolveResult orr = rr as OperatorResolveResult;
+			if (orr != null && orr.Operands.Count == 2) {
+				ProcessConversionResult(left, orr.Operands[0] as ConversionResolveResult);
+				ProcessConversionResult(right, orr.Operands[1] as ConversionResolveResult);
+			} else {
+				InvocationResolveResult irr = rr as InvocationResolveResult;
+				if (irr != null && irr.Arguments.Count == 2) {
+					ProcessConversionResult(left, irr.Arguments[0] as ConversionResolveResult);
+					ProcessConversionResult(right, irr.Arguments[1] as ConversionResolveResult);
+				}
+			}
+			return rr;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitCastExpression(CastExpression castExpression, object data)

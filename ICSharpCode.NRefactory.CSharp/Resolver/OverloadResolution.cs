@@ -793,7 +793,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.BestCandidateErrors,
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,
-				member is ILiftedOperator,
 				isDelegateInvocation: false,
 				argumentToParameterMap: this.GetArgumentToParameterMap());
 		}

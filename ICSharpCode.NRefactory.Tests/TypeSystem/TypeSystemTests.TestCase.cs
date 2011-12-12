@@ -146,7 +146,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	
 	public class OuterGeneric<X>
 	{
-		public class Inner {}
+		public class Inner {
+			OuterGeneric<X> referenceToOuter;
+			public Inner(OuterGeneric<X> referenceToOuter) {}
+		}
 		
 		public OuterGeneric<X>.Inner Field1;
 		public Inner Field2;
