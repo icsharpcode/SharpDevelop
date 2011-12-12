@@ -1549,6 +1549,27 @@ class A
 			});
 		}
 		
+		
+		/// <summary>
+		/// Bug 2198 - Typing generic argument to a class/method pops up type completion window
+		/// </summary>
+		[Test()]
+		public void TestBug2198 ()
+		{
+			CombinedProviderTest (@"$class Klass <T$", provider => {
+				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
+			});
+		}
+		
+		[Test()]
+		public void TestBug2198Case2 ()
+		{
+			CombinedProviderTest (@"$class Klass { void Test<T$", provider => {
+				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
+			});
+		}
+		
+		
 		/// <summary>
 		/// Bug 2061 - Typing 'new' in a method all does not offer valid completion
 		/// </summary>
