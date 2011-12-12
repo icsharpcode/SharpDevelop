@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -416,6 +415,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
+				
+				if (identifierStart != null && identifierStart.Item2 is TypeParameterDeclaration)
+					return null;
+				
 				if (identifierStart != null && identifierStart.Item2 is VariableInitializer && location <= ((VariableInitializer)identifierStart.Item2).NameToken.EndLocation) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems () : null;
 				}
@@ -440,6 +443,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return HandleKeywordCompletion (tokenIndex, token);
 					}
 				}
+				
 				if (identifierStart == null)
 					return HandleAccessorContext () ?? DefaultControlSpaceItems ();
 				
@@ -462,14 +466,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return DefaultControlSpaceItems ();
 					return null;
 				}
-				
 				if (n is ArrayInitializerExpression) {
 					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
 					
 					var concreteNode = identifierStart.Item3.GetNodeAt<IdentifierExpression> (location);
 					// check if we're on the right side of an initializer expression
-					if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression)
+					if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression) {
 						return DefaultControlSpaceItems ();
+					}
 						
 					if (initalizerResult != null) { 
 						
@@ -603,7 +607,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 		
-		
 		bool IsInLinqContext (int offset)
 		{
 			string token;
@@ -698,7 +701,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			Predicate<IType> typePred = null;
 			if (node is Attribute) {
-				var attribute = Compilation.FindType (typeof (System.Attribute));
+				var attribute = Compilation.FindType (typeof(System.Attribute));
 				typePred = t => {
 					return t.GetAllBaseTypeDefinitions ().Any (bt => bt.Equals (attribute));
 				};
@@ -756,8 +759,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				if (currentMember != null) {
-					foreach (var member in ctx.CurrentTypeDefinition.GetMembers ()) {
+				if (this.currentMember != null) {
+					var def = ctx.CurrentTypeDefinition ?? Compilation.MainAssembly.GetTypeDefinition (currentType);
+					foreach (var member in def.GetMembers ()) {
 						if (memberPred == null || memberPred (member))
 							wrapper.AddMember (member);
 					}
@@ -1019,7 +1023,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							foreach (var a in invoke.Arguments) {
 								if (a == expressionOrVariableDeclaration.Item2) {
 									if (mgr.Member.Parameters.Count > i1)
-										hintType = mgr.Member.Parameters[i1].Type;
+										hintType = mgr.Member.Parameters [i1].Type;
 									break;
 								}
 								i1++;
@@ -1038,7 +1042,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							foreach (var a in invoke.Arguments) {
 								if (a == expressionOrVariableDeclaration.Item2) {
 									if (mgr.Member.Parameters.Count > i1)
-										hintType = mgr.Member.Parameters[i1].Type;
+										hintType = mgr.Member.Parameters [i1].Type;
 									break;
 								}
 								i1++;
@@ -1225,7 +1229,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				addedVirtuals = true;
 			}
 			if (!addedVirtuals)
-				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, Compilation.FindType(typeof(object)).GetDefinition (), declarationBegin);
+				AddVirtuals (alreadyInserted, wrapper, type.Resolve (ctx).GetDefinition (), modifiers, Compilation.FindType (typeof(object)).GetDefinition (), declarationBegin);
 			return wrapper.Result;
 		}
 		
@@ -1873,6 +1877,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				expr = tmpUnit.GetNodeAt<VariableInitializer> (location.Line, location.Column - 1);
 				baseUnit = tmpUnit;
+			}
+			
+			// try parameter declaration type
+			if (expr == null) {
+				baseUnit = ParseStub (">", false, "{}");
+				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
+			}
+			
+			// try parameter declaration method
+			if (expr == null) {
+				baseUnit = ParseStub ("> ()", false, "{}");
+				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
 			}
 			
 			if (expr == null)
