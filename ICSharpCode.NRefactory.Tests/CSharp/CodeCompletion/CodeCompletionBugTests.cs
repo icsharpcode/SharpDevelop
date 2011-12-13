@@ -1502,6 +1502,32 @@ class A
 		}
 		
 		/// <summary>
+		/// Bug 2268 - Potential omission in code completion
+		/// </summary>
+		[Test()]
+		public void TestBug2268 ()
+		{
+			CombinedProviderTest (
+@"
+public class Outer
+{
+    static int value = 5;
+
+    class Inner
+    {
+        void Method ()
+        {
+            $v$
+        }
+    }
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("value"), "field 'value' not found.");
+			});
+		}
+		
+		
+		/// <summary>
 		/// Bug 2295 - [New Resolver] 'new' completion doesn't select the correct class name 
 		/// </summary>
 		[Test()]
