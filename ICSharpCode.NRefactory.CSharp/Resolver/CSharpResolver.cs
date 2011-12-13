@@ -1597,6 +1597,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return extensionMethodGroups;
 		}
 		
+		public List<List<IMethod>> GetAllExtensionMethods(IType targetType)
+		{
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			foreach (var inputGroup in GetAllExtensionMethods()) {
+				List<IMethod> outputGroup = new List<IMethod>();
+				foreach (var method in inputGroup) {
+					outputGroup.Add(method);
+				}
+				if (outputGroup.Count > 0)
+					extensionMethodGroups.Add(outputGroup);
+			}
+			return extensionMethodGroups;
+		}
+		
+		//
+		
 		/// <summary>
 		/// Gets all extension methods available in the current using scope.
 		/// This list includes unaccessible
