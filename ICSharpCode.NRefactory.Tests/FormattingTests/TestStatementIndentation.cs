@@ -90,6 +90,42 @@ this.TestMethod ();
 	}
 }");
 		}
+		
+		[Test()]
+		public void TestIndentBlocksCase2 ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			policy.IndentBlocks = true;
+			
+			var adapter = Test (policy,
+@"class Test {
+	Test TestMethod ()
+	{
+		if (true) {
+		Something ();
+		}
+	}
+}",
+@"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+			Something ();
+		}
+	}
+}");
+			policy.IndentBlocks = false;
+			Continue (policy, adapter, @"class Test
+{
+	Test TestMethod ()
+	{
+		if (true) {
+		Something ();
+		}
+	}
+}");
+		}
 
 		[Test()]
 		public void TestBreakIndentation ()
