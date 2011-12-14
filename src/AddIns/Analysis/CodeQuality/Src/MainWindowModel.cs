@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			this.TabMetrics = "Metrics";
 			#endregion
 			
-			MetrixTabEnable = false;
+//			MetrixTabEnable = false;
 			
 			ActivateMetrics = new RelayCommand(ActivateMetricsExecute);
 			ShowTreeMap = new RelayCommand(ShowTreemapExecute,CanActivateTreemap);
@@ -113,12 +114,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
-		bool metrixTabEnable;
 		
-		public bool MetrixTabEnable {
-			get { return metrixTabEnable; }
-			set { metrixTabEnable = value;
-			base.RaisePropertyChanged(() => MetrixTabEnable);}
+		public bool MetrixTabEnable
+		{
+			get {return SelectedNode != null;}
 		}
 		
 		string typeInfo;
@@ -140,6 +139,15 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		
+		private INode selectedNode;
+		
+		public INode SelectedNode {
+			get { return selectedNode; }
+			set { selectedNode = value;
+			base.RaisePropertyChanged(() =>this.SelectedNode);
+			base.RaisePropertyChanged(() =>this.MetrixTabEnable);}
+		}
+		
 		private ObservableCollection<INode> nodes;
 		
 		public ObservableCollection<INode> Nodes {
@@ -157,12 +165,24 @@ namespace ICSharpCode.CodeQualityAnalysis
 			base.RaisePropertyChanged(() =>this.TreeValueProperty);}
 		}
 		
-		// MetricsLevel Combo
+		
+		#region MetricsLevel Combo
 		
 		public MetricsLevel MetricsLevel {
 			get {return MetricsLevel;}
 		}
 	
+		private MetricsLevel selectedMetricsLevel;
+		
+		public MetricsLevel SelectedMetricsLevel {
+			get { return selectedMetricsLevel; }
+			set { selectedMetricsLevel = value;
+			base.RaisePropertyChanged(() =>this.selectedMetricsLevel);}
+		}
+		
+		
+		#endregion
+		
 		#region ActivateMetrics
 		
 		public ICommand ActivateMetrics {get;private set;}
@@ -171,13 +191,31 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		void ActivateMetricsExecute ()
 		{
-			metricsIsActive = true;
+			
+			Console.WriteLine(SelectedMetricsLevel.ToString());
+			switch (SelectedMetricsLevel) {
+				case MetricsLevel.Assembly:
+					Console.WriteLine("assembly");
+					break;
+				case MetricsLevel.Namespace:
+					Console.WriteLine("namespace");
+					break;
+				case MetricsLevel.Type:
+					Console.WriteLine("type");
+					break;
+				case MetricsLevel.Method:
+					metricsIsActive = true;
+					Console.WriteLine("method");
+					break;
+				default:
+					throw new Exception("Invalid value for MetricsLevel");
+			}
 		}
+		
 		
 		#endregion
 		
-		
-		// Metrics Combo
+		#region MetricsLevel Combo
 		
 		public Metrics Metrics
 		{
@@ -193,6 +231,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
+		
+		#endregion
+		
 		#region ShowTreeMap Treemap
 		
 		public ICommand ShowTreeMap {get;private set;}
@@ -203,16 +244,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 			return metricsIsActive;
 		}
 		
-		void ShowTreemapExecute()
+		
+		void ShowTreemapExecute ()
 		{
 			
-			var r  = from ns in MainModule.Namespaces
-				from type in ns.Types
-				from method in type.Methods
-				select method;	
-			
-			Nodes = new ObservableCollection<INode>(r);
-			
+			Nodes = PrepareNodes();
+		
+			var aa = SelectedNode as INode;
+		
 			switch (selectedMetrics)
 			{
 				case Metrics.ILInstructions:
@@ -228,6 +267,39 @@ namespace ICSharpCode.CodeQualityAnalysis
 				default:
 					throw new Exception("Invalid value for Metrics");
 			}
+		}
+		
+		
+		ObservableCollection<INode> PrepareNodes()
+		{
+			IEnumerable<INode> list  = new List<INode>();
+			switch (selectedMetricsLevel) {
+				case MetricsLevel.Assembly:
+					list = from ns in MainModule.Namespaces
+						select ns;
+					break;
+					
+				case MetricsLevel.Namespace:
+					list = from ns in MainModule.Namespaces
+						select ns;
+					break;
+				case MetricsLevel.Type:
+					list = from ns in MainModule.Namespaces
+						from type in ns.Types
+						select ns;
+					break;
+				case MetricsLevel.Method:
+					list  = from ns in MainModule.Namespaces
+						from type in ns.Types
+						from method in type.Methods
+						select method;
+					break;
+				default:
+					throw new Exception("Invalid value for MetricsLevel");
+			}
+			var nodes = new ObservableCollection<INode>(list.Distinct());
+			Console.WriteLine("listcount for  {0} = {1}",selectedMetricsLevel.ToString(),nodes.Count);
+			return nodes;
 		}
 		
 		#endregion

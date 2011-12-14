@@ -394,6 +394,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 			foreach (MethodDefinition methodDefinition in methods)
 			{
+				Console.WriteLine(methodDefinition.Name);
 				var method = (from m in type.Methods
 				              where m.Name == FormatMethodName(methodDefinition)
 				              select m).SingleOrDefault();

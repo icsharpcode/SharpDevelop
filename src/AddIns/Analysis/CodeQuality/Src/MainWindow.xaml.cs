@@ -138,8 +138,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 				definitionTree.SelectedItem = item;
 				var graph = item.INode.Dependency.BuildDependencyGraph();
 				graphLayout.ChangeGraph(graph);
-				var d = this.DataContext as MainWindowViewModel;
-				d.MetrixTabEnable = true;
+				var viewModel = this.DataContext as MainWindowViewModel;
+				//testhalber
+				viewModel.SelectedNode = item.INode;
+				
+//				viewModel.MetrixTabEnable = true;
 			}
 		}
 		
@@ -305,7 +308,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (icg!=null&&icg.Status==GeneratorStatus.ContainersGenerated)
 			{
 				//Do what you want
-				Mouse.OverrideCursor = Cursors.Wait;
+			//	Mouse.OverrideCursor = Cursors.Wait;
 				icg.StatusChanged -= ItemContainerGenerator_StatusChanged;
 			}
 		}

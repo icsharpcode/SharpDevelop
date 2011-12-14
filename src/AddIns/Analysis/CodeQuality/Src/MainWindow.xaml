@@ -300,6 +300,7 @@
 							
 							<util:ComboBoxWithCommand Width="200"
 								ItemsSource="{Binding Source={StaticResource MetricsLevel}}"
+								SelectedItem="{Binding SelectedMetricsLevel}"
 								Command="{Binding ActivateMetrics}">
 							</util:ComboBoxWithCommand>
 							
@@ -332,6 +333,7 @@
 						Loaded="TreeMaps_Loaded"
 						ItemsSource="{Binding Nodes}"
 						Background="LightGray"
+						TreeMapMode="Squarified"
 						ItemTemplate="{StaticResource TreeMapDataTemplate}"
 						ValuePropertyName="{Binding TreeValueProperty}">
 					</t:TreeMaps>
