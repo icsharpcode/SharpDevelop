@@ -428,7 +428,27 @@ namespace ThisOne {
 			Assert.IsNotNull (provider);
 			Assert.IsNotNull (provider.Find ("Other.TheEnum"), "Other.TheEnum not found.");
 		}
+		
+		[Test()]
+		public void TestInnerEnum ()
+		{
+			var provider = CreateProvider (
+@"class Other { 
+	public enum TheEnum { One, Two }
+	public Other (TheEnum e) { }
+}
 
+public class Test {
+	public void TestMethod () {
+		$new Other (O$
+	}
+}");
+			Assert.IsNotNull (provider);
+			Assert.IsNotNull (provider.Find ("Other.TheEnum"), "'Other.TheEnum' not found.");
+		}
+
+		
+		
 		/// <summary>
 		/// Bug 318834 - autocompletion kicks in when inputting decimals
 		/// </summary>
