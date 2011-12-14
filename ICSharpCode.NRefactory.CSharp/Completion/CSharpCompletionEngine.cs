@@ -1764,13 +1764,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			baseUnit = ParseStub ("a()");
 			
 			// Hack for handle object initializer continuation expressions
-			if (baseUnit.GetNodeAt (location) is AttributedNode) {
+			if (baseUnit.GetNodeAt (location) is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
-			
+			Print (baseUnit);
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)

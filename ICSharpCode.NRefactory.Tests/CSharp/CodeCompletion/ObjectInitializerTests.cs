@@ -31,6 +31,25 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
 	public class ObjectInitializerTests : TestBase
 	{
+		[Test()]
+		public void TestArrayInitializerSimple ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+
+class MyTest
+{
+	public void Test ()
+	{
+		$new [] { Tuple.$
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Create"), "method 'Create' not found.");
+			});
+		}
+		
+		
 		/// <summary>
 		/// Bug 487236 - Object initializer completion uses wrong type
 		/// </summary>
