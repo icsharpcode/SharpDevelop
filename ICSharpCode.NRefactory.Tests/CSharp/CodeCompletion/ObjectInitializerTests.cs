@@ -32,6 +32,24 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	public class ObjectInitializerTests : TestBase
 	{
 		[Test()]
+		public void TestArrayInitializerStart ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+
+class MyTest
+{
+	public void Test ()
+	{
+		$new [] { M$
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Tuple"), "class 'MyTest' not found.");
+			});
+		}
+		
+		[Test()]
 		public void TestArrayInitializerSimple ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
@@ -49,6 +67,25 @@ class MyTest
 			});
 		}
 		
+		/// <summary>
+		/// Bug 432727 - No completion if no constructor
+		/// </summary>
+		[Test()]
+		public void TestArrayInitializerParameterContext ()
+		{
+			var provider = ParameterCompletionTests.CreateProvider (
+@"using System;
+
+class MyTest
+{
+	public void Test ()
+	{
+		$new [] { Tuple.Create($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.Greater (provider.OverloadCount, 1);
+		}
 		
 		/// <summary>
 		/// Bug 487236 - Object initializer completion uses wrong type

@@ -420,7 +420,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
-				
 				if (identifierStart != null && identifierStart.Item2 is TypeParameterDeclaration)
 					return null;
 				
@@ -472,6 +471,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				}
 				if (n is ArrayInitializerExpression) {
+					// check for new [] {...} expression -> no need to resolve the type there
+					var parent = n.Parent as ArrayCreateExpression;
+					if (parent != null && parent.Type.IsNull)
+						return DefaultControlSpaceItems ();
+					
 					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
 					
 					var concreteNode = identifierStart.Item3.GetNodeAt<IdentifierExpression> (location);
@@ -479,8 +483,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression) {
 						return DefaultControlSpaceItems ();
 					}
-						
-					if (initalizerResult != null) { 
+					
+					if (initalizerResult != null && initalizerResult.Item1.Type.Kind != TypeKind.Unknown) { 
 						
 						foreach (var property in initalizerResult.Item1.Type.GetProperties ()) {
 							if (!property.IsPublic)
@@ -494,7 +498,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						return contextList.Result;
 					}
-					return null;
+					Console.WriteLine ("blub");
+					return DefaultControlSpaceItems ();
 				}
 				if (n != null/* && !(identifierStart.Item2 is TypeDeclaration)*/) {
 					csResolver = new CSharpResolver (ctx);
@@ -1893,6 +1898,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				baseUnit = ParseStub ("> ()", false, "{}");
 				expr = baseUnit.GetNodeAt<TypeParameterDeclaration> (location.Line, location.Column - 1); 
 			}
+			
 			
 			if (expr == null)
 				return null;

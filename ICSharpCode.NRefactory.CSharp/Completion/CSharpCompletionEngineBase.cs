@@ -413,7 +413,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
@@ -477,13 +476,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
-			AstNode expr;
+			AstNode expr = null;
 			if (mref is InvocationExpression) {
 				expr = ((InvocationExpression)mref).Target;
 			} else if (mref is ObjectCreateExpression) {
 				expr = mref;
 			} else {
-				return null;
+				baseUnit = ParseStub (")};", false);
+				mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
+				if (mref is InvocationExpression) {
+					expr = ((InvocationExpression)mref).Target;
+				} else if (mref is ObjectCreateExpression) {
+					expr = mref;
+				}
+				if (expr == null)
+					return null;
 			}
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
