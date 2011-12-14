@@ -1158,6 +1158,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				curIndent.Level++;
 			
 			foreach (var stmt in switchSection.Statements) {
+				if (stmt is BreakStatement && !policy.IndentBreakStatements && policy.IndentCaseBody) {
+					curIndent.Level--;
+					stmt.AcceptVisitor (this, null);
+					curIndent.Level++;
+					continue;
+				}
 				stmt.AcceptVisitor (this, null);
 			}
 			if (policy.IndentCaseBody)
