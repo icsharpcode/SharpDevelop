@@ -14,10 +14,15 @@
 	</Runtime>
 
     <Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
+    	<MenuItem id    = "GenerateDependencyGraph"
+			          label = "Generate Dependency Graph"
+			          class = "ICSharpCode.CodeQualityAnalysis.DependencyGraphCommand" />
+    	<!--
         <Condition name = "ProjectActive" activeproject="*">
             <MenuItem id    = "GenerateDependencyGraph"
 			          label = "Generate Dependency Graph"
 			          class = "ICSharpCode.CodeQualityAnalysis.DependencyGraphCommand" />
         </Condition>
+-->
     </Path>
 </AddIn>

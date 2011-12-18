@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+
 using ICSharpCode.TreeView;
-using System.Runtime.InteropServices;
 
 namespace ICSharpCode.CodeQualityAnalysis.Utility
 {
@@ -24,23 +26,38 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 			tree.Root = root;
 			tree.ShowRoot = false;
 		
-			foreach (var ns in module.Namespaces)
+			var sortedNameSpaces = new List<Namespace>();
+			sortedNameSpaces.AddRange (module.Namespaces);
+			sortedNameSpaces.Sort((Namespace a,Namespace b) => String.Compare(a.Name, b.Name) );
+			
+			foreach (var ns in sortedNameSpaces)
+//			foreach (var ns in module.Namespaces)
 			{
 				var namespaceNode = CreateTreeItem(ns);
 				tree.Root.Children.Add(namespaceNode);
 				
-				foreach (var type in ns.Types)
+				var sortedTypes = new List<Type>();
+				sortedTypes.AddRange(ns.Types);
+				sortedTypes.Sort((Type a,Type b) => String.Compare(a.Name, b.Name) );
+				foreach (var type in sortedTypes)
 				{
 					var typeNode = CreateTreeItem(type);
 					namespaceNode.Children.Add(typeNode);
 
-					foreach (var method in type.Methods)
+					var sortedMethods = new List<Method>();
+					sortedMethods.AddRange(type.Methods);
+					sortedMethods.Sort((Method a,Method b) => String.Compare(a.Name, b.Name) );
+					foreach (var method in sortedMethods)
 					{
 						var methodName = CreateTreeItem(method);
 						typeNode.Children.Add(methodName);
 					}
 
-					foreach (var field in type.Fields)
+					
+					var sortedFields = new List<Field>();
+					sortedFields.AddRange(type.Fields);
+					sortedFields.Sort((Field a,Field b) => String.Compare(a.Name, b.Name) );
+					foreach (var field in sortedFields)
 					{
 						var fieldNode = CreateTreeItem(field);
 						typeNode.Children.Add(fieldNode);

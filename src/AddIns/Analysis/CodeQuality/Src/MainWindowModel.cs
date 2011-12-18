@@ -251,6 +251,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 			Nodes = PrepareNodes();
 		
 			var aa = SelectedNode as INode;
+		var m = aa as Method;
+		var t = aa as Type;
+		var n = aa as Namespace;
 		
 			switch (selectedMetrics)
 			{
