@@ -84,7 +84,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				}
 
 				Helper.FillTree(definitionTree, metricsReader.MainModule);
-				dataContext.MainModule = metricsReader.MainModule;
+				dataContext.MainModule = metricsReader.MainModule;                        
 				FillMatrix();
 			};
 			
@@ -141,8 +141,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var viewModel = this.DataContext as MainWindowViewModel;
 				//testhalber
 				viewModel.SelectedNode = item.INode;
-				
-//				viewModel.MetrixTabEnable = true;
 			}
 		}
 		

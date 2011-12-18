@@ -361,6 +361,7 @@
 						Height="15" />
 				</StackPanel>
 			</StatusBarItem>
+			<!-- 
 			<StatusBarItem
 				HorizontalAlignment="Right"
 				Visibility="{Binding AssemblyStatsVisible}">
@@ -412,6 +413,20 @@
 						</StackPanel>
 					</StatusBarItem>
 				</StackPanel>
+			</StatusBarItem>
+		-->
+			<StatusBarItem
+				HorizontalAlignment="Right"
+				Visibility="{Binding AssemblyStatsVisible}">
+				<StatusBarItem>
+						<StackPanel
+							Orientation="Horizontal">
+							<TextBlock
+								Text="Summary: " />
+							<TextBlock
+								Text="{Binding Summary}" />
+						</StackPanel>
+					</StatusBarItem>
 			</StatusBarItem>
 		</StatusBar>
 	

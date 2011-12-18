@@ -58,8 +58,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			this.TabMetrics = "Metrics";
 			#endregion
 			
-//			MetrixTabEnable = false;
-			
 			ActivateMetrics = new RelayCommand(ActivateMetricsExecute);
 			ShowTreeMap = new RelayCommand(ShowTreemapExecute,CanActivateTreemap);
 		}
@@ -76,7 +74,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public string TabMetrics {get;private set;}
 		
 		#endregion
-		
 		
 		private string fileName;
 		
@@ -135,6 +132,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 			get { return mainModule; }
 			set { mainModule = value;
 				base.RaisePropertyChanged(() =>this.MainModule);
+				Summary = String.Format("Module Name: {0}  Namespaces: {1}  Types {2} Methods: {3}  Fields: {4}",
+				                                    mainModule.Name,
+				                                    mainModule.Namespaces.Count,
+				                                    mainModule.TypesCount,
+				                                    mainModule.MethodsCount,
+				                                    mainModule.FieldsCount);
 			}
 		}
 		
@@ -145,8 +148,33 @@ namespace ICSharpCode.CodeQualityAnalysis
 			get { return selectedNode; }
 			set { selectedNode = value;
 			base.RaisePropertyChanged(() =>this.SelectedNode);
-			base.RaisePropertyChanged(() =>this.MetrixTabEnable);}
+			base.RaisePropertyChanged(() =>this.MetrixTabEnable);
+			Summary = UpdateToolStrip();
+			}
 		}
+		
+		
+		string UpdateToolStrip()
+		{
+			var t = SelectedNode as Type;
+			if (t != null)
+			{
+				return string.Format("Type Namer {0}  Methods {1} Fields {2}",
+				                     t.Name,
+				                     t.GetAllMethods().Count(),
+				                     t.GetAllFields().Count());
+			}
+			var ns = SelectedNode as Namespace;
+			if ( ns != null) {
+				return string.Format("Namespace Name {0}  Types : {1}  Methods: {2} Fields : {3}",
+				                     ns.Name,
+				                     ns.Types.Count,
+				                     ns.GetAllMethods().Count(),
+				                     ns.GetAllFields().Count());
+			}
+			return String.Empty;
+		}
+		
 		
 		private ObservableCollection<INode> nodes;
 		
@@ -231,7 +259,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
-		
 		#endregion
 		
 		#region ShowTreeMap Treemap
@@ -303,6 +330,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 			var nodes = new ObservableCollection<INode>(list.Distinct());
 			Console.WriteLine("listcount for  {0} = {1}",selectedMetricsLevel.ToString(),nodes.Count);
 			return nodes;
+		}
+		
+		#endregion
+		
+		#region ToolStrip and ToolTip
+		
+		string summary;
+		
+		public string Summary {
+			get { return summary; }
+			set { summary = value;
+				base.RaisePropertyChanged(() => Summary);
+			}
 		}
 		
 		#endregion
