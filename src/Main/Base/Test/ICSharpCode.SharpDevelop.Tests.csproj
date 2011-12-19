@@ -118,14 +118,14 @@
     <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
-    <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
+    <Compile Include="WebReferences\WebReferenceTests.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
     <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
     <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
     <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
     <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />
     <Compile Include="WebReferences\RenamedWebReferencesFolderTest.cs" />
-    <Compile Include="WebReferences\IsWebReferencesFolderTests.cs" />
+    <Compile Include="WebReferences\WebReferencesProjectItemTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsCachedTest.cs" />
     <Compile Include="WebReferences\DirectoryNodeFactoryTests.cs" />
     <Compile Include="WebReferences\WebReferenceUrlTests.cs" />

@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 	/// Tests the generated project items for a web reference.
 	/// </summary>
 	[TestFixture]
-	public class WebReferenceProjectItemsTest
+	public class WebReferenceTests
 	{
 		SD.WebReference webReference;
 		DiscoveryClientProtocol protocol;

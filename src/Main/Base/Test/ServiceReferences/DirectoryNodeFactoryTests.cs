@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			return projectItem;
 		}
 		
+		FileProjectItem CreateFileProjectItem(string include)
+		{
+			return new FileProjectItem(project, ItemType.None, include);
+		}
+		
 		[Test]
 		public void CreateDirectoryNode_WCFMetadataProjectItem_CreatesServiceReferencesFolderNode()
 		{
@@ -90,6 +95,30 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 				DirectoryNodeFactory.CreateDirectoryNode(null, project, directory) as ServiceReferencesFolderNode;
 			
 			Assert.AreEqual(directory, referencesNode.Directory);
+		}
+		
+		[Test]
+		public void CreateDirectoryNode_FileProjectItemThatEndsWithForwardSlash_DirectoryNodeCreatedWithForwardSlashRemoved()
+		{
+			CreateProject();
+			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			FileProjectItem projectItem = CreateFileProjectItem(@"MyFolder/");
+			
+			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
+			
+			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory);
+		}
+		
+		[Test]
+		public void CreateDirectoryNode_FileProjectItemThatEndsWithBackSlash_DirectoryNodeCreatedWithBackSlashRemoved()
+		{
+			CreateProject();
+			project.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			FileProjectItem projectItem = CreateFileProjectItem(@"MyFolder\");
+			
+			DirectoryNode node = DirectoryNodeFactory.CreateDirectoryNode(projectItem, FileNodeStatus.None);
+			
+			Assert.AreEqual(@"d:\projects\MyProject\MyFolder", node.Directory);
 		}
 	}
 }
