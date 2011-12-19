@@ -41,7 +41,7 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="Rhino.Mocks">
-      <HintPath>..\..\..\AddIns\Analysis\MachineSpecifications\Libraries\RhinoMocks.3.6\Rhino.Mocks.dll</HintPath>
+      <HintPath>..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
