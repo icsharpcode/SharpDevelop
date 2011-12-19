@@ -144,9 +144,9 @@
     <Compile Include="ProcessExitedTestFixture.cs" />
     <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
     <Compile Include="ConsoleAppTestFixtureBase.cs" />
-    <Compile Include="Services_Navigation\INavigationPointTextFixture.cs" />
-    <Compile Include="Services_Navigation\TestNavigationPoint.cs" />
-    <Compile Include="Services_Navigation\NavigationServiceTestFixture.cs" />
+    <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
+    <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />
+    <Compile Include="NavigationServiceTests\NavigationServiceTestFixture.cs" />
     <Compile Include="SharpDevelopColorDialogTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -177,7 +177,7 @@
     <Folder Include="Utils\Tests" />
     <Folder Include="WebReferences" />
     <Folder Include="Templates" />
-    <Folder Include="Services_Navigation" />
+    <Folder Include="NavigationServiceTests" />
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>

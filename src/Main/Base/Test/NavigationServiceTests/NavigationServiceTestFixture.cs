@@ -8,7 +8,7 @@ using NUnit.Framework;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
-namespace NavigationServiceTests
+namespace ICSharpCode.SharpDevelop.Tests.NavigationServiceTests
 {
 	/// <summary>
 	/// Provides unit tests for the <see cref="NavigationService"/>.

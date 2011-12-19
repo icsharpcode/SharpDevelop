@@ -6,11 +6,8 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
-namespace NavigationServiceTests
+namespace ICSharpCode.SharpDevelop.Tests.NavigationServiceTests
 {
-	/// <summary>
-	/// Description of TestNavigationPoint.
-	/// </summary>
 	public class TestNavigationPoint : DefaultNavigationPoint
 	{
 		public TestNavigationPoint(string filename) : this(filename, 0) {}

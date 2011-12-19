@@ -7,7 +7,7 @@ using NUnit.Framework;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
-namespace NavigationServiceTests
+namespace ICSharpCode.SharpDevelop.Tests.NavigationServiceTests
 {
 	[TestFixture]
 	public class INavigationPointTextFixture
