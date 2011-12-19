@@ -56,6 +56,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	public enum SpecialFolder {
 		None,
 		AppDesigner,
+		ServiceReference,
+		ServiceReferencesFolder,
 		WebReference,
 		WebReferencesFolder
 	}
@@ -171,10 +173,12 @@ namespace ICSharpCode.SharpDevelop.Project
 							OpenedImage = "ProjectBrowser.PropertyFolder.Open";
 							ClosedImage = "ProjectBrowser.PropertyFolder.Closed";
 							break;
+						case SpecialFolder.ServiceReferencesFolder:
 						case SpecialFolder.WebReferencesFolder:
 							OpenedImage = "ProjectBrowser.WebReferenceFolder.Open";
 							ClosedImage = "ProjectBrowser.WebReferenceFolder.Closed";
 							break;
+						case SpecialFolder.ServiceReference:
 						case SpecialFolder.WebReference:
 							OpenedImage = "ProjectBrowser.WebReference";
 							ClosedImage = "ProjectBrowser.WebReference";
@@ -332,7 +336,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					continue;
 				}
 				
-				if (item.ItemType == ItemType.Folder || item.ItemType == ItemType.WebReferences) {
+				if (item.ItemType.IsFolder()) {
 					DirectoryNode node;
 					if (directoryNodeList.TryGetValue(fileName, out node)) {
 						if (node.FileNodeStatus == FileNodeStatus.None) {

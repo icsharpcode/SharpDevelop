@@ -289,6 +289,8 @@
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\SpecialFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferenceNode.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferencesFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
@@ -320,6 +322,7 @@
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
+    <Compile Include="Src\Project\Items\ServiceReferencesProjectItem.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildAdditionalLogger.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildLoggerFilter.cs" />
     <Compile Include="Src\Project\MSBuildEngine\SDConsoleLogger.cs" />

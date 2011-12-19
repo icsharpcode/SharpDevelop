@@ -177,6 +177,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 				case "WebReferences":
 					return new WebReferencesProjectItem(this, item);
+				
+				case "WCFMetadata":
+					return new ServiceReferencesProjectItem(this, item);
 					
 				default:
 					if (this.AvailableFileItemTypes.Contains(item.ItemType)
