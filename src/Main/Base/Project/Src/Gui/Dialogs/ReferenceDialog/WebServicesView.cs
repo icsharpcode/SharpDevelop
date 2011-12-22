@@ -139,21 +139,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ListViewItem item;
 			webServicesListView.Items.Clear();
 			
-			if(e.Node.Tag is ServiceDescription) {
+			if (e.Node.Tag is ServiceDescription) {
 				ServiceDescription desc = (ServiceDescription)e.Node.Tag;
 				item = new ListViewItem();
 				item.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.RetrievalUriProperty}");
 				item.SubItems.Add(desc.RetrievalUrl);
 				webServicesListView.Items.Add(item);
-			}
-			else if(e.Node.Tag is Service) {
+			} else if(e.Node.Tag is Service) {
 				Service service = (Service)e.Node.Tag;
 				item = new ListViewItem();
 				item.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DocumentationProperty}");
 				item.SubItems.Add(service.Documentation);
 				webServicesListView.Items.Add(item);
-			}
-			else if(e.Node.Tag is Port) {
+			} else if(e.Node.Tag is Port) {
 				Port port = (Port)e.Node.Tag;
 
 				item = new ListViewItem();
@@ -170,8 +168,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				item.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ServiceNameProperty}");
 				item.SubItems.Add(port.Service.Name);
 				webServicesListView.Items.Add(item);
-			}
-			else if(e.Node.Tag is Operation) {
+			} else if(e.Node.Tag is Operation) {
 				Operation operation = (Operation)e.Node.Tag;
 				
 				item = new ListViewItem();

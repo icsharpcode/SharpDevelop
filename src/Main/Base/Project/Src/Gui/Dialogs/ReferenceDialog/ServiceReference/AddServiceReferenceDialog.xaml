@@ -129,7 +129,7 @@
 			<TextBlock Text="{Binding ServiceDescriptionMessage}"></TextBlock>
 		</Border>
 		
-		<TextBlock Grid.Row="6" Text="NameSpace:" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
+		<TextBlock Grid.Row="6" Text="Namespace:" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
 		<TextBox Grid.Row="7" Grid.ColumnSpan="3"
 		         Margin="4" Background="White"
 		         Text="{Binding DefaultNameSpace}">
