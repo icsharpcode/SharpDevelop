@@ -126,7 +126,9 @@
       <SubType>Code</SubType>
       <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\DependencyGraphCommand.cs" />
+    <Compile Include="Src\DependencyGraphCommand.cs">
+      <DependentUpon>RelationshipType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\DependencyTreeNode.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
