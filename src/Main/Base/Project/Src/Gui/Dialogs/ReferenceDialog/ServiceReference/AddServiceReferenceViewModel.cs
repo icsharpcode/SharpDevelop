@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 12.10.2011
- * Time: 20:05
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,21 +18,18 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.SharpDevelop.Widgets.Resources;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	/// <summary>
-	/// Description of AddServiceReferenceViewModel.
-	/// </summary>
-	public class AddServiceReferenceViewModel:ViewModelBase
+	public class AddServiceReferenceViewModel : ViewModelBase
 	{
 		string header1 = "To see a list of available services on a specific server, ";
 		string header2 = "enter a service URL and click Go. To browse for available services click Discover.";
@@ -61,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
 		CredentialCache credentialCache = new CredentialCache();
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
+		WebServiceMetadataSet serviceMetadata;
 		
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
@@ -248,6 +241,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			if (protocol != null) {
 				serviceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
+				serviceMetadata = new WebServiceMetadataSet(protocol);
 				
 				ServiceDescriptionMessage = String.Format("{0} service(s) found at address {1}",
 				                                          serviceDescriptionCollection.Count,
@@ -401,6 +395,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				}
 			}
 			ServiceItems = items;
+		}
+		
+		public void AddServiceReference()
+		{
+			var serviceGenerator = new ServiceReferenceGenerator(project);
+			serviceGenerator.Namespace = defaultNameSpace;
+			serviceGenerator.AddServiceReference(serviceMetadata);
+			new RefreshProjectBrowser().Run();
 		}
 	}
 	

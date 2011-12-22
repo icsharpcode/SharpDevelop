@@ -227,23 +227,23 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 
 	
-	public class AddServiceReferenceToProject: AbstractMenuCommand
+	public class AddServiceReferenceToProject : AbstractMenuCommand
 	{
-//		private static string NodePath = "//system.serviceModel//client//endpoint";
-		
 		public override void Run()
 		{
-			AbstractProjectBrowserTreeNode node = Owner as AbstractProjectBrowserTreeNode;
+			var node = Owner as AbstractProjectBrowserTreeNode;
 			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
 			if (project == null) {
 				return;
 			}
 			
 			var vm = new AddServiceReferenceViewModel(project);
-			AddServiceReferenceDialog o = new AddServiceReferenceDialog();
-			o.DataContext = vm;
-			o.Owner = WorkbenchSingleton.MainWindow;
-			var b = o.ShowDialog();
+			var dialog = new AddServiceReferenceDialog();
+			dialog.DataContext = vm;
+			dialog.Owner = WorkbenchSingleton.MainWindow;
+			if (dialog.ShowDialog() ?? true) {
+				vm.AddServiceReference();
+			}
 		}
 	}
 	

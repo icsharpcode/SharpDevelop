@@ -28,6 +28,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>Full</DebugType>
@@ -60,6 +61,9 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -265,6 +269,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ICodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IFileSystem.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IProjectWithServiceReferences.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceCodeDomBuilder.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceProxyGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ProjectWithServiceReferences.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomBuilder.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileSystem.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceProxyGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\WebServiceMetadataSet.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
       <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
