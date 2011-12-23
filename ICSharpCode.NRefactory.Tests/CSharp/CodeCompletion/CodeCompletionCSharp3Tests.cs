@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeCompletionCSharp3Tests.cs
 //
 // Author:
@@ -346,6 +346,26 @@ namespace Foo
 ");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("Value"), "field 'Value' not found.");
+		}
+		
+		[Test()]
+		public void TestLinqWhere() {
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider(
+@"
+using System.Collections.Generic;
+using System.Linq;
+class A
+{
+	public static void Method1()
+	{
+    	int[] enumerable =  new int[]{1,2,3};
+		$IEnumerable<int> q = from i in enumerable where i.$
+	}
+}
+
+");
+			Assert.IsNotNull(provider); // <--- here 0 item in the completion list
+			Assert.IsNotNull(provider.Find("ToString"));
 		}
 	}
 }
