@@ -3359,17 +3359,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		internal static CompilationUnit Parse (bool convertTypeSystemMode, CompilerCompilationUnit top)
-		{
-			if (top == null)
-				return null;
-			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (convertTypeSystemMode, top.LocationsBag);
-			top.UsingsBag.Global.Accept (conversionVisitor);
-			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
-			InsertComments (top, conversionVisitor);
-			return conversionVisitor.Unit;
-		}
-		
 		public class ErrorReportPrinter : ReportPrinter
 		{
 			readonly string fileName;

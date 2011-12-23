@@ -2486,6 +2486,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				VisitNamedNode((NamedNode)childNode, data);
 			} else if (childNode is OptionalNode) {
 				VisitOptionalNode((OptionalNode)childNode, data);
+			} else if (childNode is Repeat) {
+				VisitRepeat((Repeat)childNode, data);
 			} else {
 				WritePrimitiveValue(childNode);
 			}
