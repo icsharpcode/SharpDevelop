@@ -46,9 +46,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			fakeProject.Stub(p => p.LanguageProperties).Return(languageProperties);
 		}
 		
-		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(string fileName)
+		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)
 		{
-			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName.Path);
 		}
 		
 		ServiceReferencesProjectItem GetFirstWCFMetadataItemInMSBuildProject()
@@ -91,10 +91,10 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateProject();
 			SetProjectDirectory(@"d:\projects\MyProject");
 			
-			string fileName = project.GetServiceReferenceFileName("Service1");
+			ServiceReferenceFileName fileName = project.GetServiceReferenceFileName("Service1");
 			string expectedFileName = @"d:\projects\MyProject\Service References\Service1\Reference.cs";
 			
-			Assert.AreEqual(expectedFileName, fileName);
+			Assert.AreEqual(expectedFileName, fileName.Path);
 		}
 		
 		[Test]
@@ -102,7 +102,10 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			CreateProjectWithMSBuildProject();
 			
-			string proxyFileName = @"d:\projects\MyProject\Service References\Service1\Reference.cs";
+			var proxyFileName = new ServiceReferenceFileName() {
+				ServiceReferencesFolder = @"d:\projects\MyProject\Service References",
+				ServiceName = "Service1"
+			};
 			project.AddServiceReferenceProxyFile(proxyFileName);
 			
 			ProjectItem item = GetFirstServiceReferenceFileInMSBuildProject(proxyFileName);
@@ -125,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			CreateProjectWithMSBuildProject();
 			
-			string proxyFileName = @"d:\projects\MyProject\Service References\Service1\Reference.cs";
+			var proxyFileName = new ServiceReferenceFileName() { ServiceName = "Service1" };
 			project.AddServiceReferenceProxyFile(proxyFileName);
 			
 			ServiceReferencesProjectItem item = GetFirstWCFMetadataItemInMSBuildProject();
@@ -138,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			CreateProjectWithMSBuildProject();
 			
-			string proxyFileName = @"d:\projects\MyProject\Service References\Service1\Reference.cs";
+			var proxyFileName = new ServiceReferenceFileName() { ServiceName = "Service1" };
 			project.AddServiceReferenceProxyFile(proxyFileName);
 			
 			ProjectItem item = GetFirstWCFMetadataStorageItemInMSBuildProject();

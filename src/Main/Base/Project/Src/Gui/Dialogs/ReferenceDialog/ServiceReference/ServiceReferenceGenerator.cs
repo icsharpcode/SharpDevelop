@@ -47,10 +47,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void GenerateServiceReferenceProxy(MetadataSet metadata)
 		{
-			string fileName = project.GetServiceReferenceFileName(Namespace);
-			CreateFolderForFileIfFolderMissing(fileName);
+			ServiceReferenceFileName fileName = project.GetServiceReferenceFileName(Namespace);
+			CreateFolderForFileIfFolderMissing(fileName.Path);
 			
-			proxyGenerator.GenerateProxy(metadata, fileName);
+			proxyGenerator.GenerateProxy(metadata, fileName.Path);
 			
 			project.AddServiceReferenceProxyFile(fileName);
 			

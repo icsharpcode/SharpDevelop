@@ -10,8 +10,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		string ServiceReferencesFolder { get; }
 		ICodeDomProvider CodeDomProvider { get; }
 		
-		string GetServiceReferenceFileName(string serviceReferenceName);
-		void AddServiceReferenceProxyFile(string fileName);
+		ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName);
+		void AddServiceReferenceProxyFile(ServiceReferenceFileName fileName);
 		void Save();
 	}
 }

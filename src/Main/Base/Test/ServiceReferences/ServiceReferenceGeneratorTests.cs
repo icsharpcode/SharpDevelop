@@ -29,20 +29,38 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			generator = new ServiceReferenceGenerator(fakeProject, fakeProxyGenerator, fakeFileSystem);
 		}
 		
-		void SetServiceReferenceFileName(string serviceReferenceName, string fileName)
+		void SetServiceReferenceFileName(string serviceReferenceName, ServiceReferenceFileName fileName)
 		{
 			fakeProject.Stub(p => p.GetServiceReferenceFileName(serviceReferenceName)).Return(fileName);
+		}
+		
+		ServiceReferenceFileName CreateProxyFileName(string serviceReferencesFolder, string serviceName)
+		{
+			return new ServiceReferenceFileName(serviceReferencesFolder, serviceName);
+		}
+		
+		ServiceReferenceFileName AddProxyFileNameForServiceName(string serviceName)
+		{
+			return AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", serviceName);
+		}
+		
+		ServiceReferenceFileName AddProxyFileNameForServiceName(string serviceReferencesFolder, string serviceName)
+		{
+			ServiceReferenceFileName proxyFileName = CreateProxyFileName(serviceReferencesFolder, serviceName);
+			SetServiceReferenceFileName(serviceName, proxyFileName);
+			return proxyFileName;
 		}
 		
 		[Test]
 		public void AddServiceReference_GeneratesServiceReference_MetadataPassedToProxyGenerator()
 		{
 			CreateGenerator();
-			string expectedProxyFileName = @"d:\projects\MyProject\Service References\MyServiceRef\Reference.cs";
-			SetServiceReferenceFileName("MyServiceRef", expectedProxyFileName);
+			ServiceReferenceFileName proxyFileName = 
+				AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
 			generator.Namespace = "MyServiceRef";
 			
 			generator.AddServiceReference(metadata);
+			string expectedProxyFileName = @"d:\projects\MyProject\Service References\MyServiceRef\Reference.cs";
 			
 			fakeProxyGenerator.AssertWasCalled(p => p.GenerateProxy(metadata, expectedProxyFileName));
 		}
@@ -51,8 +69,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void AddServiceReference_ServiceReferenceDoesNotExist_ServiceReferenceFolderCreated()
 		{
 			CreateGenerator();
-			string proxyFileName = @"d:\projects\MyProject\Service References\MyService1\Reference.cs";
-			SetServiceReferenceFileName("MyService1", proxyFileName);
+			AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyService1");
 			generator.Namespace = "MyService1";
 			
 			generator.AddServiceReference(metadata);
@@ -66,8 +83,8 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void AddServiceReference_GeneratesServiceReference_ServiceReferenceProxyFileAddedToProject()
 		{
 			CreateGenerator();
-			string expectedProxyFileName = @"d:\projects\MyProject\Service References\MyServiceRef\Reference.cs";
-			SetServiceReferenceFileName("MyServiceRef", expectedProxyFileName);
+			ServiceReferenceFileName expectedProxyFileName = 
+				AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
 			generator.Namespace = "MyServiceRef";
 			
 			generator.AddServiceReference(metadata);
@@ -79,6 +96,8 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void AddServiceReference_GeneratesServiceReference_ProjectIsSaved()
 		{
 			CreateGenerator();
+			AddProxyFileNameForServiceName("MyServiceRef");
+			generator.Namespace = "MyServiceRef";
 			
 			generator.AddServiceReference(metadata);
 			

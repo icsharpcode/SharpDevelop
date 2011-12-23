@@ -42,22 +42,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public ICodeDomProvider CodeDomProvider { get; private set; }
 		
-		public string GetServiceReferenceFileName(string serviceReferenceName)
+		public ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName)
 		{
-			return Path.Combine(ServiceReferencesFolder, serviceReferenceName, "Reference.cs");
+			return new ServiceReferenceFileName(ServiceReferencesFolder, serviceReferenceName);
 		}
 		
-		public void AddServiceReferenceProxyFile(string fileName)
+		public void AddServiceReferenceProxyFile(ServiceReferenceFileName fileName)
 		{
 			AddServiceReferenceFileToProject(fileName);
 			AddServiceReferencesItemToProject();
 			AddServiceReferenceItemToProject(fileName);
 		}
 		
-		void AddServiceReferenceFileToProject(string fileName)
+		void AddServiceReferenceFileToProject(ServiceReferenceFileName fileName)
 		{
 			var projectItem = new FileProjectItem(project, ItemType.Compile);
-			projectItem.FileName = fileName;
+			projectItem.FileName = fileName.Path;
 			AddProjectItemToProject(projectItem);
 		}
 		
@@ -73,12 +73,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			AddProjectItemToProject(projectItem);
 		}
 		
-		void AddServiceReferenceItemToProject(string fileName)
+		void AddServiceReferenceItemToProject(ServiceReferenceFileName fileName)
 		{
 			var projectItem = new ServiceReferenceProjectItem(project);
-			string directory = Path.GetDirectoryName(fileName);
-			string serviceName = Path.GetFileName(directory);
-			projectItem.Include = serviceName;
+			projectItem.Include = fileName.ServiceName;
 			AddProjectItemToProject(projectItem);
 		}
 		

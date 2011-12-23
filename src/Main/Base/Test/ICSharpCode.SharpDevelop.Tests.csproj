@@ -99,6 +99,7 @@
     <Compile Include="ServiceReferences\ItemTypeTests.cs" />
     <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />
     <Compile Include="ServiceReferences\ProjectWithServiceReferencesTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceFileNameTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceProxyGeneratorTests.cs" />

@@ -277,6 +277,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ProjectWithServiceReferences.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomBuilder.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileName.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileSystem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceProxyGenerator.cs" />
