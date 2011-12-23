@@ -56,6 +56,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			return msbuildProject.GetItemsOfType(ItemType.ServiceReferences).SingleOrDefault() as ServiceReferencesProjectItem;
 		}
 		
+		ServiceReferenceProjectItem GetFirstWCFMetadataStorageItemInMSBuildProject()
+		{
+			return msbuildProject.GetItemsOfType(ItemType.ServiceReference).SingleOrDefault() as ServiceReferenceProjectItem;
+		}
+		
 		[Test]
 		public void ServiceReferencesFolder_ProjectHasNoServiceReferences_ReturnsServiceReferencesFolderAsProjectSubFolder()
 		{
@@ -126,6 +131,19 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferencesProjectItem item = GetFirstWCFMetadataItemInMSBuildProject();
 			
 			Assert.AreEqual("Service References", item.Include);
+		}
+		
+		[Test]
+		public void AddServiceReferenceProxyFile_ProjectHasNoServiceReferences_WCFMetadataStorageItemAddedToProjectForServiceReferencesFolder()
+		{
+			CreateProjectWithMSBuildProject();
+			
+			string proxyFileName = @"d:\projects\MyProject\Service References\Service1\Reference.cs";
+			project.AddServiceReferenceProxyFile(proxyFileName);
+			
+			ProjectItem item = GetFirstWCFMetadataStorageItemInMSBuildProject();
+			
+			Assert.AreEqual("Service1", item.Include);
 		}
 	}
 }

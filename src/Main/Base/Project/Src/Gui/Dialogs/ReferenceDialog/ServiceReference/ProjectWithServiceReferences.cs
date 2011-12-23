@@ -51,6 +51,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			AddServiceReferenceFileToProject(fileName);
 			AddServiceReferencesItemToProject();
+			AddServiceReferenceItemToProject(fileName);
 		}
 		
 		void AddServiceReferenceFileToProject(string fileName)
@@ -69,6 +70,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			var projectItem = new ServiceReferencesProjectItem(project);
 			projectItem.Include = "Service References";
+			AddProjectItemToProject(projectItem);
+		}
+		
+		void AddServiceReferenceItemToProject(string fileName)
+		{
+			var projectItem = new ServiceReferenceProjectItem(project);
+			string directory = Path.GetDirectoryName(fileName);
+			string serviceName = Path.GetFileName(directory);
+			projectItem.Include = serviceName;
 			AddProjectItemToProject(projectItem);
 		}
 		

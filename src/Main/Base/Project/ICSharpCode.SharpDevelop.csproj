@@ -338,6 +338,7 @@
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
     <Compile Include="Src\Project\IProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
+    <Compile Include="Src\Project\Items\ServiceReferenceProjectItem.cs" />
     <Compile Include="Src\Project\Items\ServiceReferencesProjectItem.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildAdditionalLogger.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildLoggerFilter.cs" />

@@ -26,13 +26,25 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		}
 		
 		[Test]
-		public void Create_ItemTypeIsWCFMetadata_ReturnsServiceReferenceProjectItem()
+		public void CreateProjectItem_ItemTypeIsWCFMetadata_ReturnsServiceReferencesProjectItem()
 		{
 			CreateProject();
 			CreateProjectItemBackendStore();
 			backendStore.ItemType = new ItemType("WCFMetadata");
 			
 			var projectItem = project.CreateProjectItem(backendStore) as ServiceReferencesProjectItem;
+			
+			Assert.IsNotNull(projectItem);
+		}
+		
+		[Test]
+		public void CreateProjectItem_ItemTypeIsWCFMetadataStorage_ReturnsServiceReferenceProjectItem()
+		{
+			CreateProject();
+			CreateProjectItemBackendStore();
+			backendStore.ItemType = new ItemType("WCFMetadataStorage");
+			
+			var projectItem = project.CreateProjectItem(backendStore) as ServiceReferenceProjectItem;
 			
 			Assert.IsNotNull(projectItem);
 		}
