@@ -46,6 +46,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public ParamsAttribute(params object[] x) {}
 	}
 	
+	[Double(1)]
+	public class DoubleAttribute : Attribute
+	{
+		public DoubleAttribute(double val) {}
+	}
+	
 	public unsafe class DynamicTest
 	{
 		public dynamic SimpleProperty { get; set; }

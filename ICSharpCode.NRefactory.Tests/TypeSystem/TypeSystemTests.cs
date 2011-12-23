@@ -612,5 +612,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.String", rr.Input.Type.FullName);
 			Assert.AreEqual("Test", rr.Input.ConstantValue);
 		}
+		
+		[Test]
+		public void DoubleAttribute_ImplicitNumericConversion()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(DoubleAttribute)).GetDefinition();
+			var arg = type.Attributes.Single().PositionalArguments.ElementAt(0);
+			Assert.AreEqual("System.Double", arg.Type.ReflectionName);
+			Assert.AreEqual(1.0, arg.ConstantValue);
+		}
 	}
 }
