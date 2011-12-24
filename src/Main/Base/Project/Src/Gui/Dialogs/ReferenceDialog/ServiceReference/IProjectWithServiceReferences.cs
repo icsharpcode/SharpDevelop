@@ -11,7 +11,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ICodeDomProvider CodeDomProvider { get; }
 		
 		ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName);
+		ServiceReferenceMapFileName GetServiceReferenceMapFileName(string serviceReferenceName);
 		void AddServiceReferenceProxyFile(ServiceReferenceFileName fileName);
+		void AddServiceReferenceMapFile(ServiceReferenceMapFileName fileName);
 		void Save();
 	}
 }

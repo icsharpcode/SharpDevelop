@@ -37,14 +37,14 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		}
 		
 		[Test]
-		public void GenerateProxy_ProxyToBeGeneratedForMetadata_CodeGeneratedFromCodeDomForProxyFileInProjectSubFolder()
+		public void GenerateProxyFile_ProxyToBeGeneratedForMetadata_CodeGeneratedFromCodeDomForProxyFileInProjectSubFolder()
 		{
 			CreateProxyGenerator();
 			CodeCompileUnit compileUnit = CreateCompileUnitToReturnFromCodeDomBuilder(metadata);
 			proxyGenerator.ServiceReferenceNamespace = "Test";
 			string expectedProxyFileName = @"d:\projects\MyProject\Service References\Test\Service1\Reference.cs";
 			
-			proxyGenerator.GenerateProxy(metadata, expectedProxyFileName);
+			proxyGenerator.GenerateProxyFile(metadata, expectedProxyFileName);
 			
 			fakeCodeDomProvider.AssertWasCalled(p => p.GenerateCodeFromCompileUnit(compileUnit, expectedProxyFileName));
 		}

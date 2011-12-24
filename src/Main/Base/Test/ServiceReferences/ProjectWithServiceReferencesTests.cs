@@ -4,6 +4,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
@@ -61,6 +62,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			return msbuildProject.GetItemsOfType(ItemType.ServiceReference).SingleOrDefault() as ServiceReferenceProjectItem;
 		}
 		
+		FileProjectItem GetFileFromMSBuildProject(string fileName)
+		{
+			return msbuildProject.Items.Single(item => item.FileName == fileName) as FileProjectItem;
+		}
+		
 		[Test]
 		public void ServiceReferencesFolder_ProjectHasNoServiceReferences_ReturnsServiceReferencesFolderAsProjectSubFolder()
 		{
@@ -110,7 +116,10 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			ProjectItem item = GetFirstServiceReferenceFileInMSBuildProject(proxyFileName);
 			
+			string dependentUpon = item.GetMetadata("DependentUpon");
+			
 			Assert.AreEqual(ItemType.Compile, item.ItemType);
+			Assert.AreEqual("Reference.svcmap", dependentUpon);
 		}
 		
 		[Test]
@@ -147,6 +156,37 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ProjectItem item = GetFirstWCFMetadataStorageItemInMSBuildProject();
 			
 			Assert.AreEqual("Service1", item.Include);
+		}
+		
+		[Test]
+		public void GetServiceReferenceMapFileName_ProjectHasNoServiceReferences_ReturnsMapFileNameInServiceReferencesFolderWithSubFolderNamedAfterServiceReference()
+		{
+			CreateProject();
+			SetProjectDirectory(@"d:\projects\MyProject");
+			
+			ServiceReferenceMapFileName fileName = project.GetServiceReferenceMapFileName("Service1");
+			string expectedFileName = @"d:\projects\MyProject\Service References\Service1\Reference.svcmap";
+			
+			Assert.AreEqual(expectedFileName, fileName.Path);
+		}
+		
+		[Test]
+		public void AddServiceReferenceMapFile_ProjectHasNoServiceReferences_ServiceReferenceMapAddedToProject()
+		{
+			CreateProjectWithMSBuildProject();
+			
+			var mapFileName = new ServiceReferenceMapFileName(@"d:\projects\MyProject\Service References", "Service1");
+			project.AddServiceReferenceMapFile(mapFileName);
+			
+			string fileName = @"d:\projects\MyProject\Service References\Service1\Reference.svcmap";
+			FileProjectItem item = GetFileFromMSBuildProject(fileName);
+			
+			string lastGenOutput = item.GetMetadata("LastGenOutput");
+			string generator = item.GetMetadata("Generator");
+			
+			Assert.AreEqual(ItemType.None, item.ItemType);
+			Assert.AreEqual("Reference.cs", lastGenOutput);
+			Assert.AreEqual("WCF Proxy Generator", generator);
 		}
 	}
 }

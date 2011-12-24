@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public string ServiceReferenceNamespace { get; set; }
 		
-		public void GenerateProxy(MetadataSet metadata, string proxyFileName)
+		public void GenerateProxyFile(MetadataSet metadata, string proxyFileName)
 		{
 			CodeCompileUnit compileUnit = codeDomBuilder.GenerateCompileUnit(metadata);
 			GenerateProxy(compileUnit, proxyFileName);

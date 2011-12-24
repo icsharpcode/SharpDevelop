@@ -2,14 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ServiceModel.Description;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	public interface IServiceReferenceProxyGenerator
+	public class MetadataFile
 	{
-		string ServiceReferenceNamespace { get; set; }
-		
-		void GenerateProxyFile(MetadataSet metadata, string proxyFileName);
+		public MetadataFile()
+		{
+		}
 	}
 }

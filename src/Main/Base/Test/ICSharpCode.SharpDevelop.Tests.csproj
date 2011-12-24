@@ -101,6 +101,8 @@
     <Compile Include="ServiceReferences\ProjectWithServiceReferencesTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceFileNameTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceGeneratorTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceMapFileTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceMapFileGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceProxyGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />

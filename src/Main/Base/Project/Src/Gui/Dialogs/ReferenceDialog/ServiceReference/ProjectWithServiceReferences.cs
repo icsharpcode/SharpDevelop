@@ -47,6 +47,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return new ServiceReferenceFileName(ServiceReferencesFolder, serviceReferenceName);
 		}
 		
+		public ServiceReferenceMapFileName GetServiceReferenceMapFileName(string serviceReferenceName)
+		{
+			return new ServiceReferenceMapFileName(ServiceReferencesFolder, serviceReferenceName);
+		}
+		
 		public void AddServiceReferenceProxyFile(ServiceReferenceFileName fileName)
 		{
 			AddServiceReferenceFileToProject(fileName);
@@ -58,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			var projectItem = new FileProjectItem(project, ItemType.Compile);
 			projectItem.FileName = fileName.Path;
+			projectItem.DependentUpon = "Reference.svcmap";
 			AddProjectItemToProject(projectItem);
 		}
 		
@@ -83,6 +89,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public void Save()
 		{
 			project.Save();
+		}
+		
+		public void AddServiceReferenceMapFile(ServiceReferenceMapFileName fileName)
+		{
+			var projectItem = new ServiceReferenceMapFileProjectItem(project, fileName.Path);
+			AddProjectItemToProject(projectItem);
 		}
 	}
 }

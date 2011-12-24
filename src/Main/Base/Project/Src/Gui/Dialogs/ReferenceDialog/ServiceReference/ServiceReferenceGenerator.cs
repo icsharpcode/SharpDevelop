@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	public class ServiceReferenceGenerator
 	{
 		IProjectWithServiceReferences project;
-		IServiceReferenceProxyGenerator proxyGenerator;
+		IServiceReferenceFileGenerator fileGenerator;
 		IFileSystem fileSystem;
 		
 		public ServiceReferenceGenerator(IProject project)
@@ -23,18 +23,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public ServiceReferenceGenerator(IProjectWithServiceReferences project)
 			: this(
 				project,
-				new ServiceReferenceProxyGenerator(project.CodeDomProvider),
+				new ServiceReferenceFileGenerator(project.CodeDomProvider),
 				new ServiceReferenceFileSystem())
 		{
 		}
 		
 		public ServiceReferenceGenerator(
 			IProjectWithServiceReferences project,
-			IServiceReferenceProxyGenerator proxyGenerator,
+			IServiceReferenceFileGenerator fileGenerator,
 			IFileSystem fileSystem)
 		{
 			this.project = project;
-			this.proxyGenerator = proxyGenerator;
+			this.fileGenerator = fileGenerator;
 			this.fileSystem = fileSystem;
 		}
 		
@@ -47,12 +47,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void GenerateServiceReferenceProxy(MetadataSet metadata)
 		{
-			ServiceReferenceFileName fileName = project.GetServiceReferenceFileName(Namespace);
-			CreateFolderForFileIfFolderMissing(fileName.Path);
+			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(Namespace);
+			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
-			proxyGenerator.GenerateProxy(metadata, fileName.Path);
+			fileGenerator.GenerateProxyFile(metadata, referenceFileName.Path);
 			
-			project.AddServiceReferenceProxyFile(fileName);
+			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(Namespace);
+			var mapFile = new ServiceReferenceMapFile(mapFileName);
+			fileGenerator.GenerateServiceReferenceMapFile(mapFile);
+			
+			project.AddServiceReferenceProxyFile(referenceFileName);
+			project.AddServiceReferenceMapFile(mapFileName);
 			
 			project.Save();
 		}
