@@ -271,7 +271,6 @@
     <Compile Include="Refactoring\TextReplaceAction.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
-    <Compile Include="Resolver\ConversionResolveResult.cs" />
     <Compile Include="Resolver\Conversions.cs" />
     <Compile Include="Resolver\CSharpAstResolver.cs" />
     <Compile Include="Resolver\CSharpInvocationResolveResult.cs" />

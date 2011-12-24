@@ -1109,7 +1109,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (typeCode == KnownTypeCode.Object) {
 					// boxed value type
 					IType boxedTyped = ReadCustomAttributeFieldOrPropType();
-					return ReadElem(boxedTyped);
+					ResolveResult elem = ReadElem(boxedTyped);
+					if (elem.IsCompileTimeConstant && elem.ConstantValue == null)
+						return new ConstantResolveResult(elementType, null);
+					else
+						return new ConversionResolveResult(elementType, elem, Conversion.BoxingConversion);
 				} else if (typeCode == KnownTypeCode.Type) {
 					return new TypeOfResolveResult(underlyingType, ReadType());
 				} else {

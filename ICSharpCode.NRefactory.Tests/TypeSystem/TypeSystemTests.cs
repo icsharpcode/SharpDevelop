@@ -571,7 +571,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return crr.Input;
 		}
 		
-		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		[Test]
 		public void ParamsAttribute_Integer()
 		{
 			ResolveResult rr = Unbox(GetParamsAttributeArgument(0));
@@ -579,7 +579,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(1, rr.ConstantValue);
 		}
 		
-		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		[Test]
 		public void ParamsAttribute_Enum()
 		{
 			ResolveResult rr = Unbox(GetParamsAttributeArgument(1));
@@ -587,7 +587,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual((int)StringComparison.CurrentCulture, rr.ConstantValue);
 		}
 		
-		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		[Test]
 		public void ParamsAttribute_NullReference()
 		{
 			ResolveResult rr = GetParamsAttributeArgument(2);
@@ -596,7 +596,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsNull(rr.ConstantValue);
 		}
 		
-		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		[Test]
 		public void ParamsAttribute_Double()
 		{
 			ResolveResult rr = Unbox(GetParamsAttributeArgument(3));
@@ -604,7 +604,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(4.0, rr.ConstantValue);
 		}
 		
-		[Test, Ignore("CecilLoader does not create ConversionResolveResult")]
+		[Test]
 		public void ParamsAttribute_String()
 		{
 			ConversionResolveResult rr = (ConversionResolveResult)GetParamsAttributeArgument(4);
