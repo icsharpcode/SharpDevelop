@@ -65,7 +65,8 @@
 		</Menu>
 		<TabControl
 			Grid.Row="1"
-			IsEnabled="{Binding MainTabEnable}">
+			IsEnabled="{Binding MainTabEnable}"
+			SelectedItem="{Binding SelectedTabItem}">
 			<!-- It is enabled once assembly is loaded. -->
 			<TabItem
 				Header="{Binding TabDependencyGraph}">
@@ -238,6 +239,7 @@
 			-->
 
 			<TabItem
+				Name="TreeMapTabItem"
 				Header="{Binding TabMetrics}"
 				IsEnabled="{Binding MetrixTabEnable}">
 				<TabItem.Resources>
@@ -310,8 +312,8 @@
 								ItemsSource="{Binding Source={StaticResource Metrics}}"
 								SelectedItem="{Binding SelectedMetrics}"
 								SelectedIndex="{Binding SelectedMetricsIndex}"
-								Command="{Binding ShowTreeMap}"
->
+								Command="{Binding ShowTreeMap}">
+
 								<util:ComboBoxWithCommand.ItemTemplate>
 									<DataTemplate>
 										<Label  Content="{Binding   Path=.,Mode=OneWay,

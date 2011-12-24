@@ -585,7 +585,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// </summary>
 		/// <param name="name">A name with a number of generics parameters</param>
 		/// <returns>A name without generics parameters</returns>
-		private string StripGenericName(string name)
+		private static  string StripGenericName(string name)
 		{
 			return name.IndexOf('`') != -1 ? name.Remove(name.IndexOf('`')) : name;
 		}

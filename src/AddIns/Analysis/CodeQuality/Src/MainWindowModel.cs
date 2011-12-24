@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
@@ -75,6 +76,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public string TabDependencyGraph {get; private set;}
 		public string TabDependencyMatrix {get; private set;}
 		public string TabMetrics {get;private set;}
+		
+		TabItem selectedTabItem;
+		
+		public TabItem SelectedTabItem {
+			get { return selectedTabItem; }
+			set { selectedTabItem = value;
+				ResetTreeMap();
+				selectedMetricsLevel = 0;
+				base.RaisePropertyChanged(() => SelectedTabItem);}
+		}
 		
 		#endregion
 		
@@ -197,7 +208,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		
-		#region MetricsLevel Combo
+		#region MetricsLevel Combo Left ComboBox
 		
 		public MetricsLevel MetricsLevel {
 			get {return MetricsLevel;}
@@ -214,6 +225,32 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
+		#endregion
+		
+			#region Metrics Combo > Right Combobox
+		
+		public Metrics Metrics
+		{
+			get {return Metrics;}
+		}
+		
+		Metrics selectedMetrics;
+		
+		public Metrics SelectedMetrics {
+			get { return selectedMetrics; }
+			set { selectedMetrics = value;
+				base.RaisePropertyChanged(() =>this.SelectedMetrics);
+			}
+		}
+		
+		int selectedMetricsIndex;
+		
+		public int SelectedMetricsIndex {
+			get { return selectedMetricsIndex; }
+			set {
+				selectedMetricsIndex = value;
+				base.RaisePropertyChanged(() =>this.SelectedMetricsIndex);}
+		}
 		
 		#endregion
 		
@@ -247,38 +284,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		#endregion
 		
-		#region MetricsLevel Combo
-		
-		public Metrics Metrics
-		{
-			get {return Metrics;}
-		}
-		
-		Metrics selectedMetrics;
-		
-		public Metrics SelectedMetrics {
-			get { return selectedMetrics; }
-			set { selectedMetrics = value;
-				base.RaisePropertyChanged(() =>this.SelectedMetrics);
-			}
-		}
-		
-		int selectedMetricsIndex;
-		
-		public int SelectedMetricsIndex {
-			get { return selectedMetricsIndex; }
-			set {
-				selectedMetricsIndex = value;
-				base.RaisePropertyChanged(() =>this.SelectedMetricsIndex);}
-		}
-		
-		#endregion
-		
+	
 		#region ShowTreeMap Treemap
 		
 		void ResetTreeMap()
 		{
-			Nodes.Clear();
+			if (Nodes != null) {
+				Nodes.Clear();
+			}
 			metricsIsActive = false;
 		}
 		
@@ -326,27 +339,29 @@ namespace ICSharpCode.CodeQualityAnalysis
 				case MetricsLevel.Namespace:
 					var n1 = SelectedNode as Namespace;
 					list = from x in n1.GetAllMethods() select x;
-					Console.WriteLine ("NameSpace List {0}",list.Count());
-					
 					break;
+					//type has no Cyclomatics
 				case MetricsLevel.Type:
 					var n2 = SelectedNode as Namespace;
 					list = n2.GetAllTypes();
 					var i1 = list.Count();
-					Console.WriteLine ("Type List {0}",list.Count());
 					break;
 				case MetricsLevel.Method:
 					list  = from ns in MainModule.Namespaces
 						from type in ns.Types
 						from method in type.Methods
 						select method;
-					Console.WriteLine ("method List {0}",list.Count());
 					break;
 				default:
 					throw new Exception("Invalid value for MetricsLevel");
 			}
-//			var nodes = new ObservableCollection<INode>(list.Distinct());
 			var nodes = new ObservableCollection<INode>(list);
+			foreach (INode element in nodes) 
+			{
+				
+				var t = element as Namespace;
+				//Console.WriteLine(t.CyclomaticComplexity);
+			}
 			return nodes;
 		}
 		
@@ -364,5 +379,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		#endregion
+		
+		
+		
 	}
 }
