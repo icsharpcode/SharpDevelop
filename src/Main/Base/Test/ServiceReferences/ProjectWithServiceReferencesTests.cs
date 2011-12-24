@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			ProjectItem item = GetFirstWCFMetadataStorageItemInMSBuildProject();
 			
-			Assert.AreEqual("Service1", item.Include);
+			Assert.AreEqual(@"Service References\Service1", item.Include);
 		}
 		
 		[Test]

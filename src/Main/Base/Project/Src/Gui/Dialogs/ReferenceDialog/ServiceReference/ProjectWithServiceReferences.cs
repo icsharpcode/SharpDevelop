@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void AddServiceReferenceItemToProject(ServiceReferenceFileName fileName)
 		{
 			var projectItem = new ServiceReferenceProjectItem(project);
-			projectItem.Include = fileName.ServiceName;
+			projectItem.Include = @"Service References\" + fileName.ServiceName;
 			AddProjectItemToProject(projectItem);
 		}
 		
