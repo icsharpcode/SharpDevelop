@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -163,11 +163,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void InitializeReferences()
 		{
+			InitializeReferences(new IProjectContent[0]);
+		}
+		
+		public void InitializeReferences(IProjectContent[] existingContents)
+		{
 			bool changed = false;
 			if (initialized) {
 				if (missingNames != null) {
 					for (int i = 0; i < missingNames.Count; i++) {
-						IProjectContent content = registry.GetExistingProjectContent(missingNames[i]);
+						IProjectContent content = GetExistingProjectContent(existingContents, missingNames[i]);
 						if (content != null) {
 							changed = true;
 							lock (ReferencedContents) {
@@ -198,6 +203,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (changed)
 				OnReferencedContentsChanged(EventArgs.Empty);
+		}
+		
+		IProjectContent GetExistingProjectContent(IProjectContent[] existingProjectContents, DomAssemblyName fullAssemblyName)
+		{
+			IProjectContent content = registry.GetExistingProjectContent(fullAssemblyName);
+			if (content != null) {
+				return content;
+			} else if (existingProjectContents.Any()) {
+				return GetExistingProjectContentForShortName(existingProjectContents, fullAssemblyName.ShortName);
+			}
+			return null;
+		}
+		
+		IProjectContent GetExistingProjectContentForShortName(IProjectContent[] existingProjectContents, string shortName)
+		{
+			return existingProjectContents.FirstOrDefault(pc => pc.AssemblyName == shortName);
 		}
 		
 		public override string ToString()
