@@ -22,7 +22,7 @@
 				id="ManagePackages"
 				label="Manage Packages..."
 				insertafter="AddWebReference"
-				insertbefore="AddSeparator"
+				insertbefore="ShowServiceInBrowser"
 				class="ICSharpCode.PackageManagement.ManagePackagesCommand"/>		
 		</Condition>
 	</Path>

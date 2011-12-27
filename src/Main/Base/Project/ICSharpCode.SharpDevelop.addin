@@ -305,21 +305,15 @@
 			<MenuItem id    = "AddReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+			<MenuItem id    = "AddServiceReference"
+			          label = "Add Service Reference"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
-			<!--label = "${res:ProjectComponent.ContextMenu.AddWebReference}" -->
-			<Condition name = "WriteableProject">
-				<MenuItem id    = "ShowServiceinBrowser"
-				          label = "Show Service in Browser"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowServiceInBrowser"/>
-			</Condition>
-			
-			<Condition name = "WriteableProject">
-				<MenuItem id    = "AddServiceReference"
-				          label = "Add Service Reference"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
-			</Condition>
+			<MenuItem id    = "ShowServiceInBrowser"
+			          label = "Show Service in Browser"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowServiceInBrowser"/>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 		</Condition>
 		
@@ -384,6 +378,9 @@
 			<MenuItem id    = "AddReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+			<MenuItem id    = "AddServiceReference"
+			          label = "Add Service Reference"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
@@ -710,6 +707,9 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ServiceReferencesFolderNode">
+		<MenuItem id    = "AddServiceReference"
+		          label = "Add Service Reference"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "RemoveMissing"
 			          label = "${res:Global.RemoveButtonText}"
@@ -721,12 +721,12 @@
 			<Not>
 				<Condition name = "Ownerstate" ownerstate = "Missing"/>
 			</Not>
-			<MenuItem id = "Delete"
+			<MenuItem id    = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
-			          type = "Item"
+			          type  = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
-			<MenuItem id = "Rename"
+			<MenuItem id       = "Rename"
 			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
 			          shortcut = "F2"
 			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>

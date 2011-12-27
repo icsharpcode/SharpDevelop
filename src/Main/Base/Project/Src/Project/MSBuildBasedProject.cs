@@ -181,6 +181,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				case "WCFMetadata":
 					return new ServiceReferencesProjectItem(this, item);
 					
+				case "WCFMetadataStorage":
+					return new ServiceReferenceProjectItem(this, item);
+					
 				default:
 					if (this.AvailableFileItemTypes.Contains(item.ItemType)
 					    || SafeFileExists(this.Directory, item.EvaluatedInclude))
