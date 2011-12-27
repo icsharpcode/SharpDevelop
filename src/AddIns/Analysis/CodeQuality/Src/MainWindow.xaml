@@ -307,7 +307,7 @@
 							</util:ComboBoxWithCommand>
 							
 							<TextBlock  Margin="4,0,0,0" Text="Metric: " />
-							
+							<!--
 							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
 								ItemsSource="{Binding Source={StaticResource Metrics}}"
 								SelectedItem="{Binding SelectedMetrics}"
@@ -325,7 +325,17 @@
 									</DataTemplate>
 								</util:ComboBoxWithCommand.ItemTemplate>
 							</util:ComboBoxWithCommand>
-				
+				-->
+							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
+								ItemsSource="{Binding ItemsWithCommand}"
+								SelectedItem="{Binding SelectedItemWithCommand}"
+								Command="{Binding ExecuteSelectedItemWithCommand}">
+								<util:ComboBoxWithCommand.ItemTemplate>
+									<DataTemplate>
+									<Label Content="{Binding Description}"></Label>
+									</DataTemplate>
+								</util:ComboBoxWithCommand.ItemTemplate>
+							</util:ComboBoxWithCommand>
 						</ToolBar>
 					</ToolBarTray>
 					

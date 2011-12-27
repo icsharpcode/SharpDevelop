@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
+using ICSharpCode.CodeQualityAnalysis.Utility;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -64,6 +65,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			
 			ActivateMetrics = new RelayCommand(ActivateMetricsExecute);
 			ShowTreeMap = new RelayCommand(ShowTreemapExecute,CanActivateTreemap);
+			
+			ExecuteSelectedItemWithCommand = new RelayCommand (ExecuteSelectedItem);
 		}
 		
 		
@@ -193,7 +196,13 @@ namespace ICSharpCode.CodeQualityAnalysis
 		private ObservableCollection<INode> nodes;
 		
 		public ObservableCollection<INode> Nodes {
-			get { return nodes; }
+			get {
+				if (nodes == null)
+				{
+					nodes = new ObservableCollection<INode>();
+				}
+				return nodes;
+			}
 			set { nodes = value;
 				base.RaisePropertyChanged(() =>this.Nodes);}
 		}
@@ -219,7 +228,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public MetricsLevel SelectedMetricsLevel {
 			get { return selectedMetricsLevel; }
 			set { selectedMetricsLevel = value;
-				SelectedMetricsIndex = 0;
 				base.RaisePropertyChanged(() =>this.SelectedMetricsLevel);
 				ResetTreeMap();
 			}
@@ -227,7 +235,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		#endregion
 		
-			#region Metrics Combo > Right Combobox
+		#region Metrics Combo > Right Combobox
 		
 		public Metrics Metrics
 		{
@@ -243,6 +251,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
+		/*
 		int selectedMetricsIndex;
 		
 		public int SelectedMetricsIndex {
@@ -251,6 +260,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				selectedMetricsIndex = value;
 				base.RaisePropertyChanged(() =>this.SelectedMetricsIndex);}
 		}
+		*/
 		
 		#endregion
 		
@@ -259,7 +269,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public ICommand ActivateMetrics {get;private set;}
 		
 		bool metricsIsActive;
-		
+		/*
 		void ActivateMetricsExecute ()
 		{
 			
@@ -280,18 +290,117 @@ namespace ICSharpCode.CodeQualityAnalysis
 					throw new Exception("Invalid value for MetricsLevel");
 			}
 		}
+		*/
 		
 		
 		#endregion
 		
+	#region testregion
+	
+	List<ItemWithCommand> itemsWithCommand;
+	
+	public List<ItemWithCommand> ItemsWithCommand {
+		get {
+			if (itemsWithCommand == null) {
+				itemsWithCommand = new List<ItemWithCommand>();
+			}
+			return itemsWithCommand;
+		}
+		set { itemsWithCommand = value;
+		base.RaisePropertyChanged(() => ItemsWithCommand);}
+	}
+		
+	void ActivateMetricsExecute ()
+	{
+		itemsWithCommand.Clear();
+		switch (SelectedMetricsLevel) {
+			case MetricsLevel.Assembly:
+				
+				break;
+			case MetricsLevel.Namespace:
+				
+				break;
+			case MetricsLevel.Type:
+				
+				break;
+			case MetricsLevel.Method:
+				ItemsWithCommand.Add(new ItemWithCommand()
+				                     {
+				                     	Description = "IL Instructions",
+				                     	Command = new RelayCommand (ExecuteMerhodIlInstructions)
+				                     });
+				ItemsWithCommand.Add(new ItemWithCommand()
+				                     {
+				                     	Description = "Cyclomatic Complexity",
+				                     	Command = new RelayCommand (ExecuteMethodComplexity)
+				                     });
+				ItemsWithCommand.Add(new ItemWithCommand()
+				                     {
+				                     	Description = "Variables",
+				                     	Command = new RelayCommand (ExecuteMethodVariables)
+				                     });
+				
+				break;
+			default:
+				throw new Exception("Invalid value for MetricsLevel");
+		}
+	}
+		
+		ItemWithCommand selectedItemWithCommand;
+		
+		public ItemWithCommand SelectedItemWithCommand {
+			get { return selectedItemWithCommand; }
+			set { selectedItemWithCommand = value;
+				base.RaisePropertyChanged(() => SelectedItemWithCommand);}
+		}
+		
+		private void ExecuteMerhodIlInstructions()
+		{
+			var t = new testclass(MainModule);
+			TreeValueProperty = "Instructions.Count";
+			Nodes = t.QueryMethod();
+		}
+		
+		private void ExecuteMethodComplexity ()
+		{
+			var t = new testclass(MainModule);
+			TreeValueProperty = Metrics.CyclomaticComplexity.ToString();
+			var tt = t.QueryMethod();
+			foreach (var element in tt) {
+				var m = element as Method;
+				Console.WriteLine("{0} - {1}",m.Name,m.CyclomaticComplexity);
+			}
+			Nodes = t.QueryMethod();
+		}
+	
+		
+		private void ExecuteMethodVariables ()
+		{
+			var t = new testclass(MainModule);
+			TreeValueProperty = Metrics.Variables.ToString();
+			Nodes = t.QueryMethod();
+		}
+			
+		public ICommand ExecuteSelectedItemWithCommand {get; private set;}
+		
+		void ExecuteSelectedItem()
+		{
+			SelectedItemWithCommand.Command.Execute(null);
+		}
+			
+			
+	#endregion
 	
 		#region ShowTreeMap Treemap
 		
 		void ResetTreeMap()
 		{
-			if (Nodes != null) {
-				Nodes.Clear();
-			}
+			
+			Nodes.Clear();
+			ItemsWithCommand.Clear();
+			
+			base.RaisePropertyChanged(() => Nodes);
+			base.RaisePropertyChanged(() => ItemsWithCommand);
 			metricsIsActive = false;
 		}
 		
@@ -379,8 +488,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		#endregion
+	}
+	
+	
+	public class ItemWithCommand
+	{
+		public ItemWithCommand()
+		{
+		}
 		
-		
-		
+		public string Description	{get; set;}
+		public ICommand Command {get; set;}	
 	}
 }
