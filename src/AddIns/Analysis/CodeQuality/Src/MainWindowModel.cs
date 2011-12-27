@@ -297,12 +297,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 	#region testregion
 	
-	List<ItemWithCommand> itemsWithCommand;
+	List<ItemWithAction> itemsWithCommand;
 	
-	public List<ItemWithCommand> ItemsWithCommand {
+	public List<ItemWithAction> ItemsWithCommand {
 		get {
 			if (itemsWithCommand == null) {
-				itemsWithCommand = new List<ItemWithCommand>();
+				itemsWithCommand = new List<ItemWithAction>();
 			}
 			return itemsWithCommand;
 		}
@@ -324,31 +324,34 @@ namespace ICSharpCode.CodeQualityAnalysis
 				
 				break;
 			case MetricsLevel.Method:
-				ItemsWithCommand.Add(new ItemWithCommand()
+				
+				ItemsWithCommand.Add(new ItemWithAction()
 				                     {
 				                     	Description = "IL Instructions",
-				                     	Command = new RelayCommand (ExecuteMerhodIlInstructions)
+				                     	Action = ExecuteMerhodIlInstructions
 				                     });
-				ItemsWithCommand.Add(new ItemWithCommand()
+				ItemsWithCommand.Add(new ItemWithAction()
 				                     {
 				                     	Description = "Cyclomatic Complexity",
-				                     	Command = new RelayCommand (ExecuteMethodComplexity)
+				                     	Action = ExecuteMethodComplexity
 				                     });
-				ItemsWithCommand.Add(new ItemWithCommand()
+				ItemsWithCommand.Add(new ItemWithAction()
 				                     {
 				                     	Description = "Variables",
-				                     	Command = new RelayCommand (ExecuteMethodVariables)
+				                     	Action = ExecuteMethodVariables
 				                     });
-				
+			
+//				var t = new testclass(MainModule);
+//				ItemsWithCommand = t.MethodList();
 				break;
 			default:
 				throw new Exception("Invalid value for MetricsLevel");
 		}
 	}
 		
-		ItemWithCommand selectedItemWithCommand;
+		ItemWithAction selectedItemWithCommand;
 		
-		public ItemWithCommand SelectedItemWithCommand {
+		public ItemWithAction SelectedItemWithCommand {
 			get { return selectedItemWithCommand; }
 			set { selectedItemWithCommand = value;
 				base.RaisePropertyChanged(() => SelectedItemWithCommand);}
@@ -385,7 +388,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		void ExecuteSelectedItem()
 		{
-			SelectedItemWithCommand.Command.Execute(null);
+			//SelectedItemWithCommand.Command.Execute(null);
+			SelectedItemWithCommand.Action.Invoke();
 		}
 			
 			
@@ -491,13 +495,13 @@ namespace ICSharpCode.CodeQualityAnalysis
 	}
 	
 	
-	public class ItemWithCommand
+	public class ItemWithAction
 	{
-		public ItemWithCommand()
+		public ItemWithAction()
 		{
 		}
 		
 		public string Description	{get; set;}
-		public ICommand Command {get; set;}	
+		public Action  Action {get; set;}	
 	}
 }

@@ -34,5 +34,54 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 				select method;
 			return new  ObservableCollection <INode>(list);
 		}
+		
+		public List<ItemWithAction> MethodList()
+		{
+			List<ItemWithAction> itemsWithCommand = new List<ItemWithAction>();
+			itemsWithCommand.Add(new ItemWithAction()
+				                     {
+				                     	Description = "IL Instructions",
+				                     	Action = ExecuteMerhodIlInstructions
+				                     });
+				itemsWithCommand.Add(new ItemWithAction()
+				                     {
+				                     	Description = "Cyclomatic Complexity",
+				                     	Action = ExecuteMethodComplexity
+				                     });
+				itemsWithCommand.Add(new ItemWithAction()
+				                     {
+				                     	Description = "Variables",
+				                     	Action = ExecuteMethodVariables
+				                     });
+			return itemsWithCommand;
+		}
+		
+		
+		private void ExecuteMerhodIlInstructions()
+		{
+//			var t = new testclass(MainModule);
+//			TreeValueProperty = "Instructions.Count";
+//			Nodes = t.QueryMethod();
+		}
+		
+		private void ExecuteMethodComplexity ()
+		{
+//			var t = new testclass(MainModule);
+//			TreeValueProperty = Metrics.CyclomaticComplexity.ToString();
+//			var tt = t.QueryMethod();
+//			foreach (var element in tt) {
+//				var m = element as Method;
+//				Console.WriteLine("{0} - {1}",m.Name,m.CyclomaticComplexity);
+//			}
+//			Nodes = t.QueryMethod();
+		}
+	
+		
+		private void ExecuteMethodVariables ()
+		{
+//			var t = new testclass(MainModule);
+//			TreeValueProperty = Metrics.Variables.ToString();
+//			Nodes = t.QueryMethod();
+		}
 	}
 }
