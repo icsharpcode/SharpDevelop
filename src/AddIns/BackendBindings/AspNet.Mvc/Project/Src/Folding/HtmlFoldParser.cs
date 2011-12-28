@@ -51,7 +51,8 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			var fold = new HtmlElementFold() {
 				ElementName = htmlReader.Value,
-				StartOffset = htmlReader.Offset
+				StartOffset = htmlReader.Offset,
+				Line = htmlReader.Line
 			};
 			foldStack.Push(fold);
 		}
@@ -62,10 +63,17 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 				var fold = foldStack.Pop();
 				if (fold.ElementName == htmlReader.Value) {
 					fold.EndOffset = htmlReader.EndOffset;
-					folds.Add(fold);
+					AddFoldIfEndElementOnDifferentLineToStartElement(fold);
 				} else {
 					AddFoldForCompletedElement();
 				}
+			}
+		}
+		
+		void AddFoldIfEndElementOnDifferentLineToStartElement(HtmlElementFold fold)
+		{
+			if (htmlReader.Line > fold.Line) {
+				folds.Add(fold);
 			}
 		}
 		

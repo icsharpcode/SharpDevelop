@@ -113,6 +113,7 @@
     <Compile Include="Src\CodeTemplates\RazorCSharpEmptyViewTemplateTests.cs" />
     <Compile Include="Src\CodeTemplates\RazorCSharpListViewTemplateTests.cs" />
     <Compile Include="Src\Folding\CharacterReaderTests.cs" />
+    <Compile Include="Src\Folding\HtmlReaderTests.cs" />
     <Compile Include="Src\Folding\RazorHtmlFoldParserTests.cs" />
     <Compile Include="Src\Folding\HtmlElementFoldTests.cs" />
     <Compile Include="Src\Folding\RazorHtmlReaderTests.cs" />

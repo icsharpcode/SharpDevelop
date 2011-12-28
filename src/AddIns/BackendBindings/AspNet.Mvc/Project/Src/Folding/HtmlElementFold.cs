@@ -10,10 +10,6 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 	{
 		string elementName = String.Empty;
 		
-		public HtmlElementFold()
-		{
-		}
-		
 		public string ElementName {
 			get { return elementName; }
 			set {
@@ -26,6 +22,8 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			Name = String.Format("<{0}>", elementName);
 		}
+		
+		public int Line { get; set; }
 		
 		public override bool Equals(object obj)
 		{

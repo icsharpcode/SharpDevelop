@@ -177,5 +177,14 @@ namespace AspNet.Mvc.Tests.Folding
 			
 			CollectionAssert.AreEqual(expectedFolds, folds);
 		}
+		
+		[Test]
+		public void GetFolds_ScriptStartAndEndTagsOnSameLine_ReturnsNoFolds()
+		{
+			CreateParser();
+			GetFolds("<script></script>");
+			
+			Assert.AreEqual(0, folds.Count);
+		}
 	}
 }

@@ -57,7 +57,8 @@ namespace AspNet.Mvc.Tests.Folding
 			string text =
 				"@if (i<a || b>i) {\r\n" +
 				"    </a>\r\n" +
-				"    <p></p>\r\n" +
+				"    <p>\r\n" +
+				"    </p>\r\n" +
 				"}\r\n";
 
 			GetFolds(text);
@@ -66,7 +67,7 @@ namespace AspNet.Mvc.Tests.Folding
 				new HtmlElementFold() {
 					ElementName = "p",
 					StartOffset = 34,
-					EndOffset = 41
+					EndOffset = 47
 				}
 			};
 			

@@ -24,6 +24,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		public HtmlReader(CharacterReader reader)
 		{
 			this.reader = reader;
+			this.Line = 1;
 		}
 		
 		public string Value {
@@ -32,6 +33,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		
 		public int Offset { get; private set; }
 		public int Length { get; private set; }
+		public int Line { get; private set; }
 		
 		public int EndOffset {
 			get { return Offset + Length; }
@@ -77,7 +79,16 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		
 		bool ReadNextCharacter()
 		{
-			return reader.Read();
+			bool result = reader.Read();
+			UpdateLineCountIfNewLineCharacterRead();
+			return result;
+		}
+		
+		void UpdateLineCountIfNewLineCharacterRead()
+		{
+			if (reader.IsLineFeed()) {
+				Line++;
+			}
 		}
 		
 		bool IsElementStartCharacter()

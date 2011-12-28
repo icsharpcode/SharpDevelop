@@ -100,5 +100,10 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			return reader.Peek() == '%';
 		}
+		
+		public bool IsLineFeed()
+		{
+			return CurrentCharacter == '\n';
+		}
 	}
 }
