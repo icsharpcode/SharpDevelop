@@ -28,7 +28,12 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			CurrentCharacter = reader.Read();
 			CurrentCharacterOffset++;
+			OnCharacterRead();
 			return HasMoreCharactersToRead();
+		}
+		
+		protected virtual void OnCharacterRead()
+		{
 		}
 		
 		bool HasMoreCharactersToRead()
@@ -89,6 +94,11 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			for (int i = 0; i < howMany; ++i) {
 				Read();
 			}
+		}
+		
+		public bool IsNextCharacterPercentSign()
+		{
+			return reader.Peek() == '%';
 		}
 	}
 }

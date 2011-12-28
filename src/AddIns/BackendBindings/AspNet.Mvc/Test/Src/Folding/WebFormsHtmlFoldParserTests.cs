@@ -155,5 +155,27 @@ namespace AspNet.Mvc.Tests.Folding
 			
 			CollectionAssert.AreEqual(expectedFolds, folds);
 		}
+		
+		[Test]
+		public void GetFolds_ScriptTagAttributeHasAspxTagsInsideWithDoubleQuotes_ReturnsOneFoldIgnoringDoubleQuotesInsideScriptTagAttribute()
+		{
+			CreateParser();
+			
+			string text =
+				"<script src=\"<%: Url.Content(\"~/Scripts/jquery.js\") %>\" type=\"text/javascript\">\r\n" +
+				"</script>\r\n";
+			
+			GetFolds(text);
+			
+			var expectedFolds = new HtmlElementFold[] {
+				new HtmlElementFold() {
+					ElementName = "script",
+					StartOffset = 0,
+					EndOffset = 90
+				}
+			};
+			
+			CollectionAssert.AreEqual(expectedFolds, folds);
+		}
 	}
 }

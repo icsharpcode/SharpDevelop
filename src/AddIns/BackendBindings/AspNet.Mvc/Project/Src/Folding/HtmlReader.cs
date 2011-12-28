@@ -97,7 +97,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		
 		void ReadDoubleQuotedString()
 		{
-			ReadUntil(() => reader.IsDoubleQuote());
+			ReadUntil(() => IsLastDoubleQuoteOfString());
 		}
 		
 		void ReadUntil(Func<bool> match)
@@ -107,6 +107,14 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 					return;
 				}
 			}
+		}
+		
+		bool IsLastDoubleQuoteOfString()
+		{
+			if (reader.IsDoubleQuote()) {
+				return IsHtml();
+			}
+			return false;
 		}
 		
 		void ReadSingleQuotedString()

@@ -9,14 +9,22 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 {
 	public class SimpleWebFormsHtmlReader : HtmlReader
 	{
+		WebFormsMarkupCharacterReader reader;
+		
 		public SimpleWebFormsHtmlReader(string html)
-			: this(new CharacterReader(html))
+			: this(new WebFormsMarkupCharacterReader(html))
 		{
 		}
 		
-		public SimpleWebFormsHtmlReader(CharacterReader reader)
+		public SimpleWebFormsHtmlReader(WebFormsMarkupCharacterReader reader)
 			: base(reader)
 		{
+			this.reader = reader;
+		}
+		
+		protected override bool IsHtml()
+		{
+			return reader.IsHtml;
 		}
 	}
 }
