@@ -12,15 +12,20 @@ namespace AspNet.Mvc.Tests.Folding
 	{
 		RazorMarkupCharacterReader reader;
 		
-		void CreateReader(string html)
+		void CreateCSharpReader(string html)
 		{
-			reader = new RazorMarkupCharacterReader(html);
+			reader = new RazorMarkupCharacterReader(html, ".cshtml");
+		}
+		
+		void CreateVisualBasicReader(string html)
+		{
+			reader = new RazorMarkupCharacterReader(html, ".vbhtml");
 		}
 		
 		[Test]
 		public void IsHtml_CurrentCharacterIsAtStartOfHtml_ReturnsTrue()
 		{
-			CreateReader("<br/>");
+			CreateCSharpReader("<br/>");
 			
 			bool htmlCharacterRead = reader.IsHtml;
 			
@@ -28,9 +33,9 @@ namespace AspNet.Mvc.Tests.Folding
 		}
 		
 		[Test]
-		public void IsHtml_FirstCharacterReadIsRazorTransitionSymbol_ReturnsFalse()
+		public void IsHtml_FirstCharacterReadIsCSharpRazorTransitionSymbol_ReturnsFalse()
 		{
-			CreateReader("@model");
+			CreateCSharpReader("@model");
 			reader.Read();
 			
 			bool result = reader.IsHtml;
@@ -39,9 +44,9 @@ namespace AspNet.Mvc.Tests.Folding
 		}
 		
 		[Test]
-		public void IsHtml_ReadFirstRazorTransitionSymbolAfterParagraphTag_ReturnsFalse()
+		public void IsHtml_ReadFirstCSharpRazorTransitionSymbolAfterParagraphTag_ReturnsFalse()
 		{
-			CreateReader("<p>@model.Message</p>");
+			CreateCSharpReader("<p>@model.Message</p>");
 			reader.ReadCharacters(4);
 			
 			bool htmlCharacterRead = reader.IsHtml;
@@ -50,14 +55,54 @@ namespace AspNet.Mvc.Tests.Folding
 		}
 		
 		[Test]
-		public void IsHtml_ReadFirstCharacterAfterRazorTransitionSymbol_ReturnsFalse()
+		public void IsHtml_ReadFirstCharacterAfterCSharpRazorTransitionSymbol_ReturnsFalse()
 		{
-			CreateReader("<p>@model.Message</p>");
+			CreateCSharpReader("<p>@model.Message</p>");
 			reader.ReadCharacters(5);
 			
 			bool htmlCharacterRead = reader.IsHtml;
 			
 			Assert.IsFalse(htmlCharacterRead);
+		}
+		
+		[Test]
+		public void IsHtml_FirstCharacterReadIsVisualBasicRazorTransitionSymbol_ReturnsFalse()
+		{
+			CreateVisualBasicReader("@ModelType");
+			reader.Read();
+			
+			bool result = reader.IsHtml;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsHtml_SecondCharacterReadIsVisualBasicIfStatement_ReturnsFalse()
+		{
+			CreateVisualBasicReader("@If IsPost Then");
+			reader.Read();
+			reader.Read();
+			
+			bool result = reader.IsHtml;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void IsHtml_SecondHtmlCharacterAfterVisualBasicCodeBlockRead_ReturnsTrue()
+		{
+			string html = 
+				"@Code\r\n" +
+				"Dim a As Int\r\n" +
+				"End Code\r\n" +
+				"<p></p>";
+			
+			CreateVisualBasicReader(html);
+			reader.ReadCharacters(32);
+			
+			bool result = reader.IsHtml;
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

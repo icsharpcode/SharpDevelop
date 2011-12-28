@@ -5,12 +5,12 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class CSharpRazorLanguageBinding : HtmlLanguageBinding
+	public class VisualBasicRazorLanguageBinding : HtmlLanguageBinding
 	{
-		public CSharpRazorLanguageBinding()
+		public VisualBasicRazorLanguageBinding()
 			: base(
 				new TextEditorWithParseInformationFoldingFactory(),
-				new RazorFoldGeneratorFactory(".cshtml"))
+				new RazorFoldGeneratorFactory(".vbhtml"))
 		{
 		}
 	}

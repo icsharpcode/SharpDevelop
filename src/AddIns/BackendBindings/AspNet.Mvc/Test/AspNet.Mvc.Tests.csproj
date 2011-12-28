@@ -116,6 +116,7 @@
     <Compile Include="Src\Folding\RazorHtmlFoldParserTests.cs" />
     <Compile Include="Src\Folding\HtmlElementFoldTests.cs" />
     <Compile Include="Src\Folding\RazorHtmlReaderTests.cs" />
+    <Compile Include="Src\Folding\RazorHtmlSpansTests.cs" />
     <Compile Include="Src\Folding\RazorMarkupCharacterReaderTests.cs" />
     <Compile Include="Src\Folding\ScheduledFoldGeneratorTests.cs" />
     <Compile Include="Src\Folding\FoldGeneratorTests.cs" />

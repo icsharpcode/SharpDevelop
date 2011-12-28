@@ -7,13 +7,16 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 {
 	public class RazorHtmlReaderFactory : IHtmlReaderFactory
 	{
-		public RazorHtmlReaderFactory(string extension)
+		public RazorHtmlReaderFactory(string fileExtension)
 		{
+			this.FileExtension = fileExtension;
 		}
+		
+		string FileExtension { get; set; }
 		
 		public HtmlReader CreateHtmlReader(string html)
 		{
-			return new RazorHtmlReader(html);
+			return new RazorHtmlReader(html, FileExtension);
 		}
 	}
 }

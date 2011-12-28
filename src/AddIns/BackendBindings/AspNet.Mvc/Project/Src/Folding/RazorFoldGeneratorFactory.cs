@@ -7,17 +7,17 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 {
 	public class RazorFoldGeneratorFactory : IFoldGeneratorFactory
 	{
-		public RazorFoldGeneratorFactory(string extension)
+		public RazorFoldGeneratorFactory(string fileExtension)
 		{
-			this.Extension = extension;
+			this.FileExtension = fileExtension;
 		}
 		
-		string Extension { get; set; }
+		string FileExtension { get; set; }
 		
 		public IFoldGenerator CreateFoldGenerator(ITextEditorWithParseInformationFolding textEditor)
 		{
 			return new ScheduledFoldGenerator(
-				new FoldGenerator(textEditor, new RazorHtmlFoldParser(Extension)));
+				new FoldGenerator(textEditor, new RazorHtmlFoldParser(FileExtension)));
 		}
 	}
 }

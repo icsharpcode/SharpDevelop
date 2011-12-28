@@ -9,10 +9,10 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 	{
 		RazorHtmlSpans htmlSpans;
 		
-		public RazorMarkupCharacterReader(string html)
+		public RazorMarkupCharacterReader(string html, string fileExtension)
 			: base(html)
 		{
-			htmlSpans = new RazorHtmlSpans(html);
+			htmlSpans = new RazorHtmlSpans(html, fileExtension);
 		}
 		
 		public bool IsHtml {

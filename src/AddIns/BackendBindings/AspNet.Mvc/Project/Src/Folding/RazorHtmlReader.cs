@@ -10,8 +10,8 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 	{
 		RazorMarkupCharacterReader reader;
 		
-		public RazorHtmlReader(string html)
-			: this(new RazorMarkupCharacterReader(html))
+		public RazorHtmlReader(string html, string fileExtension)
+			: this(new RazorMarkupCharacterReader(html, fileExtension))
 		{
 		}
 		

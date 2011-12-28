@@ -13,15 +13,21 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 	public class RazorHtmlSpans
 	{
 		List<Span> spans;
+		RazorCodeLanguage codeLanguage;
 		
-		public RazorHtmlSpans(string html)
+		public RazorHtmlSpans(string html, string fileExtension)
 		{
+			codeLanguage = RazorCodeLanguage.GetLanguageByExtension(fileExtension);
 			ReadHtmlSpans(html);
+		}
+		
+		public string CodeLanguageName {
+			get { return codeLanguage.LanguageName; }
 		}
 		
 		void ReadHtmlSpans(string html)
 		{
-			RazorEngineHost razorEngineHost = new RazorEngineHost(RazorCodeLanguage.GetLanguageByExtension(".cshtml"));
+			RazorEngineHost razorEngineHost = new RazorEngineHost(codeLanguage);
 			RazorTemplateEngine engine = new RazorTemplateEngine(razorEngineHost);
 			ParserResults results = engine.ParseTemplate(new StringReader(html));
 			spans = new List<Span>(results.Document.Flatten());

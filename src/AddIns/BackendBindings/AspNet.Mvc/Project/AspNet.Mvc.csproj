@@ -140,6 +140,7 @@
     <Compile Include="Src\Folding\TextEditorWithParseInformationFolding.cs" />
     <Compile Include="Src\Folding\TextEditorWithParseInformationFoldingFactory.cs" />
     <Compile Include="Src\Folding\FoldGenerator.cs" />
+    <Compile Include="Src\Folding\VisualBasicRazorLanguageBinding.cs" />
     <Compile Include="Src\Folding\WebFormsFoldGeneratorFactory.cs" />
     <Compile Include="Src\Folding\WebFormsHtmlFoldParser.cs" />
     <Compile Include="Src\Folding\HtmlNode.cs" />

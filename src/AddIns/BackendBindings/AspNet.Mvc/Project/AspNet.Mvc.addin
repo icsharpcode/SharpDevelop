@@ -95,5 +95,9 @@
 			id="CSharp.Razor"
 			class="ICSharpCode.AspNet.Mvc.Folding.CSharpRazorLanguageBinding"
 			extensions=".cshtml" />
+		<LanguageBinding
+			id="VisualBasic.Razor"
+			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorLanguageBinding"
+			extensions=".vbhtml" />
 	</Path>
 </AddIn>

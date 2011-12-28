@@ -14,7 +14,7 @@ namespace AspNet.Mvc.Tests.Folding
 		
 		void CreateHtmlReader(string html)
 		{
-			htmlReader = new RazorHtmlReader(html);
+			htmlReader = new RazorHtmlReader(html, ".cshtml");
 		}
 		
 		[Test]
@@ -32,7 +32,5 @@ namespace AspNet.Mvc.Tests.Folding
 			
 			Assert.AreEqual("p", value);
 		}
-
-
 	}
 }
