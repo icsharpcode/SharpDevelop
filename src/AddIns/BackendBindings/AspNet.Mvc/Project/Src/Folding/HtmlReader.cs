@@ -103,7 +103,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		
 		bool IsElementNameCharacter()
 		{
-			return reader.IsLetterOrDigit() || reader.IsSpace();
+			return reader.IsLetterOrDigit() || reader.IsSpace() || reader.IsColon();
 		}
 		
 		void ReadDoubleQuotedString()

@@ -320,5 +320,16 @@ namespace AspNet.Mvc.Tests.Folding
 			
 			Assert.IsFalse(result);
 		}
+		
+		[Test]
+		public void Value_ReadAspContentTagWithAspNamespacePrefix_ReturnsAspContentWithColonCharacter()
+		{
+			CreateHtmlReader("<asp:Content>");
+			htmlReader.Read();
+			
+			string value = htmlReader.Value;
+			
+			Assert.AreEqual("asp:Content", value);
+		}
 	}
 }

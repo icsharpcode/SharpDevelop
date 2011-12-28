@@ -105,5 +105,10 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			return CurrentCharacter == '\n';
 		}
+		
+		public bool IsColon()
+		{
+			return CurrentCharacter == ':';
+		}
 	}
 }
