@@ -91,5 +91,9 @@
 			id="WebForms"
 			class="ICSharpCode.AspNet.Mvc.Folding.WebFormsLanguageBinding"
 			extensions=".aspx;.ascx;.master;.html;.htm" />
+		<LanguageBinding
+			id="CSharp.Razor"
+			class="ICSharpCode.AspNet.Mvc.Folding.CSharpRazorLanguageBinding"
+			extensions=".cshtml" />
 	</Path>
 </AddIn>

@@ -5,16 +5,15 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class WebFormsHtmlFoldParser : HtmlFoldParser
+	public class RazorHtmlReaderFactory : IHtmlReaderFactory
 	{
-		public WebFormsHtmlFoldParser(IHtmlReaderFactory htmlReaderFactory)
-			: base(htmlReaderFactory)
+		public RazorHtmlReaderFactory(string extension)
 		{
 		}
 		
-		public WebFormsHtmlFoldParser()
-			: this(new WebFormsHtmlReaderFactory())
+		public HtmlReader CreateHtmlReader(string html)
 		{
+			return new RazorHtmlReader(html);
 		}
 	}
 }

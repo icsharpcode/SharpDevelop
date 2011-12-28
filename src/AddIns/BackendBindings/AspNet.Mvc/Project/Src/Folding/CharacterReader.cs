@@ -9,6 +9,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 	public class CharacterReader
 	{
 		public const int EndOfCharacters = -1;
+		public const int BeforeStartOffset = -1;
 		
 		TextReader reader;
 		
@@ -20,12 +21,13 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		public CharacterReader(TextReader reader)
 		{
 			this.reader = reader;
+			this.CurrentCharacterOffset = BeforeStartOffset;
 		}
 		
 		public bool Read()
 		{
 			CurrentCharacter = reader.Read();
-			Offset++;
+			CurrentCharacterOffset++;
 			return HasMoreCharactersToRead();
 		}
 		
@@ -34,10 +36,10 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			return CurrentCharacter != EndOfCharacters;
 		}
 		
-		public int Offset { get; private set; }
+		public int CurrentCharacterOffset { get; private set; }
 		
-		public int PreviousOffset {
-			get { return Offset - 1; }
+		public int NextCharacterOffset {
+			get { return CurrentCharacterOffset + 1; }
 		}
 		
 		public int CurrentCharacter { get; private set; }
@@ -80,6 +82,13 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		public bool IsSingleQuote()
 		{
 			return CurrentCharacter == '\'';
+		}
+		
+		public void ReadCharacters(int howMany)
+		{
+			for (int i = 0; i < howMany; ++i) {
+				Read();
+			}
 		}
 	}
 }

@@ -5,16 +5,8 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class WebFormsHtmlFoldParser : HtmlFoldParser
+	public interface IFoldGeneratorFactory
 	{
-		public WebFormsHtmlFoldParser(IHtmlReaderFactory htmlReaderFactory)
-			: base(htmlReaderFactory)
-		{
-		}
-		
-		public WebFormsHtmlFoldParser()
-			: this(new WebFormsHtmlReaderFactory())
-		{
-		}
+		IFoldGenerator CreateFoldGenerator(ITextEditorWithParseInformationFolding textEditor);
 	}
 }

@@ -3,19 +3,13 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class WebFormsLanguageBinding : DefaultLanguageBinding
+	public class WebFormsLanguageBinding : HtmlLanguageBinding
 	{
-		ITextEditorWithParseInformationFoldingFactory textEditorFactory;
-		IWebFormsFoldGeneratorFactory foldGeneratorFactory;
-		IFoldGenerator foldGenerator;
-		
 		public WebFormsLanguageBinding()
-			: this(
+			: base(
 				new TextEditorWithParseInformationFoldingFactory(),
 				new WebFormsFoldGeneratorFactory())
 		{
@@ -23,33 +17,9 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		
 		public WebFormsLanguageBinding(
 			ITextEditorWithParseInformationFoldingFactory textEditorFactory,
-			IWebFormsFoldGeneratorFactory foldGeneratorFactory)
+			IFoldGeneratorFactory foldGeneratorFactory)
+			: base(textEditorFactory, foldGeneratorFactory)
 		{
-			this.textEditorFactory = textEditorFactory;
-			this.foldGeneratorFactory = foldGeneratorFactory;
-		}
-		
-		public override IFormattingStrategy FormattingStrategy {
-			get { return new DefaultFormattingStrategy(); }
-		}
-		
-		public override LanguageProperties Properties {
-			get { return LanguageProperties.None; }
-		}
-		
-		public override void Attach(ITextEditor editor)
-		{
-			Attach(textEditorFactory.CreateTextEditor(editor));
-		}
-		
-		void Attach(ITextEditorWithParseInformationFolding editor)
-		{
-			foldGenerator = foldGeneratorFactory.CreateFoldGenerator(editor);
-		}
-		
-		public override void Detach()
-		{
-			foldGenerator.Dispose();
 		}
 	}
 }

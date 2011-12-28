@@ -17,7 +17,7 @@ namespace AspNet.Mvc.Tests.Folding
 		WebFormsLanguageBinding languageBinding;
 		ITextEditor fakeTextEditor;
 		ITextEditorWithParseInformationFoldingFactory fakeTextEditorFactory;
-		IWebFormsFoldGeneratorFactory fakeFoldGeneratorFactory;
+		IFoldGeneratorFactory fakeFoldGeneratorFactory;
 		IFoldGenerator fakeFoldGenerator;
 		
 		[SetUp]
@@ -39,7 +39,7 @@ namespace AspNet.Mvc.Tests.Folding
 		
 		void CreateFakeFoldGeneratorFactory()
 		{
-			fakeFoldGeneratorFactory = MockRepository.GenerateStub<IWebFormsFoldGeneratorFactory>();
+			fakeFoldGeneratorFactory = MockRepository.GenerateStub<IFoldGeneratorFactory>();
 		}
 		
 		void AddFakeFoldGeneratorToFactory()

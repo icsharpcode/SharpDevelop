@@ -5,12 +5,19 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public class WebFormsFoldGeneratorFactory : IFoldGeneratorFactory
+	public class RazorFoldGeneratorFactory : IFoldGeneratorFactory
 	{
+		public RazorFoldGeneratorFactory(string extension)
+		{
+			this.Extension = extension;
+		}
+		
+		string Extension { get; set; }
+		
 		public IFoldGenerator CreateFoldGenerator(ITextEditorWithParseInformationFolding textEditor)
 		{
 			return new ScheduledFoldGenerator(
-				new FoldGenerator(textEditor, new WebFormsHtmlFoldParser()));
+				new FoldGenerator(textEditor, new RazorHtmlFoldParser(Extension)));
 		}
 	}
 }

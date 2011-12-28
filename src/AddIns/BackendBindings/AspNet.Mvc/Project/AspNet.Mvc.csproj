@@ -36,6 +36,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.Web.Razor" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -116,14 +117,25 @@
     <Compile Include="Src\DelegateCommand.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\Folding\CharacterReader.cs" />
+    <Compile Include="Src\Folding\HtmlFoldParser.cs" />
+    <Compile Include="Src\Folding\RazorFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\RazorHtmlFoldParser.cs" />
+    <Compile Include="Src\Folding\CSharpRazorLanguageBinding.cs" />
     <Compile Include="Src\Folding\FoldGenerationTimer.cs" />
     <Compile Include="Src\Folding\HtmlElementFold.cs" />
+    <Compile Include="Src\Folding\HtmlLanguageBinding.cs" />
+    <Compile Include="Src\Folding\HtmlReader.cs" />
     <Compile Include="Src\Folding\IFoldGenerationTimer.cs" />
     <Compile Include="Src\Folding\IFoldParser.cs" />
+    <Compile Include="Src\Folding\IHtmlReaderFactory.cs" />
     <Compile Include="Src\Folding\ITextEditorWithParseInformationFolding.cs" />
     <Compile Include="Src\Folding\ITextEditorWithParseInformationFoldingFactory.cs" />
     <Compile Include="Src\Folding\IFoldGenerator.cs" />
-    <Compile Include="Src\Folding\IWebFormsFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\IFoldGeneratorFactory.cs" />
+    <Compile Include="Src\Folding\RazorHtmlReader.cs" />
+    <Compile Include="Src\Folding\RazorHtmlReaderFactory.cs" />
+    <Compile Include="Src\Folding\RazorHtmlSpans.cs" />
+    <Compile Include="Src\Folding\RazorMarkupCharacterReader.cs" />
     <Compile Include="Src\Folding\ScheduledFoldGenerator.cs" />
     <Compile Include="Src\Folding\TextEditorWithParseInformationFolding.cs" />
     <Compile Include="Src\Folding\TextEditorWithParseInformationFoldingFactory.cs" />
@@ -132,6 +144,7 @@
     <Compile Include="Src\Folding\WebFormsHtmlFoldParser.cs" />
     <Compile Include="Src\Folding\HtmlNode.cs" />
     <Compile Include="Src\Folding\SimpleWebFormsHtmlReader.cs" />
+    <Compile Include="Src\Folding\WebFormsHtmlReaderFactory.cs" />
     <Compile Include="Src\Folding\WebFormsLanguageBinding.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
     <Compile Include="Src\IFileSystem.cs" />

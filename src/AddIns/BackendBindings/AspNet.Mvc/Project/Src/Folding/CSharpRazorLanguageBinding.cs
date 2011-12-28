@@ -5,8 +5,13 @@ using System;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public interface IWebFormsFoldGeneratorFactory
+	public class CSharpRazorLanguageBinding : HtmlLanguageBinding
 	{
-		IFoldGenerator CreateFoldGenerator(ITextEditorWithParseInformationFolding textEditor);
+		public CSharpRazorLanguageBinding()
+			: base(
+				new TextEditorWithParseInformationFoldingFactory(),
+				new RazorFoldGeneratorFactory("cshtml"))
+		{
+		}
 	}
 }
