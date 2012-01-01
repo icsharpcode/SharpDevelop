@@ -35,9 +35,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 	
 	public enum Metrics
 	{
-		[LocalizableDescription("Select a Value")]
-		dummy,
-		
+
 		[LocalizableDescription("IL Instructions")]
 		ILInstructions,
 		
@@ -50,11 +48,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 	
 	public class MainWindowViewModel :ViewModelBase
 	{
+		QueryMainModule queryModule;
 		
 		public MainWindowViewModel():base()
 		{
 			this.FrmTitle = "Code Quality Analysis";
-			//ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.Server");
 			this.btnOpenAssembly = "Open Assembly";
 			
 			#region MainTab
@@ -64,9 +62,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			#endregion
 			
 			ActivateMetrics = new RelayCommand(ActivateMetricsExecute);
-			ShowTreeMap = new RelayCommand(ShowTreemapExecute,CanActivateTreemap);
-			
 			ExecuteSelectedItemWithCommand = new RelayCommand (ExecuteSelectedItem);
+			
 		}
 		
 		
@@ -155,6 +152,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				                        mainModule.TypesCount,
 				                        mainModule.MethodsCount,
 				                        mainModule.FieldsCount);
+				queryModule = new QueryMainModule(MainModule);
 			}
 		}
 		
@@ -193,6 +191,89 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		
+		
+		
+		
+		#region MetricsLevel Combo Left ComboBox
+		
+		public MetricsLevel MetricsLevel {
+			get {return MetricsLevel;}
+		}
+		
+		private MetricsLevel selectedMetricsLevel;
+		
+		public MetricsLevel SelectedMetricsLevel {
+			get { return selectedMetricsLevel; }
+			set { selectedMetricsLevel = value;
+				base.RaisePropertyChanged(() =>this.SelectedMetricsLevel);
+				ResetTreeMap();
+			}
+		}
+		
+		
+		public ICommand ActivateMetrics {get;private set;}
+	
+		void ActivateMetricsExecute ()
+		{
+			itemsWithCommand.Clear();
+			switch (SelectedMetricsLevel) {
+				case MetricsLevel.Assembly:
+					
+					break;
+				case MetricsLevel.Namespace:
+					ItemsWithCommand = queryModule.NameSpaceList();
+					break;
+				case MetricsLevel.Type:
+					
+					break;
+				case MetricsLevel.Method:
+					ItemsWithCommand = queryModule.MethodList();
+					break;
+				default:
+					throw new Exception("Invalid value for MetricsLevel");
+			}
+		}
+		
+		#endregion
+		
+		#region Metrics Combo > Right Combobox
+		List<ItemWithAction> itemsWithCommand;
+		
+		public List<ItemWithAction> ItemsWithCommand {
+			get {
+				if (itemsWithCommand == null) {
+					itemsWithCommand = new List<ItemWithAction>();
+				}
+				return itemsWithCommand;
+			}
+			set { 
+				itemsWithCommand = value;
+				base.RaisePropertyChanged(() => ItemsWithCommand);}
+		}
+		
+		ItemWithAction selectedItemWithCommand;
+		
+		public ItemWithAction SelectedItemWithCommand {
+			get { return selectedItemWithCommand; }
+			set { selectedItemWithCommand = value;
+				base.RaisePropertyChanged(() => SelectedItemWithCommand);}
+		}
+		
+		public ICommand ExecuteSelectedItemWithCommand {get; private set;}
+		
+		void ExecuteSelectedItem()
+		{
+			TreeValueProperty = SelectedItemWithCommand.Metrics;
+			var list = SelectedItemWithCommand.Action.Invoke();
+			if (list != null ) {
+				Nodes = new ObservableCollection<INode>(list);
+			}
+		}
+		
+		#endregion
+		
+		#region ShowTreeMap Treemap
+		
 		private ObservableCollection<INode> nodes;
 		
 		public ObservableCollection<INode> Nodes {
@@ -217,266 +298,15 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		
-		#region MetricsLevel Combo Left ComboBox
-		
-		public MetricsLevel MetricsLevel {
-			get {return MetricsLevel;}
-		}
-		
-		private MetricsLevel selectedMetricsLevel;
-		
-		public MetricsLevel SelectedMetricsLevel {
-			get { return selectedMetricsLevel; }
-			set { selectedMetricsLevel = value;
-				base.RaisePropertyChanged(() =>this.SelectedMetricsLevel);
-				ResetTreeMap();
-			}
-		}
-		
-		#endregion
-		
-		#region Metrics Combo > Right Combobox
-		
-		public Metrics Metrics
-		{
-			get {return Metrics;}
-		}
-		
-		Metrics selectedMetrics;
-		
-		public Metrics SelectedMetrics {
-			get { return selectedMetrics; }
-			set { selectedMetrics = value;
-				base.RaisePropertyChanged(() =>this.SelectedMetrics);
-			}
-		}
-		
-		/*
-		int selectedMetricsIndex;
-		
-		public int SelectedMetricsIndex {
-			get { return selectedMetricsIndex; }
-			set {
-				selectedMetricsIndex = value;
-				base.RaisePropertyChanged(() =>this.SelectedMetricsIndex);}
-		}
-		*/
-		
-		#endregion
-		
-		#region ActivateMetrics
-		
-		public ICommand ActivateMetrics {get;private set;}
-		
-		bool metricsIsActive;
-		/*
-		void ActivateMetricsExecute ()
-		{
-			
-			switch (SelectedMetricsLevel) {
-				case MetricsLevel.Assembly:
-					metricsIsActive = false;
-					break;
-				case MetricsLevel.Namespace:
-					metricsIsActive = true;
-					break;
-				case MetricsLevel.Type:
-					metricsIsActive = true;
-					break;
-				case MetricsLevel.Method:
-					metricsIsActive = true;
-					break;
-				default:
-					throw new Exception("Invalid value for MetricsLevel");
-			}
-		}
-		*/
-		
-		
-		#endregion
-		
-	#region testregion
-	
-	List<ItemWithAction> itemsWithCommand;
-	
-	public List<ItemWithAction> ItemsWithCommand {
-		get {
-			if (itemsWithCommand == null) {
-				itemsWithCommand = new List<ItemWithAction>();
-			}
-			return itemsWithCommand;
-		}
-		set { itemsWithCommand = value;
-		base.RaisePropertyChanged(() => ItemsWithCommand);}
-	}
-		
-	void ActivateMetricsExecute ()
-	{
-		itemsWithCommand.Clear();
-		switch (SelectedMetricsLevel) {
-			case MetricsLevel.Assembly:
-				
-				break;
-			case MetricsLevel.Namespace:
-				
-				break;
-			case MetricsLevel.Type:
-				
-				break;
-			case MetricsLevel.Method:
-				
-				ItemsWithCommand.Add(new ItemWithAction()
-				                     {
-				                     	Description = "IL Instructions",
-				                     	Action = ExecuteMerhodIlInstructions
-				                     });
-				ItemsWithCommand.Add(new ItemWithAction()
-				                     {
-				                     	Description = "Cyclomatic Complexity",
-				                     	Action = ExecuteMethodComplexity
-				                     });
-				ItemsWithCommand.Add(new ItemWithAction()
-				                     {
-				                     	Description = "Variables",
-				                     	Action = ExecuteMethodVariables
-				                     });
-			
-//				var t = new testclass(MainModule);
-//				ItemsWithCommand = t.MethodList();
-				break;
-			default:
-				throw new Exception("Invalid value for MetricsLevel");
-		}
-	}
-		
-		ItemWithAction selectedItemWithCommand;
-		
-		public ItemWithAction SelectedItemWithCommand {
-			get { return selectedItemWithCommand; }
-			set { selectedItemWithCommand = value;
-				base.RaisePropertyChanged(() => SelectedItemWithCommand);}
-		}
-		
-		private void ExecuteMerhodIlInstructions()
-		{
-			var t = new testclass(MainModule);
-			TreeValueProperty = "Instructions.Count";
-			Nodes = t.QueryMethod();
-		}
-		
-		private void ExecuteMethodComplexity ()
-		{
-			var t = new testclass(MainModule);
-			TreeValueProperty = Metrics.CyclomaticComplexity.ToString();
-			var tt = t.QueryMethod();
-			foreach (var element in tt) {
-				var m = element as Method;
-				Console.WriteLine("{0} - {1}",m.Name,m.CyclomaticComplexity);
-			}
-			Nodes = t.QueryMethod();
-		}
-	
-		
-		private void ExecuteMethodVariables ()
-		{
-			var t = new testclass(MainModule);
-			TreeValueProperty = Metrics.Variables.ToString();
-			Nodes = t.QueryMethod();
-		}
-			
-		public ICommand ExecuteSelectedItemWithCommand {get; private set;}
-		
-		void ExecuteSelectedItem()
-		{
-			//SelectedItemWithCommand.Command.Execute(null);
-			SelectedItemWithCommand.Action.Invoke();
-		}
-			
-			
-	#endregion
-	
-		#region ShowTreeMap Treemap
-		
 		void ResetTreeMap()
 		{
-			
 			Nodes.Clear();
 			ItemsWithCommand.Clear();
 			
 			base.RaisePropertyChanged(() => Nodes);
 			base.RaisePropertyChanged(() => ItemsWithCommand);
-			metricsIsActive = false;
 		}
 		
-		
-		public ICommand ShowTreeMap {get;private set;}
-		
-		bool CanActivateTreemap()
-		{
-			return metricsIsActive;
-		}
-		
-		
-		void ShowTreemapExecute ()
-		{
-			switch (selectedMetrics)
-			{
-				case Metrics.ILInstructions:
-					TreeValueProperty = "Instructions.Count";
-					break;
-					
-				case Metrics.CyclomaticComplexity:
-					TreeValueProperty = Metrics.CyclomaticComplexity.ToString();
-					break;
-				case Metrics.Variables:
-					TreeValueProperty = Metrics.Variables.ToString();
-					break;
-				default:
-					throw new Exception("Invalid value for Metrics");
-			}
-			Nodes = PrepareNodes();
-		}
-		
-		
-		ObservableCollection<INode> PrepareNodes()
-		{
-			IEnumerable<INode> list  = new List<INode>();
-
-			switch (selectedMetricsLevel)
-			{
-				case MetricsLevel.Assembly:
-					list = from ns in MainModule.Namespaces
-						select ns;
-					break;
-					
-				case MetricsLevel.Namespace:
-					var n1 = SelectedNode as Namespace;
-					list = from x in n1.GetAllMethods() select x;
-					break;
-					//type has no Cyclomatics
-				case MetricsLevel.Type:
-					var n2 = SelectedNode as Namespace;
-					list = n2.GetAllTypes();
-					var i1 = list.Count();
-					break;
-				case MetricsLevel.Method:
-					list  = from ns in MainModule.Namespaces
-						from type in ns.Types
-						from method in type.Methods
-						select method;
-					break;
-				default:
-					throw new Exception("Invalid value for MetricsLevel");
-			}
-			var nodes = new ObservableCollection<INode>(list);
-			foreach (INode element in nodes) 
-			{
-				
-				var t = element as Namespace;
-				//Console.WriteLine(t.CyclomaticComplexity);
-			}
-			return nodes;
-		}
 		
 		#endregion
 		
@@ -502,6 +332,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		public string Description	{get; set;}
-		public Action  Action {get; set;}	
+		public Func<List<INode>>  Action {get; set;}
+		public  string Metrics {get;set;}
 	}
 }

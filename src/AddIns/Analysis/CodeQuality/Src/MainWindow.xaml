@@ -252,7 +252,7 @@
 						</ObjectDataProvider.MethodParameters>
 					</ObjectDataProvider>
 					
-					
+					<!--
 					<ObjectDataProvider MethodName="GetValues"
 						ObjectType="{x:Type sys:Enum}"
 						x:Key="Metrics">
@@ -260,7 +260,7 @@
 							<x:Type TypeName="src:Metrics" />
 						</ObjectDataProvider.MethodParameters>
 					</ObjectDataProvider>
-					
+					-->
 					 <loc:EnumToFriendlyNameConverter x:Key="enumItemsConverter"/>
 
 					<DataTemplate

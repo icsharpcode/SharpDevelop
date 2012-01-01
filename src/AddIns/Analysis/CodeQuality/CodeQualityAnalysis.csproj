@@ -151,7 +151,7 @@
     <Compile Include="Src\Utility\Localizeable\EnumToFriendlyNameConverter.cs" />
     <Compile Include="Src\Utility\Localizeable\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
-    <Compile Include="Src\Utility\testclass.cs" />
+    <Compile Include="Src\Utility\QueryMainModule.cs" />
     <Compile Include="Src\Utility\VisibleMatrix.cs" />
     <Page Include="Resources\GridSplitterTemplate.xaml" />
     <Page Include="Resources\GraphTemplate.xaml">
