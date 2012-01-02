@@ -151,7 +151,9 @@
     <Compile Include="Src\Utility\Localizeable\EnumToFriendlyNameConverter.cs" />
     <Compile Include="Src\Utility\Localizeable\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
-    <Compile Include="Src\Utility\QueryMainModule.cs" />
+    <Compile Include="Src\Utility\Queries\BaseQuery.cs" />
+    <Compile Include="Src\Utility\Queries\QueryMethod.cs" />
+    <Compile Include="Src\Utility\Queries\QueryNameSpace.cs" />
     <Compile Include="Src\Utility\VisibleMatrix.cs" />
     <Page Include="Resources\GridSplitterTemplate.xaml" />
     <Page Include="Resources\GraphTemplate.xaml">
@@ -269,6 +271,7 @@
   <ItemGroup>
     <Folder Include="Src\Utility" />
     <Folder Include="Src\Utility\Localizeable" />
+    <Folder Include="Src\Utility\Queries" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

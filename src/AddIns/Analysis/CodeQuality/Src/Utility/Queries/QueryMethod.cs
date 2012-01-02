@@ -13,20 +13,29 @@ using System.Linq;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.CodeQualityAnalysis.Utility
+namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 {
 	/// <summary>
 	/// Description of testclass.
 	/// </summary>
-	public class QueryMainModule
+	public class QueryMethod:BaseQuery
 	{
-		public QueryMainModule(Module mainModule)
-		{
-			MainModule = mainModule;
+		public QueryMethod(Module mainModule):base(mainModule)
+		{	
 		}
 		
-		public Module MainModule {get; private set;}
 		
+		private List <Method> QueryForMethod()
+		{
+			IEnumerable<Method> query  = new List<Method>();
+			query  = from ns in MainModule.Namespaces
+				from type in ns.Types
+				from method in type.Methods
+				select method;
+			return query.ToList();
+		}
+		
+		/*
 		private List <INode> QueryForMethod()
 		{
 			IEnumerable<INode> query  = new List<INode>();
@@ -36,43 +45,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 				select method;
 			return query.ToList();
 		}
+		*/
 		
-		
-		public List<ItemWithAction> NameSpaceList()
-		{
-			List<ItemWithAction> items = new List<ItemWithAction>();
-			items.Add(new ItemWithAction()
-			                     {
-			                     	Description = "# of Methods",
-			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
-			                     	Action = ExecuteNotImplemented
-			                     });
-			items.Add(new ItemWithAction()
-			                     {
-			                     	Description = "# of Fields",
-			                     	Metrics = Metrics.Variables.ToString(),
-			                     	Action = ExecuteNotImplemented
-			                     });
-			items.Add(new ItemWithAction()
-			                     {
-			                     	Description = "# of Types",
-			                     	Metrics = Metrics.Variables.ToString(),
-			                     	Action = ExecuteNotImplemented
-			                     });
-			
-			items.Add(new ItemWithAction()
-			                     {
-			                     	Description = "# of Namespaces",
-			                     	Metrics = Metrics.Variables.ToString(),
-			                     	Action = ExecuteNotImplemented
-			                     });
-			return items;
-		}
-		
-		
-		
-		
-		public List<ItemWithAction> MethodList()
+		public override List<ItemWithAction> GetQueryList()
 		{
 			List<ItemWithAction> items = new List<ItemWithAction>();
 			items.Add(new ItemWithAction()
@@ -96,16 +71,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 			return items;
 		}
 		
-		private List<INode> ExecuteNotImplemented()
-		{
-			MessageService.ShowMessage("Not Implemented yet","CodeQualityAnalysis");
-			return null;
-		}
-		
 		
 		private List<INode> ExecuteMethodILInstructions()
 		{
-			var intermediate = QueryForMethod().Cast<Method>().ToList();
+			var intermediate = QueryForMethod();
 			var filtered = from method in intermediate
 				where method.Instructions.Count > 0
 				select method;
@@ -115,7 +84,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 		
 		private List<INode> ExecuteMethodComplexity ()
 		{
-			var intermediate = QueryForMethod().Cast<Method>().ToList();
+			var intermediate = QueryForMethod();
 			var filtered = from method in intermediate
 				where method.CyclomaticComplexity > 0
 				select method;
@@ -125,8 +94,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 		
 		private List<INode> ExecuteMethodVariables ()
 		{
-			var intermediate = QueryForMethod().Cast<Method>().ToList();
-// eliminate 0-values
+			var intermediate = QueryForMethod();
+// eliminate 0-values reduce time for my test assembly from 6 to 1 sek
+
 			var filtered = from method in intermediate
 				where method.Variables > 0
 				select method;

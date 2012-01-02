@@ -15,8 +15,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
 using ICSharpCode.CodeQualityAnalysis.Utility;
+using ICSharpCode.CodeQualityAnalysis.Utility.Localizeable;
+using ICSharpCode.CodeQualityAnalysis.Utility.Queries;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -48,7 +49,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 	
 	public class MainWindowViewModel :ViewModelBase
 	{
-		QueryMainModule queryModule;
 		
 		public MainWindowViewModel():base()
 		{
@@ -152,7 +152,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				                        mainModule.TypesCount,
 				                        mainModule.MethodsCount,
 				                        mainModule.FieldsCount);
-				queryModule = new QueryMainModule(MainModule);
+				//queryModule = new QueryMethod(MainModule);
 			}
 		}
 		
@@ -190,10 +190,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			return String.Empty;
 		}
 		
-		
-		
-		
-		
+	
 		#region MetricsLevel Combo Left ComboBox
 		
 		public MetricsLevel MetricsLevel {
@@ -221,13 +218,15 @@ namespace ICSharpCode.CodeQualityAnalysis
 					
 					break;
 				case MetricsLevel.Namespace:
-					ItemsWithCommand = queryModule.NameSpaceList();
+					QueryNameSpace queryNs = new QueryNameSpace(MainModule);
+					ItemsWithCommand = queryNs.GetQueryList();
 					break;
 				case MetricsLevel.Type:
 					
 					break;
 				case MetricsLevel.Method:
-					ItemsWithCommand = queryModule.MethodList();
+					QueryMethod queryModule = new QueryMethod(MainModule);
+					ItemsWithCommand = queryModule.GetQueryList();
 					break;
 				default:
 					throw new Exception("Invalid value for MetricsLevel");
@@ -237,6 +236,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		#endregion
 		
 		#region Metrics Combo > Right Combobox
+		
 		List<ItemWithAction> itemsWithCommand;
 		
 		public List<ItemWithAction> ItemsWithCommand {
