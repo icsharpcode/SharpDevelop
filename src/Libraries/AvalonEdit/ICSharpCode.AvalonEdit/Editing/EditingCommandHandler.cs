@@ -143,12 +143,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 						if (defaultSegmentType == DefaultSegmentType.CurrentLine) {
 							segments = new ISegment[] { textArea.Document.GetLineByNumber(textArea.Caret.Line) };
 						} else if (defaultSegmentType == DefaultSegmentType.WholeDocument) {
-							segments = textArea.Document.Lines;
+							segments = textArea.Document.Lines.Cast<ISegment>();
 						} else {
 							segments = null;
 						}
 					} else {
-						segments = textArea.Selection.Segments;
+						segments = textArea.Selection.Segments.Cast<ISegment>();
 					}
 					if (segments != null) {
 						foreach (ISegment segment in segments.Reverse()) {
