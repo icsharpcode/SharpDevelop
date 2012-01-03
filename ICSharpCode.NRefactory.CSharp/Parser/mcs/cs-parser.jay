@@ -428,26 +428,19 @@ extern_alias_directive
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		string s = lt.Value;
-		if (s != "alias") {
+		if (s != "alias"){
 			syntax_error (lt.Location, "`alias' expected");
+		} else if (lang_version == LanguageVersion.ISO_1) {
+			FeatureIsNotAvailable (lt.Location, "external alias");
 		} else {
-			if (lang_version == LanguageVersion.ISO_1)
-				FeatureIsNotAvailable (lt.Location, "external alias");
-
-			lt = (Tokenizer.LocatedToken) $3;
-			if (lt.Value == QualifiedAliasMember.GlobalAlias) {
-				RootNamespace.Error_GlobalNamespaceRedefined (report, lt.Location);
-			}
-			
-			var na = new UsingExternAlias (new MemberName (lt.Value, lt.Location), GetLocation ($1));
-			current_namespace.AddUsing (na);
-			
-			lbag.AddLocation (na, GetLocation ($2), GetLocation ($4));
+			lt = (Tokenizer.LocatedToken) $3; 
+			current_namespace.AddUsingExternalAlias (lt.Value, lt.Location, report);
+			ubag.AddExternAlias  (GetLocation ($1), GetLocation ($2), lt, GetLocation ($4));
 		}
 	  }
 	| EXTERN_ALIAS error
 	  {
-		Error_SyntaxError (yyToken);
+	  	syntax_error (GetLocation ($1), "`alias' expected");   // TODO: better
 	  }
 	;
  
@@ -457,22 +450,20 @@ using_directives
 	;
 
 using_directive
-	: using_namespace
+	: using_alias_directive
+	  {
+		if (doc_support)
+			Lexer.doc_state = XmlCommentState.Allowed;
+	  }
+	| using_namespace_directive
 	  {
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
 	;
 
-using_namespace
-	: USING namespace_name SEMICOLON 
-	  {
-		var un = new UsingNamespace ((MemberName) $2, GetLocation ($1));
-		current_namespace.AddUsing (un);
-		
-		lbag.AddLocation (un, GetLocation ($3));
-	  }
-	| USING IDENTIFIER ASSIGN namespace_or_type_name SEMICOLON
+using_alias_directive
+	: USING IDENTIFIER ASSIGN namespace_or_type_name SEMICOLON
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		if (lang_version != LanguageVersion.ISO_1 && lt.Value == "global") {
@@ -480,16 +471,22 @@ using_namespace
 			 "An alias named `global' will not be used when resolving `global::'. The global namespace will be used instead");
 		}
 
-		var un = new UsingAliasNamespace (new MemberName (lt.Value, lt.Location), (MemberName) $4, GetLocation ($1));
-		current_namespace.AddUsing (un);
-		
-		lbag.AddLocation (un, GetLocation ($3), GetLocation ($5));
-	  }
+		current_namespace.AddUsingAlias (lt.Value, (MemberName) $4, GetLocation ($1));
+		ubag.AddUsingAlias (GetLocation ($1), lt, GetLocation ($3), (MemberName) $4, GetLocation ($5));
+		  }
 	| USING error
 	 {
 		Error_SyntaxError (yyToken);
 		$$ = null;
-	 }
+	  }
+	;
+
+using_namespace_directive
+	: USING namespace_name SEMICOLON 
+	  {
+		current_namespace.AddUsing ((MemberName) $2, GetLocation ($1));
+		ubag.AddUsing (GetLocation ($1), (MemberName) $2, GetLocation ($3));
+	  }
 	;
 
 //
@@ -5106,7 +5103,7 @@ statement_expression
 		ExpressionStatement s = $1 as ExpressionStatement;
 		if (s == null) {
 			Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
-			$$ = new StatementErrorExpression ($1 as Expression);
+			$$ = new InvalidStatementExpression ($1 as Expression);
 		} else {
 			$$ = new StatementExpression (s);
 		}
@@ -5155,10 +5152,9 @@ if_statement
 		if ($7 is EmptyStatement)
 			Warning_EmptyStatement (GetLocation ($7));
 	  }
-	| IF open_parens_any boolean_expression error
-	  {
-		Error_SyntaxError (yyToken);
-		
+	| IF open_parens_any boolean_expression error {
+		var eloc = GetLocation ($3);
+		report.Error (1026, eloc, "Expected a ')'");
 		$$ = new If ((BooleanExpression) $3, null, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($2));
 	  }
@@ -5174,13 +5170,6 @@ switch_statement
 		$$ = new Switch ((Expression) $3, (ExplicitBlock) current_block.Explicit, (List<SwitchSection>) $7, GetLocation ($1));	
 		end_block (GetLocation ($8));
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4), GetLocation ($5), GetLocation ($8));
-	  }
-	| SWITCH open_parens_any expression error
-	  {
-		Error_SyntaxError (yyToken);
-	  
-		$$ = new Switch ((Expression) $3, null, null, GetLocation ($1));	
-		lbag.AddStatement ($$, GetLocation ($2));
 	  }
 	;
 
@@ -5210,7 +5199,7 @@ switch_sections
 	  }
 	| error
 	  {
-		Error_SyntaxError (yyToken);
+		Error_SyntaxError (yyToken);	  
 		$$ = new List<SwitchSection> ();
 	  } 
 	;
@@ -5271,30 +5260,24 @@ while_statement
 		$$ = new While ((BooleanExpression) $3, (Statement) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
-	| WHILE open_parens_any boolean_expression error
-	  {
-		Error_SyntaxError (yyToken);
-		
-		$$ = new While ((BooleanExpression) $3, null, GetLocation ($1));
-		lbag.AddStatement ($$, GetLocation ($2));
-	  }
 	;
 
 do_statement
-	: DO embedded_statement WHILE open_parens_any boolean_expression CLOSE_PARENS SEMICOLON
+	: DO embedded_statement 
+	  WHILE open_parens_any boolean_expression CLOSE_PARENS SEMICOLON
 	  {
 		$$ = new Do ((Statement) $2, (BooleanExpression) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($3), GetLocation ($4), GetLocation ($6), GetLocation ($7));
 	  }
 	| DO embedded_statement error
 	  {
-		Error_SyntaxError (yyToken);
-		$$ = new Do ((Statement) $2, null, GetLocation ($1));
+		var loc = GetLocation ($1);
+		report.Error (-100, loc, "Expected `while'");
+		$$ = new Do ((Statement) $2, null, loc);
 	  }
-	| DO embedded_statement WHILE open_parens_any boolean_expression error
+	| DO embedded_statement 
+	  WHILE open_parens_any boolean_expression error
 	  {
-		Error_SyntaxError (yyToken);
-	  
 		$$ = new Do ((Statement) $2, (BooleanExpression) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($3), GetLocation ($4));
 	  }
@@ -5400,35 +5383,10 @@ statement_expression_list
 	;
 
 foreach_statement
-	: FOREACH open_parens_any type error
+	: FOREACH open_parens_any type IN expression CLOSE_PARENS
 	  {
 		report.Error (230, GetLocation ($1), "Type and identifier are both required in a foreach statement");
-
-		start_block (GetLocation ($2));
-		current_block.IsCompilerGenerated = true;
-		
-		Foreach f = new Foreach ((Expression) $3, null, null, null, GetLocation ($1));
-		current_block.AddStatement (f);
-		
-		lbag.AddStatement (f, GetLocation ($2));
-		$$ = end_block (GetLocation ($4));
-	  }
-	| FOREACH open_parens_any type identifier_inside_body error
-	  {
-		Error_SyntaxError (yyToken);
-	  
-		start_block (GetLocation ($2));
-		current_block.IsCompilerGenerated = true;
-		
-		var lt = (Tokenizer.LocatedToken) $4;
-		var li = new LocalVariable (current_block, lt.Value, LocalVariable.Flags.ForeachVariable | LocalVariable.Flags.Used, lt.Location);
-		current_block.AddLocalName (li);
-		
-		Foreach f = new Foreach ((Expression) $3, li, null, null, GetLocation ($1));
-		current_block.AddStatement (f);
-		
-		lbag.AddStatement (f, GetLocation ($2));
-		$$ = end_block (GetLocation ($5));
+		$$ = null;
 	  }
 	| FOREACH open_parens_any type identifier_inside_body IN expression CLOSE_PARENS 
 	  {
@@ -5586,9 +5544,9 @@ try_statement
 		$$ = new TryFinally (new TryCatch ((Block) $2, (List<Catch>) $3, GetLocation ($1), true), (Block) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($4));
 	  }
-	| TRY block error
+	| TRY block error 
 	  {
-		Error_SyntaxError (1524, yyToken);
+		report.Error (1524, GetLocation ($1), "Expected catch or finally");
 		$$ = new TryCatch ((Block) $2, null, GetLocation ($1), false);
 	  }
 	;
@@ -5606,11 +5564,15 @@ catch_clauses
 		var l = (List<Catch>) $1;
 		
 		Catch c = (Catch) $2;
-		if (l [l.Count - 1].IsGeneral) {
+		if (l [0].IsGeneral) {
 			report.Error (1017, c.loc, "Try statement already has an empty catch block");
+		} else {
+			if (c.IsGeneral)
+				l.Insert (0, c);
+			else
+				l.Add (c);
 		}
 		
-		l.Add (c);
 		$$ = l;
 	  }
 	;
@@ -5690,13 +5652,6 @@ lock_statement
 		$$ = new Lock ((Expression) $3, (Statement) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
-	| LOCK open_parens_any expression error
-	  {
-		Error_SyntaxError (yyToken);
-
-		$$ = new Lock ((Expression) $3, null, GetLocation ($1));
-		lbag.AddStatement ($$, GetLocation ($2));
-	  }
 	;
 
 fixed_statement
@@ -5758,15 +5713,9 @@ using_statement
 		if ($5 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
 			Warning_EmptyStatement (GetLocation ($5));
 	  
-		$$ = new Using ((Expression) $3, (Statement) $5, GetLocation ($1));
-		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
-	  }
-	| USING open_parens_any expression error
-	  {
-		Error_SyntaxError (yyToken);
-		
-		$$ = new Using ((Expression) $3, null, GetLocation ($1));
-		lbag.AddStatement ($$, GetLocation ($2));
+		Using u = new Using ((Expression) $3, (Statement) $5, GetLocation ($1));
+		lbag.AddStatement (u, GetLocation ($2), GetLocation ($4));
+		$$ = u;
 	  }
 	;
 	
@@ -6010,7 +5959,7 @@ let_clause
 		var sn = new Linq.RangeVariable (lt.Value, lt.Location);
 	  	$$ = new Linq.Let ((Linq.QueryBlock) current_block, sn, (Expression)$5, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($3));
-	  	
+		
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
 		
@@ -6798,12 +6747,12 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 		if (lang_version <= LanguageVersion.ISO_2)
 			FeatureIsNotAvailable (loc, "lambda expressions");
 
-		current_anonymous_method = new LambdaExpression (loc);
+		current_anonymous_method = new LambdaExpression (isAsync, loc);
 	} else {
 		if (lang_version == LanguageVersion.ISO_1)
 			FeatureIsNotAvailable (loc, "anonymous methods");
 			
-		current_anonymous_method = new AnonymousMethodExpression (loc);
+		current_anonymous_method = new AnonymousMethodExpression (isAsync, loc);
 	}
 
 	async_block = isAsync;
@@ -6835,12 +6784,7 @@ AnonymousMethodExpression end_anonymous (ParametersBlock anon_block)
 
 void Error_SyntaxError (int token)
 {
-	Error_SyntaxError (0, token);
-}
-
-void Error_SyntaxError (int error_code, int token)
-{
-	Error_SyntaxError (error_code, token, "Unexpected symbol");
+	Error_SyntaxError (0, token, "Unexpected symbol");
 }
 
 void Error_SyntaxError (int error_code, int token, string msg)
