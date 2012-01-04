@@ -109,7 +109,6 @@
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
     <Compile Include="TypeSystem\ExtensionMethods.cs" />
-    <Compile Include="TypeSystem\IAccessor.cs" />
     <Compile Include="TypeSystem\IAmbience.cs" />
     <Compile Include="TypeSystem\IAssembly.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
@@ -134,7 +133,6 @@
     <Compile Include="TypeSystem\Implementation\DefaultAssemblyReference.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultMemberReference.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
-    <Compile Include="TypeSystem\Implementation\DefaultResolvedAccessor.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedEvent.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedField.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedMethod.cs" />
@@ -142,7 +140,6 @@
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultResolvedTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultSolutionSnapshot.cs" />
-    <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAccessor.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAssembly.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedEvent.cs" />

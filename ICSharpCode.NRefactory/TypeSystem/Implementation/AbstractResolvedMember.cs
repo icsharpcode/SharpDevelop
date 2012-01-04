@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -51,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return unresolved; }
 		}
 		
-		public IList<IMember> InterfaceImplementations {
+		IList<IMember> IMember.InterfaceImplementations {
 			get {
 				throw new NotImplementedException();
 			}
@@ -76,6 +77,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IMemberReference ToMemberReference()
 		{
 			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
+		}
+		
+		internal IMethod GetAccessor(ref IMethod accessorField, IUnresolvedMethod unresolvedAccessor)
+		{
+			if (unresolvedAccessor == null)
+				return null;
+			IMethod result = accessorField;
+			if (result != null) {
+				LazyInit.ReadBarrier();
+				return result;
+			} else {
+				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));
+			}
 		}
 	}
 }
