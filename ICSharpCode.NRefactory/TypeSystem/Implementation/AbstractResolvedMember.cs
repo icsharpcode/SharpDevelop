@@ -47,6 +47,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public IUnresolvedMember UnresolvedMember {
+			get { return unresolved; }
+		}
+		
 		public IList<IMember> InterfaceImplementations {
 			get {
 				throw new NotImplementedException();

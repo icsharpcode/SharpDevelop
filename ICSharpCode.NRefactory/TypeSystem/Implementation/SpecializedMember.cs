@@ -75,7 +75,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public IMember MemberDefinition {
-			get { return memberDefinition; }
+			get { return memberDefinition.MemberDefinition; }
+		}
+		
+		public IUnresolvedMember UnresolvedMember {
+			get { return memberDefinition.UnresolvedMember; }
 		}
 		
 		public IType ReturnType {
