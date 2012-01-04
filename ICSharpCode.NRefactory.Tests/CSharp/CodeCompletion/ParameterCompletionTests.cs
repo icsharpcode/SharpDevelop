@@ -201,7 +201,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var cmp = pctx.CreateCompilation ();
 			var loc = doc.GetLocation (cursorPosition);
 			
-			var engine = new CSharpParameterCompletionEngine (doc, new TestFactory (pctx));
 			
 			var rctx = new CSharpTypeResolveContext (cmp.MainAssembly);
 			rctx = rctx.WithUsingScope (parsedFile.GetUsingScope (loc).Resolve (cmp));
@@ -212,12 +211,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				if (curMember != null)
 					rctx = rctx.WithCurrentMember (curMember.CreateResolved (rctx));
 			}
-			engine.ctx = rctx;
-			
-			engine.CSharpParsedFile = parsedFile;
-			engine.ProjectContent = pctx;
-			engine.Unit = compilationUnit;
-			
+			var engine = new CSharpParameterCompletionEngine (doc, new TestFactory (pctx), pctx, rctx, compilationUnit, parsedFile);
 			return engine.GetParameterDataProvider (cursorPosition, doc.GetCharAt (cursorPosition - 1));
 		}
 		
