@@ -3,6 +3,7 @@
     <Name value="MyUserControl" />
     <DockPadding value="" />
     <Size value="{Width=416, Height=328}" />
+    <AutoScroll value="True" />
     <Controls>
       <System.Windows.Forms.CheckBox>
         <Name value="useOutputPadCheckBox" />
