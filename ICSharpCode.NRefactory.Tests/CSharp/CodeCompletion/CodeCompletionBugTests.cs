@@ -4008,5 +4008,20 @@ public class TestMe
 			Assert.IsNotNull (provider.Find ("classParameter"), "'classParameter' not found.");
 			Assert.IsNotNull (provider.Find ("parameter"), "'parameter' not found.");
 		}
+		
+		[Test()]
+		public void TestParameterTypeNameContext ()
+		{
+			CombinedProviderTest (
+@"class Program
+{
+	public Program ($System.$)
+	{
+	}
+}", provider => {
+				Assert.IsNotNull (provider.Find ("Object"), "'Object' not found.");
+			});
+		}
+		
 	}
 }
