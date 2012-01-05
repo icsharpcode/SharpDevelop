@@ -57,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.RequireControlModifierForClick = options.RequireControlModifierForHyperlinkClick;
 		}
 		
-		Match GetMatch(int startOffset, out int matchOffset)
+		protected Match GetMatch(int startOffset, out int matchOffset)
 		{
 			int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
 			StringSegment relevantText = CurrentContext.GetText(startOffset, endOffset - startOffset);

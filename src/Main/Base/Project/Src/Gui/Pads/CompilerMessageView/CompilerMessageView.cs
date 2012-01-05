@@ -4,13 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -41,10 +47,106 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).CreatePad();
 		}
 		
-		//TextEditorControl textEditorControl = new TextEditorControl();
-		RichTextBox textEditorControl = new RichTextBox();
-		Panel myPanel = new Panel();
-		ToolStrip toolStrip;
+		#region MessageViewLinkElementGenerator
+		enum LinkType { CSharp, NUnit, Cpp }
+		
+		class MessageViewLinkElementGenerator : LinkElementGenerator
+		{
+			LinkType type;
+			
+			public MessageViewLinkElementGenerator(LinkType type)
+				: base(GetRegex(type))
+			{
+				this.type = type;
+				RequireControlModifierForClick = false;
+			}
+			
+			protected override Uri GetUriFromMatch(Match match)
+			{
+				return new Uri(match.Groups[1].Value.Trim());
+			}
+			
+			public override VisualLineElement ConstructElement(int offset)
+			{
+				int matchOffset;
+				Match m = GetMatch(offset, out matchOffset);
+				if (m.Success && matchOffset == offset) {
+					Uri uri = GetUriFromMatch(m);
+					if (uri == null)
+						return null;
+					VisualLineMessageViewLinkText linkText = new VisualLineMessageViewLinkText(CurrentContext.VisualLine, m.Length);
+					linkText.NavigateUri = uri;
+					linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
+					linkText.Line = int.Parse(m.Groups[2].Value);
+					if (type == LinkType.CSharp)
+						linkText.Column = int.Parse(m.Groups[3].Value);
+					return linkText;
+				} else {
+					return null;
+				}
+			}
+			
+			static Regex GetRegex(LinkType type)
+			{
+				switch (type) {
+					case CompilerMessageView.LinkType.CSharp:
+						return new Regex(@"\b(\w:[/\\].*?)\((\d+),(\d+)\)");
+					case CompilerMessageView.LinkType.NUnit:
+						return new Regex(@"\b(\w:[/\\].*?):line\s(\d+)?\r?$");
+					case CompilerMessageView.LinkType.Cpp:
+						return new Regex(@"\b(\w:[/\\].*?)\((\d+)\)");
+					default:
+						throw new Exception("Invalid value for LinkType");
+				}
+			}
+			
+			public static void RegisterGenerators(TextView textView)
+			{
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(LinkType.CSharp));
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(LinkType.NUnit));
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(LinkType.Cpp));
+			}
+		}
+		
+		class VisualLineMessageViewLinkText : VisualLineLinkText
+		{
+			/// <summary>
+			/// Creates a visual line text element with the specified length.
+			/// It uses the <see cref="ITextRunConstructionContext.VisualLine"/> and its
+			/// <see cref="VisualLineElement.RelativeTextOffset"/> to find the actual text string.
+			/// </summary>
+			public VisualLineMessageViewLinkText(VisualLine parentVisualLine, int length) : base(parentVisualLine, length)
+			{
+				this.RequireControlModifierForClick = false;
+			}
+			
+			public int Line { get; set; }
+			public int Column { get; set; }
+			
+			protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+			{
+				if (e.ChangedButton == MouseButton.Left && !e.Handled && LinkIsClickable() && NavigateUri.IsFile) {
+					FileService.JumpToFilePosition(NavigateUri.LocalPath, Line, Column);
+					e.Handled = true;
+				}
+			}
+			
+			protected override VisualLineText CreateInstance(int length)
+			{
+				return new VisualLineMessageViewLinkText(ParentVisualLine, length) {
+					NavigateUri = this.NavigateUri,
+					Line = this.Line,
+					Column = this.Column,
+					TargetName = this.TargetName,
+					RequireControlModifierForClick = this.RequireControlModifierForClick
+				};
+			}
+		}
+		#endregion
+		
+		TextEditor textEditor = new TextEditor();
+		DockPanel panel = new DockPanel();
+		ToolBar toolStrip;
 		
 		List<MessageViewCategory> messageCategories = new List<MessageViewCategory>();
 		
@@ -67,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			WorkbenchSingleton.DebugAssertMainThread();
 			if (selectedCategory < 0) {
-				textEditorControl.Text = "";
+				textEditor.Text = "";
 			} else {
 				lock (messageCategories[selectedCategory].SyncRoot) {
 					// accessing a categories' text takes its lock - but we have to take locks in the same
@@ -106,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public override object Control {
 			get {
-				return myPanel;
+				return panel;
 			}
 		}
 		
@@ -116,38 +218,28 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			AddCategory(TaskService.BuildMessageViewCategory);
 			
-			myPanel.SuspendLayout();
-			textEditorControl.Dock = DockStyle.Fill;
-			textEditorControl.BorderStyle = BorderStyle.FixedSingle;
-			textEditorControl.BackColor = SystemColors.Window;
-			textEditorControl.LinkClicked += delegate(object sender, LinkClickedEventArgs e) {
-				FileService.OpenFile("browser://" + e.LinkText);
-			};
+			textEditor.IsReadOnly = true;
 			
-			// auto-scrolling on RichTextBox only works when HideSelection=false.
-			// See comments to http://weblogs.asp.net/jdanforth/archive/2004/01/23/62026.aspx
-			textEditorControl.HideSelection = false;
-			
-			textEditorControl.ReadOnly = true;
-			
-			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
+			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
 			
-			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+			
+			textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
+			textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
-			//textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
-			textEditorControl.DoubleClick += TextEditorControlDoubleClick;
+			MessageViewLinkElementGenerator.RegisterGenerators(textEditor.TextArea.TextView);
+			textEditor.TextArea.TextView.ElementGenerators.OfType<LinkElementGenerator>().ForEach(x => x.RequireControlModifierForClick = false);
 			
-			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
-			toolStrip.Stretch   = true;
-			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			toolStrip = ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
+			toolStrip.SetValue(DockPanel.DockProperty, Dock.Top);
 			
-			myPanel.Controls.AddRange(new Control[] { textEditorControl, toolStrip} );
+			panel.Children.Add(toolStrip);
+			panel.Children.Add(textEditor);
 			
 			SetWordWrap();
-			myPanel.ResumeLayout(false);
 			DisplayActiveCategory();
 			ProjectService.SolutionLoaded += SolutionLoaded;
 		}
@@ -162,12 +254,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void SetWordWrap()
 		{
 			bool wordWrap = this.WordWrap;
-			textEditorControl.WordWrap = wordWrap;
-			if (wordWrap) {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-			} else {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
-			}
+			textEditor.WordWrap = wordWrap;
 		}
 		
 		#region Category handling
@@ -277,15 +364,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				text = b.ToString();
 			}
 			
-			//NativeMethods.SetWindowRedraw(textEditorControl.Handle, false);
-			if (clear) {
-				textEditorControl.Text = text;
-			} else {
-				textEditorControl.SelectionStart = textEditorControl.TextLength;
-				textEditorControl.SelectedText = text;
-			}
-			//NativeMethods.SetWindowRedraw(textEditorControl.Handle, true);
-			textEditorControl.SelectionStart = textEditorControl.TextLength;
+			if (clear)
+				textEditor.Text = text;
+			else
+				textEditor.AppendText(text);
+			
+			textEditor.ScrollToEnd();
 		}
 		
 		public void SelectCategory(string categoryName)
@@ -305,8 +389,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageViewCategory category = (MessageViewCategory)messageCategories[i];
 				if (category.Category == categoryName) {
 					selectedCategory = i;
-					textEditorControl.Text = StringParser.Parse(text);
-					//textEditorControl.Refresh();
+					textEditor.Text = StringParser.Parse(text);
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 					break;
 				}
@@ -325,45 +408,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		/// <summary>
-		/// Occurs when the mouse pointer is over the control and a
-		/// mouse button is pressed.
-		/// </summary>
-		void TextEditorControlDoubleClick(object sender, EventArgs e)
-		{
-			string fullText = textEditorControl.Text;
-			// Any text?
-			if (fullText.Length > 0) {
-				//int line = textEditorControl.ActiveTextAreaControl.Caret.Line;
-				//string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
-				Point clickPos = textEditorControl.PointToClient(System.Windows.Forms.Control.MousePosition);
-				int index = textEditorControl.GetCharIndexFromPosition(clickPos);
-				int start = index;
-				// find start of current line
-				while (--start > 0 && fullText[start - 1] != '\n');
-				// find end of current line
-				while (++index < fullText.Length && fullText[index] != '\n');
-				
-				string textLine = fullText.Substring(start, index - start);
-				
-				FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
-				if (lineReference != null) {
-					// Open matching file.
-					FileService.JumpToFilePosition(lineReference.FileName, lineReference.Line, lineReference.Column);
-				}
-			}
-		}
-		
-		/// <summary>
 		/// Changes wordwrap settings if that property has changed.
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == "WordWrap") {
 				SetWordWrap();
-				ToolbarService.UpdateToolbar(toolStrip);
 			}
 			if (e.Key == "DefaultFont") {
-				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
+				
+				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);
+				textEditor.FontSize = Math.Round(font.Size * 96.0 / 72.0);
 			}
 		}
 		
@@ -393,8 +449,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableCopy {
 			get {
-				//return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
-				return textEditorControl.SelectionLength > 0;
+				return textEditor.SelectionLength > 0;
 			}
 		}
 		
@@ -412,8 +467,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableSelectAll {
 			get {
-				//return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
-				return textEditorControl.TextLength > 0;
+				return textEditor.Document.TextLength > 0;
 			}
 		}
 		
@@ -423,8 +477,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Copy()
 		{
-			//textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
-			textEditorControl.Copy();
+			textEditor.Copy();
 		}
 		
 		public void Paste()
@@ -437,8 +490,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectAll()
 		{
-			//textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
-			textEditorControl.SelectAll();
+			textEditor.SelectAll();
 		}
 		#endregion
 	}

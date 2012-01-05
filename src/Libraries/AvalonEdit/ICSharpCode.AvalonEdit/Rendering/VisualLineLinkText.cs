@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return base.CreateTextRun(startVisualColumn, context);
 		}
 		
-		bool LinkIsClickable()
+		protected bool LinkIsClickable()
 		{
 			if (NavigateUri == null)
 				return false;
