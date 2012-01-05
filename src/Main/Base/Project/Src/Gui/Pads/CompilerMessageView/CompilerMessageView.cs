@@ -398,6 +398,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (e.Key == "WordWrap") {
 				SetWordWrap();
+				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
 			if (e.Key == "DefaultFont") {
 				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
