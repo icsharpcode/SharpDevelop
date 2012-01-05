@@ -205,6 +205,7 @@
     <Compile Include="CSharp\CodeCompletion\PreProcessorTests.cs" />
     <Compile Include="CSharp\CodeCompletion\TestBase.cs" />
     <Compile Include="CSharp\CodeCompletion\VariableDeclarationStatementTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\NameContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
