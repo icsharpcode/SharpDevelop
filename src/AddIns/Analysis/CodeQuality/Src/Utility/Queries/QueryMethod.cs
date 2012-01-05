@@ -24,7 +24,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		{	
 		}
 		
-		
 		private List <Method> QueryForMethod()
 		{
 			IEnumerable<Method> query  = new List<Method>();
@@ -35,17 +34,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			return query.ToList();
 		}
 		
-		/*
-		private List <INode> QueryForMethod()
-		{
-			IEnumerable<INode> query  = new List<INode>();
-			query  = from ns in MainModule.Namespaces
-				from type in ns.Types
-				from method in type.Methods
-				select method;
-			return query.ToList();
-		}
-		*/
 		
 		public override List<ItemWithAction> GetQueryList()
 		{
@@ -58,7 +46,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     });
 			items.Add(new ItemWithAction()
 			                     {
-			                     	Description = "Cyclomatic Complexity",
+			                     	Description = "IL Cyclomatic Complexity",
 			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
 			                     	Action = ExecuteMethodComplexity
 			                     });

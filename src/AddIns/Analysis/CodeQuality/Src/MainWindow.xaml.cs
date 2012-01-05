@@ -140,7 +140,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				graphLayout.ChangeGraph(graph);
 				var viewModel = this.DataContext as MainWindowViewModel;
 				//testhalber
-				viewModel.SelectedNode = item.INode;
+				viewModel.SelectedTreeNode = item.INode;
 			}
 		}
 		

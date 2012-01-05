@@ -128,7 +128,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public bool MetrixTabEnable
 		{
-			get {return SelectedNode != null;}
+			get {return SelectedTreeNode != null;}
 		}
 		
 		string typeInfo;
@@ -144,7 +144,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public Module MainModule {
 			get { return mainModule; }
-			set { mainModule = value;
+			set {
+				mainModule = value;
 				base.RaisePropertyChanged(() =>this.MainModule);
 				Summary = String.Format("Module Name: {0}  Namespaces: {1}  Types {2} Methods: {3}  Fields: {4}",
 				                        mainModule.Name,
@@ -152,17 +153,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 				                        mainModule.TypesCount,
 				                        mainModule.MethodsCount,
 				                        mainModule.FieldsCount);
-				//queryModule = new QueryMethod(MainModule);
 			}
 		}
 		
 		
-		private INode selectedNode;
+		private INode selectedTreeNode;
 		
-		public INode SelectedNode {
-			get { return selectedNode; }
-			set { selectedNode = value;
-				base.RaisePropertyChanged(() =>this.SelectedNode);
+		public INode SelectedTreeNode {
+			get { return selectedTreeNode; }
+			set { selectedTreeNode = value;
+				base.RaisePropertyChanged(() =>this.SelectedTreeNode);
 				base.RaisePropertyChanged(() =>this.MetrixTabEnable);
 				Summary = UpdateToolStrip();
 			}
@@ -171,7 +171,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		string UpdateToolStrip()
 		{
-			var t = SelectedNode as Type;
+			var t = SelectedTreeNode as Type;
 			if (t != null)
 			{
 				return string.Format("Type Namer {0}  Methods {1} Fields {2}",
@@ -179,7 +179,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				                     t.GetAllMethods().Count(),
 				                     t.GetAllFields().Count());
 			}
-			var ns = SelectedNode as Namespace;
+			var ns = SelectedTreeNode as Namespace;
 			if ( ns != null) {
 				return string.Format("Namespace Name {0}  Types : {1}  Methods: {2} Fields : {3}",
 				                     ns.Name,
@@ -212,25 +212,26 @@ namespace ICSharpCode.CodeQualityAnalysis
 	
 		void ActivateMetricsExecute ()
 		{
+			BaseQuery query = null;
 			itemsWithCommand.Clear();
+			
 			switch (SelectedMetricsLevel) {
 				case MetricsLevel.Assembly:
-					
+					query = new QueryAssembly(MainModule);
 					break;
 				case MetricsLevel.Namespace:
-					QueryNameSpace queryNs = new QueryNameSpace(MainModule);
-					ItemsWithCommand = queryNs.GetQueryList();
+					query = new QueryNameSpace(MainModule);
 					break;
 				case MetricsLevel.Type:
-					
+					query = new QueryType(MainModule);
 					break;
 				case MetricsLevel.Method:
-					QueryMethod queryModule = new QueryMethod(MainModule);
-					ItemsWithCommand = queryModule.GetQueryList();
+					query = new QueryMethod(MainModule);
 					break;
 				default:
 					throw new Exception("Invalid value for MetricsLevel");
 			}
+			ItemsWithCommand = query.GetQueryList();
 		}
 		
 		#endregion
@@ -263,10 +264,20 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		void ExecuteSelectedItem()
 		{
-			TreeValueProperty = SelectedItemWithCommand.Metrics;
-			var list = SelectedItemWithCommand.Action.Invoke();
-			if (list != null ) {
-				Nodes = new ObservableCollection<INode>(list);
+			/*
+			var s = SelectedTreeNode;
+			var b = s as Namespace;
+			var c = s as Type;
+			var d = s as Method;
+			var a = s as Module;
+			*/
+			if (SelectedItemWithCommand != null) {
+				TreeValueProperty = SelectedItemWithCommand.Metrics;
+				
+				var list = SelectedItemWithCommand.Action.Invoke();
+				if (list != null ) {
+					Nodes = new ObservableCollection<INode>(list);
+				}
 			}
 		}
 		

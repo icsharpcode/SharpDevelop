@@ -21,11 +21,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			MainModule = mainModule;
 		}
 		
-		public Module MainModule {get; private set;}
+		protected Module MainModule {get; private set;}
 		
 		public virtual List<ItemWithAction> GetQueryList ()
 		{
-			throw new InvalidOperationException("Must override");
+			return null;
 		}
 	}
 }
