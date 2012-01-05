@@ -15,6 +15,7 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
@@ -242,6 +243,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetWordWrap();
 			DisplayActiveCategory();
 			ProjectService.SolutionLoaded += SolutionLoaded;
+			
+			textEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(textEditor.TextArea));
 		}
 
 		void SolutionLoaded(object sender, SolutionEventArgs e)
