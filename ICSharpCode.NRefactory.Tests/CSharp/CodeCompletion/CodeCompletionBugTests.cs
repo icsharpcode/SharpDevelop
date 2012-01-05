@@ -4054,5 +4054,47 @@ namespace Test
 }");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
+		
+		[Test()]
+		public void TestNamedParameters ()
+		{
+			CombinedProviderTest (
+@"class MyClass {
+    string Bar { get; set; }
+
+    void MethodOne(string foo="""", string bar="""")
+	{
+    }
+
+    void MethodTwo() {
+        $MethodOne(b$
+    }
+}", provider => {
+				Assert.IsNotNull (provider.Find ("bar"), "'bar' not found.");
+				Assert.IsNotNull (provider.Find ("foo"), "'foo' not found.");
+			});
+		}
+		
+		[Test()]
+		public void TestNamedParametersConstructorCase ()
+		{
+			CombinedProviderTest (
+@"class MyClass {
+    MyClass(string foo="""", string bar="""")
+	{
+    }
+
+    void MethodTwo() {
+        $new MyClass(b$
+    }
+}", provider => {
+				Assert.IsNotNull (provider.Find ("bar"), "'bar' not found.");
+				Assert.IsNotNull (provider.Find ("foo"), "'foo' not found.");
+			});
+		}
+		
+		
+
+
 	}
 }
