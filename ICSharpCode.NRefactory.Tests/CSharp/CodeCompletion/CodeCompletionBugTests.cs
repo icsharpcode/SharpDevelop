@@ -4035,7 +4035,24 @@ public class TestMe
 			});
 		}
 		
+		[Test()]
+		public void TestMethodNameContext ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+namespace Test 
+{
+	class Program
+	{
+		void SomeMethod ()
+		{
+			
+		}
 		
-		
+		$public void T$
+	}
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
 	}
 }
