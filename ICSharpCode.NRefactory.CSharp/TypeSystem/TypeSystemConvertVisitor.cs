@@ -420,7 +420,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertParameters(m.Parameters, methodDeclaration.Parameters);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {
 				m.Accessibility = Accessibility.None;
-				m.InterfaceImplementations.Add(new DefaultMemberReference(
+				m.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					m.EntityType, ConvertType(methodDeclaration.PrivateImplementationType), m.Name,
 					m.TypeParameters.Count, GetParameterTypes(m.Parameters)));
 			}
@@ -597,7 +597,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
 			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
-				p.InterfaceImplementations.Add(new DefaultMemberReference(
+				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, ConvertType(propertyDeclaration.PrivateImplementationType), p.Name));
 			}
 			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p, "get_");
@@ -625,7 +625,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
-				p.InterfaceImplementations.Add(new DefaultMemberReference(
+				p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					p.EntityType, ConvertType(indexerDeclaration.PrivateImplementationType), p.Name, 0, GetParameterTypes(p.Parameters)));
 			}
 			
@@ -726,7 +726,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			if (!eventDeclaration.PrivateImplementationType.IsNull) {
 				e.Accessibility = Accessibility.None;
-				e.InterfaceImplementations.Add(new DefaultMemberReference(
+				e.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(
 					e.EntityType, ConvertType(eventDeclaration.PrivateImplementationType), e.Name));
 			}
 			

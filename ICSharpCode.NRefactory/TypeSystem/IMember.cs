@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the interfaces that are explicitly implemented by this member.
 		/// </summary>
-		IList<IMemberReference> InterfaceImplementations { get; }
+		IList<IMemberReference> ExplicitInterfaceImplementations { get; }
 		
 		/// <summary>
 		/// Gets if the member is virtual. Is true only if the "virtual" modifier was used, but non-virtual
