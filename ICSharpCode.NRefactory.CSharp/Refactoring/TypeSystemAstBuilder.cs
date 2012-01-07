@@ -39,9 +39,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <summary>
 		/// Creates a new TypeSystemAstBuilder.
 		/// </summary>
-		/// <param name="context">
-		/// Context used for resolving types.
-		/// </param>
 		public TypeSystemAstBuilder()
 		{
 			InitProperties();
