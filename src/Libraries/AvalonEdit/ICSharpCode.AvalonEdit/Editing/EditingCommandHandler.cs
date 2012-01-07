@@ -387,8 +387,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 				
 				// convert text back to correct newlines for this document
 				string newLine = TextUtilities.GetNewLineFromDocument(textArea.Document, textArea.Caret.Line);
-				string text = (string)dataObject.GetData(DataFormats.UnicodeText);
-				text = TextUtilities.NormalizeNewLines(text, newLine);
+				string text;
+				try {
+					text = (string)dataObject.GetData(DataFormats.UnicodeText);
+					text = TextUtilities.NormalizeNewLines(text, newLine);
+				} catch (OutOfMemoryException) {
+					return;
+				}
 				
 				if (!string.IsNullOrEmpty(text)) {
 					bool fullLine = textArea.Options.CutCopyWholeLine && dataObject.GetDataPresent(LineSelectedType);
