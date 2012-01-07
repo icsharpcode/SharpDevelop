@@ -102,6 +102,7 @@ namespace Grunwald.BooBinding
 		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
 		{
 			ReferenceProjectItem[] additionalReferences = {
+				new ReferenceProjectItem(this, "mscorlib"),
 				new ReferenceProjectItem(this, "System")
 			};
 			ReferenceProjectItem[] booReferences = {

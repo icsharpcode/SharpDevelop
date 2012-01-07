@@ -145,7 +145,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
 		{
-			return MSBuildInternals.ResolveAssemblyReferences(this);
+			ReferenceProjectItem[] additionalItems = {
+				new ReferenceProjectItem(this, "mscorlib")
+			};
+			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
 		}
 		
 		#region CreateProjectItem
@@ -177,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 				case "WebReferences":
 					return new WebReferencesProjectItem(this, item);
-				
+					
 				case "WCFMetadata":
 					return new ServiceReferencesProjectItem(this, item);
 					
