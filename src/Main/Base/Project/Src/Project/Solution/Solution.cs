@@ -1193,9 +1193,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			return newSolution;
 		}
 		
-		void UpdateMSBuildProperties()
+		public void UpdateMSBuildProperties()
 		{
-			MSBuildProjectCollection.SetGlobalProperty("SolutionDir", Directory);
+			MSBuildProjectCollection.SetGlobalProperty("SolutionDir", Directory + @"\");
 		}
 		
 		#endregion

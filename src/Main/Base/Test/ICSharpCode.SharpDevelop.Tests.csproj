@@ -33,6 +33,7 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -108,6 +109,7 @@
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
     <Compile Include="ServiceReferences\WebServiceMetadataSetTests.cs" />
+    <Compile Include="SolutionTests.cs" />
     <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
