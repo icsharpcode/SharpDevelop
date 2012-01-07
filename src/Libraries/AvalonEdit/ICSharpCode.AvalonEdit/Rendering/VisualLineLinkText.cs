@@ -51,6 +51,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return base.CreateTextRun(startVisualColumn, context);
 		}
 		
+		/// <summary>
+		/// Gets whether the link is currently clickable.
+		/// </summary>
+		/// <remarks>Returns true when control is pressed; or when
+		/// <see cref="RequireControlModifierForClick"/> is disabled.</remarks>
 		protected bool LinkIsClickable()
 		{
 			if (NavigateUri == null)

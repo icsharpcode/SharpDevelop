@@ -49,16 +49,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		#region MessageViewLinkElementGenerator
-		enum LinkType { CSharp, NUnit, Cpp }
-		
 		class MessageViewLinkElementGenerator : LinkElementGenerator
 		{
-			LinkType type;
-			
-			public MessageViewLinkElementGenerator(LinkType type)
-				: base(GetRegex(type))
+			public MessageViewLinkElementGenerator(Regex regex)
+				: base(regex)
 			{
-				this.type = type;
 				RequireControlModifierForClick = false;
 			}
 			
@@ -67,45 +62,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return new Uri(match.Groups[1].Value.Trim());
 			}
 			
-			public override VisualLineElement ConstructElement(int offset)
+			protected override VisualLineElement ConstructElementFromMatch(Match m)
 			{
-				int matchOffset;
-				Match m = GetMatch(offset, out matchOffset);
-				if (m.Success && matchOffset == offset) {
-					Uri uri = GetUriFromMatch(m);
-					if (uri == null)
-						return null;
-					VisualLineMessageViewLinkText linkText = new VisualLineMessageViewLinkText(CurrentContext.VisualLine, m.Length);
-					linkText.NavigateUri = uri;
-					linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
-					linkText.Line = int.Parse(m.Groups[2].Value);
-					if (type == LinkType.CSharp)
-						linkText.Column = int.Parse(m.Groups[3].Value);
-					return linkText;
-				} else {
+				Uri uri = GetUriFromMatch(m);
+				if (uri == null)
 					return null;
-				}
-			}
-			
-			static Regex GetRegex(LinkType type)
-			{
-				switch (type) {
-					case CompilerMessageView.LinkType.CSharp:
-						return new Regex(@"\b(\w:[/\\].*?)\((\d+),(\d+)\)");
-					case CompilerMessageView.LinkType.NUnit:
-						return new Regex(@"\b(\w:[/\\].*?):line\s(\d+)?\r?$");
-					case CompilerMessageView.LinkType.Cpp:
-						return new Regex(@"\b(\w:[/\\].*?)\((\d+)\)");
-					default:
-						throw new Exception("Invalid value for LinkType");
-				}
+				var linkText = new VisualLineMessageViewLinkText(CurrentContext.VisualLine, m.Length);
+				linkText.NavigateUri = uri;
+				linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
+				linkText.Line = int.Parse(m.Groups[2].Value);
+				if (m.Groups.Count > 3)
+					linkText.Column = int.Parse(m.Groups[3].Value);
+				return linkText;
 			}
 			
 			public static void RegisterGenerators(TextView textView)
 			{
-				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(LinkType.CSharp));
-				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(LinkType.NUnit));
-				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(LinkType.Cpp));
+				// C#:
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(
+					new Regex(@"\b(\w:[/\\].*?)\((\d+),(\d+)\)")));
+				// NUnit:
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(
+					new Regex(@"\b(\w:[/\\].*?):line\s(\d+)?$")));
+				// C++:
+				textView.ElementGenerators.Add(new MessageViewLinkElementGenerator(
+					new Regex(@"\b(\w:[/\\].*?)\((\d+)\)")));
 			}
 		}
 		
