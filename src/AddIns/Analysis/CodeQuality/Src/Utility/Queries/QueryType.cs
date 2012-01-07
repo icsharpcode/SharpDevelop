@@ -53,7 +53,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			return items;
 		}
 		
-		private List<INode> ExecuteNotImplemented()
+		private List<TreeMapViewModel> ExecuteNotImplemented()
 		{
 			MessageService.ShowMessage("Not Implemented yet","CodeQualityAnalysis");
 			return null;

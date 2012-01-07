@@ -24,7 +24,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		{	
 		}
 		
-		private List <Method> QueryForMethod()
+		private List <Method> MethodQuery()
 		{
 			IEnumerable<Method> query  = new List<Method>();
 			query  = from ns in MainModule.Namespaces
@@ -44,6 +44,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     	Metrics =  "Instructions.Count",
 			                     	Action = ExecuteMethodILInstructions
 			                     });
+			/*
 			items.Add(new ItemWithAction()
 			                     {
 			                     	Description = "IL Cyclomatic Complexity",
@@ -56,40 +57,55 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     	Metrics = Metrics.Variables.ToString(),
 			                     	Action = ExecuteMethodVariables
 			                     });
+			                     */
 			return items;
 		}
 		
 		
-		private List<INode> ExecuteMethodILInstructions()
+		private List<TreeMapViewModel> ExecuteMethodILInstructions()
 		{
-			var intermediate = QueryForMethod();
+			var intermediate = MethodQuery();
 			var filtered = from method in intermediate
 				where method.Instructions.Count > 0
 				select method;
-			return filtered.Cast<INode>().ToList();
+			
+			int i = 0;
+			var list = filtered.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+			                               });
+//			var list = intermediate.Select(m =>  new TreeMapViewModel()
+//			                               {
+//			                               	Name = m.Name,
+//			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+//			                               });
+		
+			return list.ToList();
+			//return filtered.Cast<TreeMapViewModel>().ToList();
 		}
 		
 		
-		private List<INode> ExecuteMethodComplexity ()
+		private List<TreeMapViewModel> ExecuteMethodComplexity ()
 		{
-			var intermediate = QueryForMethod();
+			var intermediate = MethodQuery();
 			var filtered = from method in intermediate
 				where method.CyclomaticComplexity > 0
 				select method;
-			return filtered.Cast<INode>().ToList();
+			return filtered.Cast<TreeMapViewModel>().ToList();
 		}
 	
 		
-		private List<INode> ExecuteMethodVariables ()
+		private List<TreeMapViewModel> ExecuteMethodVariables ()
 		{
-			var intermediate = QueryForMethod();
+			var intermediate = MethodQuery();
 // eliminate 0-values reduce time for my test assembly from 6 to 1 sek
 
 			var filtered = from method in intermediate
 				where method.Variables > 0
 				select method;
 			
-			return filtered.Cast<INode>().ToList();
+			return filtered.Cast<TreeMapViewModel>().ToList();
 		}
 	}
 }

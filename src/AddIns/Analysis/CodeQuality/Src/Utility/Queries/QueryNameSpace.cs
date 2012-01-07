@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using System.Linq;
 
 namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 {
@@ -21,6 +22,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		{
 		}
 		
+		private List <Namespace> NameSpaceQuery()
+		{
+			IEnumerable<Namespace> query  = new List<Namespace>();
+			query  = from ns in MainModule.Namespaces
+				select ns;
+			return query.ToList();
+		}
 		
 		public override List<ItemWithAction> GetQueryList()
 		{
@@ -29,40 +37,108 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     {
 			                     	Description = "# of IL Instructions",
 			                     	Metrics =  "Instructions.Count",
-			                     	Action = ExecuteNotImplemented
+			                     	Action = ExecuteILInstructions
 			                     });
 			items.Add(new ItemWithAction()
 			                     {
 			                     	Description = "# of Methods",
 			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
-			                     	Action = ExecuteNotImplemented
+			                     	Action = MethodsCount
 			                     });
 			items.Add(new ItemWithAction()
 			                     {
 			                     	Description = "# of Fields",
 			                     	Metrics = Metrics.Variables.ToString(),
-			                     	Action = ExecuteNotImplemented
-			                     });
-			items.Add(new ItemWithAction()
-			                     {
-			                     	Description = "# of Types",
-			                     	Metrics = Metrics.Variables.ToString(),
-			                     	Action = ExecuteNotImplemented
+			                     	Action = FieldsCount
 			                     });
 			
 			items.Add(new ItemWithAction()
 			                     {
-			                     	Description = "# of Namespaces",
+			                     	Description = "# of Types",
 			                     	Metrics = Metrics.Variables.ToString(),
-			                     	Action = ExecuteNotImplemented
+			                     	Action = TypesCount
 			                     });
+			
+//			items.Add(new ItemWithAction()
+//			                     {
+//			                     	Description = "# of Namespaces",
+//			                     	Metrics = Metrics.Variables.ToString(),
+//			                     	Action = ExecuteNotImplemented
+//			                     });
 			return items;
 		}
 		
-		private List<INode> ExecuteNotImplemented()
+		private List<TreeMapViewModel> ExecuteNotImplemented()
 		{
 			MessageService.ShowMessage("Not Implemented yet","CodeQualityAnalysis");
 			return null;
+		}
+		
+		
+		
+		private List<TreeMapViewModel> ExecuteILInstructions ()
+		{
+			//var list = new List<TreeMapNode>();
+			var intermediate = this.NameSpaceQuery();
+			var i = 0;
+			/*
+			foreach (var element in intermediate)
+			{
+				var node = new TreeMapNode();
+				node.Name = element.Name;
+				foreach (var m in element.GetAllMethods()) {
+					i = i + m.Instructions.Count;
+				}
+				node.Numval = i;
+				list.Add(node);
+				i = 0;
+			}
+			*/
+			
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+			                               });
+			return list.ToList();
+		}
+		
+		
+		private List<TreeMapViewModel> MethodsCount()
+		{
+			var intermediate = this.NameSpaceQuery();
+			
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval = m.GetAllMethods().ToList().Count
+			                               });
+			return list.ToList();
+		}
+		
+		
+		private List<TreeMapViewModel> FieldsCount()
+		{
+			var intermediate = this.NameSpaceQuery();
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval = m.GetAllFields().ToList().Count
+			                               });
+			return list.ToList();
+		}
+		
+		
+		private List<TreeMapViewModel> TypesCount()
+		{
+			var intermediate = this.NameSpaceQuery();
+			
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval = m.GetAllTypes().ToList().Count
+			                               });
+			return list.ToList();
 		}
 	}
 }

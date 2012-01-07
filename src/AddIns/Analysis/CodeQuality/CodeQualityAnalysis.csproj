@@ -156,6 +156,7 @@
     <Compile Include="Src\Utility\Queries\QueryMethod.cs" />
     <Compile Include="Src\Utility\Queries\QueryNameSpace.cs" />
     <Compile Include="Src\Utility\Queries\QueryType.cs" />
+    <Compile Include="Src\Utility\Queries\TreeMapViewModel.cs" />
     <Compile Include="Src\Utility\VisibleMatrix.cs" />
     <Page Include="Resources\GridSplitterTemplate.xaml" />
     <Page Include="Resources\GraphTemplate.xaml">

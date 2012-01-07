@@ -264,19 +264,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		void ExecuteSelectedItem()
 		{
-			/*
-			var s = SelectedTreeNode;
-			var b = s as Namespace;
-			var c = s as Type;
-			var d = s as Method;
-			var a = s as Module;
-			*/
 			if (SelectedItemWithCommand != null) {
-				TreeValueProperty = SelectedItemWithCommand.Metrics;
-				
+//				TreeValueProperty = SelectedItemWithCommand.Metrics;
+				TreeValueProperty ="Numval";
 				var list = SelectedItemWithCommand.Action.Invoke();
 				if (list != null ) {
-					Nodes = new ObservableCollection<INode>(list);
+					Nodes = new ObservableCollection<TreeMapViewModel>(list);
 				}
 			}
 		}
@@ -285,13 +278,13 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		#region ShowTreeMap Treemap
 		
-		private ObservableCollection<INode> nodes;
+		private ObservableCollection<TreeMapViewModel> nodes;
 		
-		public ObservableCollection<INode> Nodes {
+		public ObservableCollection<TreeMapViewModel> Nodes {
 			get {
 				if (nodes == null)
 				{
-					nodes = new ObservableCollection<INode>();
+					nodes = new ObservableCollection<TreeMapViewModel>();
 				}
 				return nodes;
 			}
@@ -341,9 +334,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public ItemWithAction()
 		{
 		}
-		
 		public string Description	{get; set;}
-		public Func<List<INode>>  Action {get; set;}
+		public Func<List<TreeMapViewModel>>  Action {get; set;}
 		public  string Metrics {get;set;}
 	}
 }
