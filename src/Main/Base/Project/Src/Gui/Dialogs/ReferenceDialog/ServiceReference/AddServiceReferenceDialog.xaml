@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference.AddServiceReferenceDialog"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:src="clr-namespace:ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog"
+	xmlns:web="clr-namespace:System.Web.Services.Description;assembly=System.Web.Services"
+	WindowStartupLocation="CenterOwner"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	Height="600"
+	Width="700"
+	Title="{Binding Title}">
+	
+	<!--
+
+ 	http://blogs.msdn.com/b/chkoenig/archive/2008/05/24/hierarchical-databinding-in-wpf.aspx
+	http://www.codeproject.com/KB/WPF/TreeViewWithViewModel.aspx?msg=3663052
+	-->
+	
+	<Window.Resources>
+		<HierarchicalDataTemplate x:Key="HeaderTemplate"
+			ItemsSource="{Binding SubItems}">
+			<StackPanel Orientation="Horizontal">
+				<Image Width="16" Height="16" Source="{Binding Image}"/>
+				<TextBlock Text="{Binding Description}"/>
+			</StackPanel>
+		
+		</HierarchicalDataTemplate>
+	</Window.Resources>
+	
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="2*" />
+			<RowDefinition	Height="*"></RowDefinition>
+			<RowDefinition	Height="25"></RowDefinition>
+			<RowDefinition	Height="5"></RowDefinition>
+			<RowDefinition	Height="7*"></RowDefinition>
+			<RowDefinition	Height="2*"></RowDefinition>
+			<RowDefinition	Height="20"></RowDefinition>
+			<RowDefinition	Height="30"></RowDefinition>
+			<RowDefinition	Height="40"></RowDefinition>
+		</Grid.RowDefinitions>
+		
+		<TextBox Grid.ColumnSpan="3"
+		         Margin="4,0,4,0"
+		         TextWrapping="Wrap"
+		         Text="{Binding HeadLine}">
+		</TextBox>
+		
+		<TextBlock Grid.Row="1" Text="Address:" Margin="5,0,4,0" VerticalAlignment="Bottom"></TextBlock>
+		
+		<Grid Grid.Row="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="2*"></ColumnDefinition>
+				<ColumnDefinition Width="*"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<ComboBox
+				Margin="4,0,4,0"
+				IsEditable="True"
+				ItemsSource="{Binding MruServices}"
+				IsSynchronizedWithCurrentItem="True"
+				LostFocus="Cbo_LostFocus"
+				SelectedItem="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
+			</ComboBox>
+			
+			<widgets:UniformGridWithSpacing 
+				Columns="2"
+				Grid.Column="1"
+				HorizontalAlignment="Left"
+				Margin="4,0,4,0">
+				<Button
+					Content="Go" HorizontalContentAlignment="Center"
+					Command="{Binding GoCommand}" />
+				
+				<Button
+					Content="Discover" HorizontalContentAlignment="Center"
+					Command="{Binding DiscoverCommand}" />
+			
+			</widgets:UniformGridWithSpacing>
+		</Grid>
+		
+		<!-- main area -->
+		<Grid Grid.Row="4" >
+			<Grid.RowDefinitions>
+			<RowDefinition Height="20"></RowDefinition>
+			<RowDefinition></RowDefinition>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"></ColumnDefinition>
+				<ColumnDefinition Width="2*"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<TextBlock Text="Services:" Margin="4,0,4,0"></TextBlock>
+			<TextBlock Grid.Column="1" Text="Operations:" Margin="4,0,4,0"></TextBlock>
+			<TreeView 
+				Grid.Row="1"
+				Grid.Column="0"
+				Margin="4"
+				Name="tree"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				ItemsSource="{Binding Path=ServiceItems}"
+				ItemTemplate="{StaticResource HeaderTemplate}"
+				SelectedItemChanged="Tree_SelectedItemChanged">
+			</TreeView>
+			
+			<GridSplitter
+				Grid.Row="1"
+				Grid.Column="0"
+				Width="2"/>
+			<ListBox Grid.Column="1" Grid.Row="1"  Margin="4"
+			         ItemsSource="{Binding Path=TwoValues}">
+				
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel Orientation="Horizontal">
+							<Image Width="16" Height="16" Source="{Binding Image}"/>
+							<TextBlock Text="{Binding Description}"/>
+						</StackPanel>
+					</DataTemplate>
+				
+				</ListBox.ItemTemplate>
+			</ListBox>
+		
+		</Grid>
+		
+		<Border Grid.Row="5" Grid.ColumnSpan="3" Margin="4,0,4,0"  BorderThickness="2" BorderBrush="LightGray">
+			<TextBlock Text="{Binding ServiceDescriptionMessage}"></TextBlock>
+		</Border>
+		
+		<TextBlock Grid.Row="6" Text="Namespace:" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
+		<TextBox Grid.Row="7" Grid.ColumnSpan="3"
+		         Margin="4" Background="White"
+		         Text="{Binding DefaultNameSpace}">
+		</TextBox>
+		<Grid Grid.Row="8">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"></ColumnDefinition>
+				<ColumnDefinition Width="2*"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<Button Content="Advanced..."
+			        Command="{Binding AdvancedDialogCommand}"
+			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Margin="0,4,12,12">
+			</Button>
+			
+			<widgets:UniformGridWithSpacing
+				Columns="2"
+				Grid.Column="2"
+				HorizontalAlignment="Right"
+				Margin="0,4,12,12">
+				<Button
+					Content="{core:Localize Global.OKButtonText}"
+					IsDefault="True"
+					Name="okButton"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Click="okButtonClick" />
+				<Button
+					Content="{core:Localize Global.CancelButtonText}"
+					IsCancel="True"
+					Name="cancelButton"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Click="cancelButtonClick" />
+			</widgets:UniformGridWithSpacing>
+		</Grid>
+	</Grid>
+</Window>

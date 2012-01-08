@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using ICSharpCode.Core;
@@ -139,7 +140,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ResolveAssemblyReferences()
 		{
-			MSBuildInternals.ResolveAssemblyReferences(this, null);
+			MSBuildInternals.ResolveAssemblyReferences(this);
+		}
+		
+		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			ReferenceProjectItem[] additionalItems = {
+				new ReferenceProjectItem(this, "mscorlib")
+			};
+			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
 		}
 		
 		#region CreateProjectItem
@@ -171,6 +180,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 				case "WebReferences":
 					return new WebReferencesProjectItem(this, item);
+					
+				case "WCFMetadata":
+					return new ServiceReferencesProjectItem(this, item);
+					
+				case "WCFMetadataStorage":
+					return new ServiceReferenceProjectItem(this, item);
 					
 				default:
 					if (this.AvailableFileItemTypes.Contains(item.ItemType)

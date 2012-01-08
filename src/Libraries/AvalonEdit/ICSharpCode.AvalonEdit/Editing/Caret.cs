@@ -102,7 +102,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public TextLocation Location {
 			get {
-				return position;
+				return position.Location;
 			}
 			set {
 				this.Position = new TextViewPosition(value);
@@ -174,7 +174,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (document == null) {
 					return 0;
 				} else {
-					return document.GetOffset(position);
+					return document.GetOffset(position.Location);
 				}
 			}
 			set {
@@ -279,27 +279,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			// mark column as validated
 			visualColumnValid = true;
 			
-			int caretOffset = textView.Document.GetOffset(position);
+			int caretOffset = textView.Document.GetOffset(position.Location);
 			int firstDocumentLineOffset = visualLine.FirstDocumentLine.Offset;
-			if (position.VisualColumn < 0) {
-				position.VisualColumn = visualLine.GetVisualColumn(caretOffset - firstDocumentLineOffset);
-			} else {
-				int offsetFromVisualColumn = visualLine.GetRelativeOffset(position.VisualColumn);
-				offsetFromVisualColumn += firstDocumentLineOffset;
-				if (offsetFromVisualColumn != caretOffset) {
-					position.VisualColumn = visualLine.GetVisualColumn(caretOffset - firstDocumentLineOffset);
-				} else {
-					if (position.VisualColumn > visualLine.VisualLength) {
-						position.VisualColumn = visualLine.VisualLength;
-					}
-				}
-			}
+			position.VisualColumn = visualLine.ValidateVisualColumn(position, textArea.Selection.EnableVirtualSpace);
+			
 			// search possible caret positions
-			int newVisualColumnForwards = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal);
+			int newVisualColumnForwards = visualLine.GetNextCaretPosition(position.VisualColumn - 1, LogicalDirection.Forward, CaretPositioningMode.Normal, textArea.Selection.EnableVirtualSpace);
 			// If position.VisualColumn was valid, we're done with validation.
 			if (newVisualColumnForwards != position.VisualColumn) {
 				// also search backwards so that we can pick the better match
-				int newVisualColumnBackwards = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal);
+				int newVisualColumnBackwards = visualLine.GetNextCaretPosition(position.VisualColumn + 1, LogicalDirection.Backward, CaretPositioningMode.Normal, textArea.Selection.EnableVirtualSpace);
 				
 				if (newVisualColumnForwards < 0 && newVisualColumnBackwards < 0)
 					throw ThrowUtil.NoValidCaretPosition();
@@ -347,7 +336,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 			
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
-			double xPos = textLine.GetDistanceFromCharacterHit(new CharacterHit(position.VisualColumn, 0));
+			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
 			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineBottom);
 			

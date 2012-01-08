@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<Template 
+	author="Eusebiu Marcu"
+	created="13/09/2011"
+	lastModified="13/09/2011"
+	version="1.0">
+	
+	<Config
+		name="WCF REST Service"
+		icon="C#.File.NewClass"
+		category="C#"
+		subcategory="WCF"
+		defaultname="Service${Number}.svc"
+		language="C#"/>
+	 
+	<Description>WCF REST Service</Description>
+	
+	<Files>
+		<File name="${FullName}">
+<![CDATA[
+<%@ServiceHost language="C#" Debug="true" Service="${StandardNamespace}.${ClassName}"%>
+]]>
+		</File>
+		<File name="${FullName}.cs" language="C#" DependentUpon="${FullName}">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.ServiceModel;
+using System.ServiceModel.Web;
+
+namespace ${StandardNamespace}
+{
+	[ServiceContract]
+	public interface I${ClassName}
+	{
+		[OperationContract]
+		[WebGet(UriTemplate = "operation/{name}")]
+	    string MyOperation(string name);
+	}
+
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public class ${ClassName} : I${ClassName}
+	{
+		public string MyOperation(string name)
+	    {
+		  // implement the operation
+		  return string.Format("Operation name: {0}", name);
+	    }
+	}
+}
+]]>
+		</File>
+	</Files>
+</Template>

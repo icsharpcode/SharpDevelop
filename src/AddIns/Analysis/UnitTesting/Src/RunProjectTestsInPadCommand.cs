@@ -24,7 +24,7 @@ namespace ICSharpCode.UnitTesting
 			base.Run();
 		}
 		
-		public IMember SelectedMethod {
+		public IMember SelectedMember {
 			get { return null; }
 		}
 		

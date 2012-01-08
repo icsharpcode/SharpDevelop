@@ -142,5 +142,20 @@ namespace SharpRefactoring.Gui
 			
 			context.Deactivate(null);
 		}
+		
+		protected Key? GetAccessKeyFromButton(ContentControl control)
+		{
+			if (control == null)
+				return null;
+			string text = control.Content as string;
+			if (text == null)
+				return null;
+			int index = text.IndexOf('_');
+			if (index < 0 || index > text.Length - 2)
+				return null;
+			char ch = text[index + 1];
+			// works only for letter keys!
+			return (Key)new KeyConverter().ConvertFrom(ch.ToString());
+		}
 	}
 }

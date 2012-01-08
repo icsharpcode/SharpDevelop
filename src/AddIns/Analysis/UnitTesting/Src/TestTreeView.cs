@@ -48,7 +48,7 @@ namespace ICSharpCode.UnitTesting
 		public Enum InternalState {
 			get {
 				TestTreeNode selectedNode = SelectedNode as TestTreeNode;
-				if ((selectedNode is TestClassTreeNode) || (selectedNode is TestMethodTreeNode)) {
+				if ((selectedNode is TestClassTreeNode) || (selectedNode is TestMemberTreeNode)) {
 					return TestTreeViewState.SourceCodeItemSelected;
 				}
 				return TestTreeViewState.None;
@@ -188,13 +188,13 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets the method of the currently selected tree node.
+		/// Gets the member of the currently selected tree node.
 		/// </summary>
-		public IMember SelectedMethod {
+		public IMember SelectedMember {
 			get {
-				TestMethodTreeNode methodNode = SelectedNode as TestMethodTreeNode;
-				if (methodNode != null) {
-					return methodNode.Method;
+				TestMemberTreeNode memberNode = SelectedNode as TestMemberTreeNode;
+				if (memberNode != null) {
+					return memberNode.Member;
 				}
 				return null;
 			}
@@ -207,7 +207,7 @@ namespace ICSharpCode.UnitTesting
 			get {
 				TestClassTreeNode classNode = SelectedNode as TestClassTreeNode;
 				if (classNode == null) {
-					classNode = GetClassNodeFromSelectedMethodNode();
+					classNode = GetClassNodeFromSelectedMemberNode();
 				}
 				
 				if (classNode != null) {
@@ -217,11 +217,11 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		TestClassTreeNode GetClassNodeFromSelectedMethodNode()
+		TestClassTreeNode GetClassNodeFromSelectedMemberNode()
 		{
-			TestMethodTreeNode methodNode = SelectedNode as TestMethodTreeNode;
-			if (methodNode != null) {
-				return methodNode.Parent as TestClassTreeNode;
+			TestMemberTreeNode memberNode = SelectedNode as TestMemberTreeNode;
+			if (memberNode != null) {
+				return memberNode.Parent as TestClassTreeNode;
 			}
 			return null;
 		}
@@ -269,7 +269,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Updates the classes and methods in the test tree view based on the
+		/// Updates the classes and members in the test tree view based on the
 		/// parse information.
 		/// </summary>
 		public void UpdateParseInfo(ICompilationUnit oldUnit, ICompilationUnit newUnit)
@@ -406,7 +406,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Ensures that if the TreeView's Clear method is called
+		/// Ensures that if the TreeView's Clear member is called
 		/// directly the test tree does not think there is still 
 		/// an All Tests node.
 		/// </summary>

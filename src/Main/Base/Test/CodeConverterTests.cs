@@ -37,9 +37,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(projectContentRegistry.Mscorlib);
-			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", "System.Windows.Forms"));
+			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("System.Windows.Forms", typeof(System.Windows.Forms.Form).Module.FullyQualifiedName));
 			if (sourceLanguage == SupportedLanguage.VBNet) {
-				pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", "Microsoft.VisualBasic"));
+				pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", typeof(Microsoft.VisualBasic.Constants).Module.FullyQualifiedName));
 				pc.DefaultImports = new DefaultUsing(pc);
 				pc.DefaultImports.Usings.Add("System");
 				pc.DefaultImports.Usings.Add("Microsoft.VisualBasic");

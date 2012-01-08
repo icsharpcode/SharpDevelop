@@ -33,16 +33,24 @@
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\..\..\Libraries\RhinoMocks\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Web.Services" />
@@ -88,6 +96,20 @@
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="ServiceReferences\DirectoryNodeFactoryTests.cs" />
+    <Compile Include="ServiceReferences\ItemTypeTests.cs" />
+    <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />
+    <Compile Include="ServiceReferences\ProjectWithServiceReferencesTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceFileNameTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceGeneratorTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceMapFileTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceMapFileGeneratorTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceProxyGeneratorTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
+    <Compile Include="ServiceReferences\WebServiceMetadataSetTests.cs" />
+    <Compile Include="SolutionTests.cs" />
     <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
     <Compile Include="StringTagProvider\ProjectTagsTestFixture.cs" />
@@ -108,14 +130,14 @@
     <Compile Include="VBExpressionFinderTests.cs" />
     <Compile Include="WebReferences\ValidReferenceNameTests.cs" />
     <Compile Include="WebReferences\ValidWebReferenceNamespaceTests.cs" />
-    <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
+    <Compile Include="WebReferences\WebReferenceTests.cs" />
     <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
     <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
     <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
     <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
     <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />
     <Compile Include="WebReferences\RenamedWebReferencesFolderTest.cs" />
-    <Compile Include="WebReferences\IsWebReferencesFolderTests.cs" />
+    <Compile Include="WebReferences\WebReferencesProjectItemTests.cs" />
     <Compile Include="WebReferences\WebReferenceProjectItemsCachedTest.cs" />
     <Compile Include="WebReferences\DirectoryNodeFactoryTests.cs" />
     <Compile Include="WebReferences\WebReferenceUrlTests.cs" />
@@ -134,9 +156,9 @@
     <Compile Include="ProcessExitedTestFixture.cs" />
     <Compile Include="ProcessRunnerNotStartedTestFixture.cs" />
     <Compile Include="ConsoleAppTestFixtureBase.cs" />
-    <Compile Include="Services_Navigation\INavigationPointTextFixture.cs" />
-    <Compile Include="Services_Navigation\TestNavigationPoint.cs" />
-    <Compile Include="Services_Navigation\NavigationServiceTestFixture.cs" />
+    <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
+    <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />
+    <Compile Include="NavigationServiceTests\NavigationServiceTestFixture.cs" />
     <Compile Include="SharpDevelopColorDialogTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -161,12 +183,13 @@
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
     <Folder Include="Highlighting" />
+    <Folder Include="ServiceReferences" />
     <Folder Include="StringTagProvider" />
     <Folder Include="Utils" />
     <Folder Include="Utils\Tests" />
     <Folder Include="WebReferences" />
     <Folder Include="Templates" />
-    <Folder Include="Services_Navigation" />
+    <Folder Include="NavigationServiceTests" />
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>

@@ -229,6 +229,18 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato file sconosciuto:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Errore:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Trova successivo</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Trova precedente</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Usa espressioni regolari</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostra Diagramma delle Classi</value>
   </data>
@@ -443,9 +455,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Cerca</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Cerca...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Cerca solo negli argomenti trovati in precedenza</value>
   </data>
@@ -655,6 +664,21 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Esegui con profiler</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Ricerca...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Aggiungi Set</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Seleziona i campi per i quali creare le proprietà:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>Implementa INotifyPropertyChanged</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Crea proprietà</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Estrai metodo</value>
@@ -1470,6 +1494,9 @@ Per creare/manipolare un oggetto ActiveX/COM, trascina una classe da Libreria Ti
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Aspetta l'Avvio dell'Applicazione</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Analisi della Qualità del Codice</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Inserisci riferimento al metodo; premi ancora tab o invio per inserire un nuovo metodo.</value>
@@ -2657,6 +2684,9 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Taglia o Copia l'intera linea quando nulla è selezionato</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Attiva spazio virtuale</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Nasconde i&amp;l cursore mentre si digita</value>
   </data>
@@ -2704,6 +2734,9 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>&amp;Rendi Font con Antialiasing</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Attiva margine Cambio Marcatore</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Abilita &amp;completamento codice</value>
@@ -4931,7 +4964,7 @@ Vai a 'Opzioni-&gt;Stile visuale' e cambia l'attuale ambiente di linguaggio.</va
     <value>ASP.NET/IIS (Express) worker process ({0}) non trovato.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Non è stato specificato nessun Url di Progetto o programma esterno. Controlla parametri web server su Proprietà Progetto -&amp;gt; linguetta Debug.</value>
+    <value>Non è stato specificato nessun Url di Progetto o programma esterno. Controlla il web server su Proprietà Progetto - Debug.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Porta server:</value>
@@ -5537,6 +5570,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>Non si può passare ad una funzione senza simboli di debug.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>Non puoi passare ad una funzione senza simboli senza attivare le opzioni di decompilazione del codice.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Metodi esterni]</value>
   </data>
@@ -5798,8 +5834,14 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>Non si può eseguire passo-passo perchè non c'è nessuna funzione selezionata</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>Non puoi passare ad un thread senza alcun frame disponibile.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>Non si possono cambiare i threads mentre il debugger è in esecuzione.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>Non puoi passare ad un thread nel codice decompilato senza attivare le opzioni per la decompilazione del codice.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Blocca</value>
@@ -6191,6 +6233,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>Nuova &amp;Cartella Soluzione</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>Il progetto non è un progetto web.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>A&amp;pri</value>
   </data>
@@ -6211,6 +6256,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Imposta come Progetto Inizi&amp;ale</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Visualizza nel browser</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Cartella nuova</value>
@@ -7129,6 +7177,9 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>File Vuoto</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Consente di creare una nuova classe di tipo Eccezione.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Eccezione</value>
   </data>
@@ -7260,6 +7311,9 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Web Form ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Consente di creare un ASP.NET WebHandler con il relativo codice.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>Gestore Web ASP.NET</value>

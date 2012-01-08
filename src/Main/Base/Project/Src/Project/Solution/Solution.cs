@@ -317,6 +317,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			changeWatcher.Disable();
 			changeWatcher.Rename(fileName);
 			this.fileName = fileName;
+			UpdateMSBuildProperties();
 			string outputDirectory = Path.GetDirectoryName(fileName);
 			if (!System.IO.Directory.Exists(outputDirectory)) {
 				System.IO.Directory.CreateDirectory(outputDirectory);
@@ -1173,11 +1174,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static Solution Load(string fileName)
 		{
 			Solution newSolution = new Solution(new ProjectChangeWatcher(fileName));
-			solutionBeingLoaded = newSolution;
+			solutionBeingLoaded  = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			
 			string extension = Path.GetExtension(fileName).ToUpperInvariant();
 			newSolution.fileName = fileName;
+			newSolution.UpdateMSBuildProperties();
 			newSolution.isLoading = true;
 			try {
 				if (!SetupSolution(newSolution)) {
@@ -1190,6 +1192,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			solutionBeingLoaded = null;
 			return newSolution;
 		}
+		
+		public void UpdateMSBuildProperties()
+		{
+			MSBuildProjectCollection.SetGlobalProperty("SolutionDir", Directory + @"\");
+		}
+		
 		#endregion
 		
 		#region System.IDisposable interface implementation

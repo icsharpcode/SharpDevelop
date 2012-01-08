@@ -25,7 +25,7 @@
 	<Path name="/Workspace/Icons">
 		<Icon
 			id="TextTemplateFileIcon"
-			extensions=".tt;.t4"
+			extensions=".tt;.t4;.ttinclude"
 			resource="TextTemplate.ProjectBrowser.File"/>
 	</Path>
 	
@@ -43,7 +43,7 @@
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
 		<SyntaxMode
 			id="TextTemplating.SyntaxMode"
-			extensions=".tt;.t4"
+			extensions=".tt;.t4;.ttinclude"
 			name="TextTemplating"
 			resource="ICSharpCode.TextTemplating.Resources.TextTemplating.xshd"/>
 	</Path>

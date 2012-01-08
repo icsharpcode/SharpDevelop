@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -12,6 +14,7 @@ namespace ICSharpCode.Core.WinForms
 		Codon  codon;
 		string description   = String.Empty;
 		ICheckableMenuCommand menuCommand = null;
+		IEnumerable<ICondition> conditions;
 		
 		void CreateMenuCommand()
 		{
@@ -43,12 +46,14 @@ namespace ICSharpCode.Core.WinForms
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			Text = text;
+			this.conditions = Enumerable.Empty<ICondition>();
 		}
-		public MenuCheckBox(Codon codon, object caller)
+		public MenuCheckBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller = caller;
 			this.codon  = codon;
+			this.conditions = conditions;
 			UpdateText();
 		}
 		
@@ -67,7 +72,7 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				return failedAction != ConditionFailedAction.Disable;
 			}
 		}
@@ -75,7 +80,7 @@ namespace ICSharpCode.Core.WinForms
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 				if (menuCommand == null && !string.IsNullOrEmpty(codon.Properties["checked"])) {
 					Checked = string.Equals(StringParser.Parse(codon.Properties["checked"]),

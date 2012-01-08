@@ -41,11 +41,9 @@ namespace SharpRefactoring.Gui
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
 			IDocumentLine line = editor.Document.GetLineForOffset(anchor.Offset);
-			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
-			List<PropertyOrFieldWrapper> filtered = parameterList
-				.Where(p => p.IsSelected)
+			List<PropertyOrFieldWrapper> filtered = this.varList.SelectedItems.OfType<PropertyOrFieldWrapper>()
 				.OrderBy(p => p.Index)
 				.ToList();
 			
@@ -154,6 +152,31 @@ namespace SharpRefactoring.Gui
 			varList.SelectedIndex = selection + 1;
 		}
 		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			Key? downAccessKey = GetAccessKeyFromButton(moveDown);
+			Key? upAccessKey = GetAccessKeyFromButton(moveUp);
+			Key? allAccessKey = GetAccessKeyFromButton(selectAll);
+			
+			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && allAccessKey == e.SystemKey) {
+				if (AllSelected)
+					varList.UnselectAll();
+				else
+					varList.SelectAll();
+				e.Handled = true;
+			}
+			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && upAccessKey == e.SystemKey) {
+				UpClick(this, null);
+				e.Handled = true;
+			}
+			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && downAccessKey == e.SystemKey) {
+				DownClick(this, null);
+				e.Handled = true;
+			}
+			
+			base.OnKeyDown(e);
+		}
+		
 		protected override void FocusFirstElement()
 		{
 			Dispatcher.BeginInvoke((Action)TryFocusAndSelectItem, DispatcherPriority.Background);
@@ -196,20 +219,16 @@ namespace SharpRefactoring.Gui
 		
 		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			foreach (PropertyOrFieldWrapper param in parameterList) {
-				param.IsSelected = true;
-			}
+			this.varList.SelectAll();
 		}
 		
 		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			foreach (PropertyOrFieldWrapper param in parameterList) {
-				param.IsSelected = false;
-			}
+			this.varList.UnselectAll();
 		}
 		
-		public bool AllSelected {
-			get { return parameterList.All(p => p.IsSelected); }
+		bool AllSelected {
+			get { return varList.SelectedItems.Count == varList.Items.Count; }
 		}
 		
 		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)

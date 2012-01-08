@@ -74,6 +74,7 @@ namespace ICSharpCode.Core
 			this.conditions = conditions;
 		}
 		
+		[Obsolete("Use BuildItemArgs.Conditions instead")]
 		public ConditionFailedAction GetFailedAction(object caller)
 		{
 			return Condition.GetFailedAction(conditions, caller);

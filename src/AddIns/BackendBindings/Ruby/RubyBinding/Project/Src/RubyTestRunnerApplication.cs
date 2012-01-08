@@ -116,8 +116,8 @@ namespace ICSharpCode.RubyBinding
 				
 		void AppendSelectedTest(SelectedTests selectedTests)
 		{
-			if (selectedTests.Method != null) {
-				AppendSelectedTestMethod(selectedTests.Method);
+			if (selectedTests.Member != null) {
+				AppendSelectedTestMethod(selectedTests.Member);
 			} else if (selectedTests.Class != null) {
 				AppendSelectedTestClass(selectedTests.Class);
 			}

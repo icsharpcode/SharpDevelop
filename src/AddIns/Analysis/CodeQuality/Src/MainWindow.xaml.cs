@@ -2,16 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.CodeQualityAnalysis.Utility;
@@ -57,9 +55,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
-			
-			var dataContext = this.DataContext as MainWindowTranslationViewModel;
-			
 			var fileDialog = new OpenFileDialog
 			{
 				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
@@ -70,6 +65,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
 			
+			var dataContext = this.DataContext as MainWindowViewModel;
 			dataContext.ProgressbarVisible = Visibility.Visible;
 			dataContext.AssemblyStatsVisible = Visibility.Hidden;
 			dataContext.FileName = System.IO.Path.GetFileName(fileDialog.FileName);
@@ -81,9 +77,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 				dataContext.ProgressbarVisible = Visibility.Hidden;
 				dataContext.AssemblyStatsVisible = Visibility.Visible;
 				dataContext.MainTabEnable = true;
+				
+				if (args.Error != null) {
+					ICSharpCode.Core.MessageService.ShowException(args.Error);
+					return;
+				}
 
 				Helper.FillTree(definitionTree, metricsReader.MainModule);
-				dataContext.MainModule = metricsReader.MainModule;
+				dataContext.MainModule = metricsReader.MainModule;                        
 				FillMatrix();
 			};
 			
@@ -137,6 +138,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 				definitionTree.SelectedItem = item;
 				var graph = item.INode.Dependency.BuildDependencyGraph();
 				graphLayout.ChangeGraph(graph);
+				var viewModel = this.DataContext as MainWindowViewModel;
+				//testhalber
+				viewModel.SelectedTreeNode = item.INode;
 			}
 		}
 		
@@ -149,7 +153,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var vertex = vertexControl.Vertex as DependencyVertex;
 				if (vertex != null)
 				{
-					var d = this.DataContext as MainWindowTranslationViewModel;
+					var d = this.DataContext as MainWindowViewModel;
 					d.TypeInfo = vertex.Node.GetInfo();
 				}
 			}
@@ -211,7 +215,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				encoder.Save(outStream);
 			}
 		}
-
+/*
 		private void MetricLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var comboBoxItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
@@ -234,9 +238,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Cyclomatic Complexity" });
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Variables" });
 			}
+			
 		}
 
-		
+		*/
+		/*
 		private void Metrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var levelItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
@@ -260,6 +266,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 			} else if (level == "Field") {
 
 			} else if (level == "Method") {
+//				var r =  from ns in MetricsReader.MainModule.Namespaces
+//									  from type in ns.Types
+//									  from method in type.Methods
+//									  select method;
 				treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
 									  from type in ns.Types
 									  from method in type.Methods
@@ -274,6 +284,36 @@ namespace ICSharpCode.CodeQualityAnalysis
 				if (metric == "Variables")
 					treemap.ItemDefinition.ValuePath = "Variables";
 			}
+		}
+		*/
+		
+		
+		//http://social.msdn.microsoft.com/Forums/en-MY/wpf/thread/798e100e-249d-413f-a501-50d1db680b94
+		
+		void TreeMaps_Loaded(object sender, RoutedEventArgs e)
+		{
+			ItemsControl itemsControl = sender as ItemsControl;
+			
+			if (itemsControl!=null)
+			{
+				itemsControl.ItemContainerGenerator.StatusChanged += new EventHandler(ItemContainerGenerator_StatusChanged);
+			}
+		}
+		
+		void ItemContainerGenerator_StatusChanged(object sender, EventArgs e)
+		{
+			ItemContainerGenerator icg = sender as ItemContainerGenerator;
+			if (icg!=null&&icg.Status==GeneratorStatus.ContainersGenerated)
+			{
+				//Do what you want
+			//	Mouse.OverrideCursor = Cursors.Wait;
+				icg.StatusChanged -= ItemContainerGenerator_StatusChanged;
+			}
+		}
+		
+		void MenuClose_Click(object sender, RoutedEventArgs e)
+		{
+			this.Close();
 		}
 	}
 }

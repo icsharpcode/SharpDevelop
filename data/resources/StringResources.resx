@@ -229,6 +229,19 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Unknown file format:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Error:</value>
+    <comment>Note: Mind the trailing space!</comment>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Find next</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Find previous</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Use regular expressions</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Show Class Diagram</value>
   </data>
@@ -251,8 +264,14 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Help Mode</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Help Library Manager was not found. Please check if it was installed correctly.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Installed Help Catalogs</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Launch Help Library Manager</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Help Viewer</value>
@@ -447,9 +466,6 @@ You need to install the .NET Framework SDK to get the help system.</value>
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Search</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Search...</value>
   </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Search in previously found topics only</value>
@@ -663,6 +679,21 @@ Optionally you can specify a working directory and command line arguments.
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Run with profiler</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Searching ...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Add setter</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Select the fields you want to create properties for:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>Implement INotifyPropertyChanged</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Create properties</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extract method</value>
@@ -1518,6 +1549,9 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Waiting for Application to Start</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code Quality Analysis</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Insert reference to explicit method; press tab or enter again to insert a new method stub.</value>
@@ -2729,6 +2763,9 @@ system. I don't think that it needs translation.</comment>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Cut or Copy entire line when nothing is selected</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Enable virtual space</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>&amp;Hide mouse cursor while typing</value>
@@ -5164,7 +5201,7 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
     <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>There's no Project Url specified or external program. Check the web server at Project Properties -&amp;gt; Debug tab.</value>
+    <value>There's no Project Url specified or external program. Check the web server at Project Properties - Debug tab.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server port:</value>
@@ -6134,12 +6171,6 @@ Shows the full callstack of the error.</comment>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Thread switch</value>
   </data>
-  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
-    <value>You cannot switch to a thread in decompiled code without enabling decomplied code options.</value>
-  </data>
-  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
-    <value>You cannot switch to a thread with no available frame.</value>
-  </data>
   <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
     <value>Toggle Method View</value>
   </data>
@@ -6524,6 +6555,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>New Solution &amp;Folder</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>The project is not a web project.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>O&amp;pen</value>
   </data>
@@ -6546,6 +6580,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Set as St&amp;artUp Project</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>View in browser</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>New Folder</value>

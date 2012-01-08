@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -7,25 +22,27 @@ using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	#if WITH_CONTRACTS
-	[ContractClass(typeof(IParameterContract))]
-	#endif
-	public interface IParameter : IVariable, IFreezable
+	public interface IUnresolvedParameter
 	{
+		/// <summary>
+		/// Gets the name of the variable.
+		/// </summary>
+		string Name { get; }
+		
+		/// <summary>
+		/// Gets the declaration region of the variable.
+		/// </summary>
+		DomRegion Region { get; }
+		
+		/// <summary>
+		/// Gets the type of the variable.
+		/// </summary>
+		ITypeReference Type { get; }
+		
 		/// <summary>
 		/// Gets the list of attributes.
 		/// </summary>
-		IList<IAttribute> Attributes { get; }
-		
-		/// <summary>
-		/// Gets the default value of optional parameters.
-		/// </summary>
-		IConstantValue DefaultValue { get; }
-		
-		/// <summary>
-		/// Gets the code region where the parameter is defined.
-		/// </summary>
-		DomRegion Region { get; }
+		IList<IUnresolvedAttribute> Attributes { get; }
 		
 		/// <summary>
 		/// Gets whether this parameter is a C# 'ref' parameter.
@@ -46,54 +63,36 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets whether this parameter is optional.
 		/// </summary>
 		bool IsOptional { get; }
+		
+		IParameter CreateResolvedParameter(ITypeResolveContext context);
 	}
 	
-	#if WITH_CONTRACTS
-	[ContractClassFor(typeof(IParameter))]
-	abstract class IParameterContract : IVariableContract, IParameter
+	public interface IParameter : IVariable
 	{
-		IList<IAttribute> IParameter.Attributes {
-			get {
-				Contract.Ensures(Contract.Result<IList<IAttribute>>() != null);
-				return null;
-			}
-		}
+		/// <summary>
+		/// Gets the list of attributes.
+		/// </summary>
+		IList<IAttribute> Attributes { get; }
 		
-		IConstantValue IParameter.DefaultValue {
-			get { return null; }
-		}
+		/// <summary>
+		/// Gets whether this parameter is a C# 'ref' parameter.
+		/// </summary>
+		bool IsRef { get; }
 		
-		DomRegion IParameter.Region {
-			get { return DomRegion.Empty; }
-		}
+		/// <summary>
+		/// Gets whether this parameter is a C# 'out' parameter.
+		/// </summary>
+		bool IsOut { get; }
 		
-		bool IParameter.IsRef {
-			get { return false; }
-		}
+		/// <summary>
+		/// Gets whether this parameter is a C# 'params' parameter.
+		/// </summary>
+		bool IsParams { get; }
 		
-		bool IParameter.IsOut {
-			get { return false; }
-		}
-		
-		bool IParameter.IsParams {
-			get { return false; }
-		}
-		
-		bool IParameter.IsOptional {
-			get {
-				IParameter @this = this;
-				Contract.Ensures(Contract.Result<bool>() == (@this.DefaultValue != null));
-				return false;
-			}
-		}
-		
-		bool IFreezable.IsFrozen {
-			get { return false; }
-		}
-		
-		void IFreezable.Freeze()
-		{
-		}
+		/// <summary>
+		/// Gets whether this parameter is optional.
+		/// The default value is given by the <see cref="IVariable.ConstantValue"/> property.
+		/// </summary>
+		bool IsOptional { get; }
 	}
-	#endif
 }

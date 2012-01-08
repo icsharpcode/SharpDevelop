@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -13,22 +14,25 @@ namespace ICSharpCode.Core.WinForms
 		object caller;
 		IList subItems;
 		bool isInitialized;
+		IEnumerable<ICondition> conditions;
 		
-		public Menu(Codon codon, object caller, IList subItems)
+		public Menu(Codon codon, object caller, IList subItems, IEnumerable<ICondition> conditions)
 		{
 			if (subItems == null) subItems = new ArrayList(); // don't crash when item has no children
 			this.codon    = codon;
 			this.caller   = caller;
 			this.subItems = subItems;
 			this.RightToLeft = RightToLeft.Inherit;
+			this.conditions = conditions;
 			
 			UpdateText();
 		}
 		
-		public Menu(string text, params ToolStripItem[] subItems)
+		public Menu(string text, IEnumerable<ICondition> conditions, params ToolStripItem[] subItems)
 		{
 			this.Text = StringParser.Parse(text);
 			this.DropDownItems.AddRange(subItems);
+			this.conditions = conditions;
 		}
 		
 		void CreateDropDownItems()
@@ -60,15 +64,14 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				return failedAction != ConditionFailedAction.Disable;
+				return Condition.GetFailedAction(conditions, caller) != ConditionFailedAction.Disable;
 			}
 		}
 		
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 				if (!isInitialized && failedAction != ConditionFailedAction.Exclude) {
 					isInitialized = true;

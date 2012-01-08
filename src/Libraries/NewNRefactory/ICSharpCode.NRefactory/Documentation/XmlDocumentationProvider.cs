@@ -1,12 +1,27 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Xml;
-
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Documentation
@@ -18,7 +33,8 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// This class first creates an in-memory index of the .xml file, and then uses that to read only the requested members.
 	/// This way, we avoid keeping all the documentation in memory.
 	/// </remarks>
-	public class XmlDocumentationProvider : IDocumentationProvider
+	[Serializable]
+	public class XmlDocumentationProvider : IDocumentationProvider, IDeserializationCallback
 	{
 		#region Cache
 		sealed class XmlDocumentationCache
@@ -51,6 +67,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		#endregion
 		
+		[Serializable]
 		struct IndexEntry : IComparable<IndexEntry>
 		{
 			/// <summary>
@@ -75,7 +92,9 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 		}
 		
-		readonly XmlDocumentationCache cache = new XmlDocumentationCache();
+		[NonSerialized]
+		XmlDocumentationCache cache = new XmlDocumentationCache();
+		
 		readonly string fileName;
 		DateTime lastWriteDate;
 		IndexEntry[] index; // SORTED array of index entries
@@ -90,22 +109,26 @@ namespace ICSharpCode.NRefactory.Documentation
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			
-			using (XmlTextReader xmlReader = new XmlTextReader(fileName)) {
-				xmlReader.XmlResolver = null; // no DTD resolving
-				xmlReader.MoveToContent();
-				if (string.IsNullOrEmpty(xmlReader.GetAttribute("redirect"))) {
-					this.fileName = fileName;
-					ReadXmlDoc(xmlReader);
-				} else {
-					string redirectionTarget = GetRedirectionTarget(xmlReader.GetAttribute("redirect"));
-					if (redirectionTarget != null) {
-						Debug.WriteLine("XmlDoc " + fileName + " is redirecting to " + redirectionTarget);
-						using (XmlTextReader redirectedXmlReader = new XmlTextReader(redirectionTarget)) {
-							this.fileName = redirectionTarget;
-							ReadXmlDoc(redirectedXmlReader);
-						}
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
+				using (XmlTextReader xmlReader = new XmlTextReader(fs)) {
+					xmlReader.XmlResolver = null; // no DTD resolving
+					xmlReader.MoveToContent();
+					if (string.IsNullOrEmpty(xmlReader.GetAttribute("redirect"))) {
+						this.fileName = fileName;
+						ReadXmlDoc(xmlReader);
 					} else {
-						throw new XmlException("XmlDoc " + fileName + " is redirecting to " + xmlReader.GetAttribute("redirect") + ", but that file was not found.");
+						string redirectionTarget = GetRedirectionTarget(xmlReader.GetAttribute("redirect"));
+						if (redirectionTarget != null) {
+							Debug.WriteLine("XmlDoc " + fileName + " is redirecting to " + redirectionTarget);
+							using (FileStream redirectedFs = new FileStream(redirectionTarget, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete)) {
+								using (XmlTextReader redirectedXmlReader = new XmlTextReader(redirectedFs)) {
+									this.fileName = redirectionTarget;
+									ReadXmlDoc(redirectedXmlReader);
+								}
+							}
+						} else {
+							throw new XmlException("XmlDoc " + fileName + " is redirecting to " + xmlReader.GetAttribute("redirect") + ", but that file was not found.");
+						}
 					}
 				}
 			}
@@ -138,7 +161,11 @@ namespace ICSharpCode.NRefactory.Documentation
 				return dir + Path.DirectorySeparatorChar;
 		}
 		
-		internal static string LookupLocalizedXmlDoc(string fileName)
+		/// <summary>
+		/// Given the assembly file name, looks up the XML documentation file name.
+		/// Returns null if no XML documentation file is found.
+		/// </summary>
+		public static string LookupLocalizedXmlDoc(string fileName)
 		{
 			string xmlFileName = Path.ChangeExtension(fileName, ".xml");
 			string currentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
@@ -241,71 +268,11 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		#endregion
 		
-		#region Save index / Restore from index
-		// FILE FORMAT FOR BINARY DOCUMENTATION
-		// long  magic = 0x4244636f446c6d58 (identifies file type = 'XmlDocDB')
-		const long magic = 0x4244636f446c6d58;
-		// short version = 5              (file format version)
-		const short version = 5;
-		// string fileName                (full name of .xml file)
-		// long  fileDate                 (last change date of xml file in DateTime ticks)
-		// int   testHashCode = magicTestString.GetHashCode() // (check if hash-code implementation is compatible)
-		// int   entryCount               (count of entries)
-		// int   indexPointer             (points to location where index starts in the file)
-		// {
-		//   int hashcode
-		//   int positionInFile           (byte number where the docu string starts in the .xml file)
-		// }
-		
-		const string magicTestString = "XmlDoc-Test-String";
-		
-		/// <summary>
-		/// Saves the index into a binary file.
-		/// Use <see cref="LoadFromIndex"/> to load the saved file.
-		/// </summary>
-		public void SaveIndex(BinaryWriter w)
-		{
-			if (w == null)
-				throw new ArgumentNullException("w");
-			w.Write(magic);
-			w.Write(version);
-			w.Write(fileName);
-			w.Write(lastWriteDate.Ticks);
-			w.Write(magicTestString.GetHashCode());
-			w.Write(index.Length);
-			foreach (var entry in index) {
-				w.Write(entry.HashCode);
-				w.Write(entry.PositionInFile);
-			}
-		}
-		
-		/// <summary>
-		/// Restores XmlDocumentationProvider from the index file (created by <see cref="SaveIndex"/>).
-		/// </summary>
-		public static XmlDocumentationProvider LoadFromIndex(BinaryReader r)
-		{
-			if (r.ReadInt64() != magic)
-				throw new InvalidDataException("File is not a stored XmlDoc index");
-			if (r.ReadInt16() != version)
-				throw new InvalidDataException("Index file was created by incompatible version");
-			string fileName = r.ReadString();
-			DateTime lastWriteDate = new DateTime(r.ReadInt64(), DateTimeKind.Utc);
-			if (r.ReadInt32() != magicTestString.GetHashCode())
-				throw new InvalidDataException("Index file was created by another hash code algorithm");
-			int indexLength = r.ReadInt32();
-			IndexEntry[] index = new IndexEntry[indexLength];
-			for (int i = 0; i < index.Length; i++) {
-				index[i] = new IndexEntry(r.ReadInt32(), r.ReadInt32());
-			}
-			return new XmlDocumentationProvider(fileName, lastWriteDate, index);
-		}
-		#endregion
-		
 		#region GetDocumentation
 		/// <inheritdoc/>
 		public string GetDocumentation(IEntity entity)
 		{
-			return GetDocumentation(GetDocumentationKey(entity));
+			return GetDocumentation(IDStringProvider.GetIDString(entity));
 		}
 		
 		/// <summary>
@@ -326,6 +293,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			while (--m >= 0 && index[m].HashCode == hashcode);
 			// m is now 1 before the first item with the correct hash
 			
+			XmlDocumentationCache cache = this.cache;
 			lock (cache) {
 				string val = cache.Get(key);
 				if (val == null) {
@@ -366,13 +334,9 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		#endregion
 		
-		#region GetDocumentationKey
-		public static string GetDocumentationKey(IEntity entity)
+		public virtual void OnDeserialization(object sender)
 		{
-			if (entity == null)
-				throw new ArgumentNullException("entity");
-			throw new NotImplementedException();
+			cache = new XmlDocumentationCache();
 		}
-		#endregion
 	}
 }

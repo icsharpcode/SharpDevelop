@@ -2,8 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Threading;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -80,7 +83,6 @@ namespace Grunwald.BooBinding
 		}
 		
 		internal static IProjectContent BooCompilerPC;
-		internal static IProjectContent BooUsefulPC;
 		
 		protected override ParseProjectContent CreateProjectContent()
 		{
@@ -88,22 +90,26 @@ namespace Grunwald.BooBinding
 				ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
 				BooCompilerPC = AssemblyParserService.GetProjectContentForReference(booCompilerItem);
 			}
-			if (BooUsefulPC == null) {
-				ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
-				BooUsefulPC = AssemblyParserService.GetRegistryForReference(booUsefulItem).GetProjectContentForReference("Boo.Lang.Useful", booUsefulItem.Include);
-			}
+			
 			ParseProjectContent pc = base.CreateProjectContent();
-			ReferenceProjectItem systemItem = new ReferenceProjectItem(this, "System");
-			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(systemItem));
-			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
-			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(booLangItem));
-			ReferenceProjectItem booExtensionsItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Extensions.PropertyAttribute).Assembly.Location);
-			pc.AddReferencedContent(AssemblyParserService.GetProjectContentForReference(booExtensionsItem));
 			pc.DefaultImports = new DefaultUsing(pc);
 			pc.DefaultImports.Usings.Add("Boo.Lang");
 			pc.DefaultImports.Usings.Add("Boo.Lang.Builtins");
 			pc.DefaultImports.Usings.Add("Boo.Lang.Extensions");
 			return pc;
+		}
+		
+		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			ReferenceProjectItem[] additionalReferences = {
+				new ReferenceProjectItem(this, "mscorlib"),
+				new ReferenceProjectItem(this, "System")
+			};
+			ReferenceProjectItem[] booReferences = {
+				new ReferenceProjectItem(this, "Boo.Lang") { FileName = typeof(Boo.Lang.Builtins).Assembly.Location },
+				new ReferenceProjectItem(this, "Boo.Extensions") { FileName = typeof(Boo.Lang.Extensions.PropertyAttribute).Assembly.Location }
+			};
+			return MSBuildInternals.ResolveAssemblyReferences(this, additionalReferences).Concat(booReferences);
 		}
 		
 		public override IAmbience GetAmbience()

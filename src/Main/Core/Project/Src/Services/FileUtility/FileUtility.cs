@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Threading;
 using ICSharpCode.Core.Services;
 using Microsoft.Win32;
 
@@ -140,6 +141,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string windowsSdk71InstallRoot = null;
+		/// <summary>
+		/// Location of the .NET 4.0 SDK (Windows SDK 7.1) install root.
+		/// </summary>
+		public static string WindowsSdk71InstallRoot {
+			get {
+				if (windowsSdk71InstallRoot == null) {
+					windowsSdk71InstallRoot = GetPathFromRegistry(@"SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.1", "InstallationFolder") ?? string.Empty;
+				}
+				return windowsSdk71InstallRoot;
+			}
+		}
+		
 		#endregion
 		
 		[Obsolete("Use System.IO.Path.Combine instead")]
@@ -202,6 +216,10 @@ namespace ICSharpCode.Core
 		/// <returns>The path of the executable, or null if the exe is not found.</returns>
 		public static string GetSdkPath(string exeName) {
 			string execPath;
+			if (!string.IsNullOrEmpty(WindowsSdk71InstallRoot)) {
+				execPath = Path.Combine(WindowsSdk71InstallRoot, "bin\\" + exeName);
+				if (File.Exists(execPath)) { return execPath; }
+			}
 			if (!string.IsNullOrEmpty(WindowsSdk70InstallRoot)) {
 				execPath = Path.Combine(WindowsSdk70InstallRoot, "bin\\" + exeName);
 				if (File.Exists(execPath)) { return execPath; }
@@ -305,9 +323,7 @@ namespace ICSharpCode.Core
 		
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories, bool ignoreHidden)
 		{
-			List<string> collection = new List<string>();
-			SearchDirectory(directory, filemask, collection, searchSubdirectories, ignoreHidden);
-			return collection;
+			return SearchDirectoryInternal(directory, filemask, searchSubdirectories, ignoreHidden).Select(file => file.ToString()).ToList();
 		}
 		
 		public static List<string> SearchDirectory(string directory, string filemask, bool searchSubdirectories)
@@ -320,45 +336,59 @@ namespace ICSharpCode.Core
 			return SearchDirectory(directory, filemask, true, true);
 		}
 		
+		public static IEnumerable<FileName> LazySearchDirectory(string directory, string filemask, bool searchSubdirectories = true, bool ignoreHidden = true)
+		{
+			return SearchDirectoryInternal(directory, filemask, searchSubdirectories, ignoreHidden);
+		}
+		
 		/// <summary>
 		/// Finds all files which are valid to the mask <paramref name="filemask"/> in the path
 		/// <paramref name="directory"/> and all subdirectories
 		/// (if <paramref name="searchSubdirectories"/> is true).
-		/// The found files are added to the List&lt;string&gt;
-		/// <paramref name="collection"/>.
 		/// If <paramref name="ignoreHidden"/> is true, hidden files and folders are ignored.
 		/// </summary>
-		static void SearchDirectory(string directory, string filemask, List<string> collection, bool searchSubdirectories, bool ignoreHidden)
+		static IEnumerable<FileName> SearchDirectoryInternal(string directory, string filemask, bool searchSubdirectories, bool ignoreHidden)
 		{
 			// If Directory.GetFiles() searches the 8.3 name as well as the full name so if the filemask is
 			// "*.xpt" it will return "Template.xpt~"
-			try {
-				bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
-				string ext = null;
-				string[] file = Directory.GetFiles(directory, filemask);
-				if (isExtMatch) ext = filemask.Remove(0,1);
-				
-				foreach (string f in file) {
-					if (ignoreHidden && (File.GetAttributes(f) & FileAttributes.Hidden) == FileAttributes.Hidden) {
-						continue;
-					}
-					if (isExtMatch && Path.GetExtension(f) != ext) continue;
-					
-					collection.Add(f);
-				}
-				
-				if (searchSubdirectories) {
-					string[] dir = Directory.GetDirectories(directory);
-					foreach (string d in dir) {
-						if (ignoreHidden && (File.GetAttributes(d) & FileAttributes.Hidden) == FileAttributes.Hidden) {
-							continue;
+			bool isExtMatch = Regex.IsMatch(filemask, @"^\*\..{3}$");
+			string ext = null;
+			if (isExtMatch) ext = filemask.Remove(0,1);
+			string[] empty = new string[0];
+			IEnumerable<string> dir = new[] { directory };
+			
+			if (searchSubdirectories)
+				dir = dir.Flatten(
+					d => {
+						try {
+							if (ignoreHidden)
+								return Directory.EnumerateDirectories(d).Where(child => IsNotHidden(child));
+							else
+								return Directory.EnumerateDirectories(d);
+						} catch (UnauthorizedAccessException) {
+							return empty;
 						}
-						SearchDirectory(d, filemask, collection, searchSubdirectories, ignoreHidden);
-					}
+					});
+			foreach (string d in dir) {
+				IEnumerable<string> files;
+				try {
+					files = Directory.EnumerateFiles(d, filemask);
+				} catch (UnauthorizedAccessException) {
+					continue;
 				}
+				foreach (string f in files) {
+					if (!ignoreHidden || IsNotHidden(f))
+						yield return new FileName(f);
+				}
+			}
+		}
+		
+		static bool IsNotHidden(string dir)
+		{
+			try {
+				return (File.GetAttributes(dir) & FileAttributes.Hidden) != FileAttributes.Hidden;
 			} catch (UnauthorizedAccessException) {
-				// Ignore exception when access to a directory is denied.
-				// Fixes SD2-893.
+				return false;
 			}
 		}
 		

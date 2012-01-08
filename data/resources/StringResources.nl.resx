@@ -228,6 +228,18 @@
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Onbekend bestandsformaat:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Fout:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Vind volgende</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Vorige vinden</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Reguliere Expressies gebruiken</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagram weergeven</value>
   </data>
@@ -442,9 +454,6 @@ Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.<
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Zoeken</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Zoeken...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Alleen zoeken in eerder gevonden onderwerpen</value>
   </data>
@@ -655,6 +664,21 @@ Optioneel kunnen een werkmap en commandoprompt argumenten gespecificeerd worden.
   </data>
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Voer uit met profiler</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Zoekende...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Een setter toevoegen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Selecteer de velden waarvoor u eigenschappen wilt maken:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>INotifyPropertyChanged implementeren</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Eigenschappen aanmaken.</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Onttrekken</value>
@@ -1476,6 +1500,9 @@ Om een ActiveX/COM object te maken/manipuleren, sleep een klasse uit een type-bi
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Wacht op starten van de toepassing</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code kwaliteit analyse</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Voeg referentie naar expliciete methode in, druk opnieuw de TAB of Enter om een nieuwe methode stub in te voegen.</value>
@@ -2658,6 +2685,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Knip of kopieer hele regel, als er niets geselecteerd is</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Virtuele ruimte inschakelen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Cursor &amp;verbergen tijdens typen</value>
@@ -4926,7 +4956,7 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
     <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Geen project URL of extern programma opgegeven. Controleer de Web server op project eigenschappen -&amp;gt; Foutzoeken tab.</value>
+    <value>Er is geen project URL of extern programma gespecificeerd. Check de Web server bij Project eigenschappen -&gt; Foutzoeken tab.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server poort:</value>
@@ -6195,6 +6225,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>Nieuwe Oplossing map</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>Dit is geen web project.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>O&amp;penen</value>
   </data>
@@ -6215,6 +6248,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Als startproject instellen.</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Bekijk in de browser</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Nieuwe map</value>
@@ -7136,6 +7172,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Leeg bestand</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Maakt een nieuwe uitzonderings klasse aan.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Uitzondering</value>
   </data>
@@ -7267,6 +7306,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Formulier</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Maakt een ASP.NET Webhandler aan met achterliggende code.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET behandelaar</value>

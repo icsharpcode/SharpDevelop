@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -162,8 +163,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			int version;
 			if (Int32.TryParse(s, out version)) {
 				return version;
+			} else if (TryParseHexNumber(s, out version)) {
+				return version;
 			}
 			return -1;
+		}
+		
+		static bool TryParseHexNumber(string s, out int number)
+		{
+			return Int32.TryParse(
+				s,
+				NumberStyles.AllowHexSpecifier,
+				CultureInfo.InvariantCulture,
+				out number);
 		}
 		
 		string GetTypeLibName()

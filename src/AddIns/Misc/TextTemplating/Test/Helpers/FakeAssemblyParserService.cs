@@ -11,9 +11,11 @@ namespace TextTemplating.Tests.Helpers
 	{
 		public FakeReflectionProjectContent FakeReflectionProjectContent = new FakeReflectionProjectContent();
 		public ReferenceProjectItem ItemPassedToGetReflectionProjectContentForReference;
+		public bool IsGetReflectionProjectContentForReferenceCalled;
 		
 		public IReflectionProjectContent GetReflectionProjectContentForReference(ReferenceProjectItem item)
 		{
+			IsGetReflectionProjectContentForReferenceCalled = true;
 			ItemPassedToGetReflectionProjectContentForReference = item;
 			return FakeReflectionProjectContent;
 		}

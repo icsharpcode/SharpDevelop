@@ -60,8 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\IFileSystem.cs" />
+    <Compile Include="Src\InnerClassEnumerator.cs" />
     <Compile Include="Src\IUnitTestMessageService.cs" />
     <Compile Include="Src\MultipleProjectBuildable.cs" />
+    <Compile Include="Src\TestMemberEventArgs.cs" />
     <Compile Include="Src\TestProcessRunnerBaseContext.cs" />
     <Compile Include="Src\UnitTestAddInTree.cs" />
     <Compile Include="Src\UnitTestBuildOptions.cs" />
@@ -79,7 +81,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\AllTestsTreeNode.cs" />
-    <Compile Include="Src\BaseTestMethod.cs" />
+    <Compile Include="Src\BaseTestMember.cs" />
     <Compile Include="Src\EmptyUnitTestsPad.cs" />
     <Compile Include="Src\IAddInTree.cs" />
     <Compile Include="Src\IBuildOptions.cs" />
@@ -121,7 +123,9 @@
     <Compile Include="Src\UnitTestCommands.cs" />
     <Compile Include="Src\TestableCondition.cs" />
     <Compile Include="Src\RunningTestsCondition.cs" />
-    <Compile Include="Src\TestTreeView.cs" />
+    <Compile Include="Src\TestTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\NUnitConsoleCommandLine.cs" />
     <Compile Include="Src\AbstractRunTestCommand.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -131,16 +135,18 @@
     <Compile Include="Src\TestProject.cs" />
     <Compile Include="Src\ITestTreeView.cs" />
     <Compile Include="Src\TestClass.cs" />
-    <Compile Include="Src\TestMethod.cs" />
+    <Compile Include="Src\TestMember.cs" />
     <Compile Include="Src\TestAttributeName.cs" />
     <Compile Include="Src\TestTreeNode.cs" />
     <Compile Include="Src\TestTreeViewImageList.cs" />
     <Compile Include="Src\TestProjectTreeNode.cs" />
     <Compile Include="Src\TestNamespaceTreeNode.cs" />
     <Compile Include="Src\TestClassTreeNode.cs" />
-    <Compile Include="Src\TestMethodTreeNode.cs" />
+    <Compile Include="Src\TestMemberTreeNode.cs" />
     <Compile Include="Src\UnitTestingOptions.cs" />
-    <Compile Include="Src\UnitTestingOptionsPanel.cs" />
+    <Compile Include="Src\UnitTestingOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\UnitTestsPad.cs" />
     <EmbeddedResource Include="Resources\Red.png" />
     <EmbeddedResource Include="Resources\Green.png" />
@@ -151,9 +157,8 @@
     <Compile Include="Src\TestResultsMonitor.cs" />
     <Compile Include="Src\TestFinishedEventArgs.cs" />
     <Compile Include="Src\TestClassCollection.cs" />
-    <Compile Include="Src\TestMethodCollection.cs" />
+    <Compile Include="Src\TestMemberCollection.cs" />
     <Compile Include="Src\TestClassEventArgs.cs" />
-    <Compile Include="Src\TestMethodEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
@@ -171,7 +176,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Configuration" />
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -182,7 +186,6 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Resources" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />

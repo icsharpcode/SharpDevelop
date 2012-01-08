@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {

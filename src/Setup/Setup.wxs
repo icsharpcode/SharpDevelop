@@ -318,6 +318,11 @@
 				<ComponentRef Id="VBWcfServiceProjectTemplate"/>
 				<ComponentRef Id="VBWcfServiceFileTemplate"/>
 				
+				<ComponentRef Id="CSharpWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfRestServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceFileTemplate"/>
+				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
@@ -547,6 +552,18 @@
 				<ComponentRef Id="TextTemplatingDll"/>
 				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
 				<ComponentRef Id="VBTextTemplateFileTemplate"/>
+			
+				<ComponentRef Id="MachineSpecificationsAddIn"/>
+				<ComponentRef Id="MachineSpecificationsCommandLineDll"/>
+				<ComponentRef Id="MachineSpecificationsDll"/>
+				<ComponentRef Id="MachineSpecificationsLicenseTxt"/>
+				<ComponentRef Id="ToolsMachineSpecificationsDll"/>
+				<ComponentRef Id="MachineSpecificationsReportingDll"/>
+				<ComponentRef Id="MachineSpecificationsSparkDll"/>
+				<ComponentRef Id="Mspec_clr4Exe"/>
+				<ComponentRef Id="Mspec_x86_clr4Exe"/>
+				<ComponentRef Id="Mspec_x86Exe"/>
+				<ComponentRef Id="MspecExe"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

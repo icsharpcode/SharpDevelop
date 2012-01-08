@@ -31,6 +31,7 @@
 			<ConditionEvaluator name="CompareProjectProperty" class="ICSharpCode.SharpDevelop.CompareProjectPropertyConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectItem" class="ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator"/>
 			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.AvalonEdit.TextSelectedCondition"/>
+			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
@@ -304,9 +305,15 @@
 			<MenuItem id    = "AddReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+			<MenuItem id    = "AddServiceReference"
+			          label = "Add Service Reference"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
+			<MenuItem id    = "ShowServiceInBrowser"
+			          label = "Show Service in Browser"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowServiceInBrowser"/>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 		</Condition>
 		
@@ -371,6 +378,9 @@
 			<MenuItem id    = "AddReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+			<MenuItem id    = "AddServiceReference"
+			          label = "Add Service Reference"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
 			<MenuItem id    = "AddWebReference"
 			          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
@@ -451,9 +461,26 @@
 					          label = "${res:ProjectComponent.ContextMenu.IncludeFileInProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.IncludeFileInProject"/>
 				</Condition>
-				
 				<MenuItem id = "ExcludeSeparator" type = "Separator" />
 			</ComplexCondition>
+			
+			<ComplexCondition>
+				<And>
+					<Condition name = "Ownerstate" ownerstate = "InProject"/>
+					<Not>
+						<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
+					</Not>
+					<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False"/>
+					<Condition name = "ViewInBrowser" extensions="aspx,asmx,html,htm,svc"/>
+				</And>
+			
+				<MenuItem id          = "ViewInBrowser"
+				          label       = "${res:ProjectComponent.ContextMenu.ViewInBrowser}"
+				          icon        = "Icons.22x22.Browser"
+				          class       = "ICSharpCode.SharpDevelop.Project.Commands.ViewInBrowser"/>
+				<MenuItem id = "ExcludeSeparator_ViewInBrowser" type = "Separator" />
+			</ComplexCondition>
+
 			<Include id="CutCopyPasteDeleteRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename"/>
 			<MenuItem id = "RenameSeparator" type = "Separator" />
 			<MenuItem id    = "Properties"
@@ -662,6 +689,62 @@
 			          type = "Item"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshWebReference"/>
 			<MenuItem id = "RefreshSeparator" type = "Separator" />
+			<MenuItem id = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
+			          type = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			<MenuItem id = "Rename"
+			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+			          shortcut = "F2"
+			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+			<MenuItem id = "PropertiesSeparator" type = "Separator" />
+			<MenuItem id = "Properties"
+			          icon  = "Icons.16x16.PropertiesIcon"
+			          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ServiceReferencesFolderNode">
+		<MenuItem id    = "AddServiceReference"
+		          label = "Add Service Reference"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddServiceReferenceToProject"/>
+		<Condition name = "Ownerstate" ownerstate = "Missing">
+			<MenuItem id = "RemoveMissing"
+			          label = "${res:Global.RemoveButtonText}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
+		</Condition>
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>
+			<MenuItem id    = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			<MenuItem id       = "Rename"
+			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+			          shortcut = "F2"
+			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ServiceReferenceNode">
+		<Condition name = "Ownerstate" ownerstate = "Missing">
+			<MenuItem id = "RemoveMissing"
+			          label = "${res:Global.RemoveButtonText}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
+		</Condition>
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          type = "Item"
@@ -1618,7 +1701,7 @@
 		</MenuItem> <!-- end DEBUG menu -->
 		
 		<MenuItem id = "Search" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
-			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
+			<MenuItem id = "SearchSeparator" type = "Separator" />
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
 				<MenuItem id = "ToggleBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"

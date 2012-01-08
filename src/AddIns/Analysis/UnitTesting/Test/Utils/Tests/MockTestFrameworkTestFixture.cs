@@ -25,30 +25,30 @@ namespace UnitTesting.Tests.Utils.Tests
 		public void IsTestMethodReturnsFalseByDefault()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			Assert.IsFalse(testFramework.IsTestMethod(method));
+			Assert.IsFalse(testFramework.IsTestMember(method));
 		}
 		
 		[Test]
 		public void IsTestMethodIMemberParameterIsInitiallyNull()
 		{
-			Assert.IsNull(testFramework.IsTestMethodMemberParameterUsed);
+			Assert.IsNull(testFramework.IsTestMemberParameterUsed);
 		}
 		
 		[Test]
 		public void IsTestMethodCallRecorded()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			testFramework.IsTestMethod(method);
-			Assert.AreEqual(method, testFramework.IsTestMethodMemberParameterUsed);
+			testFramework.IsTestMember(method);
+			Assert.AreEqual(method, testFramework.IsTestMemberParameterUsed);
 		}
 		
 		[Test]
 		public void IsTestMethodReturnsTrueIfMethodMatchesMethodPreviouslySpecified()
 		{
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
-			testFramework.AddTestMethod(method);
+			testFramework.AddTestMember(method);
 			
-			Assert.IsTrue(testFramework.IsTestMethod(method));
+			Assert.IsTrue(testFramework.IsTestMember(method));
 		}
 		
 		[Test]

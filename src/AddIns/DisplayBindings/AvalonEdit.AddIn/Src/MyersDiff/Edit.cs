@@ -104,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		/// <summary>
 		/// Start point in sequence A.
 		/// </summary>
-		public int BeginA { get; set; }
+		public int BeginA { get; private set; }
 		
 		/// <summary>
 		/// End point in sequence A.

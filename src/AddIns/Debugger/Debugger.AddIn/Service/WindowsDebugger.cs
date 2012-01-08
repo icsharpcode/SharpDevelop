@@ -161,25 +161,21 @@ namespace ICSharpCode.SharpDevelop.Services
 					if (index > -1){
 						Attach(processes[index]);
 					} else {
-						try {
-							this.monitor = new ProcessMonitor(processName);
-							this.monitor.ProcessCreated += delegate {
-								WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
-							};
-							this.monitor.Start();
-						}
-						catch (System.Exception ex) {
-							LoggingService.ErrorFormatted("Process Monitor exception: {0}", ex.Message);
-						}
-					}
-					
-					if (options.Data.WebServer == WebServer.IISExpress) {
-						// start IIS express and attach to it
-						if (WebProjectService.IISVersion == IISVersion.IISExpress) {
-							System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
-						} else {
-							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-							return;
+						this.monitor = new ProcessMonitor(processName);
+						this.monitor.ProcessCreated += delegate {
+							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
+						};
+						this.monitor.Start();
+						
+						if (options.Data.WebServer == WebServer.IISExpress) {
+							// start IIS express and attach to it
+							if (WebProjectService.IISVersion == IISVersion.IISExpress) {
+								System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
+							} else {
+								DisposeProcessMonitor();
+								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								return;
+							}
 						}
 					}
 					
@@ -190,6 +186,7 @@ namespace ICSharpCode.SharpDevelop.Services
 								defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
 							} else {
 								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								DisposeProcessMonitor();
 								return;
 							}
 							break;
@@ -205,6 +202,7 @@ namespace ICSharpCode.SharpDevelop.Services
 									defaultAppProcess = System.Diagnostics.Process.Start(url);
 								} else {
 									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+									DisposeProcessMonitor();
 									return;
 								}
 							}
@@ -216,6 +214,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					string err = "Error: " + ex.Message;
 					MessageService.ShowError(err);
 					LoggingService.Error(err);
+					DisposeProcessMonitor();
 					return;
 				}
 			} else {
@@ -268,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 		}
-
+		
 		public void ShowAttachDialog()
 		{
 			using (AttachToProcessForm attachForm = new AttachToProcessForm()) {
@@ -409,11 +408,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				debuggedProcess.Terminate();
 			}
 			
-			if (monitor != null) {
-				monitor.Stop();
-				monitor.Dispose();
-				monitor = null;
-			}
+			DisposeProcessMonitor();
 		}
 		
 		bool CheckWebProjectStartInfo()
@@ -449,6 +444,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			string processName = WebProjectService.WorkerProcessName;
 			var processes = System.Diagnostics.Process.GetProcesses();
 			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+			if (index == -1)
+				return;
 			Attach(processes[index]);
 			
 			if (!attached) {
@@ -461,6 +458,15 @@ namespace ICSharpCode.SharpDevelop.Services
 						MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
 					}
 				}
+			}
+		}
+		
+		void DisposeProcessMonitor()
+		{
+			if (monitor != null) {
+				monitor.Stop();
+				monitor.Dispose();
+				monitor = null;
 			}
 		}
 		
@@ -688,7 +694,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} catch (System.Exception ex) {
 				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
 				return null;
-			} 
+			}
 		}
 		
 		public ITreeNode GetNode(string variable, string currentImageName = null)

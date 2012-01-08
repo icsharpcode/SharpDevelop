@@ -646,10 +646,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IEnumerable<IMember> AllMembers {
 			get {
-				IEnumerable<IMember> p = properties;
-				return p.Concat(methods)
-					.Concat(fields)
-					.Concat(events);
+				IEnumerable<IMember> p = Properties;
+				return p.Concat(Methods)
+					.Concat(Fields)
+					.Concat(Events);
 			}
 		}
 		

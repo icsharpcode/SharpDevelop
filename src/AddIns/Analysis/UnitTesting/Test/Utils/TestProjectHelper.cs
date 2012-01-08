@@ -44,8 +44,8 @@ namespace UnitTesting.Tests.Utils
 				method.Region = new DomRegion(4, 20);
 				c.Methods.Add(method);
 				
-				TestMethod testMethod = new TestMethod(method);
-				testClass.TestMethods.Add(testMethod);
+				TestMember testMember = new TestMember(method);
+				testClass.TestMembers.Add(testMember);
 			}
 			
 			c.Project.Name = "TestProject";

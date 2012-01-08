@@ -222,7 +222,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			int maxEndOffset = 0;
 			foreach (FoldingSection fs in foldings) {
 				int end = fs.EndOffset;
-				if (end < viewEndOffset && !fs.IsFolded) {
+				if (end <= viewEndOffset && !fs.IsFolded) {
 					int textLineNr = GetTextLineIndexFromOffset(allTextLines, end);
 					if (textLineNr >= 0) {
 						endMarker[textLineNr] = foldingControlPen;

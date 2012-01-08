@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design;
 using CSharpBinding.FormattingStrategy;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -26,9 +28,16 @@ namespace CSharpBinding
 			get { return new CSharpBracketSearcher(); }
 		}
 		
+		CodeManipulation codeManipulation;
+		
 		public override void Attach(ITextEditor editor)
 		{
-			//CSharpBackgroundCompiler.Init();
+			codeManipulation = new CodeManipulation(editor);
+		}
+		
+		public override void Detach()
+		{
+			codeManipulation.Dispose();
 		}
 	}
 }

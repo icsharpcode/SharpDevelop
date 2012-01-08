@@ -1,15 +1,35 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public class PointerType : TypeWithElementType
+	public sealed class PointerType : TypeWithElementType, ISupportsInterning
 	{
 		public PointerType(IType elementType) : base(elementType)
 		{
+		}
+		
+		public override TypeKind Kind {
+			get { return TypeKind.Pointer; }
 		}
 		
 		public override string NameSuffix {
@@ -18,9 +38,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public override bool? IsReferenceType(ITypeResolveContext context)
-		{
-			return null;
+		public override bool? IsReferenceType {
+			get { return null; }
 		}
 		
 		public override int GetHashCode()
@@ -47,11 +66,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				return new PointerType(e);
 		}
+		
+		public override ITypeReference ToTypeReference()
+		{
+			return new PointerTypeReference(elementType.ToTypeReference());
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ 91725811;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			PointerType o = other as PointerType;
+			return o != null && this.elementType == o.elementType;
+		}
 	}
 	
-	public class PointerTypeReference : ITypeReference
+	[Serializable]
+	public sealed class PointerTypeReference : ITypeReference, ISupportsInterning
 	{
-		readonly ITypeReference elementType;
+		ITypeReference elementType;
 		
 		public PointerTypeReference(ITypeReference elementType)
 		{
@@ -74,12 +115,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return elementType.ToString() + "*";
 		}
 		
-		public static ITypeReference Create(ITypeReference elementType)
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			if (elementType is IType)
-				return new PointerType((IType)elementType);
-			else
-				return new PointerTypeReference(elementType);
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ 91725812;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			PointerTypeReference o = other as PointerTypeReference;
+			return o != null && this.elementType == o.elementType;
 		}
 	}
 }

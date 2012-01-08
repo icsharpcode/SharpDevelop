@@ -83,6 +83,7 @@
     </Compile>
     <Compile Include="Picker.cs" />
     <Compile Include="RadioButtonGroup.cs" />
+    <Compile Include="RelayCommand.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="SideBar\SideBar.cs">
       <SubType>UserControl</SubType>
@@ -95,6 +96,7 @@
     </Compile>
     <Compile Include="StackPanelWithSpacing.cs" />
     <Compile Include="UniformGridWithSpacing.cs" />
+    <Compile Include="ViewModelBase.cs" />
     <Compile Include="ZoomButtons.cs">
       <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
     </Compile>

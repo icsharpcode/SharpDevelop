@@ -13,11 +13,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public partial class WebProjectOptionsPanel : UserControl
 	{
-		private readonly DebugOptions parentPanel;
+		private readonly aaDebugOptions parentPanel;
 		
-		public WebProjectOptionsPanel(DebugOptions parentPanel)
+		public WebProjectOptionsPanel()
 		{
 			InitializeComponent();
+			
+//			this.parentPanel = parentPanel;
+			
+			if (CurrentProjectDebugData == null)
+				CurrentProjectDebugData = new WebProjectDebugData();
+			
+			Loaded += OnLoaded;
+		}
+		
+		public WebProjectOptionsPanel(aaDebugOptions parentPanel):this()
+		{
+//			InitializeComponent();
 			
 			this.parentPanel = parentPanel;
 			
@@ -45,10 +57,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					}
 					break;
 				case WebServer.IIS:
-					if (WebProjectService.IISVersion == IISVersion.IIS5 ||
-					    WebProjectService.IISVersion == IISVersion.IIS6 ||
-					    WebProjectService.IISVersion == IISVersion.IIS7 ||
-					    WebProjectService.IISVersion == IISVersion.IIS_Future) {
+					if (WebProjectService.IISVersion != IISVersion.IISExpress &&
+					    WebProjectService.IISVersion != IISVersion.None) {
 						UseLocalIIS.IsChecked = true;
 						ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
 						
@@ -134,19 +144,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IIS;
 			data.Port = string.Empty;
-			bool isIISInstalled = WebProjectService.IISVersion == IISVersion.IIS5 ||
-				WebProjectService.IISVersion == IISVersion.IIS6 ||
-				WebProjectService.IISVersion == IISVersion.IIS7;
+			bool isIISInstalled = WebProjectService.IISVersion != IISVersion.IISExpress &&
+					    WebProjectService.IISVersion != IISVersion.None;
 			
 			if (!isIISInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
 				ProjectUrl.Text = string.Empty;
 				data.WebServer = WebServer.None;
 				UseLocalIIS.IsChecked = false;
-			}
-			else {
+			} else {
 				StatusLabel.Text = string.Empty;
-				ProjectUrl.Text = @"http://localhost/" + ProjectService.CurrentProject.Name;
+				ProjectUrl.Text = string.Format("{0}/{1}", CompilableProject.LocalHost, ProjectService.CurrentProject.Name);
 			}
 			
 			data.ProjectUrl = ProjectUrl.Text;
@@ -200,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IISExpress;
 			data.Port = PortTextBox.Text;
-			data.ProjectUrl = string.Format(@"http://localhost:{0}/" + ProjectService.CurrentProject.Name, PortTextBox.Text);
+			data.ProjectUrl = string.Format(@"{0}:{1}/{2}", CompilableProject.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
 			CurrentProjectDebugData = data;
 		}
 	}

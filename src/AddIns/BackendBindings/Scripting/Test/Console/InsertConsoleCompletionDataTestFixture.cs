@@ -30,10 +30,10 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			int startOffset = 4;
 			int endOffset = 5;
-			SimpleSelection selection = new SimpleSelection(startOffset, endOffset);
+			Selection selection = Selection.Create(textEditor.TextArea, startOffset, endOffset);
 			
 			completionData = new ScriptingConsoleCompletionData("new");
-			completionData.Complete(textEditor.TextArea, selection, null);
+			completionData.Complete(textEditor.TextArea, selection.SurroundingSegment, null);
 			
 			string expectedText = 
 				"abc.new";

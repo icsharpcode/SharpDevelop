@@ -212,6 +212,26 @@
             <summary>Ensures the underlying array is long enough to accomodate the given index</summary>
             <returns>The site storage type corresponding to the given index</returns>
         </member>
+        <member name="T:IronPython.Modules._ast.AugLoad">
+            <summary>
+            Not used.
+            </summary>
+        </member>
+        <member name="T:IronPython.Modules._ast.AugStore">
+            <summary>
+            Not used.
+            </summary>
+        </member>
+        <member name="T:IronPython.Compiler.Ast.PythonWalker">
+            <summary>
+            PythonWalker class - The Python AST Walker (default result is true)
+            </summary>
+        </member>
+        <member name="T:IronPython.Modules._ast.Suite">
+            <summary>
+            Not an actual node. We don't create this, but it's here for compatibility.
+            </summary>
+        </member>
         <member name="T:IronPython.Runtime.Binding.IPythonExpandable">
             <summary>
             Interface used to mark objects which contain a dictionary of custom attributes that shadow
@@ -1128,11 +1148,6 @@
         <member name="M:IronPython.Compiler.Ast.ClassDefinition.GetParentClosureTuple">
             <summary>
             Gets the closure tuple from our parent context.
-            </summary>
-        </member>
-        <member name="T:IronPython.Compiler.Ast.PythonWalker">
-            <summary>
-            PythonWalker class - The Python AST Walker (default result is true)
             </summary>
         </member>
         <member name="T:IronPython.Compiler.Ast.PythonWalkerNonRecursive">
@@ -2226,6 +2241,23 @@
             string providing this method
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.Bytes.ToByteArray">
+            <summary>
+            Returns a copy of the internal byte array.
+            </summary>
+            <returns>
+            System.Byte[]
+            </returns>
+        </member>
+        <member name="M:IronPython.Runtime.Bytes.GetUnsafeByteArray">
+            <summary>
+            This method returns the underlying byte array directly.
+            It should be used sparingly!
+            </summary>
+            <returns>
+            System.Byte[]
+            </returns>
+        </member>
         <member name="T:IronPython.Runtime.ClassMethodAttribute">
             <summary>
             Marks a method as being a class method.  The PythonType which was used to access
@@ -2808,6 +2840,11 @@
             and sys.setrecursionlimit.
             </summary>
         </member>
+        <member name="P:IronPython.Runtime.PythonContext.MainThread">
+            <summary>
+            Gets or sets the main thread which should be interupted by thread.interrupt_main
+            </summary>
+        </member>
         <member name="P:IronPython.Runtime.PythonContext.DefaultEncoding">
             <summary>
             Gets or sets the default encoding for this system state / engine.
@@ -2852,6 +2889,11 @@
             Returns a shared code context for the current PythonContext.  This shared
             context can be used for doing lookups which need to occur as if they
             happened in a module which has done "import clr".
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.PythonTuple.ToArray">
+            <summary>
+            Return a copy of this tuple's data array.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.PythonDynamicStackFrame">
@@ -3742,21 +3784,21 @@
         <member name="M:IronPython.Hosting.Python.CreateEngine">
             <summary>
             Creates a new ScriptRuntime and returns the ScriptEngine for IronPython. If
-            the ScriptRuntime is requierd it can be acquired from the Runtime property
+            the ScriptRuntime is required it can be acquired from the Runtime property
             on the engine.
             </summary>
         </member>
         <member name="M:IronPython.Hosting.Python.CreateEngine(System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Creates a new ScriptRuntime with the specified options and returns the 
-            ScriptEngine for IronPython. If the ScriptRuntime is requierd it can be 
+            ScriptEngine for IronPython. If the ScriptRuntime is required it can be 
             acquired from the Runtime property on the engine.
             </summary>
         </member>
         <member name="M:IronPython.Hosting.Python.CreateEngine(System.AppDomain)">
             <summary>
             Creates a new ScriptRuntime and returns the ScriptEngine for IronPython. If
-            the ScriptRuntime is requierd it can be acquired from the Runtime property
+            the ScriptRuntime is required it can be acquired from the Runtime property
             on the engine.
             
             The remote ScriptRuntime may be manipulated from the local domain but 
@@ -3766,7 +3808,7 @@
         <member name="M:IronPython.Hosting.Python.CreateEngine(System.AppDomain,System.Collections.Generic.IDictionary{System.String,System.Object})">
             <summary>
             Creates a new ScriptRuntime with the specified options and returns the 
-            ScriptEngine for IronPython. If the ScriptRuntime is requierd it can be 
+            ScriptEngine for IronPython. If the ScriptRuntime is required it can be 
             acquired from the Runtime property on the engine.
             
             The remote ScriptRuntime may be manipulated from the local domain but 
@@ -4901,7 +4943,7 @@
         <member name="M:IronPython.Modules.Builtin.GetCompilerInheritance(System.Object)">
             <summary> Returns true if we should inherit our callers context (true division, etc...), false otherwise </summary>
         </member>
-        <member name="M:IronPython.Modules.Builtin.GetCompilerFlags(System.Object)">
+        <member name="M:IronPython.Modules.Builtin.GetCompilerFlags(System.Int32)">
             <summary> Returns the default compiler flags or the flags the user specified. </summary>
         </member>
         <member name="M:IronPython.Modules.Builtin.GetExecEvalScopeOptional(IronPython.Runtime.CodeContext,IronPython.Runtime.PythonDictionary,System.Object,System.Boolean)">
@@ -6333,11 +6375,6 @@
         <member name="M:IronPython.Runtime.StringFormatter.AppendBaseBigInt(System.Numerics.BigInteger,System.Char,System.Int32)">
             <summary>
             BigInteger version of AppendBase.  Should be kept in sync w/ AppendBase
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.PythonTuple.ToArray">
-            <summary>
-            Return a copy of this tuple's data array.
             </summary>
         </member>
         <member name="T:IronPython.Runtime.TupleEnumerator">
