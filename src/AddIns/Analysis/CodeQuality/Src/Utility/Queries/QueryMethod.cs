@@ -44,20 +44,21 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     	Metrics =  "Instructions.Count",
 			                     	Action = ExecuteMethodILInstructions
 			                     });
-			/*
+		
 			items.Add(new ItemWithAction()
 			                     {
 			                     	Description = "IL Cyclomatic Complexity",
 			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
 			                     	Action = ExecuteMethodComplexity
 			                     });
+			                
 			items.Add(new ItemWithAction()
 			                     {
-			                     	Description = "Variables",
+			                     	Description = "# of Variables",
 			                     	Metrics = Metrics.Variables.ToString(),
 			                     	Action = ExecuteMethodVariables
 			                     });
-			                     */
+			                   
 			return items;
 		}
 		
@@ -75,14 +76,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	Name = m.Name,
 			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
 			                               });
-//			var list = intermediate.Select(m =>  new TreeMapViewModel()
-//			                               {
-//			                               	Name = m.Name,
-//			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
-//			                               });
-		
+
 			return list.ToList();
-			//return filtered.Cast<TreeMapViewModel>().ToList();
 		}
 		
 		
@@ -92,20 +87,28 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var filtered = from method in intermediate
 				where method.CyclomaticComplexity > 0
 				select method;
-			return filtered.Cast<TreeMapViewModel>().ToList();
+			
+			var list = filtered.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval = m.CyclomaticComplexity
+			                               });
+			return list.ToList();
 		}
 	
 		
 		private List<TreeMapViewModel> ExecuteMethodVariables ()
 		{
 			var intermediate = MethodQuery();
-// eliminate 0-values reduce time for my test assembly from 6 to 1 sek
-
 			var filtered = from method in intermediate
 				where method.Variables > 0
 				select method;
-			
-			return filtered.Cast<TreeMapViewModel>().ToList();
+			var list = filtered.Select(m =>  new TreeMapViewModel()
+			                               {
+			                               	Name = m.Name,
+			                               	Numval =  m.Variables
+			                               });
+			return list.ToList();
 		}
 	}
 }
