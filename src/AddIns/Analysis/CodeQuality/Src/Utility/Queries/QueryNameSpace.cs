@@ -78,23 +78,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		
 		private List<TreeMapViewModel> ExecuteILInstructions ()
 		{
-			//var list = new List<TreeMapNode>();
 			var intermediate = this.NameSpaceQuery();
 			var i = 0;
-			/*
-			foreach (var element in intermediate)
-			{
-				var node = new TreeMapNode();
-				node.Name = element.Name;
-				foreach (var m in element.GetAllMethods()) {
-					i = i + m.Instructions.Count;
-				}
-				node.Numval = i;
-				list.Add(node);
-				i = 0;
-			}
-			*/
-			
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
@@ -113,6 +98,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	Name = m.Name,
 			                               	Numval = m.GetAllMethods().ToList().Count
 			                               });
+			
 			return list.ToList();
 		}
 		

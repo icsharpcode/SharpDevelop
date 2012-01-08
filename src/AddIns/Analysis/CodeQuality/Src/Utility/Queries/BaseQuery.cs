@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 {
@@ -26,6 +27,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		public virtual List<ItemWithAction> GetQueryList ()
 		{
 			return null;
+		}
+		
+		
+		protected List<TreeMapViewModel> EliminateZeroValues(IEnumerable<TreeMapViewModel> list)
+		{
+				var filtered =  from viewModel in list
+				where viewModel.Numval > 0
+				select viewModel;
+				return filtered.ToList();
 		}
 	}
 }

@@ -66,49 +66,46 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		private List<TreeMapViewModel> ExecuteMethodILInstructions()
 		{
 			var intermediate = MethodQuery();
-			var filtered = from method in intermediate
-				where method.Instructions.Count > 0
-				select method;
-			
 			int i = 0;
-			var list = filtered.Select(m =>  new TreeMapViewModel()
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
 			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
 			                               });
 
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
+			return filtered.ToList();
 		}
 		
 		
 		private List<TreeMapViewModel> ExecuteMethodComplexity ()
 		{
 			var intermediate = MethodQuery();
-			var filtered = from method in intermediate
-				where method.CyclomaticComplexity > 0
-				select method;
-			
-			var list = filtered.Select(m =>  new TreeMapViewModel()
+
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
 			                               	Numval = m.CyclomaticComplexity
 			                               });
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
+			return filtered.ToList();
 		}
 	
 		
 		private List<TreeMapViewModel> ExecuteMethodVariables ()
 		{
 			var intermediate = MethodQuery();
-			var filtered = from method in intermediate
-				where method.Variables > 0
-				select method;
-			var list = filtered.Select(m =>  new TreeMapViewModel()
+			
+			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
 			                               	Numval =  m.Variables
 			                               });
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
+			return filtered.ToList();
 		}
 	}
 }
