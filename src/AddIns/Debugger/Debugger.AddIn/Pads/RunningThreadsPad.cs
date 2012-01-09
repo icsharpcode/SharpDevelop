@@ -122,7 +122,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					debuggedProcess.SelectedThread = thread;
 					debuggedProcess.SelectedThread.SelectedStackFrame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 					if (debuggedProcess.SelectedThread.SelectedStackFrame != null) {
-						debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentThreadChanged;
 						debuggedProcess.OnPaused(); // Force refresh of pads - artificial pause
 					} else {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");

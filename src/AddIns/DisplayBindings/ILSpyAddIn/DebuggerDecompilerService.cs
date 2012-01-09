@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
@@ -15,13 +16,6 @@ using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
-	// Dummy class to avoid the build errors after updating the ICSharpCode.Decompiler version.
-	// TODO: get rid of this & fix debugging decompiled files
-	public class DecompileInformation {
-		public dynamic LocalVariables;
-		public dynamic CodeMappings;
-	}
-	
 	/// <summary>
 	/// Stores the decompilation information.
 	/// </summary>
@@ -31,7 +25,7 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		static DebuggerDecompilerService()
 		{
-			DebugInformation = new ConcurrentDictionary<int, DecompileInformation>();
+			DebugInformation = new ConcurrentDictionary<int, List<MemberMapping>>();
 			ProjectService.SolutionClosed += delegate {
 				DebugInformation.Clear();
 				GC.Collect();
@@ -44,7 +38,7 @@ namespace ICSharpCode.ILSpyAddIn
 		/// Gets or sets the external debug information.
 		/// <summary>This constains the code mappings and local variables.</summary>
 		/// </summary>
-		internal static ConcurrentDictionary<int, DecompileInformation> DebugInformation { get; private set; }
+		internal static ConcurrentDictionary<int, List<MemberMapping>> DebugInformation { get; private set; }
 		
 		public DebuggerDecompilerService()
 		{
@@ -55,14 +49,11 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public bool CheckMappings(int typeToken)
 		{
-			DecompileInformation data = null;
+			List<MemberMapping> data = null;
 			DebugInformation.TryGetValue(typeToken, out data);
-			DecompileInformation information = data as DecompileInformation;
+			var information = data as List<MemberMapping>;
 			
 			if (information == null)
-				return false;
-			
-			if (information.CodeMappings == null)
 				return false;
 			
 			return true;
@@ -80,18 +71,13 @@ namespace ICSharpCode.ILSpyAddIn
 				DecompilerContext context = new DecompilerContext(type.Module);
 				AstBuilder astBuilder = new AstBuilder(context);
 				astBuilder.AddType(type);
-				DebuggerTextOutput output = new DebuggerTextOutput(new PlainTextOutput());
-				astBuilder.GenerateCode(output);
-				
-				/*int token = type.MetadataToken.ToInt32();
-				var info = new DecompileInformation {
-					CodeMappings = astBuilder.CodeMappings,
-					LocalVariables = astBuilder.LocalVariables,
-					DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
-				};
+				DebuggerTextOutput debuggerOutput = new DebuggerTextOutput(new PlainTextOutput());
+				astBuilder.GenerateCode(debuggerOutput);
 				
 				// save the data
-				DebugInformation.AddOrUpdate(token, info, (k, v) => info);*/
+				int token = type.MetadataToken.ToInt32();
+				var info = debuggerOutput.DebuggerMemberMappings;
+				DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
 			} catch {
 				return;
 			}
@@ -104,16 +90,14 @@ namespace ICSharpCode.ILSpyAddIn
 			if (!CheckMappings(typeToken))
 				return false;
 			
-			var data = (DecompileInformation)DebugInformation[typeToken];
-			var mappings = data.CodeMappings;
-			foreach (var key in mappings.Keys) {
-				var list = mappings[key];
-				var instruction = list.GetInstructionByLineNumber(lineNumber, out memberToken);
+			foreach (var mapping in DebugInformation[typeToken]) {
+				var instruction = mapping.GetInstructionByLineNumber(lineNumber, out memberToken);
 				if (instruction == null)
 					continue;
 				
 				ilRanges = new int[] { instruction.ILInstructionOffset.From, instruction.ILInstructionOffset.To };
 				memberToken = instruction.MemberMapping.MetadataToken;
+				
 				return true;
 			}
 			
@@ -129,16 +113,15 @@ namespace ICSharpCode.ILSpyAddIn
 			if (!CheckMappings(typeToken))
 				return false;
 			
-			var data = (DecompileInformation)DebugInformation[typeToken];
-			var mappings = data.CodeMappings;
-			
-			if (!mappings.ContainsKey(memberToken))
+			var mapping = DebugInformation[typeToken].Where(m => m.MetadataToken == memberToken).FirstOrDefault();
+			if (mapping == null)
 				return false;
 			
-			var map = mappings[memberToken].GetInstructionByTokenAndOffset(memberToken, ilOffset, out isMatch);
+			var map = mapping.GetInstructionByTokenAndOffset(ilOffset, out isMatch);
+			
 			if (map != null) {
 				ilRange = map.ToArray(isMatch);
-				line = map.SourceCodeLine;
+				line = map.StartLocation.Line;
 				return true;
 			}
 			
@@ -150,17 +133,17 @@ namespace ICSharpCode.ILSpyAddIn
 			if (DebugInformation == null || !DebugInformation.ContainsKey(typeToken))
 				yield break;
 
-			var externalData = DebugInformation[typeToken];
-			IEnumerable<ILVariable> list;
+			var mappings = DebugInformation[typeToken];
+			var map = mappings.Where(m => m.MetadataToken == memberToken).FirstOrDefault();
+			if (map == null)
+				yield break;
 			
-			if (externalData.LocalVariables.TryGetValue(memberToken, out list)) {
-				foreach (var local in list) {
-					if (local.IsParameter)
-						continue;
-					if (string.IsNullOrEmpty(local.Name))
-						continue;
-					yield return local.Name;
-				}
+			foreach (var local in map.LocalVariables) {
+				if (local.IsParameter)
+					continue;
+				if (string.IsNullOrEmpty(local.Name))
+					continue;
+				yield return local.Name;
 			}
 		}
 		
@@ -169,16 +152,16 @@ namespace ICSharpCode.ILSpyAddIn
 			if (DebugInformation == null || !DebugInformation.ContainsKey(typeToken))
 				return null;
 
-			var externalData = DebugInformation[typeToken];
-			IEnumerable<ILVariable> list;
+			var mappings = DebugInformation[typeToken];
+			var map = mappings.Where(m => m.MetadataToken == memberToken).FirstOrDefault();
+			if (map == null)
+				return null;
 			
-			if (externalData.LocalVariables.TryGetValue(memberToken, out list)) {
-				foreach (var local in list) {
-					if (local.IsParameter)
-						continue;
-					if (local.Name == name)
-						return new[] { local.OriginalVariable.Index };
-				}
+			foreach (var local in map.LocalVariables) {
+				if (local.IsParameter)
+					continue;
+				if (local.Name == name)
+					return new[] { local.OriginalVariable.Index };
 			}
 			
 			return null;

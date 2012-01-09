@@ -254,24 +254,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// </summary>
 		/// <param name="editor">Text editor where the bookmark is toggled.</param>
 		/// <param name="lineNumber">Line number.</param>
-		/// <param name="breakpointType">Type of breakpoint bookmark.</param>
-		/// <param name="parameters">Optional constructor parameters.</param>
-		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber, Type breakpointType, object[] parameters = null)
+		public static void ToggleBreakpointAt(ITextEditor editor, int lineNumber)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			
-			if (breakpointType == null)
-				throw new ArgumentNullException("breakpointType");
-			
-			if (!typeof(BreakpointBookmark).IsAssignableFrom(breakpointType))
-				throw new ArgumentException("breakpointType is not a BreakpointBookmark");
+			var createService = editor.GetService(typeof(IBreakpointCreateService)) as IBreakpointCreateService;
+			if (createService == null) {
+				LoggingService.Error("Error in DebuggerService.ToggleBreakpointAt: No IBreakpointCreateService!");
+				return;
+			}
 			
 			BookmarkManager.ToggleBookmark(
 				editor, lineNumber,
 				b => b.CanToggle && b is BreakpointBookmark,
-				location => (BreakpointBookmark)Activator.CreateInstance(breakpointType, 
-				                                                         parameters ?? new object[] { editor.FileName, location, BreakpointAction.Break, "", ""}));
+				location => createService.Create(new object[] { editor.FileName, location, BreakpointAction.Break, "", ""}));
 		}
 		
 		/* TODO: reimplement this stuff

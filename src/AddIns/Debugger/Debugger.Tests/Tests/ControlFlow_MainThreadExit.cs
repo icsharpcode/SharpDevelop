@@ -84,7 +84,7 @@ namespace Debugger.Tests {
           RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
-    <DebuggingPaused>ForcedBreak ControlFlow_MainThreadExit.cs:25,4-25,26</DebuggingPaused>
+    <DebuggingPaused>ForcedBreak </DebuggingPaused>
     <ThreadsAfterExit
       Count="2"
       Selected="Thread Name = Worker thread Suspended = False">
@@ -105,7 +105,7 @@ namespace Debugger.Tests {
           Name="Worker thread"
           Priority="Normal"
           RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime()" />
+          SelectedStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext)" />
       </Item>
     </ThreadsAfterExit>
     <ProcessExited />

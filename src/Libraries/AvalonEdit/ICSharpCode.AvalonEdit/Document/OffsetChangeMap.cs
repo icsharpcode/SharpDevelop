@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// <summary>
 		/// Normal replace.
 		/// Anchors in front of the replaced region will stay in front, anchors after the replaced region will stay after.
-		/// Anchors in the middle of the removed region will be deleted. Ifthey survive deletion,
+		/// Anchors in the middle of the removed region will be deleted. If they survive deletion,
 		/// they move depending on their AnchorMovementType.
 		/// </summary>
 		/// <remarks>

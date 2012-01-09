@@ -239,18 +239,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// no bookmark on the line: create a new breakpoint
 					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
-						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
+						DebuggerService.ToggleBreakpointAt(textEditor, line);
 						return;
-					}
-					
-					// create breakpoint for the other posible active contents
-					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
-					if (viewContent != null) {
-						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-						if (textEditor != null) {
-							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
-							return;
-						}
 					}
 				}
 			}

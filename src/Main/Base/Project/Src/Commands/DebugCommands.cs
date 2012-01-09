@@ -126,14 +126,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (provider != null) {
 				editor = provider.TextEditor;
 				if (!string.IsNullOrEmpty(editor.FileName)) {
-					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(BreakpointBookmark));
+					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
 			} else {
 				var view = viewContent as AbstractViewContentWithoutFile;
 				if (view != null) {
 					editor = view.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (editor != null) {
-						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(DecompiledBreakpointBookmark));
+						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 					}
 				}
 			}

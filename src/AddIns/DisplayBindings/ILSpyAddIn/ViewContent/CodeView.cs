@@ -63,7 +63,8 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			this.adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
 			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
-			// DON'T add the editor in textview ervices - will mess the setting of breakpoints
+			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextEditor), this.adapter);
+			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(IBreakpointCreateService), new DecompiledBreakpointCreateService());
 			
 			// add events
 			this.adapter.TextEditor.MouseHover += TextEditorMouseHover;

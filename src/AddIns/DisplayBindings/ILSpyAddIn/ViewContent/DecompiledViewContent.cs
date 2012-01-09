@@ -2,9 +2,11 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
@@ -96,8 +98,9 @@ namespace ICSharpCode.ILSpyAddIn
 			BookmarkManager.Added -= BookmarkManager_Added;
 			BookmarkManager.Removed -= BookmarkManager_Removed;
 			if (decompiledType != null) {
-				DecompileInformation data;
-				DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data);
+				List<MemberMapping> data;
+				if (DebuggerDecompilerService.DebugInformation.TryRemove(decompiledType.MetadataToken.ToInt32(), out data))
+					data.Clear();
 				data = null;
 			}
 			base.Dispose();
@@ -134,7 +137,10 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			try {
 				StringWriter writer = new StringWriter();
-				RunDecompiler(assemblyFile, fullTypeName, new PlainTextOutput(writer), cancellation.Token);
+				RunDecompiler(assemblyFile,
+				              fullTypeName, 
+				              new DebuggerTextOutput(new PlainTextOutput(writer)), 
+				              cancellation.Token);
 				if (!cancellation.IsCancellationRequested) {
 					WorkbenchSingleton.SafeThreadAsyncCall(OnDecompilationFinished, writer);
 				}
@@ -175,17 +181,14 @@ namespace ICSharpCode.ILSpyAddIn
 			// save decompilation data
 			decompiledType = typeDefinition;
 			
-			/*
-			int token = decompiledType.MetadataToken.ToInt32();
-			var info = new DecompileInformation {
-				CodeMappings = astBuilder.CodeMappings,
-				LocalVariables = astBuilder.LocalVariables,
-				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
-			};
-			
+			var debuggerOutput = textOutput as DebuggerTextOutput;
+			if (debuggerOutput == null)
+				return;
+
 			// save the data
+			int token = decompiledType.MetadataToken.ToInt32();
+			var info = debuggerOutput.DebuggerMemberMappings;
 			DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
-			*/
 		}
 		
 		void OnDecompilationFinished(StringWriter output)
@@ -235,25 +238,27 @@ namespace ICSharpCode.ILSpyAddIn
 				return;
 			
 			// get debugging information
-			DecompileInformation debugInformation = (DecompileInformation)DebuggerDecompilerService.DebugInformation[typeToken];
+			var debugInformation = DebuggerDecompilerService.DebugInformation[typeToken];
 			int methodToken = decompilerService.DebugStepInformation.Item1;
 			int ilOffset = decompilerService.DebugStepInformation.Item2;
 			int line;
+			
+			var mapping = debugInformation.Where(m => m.MetadataToken == methodToken).FirstOrDefault();
+			if (mapping == null)
+				return;
+			
 			MemberReference member;
-			if (debugInformation.CodeMappings == null || !debugInformation.CodeMappings.ContainsKey(methodToken))
-				return;
-			
-			debugInformation.CodeMappings[methodToken].GetInstructionByTokenAndOffset(methodToken, ilOffset, out member, out line);
-			
-			// if the codemappings are not built
-			if (line <= 0) {
-				DebuggerService.CurrentDebugger.StepOver();
-				return;
+			if (mapping.GetInstructionByTokenAndOffset(ilOffset, out member, out line)) {
+				// if the codemappings are not built
+				if (line <= 0) {
+					DebuggerService.CurrentDebugger.StepOver();
+					return;
+				}
+				
+				// jump to line - scoll and unfold
+				this.UpdateCurrentLineBookmark(line);
+				this.JumpToLineNumber(line);
 			}
-			
-			// jump to line - scoll and unfold
-			this.UpdateCurrentLineBookmark(line);
-			this.JumpToLineNumber(line);
 		}
 		
 		public void JumpToLineNumber(int lineNumber)

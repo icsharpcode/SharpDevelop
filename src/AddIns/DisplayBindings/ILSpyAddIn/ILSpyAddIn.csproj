@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="DebuggerDecompilerService.cs" />
     <Compile Include="DebuggerTextOutput.cs" />
+    <Compile Include="DecompiledBreakpointCreateService.cs" />
     <Compile Include="LaunchILSpy\ILSpyAssemblyResolver.cs" />
     <Compile Include="NavigateToDecompiledEntityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
