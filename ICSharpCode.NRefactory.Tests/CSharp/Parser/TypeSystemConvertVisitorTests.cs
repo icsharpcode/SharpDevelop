@@ -18,6 +18,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
@@ -49,6 +50,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				.UpdateProjectContent(null, parsedFile)
 				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
 				.SetAssemblyName(typeof(TypeSystemTests).Assembly.GetName().Name);
+		}
+		
+		[Test]
+		public void ExplicitDisposableImplementation()
+		{
+			ITypeDefinition disposable = GetTypeDefinition(typeof(NRefactory.TypeSystem.TestCase.ExplicitDisposableImplementation));
+			IMethod method = disposable.Methods.Single(m => m.Name == "Dispose");
+			Assert.IsTrue(method.IsExplicitInterfaceImplementation);
+			Assert.AreEqual("System.IDisposable.Dispose", method.InterfaceImplementations.Single().FullName);
 		}
 	}
 	

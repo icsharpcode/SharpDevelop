@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		protected ICompilation compilation;
 		
-		ITypeDefinition GetTypeDefinition(Type type)
+		protected ITypeDefinition GetTypeDefinition(Type type)
 		{
 			return compilation.FindType(type).GetDefinition();
 		}
@@ -556,7 +556,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		ResolveResult GetParamsAttributeArgument(int index)
 		{
-			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute)).GetDefinition();
+			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute));
 			var arr = (ArrayCreateResolveResult)type.Attributes.Single().PositionalArguments.Single();
 			Assert.AreEqual(5, arr.InitializerElements.Length);
 			return arr.InitializerElements[index];
@@ -616,7 +616,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void DoubleAttribute_ImplicitNumericConversion()
 		{
-			ITypeDefinition type = GetTypeDefinition(typeof(DoubleAttribute)).GetDefinition();
+			ITypeDefinition type = GetTypeDefinition(typeof(DoubleAttribute));
 			var arg = type.Attributes.Single().PositionalArguments.ElementAt(0);
 			Assert.AreEqual("System.Double", arg.Type.ReflectionName);
 			Assert.AreEqual(1.0, arg.ConstantValue);

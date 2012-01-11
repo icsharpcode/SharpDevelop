@@ -161,4 +161,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public Inner Field2;
 		public OuterGeneric<OuterGeneric<X>.Inner>.Inner Field3;
 	}
+	
+	public class ExplicitDisposableImplementation : IDisposable
+	{
+		void IDisposable.Dispose() {}
+	}
 }
