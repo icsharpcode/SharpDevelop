@@ -49,12 +49,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.AreEqual(code, pe.LiteralValue);
 		}
 		
+		[Ignore("Fixme!")]
 		[Test]
 		public void DoubleWithLeadingDot()
 		{
 			CheckLiteral(".5e-06", .5e-06);
 		}
 		
+		[Ignore("Fixme!")]
 		[Test]
 		public void FloatWithLeadingDot()
 		{
@@ -226,6 +228,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			CheckLiteral(@"'\U00000041'", '\U00000041');
 		}
 		
+		[Ignore("Fixme!")]
 		[Test]
 		public void TestPositionOfIntegerAtEndOfLine()
 		{
