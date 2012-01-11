@@ -774,8 +774,15 @@ attribute
 		if (tne.HasTypeArguments) {
 			report.Error (404, tne.Location, "Attributes cannot be generic");
 		}
+		Arguments [] arguments = (Arguments []) $3;
 
 		$$ = new Attribute (current_attr_target, tne, (Arguments[]) $3, GetLocation ($1), lexer.IsEscapedIdentifier (tne));
+		if (arguments != null) {
+			attributeArgumentCommas.Insert (0, savedAttrParenOpenLocation);
+			attributeArgumentCommas.Add (savedAttrParenCloseLocation);
+			lbag.AddLocation ($$, attributeArgumentCommas);
+			attributeArgumentCommas.Clear ();
+		}
 	  }
 	;
 
@@ -1345,7 +1352,7 @@ method_header
 			method.DocComment = Lexer.consume_doc_comment ();
 
 		StoreModifierLocation (Modifiers.PARTIAL, GetLocation ($3));
-		lbag.AddMember (method, mod_locations, GetLocation ($7), GetLocation ($10));
+		lbag.AddMember (method, GetModifierLocations (), GetLocation ($7), GetLocation ($10));
 		$$ = method;
 	  }
 	| opt_attributes
@@ -2209,7 +2216,7 @@ constructor_declarator
 			}
 		}
 
-		lbag.AddMember (c, mod_locations, GetLocation ($5), GetLocation ($7));
+		lbag.AddMember (c, GetModifierLocations (), GetLocation ($5), GetLocation ($7));
 		$$ = c;
 
 		//
@@ -2229,9 +2236,9 @@ constructor_declarator
 					"`{0}': static constructor cannot have an explicit `this' or `base' constructor call",
 					c.GetSignatureForError ());
 			}
+			lbag.AddMember (c, GetModifierLocations (), GetLocation ($5), GetLocation ($7));
 		}
 
-		lbag.AddMember (c, GetModifierLocations (), GetLocation ($5), GetLocation ($7));
 		$$ = $8;
 	  }
 	;
@@ -6786,7 +6793,8 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 			
 		current_anonymous_method = new AnonymousMethodExpression (loc);
 	}
-
+	current_anonymous_method.IsAsync = isAsync;
+	
 	async_block = isAsync;
 	// Force the next block to be created as a ToplevelBlock
 	parsing_anonymous_method = true;

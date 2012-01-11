@@ -16,6 +16,7 @@ using System.Collections.Generic;
 #if STATIC
 using IKVM.Reflection;
 using IKVM.Reflection.Emit;
+using System.Diagnostics;
 #else
 using System.Reflection;
 using System.Reflection.Emit;
@@ -913,10 +914,10 @@ namespace Mono.CSharp {
 				return Block.Parameters;
 			}
 		}
-
+		
 		public bool IsAsync {
 			get;
-			private set;
+			internal set;
 		}
 		#endregion
 

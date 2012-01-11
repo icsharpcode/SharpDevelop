@@ -835,13 +835,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (indexer);
 				AddModifiers (newIndexer, location);
 				newIndexer.AddChild (ConvertToType (indexer.TypeName), IndexerDeclaration.Roles.Type);
+				AddExplicitInterface (newIndexer, indexer.MemberName);
 				var name = indexer.MemberName;
-				if (name.Left != null) {
-					newIndexer.AddChild (ConvertToType (name.Left), IndexerDeclaration.PrivateImplementationTypeRole);
-					var privateImplTypeLoc = LocationsBag.GetLocations (name.Left);
-					if (privateImplTypeLoc != null)
-						newIndexer.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
-				}
 				newIndexer.AddChild (Identifier.Create ("this", Convert (name.Location)), IndexerDeclaration.Roles.Identifier);
 				
 				if (location != null)
@@ -901,12 +896,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (m);
 				AddModifiers (newMethod, location);
 				newMethod.AddChild (ConvertToType (m.TypeName), AstNode.Roles.Type);
-				if (m.MethodName.Left != null) {
-					newMethod.AddChild (ConvertToType (m.MethodName.Left), MethodDeclaration.PrivateImplementationTypeRole);
-					var privateImplTypeLoc = LocationsBag.GetLocations (m.MethodName.Left);
-					if (privateImplTypeLoc != null)
-						newMethod.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
-				}
+				AddExplicitInterface (newMethod, m.MethodName);
 				newMethod.AddChild (Identifier.Create (m.MethodName.Name, Convert (m.Location)), AstNode.Roles.Identifier);
 				
 				AddTypeParameters (newMethod, m.MemberName);
@@ -1002,13 +992,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (p);
 				AddModifiers (newProperty, location);
 				newProperty.AddChild (ConvertToType (p.TypeName), AstNode.Roles.Type);
-				if (p.MemberName.Left != null) {
-					newProperty.AddChild (ConvertToType (p.MemberName.Left), PropertyDeclaration.PrivateImplementationTypeRole);
-					var privateImplTypeLoc = LocationsBag.GetLocations (p.MemberName.Left);
-					if (privateImplTypeLoc != null)
-						newProperty.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
-				}
-				
+				AddExplicitInterface (newProperty, p.MemberName);
 				newProperty.AddChild (Identifier.Create (p.MemberName.Name, Convert (p.Location)), PropertyDeclaration.Roles.Identifier);
 				
 				if (location != null)
@@ -1172,6 +1156,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				typeStack.Peek ().AddChild (newEvent, TypeDeclaration.MemberRole);
 			}
 			
+			void AddExplicitInterface (AstNode parent, MemberName memberName)
+			{
+				if (memberName == null || memberName.ExplicitInterface == null)
+					return;
+				
+				parent.AddChild (ConvertToType (memberName.ExplicitInterface), MemberDeclaration.PrivateImplementationTypeRole);
+				var privateImplTypeLoc = LocationsBag.GetLocations (memberName.ExplicitInterface);
+				if (privateImplTypeLoc != null)
+					parent.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
+			}
+			
 			public override void Visit (EventProperty ep)
 			{
 				CustomEventDeclaration newEvent = new CustomEventDeclaration ();
@@ -1182,12 +1177,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					newEvent.AddChild (new CSharpTokenNode (Convert (location[0]), "event".Length), CustomEventDeclaration.Roles.Keyword);
 				newEvent.AddChild (ConvertToType (ep.TypeName), CustomEventDeclaration.Roles.Type);
-				if (ep.MemberName.Left != null) {
-					newEvent.AddChild (ConvertToType (ep.MemberName.Left), CustomEventDeclaration.PrivateImplementationTypeRole);
-					var privateImplTypeLoc = LocationsBag.GetLocations (ep.MemberName.Left);
-					if (privateImplTypeLoc != null)
-						newEvent.AddChild (new CSharpTokenNode (Convert (privateImplTypeLoc[0]), 1), MethodDeclaration.Roles.Dot);
-				}
+				
+				AddExplicitInterface (newEvent, ep.MemberName);
 				
 				newEvent.AddChild (Identifier.Create (ep.MemberName.Name, Convert (ep.Location)), CustomEventDeclaration.Roles.Identifier);
 
