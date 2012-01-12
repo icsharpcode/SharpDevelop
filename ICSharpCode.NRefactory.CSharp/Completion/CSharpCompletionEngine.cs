@@ -390,11 +390,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					return null;
 				case ":":
-					if (currentMember == null) {
+					
+/* Breaks constructor initializer case:
+					 * if (currentMember == null) {
 						var wrapper = new CompletionDataWrapper (this);
 						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.Equals (t) : true);
 						return wrapper.Result;
-					}
+					}*/
 					return null;
 				}
 				
@@ -730,11 +732,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
-			if (node == null) {
+			if (Unit != null && (node == null || node is TypeDeclaration)) {
 				var constructor = Unit.GetNodeAt<ConstructorDeclaration> (location.Line, location.Column - 3);
-				Console.WriteLine (constructor);
-				Console.WriteLine (constructor.ColonToken.IsNull);
-				Console.WriteLine (constructor.Initializer.IsNull);
 				if (constructor != null && !constructor.ColonToken.IsNull && constructor.Initializer.IsNull) {
 					wrapper.AddCustom ("this");
 					wrapper.AddCustom ("base");
