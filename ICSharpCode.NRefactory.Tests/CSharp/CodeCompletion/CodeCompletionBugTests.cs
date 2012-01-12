@@ -4098,14 +4098,13 @@ namespace Test
 			});
 		}
 		
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestConstructorThisBase ()
 		{
 			CombinedProviderTest (
 @"class Program
 {
-	public Program ()$ : t$
+	public Program () : $t$
 	{
 	}
 }", provider => {

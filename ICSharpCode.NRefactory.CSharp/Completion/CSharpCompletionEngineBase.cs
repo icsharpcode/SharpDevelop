@@ -175,7 +175,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!IsInsideType (currentType, location))
 					currentType = null;
 			}
-			
 			this.currentMember = null;
 			if (this.currentType != null) {
 				foreach (var member in currentType.Members) {
@@ -190,7 +189,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!IsInsideType (currentMember, location))
 					currentMember = null;
 			}
-			
 			var stack = GetBracketStack (GetMemberTextToCaret ().Item1);
 			if (stack.Count == 0)
 				currentMember = null;

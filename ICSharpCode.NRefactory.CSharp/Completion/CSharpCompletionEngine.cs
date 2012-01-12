@@ -730,7 +730,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return wrapper.Result;
 				}
 			}
-			
+			if (node == null) {
+				var constructor = Unit.GetNodeAt<ConstructorDeclaration> (location.Line, location.Column - 3);
+				Console.WriteLine (constructor);
+				Console.WriteLine (constructor.ColonToken.IsNull);
+				Console.WriteLine (constructor.Initializer.IsNull);
+				if (constructor != null && !constructor.ColonToken.IsNull && constructor.Initializer.IsNull) {
+					wrapper.AddCustom ("this");
+					wrapper.AddCustom ("base");
+					return wrapper.Result;
+				}
+			}
 			CSharpResolver csResolver;
 			if (node != null) {
 				var nodes = new List<AstNode> ();
