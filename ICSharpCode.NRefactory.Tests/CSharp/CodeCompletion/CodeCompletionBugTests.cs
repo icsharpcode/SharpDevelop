@@ -1632,6 +1632,29 @@ class A
 			});
 		}
 		
+		/// <summary>
+		/// Bug 2788 - Locals do not show up inside the 'for' statement context
+		/// </summary>
+		[Test()]
+		public void TestBug2788 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	public void Test()
+	{
+		
+		var foo = new byte[100];
+		$for (int i = 0; i < f$
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("foo"), "'foo' not found.");
+				Assert.IsNotNull (provider.Find ("i"), "'i' not found.");
+			});
+		}
+		
 		[Test()]
 		public void TestNewInConstructor ()
 		{
