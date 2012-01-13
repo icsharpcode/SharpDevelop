@@ -4157,5 +4157,50 @@ class Program
 				Assert.IsNotNull (provider.Find ("args"), "'args' not found.");
 			});
 		}
+		
+		[Test()]
+		public void TestCodeCompletionCategorySorting ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"class CClass : BClass
+{
+	public int C;
+}
+
+class BClass : AClass
+{
+	public int B;
+}
+
+class AClass
+{
+	public int A;
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		CClass a;
+		$a.$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			var list = new List<CompletionCategory> ();
+			
+			for (int i = 0; i < provider.Count; i++) {
+				if (list.Contains (provider[i].CompletionCategory))
+					continue;
+				list.Add (provider[i].CompletionCategory);
+			}	
+			Assert.AreEqual (4, list.Count);
+			
+			list.Sort ();
+			Assert.AreEqual ("CClass", list[0].DisplayText);
+			Assert.AreEqual ("BClass", list[1].DisplayText);
+			Assert.AreEqual ("AClass", list[2].DisplayText);
+			Assert.AreEqual ("System.Object", list[3].DisplayText);
+		}
 	}
 }
