@@ -245,13 +245,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Process Conversions
-		sealed class AnonymousFunctionConversionData
+		sealed class AnonymousFunctionConversion : Conversion
 		{
 			public readonly IType ReturnType;
 			public readonly ExplicitlyTypedLambda ExplicitlyTypedLambda;
 			public readonly LambdaTypeHypothesis Hypothesis;
 			
-			public AnonymousFunctionConversionData(IType returnType, LambdaTypeHypothesis hypothesis)
+			public AnonymousFunctionConversion(IType returnType, LambdaTypeHypothesis hypothesis)
 			{
 				if (returnType == null)
 					throw new ArgumentNullException("returnType");
@@ -259,12 +259,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.Hypothesis = hypothesis;
 			}
 			
-			public AnonymousFunctionConversionData(IType returnType, ExplicitlyTypedLambda explicitlyTypedLambda)
+			public AnonymousFunctionConversion(IType returnType, ExplicitlyTypedLambda explicitlyTypedLambda)
 			{
 				if (returnType == null)
 					throw new ArgumentNullException("returnType");
 				this.ReturnType = returnType;
 				this.ExplicitlyTypedLambda = explicitlyTypedLambda;
+			}
+			
+			public override bool IsImplicit {
+				get { return true; }
+			}
+			
+			public override bool IsAnonymousFunctionConversion {
+				get { return true; }
 			}
 		}
 		
@@ -275,19 +283,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (expr == null || expr.IsNull)
 				return;
-			if (conversion.IsAnonymousFunctionConversion) {
+			AnonymousFunctionConversion afc = conversion as AnonymousFunctionConversion;
+			if (afc != null) {
 				Log.WriteLine("Processing conversion of anonymous function to " + targetType + "...");
-				AnonymousFunctionConversionData data = conversion.data as AnonymousFunctionConversionData;
-				if (data != null) {
-					Log.Indent();
-					if (data.Hypothesis != null)
-						data.Hypothesis.MergeInto(this, data.ReturnType);
-					if (data.ExplicitlyTypedLambda != null)
-						data.ExplicitlyTypedLambda.ApplyReturnType(this, data.ReturnType);
-					Log.Unindent();
-				} else {
-					Log.WriteLine("  Data not found.");
-				}
+				
+				Log.Indent();
+				if (afc.Hypothesis != null)
+					afc.Hypothesis.MergeInto(this, afc.ReturnType);
+				if (afc.ExplicitlyTypedLambda != null)
+					afc.ExplicitlyTypedLambda.ApplyReturnType(this, afc.ReturnType);
+				Log.Unindent();
 			}
 			if (conversion != Conversion.IdentityConversion)
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
@@ -911,11 +916,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
 				if (!string.IsNullOrEmpty(name)) {
+					var returnType = new VarTypeReference(this, resolver, resolveExpr);
 					var property = new DefaultUnresolvedProperty {
 						Name = name,
 						Accessibility = Accessibility.Public,
-						ReturnType = new VarTypeReference(this, resolver, resolveExpr),
-						Getter = DefaultUnresolvedAccessor.GetFromAccessibility(Accessibility.Public)
+						ReturnType = returnType,
+						Getter = new DefaultUnresolvedMethod {
+							Name = "get_" + name,
+							Accessibility = Accessibility.Public,
+							ReturnType = returnType
+						}
 					};
 					properties.Add(property);
 				}
@@ -1055,11 +1065,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data)
 		{
 			if (resolverEnabled) {
-				ResolveResult left = Resolve(assignmentExpression.Left);
-				ResolveResult right = Resolve(assignmentExpression.Right);
-				ProcessConversion(assignmentExpression.Right, right, left.Type);
-				var op = AssignmentExpression.GetLinqNodeType(assignmentExpression.Operator, resolver.CheckForOverflow);
-				return new OperatorResolveResult(left.Type, op, left, right);
+				Expression left = assignmentExpression.Left;
+				Expression right = assignmentExpression.Right;
+				ResolveResult leftResult = Resolve(left);
+				ResolveResult rightResult = Resolve(right);
+				ResolveResult rr = resolver.ResolveAssignment(assignmentExpression.Operator, leftResult, rightResult);
+				ProcessConversionsInBinaryOperatorResult(left, right, rr);
+				return rr;
 			} else {
 				ScanChildren(assignmentExpression);
 				return null;
@@ -1084,22 +1096,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult leftResult = Resolve(left);
 				ResolveResult rightResult = Resolve(right);
 				ResolveResult rr = resolver.ResolveBinaryOperator(binaryOperatorExpression.Operator, leftResult, rightResult);
-				OperatorResolveResult orr = rr as OperatorResolveResult;
-				if (orr != null && orr.Operands.Count == 2) {
-					ProcessConversionResult(left, orr.Operands[0] as ConversionResolveResult);
-					ProcessConversionResult(right, orr.Operands[1] as ConversionResolveResult);
-				} else {
-					InvocationResolveResult irr = rr as InvocationResolveResult;
-					if (irr != null && irr.Arguments.Count == 2) {
-						ProcessConversionResult(left, irr.Arguments[0] as ConversionResolveResult);
-						ProcessConversionResult(right, irr.Arguments[1] as ConversionResolveResult);
-					}
-				}
+				ProcessConversionsInBinaryOperatorResult(left, right, rr);
 				return rr;
 			} else {
 				ScanChildren(binaryOperatorExpression);
 				return null;
 			}
+		}
+		
+		ResolveResult ProcessConversionsInBinaryOperatorResult(Expression left, Expression right, ResolveResult rr)
+		{
+			OperatorResolveResult orr = rr as OperatorResolveResult;
+			if (orr != null && orr.Operands.Count == 2) {
+				ProcessConversionResult(left, orr.Operands[0] as ConversionResolveResult);
+				ProcessConversionResult(right, orr.Operands[1] as ConversionResolveResult);
+			} else {
+				InvocationResolveResult irr = rr as InvocationResolveResult;
+				if (irr != null && irr.Arguments.Count == 2) {
+					ProcessConversionResult(left, irr.Arguments[0] as ConversionResolveResult);
+					ProcessConversionResult(right, irr.Arguments[1] as ConversionResolveResult);
+				}
+			}
+			return rr;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitCastExpression(CastExpression castExpression, object data)
@@ -1811,7 +1829,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.Unindent();
 				Log.WriteLine("{0} is {1} for return-type {2}", this, valid ? "valid" : "invalid", returnType);
 				if (valid) {
-					return Conversion.AnonymousFunctionConversion(new AnonymousFunctionConversionData(returnType, this));
+					return new AnonymousFunctionConversion(returnType, this);
 				} else {
 					return Conversion.None;
 				}
@@ -1963,7 +1981,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var hypothesis = GetHypothesis(parameterTypes);
 				Conversion c = hypothesis.IsValid(returnType, conversions);
 				Log.Unindent();
-				Log.WriteLine("{0} is {1} for return-type {2}", hypothesis, c ? "valid" : "invalid", returnType);
+				Log.WriteLine("{0} is {1} for return-type {2}", hypothesis, c.IsValid ? "valid" : "invalid", returnType);
 				return c;
 			}
 			
@@ -2123,7 +2141,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public Conversion IsValid(IType returnType, Conversions conversions)
 			{
 				if (success && IsValidLambda(isValidAsVoidMethod, lambda.IsAsync, returnValues, returnType, conversions)) {
-					return Conversion.AnonymousFunctionConversion(new AnonymousFunctionConversionData(returnType, this));
+					return new AnonymousFunctionConversion(returnType, this);
 				} else {
 					return Conversion.None;
 				}
@@ -2333,7 +2351,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					returnType = ((ParameterizedType)returnType).GetTypeArgument(0);
 				}
 				foreach (ResolveResult returnRR in returnValues) {
-					if (!conversions.ImplicitConversion(returnRR, returnType))
+					if (!conversions.ImplicitConversion(returnRR, returnType).IsValid)
 						return false;
 				}
 				return true;
@@ -3174,6 +3192,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return GetElementTypeFromIEnumerable(type, resolver.Compilation, false);
 		}
 		
+		sealed class QueryExpressionLambdaConversion : Conversion
+		{
+			internal readonly IType[] ParameterTypes;
+			
+			public QueryExpressionLambdaConversion(IType[] parameterTypes)
+			{
+				this.ParameterTypes = parameterTypes;
+			}
+			
+			public override bool IsImplicit {
+				get { return true; }
+			}
+			
+			public override bool IsAnonymousFunctionConversion {
+				get { return true; }
+			}
+		}
+		
 		sealed class QueryExpressionLambda : LambdaResolveResult
 		{
 			readonly IParameter[] parameters;
@@ -3198,7 +3234,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				if (parameterTypes.Length == parameters.Length) {
 					this.inferredParameterTypes = parameterTypes;
-					return Conversion.AnonymousFunctionConversion(parameterTypes);
+					return new QueryExpressionLambdaConversion(parameterTypes);
 				} else {
 					return Conversion.None;
 				}
@@ -3448,8 +3484,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IType[] inferredParameterTypes = null;
 				if (invocationRR != null && invocationRR.Arguments.Count > 0) {
 					ConversionResolveResult crr = invocationRR.Arguments[invocationRR.Arguments.Count - 1] as ConversionResolveResult;
-					if (crr != null && crr.Conversion.IsAnonymousFunctionConversion) {
-						inferredParameterTypes = crr.Conversion.data as IType[];
+					if (crr != null && crr.Conversion is QueryExpressionLambdaConversion) {
+						inferredParameterTypes = ((QueryExpressionLambdaConversion)crr.Conversion).ParameterTypes;
 					}
 				}
 				if (inferredParameterTypes == null)

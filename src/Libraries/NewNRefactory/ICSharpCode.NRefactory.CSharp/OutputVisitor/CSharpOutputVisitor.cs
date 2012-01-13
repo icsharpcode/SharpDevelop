@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Writes a comma.
 		/// </summary>
 		/// <param name="nextNode">The next node after the comma.</param>
-		/// <param name="noSpacesAfterComma">When set prevents printing a space after comma.</param>
+		/// <param name="noSpaceAfterComma">When set prevents printing a space after comma.</param>
 		void Comma (AstNode nextNode, bool noSpaceAfterComma = false)
 		{
 			WriteSpecialsUpToRole (AstNode.Roles.Comma, nextNode);
@@ -1799,16 +1799,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				label.AcceptVisitor (this, data);
 				first = false;
 			}
-			if(!(switchSection.Statements.FirstOrDefault() is BlockStatement))
-				NewLine();
-
 			if (policy.IndentCaseBody)
 				formatter.Indent ();
-
-			foreach (var statement in switchSection.Statements)
-				statement.AcceptVisitor(this, data);
-			if (switchSection.NextSibling != null)
-				NewLine();
+			
+			foreach (var statement in switchSection.Statements) {
+				NewLine ();
+				statement.AcceptVisitor (this, data);
+			}
 			
 			if (policy.IndentCaseBody)
 				formatter.Unindent ();
@@ -2489,6 +2486,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				VisitNamedNode((NamedNode)childNode, data);
 			} else if (childNode is OptionalNode) {
 				VisitOptionalNode((OptionalNode)childNode, data);
+			} else if (childNode is Repeat) {
+				VisitRepeat((Repeat)childNode, data);
 			} else {
 				WritePrimitiveValue(childNode);
 			}

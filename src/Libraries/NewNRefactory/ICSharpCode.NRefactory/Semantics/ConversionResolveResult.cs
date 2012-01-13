@@ -17,47 +17,32 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Runtime.Serialization;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Semantics
 {
-	/// <summary>
-	/// Represents an error while parsing a reflection name.
-	/// </summary>
-	[Serializable]
-	public class ReflectionNameParseException : Exception
+	public class ConversionResolveResult : ResolveResult
 	{
-		int position;
+		public readonly ResolveResult Input;
+		public readonly Conversion Conversion;
 		
-		public int Position {
-			get { return position; }
+		public ConversionResolveResult(IType targetType, ResolveResult input, Conversion conversion)
+			: base(targetType)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			this.Input = input;
+			this.Conversion = conversion;
 		}
 		
-		public ReflectionNameParseException(int position)
-		{
-			this.position = position;
+		public override bool IsError {
+			get { return !Conversion.IsValid; }
 		}
 		
-		public ReflectionNameParseException(int position, string message) : base(message)
+		public override IEnumerable<ResolveResult> GetChildResults()
 		{
-			this.position = position;
-		}
-		
-		public ReflectionNameParseException(int position, string message, Exception innerException) : base(message, innerException)
-		{
-			this.position = position;
-		}
-		
-		// This constructor is needed for serialization.
-		protected ReflectionNameParseException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
-			position = info.GetInt32("position");
-		}
-		
-		public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData(info, context);
-			info.AddValue("position", position);
+			return new [] { Input };
 		}
 	}
 }

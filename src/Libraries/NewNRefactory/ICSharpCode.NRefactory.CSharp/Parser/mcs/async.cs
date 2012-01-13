@@ -40,6 +40,12 @@ namespace Mono.CSharp
 			this.loc = loc;
 		}
 
+		public Expression Expr {
+			get {
+				return expr;
+			}
+		}
+
 		protected override void CloneTo (CloneContext clonectx, Expression target)
 		{
 			var t = (Await) target;
@@ -777,7 +783,7 @@ namespace Mono.CSharp
 
 	class StackField : Field
 	{
-		public StackField (DeclSpace parent, FullNamedExpression type, Modifiers mod, MemberName name)
+		public StackField (TypeContainer parent, FullNamedExpression type, Modifiers mod, MemberName name)
 			: base (parent, type, mod, name, null)
 		{
 		}
