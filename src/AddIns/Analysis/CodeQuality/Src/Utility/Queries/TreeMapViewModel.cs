@@ -16,6 +16,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 	public class TreeMapViewModel
 	{
 		public string Name {get;set;}
-		public int  Numval {get;set;}
+		public int  NumericValue {get;set;}
 	}
 }

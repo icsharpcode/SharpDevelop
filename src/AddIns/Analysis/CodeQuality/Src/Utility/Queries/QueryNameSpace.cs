@@ -58,22 +58,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     	Metrics = Metrics.Variables.ToString(),
 			                     	Action = TypesCount
 			                     });
-			
-//			items.Add(new ItemWithAction()
-//			                     {
-//			                     	Description = "# of Namespaces",
-//			                     	Metrics = Metrics.Variables.ToString(),
-//			                     	Action = ExecuteNotImplemented
-//			                     });
 			return items;
 		}
-		
-		private List<TreeMapViewModel> ExecuteNotImplemented()
-		{
-			MessageService.ShowMessage("Not Implemented yet","CodeQualityAnalysis");
-			return null;
-		}
-		
 		
 		
 		private List<TreeMapViewModel> ExecuteILInstructions ()
@@ -83,9 +69,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+			                               	NumericValue = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
 			                               });
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			return filtered.ToList();
 		}
 		
 		
@@ -96,10 +83,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllMethods().ToList().Count
+			                               	NumericValue = m.GetAllMethods().ToList().Count
 			                               });
-			
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			return filtered.ToList();
 		}
 		
 		
@@ -109,9 +96,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllFields().ToList().Count
+			                               	NumericValue = m.GetAllFields().ToList().Count
 			                               });
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			return filtered.ToList();
 		}
 		
 		
@@ -122,9 +110,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllTypes().ToList().Count
+			                               	NumericValue = m.GetAllTypes().ToList().Count
 			                               });
-			return list.ToList();
+			var filtered = base.EliminateZeroValues(list);
+			return filtered.ToList();
 		}
 	}
 }

@@ -74,7 +74,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+			                               	NumericValue = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			return filtered.ToList();
@@ -88,7 +88,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.CyclomaticComplexity)
+			                               	NumericValue = m.GetAllMethods().Aggregate(i, (current, x) => current + x.CyclomaticComplexity)
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
@@ -102,7 +102,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllMethods().ToList().Count
+			                               	NumericValue = m.GetAllMethods().ToList().Count
 			                               });
 		
 			var filtered = base.EliminateZeroValues(list);
@@ -117,7 +117,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllFields().ToList().Count
+			                               	NumericValue = m.GetAllFields().ToList().Count
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());

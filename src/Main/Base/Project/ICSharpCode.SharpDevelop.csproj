@@ -525,6 +525,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ProjectReferencePanel.cs">
       <SubType>Component</SubType>
+      <DependentUpon>SelectReferenceDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.cs">
       <SubType>Form</SubType>

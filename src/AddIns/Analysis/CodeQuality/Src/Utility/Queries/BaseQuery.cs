@@ -23,7 +23,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		}
 		
 		protected Module MainModule {get; private set;}
-		
+	
+		public int TotalElements {get; private set;}
+		public int RemovedElements {get; private set;}
+				
 		public virtual List<ItemWithAction> GetQueryList ()
 		{
 			return null;
@@ -32,10 +35,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		
 		protected List<TreeMapViewModel> EliminateZeroValues(IEnumerable<TreeMapViewModel> list)
 		{
-				var filtered =  from viewModel in list
-				where viewModel.Numval > 0
+			var filtered =  from viewModel in list
+				where viewModel.NumericValue > 0
 				select viewModel;
-				return filtered.ToList();
+			var result = filtered.ToList();
+			TotalElements = list.Count();
+			RemovedElements = TotalElements - result.Count();
+			return result;
 		}
 	}
 }

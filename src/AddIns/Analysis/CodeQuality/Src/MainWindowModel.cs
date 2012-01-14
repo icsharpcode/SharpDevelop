@@ -33,7 +33,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		Method
 	}
 	
-	
+
 	public enum Metrics
 	{
 
@@ -46,9 +46,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 		[LocalizableDescription("Variables")]
 		Variables
 	}
+
 	
 	public class MainWindowViewModel :ViewModelBase
 	{
+		BaseQuery query;
 		
 		public MainWindowViewModel():base()
 		{
@@ -212,7 +214,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 	
 		void ActivateMetricsExecute ()
 		{
-			BaseQuery query = null;
+//			BaseQuery query = null;
 			itemsWithCommand.Clear();
 			
 			switch (SelectedMetricsLevel) {
@@ -265,11 +267,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 		void ExecuteSelectedItem()
 		{
 			if (SelectedItemWithCommand != null) {
-//				TreeValueProperty = SelectedItemWithCommand.Metrics;
-				TreeValueProperty ="Numval";
+				TreeValueProperty ="NumericValue";
 				var list = SelectedItemWithCommand.Action.Invoke();
 				if (list != null ) {
 					Nodes = new ObservableCollection<TreeMapViewModel>(list);
+					Summary = String.Format("Total number of Elements <{0}> '0'-values <{1}> No of Displayed Elements <{2}>        ",
+					                        query.TotalElements,
+					                        query.RemovedElements,
+					                        Nodes.Count);
 				}
 			}
 		}

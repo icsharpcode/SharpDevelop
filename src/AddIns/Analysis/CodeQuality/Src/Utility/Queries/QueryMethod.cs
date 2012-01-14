@@ -70,7 +70,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+			                               	NumericValue = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
 			                               });
 
 			var filtered = base.EliminateZeroValues(list);
@@ -86,7 +86,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval = m.CyclomaticComplexity
+			                               	NumericValue = m.CyclomaticComplexity
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
@@ -101,7 +101,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
-			                               	Numval =  m.Variables
+			                               	NumericValue =  m.Variables
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());

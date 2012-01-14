@@ -148,90 +148,11 @@
 					x:Name="matrixControl"></Graph:TreeMatrixControl>
 			</TabItem>
 			
-			<!-- Initial version of Thomaz 
-			<TabItem
-				Header="{Binding TabMetrics}"
-				IsEnabled="{Binding MetrixTabEnable}">
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition
-							Height="Auto" />
-						<RowDefinition
-							Height="*" />
-					</Grid.RowDefinitions>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition
-							Width="*" />
-					</Grid.ColumnDefinitions>
-					<ToolBarTray
-						Background="White"
-						Grid.Row="0"
-						Grid.Column="0">
-						<ToolBar>
-							<TextBlock
-								Text="Level: " />
-							<ComboBox
-								IsEditable="False"
-								x:Name="cbxMetrixLevel"
-								IsDropDownOpen="True"
-								Width="150"
-								SelectionChanged="MetricLevel_SelectionChanged">
-								<ComboBoxItem
-									Name="assembly">Assembly</ComboBoxItem>
-								<ComboBoxItem
-									Name="namespace">Namespace</ComboBoxItem>
-								<ComboBoxItem
-									Name="type">Type</ComboBoxItem>
-								<ComboBoxItem
-									Name="field">Field</ComboBoxItem>
-								<ComboBoxItem
-									Name="method">Method</ComboBoxItem>
-							</ComboBox>
-							<TextBlock
-								Text="Metric: " />
-							<ComboBox
-								Width="200"
-								x:Name="cbxMetrics"
-								SelectionChanged="Metrics_SelectionChanged" />
-						</ToolBar>
-					</ToolBarTray>
-					<datavis:TreeMap
-						x:Name="treemap"
-						Grid.Row="1"
-						Grid.Column="0">
-						<datavis:TreeMap.ItemDefinition>
-							<datavis:TreeMapItemDefinition
-								ValuePath="Instructions.Count">
-								<DataTemplate>
-									<Border
-										Background="AliceBlue"
-										BorderBrush="Black"
-										BorderThickness="1"
-										ToolTipService.ToolTip="{Binding ToolTip}">
-										<StackPanel>
-											<TextBlock
-												Text="{Binding DeclaringType.Name}" />
-											<TextBlock
-												Text="{Binding Name}"
-												VerticalAlignment="Center"
-												TextAlignment="Center"
-												TextWrapping="Wrap" />
-										</StackPanel>
-									</Border>
-								</DataTemplate>
-							</datavis:TreeMapItemDefinition>
-						</datavis:TreeMap.ItemDefinition>
-					</datavis:TreeMap>
-				</Grid>
-			</TabItem>
-			-->
-
 			<TabItem
 				Name="TreeMapTabItem"
 				Header="{Binding TabMetrics}"
 				IsEnabled="{Binding MetrixTabEnable}">
 				<TabItem.Resources>
-					
 					<ObjectDataProvider MethodName="GetValues"
 						ObjectType="{x:Type sys:Enum}"
 						x:Key="MetricsLevel">
@@ -240,16 +161,7 @@
 						</ObjectDataProvider.MethodParameters>
 					</ObjectDataProvider>
 					
-					<!--
-					<ObjectDataProvider MethodName="GetValues"
-						ObjectType="{x:Type sys:Enum}"
-						x:Key="Metrics">
-						<ObjectDataProvider.MethodParameters>
-							<x:Type TypeName="src:Metrics" />
-						</ObjectDataProvider.MethodParameters>
-					</ObjectDataProvider>
-					-->
-					 <loc:EnumToFriendlyNameConverter x:Key="enumItemsConverter"/>
+					<loc:EnumToFriendlyNameConverter x:Key="enumItemsConverter"/>
 
 					<DataTemplate
 						x:Key="TreeMapDataTemplate">
@@ -262,7 +174,7 @@
 									Text="{Binding DeclaringType.Name}" />
 								<TextBlock
 									Text="{Binding Name}"
-									VerticalAlignment="Center"
+									VerticalAlignment="Top"
 									TextAlignment="Center"
 									TextWrapping="Wrap" />
 							</StackPanel>
@@ -295,25 +207,7 @@
 							</util:ComboBoxWithCommand>
 							
 							<TextBlock  Margin="4,0,0,0" Text="Metric: " />
-							<!--
-							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
-								ItemsSource="{Binding Source={StaticResource Metrics}}"
-								SelectedItem="{Binding SelectedMetrics}"
-								SelectedIndex="{Binding SelectedMetricsIndex}"
-								Command="{Binding ShowTreeMap}">
-
-								<util:ComboBoxWithCommand.ItemTemplate>
-									<DataTemplate>
-										<Label  Content="{Binding   Path=.,Mode=OneWay,
-										       Converter={StaticResource enumItemsConverter}}"
-										       Height="Auto"
-										       Margin="0"
-										       VerticalAlignment="Center"/>
-									
-									</DataTemplate>
-								</util:ComboBoxWithCommand.ItemTemplate>
-							</util:ComboBoxWithCommand>
-				-->
+							
 							<util:ComboBoxWithCommand Width="200" Margin="4,0,0,0"
 								ItemsSource="{Binding ItemsWithCommand}"
 								SelectedItem="{Binding SelectedItemWithCommand}"
@@ -363,60 +257,7 @@
 						Height="15" />
 				</StackPanel>
 			</StatusBarItem>
-			<!-- 
-			<StatusBarItem
-				HorizontalAlignment="Right"
-				Visibility="{Binding AssemblyStatsVisible}">
-				<StackPanel
-					Orientation="Horizontal">
-					<StatusBarItem>
-						<StackPanel
-							Orientation="Horizontal">
-							<TextBlock
-								Text="Namespaces: " />
-							<TextBlock
-								Text="{Binding Path=MainModule.Namespaces.Count}" />
-						</StackPanel>
-					</StatusBarItem>
-					<StatusBarItem>
-						<StackPanel
-							Orientation="Horizontal">
-							<TextBlock
-								Text="Types: " />
-							<TextBlock
-								Text="{Binding Path=MainModule.TypesCount}" />
-						</StackPanel>
-					</StatusBarItem>
-					<StatusBarItem>
-						<StackPanel
-							Orientation="Horizontal">
-							<TextBlock
-								Text="Methods: " />
-							<TextBlock
-								Text="{Binding Path=MainModule.MethodsCount}" />
-						</StackPanel>
-					</StatusBarItem>
-					<StatusBarItem>
-						<StackPanel
-							Orientation="Horizontal">
-							<TextBlock
-								Text="Fields: " />
-							<TextBlock
-								Text="{Binding Path=MainModule.FieldsCount}" />
-						</StackPanel>
-					</StatusBarItem>
-					<StatusBarItem>
-						<StackPanel
-							Orientation="Horizontal">
-							<TextBlock
-								Text="IL instructions: " />
-							<TextBlock
-								Text="{Binding Path=MainModule.InstructionsCount}" />
-						</StackPanel>
-					</StatusBarItem>
-				</StackPanel>
-			</StatusBarItem>
-		-->
+			
 			<StatusBarItem
 				HorizontalAlignment="Right"
 				Visibility="{Binding AssemblyStatsVisible}">
