@@ -42,7 +42,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop/packages");
 		public bool UpdateDependencies;
-		public Version Version;
+		public SemanticVersion Version;
 		
 		public void UpdatePackageById(string packageId)
 		{

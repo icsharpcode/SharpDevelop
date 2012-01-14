@@ -133,17 +133,12 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Summary; }
 		}
 		
-		public Version Version {
-	
+		public SemanticVersion Version {
 			get { return package.Version; }
 		}
 		
 		public int DownloadCount {
 			get { return package.DownloadCount; }
-		}
-		
-		public double Rating {
-			get { return package.Rating; }
 		}
 		
 		public string Description {
@@ -175,7 +170,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = GetSingleProjectSelected();
 			project.Logger = logger;
-			packageOperations = project.GetInstallPackageOperations(package, false);
+			packageOperations = project.GetInstallPackageOperations(package, false, false);
 		}
 		
 		IPackageManagementProject GetSingleProjectSelected()
@@ -409,7 +404,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = selectedProject.Project;
 			project.Logger = logger;
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, false);
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, false, false);
 			return GetPackagesRequiringLicenseAcceptance(operations);
 		}
 		

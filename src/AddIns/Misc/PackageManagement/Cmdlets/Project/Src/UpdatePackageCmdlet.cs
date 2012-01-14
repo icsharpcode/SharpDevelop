@@ -40,7 +40,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public string ProjectName { get; set; }
 		
 		[Parameter(Position = 2, ParameterSetName = "Project")]
-		public Version Version { get; set; }
+		public SemanticVersion Version { get; set; }
 		
 		[Parameter(Position = 3)]
 		public string Source { get; set; }

@@ -78,10 +78,7 @@ namespace PackageManagement.Tests
 		
 		FakePackage CreateFakePackage()
 		{
-			var package = new FakePackage();
-			package.Id = "Test";
-			package.Version = new Version(1, 0, 0, 0);
-			return package;
+			return new FakePackage("Test", "1.0.0.0");
 		}
 		
 		FakePackage InstallPackage()
@@ -105,7 +102,7 @@ namespace PackageManagement.Tests
 		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.InstallPackage(package, operations, ignoreDependencies);
+			packageManager.InstallPackage(package, operations, ignoreDependencies, false);
 			return package;
 		}
 		
@@ -115,21 +112,21 @@ namespace PackageManagement.Tests
 				operation
 			};
 			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, operations, false);
+			packageManager.InstallPackage(package, operations, false, false);
 			return package;
 		}
 		
 		FakePackage InstallPackageAndIgnoreDependencies()
 		{
 			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, true);
+			packageManager.InstallPackage(package, true, false);
 			return package;
 		}
 		
 		FakePackage InstallPackageAndDoNotIgnoreDependencies()
 		{
 			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, false);
+			packageManager.InstallPackage(package, false, false);
 			return package;
 		}
 		
@@ -176,19 +173,19 @@ namespace PackageManagement.Tests
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(FakePackage package)
 		{
-			return packageManager.GetInstallPackageOperations(package, false);
+			return packageManager.GetInstallPackageOperations(package, false, false);
 		}
 		
 		IEnumerable<PackageOperation>  GetInstallPackageOperationsAndIgnoreDependencies(FakePackage package)
 		{
-			return packageManager.GetInstallPackageOperations(package, true);
+			return packageManager.GetInstallPackageOperations(package, true, false);
 		}
 		
 		FakePackage UpdatePackageWithNoPackageOperations()
 		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.UpdatePackage(package, operations, true);
+			packageManager.UpdatePackage(package, operations, true, false);
 			return package;
 		}
 		
@@ -198,7 +195,7 @@ namespace PackageManagement.Tests
 				operation
 			};
 			FakePackage package = CreateFakePackage();
-			packageManager.UpdatePackage(package, operations, true);
+			packageManager.UpdatePackage(package, operations, true, false);
 			return package;
 		}
 		
@@ -206,7 +203,7 @@ namespace PackageManagement.Tests
 		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.UpdatePackage(package, operations, false);
+			packageManager.UpdatePackage(package, operations, false, false);
 			return package;			
 		}
 
@@ -447,9 +444,7 @@ namespace PackageManagement.Tests
 			CreatePackageManager();
 			CreateTestableProjectManager();
 			
-			FakePackage package = CreateFakePackage();
-			package.Id = "MyPackageId";
-			package.Version = new Version("1.4.5.2");
+			var package = new FakePackage("MyPackageId", "1.4.5.2");
 			
 			testableProjectManager.FakeLocalRepository.FakePackages.Add(package);
 			fakeSolutionSharedRepository.FakePackages.Add(package);

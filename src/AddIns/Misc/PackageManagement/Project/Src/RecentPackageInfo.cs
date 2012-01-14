@@ -8,7 +8,7 @@ namespace ICSharpCode.PackageManagement
 {
 	public class RecentPackageInfo
 	{
-		Version version;
+		SemanticVersion version;
 		
 		public RecentPackageInfo()
 		{
@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public RecentPackageInfo(string id, Version version)
+		public RecentPackageInfo(string id, SemanticVersion version)
 		{
 			this.Id = id;
 			this.version = version;
@@ -29,7 +29,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public string Version {
 			get { return version.ToString(); }
-			set { version = new Version(value); }
+			set { version = new SemanticVersion(value); }
 		}
 		
 		public override string ToString()

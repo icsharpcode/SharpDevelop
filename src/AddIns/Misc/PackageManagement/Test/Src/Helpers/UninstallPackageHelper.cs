@@ -28,7 +28,7 @@ namespace PackageManagement.Tests.Helpers
 			action.Execute();
 		}
 		
-		public Version Version;
+		public SemanticVersion Version;
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop.net");
 		public bool ForceRemove;
 		public bool RemoveDependencies;

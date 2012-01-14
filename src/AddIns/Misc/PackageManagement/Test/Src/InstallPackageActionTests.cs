@@ -169,13 +169,13 @@ namespace PackageManagement.Tests
 			CreateAction();
 			
 			var recentPackage = AddOnePackageToProjectSourceRepository("PackageId");
-			recentPackage.Version = new Version("1.2.0");
+			recentPackage.Version = new SemanticVersion("1.2.0");
 			
 			var oldPackage = AddOnePackageToProjectSourceRepository("PackageId");
-			oldPackage.Version = new Version("1.0.0");
+			oldPackage.Version = new SemanticVersion("1.0.0");
 			
 			var package = AddOnePackageToProjectSourceRepository("PackageId");
-			var version = new Version("1.1.0");
+			var version = new SemanticVersion("1.1.0");
 			package.Version = version;
 			
 			installPackageHelper.Version = version;

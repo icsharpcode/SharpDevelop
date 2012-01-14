@@ -84,7 +84,7 @@ namespace PackageManagement.Tests
 			AddPackageToProject("Test");
 			CallCreateActions();
 			
-			Version version = FirstUpdateAction.PackageVersion;
+			SemanticVersion version = FirstUpdateAction.PackageVersion;
 			
 			Assert.IsNull(version);
 		}

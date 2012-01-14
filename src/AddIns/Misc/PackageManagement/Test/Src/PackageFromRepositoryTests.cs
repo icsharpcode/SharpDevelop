@@ -62,9 +62,9 @@ namespace PackageManagement.Tests
 		public void Version_WrappedPackageVersionIsOnePointOne_ReturnsOnePointOne()
 		{
 			CreatePackage();
-			var expectedVersion = new Version("1.1");
+			var expectedVersion = new SemanticVersion("1.1");
 			fakePackage.Version = expectedVersion;
-			Version version = package.Version;
+			SemanticVersion version = package.Version;
 			
 			Assert.AreEqual(expectedVersion, version);
 		}
@@ -240,26 +240,6 @@ namespace PackageManagement.Tests
 			int count = package.DownloadCount;
 			
 			Assert.AreEqual(10, count);
-		}
-		
-		[Test]
-		public void RatingsCount_WrappedPackageRatingsCountIsTen_ReturnsTen()
-		{
-			CreatePackage();
-			fakePackage.RatingsCount = 10;
-			int count = package.RatingsCount;
-			
-			Assert.AreEqual(10, count);
-		}
-		
-		[Test]
-		public void Rating_WrappedPackageRatingIsFive_ReturnsFive()
-		{
-			CreatePackage();
-			fakePackage.Rating = 5.0;
-			double rating = package.Rating;
-			
-			Assert.AreEqual(5.0, rating);
 		}
 		
 		[Test]

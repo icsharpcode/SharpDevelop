@@ -108,7 +108,7 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.Source = source;
 		}
 		
-		void SetVersionParameter(Version version)
+		void SetVersionParameter(SemanticVersion version)
 		{
 			cmdlet.Version = version;
 		}
@@ -273,11 +273,11 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			SetIdParameter("Test");
 			SetProjectNameParameter("MyProject");
-			var version = new Version("1.0.1");
+			var version = new SemanticVersion("1.0.1");
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			Version actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
+			SemanticVersion actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -658,7 +658,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetIdParameter("MyPackage");
-			var expectedVersion = new Version("1.0");
+			var expectedVersion = new SemanticVersion("1.0");
 			SetVersionParameter(expectedVersion);
 			RunCmdlet();
 			

@@ -121,7 +121,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			project.GetInstallPackageOperations(package, true);
+			project.GetInstallPackageOperations(package, true, false);
 			
 			Assert.IsTrue(fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations);
 		}
@@ -132,7 +132,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			project.GetInstallPackageOperations(package, false);
+			project.GetInstallPackageOperations(package, false, false);
 			
 			Assert.IsFalse(fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations);
 		}
@@ -143,7 +143,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var expectedPackage = new FakePackage();
 			
-			project.GetInstallPackageOperations(expectedPackage, true);
+			project.GetInstallPackageOperations(expectedPackage, true, false);
 			
 			IPackage actualPackage = fakePackageManager.PackagePassedToGetInstallPackageOperations;
 			
@@ -156,7 +156,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, true);
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, true, false);
 			
 			IEnumerable<PackageOperation> expectedOperations = fakePackageManager.PackageOperationsToReturnFromGetInstallPackageOperations;
 			
@@ -191,7 +191,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			project.InstallPackage(package, null, true);
+			project.InstallPackage(package, null, true, false);
 			
 			IPackage expectedPackage = fakePackageManager.PackagePassedToInstallPackage;
 			
@@ -202,7 +202,7 @@ namespace PackageManagement.Tests
 		public void InstallPackage_IgnoreDependenciesIsTrue_DependenciesAreIgnoredWhenPackageIsInstalled()
 		{
 			CreateProject();
-			project.InstallPackage(null, null, true);
+			project.InstallPackage(null, null, true, false);
 			
 			Assert.IsTrue(fakePackageManager.IgnoreDependenciesPassedToInstallPackage);
 		}
@@ -211,7 +211,7 @@ namespace PackageManagement.Tests
 		public void InstallPackage_IgnoreDependenciesIsFalse_DependenciesAreNotIgnoredWhenPackageIsInstalled()
 		{
 			CreateProject();
-			project.InstallPackage(null, null, false);
+			project.InstallPackage(null, null, false, false);
 			
 			Assert.IsFalse(fakePackageManager.IgnoreDependenciesPassedToInstallPackage);
 		}
@@ -221,7 +221,7 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var expectedOperations = new List<PackageOperation>();
-			project.InstallPackage(null, expectedOperations, false);
+			project.InstallPackage(null, expectedOperations, false, false);
 			
 			IEnumerable<PackageOperation> actualOperations = fakePackageManager.PackageOperationsPassedToInstallPackage;
 			
@@ -292,7 +292,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			project.UpdatePackage(package, null, true);
+			project.UpdatePackage(package, null, true, false);
 			
 			IPackage expectedPackage = fakePackageManager.PackagePassedToUpdatePackage;
 			
@@ -303,7 +303,7 @@ namespace PackageManagement.Tests
 		public void UpdatePackage_UpdateDependenciesIsTrue_DependenciesUpdatedWhenPackageIsUpdated()
 		{
 			CreateProject();
-			project.UpdatePackage(null, null, true);
+			project.UpdatePackage(null, null, true, false);
 			
 			Assert.IsTrue(fakePackageManager.UpdateDependenciesPassedToUpdatePackage);
 		}
@@ -312,7 +312,7 @@ namespace PackageManagement.Tests
 		public void UpdatePackage_UpdateDependenciesIsFalse_DependenciesAreNotUpdatedWhenPackageIsUpdated()
 		{
 			CreateProject();
-			project.UpdatePackage(null, null, false);
+			project.UpdatePackage(null, null, false, false);
 			
 			Assert.IsFalse(fakePackageManager.UpdateDependenciesPassedToUpdatePackage);
 		}
@@ -322,7 +322,7 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var expectedOperations = new List<PackageOperation>();
-			project.UpdatePackage(null, expectedOperations, false);
+			project.UpdatePackage(null, expectedOperations, false, false);
 			
 			IEnumerable<PackageOperation> actualOperations = fakePackageManager.PackageOperationsPassedToUpdatePackage;
 			

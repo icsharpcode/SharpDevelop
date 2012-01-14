@@ -27,9 +27,7 @@ namespace PackageManagement.Tests.Helpers
 			FakeProjectSystem.FileExistsReturnValue = true;
 			FakeProjectSystem.FileToReturnFromOpenFile = config;
 			
-			FakePackage package = new FakePackage();
-			package.Id = "Test";
-			package.Version = new Version(1, 0, 0, 0);
+			FakePackage package = new FakePackage("Test", "1.0.0.0");
 			
 			FakeSharedSourceRepository.FakePackages.Add(package);
 		}

@@ -162,5 +162,9 @@ namespace ICSharpCode.PackageManagement
 			packages.Clear();
 			UpdateRecentPackagesInOptions();
 		}
+		
+		public bool SupportsPrereleasePackages {
+			get { return false; }
+		}
 	}
 }

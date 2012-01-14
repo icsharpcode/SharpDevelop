@@ -94,7 +94,7 @@ namespace PackageManagement.Tests
 		void SetPackageIdAndVersion(string id, string version)
 		{
 			fakePackage.Id = id;
-			fakePackage.Version = new Version(version);
+			fakePackage.Version = new SemanticVersion(version);
 		}
 		
 		void UserCancelsProjectSelection()
@@ -512,7 +512,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			fakePackage.Id = "Test.Package";
-			fakePackage.Version = new Version(1, 2, 0, 55);
+			fakePackage.Version = new SemanticVersion(1, 2, 0, 55);
 			viewModel.AddPackage();
 			
 			string expectedMessage = "------- Installing...Test.Package 1.2.0.55 -------";
@@ -553,7 +553,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			fakePackage.Id = "Test.Package";
-			fakePackage.Version = new Version(1, 2, 0, 55);
+			fakePackage.Version = new SemanticVersion(1, 2, 0, 55);
 			viewModel.RemovePackage();
 			
 			string expectedMessage = "------- Uninstalling...Test.Package 1.2.0.55 -------";
@@ -1134,7 +1134,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			UserAcceptsProjectSelection();
 			fakePackage.Id = "Test.Package";
-			fakePackage.Version = new Version(1, 2, 0, 55);
+			fakePackage.Version = new SemanticVersion(1, 2, 0, 55);
 			viewModel.ManagePackage();
 			
 			string expectedMessage = "------- Managing...Test.Package 1.2.0.55 -------";

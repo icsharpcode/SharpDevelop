@@ -11,9 +11,9 @@ namespace ICSharpCode.PackageManagement
 	{
 		ISharpDevelopProjectManager ProjectManager { get; }
 		
-		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies);
-		void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies);
+		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies, bool allowPrereleaseVersions);
+		void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies, bool allowPrereleaseVersions);
 		
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies);
+		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions);
 	}
 }

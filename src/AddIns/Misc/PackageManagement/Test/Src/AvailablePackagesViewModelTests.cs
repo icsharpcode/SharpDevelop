@@ -113,15 +113,15 @@ namespace PackageManagement.Tests
 			
 			var package1 = new FakePackage() {
              	Id = "Test",
-             	Version = new Version(0, 1, 0, 0)
+             	Version = new SemanticVersion(0, 1, 0, 0)
             };
 			var package2 = new FakePackage() {
 				Id = "Test",
-				Version = new Version(0, 2, 0, 0)
+				Version = new SemanticVersion(0, 2, 0, 0)
 			};
 			var package3 = new FakePackage() {
 				Id = "Test",
-				Version = new Version(0, 3, 0, 0)
+				Version = new SemanticVersion(0, 3, 0, 0)
 			};
 			var packages = new FakePackage[] {
 				package1, package2, package3
@@ -154,17 +154,17 @@ namespace PackageManagement.Tests
 			var package1 = new FakePackage() {
              	Id = "Test",
              	Description = "",
-             	Version = new Version(0, 1, 0, 0)
+             	Version = new SemanticVersion(0, 1, 0, 0)
             };
 			var package2 = new FakePackage() {
 				Id = "Test",
              	Description = "",
-				Version = new Version(0, 2, 0, 0)
+				Version = new SemanticVersion(0, 2, 0, 0)
 			};
 			var package3 = new FakePackage() {
 				Id = "Test",
              	Description = "",
-				Version = new Version(0, 3, 0, 0)
+				Version = new SemanticVersion(0, 3, 0, 0)
 			};
 			var packages = new FakePackage[] {
 				package1, package2, package3
@@ -192,22 +192,22 @@ namespace PackageManagement.Tests
 			var package1 = new FakePackage() {
              	Id = "First",
              	Description = "",
-             	Version = new Version(0, 1, 0, 0)
+             	Version = new SemanticVersion(0, 1, 0, 0)
             };
 			var package2 = new FakePackage() {
-				Id = "Secon",
+				Id = "Second",
              	Description = "",
-				Version = new Version(0, 2, 0, 0)
+				Version = new SemanticVersion(0, 2, 0, 0)
 			};
 			var package3 = new FakePackage() {
 				Id = "Test",
              	Description = "",
-				Version = new Version(0, 3, 0, 0)
+				Version = new SemanticVersion(0, 3, 0, 0)
 			};
 			var package4 = new FakePackage() {
 				Id = "Test",
              	Description = "",
-				Version = new Version(0, 4, 0, 0)
+				Version = new SemanticVersion(0, 4, 0, 0)
 			};
 			var packages = new FakePackage[] {
 				package1, package2, package3, package4

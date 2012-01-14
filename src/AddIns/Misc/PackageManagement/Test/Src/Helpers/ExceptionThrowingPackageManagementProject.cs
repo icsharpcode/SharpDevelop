@@ -25,12 +25,12 @@ namespace PackageManagement.Tests.Helpers
 			throw ExceptionToThrowWhenCreateUninstallPackageActionCalled;
 		}
 		
-		public override IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public override IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			if (ExceptionToThrowWhenGetInstallPackageOperationsCalled != null) {
 				throw ExceptionToThrowWhenGetInstallPackageOperationsCalled;
 			}
-			return base.GetInstallPackageOperations(package, ignoreDependencies);
+			return base.GetInstallPackageOperations(package, ignoreDependencies, allowPrereleaseVersions);
 		}
 	}
 }

@@ -30,7 +30,7 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Id; }
 		}
 		
-		public Version Version {
+		public SemanticVersion Version {
 			get { return package.Version; }
 		}
 		
@@ -94,14 +94,6 @@ namespace ICSharpCode.PackageManagement
 			get { return package.DownloadCount; }
 		}
 		
-		public int RatingsCount {
-			get { return package.RatingsCount; }
-		}
-		
-		public double Rating {
-			get { return package.Rating; }
-		}
-		
 		public DateTime? LastUpdated {
 			get { return GetLastUpdated(); }
 		}
@@ -158,6 +150,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public string Copyright {
 			get { return package.Copyright; }
+		}
+		
+		public bool IsAbsoluteLatestVersion {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool Listed {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

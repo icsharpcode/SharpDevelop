@@ -19,7 +19,8 @@ namespace PackageManagement.Tests.Helpers
 			IPackageRepository localRepository,
 			IPackageRepository sourceRepository,
 			ILogger logger,
-			bool ignoreDependencies)
+			bool ignoreDependencies,
+			bool allowPrereleaseVersions)
 		{
 			LocalRepositoryPassedToCreateInstallPackageOperationsResolver = localRepository;
 			SourceRepositoryPassedToCreateInstallPackageOperationsResolver = sourceRepository;

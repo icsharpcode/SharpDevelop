@@ -32,7 +32,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 		}
 		
-		public override void AddPackageReference(string packageId, Version version, bool ignoreDependencies)
+		public override void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			var package = new FakePackage();
 			package.Id = packageId;
@@ -41,7 +41,7 @@ namespace PackageManagement.Tests.Helpers
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
 		}
 		
-		public override void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public override void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			PackagePassedToAddPackageReference = package;
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
@@ -54,7 +54,7 @@ namespace PackageManagement.Tests.Helpers
 			RemoveDependenciesPassedToRemovePackageReference = removeDependencies;
 		}
 		
-		public override void UpdatePackageReference(string packageId, Version version, bool updateDependencies)
+		public override void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
 		{
 			var package = new FakePackage();
 			package.Id = packageId;

@@ -167,13 +167,13 @@ namespace PackageManagement.Tests
 			
 			var oldPackage = new FakePackage() {
 				Id = "Test",
-				Version = new Version("1.0.0.0")
+				Version = new SemanticVersion("1.0.0.0")
 			};
 			fakeSolution.FakeProjectToReturnFromGetProject.FakePackages.Add(oldPackage);
 			
 			var newPackage = new FakePackage() {
 				Id = "Test",
-				Version = new Version("2.0.0.0")
+				Version = new SemanticVersion("2.0.0.0")
 			};
 			fakeRegisteredPackageRepositories.FakeAggregateRepository.FakePackages.Add(newPackage);
 			
