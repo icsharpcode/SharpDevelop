@@ -349,5 +349,25 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual("Test", releaseNotes);
 		}
+		
+		[Test]
+		public void IsAbsoluteLatestVersion_WrappedPackageIsAbsoluteLatestVersion_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.IsAbsoluteLatestVersion = true;
+			bool result = package.IsAbsoluteLatestVersion;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Listed_WrappedPackageIsListed_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.Listed = true;
+			bool result = package.Listed;
+			
+			Assert.IsTrue(result);
+		}
 	}
 }

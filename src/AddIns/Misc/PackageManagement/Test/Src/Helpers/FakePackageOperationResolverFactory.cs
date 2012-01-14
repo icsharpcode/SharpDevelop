@@ -14,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 		public IPackageRepository SourceRepositoryPassedToCreateInstallPackageOperationsResolver;
 		public ILogger LoggerPassedToCreateInstallPackageOperationResolver;
 		public bool IgnoreDependenciesPassedToCreateInstallPackageOperationResolver;
+		public bool AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver;
 		
 		public IPackageOperationResolver CreateInstallPackageOperationResolver(
 			IPackageRepository localRepository,
@@ -26,6 +27,7 @@ namespace PackageManagement.Tests.Helpers
 			SourceRepositoryPassedToCreateInstallPackageOperationsResolver = sourceRepository;
 			LoggerPassedToCreateInstallPackageOperationResolver = logger;
 			IgnoreDependenciesPassedToCreateInstallPackageOperationResolver = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver = allowPrereleaseVersions;
 			
 			return FakeInstallPackageOperationResolver;
 		}

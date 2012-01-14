@@ -48,6 +48,9 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		[Parameter]
 		public SwitchParameter IgnoreDependencies { get; set; }
 		
+		[Parameter, Alias("Prerelease")]
+		public SwitchParameter IncludePrerelease { get; set; }
+
 		protected override void ProcessRecord()
 		{
 			ThrowErrorIfProjectNotOpen();
@@ -125,6 +128,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.UpdateDependencies = UpdateDependencies;
+			action.AllowPrereleaseVersions = AllowPreleaseVersions;
 			action.PackageScriptRunner = this;
 			return action;
 		}
@@ -133,9 +137,14 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			get { return !IgnoreDependencies.IsPresent; }
 		}
 		
+		bool AllowPreleaseVersions {
+			get { return IncludePrerelease.IsPresent; }
+		}
+		
 		void RunActions(IUpdatePackageActions updateActions)
 		{
 			updateActions.UpdateDependencies = UpdateDependencies;
+			updateActions.AllowPrereleaseVersions = AllowPreleaseVersions;
 			updateActions.PackageScriptRunner = this;
 			
 			foreach (UpdatePackageAction action in updateActions.CreateActions()) {

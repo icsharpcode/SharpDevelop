@@ -60,7 +60,7 @@ namespace ICSharpCode.PackageManagement
 		public void InstallPackage(IPackage package)
 		{
 			bool ignoreDependencies = false;
-			bool allowPreleaseVersions = true;
+			bool allowPreleaseVersions = false;
 			InstallPackage(package, ignoreDependencies, allowPreleaseVersions);
 		}
 		
@@ -123,7 +123,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
 		{
-			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);			
+			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);		
 		}
 	}
 }

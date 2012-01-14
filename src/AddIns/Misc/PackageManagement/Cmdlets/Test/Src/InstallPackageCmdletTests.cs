@@ -52,6 +52,11 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.IgnoreDependencies = new SwitchParameter(true);
 		}
 		
+		void EnablePrereleaseParameter()
+		{
+			cmdlet.IncludePrerelease = new SwitchParameter(true);
+		}
+		
 		void SetSourceParameter(string source)
 		{
 			cmdlet.Source = source;
@@ -113,6 +118,33 @@ namespace PackageManagement.Cmdlets.Tests
 			RunCmdlet();
 			
 			bool result = fakeInstallPackageAction.IgnoreDependencies;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PrereleaseParameterSet_AllowPrereleaseVersionsIsTrueWhenInstallingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			EnablePrereleaseParameter();
+			RunCmdlet();
+			
+			bool result = fakeInstallPackageAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PrereleaseParameterNotSet_AllowPrereleaseVersionsIsFalseWhenInstallingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			RunCmdlet();
+			
+			bool result = fakeInstallPackageAction.AllowPrereleaseVersions;
 			
 			Assert.IsFalse(result);
 		}

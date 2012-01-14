@@ -153,15 +153,11 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool IsAbsoluteLatestVersion {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return package.IsAbsoluteLatestVersion; }
 		}
 		
 		public bool Listed {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return package.Listed; }
 		}
 	}
 }

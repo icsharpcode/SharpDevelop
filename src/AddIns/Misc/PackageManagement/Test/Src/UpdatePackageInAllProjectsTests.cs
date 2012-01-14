@@ -207,5 +207,31 @@ namespace PackageManagement.Tests
 			
 			Assert.IsTrue(updateDependencies);
 		}
+		
+		[Test]
+		public void CreateActions_SolutionHasOneProjectAndAllowPrereleaseVersionsIsFalse_UpdateActionDoesNotAllowPrereleaseVersions()
+		{
+			CreateUpdatePackageInAllProjects();
+			AddProjectToSolution("MyProject");
+			updatePackageInAllProjects.AllowPrereleaseVersions = false;
+			CallCreateActions();
+			
+			bool allowPrereleases = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(allowPrereleases);
+		}
+		
+		[Test]
+		public void CreateActions_SolutionHasOneProjectAndAllowPrereleaseVersionsIsTrue_UpdateActionDoesAllowPrereleaseVersions()
+		{
+			CreateUpdatePackageInAllProjects();
+			AddProjectToSolution("MyProject");
+			updatePackageInAllProjects.AllowPrereleaseVersions = true;
+			CallCreateActions();
+			
+			bool allowPrereleases = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(allowPrereleases);
+		}
 	}
 }

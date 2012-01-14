@@ -62,11 +62,13 @@ namespace ICSharpCode.PackageManagement.Design
 		public List<FakePackageOperation> FakeInstallOperations = new List<FakePackageOperation>();
 		public IPackage PackagePassedToGetInstallPackageOperations;
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
+		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 		
 		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
 			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToGetInstallPackageOperations = allowPrereleaseVersions;
 			
 			return FakeInstallOperations;
 		}
@@ -76,12 +78,14 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackage PackagePassedToInstallPackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
 		public bool IgnoreDependenciesPassedToInstallPackage;
+		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
 		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			PackagePassedToInstallPackage = package;
 			PackageOperationsPassedToInstallPackage = operations;
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToInstallPackage = allowPrereleaseVersions;
 		}
 		
 		public FakePackageOperation AddFakeInstallOperation()
@@ -120,6 +124,7 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackage PackagePassedToUpdatePackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
 		public bool UpdateDependenciesPassedToUpdatePackage;
+		public bool AllowPrereleaseVersionsPassedToUpdatePackage;
 		public bool IsUpdatePackageCalled;
 		
 		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies, bool allowPrereleaseVersions)
@@ -127,6 +132,7 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToUpdatePackage = package;
 			PackageOperationsPassedToUpdatePackage = operations;
 			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+			AllowPrereleaseVersionsPassedToUpdatePackage = allowPrereleaseVersions;
 			IsUpdatePackageCalled = true;
 		}
 		

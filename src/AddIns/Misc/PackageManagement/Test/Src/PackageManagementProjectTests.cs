@@ -121,7 +121,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			project.GetInstallPackageOperations(package, true, false);
+			project.GetInstallPackageOperations(package, ignoreDependencies: true, allowPrereleaseVersions: false);
 			
 			Assert.IsTrue(fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations);
 		}
@@ -132,7 +132,7 @@ namespace PackageManagement.Tests
 			CreateProject();
 			var package = new FakePackage();
 			
-			project.GetInstallPackageOperations(package, false, false);
+			project.GetInstallPackageOperations(package, ignoreDependencies: false, allowPrereleaseVersions: false);
 			
 			Assert.IsFalse(fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations);
 		}
@@ -499,6 +499,64 @@ namespace PackageManagement.Tests
 			IEnumerable<IPackage> packages = project.GetPackagesInReverseDependencyOrder();
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, packages);
+		}
+		
+		[Test]
+		public void InstallPackage_AllowPrereleaseVersionsIsTrue_PrereleaseVersionsAreNotAllowedWhenPackageIsInstalled()
+		{
+			CreateProject();
+			project.InstallPackage(null, null, false, allowPrereleaseVersions: false);
+			
+			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void InstallPackage_AllowPrereleaseVersionsIsFalse_PrereleaseVersionsAreAllowedWhenPackageIsInstalled()
+		{
+			CreateProject();
+			project.InstallPackage(null, null, false, allowPrereleaseVersions: true);
+			
+			Assert.IsTrue(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsTrue_PrereleaseVersionsAllowedWhenRetrievingPackageOperations()
+		{
+			CreateProject();
+			var package = new FakePackage();
+			
+			project.GetInstallPackageOperations(package, false, allowPrereleaseVersions: true);
+			
+			Assert.IsTrue(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedWhenRetrievingPackageOperations()
+		{
+			CreateProject();
+			var package = new FakePackage();
+			
+			project.GetInstallPackageOperations(package, false, allowPrereleaseVersions: false);
+			
+			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void UpdatePackage_AllowPrereleaseVersionsIsTrue_PrereleaseVersionsNotAllowedWhenPackageIsUpdated()
+		{
+			CreateProject();
+			project.UpdatePackage(null, null, false, allowPrereleaseVersions: true);
+			
+			Assert.IsTrue(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void UpdatePackage_AllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedWhenPackageIsUpdated()
+		{
+			CreateProject();
+			project.UpdatePackage(null, null, false, allowPrereleaseVersions: false);
+			
+			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
 		}
 	}
 }

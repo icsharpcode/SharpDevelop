@@ -18,23 +18,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackage PackagePassedToInstallPackage;
 		public bool IgnoreDependenciesPassedToInstallPackage;
-		
-		public InstallPackageParameters ParametersPassedToInstallPackage;
+		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
 		public IPackage PackagePassedToUninstallPackage;
-		
-		public struct InstallPackageParameters {
-			public IPackage PackagePassedToInstallPackage;
-			public bool IgnoreDependenciesPassedToInstallPackage;
-			public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
-			
-			public override string ToString()
-			{
-				return String.Format("Package: {0}, IgnoreDependencies: {1}",
-					PackagePassedToInstallPackage,
-					IgnoreDependenciesPassedToInstallPackage);
-			}
-		}
 		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
@@ -80,12 +66,9 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			PackagePassedToInstallPackage = package;
 			
-			ParametersPassedToInstallPackage = new InstallPackageParameters();
-			ParametersPassedToInstallPackage.PackagePassedToInstallPackage = package;
-			ParametersPassedToInstallPackage.PackageOperationsPassedToInstallPackage = operations;
-			
 			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
 			PackageOperationsPassedToInstallPackage = operations;
+			AllowPrereleaseVersionsPassedToInstallPackage = allowPrereleaseVersions;
 			
 			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
@@ -98,6 +81,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			PackagePassedToGetInstallPackageOperations = package;
 			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToInstallPackage = allowPrereleaseVersions;
 			return PackageOperationsToReturnFromGetInstallPackageOperations;
 		}
 		
@@ -110,6 +94,7 @@ namespace ICSharpCode.PackageManagement.Design
 			PackagePassedToUpdatePackage = package;
 			PackageOperationsPassedToUpdatePackage = operations;
 			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+			AllowPrereleaseVersionsPassedToInstallPackage = allowPrereleaseVersions;
 		}
 		
 		public void FirePackageInstalled(PackageOperationEventArgs e)

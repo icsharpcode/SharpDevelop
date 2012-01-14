@@ -701,6 +701,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AddPackage_PackagesInstalledSuccessfully_PrereleaseVersionsNotAllowedWhenCheckingForPackageOperations()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			viewModel.AddPackage();
+			
+			bool result = fakeSolution
+				.FakeProjectToReturnFromGetProject
+				.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
 		public void RemovePackage_PackageRemovedSuccessfully_PackageIsRemoved()
 		{
 			CreateViewModel();
@@ -921,6 +935,24 @@ namespace PackageManagement.Tests
 			bool ignored = selectedProject.FakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(ignored);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndPackageOperationRequiresLicenseAcceptance_PrereleaseVersionsAreNotAllowed()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject selectedProject = fakeSelectedProjects[0];
+			selectedProject.IsSelected = true;
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			bool allowed = selectedProject.FakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(allowed);
 		}
 		
 		[Test]

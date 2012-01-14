@@ -98,11 +98,21 @@ namespace PackageManagement.Tests
 			return InstallPackageWithNoPackageOperations(ignoreDependencies: true);
 		}
 		
+		FakePackage InstallPackageWithNoPackageOperationsAndAllowPrereleaseVersions()
+		{
+			return InstallPackageWithNoPackageOperations(ignoreDependencies: false, allowPrereleaseVersions: true);
+		}
+		
 		FakePackage InstallPackageWithNoPackageOperations(bool ignoreDependencies)
+		{
+			return InstallPackageWithNoPackageOperations(ignoreDependencies, allowPrereleaseVersions: false);
+		}
+		
+		FakePackage InstallPackageWithNoPackageOperations(bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.InstallPackage(package, operations, ignoreDependencies, false);
+			packageManager.InstallPackage(package, operations, ignoreDependencies, allowPrereleaseVersions);
 			return package;
 		}
 		
@@ -118,16 +128,29 @@ namespace PackageManagement.Tests
 		
 		FakePackage InstallPackageAndIgnoreDependencies()
 		{
+			return InstallPackageWithParameters(true, false);
+		}
+		
+		FakePackage InstallPackageWithParameters(bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
 			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, true, false);
+			packageManager.InstallPackage(package, ignoreDependencies, allowPrereleaseVersions);
 			return package;
+		}
+		
+		FakePackage InstallPackageAndAllowPrereleaseVersions()
+		{
+			return InstallPackageWithParameters(false, true);
+		}
+		
+		FakePackage InstallPackageAndDoNotAllowPrereleaseVersions()
+		{
+			return InstallPackageWithParameters(false, false);
 		}
 		
 		FakePackage InstallPackageAndDoNotIgnoreDependencies()
 		{
-			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, false, false);
-			return package;
+			return InstallPackageWithParameters(false, false);
 		}
 		
 		FakePackage UninstallPackage()
@@ -173,12 +196,25 @@ namespace PackageManagement.Tests
 		
 		IEnumerable<PackageOperation> GetInstallPackageOperations(FakePackage package)
 		{
-			return packageManager.GetInstallPackageOperations(package, false, false);
+			return GetInstallPackageOperations(package, false, false);
 		}
 		
-		IEnumerable<PackageOperation>  GetInstallPackageOperationsAndIgnoreDependencies(FakePackage package)
+		IEnumerable<PackageOperation> GetInstallPackageOperationsAndIgnoreDependencies(FakePackage package)
 		{
-			return packageManager.GetInstallPackageOperations(package, true, false);
+			return GetInstallPackageOperations(package, true, false);
+		}
+		
+		IEnumerable<PackageOperation> GetInstallPackageOperationsAndAllowPrereleaseVersions(FakePackage package)
+		{
+			return GetInstallPackageOperations(package, false, true);
+		}
+		
+		IEnumerable<PackageOperation> GetInstallPackageOperations(
+			FakePackage package,
+			bool ignoreDependencies,
+			bool allowPrereleaseVersions)
+		{
+			return packageManager.GetInstallPackageOperations(package, ignoreDependencies, allowPrereleaseVersions);
 		}
 		
 		FakePackage UpdatePackageWithNoPackageOperations()
@@ -201,9 +237,19 @@ namespace PackageManagement.Tests
 		
 		FakePackage UpdatePackageWithNoPackageOperationsAndDoNotUpdateDependencies()
 		{
+			return UpdatePackageWithNoPackageOperations(false, false);
+		}
+		
+		FakePackage UpdatePackageWithNoPackageOperationsAndAllowPrereleaseVersions()
+		{
+			return UpdatePackageWithNoPackageOperations(false, true);
+		}
+		
+		FakePackage UpdatePackageWithNoPackageOperations(bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.UpdatePackage(package, operations, false, false);
+			packageManager.UpdatePackage(package, operations, ignoreDependencies, allowPrereleaseVersions);
 			return package;			
 		}
 
@@ -266,6 +312,16 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void InstallPackage_PackageInstancePassed_PrereleaseVersionsNotAllowedWhenAddingReferenceToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackage();
+			
+			Assert.IsFalse(testableProjectManager.AllowPrereleaseVersionsPassedToAddPackageReference);
+		}
+		
+		[Test]
 		public void InstallPackage_PackageInstanceAndPackageOperationsPassed_AddsReferenceToProject()
 		{
 			CreatePackageManager();
@@ -286,6 +342,16 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void InstallPackage_PackageInstanceAndPackageOperationsPassed_DoNotAllowPrereleaseVersionsWhenAddingReferenceToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackageWithNoPackageOperations();
+				
+			Assert.IsFalse(testableProjectManager.AllowPrereleaseVersionsPassedToAddPackageReference);
+		}
+		
+		[Test]
 		public void InstallPackage_PackageInstanceAndPackageOperationsPassedAndIgnoreDependenciesIsTrue_IgnoreDependenciesWhenAddingReferenceToProject()
 		{
 			CreatePackageManager();
@@ -293,6 +359,16 @@ namespace PackageManagement.Tests
 			InstallPackageWithNoPackageOperationsAndIgnoreDependencies();
 				
 			Assert.IsTrue(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_PackageInstanceAndPackageOperationsPassedAndAllowPrereleaseVersionsIsTrue_PrereleaseVersionsallowedWhenAddingReferenceToProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackageWithNoPackageOperationsAndAllowPrereleaseVersions();
+				
+			Assert.IsTrue(testableProjectManager.AllowPrereleaseVersionsPassedToAddPackageReference);
 		}
 		
 		[Test]
@@ -315,6 +391,16 @@ namespace PackageManagement.Tests
 			InstallPackageAndIgnoreDependencies();
 			
 			Assert.IsTrue(testableProjectManager.IgnoreDependenciesPassedToAddPackageReference);
+		}
+		
+		[Test]
+		public void InstallPackage_AllowPrereleaseVersions_AllowPrereleaseVersionsPassedToProjectManager()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			InstallPackageAndAllowPrereleaseVersions();
+			
+			Assert.IsTrue(testableProjectManager.AllowPrereleaseVersionsPassedToAddPackageReference);
 		}
 		
 		[Test]
@@ -546,8 +632,32 @@ namespace PackageManagement.Tests
 			bool result = fakePackageOperationResolverFactory.IgnoreDependenciesPassedToCreateInstallPackageOperationResolver;
 			
 			Assert.IsTrue(result);
-    }
+    	}
     
+		[Test]
+		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsTrue_PackageOperationResolverAllowsPrereleaseVersions()
+		{
+			CreatePackageManager();
+			var package = new FakePackage();
+			GetInstallPackageOperationsAndAllowPrereleaseVersions(package);
+			
+			bool result = fakePackageOperationResolverFactory.AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver;
+			
+			Assert.IsTrue(result);
+    	}
+		
+		[Test]
+		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsFalse_PackageOperationResolverDoesNotAllowPrereleaseVersions()
+		{
+			CreatePackageManager();
+			var package = new FakePackage();
+			GetInstallPackageOperations(package);
+			
+			bool result = fakePackageOperationResolverFactory.AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver;
+			
+			Assert.IsFalse(result);
+    	}
+		
 		public void UpdatePackage_PackageInstanceAndNoPackageOperationsPassed_UpdatesReferenceInProject()
 		{
 			CreatePackageManager();
@@ -565,6 +675,26 @@ namespace PackageManagement.Tests
 			FakePackage package = UpdatePackageWithNoPackageOperations();
 			
 			Assert.IsTrue(testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageInstanceAndAllowPrereleaseVersionsIsTrue_PrereleaseVersionsAllowedToUpdateProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = UpdatePackageWithNoPackageOperationsAndAllowPrereleaseVersions();
+			
+			Assert.IsTrue(testableProjectManager.AllowPrereleaseVersionsPassedToUpdatePackageReference);
+		}
+		
+		[Test]
+		public void UpdatePackage_PackageInstanceAndAllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedToUpdateProject()
+		{
+			CreatePackageManager();
+			CreateTestableProjectManager();
+			FakePackage package = UpdatePackageWithNoPackageOperations();
+			
+			Assert.IsFalse(testableProjectManager.AllowPrereleaseVersionsPassedToUpdatePackageReference);
 		}
 		
 		[Test]

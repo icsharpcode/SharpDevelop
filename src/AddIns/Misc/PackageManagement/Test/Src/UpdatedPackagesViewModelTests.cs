@@ -185,5 +185,19 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void ReadPackages_PrereleasePackageVersionAvailable_NoUpdatesFound()
+		{
+			CreateViewModel();
+			
+			AddPackageToLocalRepository("1.0.0");
+			FakePackage newerPackage = AddPackageToAggregateRepository("1.1.0-alpha");
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
 	}
 }

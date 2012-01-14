@@ -157,6 +157,43 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void CreateActions_OnePackageInProjectAndAllowPrereleaseVersionsSetToFalse_ActionPrereleaseVersionsIsFalse()
+		{
+			CreateUpdateAllPackagesInProject();
+			AddPackageToProject("Test");
+			updateAllPackagesInProject.AllowPrereleaseVersions = false;
+			
+			CallCreateActions();
+			
+			bool allow = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(allow);
+		}
+		
+		[Test]
+		public void CreateActions_OnePackageInProjectAndAllowPrereleaseVersionsSetToTrue_ActionPrereleaseVersionsIsTrue()
+		{
+			CreateUpdateAllPackagesInProject();
+			AddPackageToProject("Test");
+			updateAllPackagesInProject.AllowPrereleaseVersions = true;
+			
+			CallCreateActions();
+			
+			bool allow = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(allow);
+		}
+		
+		[Test]
+		public void AllowPrereleaseVersions_NewInstance_ReturnsFalse()
+		{
+			CreateUpdateAllPackagesInProject();
+			bool allow = updateAllPackagesInProject.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(allow);
+		}
+		
+		[Test]
 		public void CreateActions_OnePackageInProjectAndUpdateDependenciesSetToTrue_ActionUpdateDependenciesIsTrue()
 		{
 			CreateUpdateAllPackagesInProject();

@@ -82,7 +82,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Execute_PackageIsSetAndIgnoreDependencies_IsTrueInstallsPackageIgnoringDependencies()
+		public void Execute_PackageIsSetAndIgnoreDependenciesIsTrue_InstallsPackageIgnoringDependencies()
 		{
 			CreateAction();
 			installPackageHelper.IgnoreDependencies = true;
@@ -94,10 +94,41 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void Execute_PackageIsSetAndAllowPrereleaseVersionsIsTrue_InstallsPackageAllowingPrereleaseVersions()
+		{
+			CreateAction();
+			installPackageHelper.AllowPrereleaseVersions = true;
+			installPackageHelper.InstallTestPackage();
+			
+			bool allowed = fakeProject.AllowPrereleaseVersionsPassedToInstallPackage;
+			
+			Assert.IsTrue(allowed);
+		}
+		
+		[Test]
+		public void Execute_PackageIsSetAndAllowPrereleaseVersionsIsFalse_InstallsPackageWithoutAllowingPrereleaseVersions()
+		{
+			CreateAction();
+			installPackageHelper.AllowPrereleaseVersions = false;
+			installPackageHelper.InstallTestPackage();
+			
+			bool allowed = fakeProject.AllowPrereleaseVersionsPassedToInstallPackage;
+			
+			Assert.IsFalse(allowed);
+		}
+		
+		[Test]
 		public void IgnoreDependencies_DefaultValue_IsFalse()
 		{
 			CreateAction();
 			Assert.IsFalse(action.IgnoreDependencies);
+		}
+		
+		[Test]
+		public void AllowPrereleaseVersion_DefaultValue_IsFalse()
+		{
+			CreateAction();
+			Assert.IsFalse(action.AllowPrereleaseVersions);
 		}
 		
 		[Test]
@@ -152,6 +183,18 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void Execute_PackageIdAndSourceAndProjectPassedAndAllowPrereleaseVersionsIsTrue_PrereleaseVersionsAllowedWhenGettingPackageOperations()
+		{
+			CreateAction();
+			installPackageHelper.AllowPrereleaseVersions = true;
+			installPackageHelper.InstallPackageById("PackageId");
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
 		public void InstallPackage_PackageIdAndSourceAndProjectPassedAndIgnoreDependenciesIsFalse_DependenciesNotIgnoredWhenGettingPackageOperations()
 		{
 			CreateAction();
@@ -159,6 +202,18 @@ namespace PackageManagement.Tests
 			installPackageHelper.InstallPackageById("PackageId");
 			
 			bool result = fakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_PackageIdAndSourceAndProjectPassedAndAllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedWhenGettingPackageOperations()
+		{
+			CreateAction();
+			installPackageHelper.AllowPrereleaseVersions = false;
+			installPackageHelper.InstallPackageById("PackageId");
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);
 		}

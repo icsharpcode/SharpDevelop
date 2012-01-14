@@ -9,7 +9,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class UpdatePackageInAllProjects : IUpdatePackageActions
+	public class UpdatePackageInAllProjects : UpdatePackageActions
 	{
 		IPackageManagementSolution solution;
 		IPackageRepository sourceRepository;
@@ -26,10 +26,7 @@ namespace ICSharpCode.PackageManagement
 			this.sourceRepository = sourceRepository;
 		}
 		
-		public bool UpdateDependencies { get; set; }
-		public IPackageScriptRunner PackageScriptRunner { get; set; }
-		
-		public IEnumerable<UpdatePackageAction> CreateActions()
+		public override IEnumerable<UpdatePackageAction> CreateActions()
 		{
 			GetProjects();
 			foreach (IPackageManagementProject project in projects) {
@@ -45,18 +42,10 @@ namespace ICSharpCode.PackageManagement
 		
 		UpdatePackageAction CreateUpdatePackageAction(IPackageManagementProject project)
 		{
-			UpdatePackageAction action = project.CreateUpdatePackageAction();
-			SetUpdatePackageActionProperties(action);
-			return action;
-		}
-		
-		void SetUpdatePackageActionProperties(UpdatePackageAction action)
-		{
+			UpdatePackageAction action = CreateDefaultUpdatePackageAction(project);
 			action.PackageId = packageReference.Id;
-			action.PackageScriptRunner = PackageScriptRunner;
 			action.PackageVersion = packageReference.Version;
-			action.UpdateDependencies = UpdateDependencies;
-			action.UpdateIfPackageDoesNotExistInProject = false;
+			return action;
 		}
 	}
 }

@@ -27,6 +27,7 @@ namespace PackageManagement.Tests.Helpers
 		public void UpdateTestPackage()
 		{
 			action.UpdateDependencies = UpdateDependencies;
+			action.AllowPrereleaseVersions = AllowPrereleaseVersions;
 			action.Package = TestPackage;
 			action.Operations = PackageOperations;
 			action.Execute();
@@ -42,6 +43,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public PackageSource PackageSource = new PackageSource("http://sharpdevelop/packages");
 		public bool UpdateDependencies;
+		public bool AllowPrereleaseVersions;
 		public SemanticVersion Version;
 		
 		public void UpdatePackageById(string packageId)
@@ -49,6 +51,7 @@ namespace PackageManagement.Tests.Helpers
 			action.PackageId = packageId;
 			action.PackageVersion = Version;
 			action.UpdateDependencies = UpdateDependencies;
+			action.AllowPrereleaseVersions = AllowPrereleaseVersions;
 			action.Execute();
 		}
 	}
