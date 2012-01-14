@@ -20,14 +20,13 @@ namespace PackageManagement.Tests.Helpers
 			IPackageRepository localRepository,
 			IPackageRepository sourceRepository,
 			ILogger logger,
-			bool ignoreDependencies,
-			bool allowPrereleaseVersions)
+			InstallPackageAction installAction)
 		{
 			LocalRepositoryPassedToCreateInstallPackageOperationsResolver = localRepository;
 			SourceRepositoryPassedToCreateInstallPackageOperationsResolver = sourceRepository;
 			LoggerPassedToCreateInstallPackageOperationResolver = logger;
-			IgnoreDependenciesPassedToCreateInstallPackageOperationResolver = ignoreDependencies;
-			AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver = allowPrereleaseVersions;
+			IgnoreDependenciesPassedToCreateInstallPackageOperationResolver = installAction.IgnoreDependencies;
+			AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver = installAction.AllowPrereleaseVersions;
 			
 			return FakeInstallPackageOperationResolver;
 		}

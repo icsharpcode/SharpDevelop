@@ -64,12 +64,12 @@ namespace ICSharpCode.PackageManagement
 			InstallPackage(package, ignoreDependencies, allowPreleaseVersions);
 		}
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies, bool allowPrereleaseVersions)
+		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			foreach (PackageOperation operation in operations) {
+			foreach (PackageOperation operation in installAction.Operations) {
 				Execute(operation);
 			}
-			AddPackageReference(package, ignoreDependencies, allowPrereleaseVersions);
+			AddPackageReference(package, installAction.IgnoreDependencies, installAction.AllowPrereleaseVersions);
 		}
 		
 		void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
@@ -81,6 +81,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			base.InstallPackage(package, ignoreDependencies, allowPrereleaseVersions);
 			AddPackageReference(package, ignoreDependencies, allowPrereleaseVersions);
+		}
+		
+		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
+		{
+			UninstallPackage(package, uninstallAction.ForceRemove, uninstallAction.RemoveDependencies);
 		}
 		
 		public override void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
@@ -97,33 +102,32 @@ namespace ICSharpCode.PackageManagement
 			return sharedRepository.IsReferenced(package.Id, package.Version);
 		}
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
-			IPackageOperationResolver resolver = CreateInstallPackageOperationResolver(ignoreDependencies, allowPrereleaseVersions);
+			IPackageOperationResolver resolver = CreateInstallPackageOperationResolver(installAction);
 			return resolver.ResolveOperations(package);
 		}
 		
-		IPackageOperationResolver CreateInstallPackageOperationResolver(bool ignoreDependencies, bool allowPrereleaseVersions)
+		IPackageOperationResolver CreateInstallPackageOperationResolver(InstallPackageAction installAction)
 		{
 			return packageOperationResolverFactory.CreateInstallPackageOperationResolver(
 				LocalRepository,
 				SourceRepository,
 				Logger,
-				ignoreDependencies,
-				allowPrereleaseVersions);
+				installAction);
 		}
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies, bool allowPrereleaseVersions)
+		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
-			foreach (PackageOperation operation in operations) {
+			foreach (PackageOperation operation in updateAction.Operations) {
 				Execute(operation);
 			}
-			UpdatePackageReference(package, updateDependencies, allowPrereleaseVersions);
+			UpdatePackageReference(package, updateAction);
 		}
 		
-		void UpdatePackageReference(IPackage package, bool updateDependencies, bool allowPrereleaseVersions)
+		void UpdatePackageReference(IPackage package, UpdatePackageAction updateAction)
 		{
-			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateDependencies, allowPrereleaseVersions);		
+			ProjectManager.UpdatePackageReference(package.Id, package.Version, updateAction.UpdateDependencies, updateAction.AllowPrereleaseVersions);		
 		}
 	}
 }

@@ -24,13 +24,16 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
-			return Project.GetInstallPackageOperations(Package, !UpdateDependencies, AllowPrereleaseVersions);
+			var installAction = Project.CreateInstallPackageAction();
+			installAction.AllowPrereleaseVersions = AllowPrereleaseVersions;
+			installAction.IgnoreDependencies = !UpdateDependencies;
+			return Project.GetInstallPackageOperations(Package, installAction);
 		}
 		
 		protected override void ExecuteCore()
 		{
 			if (ShouldUpdatePackage()) {
-				Project.UpdatePackage(Package, Operations, UpdateDependencies, AllowPrereleaseVersions);
+				Project.UpdatePackage(Package, this);
 				OnParentPackageInstalled();
 			}
 		}

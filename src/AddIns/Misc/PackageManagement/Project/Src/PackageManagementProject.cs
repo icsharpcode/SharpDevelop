@@ -84,24 +84,24 @@ namespace ICSharpCode.PackageManagement
 			return projectManager.LocalRepository.GetPackages();
 		}
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
-			return packageManager.GetInstallPackageOperations(package, ignoreDependencies, allowPrereleaseVersions);
+			return packageManager.GetInstallPackageOperations(package, installAction);
 		}
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies, bool allowPrereleaseVersions)
+		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
-			packageManager.InstallPackage(package, operations, ignoreDependencies, allowPrereleaseVersions);
+			packageManager.InstallPackage(package, installAction);
 		}
 		
-		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
+		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
 		{
-			packageManager.UninstallPackage(package, forceRemove, removeDependencies);
+			packageManager.UninstallPackage(package, uninstallAction);
 		}
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies, bool allowPrereleaseVersions)
+		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
-			packageManager.UpdatePackage(package, operations, updateDependencies, allowPrereleaseVersions);
+			packageManager.UpdatePackage(package, updateAction);
 		}
 		
 		public InstallPackageAction CreateInstallPackageAction()

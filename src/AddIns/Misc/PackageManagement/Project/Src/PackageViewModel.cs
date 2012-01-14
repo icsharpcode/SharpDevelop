@@ -170,7 +170,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = GetSingleProjectSelected();
 			project.Logger = logger;
-			packageOperations = project.GetInstallPackageOperations(package, false, false);
+			var installAction = project.CreateInstallPackageAction();
+			packageOperations = project.GetInstallPackageOperations(package, installAction);
 		}
 		
 		IPackageManagementProject GetSingleProjectSelected()
@@ -404,7 +405,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = selectedProject.Project;
 			project.Logger = logger;
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, false, false);
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, project.CreateInstallPackageAction());
 			return GetPackagesRequiringLicenseAcceptance(operations);
 		}
 		

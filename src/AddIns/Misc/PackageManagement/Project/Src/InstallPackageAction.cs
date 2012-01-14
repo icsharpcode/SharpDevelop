@@ -23,12 +23,12 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
-			return Project.GetInstallPackageOperations(Package, IgnoreDependencies, AllowPrereleaseVersions);
+			return Project.GetInstallPackageOperations(Package, this);
 		}
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, Operations, IgnoreDependencies, AllowPrereleaseVersions);
+			Project.InstallPackage(Package, this);
 			OnParentPackageInstalled();
 		}
 	}

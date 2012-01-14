@@ -112,7 +112,11 @@ namespace PackageManagement.Tests
 		{
 			FakePackage package = CreateFakePackage();
 			var operations = new List<PackageOperation>();
-			packageManager.InstallPackage(package, operations, ignoreDependencies, allowPrereleaseVersions);
+			var installAction = new FakeInstallPackageAction();
+			installAction.IgnoreDependencies = ignoreDependencies;
+			installAction.AllowPrereleaseVersions = allowPrereleaseVersions;
+			installAction.Operations = operations;
+			packageManager.InstallPackage(package, installAction);
 			return package;
 		}
 		
@@ -122,7 +126,9 @@ namespace PackageManagement.Tests
 				operation
 			};
 			FakePackage package = CreateFakePackage();
-			packageManager.InstallPackage(package, operations, false, false);
+			var installAction = new FakeInstallPackageAction();
+			installAction.Operations = operations;
+			packageManager.InstallPackage(package, installAction);
 			return package;
 		}
 		
@@ -214,14 +220,19 @@ namespace PackageManagement.Tests
 			bool ignoreDependencies,
 			bool allowPrereleaseVersions)
 		{
-			return packageManager.GetInstallPackageOperations(package, ignoreDependencies, allowPrereleaseVersions);
+			var fakeInstallAction = new FakeInstallPackageAction();
+			fakeInstallAction.IgnoreDependencies = ignoreDependencies;
+			fakeInstallAction.AllowPrereleaseVersions = allowPrereleaseVersions;
+			return packageManager.GetInstallPackageOperations(package, fakeInstallAction);
 		}
 		
 		FakePackage UpdatePackageWithNoPackageOperations()
 		{
 			FakePackage package = CreateFakePackage();
-			var operations = new List<PackageOperation>();
-			packageManager.UpdatePackage(package, operations, true, false);
+			var updateAction = new FakeUpdatePackageAction();
+			updateAction.Operations = new List<PackageOperation>();
+			updateAction.UpdateDependencies = true;
+			packageManager.UpdatePackage(package, updateAction);
 			return package;
 		}
 		
@@ -231,7 +242,10 @@ namespace PackageManagement.Tests
 				operation
 			};
 			FakePackage package = CreateFakePackage();
-			packageManager.UpdatePackage(package, operations, true, false);
+			var updateAction = new FakeUpdatePackageAction();
+			updateAction.Operations = operations;
+			updateAction.UpdateDependencies = true;
+			packageManager.UpdatePackage(package, updateAction);
 			return package;
 		}
 		
@@ -245,11 +259,14 @@ namespace PackageManagement.Tests
 			return UpdatePackageWithNoPackageOperations(false, true);
 		}
 		
-		FakePackage UpdatePackageWithNoPackageOperations(bool ignoreDependencies, bool allowPrereleaseVersions)
+		FakePackage UpdatePackageWithNoPackageOperations(bool updateDependencies, bool allowPrereleaseVersions)
 		{
 			FakePackage package = CreateFakePackage();
-			var operations = new List<PackageOperation>();
-			packageManager.UpdatePackage(package, operations, ignoreDependencies, allowPrereleaseVersions);
+			var updateAction = new FakeUpdatePackageAction();
+			updateAction.Operations = new List<PackageOperation>();
+			updateAction.UpdateDependencies = updateDependencies;
+			updateAction.AllowPrereleaseVersions = allowPrereleaseVersions;
+			packageManager.UpdatePackage(package, updateAction);
 			return package;			
 		}
 
