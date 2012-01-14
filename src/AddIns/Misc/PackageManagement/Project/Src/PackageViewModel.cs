@@ -288,7 +288,12 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool IsManaged {
-			get { return selectedProjects.HasMultipleProjects(); }
+			get {
+				if (selectedProjects.HasMultipleProjects()) {
+					return true;
+				}
+				return !selectedProjects.HasSingleProjectSelected();
+			}
 		}
 		
 		public void ManagePackage()

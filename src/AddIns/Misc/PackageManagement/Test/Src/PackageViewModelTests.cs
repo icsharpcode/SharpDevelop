@@ -767,6 +767,19 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void IsManaged_SolutionSelectedContainingOneProject_ReturnsTrue()
+		{
+			CreateFakeSolution();
+			AddProjectToSolution();
+			fakeSolution.NoProjectsSelected();
+			CreateViewModel(fakeSolution);
+			
+			bool managed = viewModel.IsManaged;
+			
+			Assert.IsTrue(managed);
+		}
+		
+		[Test]
 		public void IsManaged_SolutionWithOneProjectSelected_ReturnsFalse()
 		{
 			CreateFakeSolution();
