@@ -152,6 +152,7 @@
     <Compile Include="Src\Utility\Localizeable\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Src\Utility\Matrix.cs" />
     <Compile Include="Src\Utility\Queries\BaseQuery.cs" />
+    <Compile Include="Src\Utility\Queries\ItemWithFunction.cs" />
     <Compile Include="Src\Utility\Queries\QueryAssembly.cs" />
     <Compile Include="Src\Utility\Queries\QueryMethod.cs" />
     <Compile Include="Src\Utility\Queries\QueryNameSpace.cs" />

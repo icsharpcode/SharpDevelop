@@ -27,39 +27,34 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			IEnumerable<Type> query  = new List<Type>();
 			query  = from ns in MainModule.Namespaces
 				from type in ns.Types
-				//from method in type.Methods
 				select type;
 			return query.ToList();
 		}
 		
-		public override System.Collections.Generic.List<ItemWithAction> GetQueryList()
+		public override System.Collections.Generic.List<ItemWithFunc> GetQueryList()
 		{
-			List<ItemWithAction> items = new List<ItemWithAction>();
-			items.Add(new ItemWithAction()
+			List<ItemWithFunc> items = new List<ItemWithFunc>();
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of IL Instructions",
-			                     	Metrics =  "Instructions.Count",
 			                     	Action = ExecuteILInstructions
 			                     });
 			
-			items.Add(new ItemWithAction()
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "IL Cyclomatic Complexity",
-			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
 			                     	Action = ExecuteMethodComplexity
 			                     });
 			                   
-			items.Add(new ItemWithAction()
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Methods",
-			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
 			                     	Action = ExecuteNumberOfMethods
 			                     });
 			                       
-				items.Add(new ItemWithAction()
+				items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Fields",
-			                     	Metrics = Metrics.Variables.ToString(),
 			                     	Action = ExecuteNumberOfFields
 			                     });
 		

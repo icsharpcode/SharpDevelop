@@ -30,32 +30,28 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			return query.ToList();
 		}
 		
-		public override List<ItemWithAction> GetQueryList()
+		public override List<ItemWithFunc> GetQueryList()
 		{
-			List<ItemWithAction> items = new List<ItemWithAction>();
-			items.Add(new ItemWithAction()
+			List<ItemWithFunc> items = new List<ItemWithFunc>();
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of IL Instructions",
-			                     	Metrics =  "Instructions.Count",
 			                     	Action = ExecuteILInstructions
 			                     });
-			items.Add(new ItemWithAction()
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Methods",
-			                     	Metrics = Metrics.CyclomaticComplexity.ToString(),
 			                     	Action = MethodsCount
 			                     });
-			items.Add(new ItemWithAction()
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Fields",
-			                     	Metrics = Metrics.Variables.ToString(),
 			                     	Action = FieldsCount
 			                     });
 			
-			items.Add(new ItemWithAction()
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Types",
-			                     	Metrics = Metrics.Variables.ToString(),
 			                     	Action = TypesCount
 			                     });
 			return items;

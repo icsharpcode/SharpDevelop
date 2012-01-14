@@ -21,13 +21,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		{
 		}
 		
-		public override System.Collections.Generic.List<ItemWithAction> GetQueryList()
+		public override System.Collections.Generic.List<ItemWithFunc> GetQueryList()
 		{
-			List<ItemWithAction> items = new List<ItemWithAction>();
-			items.Add(new ItemWithAction()
+			List<ItemWithFunc> items = new List<ItemWithFunc>();
+			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of NameSpaces",
-			                     	Metrics =  "Instructions.Count",
 			                     	Action = ExecuteNotImplemented
 			                     });
 			return items;

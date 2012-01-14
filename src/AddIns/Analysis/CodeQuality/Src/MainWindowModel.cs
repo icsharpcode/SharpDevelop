@@ -33,20 +33,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 		Method
 	}
 	
-
-	public enum Metrics
-	{
-
-		[LocalizableDescription("IL Instructions")]
-		ILInstructions,
-		
-		[LocalizableDescription("Cyclomatic Complexity")]
-		CyclomaticComplexity,
-		
-		[LocalizableDescription("Variables")]
-		Variables
-	}
-
 	
 	public class MainWindowViewModel :ViewModelBase
 	{
@@ -214,7 +200,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 	
 		void ActivateMetricsExecute ()
 		{
-//			BaseQuery query = null;
 			itemsWithCommand.Clear();
 			
 			switch (SelectedMetricsLevel) {
@@ -240,12 +225,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		#region Metrics Combo > Right Combobox
 		
-		List<ItemWithAction> itemsWithCommand;
+		List<ItemWithFunc> itemsWithCommand;
 		
-		public List<ItemWithAction> ItemsWithCommand {
+		public List<ItemWithFunc> ItemsWithCommand {
 			get {
 				if (itemsWithCommand == null) {
-					itemsWithCommand = new List<ItemWithAction>();
+					itemsWithCommand = new List<ItemWithFunc>();
 				}
 				return itemsWithCommand;
 			}
@@ -254,9 +239,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 				base.RaisePropertyChanged(() => ItemsWithCommand);}
 		}
 		
-		ItemWithAction selectedItemWithCommand;
+		ItemWithFunc selectedItemWithCommand;
 		
-		public ItemWithAction SelectedItemWithCommand {
+		public ItemWithFunc SelectedItemWithCommand {
 			get { return selectedItemWithCommand; }
 			set { selectedItemWithCommand = value;
 				base.RaisePropertyChanged(() => SelectedItemWithCommand);}
@@ -331,16 +316,5 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		#endregion
-	}
-	
-	
-	public class ItemWithAction
-	{
-		public ItemWithAction()
-		{
-		}
-		public string Description	{get; set;}
-		public Func<List<TreeMapViewModel>>  Action {get; set;}
-		public  string Metrics {get;set;}
 	}
 }

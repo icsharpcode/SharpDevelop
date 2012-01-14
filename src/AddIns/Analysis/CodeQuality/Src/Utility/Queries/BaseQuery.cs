@@ -27,7 +27,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		public int TotalElements {get; private set;}
 		public int RemovedElements {get; private set;}
 				
-		public virtual List<ItemWithAction> GetQueryList ()
+		public virtual List<ItemWithFunc> GetQueryList ()
 		{
 			return null;
 		}
@@ -35,6 +35,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		
 		protected List<TreeMapViewModel> EliminateZeroValues(IEnumerable<TreeMapViewModel> list)
 		{
+			
+//			var zeros =  from v in list
+//				where v.NumericValue == 0
+//				select v;
+			
 			var filtered =  from viewModel in list
 				where viewModel.NumericValue > 0
 				select viewModel;
