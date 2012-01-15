@@ -15,5 +15,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void AddServiceReferenceProxyFile(ServiceReferenceFileName fileName);
 		void AddServiceReferenceMapFile(ServiceReferenceMapFileName fileName);
 		void Save();
+		void AddAssemblyReference(string referenceName);
 	}
 }

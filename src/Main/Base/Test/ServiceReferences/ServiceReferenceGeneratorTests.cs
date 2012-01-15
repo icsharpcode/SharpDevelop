@@ -159,5 +159,34 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			fakeProject.AssertWasCalled(p => p.AddServiceReferenceMapFile(expectedMapFileName));
 		}
+		
+		[Test]
+		public void AddServiceReference_ProjectDoesNotHaveSystemServiceModelReference_SystemServiceModelReferenceAddedToProject()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Namespace = "MyService";
+			
+			generator.AddServiceReference(metadata);
+			
+			fakeProject.AssertWasCalled(p => p.AddAssemblyReference("System.ServiceModel"));
+		}
+		
+		[Test]
+		public void AddServiceReference_ProjectDoesNotHaveSystemServiceModelReference_ProjectIsSavedAfterReferenceIsAdded()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Namespace = "MyService";
+			
+			fakeProject
+				.Stub(p => p.Save())
+				.WhenCalled(new Action<MethodInvocation>(
+					mi => fakeProject.AssertWasCalled(p => p.AddAssemblyReference("System.ServiceModel"))));
+			
+			generator.AddServiceReference(metadata);
+		}
 	}
 }
