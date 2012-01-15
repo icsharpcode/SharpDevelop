@@ -29,8 +29,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                     	Description = "# of NameSpaces",
 			                     	Action = ExecuteNotImplemented
 			                     });
+			
 			return items;
 		}
+		
 		
 		private List<TreeMapViewModel> ExecuteNotImplemented()
 		{

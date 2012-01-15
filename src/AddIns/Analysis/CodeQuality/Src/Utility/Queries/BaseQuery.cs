@@ -21,6 +21,13 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		{
 			MainModule = mainModule;
 		}
+		protected string NameSpaceCount = "No of Namespaces";
+		protected string InstructionsCount = "No of Instructions";
+		protected string Complexity = "Complexity";
+		protected string MethodsCount = "No of Methods";
+		protected string FieldsCount = "No of Fields";
+		protected string VariablesCount = "No of Variables";
+		protected string TypesCount = "No of Types";
 		
 		protected Module MainModule {get; private set;}
 	
@@ -35,11 +42,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		
 		protected List<TreeMapViewModel> EliminateZeroValues(IEnumerable<TreeMapViewModel> list)
 		{
-			
-//			var zeros =  from v in list
-//				where v.NumericValue == 0
-//				select v;
-			
 			var filtered =  from viewModel in list
 				where viewModel.NumericValue > 0
 				select viewModel;
@@ -47,6 +49,14 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			TotalElements = list.Count();
 			RemovedElements = TotalElements - result.Count();
 			return result;
+		}
+		
+		
+		protected void SetToolstripText (IEnumerable<TreeMapViewModel> list,string tooltipText)
+		{
+			foreach (var element in list) {
+				element.ToolTipString = string.Format("{0} <{1}>",tooltipText , element.NumericValue);
+			}
 		}
 	}
 }

@@ -17,5 +17,6 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 	{
 		public string Name {get;set;}
 		public int  NumericValue {get;set;}
+		public string ToolTipString {get;set;}
 	}
 }

@@ -71,7 +71,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               });
 
 			var filtered = base.EliminateZeroValues(list);
-			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
+			base.SetToolstripText(filtered,base.InstructionsCount);
 			return filtered.ToList();
 		}
 		
@@ -86,7 +86,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	NumericValue = m.CyclomaticComplexity
 			                               });
 			var filtered = base.EliminateZeroValues(list);
-			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
+			base.SetToolstripText(filtered,base.Complexity);
 			return filtered.ToList();
 		}
 	
@@ -101,7 +101,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	NumericValue =  m.Variables
 			                               });
 			var filtered = base.EliminateZeroValues(list);
-			Console.WriteLine("{0} - {1} - {2}",intermediate.Count,list.Count(),filtered.Count());
+			base.SetToolstripText(filtered,base.VariablesCount);
 			return filtered.ToList();
 		}
 	}

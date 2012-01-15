@@ -169,7 +169,7 @@
 							Background="AliceBlue"
 							BorderBrush="Black"
 							BorderThickness="1">
-							<StackPanel ToolTip="{Binding NumericValue}">
+							<StackPanel ToolTip="{Binding ToolTipString}">
 								<TextBlock
 									Text="{Binding DeclaringType.Name}" />
 								<TextBlock

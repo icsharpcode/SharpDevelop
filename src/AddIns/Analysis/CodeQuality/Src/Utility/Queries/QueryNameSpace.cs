@@ -41,18 +41,18 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Methods",
-			                     	Action = MethodsCount
+			                     	Action = ExecuteMethodsCount
 			                     });
 			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Fields",
-			                     	Action = FieldsCount
+			                     	Action = ExecuteFieldsCount
 			                     });
 			
 			items.Add(new ItemWithFunc()
 			                     {
 			                     	Description = "# of Types",
-			                     	Action = TypesCount
+			                     	Action = ExecuteTypesCount
 			                     });
 			return items;
 		}
@@ -68,11 +68,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	NumericValue = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
 			                               });
 			var filtered = base.EliminateZeroValues(list);
+			base.SetToolstripText (filtered,base.InstructionsCount);
 			return filtered.ToList();
 		}
 		
 		
-		private List<TreeMapViewModel> MethodsCount()
+		private List<TreeMapViewModel> ExecuteMethodsCount()
 		{
 			var intermediate = this.NameSpaceQuery();
 			
@@ -82,11 +83,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	NumericValue = m.GetAllMethods().ToList().Count
 			                               });
 			var filtered = base.EliminateZeroValues(list);
+			base.SetToolstripText (filtered,base.MethodsCount);
 			return filtered.ToList();
 		}
 		
 		
-		private List<TreeMapViewModel> FieldsCount()
+		private List<TreeMapViewModel> ExecuteFieldsCount()
 		{
 			var intermediate = this.NameSpaceQuery();
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
@@ -95,11 +97,12 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	NumericValue = m.GetAllFields().ToList().Count
 			                               });
 			var filtered = base.EliminateZeroValues(list);
+			base.SetToolstripText (filtered,base.FieldsCount);
 			return filtered.ToList();
 		}
 		
 		
-		private List<TreeMapViewModel> TypesCount()
+		private List<TreeMapViewModel> ExecuteTypesCount()
 		{
 			var intermediate = this.NameSpaceQuery();
 			
@@ -109,6 +112,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			                               	NumericValue = m.GetAllTypes().ToList().Count
 			                               });
 			var filtered = base.EliminateZeroValues(list);
+			base.SetToolstripText (filtered,base.TypesCount);
 			return filtered.ToList();
 		}
 	}
