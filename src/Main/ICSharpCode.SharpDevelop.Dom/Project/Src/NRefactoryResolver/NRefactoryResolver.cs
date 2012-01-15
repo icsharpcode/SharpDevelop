@@ -1225,6 +1225,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				IClass c = GetPrimitiveClass(pair.Value, pair.Key);
 				if (c != null) result.Add(c);
 			}
+			result.Add(new KeywordEntry("dynamic"));
 		}
 		
 		void CtrlSpaceInternal(List<ICompletionEntry> result, string fileContent, bool showEntriesFromAllNamespaces)
