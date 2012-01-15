@@ -20,15 +20,15 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 		[DllImport("gdi32.dll")]
 		public static extern bool DeleteObject(IntPtr hObject);
 		
-		public static void FillTree(SharpTreeView tree, Module module)
+		public static void FillTree(SharpTreeView tree, AssemblyNode module)
 		{
 			var root = CreateTreeItem(module);
 			tree.Root = root;
 			tree.ShowRoot = false;
 		
-			var sortedNameSpaces = new List<Namespace>();
+			var sortedNameSpaces = new List<NamespaceNode>();
 			sortedNameSpaces.AddRange (module.Namespaces);
-			sortedNameSpaces.Sort((Namespace a,Namespace b) => String.Compare(a.Name, b.Name) );
+			sortedNameSpaces.Sort((a, b) => String.Compare(a.Name, b.Name));
 			
 			foreach (var ns in sortedNameSpaces)
 //			foreach (var ns in module.Namespaces)
@@ -36,17 +36,17 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 				var namespaceNode = CreateTreeItem(ns);
 				tree.Root.Children.Add(namespaceNode);
 				
-				var sortedTypes = new List<Type>();
+				var sortedTypes = new List<TypeNode>();
 				sortedTypes.AddRange(ns.Types);
-				sortedTypes.Sort((Type a,Type b) => String.Compare(a.Name, b.Name) );
+				sortedTypes.Sort((a, b) => String.Compare(a.Name, b.Name));
 				foreach (var type in sortedTypes)
 				{
 					var typeNode = CreateTreeItem(type);
 					namespaceNode.Children.Add(typeNode);
 
-					var sortedMethods = new List<Method>();
+					var sortedMethods = new List<MethodNode>();
 					sortedMethods.AddRange(type.Methods);
-					sortedMethods.Sort((Method a,Method b) => String.Compare(a.Name, b.Name) );
+					sortedMethods.Sort((a, b) => String.Compare(a.Name, b.Name) );
 					foreach (var method in sortedMethods)
 					{
 						var methodName = CreateTreeItem(method);
@@ -54,9 +54,9 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility
 					}
 
 					
-					var sortedFields = new List<Field>();
+					var sortedFields = new List<FieldNode>();
 					sortedFields.AddRange(type.Fields);
-					sortedFields.Sort((Field a,Field b) => String.Compare(a.Name, b.Name) );
+					sortedFields.Sort((a, b) => String.Compare(a.Name, b.Name) );
 					foreach (var field in sortedFields)
 					{
 						var fieldNode = CreateTreeItem(field);

@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 02.09.2011
- * Time: 23:08
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using ICSharpCode.TreeView;
 
@@ -31,11 +26,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 			get { return  node.Name; }
 		}
 		
-		public INode INode
-		{
-			get {return node;}
+		public override object Icon {
+			get { return node.Icon; }
 		}
 		
-		
+		public INode INode {
+			get { return node; }
+		}
 	}
 }

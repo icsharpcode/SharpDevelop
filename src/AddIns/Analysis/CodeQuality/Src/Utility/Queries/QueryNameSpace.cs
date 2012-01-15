@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 02.01.2012
- * Time: 20:11
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
@@ -18,14 +13,14 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 	/// </summary>
 	public class QueryNameSpace:BaseQuery
 	{
-		public QueryNameSpace(Module mainModule):base (mainModule)
+		public QueryNameSpace(AssemblyNode mainModule):base (mainModule)
 		{
 		}
 		
-		private List <Namespace> NameSpaceQuery()
+		private List<NamespaceNode> NameSpaceQuery()
 		{
-			IEnumerable<Namespace> query  = new List<Namespace>();
-			query  = from ns in MainModule.Namespaces
+			IEnumerable<NamespaceNode> query = from ns
+				in MainModule.Namespaces
 				select ns;
 			return query.ToList();
 		}
@@ -65,7 +60,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
+<<<<<<< HEAD
 			                               	NumericValue = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+=======
+//			                               	Numval = m.GetAllMethods().Aggregate(i, (current, x) => current + x.Instructions.Count)
+>>>>>>> started implementation of new DOM based on NRefactory.TypeSystem
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			base.SetToolstripText (filtered,base.InstructionsCount);
@@ -80,7 +79,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
+<<<<<<< HEAD
 			                               	NumericValue = m.GetAllMethods().ToList().Count
+=======
+//			                               	Numval = m.GetAllMethods().ToList().Count
+>>>>>>> started implementation of new DOM based on NRefactory.TypeSystem
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			base.SetToolstripText (filtered,base.MethodsCount);
@@ -94,7 +97,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
+<<<<<<< HEAD
 			                               	NumericValue = m.GetAllFields().ToList().Count
+=======
+//			                               	Numval = m.GetAllFields().ToList().Count
+>>>>>>> started implementation of new DOM based on NRefactory.TypeSystem
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			base.SetToolstripText (filtered,base.FieldsCount);
@@ -109,7 +116,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 			var list = intermediate.Select(m =>  new TreeMapViewModel()
 			                               {
 			                               	Name = m.Name,
+<<<<<<< HEAD
 			                               	NumericValue = m.GetAllTypes().ToList().Count
+=======
+//			                               	Numval = m.GetAllTypes().ToList().Count
+>>>>>>> started implementation of new DOM based on NRefactory.TypeSystem
 			                               });
 			var filtered = base.EliminateZeroValues(list);
 			base.SetToolstripText (filtered,base.TypesCount);

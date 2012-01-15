@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 03.09.2011
- * Time: 13:45
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -128,16 +123,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 		
-		private Module mainModule;
+		private AssemblyNode mainModule;
 		
-		public Module MainModule {
+		public AssemblyNode MainModule {
 			get { return mainModule; }
 			set {
 				mainModule = value;
 				base.RaisePropertyChanged(() =>this.MainModule);
 				Summary = String.Format("Module Name: {0}  Namespaces: {1}  Types {2} Methods: {3}  Fields: {4}",
 				                        mainModule.Name,
-				                        mainModule.Namespaces.Count,
+				                        mainModule.Namespaces.Count(),
 				                        mainModule.TypesCount,
 				                        mainModule.MethodsCount,
 				                        mainModule.FieldsCount);
@@ -159,22 +154,22 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		string UpdateToolStrip()
 		{
-			var t = SelectedTreeNode as Type;
-			if (t != null)
-			{
-				return string.Format("Type Namer {0}  Methods {1} Fields {2}",
-				                     t.Name,
-				                     t.GetAllMethods().Count(),
-				                     t.GetAllFields().Count());
-			}
-			var ns = SelectedTreeNode as Namespace;
-			if ( ns != null) {
-				return string.Format("Namespace Name {0}  Types : {1}  Methods: {2} Fields : {3}",
-				                     ns.Name,
-				                     ns.Types.Count,
-				                     ns.GetAllMethods().Count(),
-				                     ns.GetAllFields().Count());
-			}
+//			var t = SelectedTreeNode as Type;
+//			if (t != null)
+//			{
+//				return string.Format("Type Namer {0}  Methods {1} Fields {2}",
+//				                     t.Name,
+//				                     t.GetAllMethods().Count(),
+//				                     t.GetAllFields().Count());
+//			}
+//			var ns = SelectedTreeNode as Namespace;
+//			if ( ns != null) {
+//				return string.Format("Namespace Name {0}  Types : {1}  Methods: {2} Fields : {3}",
+//				                     ns.Name,
+//				                     ns.Types.Count,
+//				                     ns.GetAllMethods().Count(),
+//				                     ns.GetAllFields().Count());
+//			}
 			return String.Empty;
 		}
 		

@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 02.01.2012
- * Time: 20:26
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +12,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 	/// </summary>
 	public class BaseQuery
 	{
-		public BaseQuery(Module mainModule)
+		public BaseQuery(AssemblyNode mainModule)
 		{
 			MainModule = mainModule;
 		}
@@ -29,7 +24,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 		protected string VariablesCount = "No of Variables";
 		protected string TypesCount = "No of Types";
 		
-		protected Module MainModule {get; private set;}
+		protected AssemblyNode MainModule {get; private set;}
 	
 		public int TotalElements {get; private set;}
 		public int RemovedElements {get; private set;}

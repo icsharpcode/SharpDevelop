@@ -130,20 +130,20 @@
       <DependentUpon>RelationshipType.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\DependencyTreeNode.cs" />
-    <Compile Include="Src\Event.cs" />
-    <Compile Include="Src\Field.cs" />
     <Compile Include="Src\INode.cs" />
-    <Compile Include="Src\Instruction.cs" />
     <Compile Include="Src\IValue.cs" />
     <Compile Include="Src\MainWindowModel.cs" />
     <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
-    <Compile Include="Src\Method.cs" />
-    <Compile Include="Src\Namespace.cs" />
+    <Compile Include="Src\Nodes\AssemblyNode.cs" />
+    <Compile Include="Src\Nodes\EventNode.cs" />
+    <Compile Include="Src\Nodes\FieldNode.cs" />
+    <Compile Include="Src\Nodes\MethodNode.cs" />
+    <Compile Include="Src\Nodes\NamespaceNode.cs" />
+    <Compile Include="Src\Nodes\TypeNode.cs" />
     <Compile Include="Src\Relationship.cs" />
     <Compile Include="Src\RelationshipType.cs" />
-    <Compile Include="Src\Type.cs" />
     <Compile Include="Src\Utility\ComboBoxWithCommand.cs" />
     <Compile Include="Src\Utility\DoubleKeyDictionary.cs" />
     <Compile Include="Src\Utility\IColorizer.cs" />
@@ -180,7 +180,6 @@
     <Page Include="Themes\Generic.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -231,6 +230,10 @@
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\NewNRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
       <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
       <Name>ICSharpCode.TreeView</Name>
@@ -273,6 +276,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\Nodes" />
     <Folder Include="Src\Utility" />
     <Folder Include="Src\Utility\Localizeable" />
     <Folder Include="Src\Utility\Queries" />

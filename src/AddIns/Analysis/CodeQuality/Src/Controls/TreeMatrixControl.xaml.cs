@@ -53,7 +53,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		}
 		
 		
-		public void DrawTree(Module module)
+		public void DrawTree(AssemblyNode module)
 		{
 			var leftCol = leftTree.Items.SourceCollection as INotifyCollectionChanged;
 			leftCol.CollectionChanged += BuildLeftINodeList;

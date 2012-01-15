@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 05.01.2012
- * Time: 20:13
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
@@ -17,7 +12,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Utility.Queries
 	/// </summary>
 	public class QueryAssembly:BaseQuery
 	{
-		public QueryAssembly(Module mainModule):base(mainModule)
+		public QueryAssembly(AssemblyNode mainModule):base(mainModule)
 		{
 		}
 		

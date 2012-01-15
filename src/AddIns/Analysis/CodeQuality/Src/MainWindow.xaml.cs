@@ -83,8 +83,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 					return;
 				}
 
-				Helper.FillTree(definitionTree, metricsReader.MainModule);
-				dataContext.MainModule = metricsReader.MainModule;                        
+				Helper.FillTree(definitionTree, metricsReader.Assembly);
+				dataContext.MainModule = metricsReader.Assembly;                        
 				FillMatrix();
 			};
 			
@@ -105,7 +105,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		{
 			var matrix = new DependencyMatrix();
 
-			foreach (var ns in metricsReader.MainModule.Namespaces) {
+			foreach (var ns in metricsReader.Assembly.Namespaces) {
 				matrix.AddRow(ns);
 				foreach (var type in ns.Types) {
 					matrix.AddRow(type);
@@ -126,7 +126,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 
 			matrixControl.Matrix = matrix;
-			matrixControl.DrawTree(metricsReader.MainModule);
+			matrixControl.DrawTree(metricsReader.Assembly);
 		}
 		
 		
