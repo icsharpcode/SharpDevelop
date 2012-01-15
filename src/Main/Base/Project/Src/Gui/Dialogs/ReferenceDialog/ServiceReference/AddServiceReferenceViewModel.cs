@@ -82,6 +82,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			if (String.IsNullOrEmpty(SelectedService)) {
 				MessageBox.Show(noUrl);
+				return;
 			}
 			ServiceDescriptionMessage = waitMessage;
 			Uri uri = new Uri(SelectedService);

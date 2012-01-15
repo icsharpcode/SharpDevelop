@@ -57,12 +57,13 @@
 				<ColumnDefinition Width="*"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 			<ComboBox
+				x:Name="UrlComboBox"
 				Margin="4,0,4,0"
 				IsEditable="True"
 				ItemsSource="{Binding MruServices}"
-				IsSynchronizedWithCurrentItem="True"
 				LostFocus="Cbo_LostFocus"
-				SelectedItem="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
+				Loaded="UrlComboBoxLoaded"
+				Text="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
 			</ComboBox>
 			
 			<widgets:UniformGridWithSpacing 
@@ -71,11 +72,16 @@
 				HorizontalAlignment="Left"
 				Margin="4,0,4,0">
 				<Button
-					Content="Go" HorizontalContentAlignment="Center"
+					IsDefault="True"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Content="Go"
+					HorizontalContentAlignment="Center"
 					Command="{Binding GoCommand}" />
 				
 				<Button
-					Content="Discover" HorizontalContentAlignment="Center"
+					Content="Discover"
+					HorizontalContentAlignment="Center"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Command="{Binding DiscoverCommand}" />
 			
 			</widgets:UniformGridWithSpacing>
@@ -142,7 +148,7 @@
 			<Button Content="Advanced..."
 			        Command="{Binding AdvancedDialogCommand}"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
-					Margin="0,4,12,12">
+					Margin="4,4,12,12">
 			</Button>
 			
 			<widgets:UniformGridWithSpacing
@@ -152,7 +158,6 @@
 				Margin="0,4,12,12">
 				<Button
 					Content="{core:Localize Global.OKButtonText}"
-					IsDefault="True"
 					Name="okButton"
 					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Click="okButtonClick" />
