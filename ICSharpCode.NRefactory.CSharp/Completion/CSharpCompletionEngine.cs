@@ -1774,6 +1774,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						//					Console.WriteLine ("skip non static member: " + member.FullName);
 						continue;
 					}
+					
+					if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize")
+						continue;
+					
 					//				Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}

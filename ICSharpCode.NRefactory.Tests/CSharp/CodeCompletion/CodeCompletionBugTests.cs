@@ -1655,6 +1655,44 @@ class A
 			});
 		}
 		
+		/// <summary>
+		/// Bug 2800 - Finalize is offered as a valid completion target
+		/// </summary>
+		[Test()]
+		public void TestBug2800 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	public void Test()
+	{
+		$this.$
+	}
+}
+", provider => {
+				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
+			});
+		}
+		
+		
+		[Test()]
+		public void TestBug2800B ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	$public override $
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("ToString"), "'ToString' not found.");
+				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
+			});
+		}
+		
+		
+		
 		[Test()]
 		public void TestNewInConstructor ()
 		{
