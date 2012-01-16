@@ -51,7 +51,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public IEnumerable<MethodNode> MethodUses {
 			get { return methodUses; }
 		}
-		 
+		
 		internal List<FieldNode> fieldUses;
 		
 		public IEnumerable<FieldNode> FieldUses {
@@ -75,13 +75,62 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public Relationship GetRelationship(INode node)
 		{
-			throw new NotImplementedException();
+			Relationship relationship = new Relationship();
+			
+			if (node == this) {
+				relationship.Relationships.Add(RelationshipType.Same);
+				return relationship;
+			}
+
+			if (node is NamespaceNode) {
+				NamespaceNode ns = (NamespaceNode)node;
+				
+				foreach (var type in this.GetAllTypes()) {
+					if (type != null && type.Namespace == ns) {
+						relationship.AddRelationship(RelationshipType.UseThis);
+					}
+				}
+			}
+			
+			if (node is TypeNode) {
+				TypeNode type = (TypeNode)node;
+				
+				foreach (var usedType in this.GetAllTypes()) {
+					if (type == usedType) {
+						relationship.AddRelationship(RelationshipType.UseThis);
+					}
+				}
+			}
+			
+			if (node is MethodNode) {
+				MethodNode method = (MethodNode)node;
+				
+				foreach (var usedMethod in this.GetAllMethods()) {
+					if (method == usedMethod) {
+						relationship.AddRelationship(RelationshipType.UseThis);
+					}
+				}
+			}
+			
+			if (node is FieldNode) {
+				FieldNode field = (FieldNode)node;
+				
+				foreach (var usedField in this.GetAllFields()) {
+					if (field == usedField) {
+						relationship.AddRelationship(RelationshipType.UseThis);
+					}
+				}
+			}
+
+			return relationship;
 		}
 		
 		public IEnumerable<TypeNode> GetAllTypes()
 		{
-			yield return this.DeclaringType;
-			yield return this.ReturnType;
+			if (DeclaringType != null)
+				yield return this.DeclaringType;
+			if (ReturnType != null)
+				yield return this.ReturnType;
 			foreach (var type in this.TypeUses)
 				yield return type;
 //			foreach (var type in this.GenericReturnTypes)

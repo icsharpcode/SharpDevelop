@@ -244,14 +244,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 					set.Add(method.ReturnType);
 			}
 
-//			foreach (var field in Fields)
-//			{
+			foreach (var field in Fields)
+			{
 //				if (field.IsGenericInstance)
 //					set.UnionWith(field.GenericTypes);
-//
-//				if (field.FieldType != null) // if it is null so it is type from outside of this assembly
-//					set.Add(field.FieldType); // TODO: find solution to handle them
-//			}
+
+				if (field.ReturnType != null) // if it is null so it is type from outside of this assembly
+					set.Add(field.ReturnType); // TODO: find solution to handle them
+			}
 
 			set.UnionWith(BaseTypes);
 			set.UnionWith(BaseTypeArguments);
@@ -259,9 +259,30 @@ namespace ICSharpCode.CodeQualityAnalysis
 			return set;
 		}
 		
+		DependencyGraph cachedGraph;
+		
 		public DependencyGraph BuildDependencyGraph()
 		{
-			throw new NotImplementedException();
+			if (cachedGraph != null)
+				return cachedGraph;
+
+			cachedGraph = new DependencyGraph();
+
+			foreach (var method in Methods)
+				cachedGraph.AddVertex(new DependencyVertex(method));
+
+			foreach (var field in Fields)
+				cachedGraph.AddVertex(new DependencyVertex(field));
+
+			foreach (var method in Methods) {
+				foreach (var methodUse in method.MethodUses)
+					cachedGraph.AddEdge(new DependencyEdge(new DependencyVertex(method), new DependencyVertex(methodUse)));
+
+				foreach (var fieldUse in method.FieldUses)
+					cachedGraph.AddEdge(new DependencyEdge(new DependencyVertex(method), new DependencyVertex(fieldUse)));
+			}
+			
+			return cachedGraph;
 		}
 	}
 }

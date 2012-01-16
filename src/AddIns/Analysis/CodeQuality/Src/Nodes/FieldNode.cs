@@ -26,18 +26,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		public IDependency Dependency {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		public BitmapSource Icon {
-			get {
-				return NodeIconService.GetIcon(this);
-			}
+			get { return NodeIconService.GetIcon(this); }
 		}
 		
 		public string GetInfo()
@@ -47,12 +40,53 @@ namespace ICSharpCode.CodeQualityAnalysis
 		
 		public Relationship GetRelationship(INode node)
 		{
-			throw new NotImplementedException();
+			Relationship relationship = new Relationship();
+			
+			if (node == this) {
+				relationship.Relationships.Add(RelationshipType.Same);
+				return relationship;
+			}
+			
+			if (node is NamespaceNode) {
+				NamespaceNode ns = (NamespaceNode)node;
+				
+				foreach (var type in this.GetAllTypes()) {
+					if (type != null && type.Namespace == ns) {
+						relationship.AddRelationship(RelationshipType.UseThis);
+					}
+				}
+			}
+			
+			if (node is TypeNode) {
+				TypeNode type = (TypeNode)node;
+				
+				foreach (var usedType in this.GetAllTypes()) {
+					if (type == usedType) {
+						relationship.AddRelationship(RelationshipType.UseThis);
+					}
+				}
+			}
+			
+			if (node is FieldNode) {
+				FieldNode field = (FieldNode)node;
+				
+				if (this == field) {
+					relationship.AddRelationship(RelationshipType.UseThis);
+				}
+			}
+			
+			return relationship;
 		}
 		
 		public IEnumerable<TypeNode> GetAllTypes()
 		{
-			throw new NotImplementedException();
+			yield return ReturnType;
+			yield return DeclaringType;
+		}
+		
+		public override string ToString()
+		{
+			return Name;
 		}
 	}
 }
