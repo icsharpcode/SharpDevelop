@@ -1691,6 +1691,36 @@ class A
 			});
 		}
 		
+		/// <summary>
+		/// Bug 2799 - No completion offered when declaring fields in a class
+		/// </summary>
+		[Test()]
+		public void TestBug2799 ()
+		{
+			CombinedProviderTest (
+@"namespace Foobar
+{
+    class MainClass
+    {
+        public enum Foo
+        {
+            Value1,
+            Value2
+        }
+    }
+
+
+    public class Second
+    {
+        $MainClass.$
+    }
+}
+
+", provider => {
+				Assert.IsNotNull (provider.Find ("Foo"), "'Foo' not found.");
+			});
+		}
+		
 		
 		
 		[Test()]
