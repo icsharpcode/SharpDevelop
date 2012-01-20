@@ -22,64 +22,20 @@ namespace Mono.CSharp
 		}
 
 		public virtual void Visit (ModuleContainer mc)
-		{/*
-			if (mc.Delegates != null) {
-				foreach (TypeContainer tc in mc.Delegates) {
-					tc.Accept (this);
-				}
-			}*/
-			if (mc.Types != null) {
-				foreach (TypeContainer tc in mc.Types) {
-					tc.Accept (this);
-				}
+		{
+			foreach (var container in mc.Containers) {
+				container.Accept (this);
 			}
+			
 		}
 
 		void VisitTypeContainer (TypeContainer tc)
 		{
-			foreach (MemberCore member in tc.OrderedAllMembers) {
-				member.Accept (this);
-			}
 		}
 		
-		protected void VisitNamespaceUsings (UsingsBag.Namespace nspace)
+		public virtual void Visit (NamespaceContainer ns)
 		{
-			foreach (object u in nspace.usings) {
-				if (u is UsingsBag.Using) {
-					((UsingsBag.Using)u).Accept (this);
-				} else {
-					((UsingsBag.AliasUsing)u).Accept (this);
-				}
-			}
-		}
-		
-		protected void VisitNamespaceBody (UsingsBag.Namespace nspace)
-		{
-			foreach (object member in nspace.members) {
-				if (member is MemberCore) {
-					((MemberCore)member).Accept (this);
-				} else {
-					((UsingsBag.Namespace)member).Accept (this);
-				}
-			}
-		}
-		
-		public virtual void Visit (UsingsBag.Namespace nspace)
-		{
-			VisitNamespaceUsings (nspace);
-			VisitNamespaceBody (nspace);
-		}
-		
-		public virtual void Visit (UsingsBag.Using u)
-		{
-		}
-		
-		public virtual void Visit (UsingsBag.AliasUsing aliasUsing)
-		{
-		}
-
-		public virtual void Visit (UsingsBag.ExternAlias externAlias)
-		{
+			VisitTypeContainer (ns);
 		}
 
 		public virtual void Visit (Class c)

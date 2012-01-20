@@ -1511,6 +1511,12 @@ namespace Mono.CSharp
 
 #if FULL_AST
 			int read_start = reader.Position - 1;
+			if (c == '.') {
+				//
+				// Caller did peek_char
+				//
+				--read_start;
+			}
 #endif
 			number_pos = 0;
 			var loc = Location;
@@ -1596,10 +1602,10 @@ namespace Mono.CSharp
 
 			val = res;
 #if FULL_AST
-			var endPos = reader.Position - (type == TypeCode.Empty ? 1 : 0);
-			if (reader.GetChar (endPos - 1) == '\r')
-				endPos--;
-			res.ParsedValue = reader.ReadChars (hasLeadingDot ? read_start - 1 : read_start, endPos);
+			var chars = reader.ReadChars (read_start, reader.Position - (type == TypeCode.Empty && c > 0 ? 1 : 0));
+			if (chars[chars.Length - 1] == '\r')
+				Array.Resize (ref chars, chars.Length - 1);
+			res.ParsedValue = chars;
 #endif
 
 			return Token.LITERAL;

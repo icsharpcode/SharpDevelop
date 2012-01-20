@@ -66,6 +66,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new TextLocation (loc.Row, loc.Column);
 			}
 			
+			public override void Visit (ModuleContainer mc)
+			{
+				AddAttributeSection (Unit, mc);
+				foreach (var container in mc.Containers) {
+					container.Accept (this);
+				}
+				
+			}
 			
 			#region Global
 			Stack<NamespaceDeclaration> namespaceStack = new Stack<NamespaceDeclaration> ();
@@ -288,30 +296,39 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override void Visit (UsingsBag.Namespace nspace)
+			public override void Visit (NamespaceContainer nspace)
 			{
 				NamespaceDeclaration nDecl = null;
-				if (nspace.Name != null) {
+				if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
 					nDecl = new NamespaceDeclaration ();
-					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
-					ConvertNamespaceName (nspace.Name, nDecl);
-					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
+//					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
+					ConvertNamespaceName (nspace.NS.MemberName, nDecl);
+//					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
 				}
 				
-				VisitNamespaceUsings (nspace);
-				VisitNamespaceBody (nspace);
+				foreach (var container in nspace.Containers) {
+					container.Accept (this);
+				}
 				
 				if (nDecl != null) {
-					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.CloseBrace), 1), NamespaceDeclaration.Roles.RBrace);
-					if (!nspace.OptSemicolon.IsNull)
-						nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OptSemicolon), 1), NamespaceDeclaration.Roles.Semicolon);
+//					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.CloseBrace), 1), NamespaceDeclaration.Roles.RBrace);
+//					if (!nspace.OptSemicolon.IsNull)
+//						nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OptSemicolon), 1), NamespaceDeclaration.Roles.Semicolon);
 					
 					namespaceStack.Pop ();
 				}
 			}
-			
+//			public override void Visit (UsingsBag.Namespace nspace)
+//			{
+//				
+//				
+//				VisitNamespaceUsings (nspace);
+//				VisitNamespaceBody (nspace);
+//				
+//			}
+//			
 			void ConvertNamespaceName (MemberName memberName, NamespaceDeclaration namespaceDecl)
 			{
 				AstNode insertPos = null;
@@ -330,35 +347,35 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override void Visit (UsingsBag.Using u)
-			{
-				UsingDeclaration ud = new UsingDeclaration ();
-				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
-				ud.AddChild (ConvertToType (u.NSpace), UsingDeclaration.ImportRole);
-				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
-				AddToNamespace (ud);
-			}
+//			public override void Visit (UsingsBag.Using u)
+//			{
+//				UsingDeclaration ud = new UsingDeclaration ();
+//				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
+//				ud.AddChild (ConvertToType (u.NSpace), UsingDeclaration.ImportRole);
+//				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
+//				AddToNamespace (ud);
+//			}
 			
-			public override void Visit (UsingsBag.AliasUsing u)
-			{
-				UsingAliasDeclaration ud = new UsingAliasDeclaration ();
-				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
-				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
-				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
-				ud.AddChild (ConvertToType (u.Nspace), UsingAliasDeclaration.ImportRole);
-				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
-				AddToNamespace (ud);
-			}
-
-			public override void Visit (UsingsBag.ExternAlias u)
-			{
-				var ud = new ExternAliasDeclaration ();
-				ud.AddChild (new CSharpTokenNode (Convert (u.ExternLocation), "extern".Length), ExternAliasDeclaration.Roles.Keyword);
-				ud.AddChild (new CSharpTokenNode (Convert (u.AliasLocation), "alias".Length), ExternAliasDeclaration.AliasRole);
-				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), ExternAliasDeclaration.Roles.Identifier);
-				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
-				AddToNamespace (ud);
-			}
+//			public override void Visit (UsingsBag.AliasUsing u)
+//			{
+//				UsingAliasDeclaration ud = new UsingAliasDeclaration ();
+//				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
+//				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
+//				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
+//				ud.AddChild (ConvertToType (u.Nspace), UsingAliasDeclaration.ImportRole);
+//				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
+//				AddToNamespace (ud);
+//			}
+//
+//			public override void Visit (UsingsBag.ExternAlias u)
+//			{
+//				var ud = new ExternAliasDeclaration ();
+//				ud.AddChild (new CSharpTokenNode (Convert (u.ExternLocation), "extern".Length), ExternAliasDeclaration.Roles.Keyword);
+//				ud.AddChild (new CSharpTokenNode (Convert (u.AliasLocation), "alias".Length), ExternAliasDeclaration.AliasRole);
+//				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), ExternAliasDeclaration.Roles.Identifier);
+//				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
+//				AddToNamespace (ud);
+//			}
 
 			AstType ConvertImport (MemberName memberName)
 			{
@@ -428,8 +445,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null && curLoc < location.Count) {
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
 					
-					if (c.HasOptionalSemicolon)
-						newType.AddChild (new CSharpTokenNode (Convert (c.OptionalSemicolon), 1), AstNode.Roles.Semicolon);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 					
 				} else {
 					// parser error, set end node to max value.
@@ -474,8 +491,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null && location.Count > 2) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
-					if (s.HasOptionalSemicolon)
-						newType.AddChild (new CSharpTokenNode (Convert (s.OptionalSemicolon), 1), AstNode.Roles.Semicolon);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
@@ -519,8 +536,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null && location.Count > 2) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
-					if (i.HasOptionalSemicolon)
-						newType.AddChild (new CSharpTokenNode (Convert (i.OptionalSemicolon), 1), AstNode.Roles.Semicolon);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
@@ -605,9 +622,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null && location.Count > 2) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
-					
-					if (e.HasOptionalSemicolon)
-						newType.AddChild (new CSharpTokenNode (Convert (e.OptionalSemicolon), 1), AstNode.Roles.Semicolon);
+					if (location != null && curLoc < location.Count)
+						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Semicolon);
 				} else {
 					// parser error, set end node to max value.
 					newType.AddChild (new ErrorNode (), AstNode.Roles.Error);
@@ -3278,12 +3294,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpParser ()
 		{
-			CompilerArguments = new string[] { "-v", "-unsafe"};
+			CompilerSettings = new CompilerSettings ();
 		}
 		
-		public CSharpParser (string[] args)
+		public CSharpParser (CompilerSettings args)
 		{
-			CompilerArguments = args;
+			CompilerSettings = args;
 		}
 		
 		static AstNode GetOuterLeft (AstNode node)
@@ -3427,6 +3443,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					w.Write (buffer, 0, read);
 				w.Flush (); // we can't close the StreamWriter because that would also close the MemoryStream
 				stream.Position = 0;
+				
 				return Parse (stream, fileName, lineModifier);
 			}
 		}
@@ -3446,8 +3463,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top == null)
 				return null;
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (GenerateTypeSystemMode, top.LocationsBag);
-			top.UsingsBag.Global.Accept (conversionVisitor);
-			conversionVisitor.AddAttributeSection (conversionVisitor.Unit, top.ModuleCompiled);
+			top.ModuleCompiled.Accept (conversionVisitor);
 			InsertComments (top, conversionVisitor);
 			if (CompilationUnitCallback != null)
 				CompilationUnitCallback (top);
@@ -3459,7 +3475,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return conversionVisitor.Unit;
 		}
 		
-		public string[] CompilerArguments {
+		public CompilerSettings CompilerSettings {
 			get;
 			private set;
 		}
@@ -3479,12 +3495,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Parse (new StringReader (program), fileName);
 		}
 		
+		internal static object parseLock = new object ();
+		
 		public CompilationUnit Parse (Stream stream, string fileName, int lineModifier = 0)
 		{
-			lock (CompilerCallableEntryPoint.parseLock) {
+			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
-				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (CompilerArguments, stream, fileName, errorReportPrinter);
-				var unit = Parse (top, fileName, lineModifier);
+				var ctx = new CompilerContext (CompilerSettings, new Report (errorReportPrinter));
+				var reader = new SeekableStreamReader (stream, Encoding.UTF8);
+				var file = new CompilationSourceFile (fileName, fileName, 0);
+				Location.Initialize (new List<CompilationSourceFile> (new [] { file }));
+				var module = new ModuleContainer (ctx);
+				var driver = new Driver (ctx);
+				var parser = driver.Parse (reader, file, module);
+				
+				var top = new CompilerCompilationUnit () { 
+					ModuleCompiled = module,
+					LocationsBag = parser.LocationsBag,
+					SpecialsBag = parser.Lexer.sbag
+				};
+				var unit = Parse (top, fileName, lineModifier);		
 				unit.Errors.AddRange (errorReportPrinter.Errors);
 				return unit;
 			}
