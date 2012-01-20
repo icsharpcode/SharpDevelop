@@ -1692,6 +1692,27 @@ class A
 		}
 		
 		/// <summary>
+		/// Bug 2793 - op_Equality should not be offered in the completion list
+		/// </summary>
+		[Test()]
+		public void Test2793 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	public static void Main (string[] args)
+	{
+		$System.Action.$
+	}
+}
+", provider => {
+				Assert.IsNull (provider.Find ("op_Equality"), "'op_Equality' found.");
+				Assert.IsNull (provider.Find ("op_Inequality"), "'op_Inequality' found.");
+			});
+		}
+		
+		/// <summary>
 		/// Bug 2799 - No completion offered when declaring fields in a class
 		/// </summary>
 		[Test()]
