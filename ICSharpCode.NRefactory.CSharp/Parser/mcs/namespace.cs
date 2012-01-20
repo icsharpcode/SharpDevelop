@@ -1264,6 +1264,11 @@ namespace Mono.CSharp {
 				}
 			}
 		}
+		
+		public void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
+		}
 	}
 
 	public class UsingExternAlias : UsingAliasNamespace
@@ -1281,6 +1286,11 @@ namespace Mono.CSharp {
 					"The extern alias `{0}' was not specified in -reference option",
 					Alias.Value);
 			}
+		}
+		
+		public void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 	}
 
@@ -1410,6 +1420,11 @@ namespace Mono.CSharp {
 			// namespace or type resolve calls to parent namespace
 			//
 			resolved = NamespaceExpression.ResolveAsTypeOrNamespace (new AliasContext (ctx));
+		}
+		
+		public void Accept (StructuralVisitor visitor)
+		{
+			visitor.Visit (this);
 		}
 	}
 }

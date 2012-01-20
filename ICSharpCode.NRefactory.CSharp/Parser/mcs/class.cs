@@ -338,10 +338,8 @@ namespace Mono.CSharp
 
 		public virtual void RemoveContainer (TypeContainer next_part)
 		{
-			if (containers != null) {
-				Console.WriteLine ("remove :"+ next_part);
+			if (containers != null)
 				containers.Remove (next_part);
-			}
 
 			defined_names.Remove (next_part.Basename);
 		}

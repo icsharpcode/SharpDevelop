@@ -31,6 +31,12 @@ namespace Mono.CSharp
 
 		void VisitTypeContainer (TypeContainer tc)
 		{
+			if (tc.Containers == null)
+				return;
+			foreach (var container in tc.Containers) {
+				if (container != null)
+					container.Accept (this);
+			}
 		}
 		
 		public virtual void Visit (NamespaceContainer ns)
@@ -38,6 +44,18 @@ namespace Mono.CSharp
 			VisitTypeContainer (ns);
 		}
 
+		public virtual void Visit (UsingNamespace un)
+		{
+		}
+
+		public virtual void Visit (UsingAliasNamespace uan)
+		{
+		}
+		
+		public virtual void Visit (UsingExternAlias uea)
+		{
+		}
+		
 		public virtual void Visit (Class c)
 		{
 			VisitTypeContainer (c);

@@ -3295,6 +3295,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public CSharpParser ()
 		{
 			CompilerSettings = new CompilerSettings ();
+			CompilerSettings.Unsafe = true;
 		}
 		
 		public CSharpParser (CompilerSettings args)

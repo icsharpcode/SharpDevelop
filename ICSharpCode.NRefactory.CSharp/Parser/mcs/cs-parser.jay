@@ -957,7 +957,11 @@ struct_declaration
 	  }
 	  opt_semicolon
 	  {
-		lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($14), GetLocation ($16));
+		if ($16 == null) {
+			lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($14));
+		} else {
+			lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($14), GetLocation ($16));
+		}
 		$$ = pop_current_class ();
 	  }
 	| opt_attributes opt_modifiers opt_partial STRUCT error
@@ -1906,7 +1910,11 @@ interface_declaration
 	  }
 	  opt_semicolon 
 	  {
-	    lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		if ($15 == null) {
+			lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($13));
+		} else {
+			lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		}
 		$$ = pop_current_class ();
 	  }
 	| opt_attributes opt_modifiers opt_partial INTERFACE error
@@ -4329,7 +4337,11 @@ class_declaration
 	  }
 	  opt_semicolon 
 	  {
-		lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		if ($15 == null) {
+			lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($13));
+		} else {
+			lbag.AppendToMember (current_container, GetLocation ($11), GetLocation ($13), GetLocation ($15));
+		}
 		$$ = pop_current_class ();
 	  }
 	;	
