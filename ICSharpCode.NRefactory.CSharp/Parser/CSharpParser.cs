@@ -1659,40 +1659,44 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (switchStatement.Expr != null)
 					result.AddChild ((Expression)switchStatement.Expr.Accept (this), SwitchStatement.Roles.Expression);
 				if (location != null && location.Count > 1)
-					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), SwitchStatement.Roles.RPar);
+					result.AddChild (new CSharpTokenNode (Convert (location [1]), 1), SwitchStatement.Roles.RPar);
 				if (location != null && location.Count > 2)
-					result.AddChild (new CSharpTokenNode (Convert (location[2]), 1), SwitchStatement.Roles.LBrace);
-				foreach (var section in switchStatement.Sections) {
-					var newSection = new SwitchSection ();
-					foreach (var caseLabel in section.Labels) {
-						var newLabel = new CaseLabel ();
-						if (caseLabel.Label != null) {
-							newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "case".Length), SwitchStatement.Roles.Keyword);
-							newLabel.AddChild ((Expression)caseLabel.Label.Accept (this), SwitchStatement.Roles.Expression);
-							var colonLocation = LocationsBag.GetLocations (caseLabel);
-							if (colonLocation != null)
-								newLabel.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), 1), SwitchStatement.Roles.Colon);
-						} else {
-							newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "default".Length), SwitchStatement.Roles.Keyword);
-							newLabel.AddChild (new CSharpTokenNode (new TextLocation (caseLabel.Location.Row, caseLabel.Location.Column + "default".Length), 1), SwitchStatement.Roles.Colon);
+					result.AddChild (new CSharpTokenNode (Convert (location [2]), 1), SwitchStatement.Roles.LBrace);
+				if (switchStatement.Sections != null) {
+					foreach (var section in switchStatement.Sections) {
+						var newSection = new SwitchSection ();
+						if (section.Labels != null) {
+							foreach (var caseLabel in section.Labels) {
+								var newLabel = new CaseLabel ();
+								if (caseLabel.Label != null) {
+									newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "case".Length), SwitchStatement.Roles.Keyword);
+									newLabel.AddChild ((Expression)caseLabel.Label.Accept (this), SwitchStatement.Roles.Expression);
+									var colonLocation = LocationsBag.GetLocations (caseLabel);
+									if (colonLocation != null)
+										newLabel.AddChild (new CSharpTokenNode (Convert (colonLocation [0]), 1), SwitchStatement.Roles.Colon);
+								} else {
+									newLabel.AddChild (new CSharpTokenNode (Convert (caseLabel.Location), "default".Length), SwitchStatement.Roles.Keyword);
+									newLabel.AddChild (new CSharpTokenNode (new TextLocation (caseLabel.Location.Row, caseLabel.Location.Column + "default".Length), 1), SwitchStatement.Roles.Colon);
+								}
+								newSection.AddChild (newLabel, SwitchSection.CaseLabelRole);
+							}
 						}
-						newSection.AddChild (newLabel, SwitchSection.CaseLabelRole);
-					}
-					
-					var blockStatement = section.Block;
-					var bodyBlock = new BlockStatement ();
-					int curLocal = 0;
-					AddBlockChildren (bodyBlock, blockStatement, ref curLocal);
-					foreach (var statement in bodyBlock.Statements) {
-						statement.Remove ();
-						newSection.AddChild (statement, SwitchSection.Roles.EmbeddedStatement);
 						
+						var blockStatement = section.Block;
+						var bodyBlock = new BlockStatement ();
+						int curLocal = 0;
+						AddBlockChildren (bodyBlock, blockStatement, ref curLocal);
+						foreach (var statement in bodyBlock.Statements) {
+							statement.Remove ();
+							newSection.AddChild (statement, SwitchSection.Roles.EmbeddedStatement);
+							
+						}
+						result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
 					}
-					result.AddChild (newSection, SwitchStatement.SwitchSectionRole);
 				}
 				
 				if (location != null && location.Count > 3) {
-					result.AddChild (new CSharpTokenNode (Convert (location[3]), 1), SwitchStatement.Roles.RBrace);
+					result.AddChild (new CSharpTokenNode (Convert (location [3]), 1), SwitchStatement.Roles.RBrace);
 				} else {
 					// parser error, set end node to max value.
 					result.AddChild (new ErrorNode (), AstNode.Roles.Error);
