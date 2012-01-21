@@ -10,6 +10,8 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.CodeQuality.Engine;
+using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
@@ -18,9 +20,28 @@ namespace ICSharpCode.CodeQuality.Gui
 	/// </summary>
 	public partial class MainView : UserControl
 	{
+		AssemblyAnalyzer context;
+		
 		public MainView()
 		{
 			InitializeComponent();
+			
+			context = new AssemblyAnalyzer();
+			this.DataContext = context;
+		}
+		
+		void AddAssemblyClick(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog fileDialog = new OpenFileDialog {
+				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe",
+				Multiselect = true
+			};
+
+			if (fileDialog.ShowDialog() != true || fileDialog.FileNames.Length == 0)
+				return;
+			
+			context.AddAssemblyFiles(fileDialog.FileNames);
+			matrix.Update(context.Analyze());
 		}
 	}
 }

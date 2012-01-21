@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="ICSharpCode.CodeQuality.Gui.DependencyMatrixView"
+             xmlns:gui="clr-namespace:ICSharpCode.CodeQuality.Gui"
+             xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="2*" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="1*" />
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="2*" />
+		</Grid.ColumnDefinitions>
+		<!-- Top TreeView -->
+		<tv:SharpTreeView Name="topTree" Grid.Column="2" ScrollViewer.ScrollChanged="ViewScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+			<tv:SharpTreeView.LayoutTransform>
+				<RotateTransform Angle="-90" />
+			</tv:SharpTreeView.LayoutTransform>
+		</tv:SharpTreeView>
+		<GridSplitter Grid.Column="1"
+		              Grid.RowSpan="3"
+		              HorizontalAlignment="Center"
+		              VerticalAlignment="Stretch"
+		              ShowsPreview="True"
+		              Width="1" />
+		<GridSplitter Grid.Row="1"
+		              Grid.ColumnSpan="3"
+		              VerticalAlignment="Center"
+		              HorizontalAlignment="Stretch"
+		              ShowsPreview="True"
+		              Height="1" />
+		<!-- Left TreeView -->
+		<tv:SharpTreeView Name="leftTree" Grid.Row="2" ScrollViewer.ScrollChanged="ViewScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+		</tv:SharpTreeView>
+		<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="2" Grid.Column="2">
+			<gui:DependencyMatrixControl x:Name="matrix" ScrollViewer.ScrollChanged="ViewScrollChanged" />
+		</ScrollViewer>
+	</Grid>
+</UserControl>

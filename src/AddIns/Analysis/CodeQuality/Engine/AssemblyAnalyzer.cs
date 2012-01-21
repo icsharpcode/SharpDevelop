@@ -17,25 +17,71 @@ namespace ICSharpCode.CodeQuality.Engine
 	public class AssemblyAnalyzer
 	{
 		CecilLoader loader = new CecilLoader(true);
-		ICompilation compilation = null;
-		IUnresolvedAssembly mainAssem = null;
+		ICompilation compilation;
+		Dictionary<IAssembly, AssemblyNode> assemblyMappings;
+		Dictionary<string, NamespaceNode> namespaceMappings;
+		Dictionary<ITypeDefinition, TypeNode> typeMappings;
+		Dictionary<IMethod, MethodNode> methodMappings;
+		Dictionary<IField, FieldNode> fieldMappings;
+		List<string> fileNames;
 		
-		public AssemblyAnalyzer(params string[] fileNames)
+		public AssemblyAnalyzer()
 		{
-			List<IUnresolvedAssembly> references = new List<IUnresolvedAssembly>();
-			foreach (string fileName in fileNames) {
-				if (mainAssem == null)
-					mainAssem = loader.LoadAssemblyFile(fileName);
-				else
-					references.Add(loader.LoadAssemblyFile(fileName));
-				}
-			compilation = new SimpleCompilation(mainAssem, references);
+			fileNames = new List<string>();
+		}
+		
+		public void AddAssemblyFiles(params string[] files)
+		{
+			fileNames.AddRange(files);
 		}
 		
 		public ReadOnlyCollection<AssemblyNode> Analyze()
 		{
-			AssemblyNode mainAssembly = new AssemblyNode();
-			return new ReadOnlyCollection<AssemblyNode>(new AssemblyNode[] { mainAssembly });
+			compilation = new SimpleCompilation(loader.LoadAssemblyFile(fileNames.First()), LoadOthorAssemblies());
+			
+			assemblyMappings = new Dictionary<IAssembly, AssemblyNode>();
+			namespaceMappings = new Dictionary<string, NamespaceNode>();
+			
+			AssemblyNode mainAssembly = new AssemblyNode(compilation.MainAssembly);
+			foreach (var type in compilation.GetAllTypeDefinitions()) {
+				AnalyzeType(type);
+			}
+			return new ReadOnlyCollection<AssemblyNode>(assemblyMappings.Values.ToList());
+		}
+		
+		IEnumerable<IUnresolvedAssembly> LoadOthorAssemblies()
+		{
+			foreach (var file in fileNames.Skip(1)) {
+				yield return loader.LoadAssemblyFile(file);
+			}
+		}
+		
+		NamespaceNode GetOrCreateNamespace(string namespaceName)
+		{
+			NamespaceNode result;
+			if (!namespaceMappings.TryGetValue(namespaceName, out result)) {
+				result = new NamespaceNode(namespaceName);
+				namespaceMappings.Add(namespaceName, result);
+			}
+			return result;
+		}
+		
+		AssemblyNode GetOrCreateAssembly(IAssembly asm)
+		{
+			AssemblyNode result;
+			if (!assemblyMappings.TryGetValue(asm, out result)) {
+				result = new AssemblyNode(asm);
+				assemblyMappings.Add(asm, result);
+			}
+			return result;
+		}
+		
+		void AnalyzeType(ITypeDefinition type)
+		{
+			var asm = GetOrCreateAssembly(type.ParentAssembly);
+			var ns = GetOrCreateNamespace(type.Namespace);
+			if (!asm.namespaces.Contains(ns))
+				asm.namespaces.Add(ns);
 		}
 	}
 }

@@ -7,16 +7,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.CodeQuality.Engine.Dom
 {
-	/// <summary>
-	/// Description of INode.
-	/// </summary>
-	public interface INode
+	public interface IValue
 	{
-		string Name { get; }
-		IList<INode> Children { get; }
-		IEnumerable<INode> Uses { get; }
-		IEnumerable<INode> UsedBy { get; }
-		
-		Relationship GetRelationship(INode value);
+		string Text { get; }
 	}
 }
