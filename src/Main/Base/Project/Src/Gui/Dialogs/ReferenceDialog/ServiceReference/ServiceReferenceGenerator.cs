@@ -52,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(Namespace);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
+			fileGenerator.ServiceReferenceNamespace = Namespace;
 			fileGenerator.GenerateProxyFile(metadata, referenceFileName.Path);
 			
 			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(Namespace);

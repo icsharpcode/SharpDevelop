@@ -188,5 +188,19 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			generator.AddServiceReference(metadata);
 		}
+		
+		[Test]
+		public void AddServiceReference_GeneratesServiceReference_NamespaceSetOnProxyGenerator()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyServiceRef");
+			ServiceReferenceMapFileName expectedMapFileName = 
+				AddMapFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
+			generator.Namespace = "MyServiceRef";
+			
+			generator.AddServiceReference(metadata);
+			
+			Assert.AreEqual("MyServiceRef", fakeProxyGenerator.ServiceReferenceNamespace);
+		}
 	}
 }
