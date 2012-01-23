@@ -368,6 +368,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.LessThan, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
+			
+			TestOperator(MakeResult(typeof(int?)), BinaryOperatorType.LessThan, MakeResult(typeof(int)),
+			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(bool));
 		}
 		
 		[Test]
