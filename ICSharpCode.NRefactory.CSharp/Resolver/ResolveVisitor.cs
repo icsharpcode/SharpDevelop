@@ -1917,8 +1917,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("Applying return type {0} to explicitly-typed lambda {1}", returnType, this.LambdaExpression);
 				if (isAsync)
 					returnType = parentVisitor.UnpackTask(returnType);
-				for (int i = 0; i < returnExpressions.Count; i++) {
-					visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+				if (returnType.Kind != TypeKind.Void) {
+					for (int i = 0; i < returnExpressions.Count; i++) {
+						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+					}
 				}
 			}
 			
@@ -2203,8 +2205,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Log.WriteLine("Applying return type {0} to implicitly-typed lambda {1}", returnType, lambda.LambdaExpression);
 				if (lambda.IsAsync)
 					returnType = parentVisitor.UnpackTask(returnType);
-				for (int i = 0; i < returnExpressions.Count; i++) {
-					visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+				if (returnType.Kind != TypeKind.Void) {
+					for (int i = 0; i < returnExpressions.Count; i++) {
+						visitor.ProcessConversion(returnExpressions[i], returnValues[i], returnType);
+					}
 				}
 				
 				visitor.MergeUndecidedLambdas();
