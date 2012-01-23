@@ -11,15 +11,18 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 	{
 		public ITypeDefinition TypeDefinition { get; private set; }
 		
+		public TypeNode(ITypeDefinition typeDefinition)
+		{
+			this.TypeDefinition = typeDefinition;
+		}
+		
 		public string Name {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return TypeDefinition.Name; }
 		}
 		
 		public IList<INode> Children {
 			get {
-				throw new NotImplementedException();
+				return new List<INode>();
 			}
 		}
 		

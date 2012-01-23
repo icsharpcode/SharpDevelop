@@ -2,19 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-
 using ICSharpCode.CodeQuality.Engine.Dom;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
-    public class DependencyMatrixControl : MatrixControl<VisibleMatrix<INode, Relationship>, INode, Relationship>
-    {
-    	
-    }
+	public class DependencyMatrixControl : MatrixControl<VisibleMatrix<INode, Relationship>, INode, Relationship>
+	{
+		
+	}
 }

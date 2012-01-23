@@ -13,8 +13,11 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+
+using ICSharpCode.CodeQuality;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.TreeView;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
@@ -23,6 +26,8 @@ namespace ICSharpCode.CodeQuality.Gui
 	/// </summary>
 	public partial class DependencyMatrixView : UserControl
 	{
+		ScrollViewer topTreeScrollViewer, leftTreeScrollViewer;
+		
 		public DependencyMatrixView()
 		{
 			InitializeComponent();
@@ -30,6 +35,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			topTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			leftTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			matrix.Colorizer = new DependencyColorizer();
+			matrix.ScrollOwner = scrollViewer;
 		}
 		
 		public void Update(IEnumerable<INode> nodes)
@@ -46,6 +52,8 @@ namespace ICSharpCode.CodeQuality.Gui
 			var matrix = new DependencyMatrix();
 			AddChildrenToMatrix(matrix, nodes);
 			this.matrix.Matrix = matrix;
+			BuildLeftINodeList(null, null);
+			BuildTopINodeList(null, null);
 		}
 
 		void AddChildrenToMatrix(DependencyMatrix matrix, IEnumerable<INode> nodes)
@@ -59,17 +67,17 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		void ViewScrollChanged(object sender, ScrollChangedEventArgs e)
 		{
-			ScrollViewer scrollViewer = e.OriginalSource as ScrollViewer;
-			ScrollViewer topTree = this.topTree.GetScrollViewer();
-			ScrollViewer leftTree = this.leftTree.GetScrollViewer();
-			if (scrollViewer.Content == matrix) {
-				scrollViewer.SynchronizeScroll(topTree, ScrollSyncOption.HorizontalToVertical);
-				scrollViewer.SynchronizeScroll(leftTree, ScrollSyncOption.Vertical);
+			ScrollViewer sv = e.OriginalSource as ScrollViewer;
+			topTreeScrollViewer = topTreeScrollViewer ?? topTree.GetScrollViewer();
+			leftTreeScrollViewer = leftTreeScrollViewer ?? leftTree.GetScrollViewer();
+			
+			if (sv == this.scrollViewer) {
+				topTreeScrollViewer.SynchronizeScroll(sv, ScrollSyncOption.HorizontalToVertical);
+				leftTreeScrollViewer.SynchronizeScroll(sv, ScrollSyncOption.Vertical);
 			}
 		}
 		
 		#region Update MatrixControl
-		
 		bool rebuildLeftNodeListRequested;
 		
 		void BuildLeftINodeList(object sender, NotifyCollectionChangedEventArgs e)
@@ -91,7 +99,6 @@ namespace ICSharpCode.CodeQuality.Gui
 			matrix.SetVisibleItems(HeaderType.Rows, leftNodes);
 		}
 		
-		
 		bool rebuildTopNodeListRequested;
 		
 		void BuildTopINodeList(object sender, NotifyCollectionChangedEventArgs e)
@@ -112,7 +119,45 @@ namespace ICSharpCode.CodeQuality.Gui
 			rebuildTopNodeListRequested = false;
 			matrix.SetVisibleItems(HeaderType.Columns, topNodes);
 		}
+		#endregion
 		
+		#region Tree MouseMove
+		void LeftTreeMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+		{
+			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
+			if (n != null) {
+				matrix.HighlightLine(HeaderType.Rows, n.Node);
+				leftTree.SelectedItem = n;
+			}
+		}
+		
+		void TopTreeMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+		{
+			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
+			if (n != null) {
+				matrix.HighlightLine(HeaderType.Columns, n.Node);
+				topTree.SelectedItem = n;
+			}
+		}
+		
+		MatrixTreeNode ConvertNode(DependencyObject node)
+		{
+			var c = Extensions.GetParent<SharpTreeViewItem>(node);
+			if (c != null)
+				return c.Node as MatrixTreeNode;
+			return null;
+		}
+		
+		void MatrixHoveredCellChanged(object sender, HoveredCellEventArgs<Relationship> e)
+		{
+			// need to add 1 to index, because first item in treeview is invisible root node
+			if (e.HoveredCell.RowIndex < leftTree.Items.Count) {
+				leftTree.SelectedItem = leftTree.Items[e.HoveredCell.RowIndex + 1];
+			}
+			if (e.HoveredCell.ColumnIndex < topTree.Items.Count) {
+				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
+			}
+		}
 		#endregion
 	}
 }

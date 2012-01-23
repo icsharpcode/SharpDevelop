@@ -63,6 +63,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void SynchronizeScroll(this ScrollViewer target, ScrollViewer source, ScrollSyncOption option)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (target == null)
+				throw new ArgumentNullException("target");
 			double newScrollOffset;
 			switch (option) {
 				case ScrollSyncOption.Vertical:

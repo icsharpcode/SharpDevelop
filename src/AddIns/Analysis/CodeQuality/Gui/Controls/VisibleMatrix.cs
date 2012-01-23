@@ -15,15 +15,13 @@ namespace ICSharpCode.CodeQuality.Gui
 		protected List<Cell<TItem>> visibleHeaderRows;
 		protected List<Cell<TItem>> visibleHeaderColumns;
 		
-		public override List<Cell<TItem>> HeaderRows
-		{
+		public override List<Cell<TItem>> HeaderRows {
 			get {
 				return visibleHeaderRows;
 			}
 		}
 		
-		public override List<Cell<TItem>> HeaderColumns
-		{
+		public override List<Cell<TItem>> HeaderColumns {
 			get {
 				return visibleHeaderColumns;
 			}
@@ -33,8 +31,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		{
 			var items = type == HeaderType.Columns ? headerColumns : headerRows;
 			
-			foreach (var item in items)
-			{
+			foreach (var item in items) {
 				var foundItem = visibleItems.Where(n => n.Equals(item.Value)).SingleOrDefault();
 				item.Visible = foundItem != null;
 			}

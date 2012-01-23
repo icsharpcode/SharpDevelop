@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using Mono.Cecil;
 
 namespace ICSharpCode.CodeQuality.Engine
 {
@@ -37,31 +39,41 @@ namespace ICSharpCode.CodeQuality.Engine
 		
 		public ReadOnlyCollection<AssemblyNode> Analyze()
 		{
-			compilation = new SimpleCompilation(loader.LoadAssemblyFile(fileNames.First()), LoadOthorAssemblies());
+			var loadedAssemblies = LoadAssemblies().ToArray();
+			compilation = new SimpleCompilation(loadedAssemblies.First(), loadedAssemblies.Skip(1));
 			
 			assemblyMappings = new Dictionary<IAssembly, AssemblyNode>();
 			namespaceMappings = new Dictionary<string, NamespaceNode>();
+			typeMappings = new Dictionary<ITypeDefinition, TypeNode>();
 			
-			AssemblyNode mainAssembly = new AssemblyNode(compilation.MainAssembly);
 			foreach (var type in compilation.GetAllTypeDefinitions()) {
 				AnalyzeType(type);
 			}
 			return new ReadOnlyCollection<AssemblyNode>(assemblyMappings.Values.ToList());
 		}
 		
-		IEnumerable<IUnresolvedAssembly> LoadOthorAssemblies()
+		IEnumerable<IUnresolvedAssembly> LoadAssemblies()
 		{
-			foreach (var file in fileNames.Skip(1)) {
-				yield return loader.LoadAssemblyFile(file);
+			var resolver = new DefaultAssemblyResolver();
+			foreach (var file in fileNames) {
+				var mainAsm = loader.LoadAssemblyFile(file);
+				yield return mainAsm;
+				var referencedAssemblies = loader.GetCecilObject(mainAsm).Modules
+					.SelectMany(m => m.AssemblyReferences)
+					.Select(r => resolver.Resolve(r));
+				foreach (var asm in referencedAssemblies)
+					yield return loader.LoadAssembly(asm);
 			}
 		}
 		
-		NamespaceNode GetOrCreateNamespace(string namespaceName)
+		NamespaceNode GetOrCreateNamespace(AssemblyNode assembly, string namespaceName)
 		{
 			NamespaceNode result;
-			if (!namespaceMappings.TryGetValue(namespaceName, out result)) {
+			var asmDef = loader.GetCecilObject(assembly.AssemblyInfo.UnresolvedAssembly);
+			if (!namespaceMappings.TryGetValue(namespaceName + "," + asmDef.FullName, out result)) {
 				result = new NamespaceNode(namespaceName);
-				namespaceMappings.Add(namespaceName, result);
+				assembly.Children.Add(result);
+				namespaceMappings.Add(namespaceName + "," + asmDef.FullName, result);
 			}
 			return result;
 		}
@@ -79,9 +91,10 @@ namespace ICSharpCode.CodeQuality.Engine
 		void AnalyzeType(ITypeDefinition type)
 		{
 			var asm = GetOrCreateAssembly(type.ParentAssembly);
-			var ns = GetOrCreateNamespace(type.Namespace);
-			if (!asm.namespaces.Contains(ns))
-				asm.namespaces.Add(ns);
+			var ns = GetOrCreateNamespace(asm, type.Namespace);
+			var node = new TypeNode(type);
+			typeMappings.Add(type, node);
+			ns.Children.Add(node);
 		}
 	}
 }

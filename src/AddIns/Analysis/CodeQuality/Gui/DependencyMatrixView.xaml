@@ -15,7 +15,7 @@
 			<ColumnDefinition Width="2*" />
 		</Grid.ColumnDefinitions>
 		<!-- Top TreeView -->
-		<tv:SharpTreeView Name="topTree" Grid.Column="2" ScrollViewer.ScrollChanged="ViewScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+		<tv:SharpTreeView Name="topTree" Grid.Column="2" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="TopTreeMouseMove" ScrollViewer.ScrollChanged="ViewScrollChanged">
 			<tv:SharpTreeView.LayoutTransform>
 				<RotateTransform Angle="-90" />
 			</tv:SharpTreeView.LayoutTransform>
@@ -33,10 +33,10 @@
 		              ShowsPreview="True"
 		              Height="1" />
 		<!-- Left TreeView -->
-		<tv:SharpTreeView Name="leftTree" Grid.Row="2" ScrollViewer.ScrollChanged="ViewScrollChanged" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+		<tv:SharpTreeView Name="leftTree" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="LeftTreeMouseMove" ScrollViewer.ScrollChanged="ViewScrollChanged">
 		</tv:SharpTreeView>
-		<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="2" Grid.Column="2">
-			<gui:DependencyMatrixControl x:Name="matrix" ScrollViewer.ScrollChanged="ViewScrollChanged" />
+		<ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Grid.Row="2" Grid.Column="2" Name="scrollViewer" CanContentScroll="True" ScrollChanged="ViewScrollChanged">
+			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged" />
 		</ScrollViewer>
 	</Grid>
 </UserControl>

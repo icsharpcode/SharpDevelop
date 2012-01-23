@@ -23,22 +23,22 @@ namespace ICSharpCode.CodeQuality.Gui
 	{
 		public event EventHandler<HoveredCellEventArgs<TValue>> HoveredCellChanged;
 		
-		private Dictionary<string, ImageSource> imgs = new Dictionary<string, ImageSource>();
-		private Coords currentCell = new Coords(0, 0);
-		private string font;
+		Dictionary<string, ImageSource> imgs = new Dictionary<string, ImageSource>();
+		Coords currentCell = new Coords(0, 0);
+		string font;
 
-		private bool canHorizontalScroll = true;
-		private bool canVerticalScroll = true;
-		private Size extent = new Size(0, 0);
-		private Size viewport = new Size(0, 0);
-		private Point offset;
+		bool canHorizontalScroll = true;
+		bool canVerticalScroll = true;
+		Size extent = new Size(0, 0);
+		Size viewport = new Size(0, 0);
+		Point offset;
 		
 		// will be loaded from Matrix
-		private int matrixWidth = 0;
-		private int matrixHeight = 0;
+		int matrixWidth = 0;
+		int matrixHeight = 0;
 		
-		private int fontSize = 0;
-		private int penSize = 0;
+		int fontSize = 0;
+		int penSize = 0;
 		
 		
 		protected int PageSizeWidth { get; set; }
@@ -58,7 +58,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		public MatrixControl()
 		{
-			CellHeight = CellWidth = 18;
+			CellHeight = CellWidth = 17;
 			matrixWidth = 0;
 			matrixHeight = 0;
 			fontSize = CellHeight / 3;
@@ -159,8 +159,8 @@ namespace ICSharpCode.CodeQuality.Gui
 			base.OnRender(drawingContext);
 
 			// how much space we got for cells
-			var maxWidth = ((int) viewport.Width / CellWidth) + 1;
-			var maxHeight = ((int) viewport.Height / CellHeight) + 1;
+			var maxWidth = ((int) viewport.Width / CellWidth);
+			var maxHeight = ((int) viewport.Height / CellHeight);
 
 			// how many cells we will draw
 			// sometimes happens when half of cell is hidden in scroll so text isnt drawn
@@ -181,7 +181,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			
 			// background
 			var background = new Rect(0, 0, cellsHorizontally * CellWidth, cellsVertically * CellHeight);
-			var backgroundColor = new SolidColorBrush(Colors.Yellow);
+			var backgroundColor = new SolidColorBrush(Colors.LightGray);
 			backgroundColor.Freeze();
 			drawingContext.DrawRectangle(backgroundColor, null, background);
 			
@@ -237,8 +237,8 @@ namespace ICSharpCode.CodeQuality.Gui
 					
 					if (Colorizer != null) {
 						var rect = new Rect(
-							i * CellWidth - offsetDiffX,
-							j * CellHeight - offsetDiffY,
+							i * CellWidth - offsetDiffX + 1,
+							j * CellHeight - offsetDiffY + 1,
 							CellWidth,
 							CellHeight);
 
@@ -294,14 +294,14 @@ namespace ICSharpCode.CodeQuality.Gui
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
 			
-			var fontOjb = new System.Drawing.Font(font, fontSize);
+			var fontObj = new System.Drawing.Font(font, fontSize);
 			
-			var size = g.MeasureString(text, fontOjb);
+			var size = g.MeasureString(text, fontObj);
 			
 			var spanWidth = (CellWidth - size.Width) / 2;
 			var spanHeight = (CellHeight - size.Height) / 2;
 			
-			g.DrawString(text, fontOjb, System.Drawing.Brushes.Black, new PointF(spanWidth, spanHeight));
+			g.DrawString(text, fontObj, System.Drawing.Brushes.Black, new PointF(spanWidth, spanHeight));
 			g.Dispose();
 			
 			var bitmap = bmp.GetHbitmap();

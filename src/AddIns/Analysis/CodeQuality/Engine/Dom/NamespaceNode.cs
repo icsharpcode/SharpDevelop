@@ -14,14 +14,15 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		public NamespaceNode(string name)
 		{
 			this.Name = name;
+			types = new List<INode>();
 		}
 		
 		public string Name { get; private set; }
+		
+		List<INode> types;
 	
 		public IList<INode> Children {
-			get {
-				return Enumerable.Empty<INode>().ToList();
-			}
+			get { return types; }
 		}
 		
 		public IEnumerable<INode> Uses {

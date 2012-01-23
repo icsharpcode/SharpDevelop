@@ -21,7 +21,7 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 			get { return AssemblyInfo.AssemblyName; }
 		}
 		
-		internal List<INode> namespaces;
+		List<INode> namespaces;
 		
 		public IList<INode> Children {
 			get { return namespaces; }
