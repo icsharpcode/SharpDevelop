@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		readonly IType declaringType;
 		readonly IMember memberDefinition;
-		IType returnType;
+		protected IType returnType;
 		
 		protected SpecializedMember(IType declaringType, IMember memberDefinition)
 		{
