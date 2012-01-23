@@ -68,6 +68,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly CSharpParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
 		readonly Dictionary<AstNode, CSharpResolver> resolverBeforeDict = new Dictionary<AstNode, CSharpResolver>();
+		readonly Dictionary<Expression, ConversionWithTargetType> conversionDict = new Dictionary<Expression, ConversionWithTargetType>();
+		
+		internal struct ConversionWithTargetType
+		{
+			public readonly Conversion Conversion;
+			public readonly IType TargetType;
+			
+			public ConversionWithTargetType(Conversion conversion, IType targetType)
+			{
+				this.Conversion = conversion;
+				this.TargetType = targetType;
+			}
+		}
 		
 		IResolveVisitorNavigator navigator;
 		bool resolverEnabled;
@@ -294,8 +307,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					afc.ExplicitlyTypedLambda.ApplyReturnType(this, afc.ReturnType);
 				Log.Unindent();
 			}
-			if (conversion != Conversion.IdentityConversion)
+			if (conversion != Conversion.IdentityConversion) {
 				navigator.ProcessConversion(expr, rr, conversion, targetType);
+				conversionDict[expr] = new ConversionWithTargetType(conversion, targetType);
+			}
+		}
+		
+		void ImportConversions(ResolveVisitor childVisitor)
+		{
+			foreach (var pair in childVisitor.conversionDict) {
+				conversionDict.Add(pair.Key, pair.Value);
+				navigator.ProcessConversion(pair.Key, resolveResultCache[pair.Key], pair.Value.Conversion, pair.Value.TargetType);
+			}
 		}
 		
 		/// <summary>
@@ -461,6 +484,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				node = node.Parent;
 			}
 			return null;
+		}
+		
+		public ConversionWithTargetType GetConversionWithTargetType(Expression expr)
+		{
+			MergeUndecidedLambdas();
+			ResolveParentForConversion(expr);
+			ConversionWithTargetType result;
+			if (conversionDict.TryGetValue(expr, out result)) {
+				return result;
+			} else {
+				ResolveResult rr = GetResolveResultIfResolved(expr);
+				return new ConversionWithTargetType(Conversion.IdentityConversion, rr != null ? rr.Type : SpecialType.UnknownType);
+			}
 		}
 		#endregion
 		
@@ -2179,6 +2215,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var pair in visitor.resolveResultCache) {
 					parentVisitor.StoreResult(pair.Key, pair.Value);
 				}
+				parentVisitor.ImportConversions(visitor);
 				parentVisitor.undecidedLambdas.Remove(lambda);
 			}
 			
@@ -2218,21 +2255,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Log.Indent();
 			while (undecidedLambdas.Count > 0) {
 				LambdaBase lambda = undecidedLambdas[0];
-				AstNode parent = lambda.LambdaExpression.Parent;
-				// Continue going upwards until we find a node that can be resolved and provides
-				// an expected type.
-				while (ActsAsParenthesizedExpression(parent) || parent is NamedArgumentExpression || parent is ArrayInitializerExpression) {
-					parent = parent.Parent;
-				}
-				CSharpResolver storedResolver;
-				if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
-					Log.WriteLine("Trying to resolve '" + parent + "' in order to merge the lambda...");
-					Log.Indent();
-					ResetContext(storedResolver, delegate { Resolve(parent); });
-					Log.Unindent();
-				} else {
-					Log.WriteLine("Could not find a suitable parent for '" + lambda);
-				}
+				ResolveParentForConversion(lambda.LambdaExpression);
 				if (lambda.IsUndecided) {
 					// Lambda wasn't merged by resolving its parent -> enforce merging
 					Log.WriteLine("Lambda wasn't merged by conversion - enforce merging");
@@ -2241,6 +2264,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			Log.Unindent();
 			Log.WriteLine("MergeUndecidedLambdas() finished.");
+		}
+		
+		void ResolveParentForConversion(AstNode expression)
+		{
+			AstNode parent = expression.Parent;
+			// Continue going upwards until we find a node that can be resolved and provides
+			// an expected type.
+			while (ActsAsParenthesizedExpression(parent) || parent is NamedArgumentExpression || parent is ArrayInitializerExpression) {
+				parent = parent.Parent;
+			}
+			CSharpResolver storedResolver;
+			if (parent != null && resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
+				Log.WriteLine("Trying to resolve '" + parent + "' in order to find the conversion applied to '" + expression + "'...");
+				Log.Indent();
+				ResetContext(storedResolver, delegate { Resolve(parent); });
+				Log.Unindent();
+			} else {
+				Log.WriteLine("Could not find a suitable parent for '" + expression);
+			}
 		}
 		
 		internal static bool ActsAsParenthesizedExpression(AstNode expression)

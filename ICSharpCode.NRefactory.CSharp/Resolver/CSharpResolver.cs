@@ -1420,12 +1420,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					foreach (var importedNamespace in u.Usings) {
 						ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, k);
 						if (def != null) {
-							if (firstResult == null) {
-								if (parameterizeResultType && k > 0)
-									firstResult = new ParameterizedType(def, typeArguments);
-								else
-									firstResult = def;
-							} else {
+							IType resultType;
+							if (parameterizeResultType && k > 0)
+								resultType = new ParameterizedType(def, typeArguments);
+							else
+								resultType = def;
+							
+							if (firstResult == null || !TopLevelTypeDefinitionIsAccessible(firstResult.GetDefinition())) {
+								firstResult = resultType;
+							} else if (TopLevelTypeDefinitionIsAccessible(def)) {
 								return new AmbiguousTypeResolveResult(firstResult);
 							}
 						}
@@ -1436,6 +1439,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// if we didn't find anything: repeat lookup with parent namespace
 			}
 			return null;
+		}
+		
+		bool TopLevelTypeDefinitionIsAccessible(ITypeDefinition typeDef)
+		{
+			if (typeDef.IsInternal) {
+				return typeDef.ParentAssembly.InternalsVisibleTo(compilation.MainAssembly);
+			}
+			return true;
 		}
 		
 		/// <summary>
