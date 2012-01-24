@@ -1127,7 +1127,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.nonLiftedOperator = nonLiftedMethod;
 				// Comparison operators keep the 'bool' return type even when lifted.
 				if (IsComparisonOperator(nonLiftedMethod))
-					this.returnType = nonLiftedMethod.ReturnType;
+					this.ReturnType = nonLiftedMethod.ReturnType;
 			}
 			
 			public IList<IParameter> NonLiftedParameters {

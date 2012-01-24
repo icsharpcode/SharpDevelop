@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		readonly IType declaringType;
 		readonly IMember memberDefinition;
-		protected IType returnType;
+		IType returnType;
 		
 		protected SpecializedMember(IType declaringType, IMember memberDefinition)
 		{
@@ -92,6 +92,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IType ReturnType {
 			get { return returnType; }
+			protected set { returnType = value; }
 		}
 		
 		public bool IsVirtual {

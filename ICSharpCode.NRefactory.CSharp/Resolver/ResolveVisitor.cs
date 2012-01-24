@@ -948,7 +948,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// 7.6.10.6 Anonymous object creation expressions
 			List<IUnresolvedProperty> properties = new List<IUnresolvedProperty>();
 			foreach (var expr in anonymousTypeCreateExpression.Initializers) {
-				Scan(expr);
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
 				if (!string.IsNullOrEmpty(name)) {
@@ -966,7 +965,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					properties.Add(property);
 				}
 			}
-			return new ResolveResult(new AnonymousType(resolver.Compilation, properties));
+			IType anonymousType = new AnonymousType(resolver.Compilation, properties);
+			resolver = resolver.PushInitializerType(anonymousType);
+			ScanChildren(anonymousTypeCreateExpression);
+			resolver = resolver.PopInitializerType();
+			return new ResolveResult(anonymousType);
 		}
 		
 		sealed class VarTypeReference : ITypeReference
