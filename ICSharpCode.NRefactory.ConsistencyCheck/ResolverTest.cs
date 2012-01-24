@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			{
 				if (!nodesWithConversions.Add(expression))
 					throw new InvalidOperationException("Duplicate ProcessConversion() call");
-				if (conversion == Conversion.None) {
+				if (!conversion.IsValid) {
 					Console.WriteLine("Compiler error at " + fileName + ":" + expression.StartLocation + ": Cannot convert from " + result + " to " + targetType);
 				}
 			}
