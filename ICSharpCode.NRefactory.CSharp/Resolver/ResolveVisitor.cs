@@ -58,7 +58,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
 		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
-		static readonly ResolveResult transparentIdentifierResolveResult = new ResolveResult(SpecialType.UnboundTypeArgument);
 		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
@@ -3241,6 +3240,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return GetElementTypeFromIEnumerable(type, resolver.Compilation, false);
 		}
 		
+		ResolveResult MakeTransparentIdentifierResolveResult()
+		{
+			return new ResolveResult(new AnonymousType(resolver.Compilation, EmptyList<IUnresolvedProperty>.Instance));
+		}
+		
 		sealed class QueryExpressionLambdaConversion : Conversion
 		{
 			internal readonly IType[] ParameterTypes;
@@ -3368,7 +3372,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					selectResult = Resolve(selectClause.Expression);
 				} else {
 					// from .. from ... ... - introduce a transparent identifier
-					selectResult = transparentIdentifierResolveResult;
+					selectResult = MakeTransparentIdentifierResolveResult();
 				}
 				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "SelectMany", EmptyList<IType>.Instance, true);
 				ResolveResult[] arguments = {
@@ -3401,7 +3405,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled && currentQueryResult != null) {
 				// resolve the .Select() call
 				ResolveResult methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Select", EmptyList<IType>.Instance, true);
-				ResolveResult[] arguments = { new QueryExpressionLambda(1, transparentIdentifierResolveResult) };
+				ResolveResult[] arguments = { new QueryExpressionLambda(1, MakeTransparentIdentifierResolveResult()) };
 				return resolver.ResolveInvocation(methodGroup, arguments);
 			} else {
 				return null;
@@ -3454,7 +3458,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						selectResult = Resolve(selectClause.Expression);
 					} else {
 						// from .. join ... ... - introduce a transparent identifier
-						selectResult = transparentIdentifierResolveResult;
+						selectResult = MakeTransparentIdentifierResolveResult();
 					}
 					
 					var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Join", EmptyList<IType>.Instance);
@@ -3493,7 +3497,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				groupJoinLambda = new ImplicitlyTypedLambda(selectClause, selectLambdaParameters, this);
 			} else {
 				// from .. join ... ... - introduce a transparent identifier
-				groupJoinLambda = new QueryExpressionLambda(2, transparentIdentifierResolveResult);
+				groupJoinLambda = new QueryExpressionLambda(2, MakeTransparentIdentifierResolveResult());
 			}
 			
 			ResolveResult[] arguments = {
