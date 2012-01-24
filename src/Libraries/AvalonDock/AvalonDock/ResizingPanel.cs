@@ -882,6 +882,10 @@ namespace AvalonDock
             //Point draggedPoint = this.PointToScreenDPI(
             //    new Point(e.HorizontalChange, e.VerticalChange));
             Window wnd = Window.GetWindow(this);
+            if (wnd == null)
+            {
+                return;
+            }
             var trToWnd = TransformToAncestor(wnd);
             Vector transformedDelta = trToWnd.Transform(new Point(e.HorizontalChange, e.VerticalChange)) -
                 trToWnd.Transform(new Point());
@@ -1172,6 +1176,11 @@ namespace AvalonDock
 
             Size[] currentSizes = new Size[visibleChildren.Count];
             Window wnd = Window.GetWindow(this);
+            if (wnd == null)
+            {
+                InvalidateMeasure();
+                return;
+            }
             var trToWnd = TransformToAncestor(wnd).Inverse;
             Vector transformedDelta = trToWnd.Transform(new Point(e.HorizontalChange, e.VerticalChange)) -
                 trToWnd.Transform(new Point());
