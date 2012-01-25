@@ -29,6 +29,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public unsafe class BinaryOperatorTests : ResolverTestBase
 	{
+		CSharpResolver resolver;
+		
+		public override void SetUp()
+		{
+			base.SetUp();
+			resolver = new CSharpResolver(compilation);
+		}
+		
 		[Test]
 		public void Multiplication()
 		{
@@ -144,12 +152,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void AdditionWithOverflow()
 		{
-			resolver.CheckForOverflow = false;
-			AssertConstant(int.MinValue, resolver.ResolveBinaryOperator(
+			AssertConstant(int.MinValue, resolver.WithCheckForOverflow(false).ResolveBinaryOperator(
 				BinaryOperatorType.Add, MakeConstant(int.MaxValue), MakeConstant(1)));
 			
-			resolver.CheckForOverflow = true;
-			AssertError(typeof(int), resolver.ResolveBinaryOperator(
+			AssertError(typeof(int), resolver.WithCheckForOverflow(true).ResolveBinaryOperator(
 				BinaryOperatorType.Add, MakeConstant(int.MaxValue), MakeConstant(1)));
 		}
 		
@@ -336,6 +342,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.InEquality, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeResult(typeof(bool?)), MakeConstant(null)));
 		}
 		
 		[Test]
@@ -359,6 +368,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.LessThan, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
+			
+			TestOperator(MakeResult(typeof(int?)), BinaryOperatorType.LessThan, MakeResult(typeof(int)),
+			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(bool));
 		}
 		
 		[Test]
@@ -504,16 +516,16 @@ class Test {
 	}
 }
 ";
-			var irr = Resolve<CSharpInvocationResolveResult>(program);
+			var irr = Resolve<OperatorResolveResult>(program);
 			Assert.IsFalse(irr.IsError);
-			Assert.IsTrue(irr.IsLiftedOperatorInvocation);
-			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
-			// even though we're calling the lifted operator, trr.Member should be the original operator method
-			Assert.AreEqual("S", irr.Member.ReturnType.Resolve(context).ReflectionName);
+			Assert.IsTrue(irr.IsLiftedOperator);
+			Assert.IsTrue(irr.UserDefinedOperatorMethod is OverloadResolution.ILiftedOperator);
+			Assert.AreEqual("A.op_Addition", irr.UserDefinedOperatorMethod.FullName);
 			Assert.AreEqual("System.Nullable`1[[S]]", irr.Type.ReflectionName);
+			Assert.AreEqual("System.Nullable`1[[S]]", irr.UserDefinedOperatorMethod.ReturnType.ReflectionName);
 			
-			Conversion lhsConv = ((ConversionResolveResult)irr.Arguments[0]).Conversion;
-			Conversion rhsConv = ((ConversionResolveResult)irr.Arguments[1]).Conversion;
+			Conversion lhsConv = ((ConversionResolveResult)irr.Operands[0]).Conversion;
+			Conversion rhsConv = ((ConversionResolveResult)irr.Operands[1]).Conversion;
 			Assert.AreEqual(Conversion.ImplicitNullableConversion, lhsConv);
 			Assert.IsTrue(rhsConv.IsUserDefined);
 			Assert.AreEqual("A.op_Implicit", rhsConv.Method.FullName);
@@ -538,6 +550,72 @@ class Test {
 			Assert.IsTrue(irr.IsError); // cannot convert from A to S
 			Assert.AreEqual("A.op_Addition", irr.Member.FullName);
 			Assert.AreEqual("S", irr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void CompoundAssign_String_Char()
+		{
+			string program = @"
+class Test {
+	string text;
+	void Append(char c) {
+		$text += c$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(System.Linq.Expressions.ExpressionType.AddAssign, irr.OperatorType);
+			Assert.IsNull(irr.UserDefinedOperatorMethod);
+			Assert.AreEqual("System.String", irr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void CompoundAssign_Byte_Literal1()
+		{
+			string program = @"
+class Test {
+	byte c;
+	void Inc() {
+		$c += 1$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(System.Linq.Expressions.ExpressionType.AddAssign, irr.OperatorType);
+			Assert.IsNull(irr.UserDefinedOperatorMethod);
+			Assert.AreEqual("System.Byte", irr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void CompareNullableStructWithNullLiteral()
+		{
+			string program = @"
+struct X { }
+class Test {
+	static void Inc(X? x) {
+		var c = $x == null$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
+		}
+		
+		[Test]
+		public void LiftedEqualityOperator()
+		{
+			string program = @"
+struct X {
+	public static bool operator ==(X a, X b) {}
+}
+class Test {
+	static void Inc(X? x) {
+		var c = $x == x$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
 		}
 	}
 }

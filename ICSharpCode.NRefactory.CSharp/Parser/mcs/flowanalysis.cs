@@ -1346,13 +1346,7 @@ namespace Mono.CSharp
 		// </summary>
 		public readonly bool IsParameter;
 
-		readonly VariableInfo Parent;
 		VariableInfo[] sub_info;
-
-		bool is_ever_assigned;
-		public bool IsEverAssigned {
-			get { return is_ever_assigned; }
-		}
 
 		protected VariableInfo (string name, TypeSpec type, int offset)
 		{
@@ -1370,7 +1364,6 @@ namespace Mono.CSharp
 			this.Name = parent.Name;
 			this.TypeInfo = type;
 			this.Offset = parent.Offset + type.Offset;
-			this.Parent = parent;
 			this.Length = type.TotalLength;
 
 			this.IsParameter = parent.IsParameter;
@@ -1416,28 +1409,30 @@ namespace Mono.CSharp
 			if (vector [Offset])
 				return true;
 
-			// FIXME: Fix SetFieldAssigned to set the whole range like SetAssigned below. Then, get rid of this stanza
-			for (VariableInfo parent = Parent; parent != null; parent = parent.Parent) {
-				if (vector [parent.Offset]) {
-					// 'parent' is assigned, but someone forgot to note that all its components are assigned too
-					parent.SetAssigned (vector);
-					return true;
-				}
-			}
-
-			// Return unless this is a struct.
+			// Unless this is a struct
 			if (!TypeInfo.IsStruct)
 				return false;
 
-			// Ok, so each field must be assigned.
-			for (int i = 0; i < TypeInfo.Length; i++) {
-				if (!vector [Offset + i + 1])
+			//
+			// Following case cannot be handled fully by SetStructFieldAssigned
+			// because we may encounter following case
+			// 
+			// struct A { B b }
+			// struct B { int value; }
+			//
+			// setting a.b.value is propagated only to B's vector and not upwards to possible parents
+			//
+			//
+			// Each field must be assigned
+			//
+			for (int i = Offset + 1; i <= TypeInfo.Length + Offset; i++) {
+				if (!vector[i])
 					return false;
 			}
 
 			// Ok, now check all fields which are structs.
 			for (int i = 0; i < sub_info.Length; i++) {
-				VariableInfo sinfo = sub_info [i];
+				VariableInfo sinfo = sub_info[i];
 				if (sinfo == null)
 					continue;
 
@@ -1446,25 +1441,10 @@ namespace Mono.CSharp
 			}
 			
 			vector [Offset] = true;
-			is_ever_assigned = true;
 			return true;
 		}
 
-		public void SetAssigned (ResolveContext ec)
-		{
-			if (ec.DoFlowAnalysis)
-				ec.CurrentBranching.SetAssigned (this);
-		}
-
-		public void SetAssigned (MyBitVector vector)
-		{
-			if (Length == 1)
-				vector [Offset] = true;
-			else
-				vector.SetRange (Offset, Length);
-
-			is_ever_assigned = true;
-		}
+		public bool IsEverAssigned { get; set; }
 
 		public bool IsStructFieldAssigned (ResolveContext ec, string name)
 		{
@@ -1487,15 +1467,54 @@ namespace Mono.CSharp
 				ec.CurrentBranching.SetFieldAssigned (this, name);
 		}
 
+		public void SetAssigned (ResolveContext ec)
+		{
+			if (ec.DoFlowAnalysis)
+				ec.CurrentBranching.SetAssigned (this);
+		}
+
+		public void SetAssigned (MyBitVector vector)
+		{
+			if (Length == 1)
+				vector[Offset] = true;
+			else
+				vector.SetRange (Offset, Length);
+
+			IsEverAssigned = true;
+		}
+
 		public void SetStructFieldAssigned (MyBitVector vector, string field_name)
 		{
+			if (vector[Offset])
+				return;
+
 			int field_idx = TypeInfo.GetFieldIndex (field_name);
 
 			if (field_idx == 0)
 				return;
 
-			vector [Offset + field_idx] = true;
-			is_ever_assigned = true;
+			var complex_field = TypeInfo.GetStructField (field_name);
+			if (complex_field != null) {
+				vector.SetRange (complex_field.Offset, complex_field.TotalLength);
+			} else {
+				vector[Offset + field_idx] = true;
+			}
+
+			IsEverAssigned = true;
+
+			//
+			// Each field must be assigned
+			//
+			for (int i = Offset + 1; i <= TypeInfo.TotalLength + Offset; i++) {
+				if (!vector[i])
+					return;
+			}
+
+			//
+			// Set master struct flag to assigned when all tested struct
+			// fields have been assigned
+			//
+			vector[Offset] = true;
 		}
 
 		public VariableInfo GetStructFieldInfo (string fieldName)

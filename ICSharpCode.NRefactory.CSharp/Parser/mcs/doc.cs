@@ -8,6 +8,7 @@
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2004 Novell, Inc.
+// Copyright 2011 Xamarin Inc
 //
 //
 
@@ -140,7 +141,7 @@ namespace Mono.CSharp
 				}
 
 				// FIXME: it could be done with XmlReader
-				DeclSpace ds_target = mc as DeclSpace;
+				var ds_target = mc as TypeContainer;
 				if (ds_target == null)
 					ds_target = mc.Parent;
 
@@ -212,7 +213,7 @@ namespace Mono.CSharp
 		//
 		// Handles <see> elements.
 		//
-		void HandleSee (MemberCore mc, DeclSpace ds, XmlElement see)
+		void HandleSee (MemberCore mc, TypeContainer ds, XmlElement see)
 		{
 			HandleXrefCommon (mc, ds, see);
 		}
@@ -220,7 +221,7 @@ namespace Mono.CSharp
 		//
 		// Handles <seealso> elements.
 		//
-		void HandleSeeAlso (MemberCore mc, DeclSpace ds, XmlElement seealso)
+		void HandleSeeAlso (MemberCore mc, TypeContainer ds, XmlElement seealso)
 		{
 			HandleXrefCommon (mc, ds, seealso);
 		}
@@ -228,7 +229,7 @@ namespace Mono.CSharp
 		//
 		// Handles <exception> elements.
 		//
-		void HandleException (MemberCore mc, DeclSpace ds, XmlElement seealso)
+		void HandleException (MemberCore mc, TypeContainer ds, XmlElement seealso)
 		{
 			HandleXrefCommon (mc, ds, seealso);
 		}
@@ -243,10 +244,8 @@ namespace Mono.CSharp
 
 			string tp_name = node.GetAttribute ("name");
 			if (mc.CurrentTypeParameters != null) {
-				foreach (var tp in mc.CurrentTypeParameters) {
-					if (tp.Name == tp_name)
-						return;
-				}
+				if (mc.CurrentTypeParameters.Find (tp_name) != null)
+					return;
 			}
 			
 			// TODO: CS1710, CS1712
@@ -268,10 +267,8 @@ namespace Mono.CSharp
 			var member = mc;
 			do {
 				if (member.CurrentTypeParameters != null) {
-					foreach (var tp in member.CurrentTypeParameters) {
-						if (tp.Name == tp_name)
-							return;
-					}
+					if (member.CurrentTypeParameters.Find (tp_name) != null)
+						return;
 				}
 
 				member = member.Parent;
@@ -307,7 +304,7 @@ namespace Mono.CSharp
 		//
 		// Processes "see" or "seealso" elements from cref attribute.
 		//
-		void HandleXrefCommon (MemberCore mc, DeclSpace ds, XmlElement xref)
+		void HandleXrefCommon (MemberCore mc, TypeContainer ds, XmlElement xref)
 		{
 			string cref = xref.GetAttribute ("cref");
 			// when, XmlReader, "if (cref == null)"

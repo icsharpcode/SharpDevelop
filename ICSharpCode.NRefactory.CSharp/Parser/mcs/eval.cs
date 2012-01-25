@@ -9,6 +9,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2011 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -55,7 +56,9 @@ namespace Mono.CSharp
 		static object evaluator_lock = new object ();
 		static volatile bool invoking;
 		
+#if !STATIC
 		static int count;
+#endif
 		static Thread invoke_thread;
 
 		readonly Dictionary<string, Tuple<FieldSpec, FieldInfo>> fields;
@@ -135,6 +138,11 @@ namespace Mono.CSharp
 		public bool DescribeTypeExpressions;
 
 		/// <summary>
+		///   Whether the evaluator will use terse syntax, and the semicolons at the end are optional
+		/// </summary>
+		public bool Terse = true;
+
+		/// <summary>
 		///   The base class for the classes that host the user generated code
 		/// </summary>
 		/// <remarks>
@@ -200,7 +208,7 @@ namespace Mono.CSharp
 		///   compiled parameter will be set to the delegate
 		///   that can be invoked to execute the code.
 		///
-	    /// </remarks>
+		/// </remarks>
 		public string Compile (string input, out CompiledMethod compiled)
 		{
 			if (input == null || input.Length == 0){
@@ -218,6 +226,10 @@ namespace Mono.CSharp
 
 				bool partial_input;
 				CSharpParser parser = ParseString (ParseMode.Silent, input, out partial_input);
+				if (parser == null && Terse && partial_input){
+					bool ignore;
+					parser = ParseString (ParseMode.Silent, input + ";", out ignore);
+				}
 				if (parser == null){
 					compiled = null;
 					if (partial_input)
@@ -361,6 +373,7 @@ namespace Mono.CSharp
 
 				// Need to setup MemberCache
 				parser_result.CreateType ();
+				parser_result.NamespaceEntry.Define ();
 
 				var method = parser_result.Methods[0] as Method;
 				BlockContext bc = new BlockContext (method, method.Block, ctx.BuiltinTypes.Void);
@@ -604,11 +617,12 @@ namespace Mono.CSharp
 
 		CompiledMethod CompileBlock (Class host, Undo undo, Report Report)
 		{
-			string current_debug_name = "eval-" + count + ".dll";
-			++count;
 #if STATIC
 			throw new NotSupportedException ();
 #else
+			string current_debug_name = "eval-" + count + ".dll";
+			++count;
+
 			AssemblyDefinitionDynamic assembly;
 			AssemblyBuilderAccess access;
 
@@ -681,7 +695,7 @@ namespace Mono.CSharp
 			// work from MethodBuilders.   Retarded, I know.
 			//
 			var tt = assembly.Builder.GetType (host.TypeBuilder.Name);
-			var mi = tt.GetMethod (expression_method.Name);
+			var mi = tt.GetMethod (expression_method.MemberName.Name);
 
 			if (host.Fields != null) {
 				//
@@ -755,12 +769,17 @@ namespace Mono.CSharp
 			return sb.ToString ();
 		}
 
-		internal ICollection<string> GetUsingList ()
+		internal List<string> GetUsingList ()
 		{
 			var res = new List<string> ();
 
-			foreach (var ue in source_file.NamespaceContainer.Usings)
-				res.Add (ue.Name);
+			foreach (var ue in source_file.NamespaceContainer.Usings) {
+				if (ue.Alias != null || ue.ResolvedExpression == null)
+					continue;
+
+				res.Add (ue.NamespaceExpression.Name);
+			}
+
 			return res;
 		}
 		
@@ -801,7 +820,7 @@ namespace Mono.CSharp
 		public void LoadAssembly (string file)
 		{
 			var loader = new DynamicLoader (importer, ctx);
-			var assembly = loader.LoadAssemblyFile (file);
+			var assembly = loader.LoadAssemblyFile (file, false);
 			if (assembly == null)
 				return;
 

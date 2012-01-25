@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public abstract class LambdaResolveResult : ResolveResult
 	{
-		protected LambdaResolveResult() : base(SharedTypes.UnknownType)
+		protected LambdaResolveResult() : base(SpecialType.UnknownType)
 		{
 		}
 		
@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets whether the lambda body is valid for the given parameter types and return type.
 		/// </summary>
 		/// <returns>
-		/// Produces a <see cref="Conversion.AnonymousFunctionConversion"/> if the lambda is valid;
+		/// Produces a conversion with <see cref="Conversion.IsAnonymousFunctionConversion"/>=<c>true</c> if the lambda is valid;
 		/// otherwise returns <see cref="Conversion.None"/>.
 		/// </returns>
 		public abstract Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions);

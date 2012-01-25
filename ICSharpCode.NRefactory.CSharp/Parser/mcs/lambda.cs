@@ -7,6 +7,7 @@
 // Dual licensed under the terms of the MIT X11 or GNU GPL
 //
 // Copyright 2007-2008 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 
 #if STATIC
@@ -23,13 +24,8 @@ namespace Mono.CSharp {
 		//    A list of Parameters (explicitly typed parameters)
 		//    An ImplicitLambdaParameter
 		//
-		public LambdaExpression (bool isAsync, Location loc)
-			: base (isAsync, loc)
-		{
-		}
-
 		public LambdaExpression (Location loc)
-			: this (false, loc)
+			: base (loc)
 		{
 		}
 

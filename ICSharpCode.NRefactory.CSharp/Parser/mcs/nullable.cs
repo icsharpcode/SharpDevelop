@@ -9,6 +9,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -1000,19 +1001,23 @@ namespace Mono.CSharp.Nullable
 		Expression left, right;
 		Unwrap unwrap;
 		
-		public Expression Left {
-			get { return this.left; }
-		}
-
-		public Expression Right {
-			get { return this.right; }
-		}
-
 		public NullCoalescingOperator (Expression left, Expression right, Location loc)
 		{
 			this.left = left;
 			this.right = right;
 			this.loc = loc;
+		}
+
+		public Expression LeftExpression {
+			get {
+ 				return left;
+ 			}
+		}
+
+		public Expression RightExpression {
+			get {
+ 				return right;
+ 			}
 		}
 		
 		public override Expression CreateExpressionTree (ResolveContext ec)

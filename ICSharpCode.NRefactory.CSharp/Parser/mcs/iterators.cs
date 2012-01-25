@@ -33,16 +33,16 @@ namespace Mono.CSharp
 		protected T machine_initializer;
 		int resume_pc;
 		
-		public Expression Expr {
-			get { return this.expr; }
-		}
-		
 		protected YieldStatement (Expression expr, Location l)
 		{
 			this.expr = expr;
 			loc = l;
 		}
 
+		public Expression Expr {
+			get { return this.expr; }
+		}
+		
 		protected override void CloneTo (CloneContext clonectx, Statement t)
 		{
 			var target = (YieldStatement<T>) t;
@@ -158,10 +158,9 @@ namespace Mono.CSharp
 		}
 
 		Field pc_field;
-		int local_name_idx;
 		StateMachineMethod method;
 
-		protected StateMachine (Block block, TypeContainer parent, MemberBase host, TypeParameter[] tparams, string name)
+		protected StateMachine (Block block, TypeContainer parent, MemberBase host, TypeParameters tparams, string name)
 			: base (block, parent, host, tparams, name)
 		{
 		}
@@ -196,11 +195,6 @@ namespace Mono.CSharp
 			pc_field = AddCompilerGeneratedField ("$PC", new TypeExpression (Compiler.BuiltinTypes.Int, Location));
 
 			return base.DoDefineMembers ();
-		}
-
-		protected override string GetVariableMangledName (LocalVariable local_info)
-		{
-			return "<" + local_info.Name + ">__" + local_name_idx++.ToString ("X");
 		}
 	}
 
@@ -390,6 +384,7 @@ namespace Mono.CSharp
 		TypeExpr iterator_type_expr;
 		Field current_field;
 		Field disposing_field;
+		int local_name_idx;
 
 		TypeExpr enumerator_type;
 		TypeExpr enumerable_type;
@@ -399,7 +394,7 @@ namespace Mono.CSharp
 
 		public IteratorStorey (Iterator iterator)
 			: base (iterator.Container.ParametersBlock, iterator.Host,
-			  iterator.OriginalMethod as MemberBase, iterator.GenericMethod == null ? null : iterator.GenericMethod.CurrentTypeParameters, "Iterator")
+			  iterator.OriginalMethod as MemberBase, iterator.OriginalMethod.CurrentTypeParameters, "Iterator")
 		{
 			this.Iterator = iterator;
 		}
@@ -483,17 +478,14 @@ namespace Mono.CSharp
 			Define_Reset ();
 
 			if (Iterator.IsEnumerable) {
-				MemberName name = new MemberName (QualifiedAliasMember.GlobalAlias, "System", null, Location);
-				name = new MemberName (name, "Collections", Location);
-				name = new MemberName (name, "IEnumerable", Location);
-				name = new MemberName (name, "GetEnumerator", Location);
+				FullNamedExpression explicit_iface = new TypeExpression (Compiler.BuiltinTypes.IEnumerable, Location);
+				var name = new MemberName ("GetEnumerator", null, explicit_iface, Location);
 
 				if (generic_enumerator_type != null) {
 					Method get_enumerator = new StateMachineMethod (this, null, enumerator_type, 0, name);
 
-					name = new MemberName (name.Left.Left, "Generic", Location);
-					name = new MemberName (name, "IEnumerable", generic_args, Location);
-					name = new MemberName (name, "GetEnumerator", Location);
+					explicit_iface = new GenericTypeExpr (Module.PredefinedTypes.IEnumerableGeneric.Resolve (), generic_args, Location);
+					name = new MemberName ("GetEnumerator", null, explicit_iface, Location);
 					Method gget_enumerator = new GetEnumeratorMethod (this, generic_enumerator_type, name);
 
 					//
@@ -515,20 +507,17 @@ namespace Mono.CSharp
 		void Define_Current (bool is_generic)
 		{
 			TypeExpr type;
-
-			MemberName name = new MemberName (QualifiedAliasMember.GlobalAlias, "System", null, Location);
-			name = new MemberName (name, "Collections", Location);
+			FullNamedExpression explicit_iface;
 
 			if (is_generic) {
-				name = new MemberName (name, "Generic", Location);
-				name = new MemberName (name, "IEnumerator", generic_args, Location);
+				explicit_iface = new GenericTypeExpr (Module.PredefinedTypes.IEnumeratorGeneric.Resolve (), generic_args, Location);
 				type = iterator_type_expr;
 			} else {
-				name = new MemberName (name, "IEnumerator");
+				explicit_iface = new TypeExpression (Module.Compiler.BuiltinTypes.IEnumerator, Location);
 				type = new TypeExpression (Compiler.BuiltinTypes.Object, Location);
 			}
 
-			name = new MemberName (name, "Current", Location);
+			var name = new MemberName ("Current", null, explicit_iface, Location);
 
 			ToplevelBlock get_block = new ToplevelBlock (Compiler, Location);
 			get_block.AddStatement (new Return (new DynamicFieldExpr (CurrentField, Location), Location));
@@ -543,7 +532,7 @@ namespace Mono.CSharp
 		void Define_Reset ()
 		{
 			Method reset = new Method (
-				this, null, new TypeExpression (Compiler.BuiltinTypes.Void, Location),
+				this, new TypeExpression (Compiler.BuiltinTypes.Void, Location),
 				Modifiers.PUBLIC | Modifiers.DEBUGGER_HIDDEN,
 				new MemberName ("Reset", Location),
 				ParametersCompiled.EmptyReadOnlyParameters, null);
@@ -563,6 +552,11 @@ namespace Mono.CSharp
 			base.EmitHoistedParameters (ec, hoisted);
 			base.EmitHoistedParameters (ec, hoisted_params_copy);
 		}
+
+		protected override string GetVariableMangledName (LocalVariable local_info)
+		{
+			return "<" + local_info.Name + ">__" + local_name_idx++.ToString ("X");
+		}
 	}
 
 	public class StateMachineMethod : Method
@@ -570,7 +564,7 @@ namespace Mono.CSharp
 		readonly StateMachineInitializer expr;
 
 		public StateMachineMethod (StateMachine host, StateMachineInitializer expr, FullNamedExpression returnType, Modifiers mod, MemberName name)
-			: base (host, null, returnType, mod | Modifiers.COMPILER_GENERATED,
+			: base (host, returnType, mod | Modifiers.COMPILER_GENERATED,
 			  name, ParametersCompiled.EmptyReadOnlyParameters, null)
 		{
 			this.expr = expr;
@@ -914,10 +908,6 @@ namespace Mono.CSharp
 
 		public Block Container {
 			get { return OriginalMethod.Block; }
-		}
-
-		public GenericMethod GenericMethod {
-			get { return OriginalMethod.GenericMethod; }
 		}
 
 		public override string ContainerType {

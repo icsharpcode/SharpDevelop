@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 					Parameters = { new ParameterDeclaration(new SimpleType("T"), "a") },
 					Constraints = {
 						new Constraint {
-							TypeParameter = "T",
+							TypeParameter = new SimpleType ("T"),
 							BaseTypes = { new SimpleType("ISomeInterface") }
 						}
 					},
@@ -167,6 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 ",
 				new TypeDeclaration {
 					ClassType = ClassType.Interface,
+					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
 							ReturnType = new SimpleType("T"),
@@ -175,7 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 							Parameters = { new ParameterDeclaration(new SimpleType("T"), "a") },
 							Constraints = {
 								new Constraint {
-									TypeParameter = "T",
+									TypeParameter = new SimpleType ("T"),
 									BaseTypes = { new SimpleType("ISomeInterface") }
 								}
 							}
@@ -192,6 +193,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 ",
 				new TypeDeclaration {
 					ClassType = ClassType.Interface,
+					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
 							ReturnType = new PrimitiveType("void"),
@@ -200,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 							Parameters = { new ParameterDeclaration(new SimpleType("T"), "a") },
 							Constraints = {
 								new Constraint {
-									TypeParameter = "T",
+									TypeParameter = new SimpleType ("T"),
 									BaseTypes = { new SimpleType("ISomeInterface") }
 								}
 							}
@@ -277,6 +279,30 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 					Name = "MyMethod",
 					Body = new BlockStatement()
 				});
+		}
+		
+		[Test, Ignore("Parser bug: constraints added in wrong order")]
+		public void GenericMethodWithMultipleConstraints()
+		{
+			ParseUtilCSharp.AssertTypeMember(
+				"void MyMethod<A, B>() where A : IA where B : IB {} ",
+				new MethodDeclaration {
+					ReturnType = new PrimitiveType("void"),
+					Name = "MyMethod",
+					TypeParameters = {
+						new TypeParameterDeclaration { Name = "A" },
+						new TypeParameterDeclaration { Name = "B" }
+					},
+					Constraints = {
+						new Constraint {
+							TypeParameter = new SimpleType("A"),
+							BaseTypes = { new SimpleType("IA") }
+						},
+						new Constraint {
+							TypeParameter = new SimpleType("B"),
+							BaseTypes = { new SimpleType("IB") }
+						}
+					}});
 		}
 		
 		[Test]

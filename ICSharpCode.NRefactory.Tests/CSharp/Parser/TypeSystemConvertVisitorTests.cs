@@ -18,8 +18,10 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.TypeSystem.TestCase;
 using ICSharpCode.NRefactory.Utils;
 using NUnit.Framework;
 
@@ -31,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			testCasePC = ParseTestCase();
+			compilation = ParseTestCase().CreateCompilation();
 		}
 		
 		internal static IProjectContent ParseTestCase()
@@ -41,14 +43,42 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			CompilationUnit cu;
 			using (Stream s = typeof(TypeSystemTests).Assembly.GetManifestResourceStream(typeof(TypeSystemTests), fileName)) {
-				cu = parser.Parse(s);
+				cu = parser.Parse(s, fileName);
 			}
 			
-			var testCasePC = new SimpleProjectContent();
-			CSharpParsedFile parsedFile = new TypeSystemConvertVisitor(testCasePC, fileName).Convert(cu);
-			parsedFile.Freeze();
-			testCasePC.UpdateProjectContent(null, parsedFile);
-			return testCasePC;
+			var parsedFile = cu.ToTypeSystem();
+			return new CSharpProjectContent()
+				.UpdateProjectContent(null, parsedFile)
+				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
+				.SetAssemblyName(typeof(TypeSystemTests).Assembly.GetName().Name);
+		}
+		
+		[Test]
+		public void ExplicitDisposableImplementation()
+		{
+			ITypeDefinition disposable = GetTypeDefinition(typeof(NRefactory.TypeSystem.TestCase.ExplicitDisposableImplementation));
+			IMethod method = disposable.Methods.Single(m => m.Name == "Dispose");
+			Assert.IsTrue(method.IsExplicitInterfaceImplementation);
+			Assert.AreEqual("System.IDisposable.Dispose", method.InterfaceImplementations.Single().FullName);
+		}
+		
+		[Test]
+		public void ExplicitGenericInterfaceImplementation()
+		{
+			ITypeDefinition impl = GetTypeDefinition(typeof(NRefactory.TypeSystem.TestCase.ExplicitGenericInterfaceImplementation));
+			IType genericInterfaceOfString = compilation.FindType(typeof(IGenericInterface<string>));
+			IMethod implMethod1 = impl.Methods.Single(m => m.Name == "Test" && !m.Parameters[1].IsRef);
+			IMethod implMethod2 = impl.Methods.Single(m => m.Name == "Test" && m.Parameters[1].IsRef);
+			Assert.IsTrue(implMethod1.IsExplicitInterfaceImplementation);
+			Assert.IsTrue(implMethod2.IsExplicitInterfaceImplementation);
+			
+			IMethod interfaceMethod1 = (IMethod)implMethod1.InterfaceImplementations.Single();
+			Assert.AreEqual(genericInterfaceOfString, interfaceMethod1.DeclaringType);
+			Assert.IsTrue(!interfaceMethod1.Parameters[1].IsRef);
+			
+			IMethod interfaceMethod2 = (IMethod)implMethod2.InterfaceImplementations.Single();
+			Assert.AreEqual(genericInterfaceOfString, interfaceMethod2.DeclaringType);
+			Assert.IsTrue(interfaceMethod2.Parameters[1].IsRef);
 		}
 	}
 	
@@ -62,7 +92,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			using (MemoryStream ms = new MemoryStream()) {
 				serializer.Serialize(ms, TypeSystemConvertVisitorTests.ParseTestCase());
 				ms.Position = 0;
-				testCasePC = (IProjectContent)serializer.Deserialize(ms);
+				var pc = (IProjectContent)serializer.Deserialize(ms);
+				compilation = pc.CreateCompilation();
 			}
 		}
 	}

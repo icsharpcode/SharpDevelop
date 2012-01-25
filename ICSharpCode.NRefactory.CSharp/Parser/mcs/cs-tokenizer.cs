@@ -85,6 +85,11 @@ namespace Mono.CSharp
 				return Create (null, row, column);
 			}
 
+			public static LocatedToken Create (string value, Location loc)
+			{
+				return Create (value, loc.Row, loc.Column);
+			}
+			
 			public static LocatedToken Create (string value, int row, int column)
 			{
 				//
@@ -207,8 +212,6 @@ namespace Mono.CSharp
 
 		public bool parsing_modifiers;
 
-		public bool async_block;
-
 		//
 		// The special characters to inject on streams to run the unit parser
 		// in the special expression mode. Using private characters from
@@ -321,7 +324,7 @@ namespace Mono.CSharp
 			escaped_identifiers.Add (loc);
 		}
 
-		public bool IsEscapedIdentifier (MemberName name)
+		public bool IsEscapedIdentifier (ATypeNameExpression name)
 		{
 			return escaped_identifiers != null && escaped_identifiers.Contains (name.Location);
 		}
@@ -421,10 +424,6 @@ namespace Mono.CSharp
 			else
 				tab_size = 8;
 
-			//
-			// FIXME: This could be `Location.Push' but we have to
-			// find out why the MS compiler allows this
-			//
 			Mono.CSharp.Location.Push (file, file);
 		}
 		
@@ -830,13 +829,12 @@ namespace Mono.CSharp
 				break;
 
 			case Token.AWAIT:
-				if (!async_block)
+				if (parsing_block == 0)
 					res = -1;
 
 				break;
 			}
 
-			return res;
 			return res;
 		}
 
@@ -1516,6 +1514,7 @@ namespace Mono.CSharp
 #endif
 			number_pos = 0;
 			var loc = Location;
+			bool hasLeadingDot = c == '.';
 
 			if (c >= '0' && c <= '9'){
 				if (c == '0'){
@@ -1547,7 +1546,6 @@ namespace Mono.CSharp
 					putback ('.');
 					number_pos--;
 					val = res = adjust_int (-1, loc);
-
 #if FULL_AST
 					res.ParsedValue = reader.ReadChars (read_start, reader.Position - 1);
 #endif
@@ -1597,9 +1595,11 @@ namespace Mono.CSharp
 			}
 
 			val = res;
-
 #if FULL_AST
-			res.ParsedValue = reader.ReadChars (read_start, reader.Position - (type == TypeCode.Empty ? 1 : 0));
+			var endPos = reader.Position - (type == TypeCode.Empty ? 1 : 0);
+			if (reader.GetChar (endPos - 1) == '\r')
+				endPos--;
+			res.ParsedValue = reader.ReadChars (hasLeadingDot ? read_start - 1 : read_start, endPos);
 #endif
 
 			return Token.LITERAL;
@@ -1826,11 +1826,11 @@ namespace Mono.CSharp
 		{
 			// skip over white space
 			do {
+				endLine = line;
+				endCol = col;
 				c = get_char ();
 			} while (c == ' ' || c == '\t');
-
-			endLine = line;
-			endCol = col;
+			
 			int pos = 0;
 			while (c != -1 && c >= 'a' && c <= 'z') {
 				id_builder[pos++] = (char) c;
@@ -1871,15 +1871,13 @@ namespace Mono.CSharp
 				return cmd;
 			}
 			
-
 			// skip over white space
-			while (c == ' ' || c == '\t')
+			while (c == ' ' || c == '\t') {
 				c = get_char ();
-
+			}
 			int has_identifier_argument = (int)(cmd & PreprocessorDirective.RequiresArgument);
 
 			int pos = 0;
-
 			while (c != -1 && c != '\n' && c != '\r') {
 				if (c == '\\' && has_identifier_argument >= 0) {
 					if (has_identifier_argument != 0) {
@@ -1913,9 +1911,9 @@ namespace Mono.CSharp
 
 					break;
 				}
-
+				
 				endLine = line;
-				endCol = col;
+				endCol = col + 1;
 				
 				if (pos == value_builder.Length)
 					Array.Resize (ref value_builder, pos * 2);
@@ -2878,7 +2876,7 @@ namespace Mono.CSharp
 			if (id_builder [0] >= '_' && !quoted) {
 				int keyword = GetKeyword (id_builder, pos);
 				if (keyword != -1) {
-					val = LocatedToken.Create (null, ref_line, column);
+					val = LocatedToken.Create (keyword == Token.AWAIT ? "await" : null, ref_line, column);
 					return keyword;
 				}
 			}
@@ -3236,16 +3234,16 @@ namespace Mono.CSharp
 						bool docAppend = false;
 						if (doc_processing && peek_char () == '*') {
 							int ch = get_char ();
-							if (position_stack.Count == 0)
-								sbag.PushCommentChar (ch);
 							// But when it is /**/, just do nothing.
 							if (peek_char () == '/') {
 								ch = get_char ();
 								if (position_stack.Count == 0) {
-									sbag.PushCommentChar (ch);
 									sbag.EndComment (line, col + 1);
 								}
 								continue;
+							} else {
+								if (position_stack.Count == 0)
+									sbag.PushCommentChar (ch);
 							}
 							if (doc_state == XmlCommentState.Allowed)
 								docAppend = true;
@@ -3261,16 +3259,15 @@ namespace Mono.CSharp
 						}
 
 						while ((d = get_char ()) != -1){
-							if (position_stack.Count == 0)
-								sbag.PushCommentChar (d);
 							if (d == '*' && peek_char () == '/'){
-								if (position_stack.Count == 0)
-									sbag.PushCommentChar ('/');
 								get_char ();
 								if (position_stack.Count == 0)
 									sbag.EndComment (line, col + 1);
 								comments_seen = true;
 								break;
+							} else {
+								if (position_stack.Count == 0)
+									sbag.PushCommentChar (d);
 							}
 							if (docAppend)
 								xml_comment_buffer.Append ((char) d);
@@ -3348,7 +3345,7 @@ namespace Mono.CSharp
 					
 					if (ParsePreprocessingDirective (true))
 						continue;
-
+					sbag.StartComment (SpecialsBag.CommentType.InactiveCode, false, line, 1);
 					bool directive_expected = false;
 					while ((c = get_char ()) != -1) {
 						if (col == 1) {
@@ -3359,26 +3356,30 @@ namespace Mono.CSharp
 //								Eror_WrongPreprocessorLocation ();
 //								return Token.ERROR;
 //							}
+							sbag.PushCommentChar (c);
 							continue;
 						}
 
-						if (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\v' )
+						if (c == ' ' || c == '\t' || c == '\n' || c == '\f' || c == '\v' ) {
+							sbag.PushCommentChar (c);
 							continue;
+						}
 
 						if (c == '#') {
 							if (ParsePreprocessingDirective (false))
 								break;
 						}
+						sbag.PushCommentChar (c);
 						directive_expected = false;
 					}
-
+					sbag.EndComment (line, col);
 					if (c != -1) {
 						tokens_seen = false;
 						continue;
 					}
 
 					return Token.EOF;
-				
+								
 				case '"':
 					return consume_string (false);
 
