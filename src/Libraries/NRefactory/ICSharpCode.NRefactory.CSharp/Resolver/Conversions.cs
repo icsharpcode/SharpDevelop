@@ -17,10 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
@@ -28,251 +28,40 @@ using ICSharpCode.NRefactory.Utils;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Holds information about a conversion between two types.
-	/// </summary>
-	public struct Conversion : IEquatable<Conversion>
-	{
-		public static readonly Conversion None = default(Conversion);
-		public static readonly Conversion IdentityConversion = new Conversion(1);
-		public static readonly Conversion ImplicitNumericConversion = new Conversion(2);
-		public static readonly Conversion ImplicitEnumerationConversion = new Conversion(3);
-		public static readonly Conversion ImplicitNullableConversion = new Conversion(4);
-		public static readonly Conversion NullLiteralConversion = new Conversion(5);
-		public static readonly Conversion ImplicitReferenceConversion = new Conversion(6);
-		public static readonly Conversion BoxingConversion = new Conversion(7);
-		public static readonly Conversion ImplicitDynamicConversion = new Conversion(8);
-		public static readonly Conversion ImplicitConstantExpressionConversion = new Conversion(9);
-		const int userDefinedImplicitConversionKind = 10;
-		const int liftedUserDefinedImplicitConversionKind = 11;
-		public static readonly Conversion ImplicitPointerConversion = new Conversion(12);
-		const int anonymousFunctionConversionKind = 13;
-		const int methodGroupConversionKind = 14;
-		public static readonly Conversion ExplicitNumericConversion = new Conversion(15);
-		public static readonly Conversion ExplicitEnumerationConversion = new Conversion(16);
-		public static readonly Conversion ExplicitNullableConversion = new Conversion(17);
-		public static readonly Conversion ExplicitReferenceConversion = new Conversion(18);
-		public static readonly Conversion UnboxingConversion = new Conversion(19);
-		public static readonly Conversion ExplicitDynamicConversion = new Conversion(20);
-		public static readonly Conversion ExplicitPointerConversion = new Conversion(21);
-		const int userDefinedExplicitConversionKind = 22;
-		const int liftedUserDefinedExplicitConversionKind = 23;
-		
-		const int lastImplicitConversion = methodGroupConversionKind;
-		
-		static readonly string[] conversionNames = {
-			"None",
-			"Identity conversion",
-			"Implicit numeric conversion",
-			"Implicit enumeration conversion",
-			"Implicit nullable conversion",
-			"Null literal conversion",
-			"Implicit reference conversion",
-			"Boxing conversion",
-			"Implicit dynamic conversion",
-			"Implicit constant expression conversion",
-			"User-defined implicit conversion",
-			"Lifted user-defined implicit conversion",
-			"Implicit pointer conversion",
-			"Anonymous function conversion",
-			"Method group conversion",
-			"Explicit numeric conversion",
-			"Explicit enumeration conversion",
-			"Explicit nullable conversion",
-			"Explicit reference conversion",
-			"Unboxing conversion",
-			"Explicit dynamic conversion",
-			"Explicit pointer conversion",
-			"User-defined explicit conversion",
-			"Lifted user-defined explicit conversion"
-		};
-		
-		public static Conversion UserDefinedImplicitConversion(IMethod operatorMethod, bool isLifted)
-		{
-			if (operatorMethod == null)
-				throw new ArgumentNullException("operatorMethod");
-			return new Conversion(isLifted ? liftedUserDefinedImplicitConversionKind : userDefinedImplicitConversionKind, operatorMethod);
-		}
-		
-		public static Conversion UserDefinedExplicitConversion(IMethod operatorMethod, bool isLifted)
-		{
-			if (operatorMethod == null)
-				throw new ArgumentNullException("operatorMethod");
-			return new Conversion(isLifted ? liftedUserDefinedExplicitConversionKind : userDefinedExplicitConversionKind, operatorMethod);
-		}
-		
-		public static Conversion MethodGroupConversion(IMethod chosenMethod)
-		{
-			if (chosenMethod == null)
-				throw new ArgumentNullException("chosenMethod");
-			return new Conversion(methodGroupConversionKind, chosenMethod);
-		}
-		
-		/// <summary>
-		/// Creates a new anonymous function conversion.
-		/// </summary>
-		/// <param name="data">Used by ResolveVisitor to pass the LambdaTypeHypothesis.</param>
-		public static Conversion AnonymousFunctionConversion(object data)
-		{
-			return new Conversion(anonymousFunctionConversionKind, data);
-		}
-		
-		readonly int kind;
-		internal readonly object data;
-		
-		public Conversion(int kind, object data = null)
-		{
-			this.kind = kind;
-			this.data = data;
-		}
-		
-		/// <summary>
-		/// Gets whether this conversion is an implicit conversion.
-		/// </summary>
-		public bool IsImplicitConversion {
-			get { return kind > 0 && kind <= lastImplicitConversion; }
-		}
-		
-		/// <summary>
-		/// Gets whether this conversion is an explicit conversion.
-		/// </summary>
-		public bool IsExplicitConversion {
-			get { return kind > lastImplicitConversion; }
-		}
-		
-		/// <summary>
-		/// Gets whether this conversion is user-defined.
-		/// </summary>
-		public bool IsUserDefined {
-			get {
-				switch (kind) {
-					case userDefinedImplicitConversionKind:
-					case liftedUserDefinedImplicitConversionKind:
-					case userDefinedExplicitConversionKind:
-					case liftedUserDefinedExplicitConversionKind:
-						return true;
-					default:
-						return false;
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Gets whether this conversion is a lifted version of a user-defined conversion operator.
-		/// </summary>
-		/// <remarks>Lifted versions of builtin conversion operators are classified as nullable-conversion</remarks>
-		public bool IsLifted {
-			get {
-				return kind == liftedUserDefinedImplicitConversionKind || kind == liftedUserDefinedExplicitConversionKind;
-			}
-		}
-		
-		/// <summary>
-		/// Gets whether this conversion is a method group conversion.
-		/// </summary>
-		public bool IsMethodGroupConversion {
-			get { return kind == methodGroupConversionKind; }
-		}
-		
-		/// <summary>
-		/// Gets whether this conversion is an anonymous function conversion.
-		/// </summary>
-		public bool IsAnonymousFunctionConversion {
-			get { return kind == anonymousFunctionConversionKind; }
-		}
-		
-		/// <summary>
-		/// Gets the method associated with this conversion.
-		/// For user-defined conversions, this is the method being called.
-		/// For method-group conversions, this is the method that was chosen from the group.
-		/// </summary>
-		public IMethod Method {
-			get { return data as IMethod; }
-		}
-		
-		public override string ToString()
-		{
-			string name = conversionNames[kind];
-			if (data != null)
-				return name + " (" + data + ")";
-			else
-				return name;
-		}
-		
-		public bool IsValid {
-			get { return kind > 0; }
-		}
-		
-		public static implicit operator bool(Conversion conversion)
-		{
-			return conversion.kind > 0;
-		}
-		
-		#region Equals and GetHashCode implementation
-		public override int GetHashCode()
-		{
-			if (data != null)
-				return kind ^ data.GetHashCode();
-			else
-				return kind;
-		}
-		
-		public override bool Equals(object obj)
-		{
-			return (obj is Conversion) && Equals((Conversion)obj);
-		}
-		
-		public bool Equals(Conversion other)
-		{
-			return this.kind == other.kind && object.Equals(this.data, other.data);
-		}
-		
-		public static bool operator ==(Conversion lhs, Conversion rhs)
-		{
-			return lhs.Equals(rhs);
-		}
-		
-		public static bool operator !=(Conversion lhs, Conversion rhs)
-		{
-			return !lhs.Equals(rhs);
-		}
-		#endregion
-	}
-	
-	/// <summary>
 	/// Contains logic that determines whether an implicit conversion exists between two types.
 	/// </summary>
-	public class Conversions
+	/// <remarks>
+	/// Because this class internally uses a cache, it is NOT thread-safe!
+	/// </remarks>
+	public sealed class Conversions
 	{
 		readonly Dictionary<TypePair, Conversion> implicitConversionCache = new Dictionary<TypePair, Conversion>();
-		readonly ITypeResolveContext context;
+		readonly ICompilation compilation;
 		readonly IType objectType;
+		int subtypeCheckNestingDepth;
 		
-		public Conversions(ITypeResolveContext context)
+		public Conversions(ICompilation compilation)
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.context = context;
-			this.objectType = KnownTypeReference.Object.Resolve(context);
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			this.compilation = compilation;
+			this.objectType = compilation.FindType(KnownTypeCode.Object);
 			this.dynamicErasure = new DynamicErasure(this);
 		}
 		
 		/// <summary>
-		/// Gets the Conversions instance for the specified <see cref="ITypeResolveContext"/>.
+		/// Gets the Conversions instance for the specified <see cref="ICompilation"/>.
 		/// This will make use of the context's cache manager (if available) to reuse the Conversions instance.
 		/// </summary>
-		public static Conversions Get(ITypeResolveContext context)
+		public static Conversions Get(ICompilation compilation)
 		{
-			CacheManager cache = context.CacheManager;
-			if (cache != null) {
-				Conversions conversions = cache.GetThreadLocal(typeof(Conversions)) as Conversions;
-				if (conversions == null) {
-					conversions = new Conversions(context);
-					cache.SetThreadLocal(typeof(Conversions), conversions);
-				}
-				return conversions;
-			} else {
-				return new Conversions(context);
+			CacheManager cache = compilation.CacheManager;
+			Conversions conversions = (Conversions)cache.GetThreadLocal(typeof(Conversions));
+			if (conversions == null) {
+				conversions = new Conversions(compilation);
+				cache.SetThreadLocal(typeof(Conversions), conversions);
 			}
+			return conversions;
 		}
 		
 		#region TypePair (for caching)
@@ -311,17 +100,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolveResult == null)
 				throw new ArgumentNullException("resolveResult");
+			Conversion c;
 			if (resolveResult.IsCompileTimeConstant) {
-				if (ImplicitEnumerationConversion(resolveResult, toType))
-					return Conversion.ImplicitEnumerationConversion;
+				c = ImplicitEnumerationConversion(resolveResult, toType);
+				if (c.IsValid) return c;
 				if (ImplicitConstantExpressionConversion(resolveResult, toType))
 					return Conversion.ImplicitConstantExpressionConversion;
 			}
-			Conversion c;
 			c = ImplicitConversion(resolveResult.Type, toType);
-			if (c) return c;
+			if (c.IsValid) return c;
 			c = AnonymousFunctionConversion(resolveResult, toType);
-			if (c) return c;
+			if (c.IsValid) return c;
 			c = MethodGroupConversion(resolveResult, toType);
 			return c;
 		}
@@ -340,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// C# 4.0 spec: §6.1
 			c = StandardImplicitConversion(fromType, toType);
-			if (!c) {
+			if (!c.IsValid) {
 				c = UserDefinedImplicitConversion(fromType, toType);
 			}
 			implicitConversionCache[pair] = c;
@@ -358,8 +147,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return Conversion.IdentityConversion;
 			if (ImplicitNumericConversion(fromType, toType))
 				return Conversion.ImplicitNumericConversion;
-			if (ImplicitNullableConversion(fromType, toType))
-				return Conversion.ImplicitNullableConversion;
+			Conversion c = ImplicitNullableConversion(fromType, toType);
+			if (c.IsValid)
+				return c;
 			if (NullLiteralConversion(fromType, toType))
 				return Conversion.NullLiteralConversion;
 			if (ImplicitReferenceConversion(fromType, toType))
@@ -412,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolveResult.Type.Kind == TypeKind.Dynamic)
 				return Conversion.ExplicitDynamicConversion;
 			Conversion c = ImplicitConversion(resolveResult, toType);
-			if (c)
+			if (c.IsValid)
 				return c;
 			else
 				return ExplicitConversionImpl(resolveResult.Type, toType);
@@ -428,7 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (fromType.Kind == TypeKind.Dynamic)
 				return Conversion.ExplicitDynamicConversion;
 			Conversion c = ImplicitConversion(fromType, toType);
-			if (c)
+			if (c.IsValid)
 				return c;
 			else
 				return ExplicitConversionImpl(fromType, toType);
@@ -441,9 +231,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (AnyNumericConversion(fromType, toType))
 				return Conversion.ExplicitNumericConversion;
 			if (ExplicitEnumerationConversion(fromType, toType))
-				return Conversion.ExplicitEnumerationConversion;
-			if (ExplicitNullableConversion(fromType, toType))
-				return Conversion.ExplicitNullableConversion;
+				return Conversion.EnumerationConversion(false, false);
+			Conversion c = ExplicitNullableConversion(fromType, toType);
+			if (c.IsValid)
+				return c;
 			if (ExplicitReferenceConversion(fromType, toType))
 				return Conversion.ExplicitReferenceConversion;
 			if (UnboxingConversion(fromType, toType))
@@ -482,7 +273,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override IType VisitOtherType(IType type)
 			{
-				if (type == SharedTypes.Dynamic)
+				if (type.Kind == TypeKind.Dynamic)
 					return objectType;
 				else
 					return base.VisitOtherType(type);
@@ -536,15 +327,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Enumeration Conversions
-		bool ImplicitEnumerationConversion(ResolveResult rr, IType toType)
+		Conversion ImplicitEnumerationConversion(ResolveResult rr, IType toType)
 		{
 			// C# 4.0 spec: §6.1.3
 			Debug.Assert(rr.IsCompileTimeConstant);
 			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
 			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDouble(rr.ConstantValue) == 0) {
-				return NullableType.GetUnderlyingType(toType).Kind == TypeKind.Enum;
+				if (NullableType.GetUnderlyingType(toType).Kind == TypeKind.Enum) {
+					return Conversion.EnumerationConversion(true, NullableType.IsNullable(toType));
+				}
 			}
-			return false;
+			return Conversion.None;
 		}
 		
 		bool ExplicitEnumerationConversion(IType fromType, IType toType)
@@ -560,28 +353,34 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Nullable Conversions
-		bool ImplicitNullableConversion(IType fromType, IType toType)
+		Conversion ImplicitNullableConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.4
 			if (NullableType.IsNullable(toType)) {
 				IType t = NullableType.GetUnderlyingType(toType);
 				IType s = NullableType.GetUnderlyingType(fromType); // might or might not be nullable
-				return IdentityConversion(s, t) || ImplicitNumericConversion(s, t);
-			} else {
-				return false;
+				if (IdentityConversion(s, t))
+					return Conversion.ImplicitNullableConversion;
+				if (ImplicitNumericConversion(s, t))
+					return Conversion.ImplicitLiftedNumericConversion;
 			}
+			return Conversion.None;
 		}
 		
-		bool ExplicitNullableConversion(IType fromType, IType toType)
+		Conversion ExplicitNullableConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.4
 			if (NullableType.IsNullable(toType) || NullableType.IsNullable(fromType)) {
 				IType t = NullableType.GetUnderlyingType(toType);
 				IType s = NullableType.GetUnderlyingType(fromType);
-				return IdentityConversion(s, t) || AnyNumericConversion(s, t) || ExplicitEnumerationConversion(s, t);
-			} else {
-				return false;
+				if (IdentityConversion(s, t))
+					return Conversion.ExplicitNullableConversion;
+				if (AnyNumericConversion(s, t))
+					return Conversion.ExplicitLiftedNumericConversion;
+				if (ExplicitEnumerationConversion(s, t))
+					return Conversion.EnumerationConversion(false, true);
 			}
+			return Conversion.None;
 		}
 		#endregion
 		
@@ -589,8 +388,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool NullLiteralConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.5
-			if (SharedTypes.Null.Equals(fromType)) {
-				return NullableType.IsNullable(toType) || toType.IsReferenceType(context) == true;
+			if (SpecialType.NullType.Equals(fromType)) {
+				return NullableType.IsNullable(toType) || toType.IsReferenceType == true;
 			} else {
 				return false;
 			}
@@ -603,7 +402,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §6.1.6
 			
 			// reference conversions are possible only if both types are known to be reference types
-			if (!(fromType.IsReferenceType(context) == true && toType.IsReferenceType(context) == true))
+			if (!(fromType.IsReferenceType == true && toType.IsReferenceType == true))
 				return false;
 			
 			ArrayType fromArray = fromType as ArrayType;
@@ -625,8 +424,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.GetTypeArgument(0));
 				}
 				// conversion from any array to System.Array and the interfaces it implements:
-				ITypeDefinition systemArray = context.GetTypeDefinition("System", "Array", 0, StringComparer.Ordinal);
-				return systemArray != null && (systemArray.Equals(toType) || ImplicitReferenceConversion(systemArray, toType));
+				IType systemArray = compilation.FindType(KnownTypeCode.Array);
+				return systemArray.Kind != TypeKind.Unknown && (systemArray.Equals(toType) || ImplicitReferenceConversion(systemArray, toType));
 			}
 			
 			// now comes the hard part: traverse the inheritance chain and figure out generics+variance
@@ -636,12 +435,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// Determines whether s is a subtype of t.
 		// Helper method used for ImplicitReferenceConversion, BoxingConversion and ImplicitTypeParameterConversion
 		
-		int subtypeCheckNestingDepth;
-		
 		bool IsSubtypeOf(IType s, IType t)
 		{
 			// conversion to dynamic + object are always possible
-			if (t.Equals(SharedTypes.Dynamic) || t.Equals(objectType))
+			if (t.Equals(SpecialType.Dynamic) || t.Equals(objectType))
 				return true;
 			try {
 				if (++subtypeCheckNestingDepth > 10) {
@@ -654,7 +451,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return false;
 				}
 				// let GetAllBaseTypes do the work for us
-				foreach (IType baseType in s.GetAllBaseTypes(context)) {
+				foreach (IType baseType in s.GetAllBaseTypes()) {
 					if (IdentityOrVarianceConversion(baseType, t))
 						return true;
 				}
@@ -706,11 +503,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §6.2.4
 			
 			// reference conversions are possible only if both types are known to be reference types
-			if (!(fromType.IsReferenceType(context) == true && toType.IsReferenceType(context) == true))
+			if (!(fromType.IsReferenceType == true && toType.IsReferenceType == true))
 				return false;
 			
 			// There's lots of additional rules, but they're not really relevant,
-			// as they are only used to identify invalid casts, and we don't care about reporting those.
+			// as they are only used to identify invalid casts, and we currently don't care about reporting those.
 			return true;
 		}
 		#endregion
@@ -720,7 +517,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §6.1.7
 			fromType = NullableType.GetUnderlyingType(fromType);
-			if (fromType.IsReferenceType(context) == false && toType.IsReferenceType(context) == true)
+			if (fromType.IsReferenceType == false && toType.IsReferenceType == true)
 				return IsSubtypeOf(fromType, toType);
 			else
 				return false;
@@ -730,7 +527,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §6.2.5
 			toType = NullableType.GetUnderlyingType(toType);
-			if (fromType.IsReferenceType(context) == true && toType.IsReferenceType(context) == false)
+			if (fromType.IsReferenceType == true && toType.IsReferenceType == false)
 				return IsSubtypeOf(toType, fromType);
 			else
 				return false;
@@ -776,7 +573,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (fromType.Kind != TypeKind.TypeParameter)
 				return false; // not a type parameter
-			if (fromType.IsReferenceType(context) == true)
+			if (fromType.IsReferenceType == true)
 				return false; // already handled by ImplicitReferenceConversion
 			return IsSubtypeOf(fromType, toType);
 		}
@@ -784,7 +581,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool ExplicitTypeParameterConversion(IType fromType, IType toType)
 		{
 			if (toType.Kind == TypeKind.TypeParameter) {
-				return fromType.Kind == TypeKind.TypeParameter || fromType.IsReferenceType(context) == true;
+				return fromType.Kind == TypeKind.TypeParameter || fromType.IsReferenceType == true;
 			} else {
 				return fromType.Kind == TypeKind.TypeParameter && toType.Kind == TypeKind.Interface;
 			}
@@ -797,7 +594,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §18.4 Pointer conversions
 			if (fromType is PointerType && toType is PointerType && toType.ReflectionName == "System.Void*")
 				return true;
-			if (SharedTypes.Null.Equals(fromType) && toType is PointerType)
+			if (SpecialType.NullType.Equals(fromType) && toType is PointerType)
 				return true;
 			return false;
 		}
@@ -825,13 +622,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		bool IsEncompassedBy(IType a, IType b)
 		{
-			return a.Kind != TypeKind.Interface && b.Kind != TypeKind.Interface && StandardImplicitConversion(a, b);
+			return a.Kind != TypeKind.Interface && b.Kind != TypeKind.Interface && StandardImplicitConversion(a, b).IsValid;
 		}
 		
 		bool IsEncompassingOrEncompassedBy(IType a, IType b)
 		{
 			return a.Kind != TypeKind.Interface && b.Kind != TypeKind.Interface
-				&& (StandardImplicitConversion(a, b) || StandardImplicitConversion(b, a));
+				&& (StandardImplicitConversion(a, b).IsValid || StandardImplicitConversion(b, a).IsValid);
 		}
 		
 		Conversion UserDefinedImplicitConversion(IType fromType, IType toType)
@@ -875,19 +672,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		List<OperatorInfo> GetApplicableConversionOperators(IType fromType, IType toType, bool isExplicit)
 		{
 			// Find the candidate operators:
-			Predicate<IMethod> opFilter;
+			Predicate<IUnresolvedMethod> opFilter;
 			if (isExplicit)
 				opFilter = m => m.IsStatic && m.IsOperator && m.Name == "op_Explicit" && m.Parameters.Count == 1;
 			else
 				opFilter = m => m.IsStatic && m.IsOperator && m.Name == "op_Implicit" && m.Parameters.Count == 1;
 			
-			var operators = NullableType.GetUnderlyingType(fromType).GetMethods(context, opFilter)
-				.Concat(NullableType.GetUnderlyingType(toType).GetMethods(context, opFilter)).Distinct();
+			var operators = NullableType.GetUnderlyingType(fromType).GetMethods(opFilter)
+				.Concat(NullableType.GetUnderlyingType(toType).GetMethods(opFilter)).Distinct();
 			// Determine whether one of them is applicable:
 			List<OperatorInfo> result = new List<OperatorInfo>();
 			foreach (IMethod op in operators) {
-				IType sourceType = op.Parameters[0].Type.Resolve(context);
-				IType targetType = op.ReturnType.Resolve(context);
+				IType sourceType = op.Parameters[0].Type;
+				IType targetType = op.ReturnType;
 				// Try if the operator is applicable:
 				bool isApplicable;
 				if (isExplicit) {
@@ -900,11 +697,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					result.Add(new OperatorInfo(op, sourceType, targetType, false));
 				}
 				// Try if the operator is applicable in lifted form:
-				if (NullableType.IsNonNullableValueType(sourceType, context)
-				    && NullableType.IsNonNullableValueType(targetType, context))
+				if (NullableType.IsNonNullableValueType(sourceType)
+				    && NullableType.IsNonNullableValueType(targetType))
 				{
-					IType liftedSourceType = NullableType.Create(sourceType, context);
-					IType liftedTargetType = NullableType.Create(targetType, context);
+					IType liftedSourceType = NullableType.Create(compilation, sourceType);
+					IType liftedTargetType = NullableType.Create(compilation, targetType);
 					if (isExplicit) {
 						isApplicable = IsEncompassingOrEncompassedBy(fromType, liftedSourceType)
 							&& IsEncompassingOrEncompassedBy(liftedTargetType, toType);
@@ -938,9 +735,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			IType[] dParamTypes = new IType[d.Parameters.Count];
 			for (int i = 0; i < dParamTypes.Length; i++) {
-				dParamTypes[i] = d.Parameters[i].Type.Resolve(context);
+				dParamTypes[i] = d.Parameters[i].Type;
 			}
-			IType dReturnType = d.ReturnType.Resolve(context);
+			IType dReturnType = d.ReturnType;
 			
 			if (f.HasParameterList) {
 				// If F contains an anonymous-function-signature, then D and F have the same number of parameters.
@@ -961,7 +758,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						IParameter pF = f.Parameters[i];
 						if (pD.IsRef != pF.IsRef || pD.IsOut != pF.IsOut)
 							return Conversion.None;
-						if (!dParamTypes[i].Equals(pF.Type.Resolve(context)))
+						if (!dParamTypes[i].Equals(pF.Type))
 							return Conversion.None;
 					}
 				}
@@ -1002,7 +799,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult[] args = new ResolveResult[m.Parameters.Count];
 			for (int i = 0; i < args.Length; i++) {
 				IParameter param = m.Parameters[i];
-				IType parameterType = param.Type.Resolve(context);
+				IType parameterType = param.Type;
 				if ((param.IsRef || param.IsOut) && parameterType.Kind == TypeKind.ByReference) {
 					parameterType = ((ByReferenceType)parameterType).ElementType;
 					args[i] = new ByReferenceResolveResult(parameterType, param.IsOut);
@@ -1010,7 +807,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					args[i] = new ResolveResult(parameterType);
 				}
 			}
-			var or = rr.PerformOverloadResolution(context, args, allowExpandingParams: false, conversions: this);
+			var or = rr.PerformOverloadResolution(compilation, args, allowExpandingParams: false, conversions: this);
 			if (or.FoundApplicableCandidate)
 				return Conversion.MethodGroupConversion((IMethod)or.BestCandidate);
 			else
@@ -1042,15 +839,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return 0;
 				IType[] parameterTypes = new IType[m1.Parameters.Count];
 				for (int i = 0; i < parameterTypes.Length; i++) {
-					parameterTypes[i] = m1.Parameters[i].Type.Resolve(context);
-					if (!parameterTypes[i].Equals(m2.Parameters[i].Type.Resolve(context)))
+					parameterTypes[i] = m1.Parameters[i].Type;
+					if (!parameterTypes[i].Equals(m2.Parameters[i].Type))
 						return 0;
 				}
 				if (lambda.HasParameterList && parameterTypes.Length != lambda.Parameters.Count)
 					return 0;
 				
-				IType ret1 = m1.ReturnType.Resolve(context);
-				IType ret2 = m2.ReturnType.Resolve(context);
+				IType ret1 = m1.ReturnType;
+				IType ret2 = m2.ReturnType;
 				if (ret1.Kind == TypeKind.Void && ret2.Kind != TypeKind.Void)
 					return 1;
 				if (ret1.Kind != TypeKind.Void && ret2.Kind == TypeKind.Void)
@@ -1104,8 +901,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <returns>0 = neither is better; 1 = t1 is better; 2 = t2 is better</returns>
 		int BetterConversionTarget(IType t1, IType t2)
 		{
-			bool t1To2 = ImplicitConversion(t1, t2);
-			bool t2To1 = ImplicitConversion(t2, t1);
+			bool t1To2 = ImplicitConversion(t1, t2).IsValid;
+			bool t2To1 = ImplicitConversion(t2, t1).IsValid;
 			if (t1To2 && !t2To1)
 				return 1;
 			if (t2To1 && !t1To2)

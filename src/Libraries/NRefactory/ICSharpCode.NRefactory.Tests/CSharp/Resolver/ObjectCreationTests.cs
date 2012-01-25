@@ -52,7 +52,7 @@ class A {
 }
 ";
 			ResolveResult result = Resolve<ErrorResolveResult>(program);
-			Assert.AreSame(SharedTypes.UnknownType, result.Type);
+			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
 		[Test]
@@ -66,7 +66,7 @@ class A {
 ";
 			UnknownIdentifierResolveResult result = Resolve<UnknownIdentifierResolveResult>(program);
 			Assert.AreEqual("ThisClassDoesNotExist", result.Identifier);
-			Assert.AreSame(SharedTypes.UnknownType, result.Type);
+			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
 		[Test]
@@ -181,7 +181,7 @@ class B {
 		var x = new List<int>() { ${ 0 }$ };
 	}
 }";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			var result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.Collections.Generic.List.Add", result.Member.FullName);
 		}
 		
@@ -194,8 +194,43 @@ class B {
 		var x = new Dictionary<char, int>() { ${ 'a', 0 }$ };
 	}
 }";
-			InvocationResolveResult result = Resolve<InvocationResolveResult>(program);
+			var result = Resolve<CSharpInvocationResolveResult>(program);
 			Assert.AreEqual("System.Collections.Generic.Dictionary.Add", result.Member.FullName);
+		}
+		
+		[Test]
+		public void CanCallProtectedBaseConstructorInCtorInitializer()
+		{
+			string program = @"using System.Collections.Generic;
+class A { protected A(int x) {} }
+class B : A { public B(int y) : $base(y)$ { } }";
+			var result = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(result.IsError);
+			Assert.AreEqual("A..ctor", result.Member.FullName);
+		}
+		
+		[Test]
+		public void CannotCallProtectedBaseConstructorAsNewObject()
+		{
+			string program = @"using System.Collections.Generic;
+class A { protected A(int x) {} }
+class B : A { public B(int y) { $new A(y)$; } }";
+			var result = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsTrue(result.IsError);
+			Assert.AreEqual(OverloadResolutionErrors.Inaccessible, result.OverloadResolutionErrors);
+			Assert.AreEqual("A..ctor", result.Member.FullName); // should still find member even if it's not accessible
+		}
+		
+		[Test]
+		public void CannotCallProtectedDerivedConstructorAsNewObject()
+		{
+			string program = @"using System.Collections.Generic;
+class A { protected A(int x) { $new B(x)$; } }
+class B : A { protected B(int y) {} }";
+			var result = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsTrue(result.IsError);
+			Assert.AreEqual(OverloadResolutionErrors.Inaccessible, result.OverloadResolutionErrors);
+			Assert.AreEqual("B..ctor", result.Member.FullName); // should still find member even if it's not accessible
 		}
 	}
 }

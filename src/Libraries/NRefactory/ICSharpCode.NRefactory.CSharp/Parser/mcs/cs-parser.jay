@@ -47,7 +47,7 @@ namespace Mono.CSharp
 	
 		NamespaceContainer  current_namespace;
 		TypeContainer   current_container;
-		DeclSpace	current_class;
+		TypeContainer	current_class;
 		PropertyBase current_property;
 		EventProperty current_event;
 		EventField current_event_field;
@@ -75,6 +75,8 @@ namespace Mono.CSharp
 		ParametersCompiled current_local_parameters;
 
 		bool parsing_anonymous_method;
+		
+		bool async_block;
 
 		///
 		/// An out-of-band stack.
@@ -149,20 +151,6 @@ namespace Mono.CSharp
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> attributeArgumentCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
-		List<Location> enumCommas = new List<Location> ();
-		
-		object lastYYVal;
-		
-		// Can be used for code completion to get the last valid expression before an error.
-		// needs a hack in yyparse to make it work add 
-		// lastYYVal = yyVal;
-		// after the big switch/case (somewhere around line 3915)
-		public object LastYYVal {
-			get {
-				return lastYYVal;
-			}
-		}
-		
 %}
 
 %token EOF
@@ -440,19 +428,26 @@ extern_alias_directive
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		string s = lt.Value;
-		if (s != "alias"){
+		if (s != "alias") {
 			syntax_error (lt.Location, "`alias' expected");
-		} else if (lang_version == LanguageVersion.ISO_1) {
-			FeatureIsNotAvailable (lt.Location, "external alias");
 		} else {
-			lt = (Tokenizer.LocatedToken) $3; 
-			current_namespace.AddUsingExternalAlias (lt.Value, lt.Location, report);
-			ubag.AddExternAlias  (GetLocation ($1), GetLocation ($2), lt, GetLocation ($4));
+			if (lang_version == LanguageVersion.ISO_1)
+				FeatureIsNotAvailable (lt.Location, "external alias");
+
+			lt = (Tokenizer.LocatedToken) $3;
+			if (lt.Value == QualifiedAliasMember.GlobalAlias) {
+				RootNamespace.Error_GlobalNamespaceRedefined (report, lt.Location);
+			}
+			
+			var na = new UsingExternAlias (new SimpleMemberName (lt.Value, lt.Location), GetLocation ($1));
+			current_namespace.AddUsing (na);
+			
+			lbag.AddLocation (na, GetLocation ($2), GetLocation ($4));
 		}
 	  }
 	| EXTERN_ALIAS error
 	  {
-	  	syntax_error (GetLocation ($1), "`alias' expected");   // TODO: better
+		Error_SyntaxError (yyToken);
 	  }
 	;
  
@@ -462,20 +457,23 @@ using_directives
 	;
 
 using_directive
-	: using_alias_directive
-	  {
-		if (doc_support)
-			Lexer.doc_state = XmlCommentState.Allowed;
-	  }
-	| using_namespace_directive
+	: using_namespace
 	  {
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
 	  }
 	;
 
-using_alias_directive
-	: USING IDENTIFIER ASSIGN namespace_or_type_name SEMICOLON
+using_namespace
+	: USING namespace_or_type_expr SEMICOLON 
+	  {
+		var un = new UsingNamespace ((ATypeNameExpression) $2, GetLocation ($1));
+		current_namespace.AddUsing (un);
+		
+		ubag.AddUsing (GetLocation ($1), (ATypeNameExpression) $2, GetLocation ($3));
+		lbag.AddLocation (un, GetLocation ($3));
+	  }
+	| USING IDENTIFIER ASSIGN namespace_or_type_expr SEMICOLON
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		if (lang_version != LanguageVersion.ISO_1 && lt.Value == "global") {
@@ -483,22 +481,17 @@ using_alias_directive
 			 "An alias named `global' will not be used when resolving `global::'. The global namespace will be used instead");
 		}
 
-		current_namespace.AddUsingAlias (lt.Value, (MemberName) $4, GetLocation ($1));
-		ubag.AddUsingAlias (GetLocation ($1), lt, GetLocation ($3), (MemberName) $4, GetLocation ($5));
-		  }
+		var un = new UsingAliasNamespace (new SimpleMemberName (lt.Value, lt.Location), (ATypeNameExpression) $4, GetLocation ($1));
+		current_namespace.AddUsing (un);
+		ubag.AddUsingAlias (GetLocation ($1), lt, GetLocation ($3), (ATypeNameExpression) $4, GetLocation ($5));
+		
+		lbag.AddLocation (un, GetLocation ($3), GetLocation ($5));
+	  }
 	| USING error
 	 {
 		Error_SyntaxError (yyToken);
 		$$ = null;
-	  }
-	;
-
-using_namespace_directive
-	: USING namespace_name SEMICOLON 
-	  {
-		current_namespace.AddUsing ((MemberName) $2, GetLocation ($1));
-		ubag.AddUsing (GetLocation ($1), (MemberName) $2, GetLocation ($3));
-	  }
+	 }
 	;
 
 //
@@ -507,10 +500,10 @@ using_namespace_directive
 // detach them
 // 
 namespace_declaration
-	: opt_attributes NAMESPACE qualified_identifier
+	: opt_attributes NAMESPACE namespace_name
 	  {
 		Attributes attrs = (Attributes) $1;
-		MemberName name = (MemberName) $3;
+		var name = (MemberName) $3;
 		if (attrs != null) {
 			bool valid_global_attrs = true;
 			if ((current_namespace.DeclarationFound || current_namespace != file.NamespaceContainer)) {
@@ -557,13 +550,13 @@ namespace_declaration
 	  }
 	;
 
-qualified_identifier
+namespace_name
 	: IDENTIFIER
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		$$ = new MemberName (lt.Value, lt.Location);
 	  }
-	| qualified_identifier DOT IDENTIFIER
+	| namespace_name DOT IDENTIFIER
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		$$ = new MemberName ((MemberName) $1, lt.Value, lt.Location) {
@@ -585,18 +578,6 @@ opt_semicolon
 opt_comma
 	: /* empty */
 	| COMMA
-	;
-
-namespace_name
-	: namespace_or_type_name
-	 {
-		MemberName name = (MemberName) $1;
-
-		if (name.TypeArguments != null)
-			syntax_error (lexer.Location, "namespace name expected");
-
-		$$ = name;
-	  }
 	;
 
 opt_using_directives
@@ -788,15 +769,14 @@ attribute
 	  opt_attribute_arguments
 	  {
 		--lexer.parsing_block;
-		MemberName mname = (MemberName) $1;
-		if (mname.IsGeneric) {
-			report.Error (404, lexer.Location,
-				      "'<' unexpected: attributes cannot be generic");
+		
+		var tne = (ATypeNameExpression) $1;
+		if (tne.HasTypeArguments) {
+			report.Error (404, tne.Location, "Attributes cannot be generic");
 		}
-
 		Arguments [] arguments = (Arguments []) $3;
-		ATypeNameExpression expr = mname.GetTypeExpression ();
-		$$ = new Attribute (current_attr_target, expr, arguments, mname.Location, lexer.IsEscapedIdentifier (mname));
+
+		$$ = new Attribute (current_attr_target, tne, (Arguments[]) $3, GetLocation ($1), lexer.IsEscapedIdentifier (tne));
 		if (arguments != null) {
 			attributeArgumentCommas.Insert (0, savedAttrParenOpenLocation);
 			attributeArgumentCommas.Add (savedAttrParenCloseLocation);
@@ -807,7 +787,7 @@ attribute
 	;
 
 attribute_name
-	: namespace_or_type_name
+	: namespace_or_type_expr
 	;
 
 opt_attribute_arguments
@@ -885,7 +865,7 @@ named_attribute_argument
 	;
 	
 named_argument
-	: IDENTIFIER COLON opt_named_modifier expression
+	: identifier_inside_body COLON opt_named_modifier expression
 	  {
 		if (lang_version <= LanguageVersion.V_3)
 			FeatureIsNotAvailable (GetLocation ($1), "named argument");
@@ -966,7 +946,8 @@ struct_declaration
 	  {
 		lexer.ConstraintsParsing = false;
 
-		current_class.SetParameterInfo ((List<Constraints>) $9);
+		if ($9 != null)
+			current_class.SetConstraints ((List<Constraints>) $9);
 
 		if (doc_support)
 			current_container.DocComment = Lexer.consume_doc_comment ();
@@ -1254,14 +1235,14 @@ method_declaration
 
 		// Add it early in the case of body being eof for full ast
 		Method m = (Method) $1;
-		lexer.async_block = (m.ModFlags & Modifiers.ASYNC) != 0;
+		async_block = (m.ModFlags & Modifiers.ASYNC) != 0;
 		current_container.AddMethod (m);
 	  }
 	  method_body
 	  {
 		Method method = (Method) $1;
 		method.Block = (ToplevelBlock) $3;
-		lexer.async_block = false;
+		async_block = false;
 		
 		if (method.Block == null) {
 			lbag.AppendToMember (method, savedLocation); // semicolon
@@ -1304,19 +1285,11 @@ method_header
 		MemberName name = (MemberName) $4;
 		current_local_parameters = (ParametersCompiled) $7;
 
-		GenericMethod generic = null;
-		if (name.TypeArguments != null) {
-			generic = new GenericMethod (current_namespace, current_class, name,
-						     (FullNamedExpression) $3, current_local_parameters);
-
-			generic.SetParameterInfo ((List<Constraints>) $10);
-		} else if ($10 != null) {
-			report.Error (80, GetLocation ($10),
-				"Constraints are not allowed on non-generic declarations");
-		}
-
-		var method = Method.Create (current_class, generic, (FullNamedExpression) $3, (Modifiers) $2,
+		var method = Method.Create (current_class, (FullNamedExpression) $3, (Modifiers) $2,
 				     name, current_local_parameters, (Attributes) $1, $10 != null);
+
+		if ($10 != null)
+			method.SetConstraints ((List<Constraints>) $10);
 				     
 		if (doc_support)
 			method.DocComment = Lexer.consume_doc_comment ();
@@ -1349,30 +1322,20 @@ method_header
 		MemberName name = (MemberName) $6;
 		current_local_parameters = (ParametersCompiled) $9;
 
-		if ($11 != null && name.TypeArguments == null)
-			report.Error (80, lexer.Location,
-				      "Constraints are not allowed on non-generic declarations");
-
-		GenericMethod generic = null;
-		if (name.TypeArguments != null) {
-			generic = new GenericMethod (current_namespace, current_class, name,
-				new TypeExpression (compiler.BuiltinTypes.Void, GetLocation ($4)),
-				current_local_parameters);
-
-			generic.SetParameterInfo ((List<Constraints>) $11);
-		}
-
 		var modifiers = (Modifiers) $2;
 		modifiers |= Modifiers.PARTIAL;
 
-		var method = Method.Create (current_class, generic, new TypeExpression (compiler.BuiltinTypes.Void, GetLocation ($4)),
+		var method = Method.Create (current_class, new TypeExpression (compiler.BuiltinTypes.Void, GetLocation ($4)),
 				     modifiers, name, current_local_parameters, (Attributes) $1, $11 != null);
+
+		if ($11 != null)
+			method.SetConstraints ((List<Constraints>) $11);
 
 		if (doc_support)
 			method.DocComment = Lexer.consume_doc_comment ();
 
 		StoreModifierLocation (Modifiers.PARTIAL, GetLocation ($3));
-		lbag.AddMember (method, mod_locations, GetLocation ($7), GetLocation ($10));
+		lbag.AddMember (method, GetModifierLocations (), GetLocation ($7), GetLocation ($10));
 		$$ = method;
 	  }
 	| opt_attributes
@@ -1384,7 +1347,7 @@ method_header
 		report.Error (1585, name.Location, 
 			"Member modifier `{0}' must precede the member type and name", ModifiersExtensions.Name ((Modifiers) $4));
 
-		var method = Method.Create (current_class, null, (FullNamedExpression) $3,
+		var method = Method.Create (current_class, (FullNamedExpression) $3,
 					    0, name, (ParametersCompiled) $7, (Attributes) $1, false);
 
 		current_local_parameters = (ParametersCompiled) $7;
@@ -1939,7 +1902,8 @@ interface_declaration
 	  {
 		lexer.ConstraintsParsing = false;
 
-		current_class.SetParameterInfo ((List<Constraints>) $9);
+		if ($9 != null)
+			current_class.SetConstraints ((List<Constraints>) $9);
 
 		if (doc_support) {
 			current_container.DocComment = Lexer.consume_doc_comment ();
@@ -2197,8 +2161,6 @@ constructor_declaration
 		if (doc_support)
 			c.DocComment = ConsumeStoredComment ();
 
-		current_container.AddConstructor (c);
-
 		current_local_parameters = null;
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
@@ -2220,23 +2182,12 @@ constructor_declarator
 	  OPEN_PARENS opt_formal_parameter_list CLOSE_PARENS
 	  {
 		valid_param_mod = 0;
-		current_local_parameters = (ParametersCompiled) $6;  
+		current_local_parameters = (ParametersCompiled) $6;
 		
-		//
-		// start block here, so possible anonymous methods inside
-		// constructor initializer can get correct parent block
-		//
-	  	start_block (lexer.Location);
-	  }
-	  opt_constructor_initializer
-	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		var mods = (Modifiers) $2;
-		ConstructorInitializer ci = (ConstructorInitializer) $9;
+		var c = new Constructor (current_class, lt.Value, mods, (Attributes) $1, current_local_parameters, lt.Location);
 
-		Constructor c = new Constructor (current_class, lt.Value, mods,
-			(Attributes) $1, current_local_parameters, ci, lt.Location);
-		
 		if (lt.Value != current_container.MemberName.Name) {
 			report.Error (1520, c.Location, "Class, struct, or interface method must have a return type");
 		} else if ((mods & Modifiers.STATIC) != 0) {
@@ -2245,16 +2196,32 @@ constructor_declarator
 					"`{0}': static constructor cannot have an access modifier",
 					c.GetSignatureForError ());
 			}
-			if (ci != null) {
+		}
+
+		current_container.AddConstructor (c);
+		lbag.AddMember (c, GetModifierLocations (), GetLocation ($5), GetLocation ($7));
+		$$ = c;
+
+		//
+		// start block here, so possible anonymous methods inside
+		// constructor initializer can get correct parent block
+		//
+	  	start_block (lexer.Location);
+	  }
+	  opt_constructor_initializer
+	  {
+		if ($9 != null) {
+			var c = (Constructor) $8;
+			c.Initializer = (ConstructorInitializer) $9;
+			
+			if (c.IsStatic) {
 				report.Error (514, c.Location,
 					"`{0}': static constructor cannot have an explicit `this' or `base' constructor call",
 					c.GetSignatureForError ());
-			
 			}
 		}
-		
-		lbag.AddMember (c, GetModifierLocations (), GetLocation ($5), GetLocation ($7));
-		$$ = c;
+
+		$$ = $8;
 	  }
 	;
 
@@ -2288,6 +2255,12 @@ constructor_initializer
 	  	--lexer.parsing_block;
 		$$ = new ConstructorThisInitializer ((Arguments) $5, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($1), GetLocation ($3), GetLocation ($6));
+	  }
+	| COLON error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new ConstructorThisInitializer (null, GetLocation ($1));
+		lbag.AddLocation ($$, GetLocation ($1));
 	  }
 	| error
 	  {
@@ -2336,7 +2309,7 @@ event_declaration
 		current_event_field = new EventField (current_class, (FullNamedExpression) $4, (Modifiers) $2, (MemberName) $5, (Attributes) $1);
 		current_container.AddEvent (current_event_field);
 		
-		if (current_event_field.MemberName.Left != null) {
+		if (current_event_field.MemberName.ExplicitInterface != null) {
 			report.Error (71, current_event_field.Location, "`{0}': An explicit interface implementation of an event must use property syntax",
 			current_event_field.GetSignatureForError ());
 		}
@@ -2542,9 +2515,6 @@ enum_declaration
 	: opt_attributes
 	  opt_modifiers
 	  ENUM
-	  {
-		enumCommas.Add (GetLocation ($3));
-	  }
 	  type_declaration_name
 	  opt_enum_base
 	  {
@@ -2555,14 +2525,18 @@ enum_declaration
 	  {
 		if (doc_support)
 			Lexer.doc_state = XmlCommentState.Allowed;
-		enumCommas.Add (GetLocation ($8));
 
-		MemberName name = (MemberName) $5;
+		MemberName name = (MemberName) $4;
 		if (name.IsGeneric) {
 			report.Error (1675, name.Location, "Enums cannot have type parameters");
 		}
 		
-		push_current_class (new Enum (current_namespace, current_class, (TypeExpression) $6, (Modifiers) $2, MakeName (name), (Attributes) $1), null);
+		push_current_class (new Enum (current_namespace, current_class, (TypeExpression) $5, (Modifiers) $2, MakeName (name), (Attributes) $1), null);
+		if ($5 != null) {
+			lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), savedLocation, GetLocation ($7));
+		} else {
+			lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($3), GetLocation ($7));
+		}
 	  }
 	  opt_enum_member_declarations
 	  {
@@ -2572,16 +2546,16 @@ enum_declaration
 	  }
 	  CLOSE_BRACE opt_semicolon
 	  {
-		enumCommas.Add (GetLocation ($12));
-		if ($13 != null)
-			current_class.OptionalSemicolon = GetLocation ($13);
+		lbag.AppendToMember (current_class, GetLocation ($11));
+		if ($12 != null) {
+			current_class.OptionalSemicolon = GetLocation ($12);
+			lbag.AppendToMember (current_class, GetLocation ($12));
+		}
 		if (doc_support)
 			current_class.DocComment = enumTypeComment;
 			
 		--lexer.parsing_declaration;
 
-		lbag.AddMember (current_class, GetModifierLocations (), enumCommas);
-		enumCommas.Clear ();
 		$$ = pop_current_class ();
 	  }
 	;
@@ -2595,7 +2569,7 @@ opt_enum_base
 			Enum.Error_1008 (GetLocation ($2), report);
 			$$ = null;
 		} else {
-			enumCommas.Add (GetLocation ($1));
+			savedLocation = GetLocation ($1);
 			$$ = $2;
 		}
 	 }
@@ -2611,7 +2585,7 @@ opt_enum_member_declarations
 	| enum_member_declarations
 	| enum_member_declarations COMMA
 	  {
-	  	enumCommas.Add (GetLocation ($2));
+		lbag.AppendToMember (current_class, GetLocation ($2));
 	  }
 	;
 
@@ -2619,7 +2593,7 @@ enum_member_declarations
 	: enum_member_declaration
 	| enum_member_declarations COMMA enum_member_declaration
 	  {
-	  	enumCommas.Add (GetLocation ($2));
+		lbag.AppendToMember (current_class, GetLocation ($2));
 	  	$$ = $3;
 	  }
 	;
@@ -2700,7 +2674,8 @@ delegate_declaration
 			Lexer.doc_state = XmlCommentState.Allowed;
 		}
 	  
-		current_delegate.SetParameterInfo ((List<Constraints>) $11);
+		if ($11 != null)
+			current_delegate.SetConstraints ((List<Constraints>) $11);
 		lbag.AddMember (current_delegate, GetModifierLocations (), GetLocation ($3), GetLocation ($6), GetLocation ($9), GetLocation ($13));
 
 		$$ = current_delegate;
@@ -2720,33 +2695,33 @@ opt_nullable
 	  }
 	;
 
-namespace_or_type_name
+namespace_or_type_expr
 	: member_name
 	| qualified_alias_member IDENTIFIER opt_type_argument_list
 	  {
 		var lt1 = (Tokenizer.LocatedToken) $1;
 		var lt2 = (Tokenizer.LocatedToken) $2;
 		
-		$$ = new MemberName (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
+		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	;
 
 member_name
-	: type_name
-	| namespace_or_type_name DOT IDENTIFIER opt_type_argument_list
+	: simple_name_expr
+	| namespace_or_type_expr DOT IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberName ((MemberName) $1, lt.Value, (TypeArguments) $4, lt.Location) {
-			DotLocation = GetLocation ($2)
-		};
+		$$ = new MemberAccess ((Expression) $1, lt.Value, (TypeArguments) $4, lt.Location);
+		lbag.AddLocation ($$, GetLocation ($2));
 	  }
 	;
 
-type_name
+simple_name_expr
 	: IDENTIFIER opt_type_argument_list
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
-		$$ = new MemberName (lt.Value, (TypeArguments)$2, lt.Location);	  
+		$$ = new SimpleName (lt.Value, (TypeArguments)$2, lt.Location);
 	  }
 	;
 	
@@ -2802,7 +2777,7 @@ type_declaration_name
 	  {
 		lexer.parsing_generic_declaration = false;
 		var lt = (Tokenizer.LocatedToken) $1;
-		$$ = new MemberName (lt.Value, (TypeArguments)$3, lt.Location);
+		$$ = new MemberName (lt.Value, (TypeParameters)$3, lt.Location);
 	  }
 	;
 
@@ -2810,7 +2785,7 @@ member_declaration_name
 	: method_declaration_name
 	  {
 	  	MemberName mn = (MemberName)$1;
-	  	if (mn.TypeArguments != null)
+	  	if (mn.TypeParameters != null)
 	  		syntax_error (mn.Location, string.Format ("Member `{0}' cannot declare type arguments",
 	  			mn.GetSignatureForError ()));
 	  }
@@ -2822,7 +2797,7 @@ method_declaration_name
 	  {
 		lexer.parsing_generic_declaration = false;	  
 		var lt = (Tokenizer.LocatedToken) $2;
-		$$ = new MemberName ((MemberName) $1, lt.Value, (TypeArguments) $3, lt.Location);
+		$$ = new MemberName (lt.Value, (TypeParameters) $3, (ATypeNameExpression) $1, lt.Location);
 	  }
 	;
 	
@@ -2835,7 +2810,7 @@ indexer_declaration_name
 	| explicit_interface THIS
 	  {
 		lexer.parsing_generic_declaration = false;
-		$$ = new MemberName ((MemberName) $1, TypeContainer.DefaultIndexerName, null, GetLocation ($2));
+		$$ = new MemberName (TypeContainer.DefaultIndexerName, null, (ATypeNameExpression) $1, GetLocation ($2));
 	  }
 	;
 
@@ -2843,21 +2818,21 @@ explicit_interface
 	: IDENTIFIER opt_type_argument_list DOT
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
-		$$ = new MemberName (lt.Value, (TypeArguments) $2, lt.Location);
+		$$ = new SimpleName (lt.Value, (TypeArguments) $2, lt.Location);
 		lbag.AddLocation ($$, GetLocation ($3));
 	  }
 	| qualified_alias_member IDENTIFIER opt_type_argument_list DOT
 	  {
 		var lt1 = (Tokenizer.LocatedToken) $1;
 		var lt2 = (Tokenizer.LocatedToken) $2;
-		
-		$$ = new MemberName (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
+
+		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (TypeArguments) $3, lt1.Location);
 		lbag.AddLocation ($$, GetLocation ($4));
 	  }
 	| explicit_interface IDENTIFIER opt_type_argument_list DOT
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
-		$$ = new MemberName ((MemberName) $1, lt.Value, (TypeArguments) $3, lt.Location);
+		$$ = new MemberAccess ((ATypeNameExpression) $1, lt.Value, (TypeArguments) $3, lt.Location);
 		lbag.AddLocation ($$, GetLocation ($4));
 	  }
 	;
@@ -2877,16 +2852,16 @@ opt_type_parameter_list
 type_parameters
 	: type_parameter
 	  {
-		TypeArguments type_args = new TypeArguments ();
-		type_args.Add ((FullNamedExpression)$1);
-		$$ = type_args;
+		var tparams = new TypeParameters ();
+		tparams.Add ((TypeParameter)$1);
+		$$ = tparams;
 	  }
 	| type_parameters COMMA type_parameter
 	  {
-		TypeArguments type_args = (TypeArguments) $1;
-		type_args.Add ((FullNamedExpression)$3);
-		$$ = type_args;
-		lbag.AppendTo (type_args, GetLocation ($2));
+		var tparams = (TypeParameters) $1;
+		tparams.Add ((TypeParameter)$3);
+		$$ = tparams;
+		lbag.AddLocation ($3, GetLocation ($3));
 	  }	  
 	;
 
@@ -2894,10 +2869,7 @@ type_parameter
 	: opt_attributes opt_type_parameter_variance IDENTIFIER
 	  {
 		var lt = (Tokenizer.LocatedToken)$3;
-		var variance =  (Variance) $2;
-		$$ = new TypeParameterName (lt.Value, (Attributes)$1, variance, lt.Location);
-		if (variance != Variance.None)
-			lbag.AddLocation ($$, savedLocation);
+		$$ = new TypeParameter (new MemberName (lt.Value, lt.Location), (Attributes)$1, (Variance) $2);
   	  }
   	| error
   	  {
@@ -2906,7 +2878,7 @@ type_parameter
 		else
 			Error_SyntaxError (yyToken);
 			
-  	  	$$ = new TypeParameterName ("", null, lexer.Location);
+  	  	$$ = new TypeParameter (MemberName.Null, null, Variance.None);
   	  }
  	;
 
@@ -2967,22 +2939,21 @@ type_expression_or_array
 	;
 	
 type_expression
-	: namespace_or_type_name opt_nullable
+	: namespace_or_type_expr opt_nullable
 	  {
-		MemberName name = (MemberName) $1;
-
 		if ($2 != null) {
-			$$ = new ComposedCast (name.GetTypeExpression (), (ComposedTypeSpecifier) $2);
+			$$ = new ComposedCast ((ATypeNameExpression) $1, (ComposedTypeSpecifier) $2);
 		} else {
-			if (name.Left == null && name.Name == "var")
-				$$ = new VarExpr (name.Location);
+			var sn = $1 as SimpleName;
+			if (sn != null && sn.Name == "var")
+				$$ = new VarExpr (sn.Location);
 			else
-				$$ = name.GetTypeExpression ();
+				$$ = $1;
 		}
 	  }
-	| namespace_or_type_name pointer_stars
+	| namespace_or_type_expr pointer_stars
 	  {
-		$$ = new ComposedCast (((MemberName) $1).GetTypeExpression (), (ComposedTypeSpecifier) $2);
+		$$ = new ComposedCast ((ATypeNameExpression) $1, (ComposedTypeSpecifier) $2);
 	  }
 	| builtin_types opt_nullable
 	  {
@@ -3379,6 +3350,14 @@ element_access
 		$$ = new ElementAccess ((Expression) $1, (Arguments) $3, GetLocation ($2));
 		lbag.AddLocation ($$, GetLocation ($4));
 	  }
+	| primary_expression OPEN_BRACKET_EXPR expression_list_arguments error
+	  {
+		$$ = new ElementAccess ((Expression) $1, (Arguments) $3, GetLocation ($2));
+	  }
+	| primary_expression OPEN_BRACKET_EXPR error
+	  {
+		$$ = new ElementAccess ((Expression) $1, null, GetLocation ($2));
+	  }
 	;
 
 expression_list
@@ -3709,13 +3688,13 @@ typeof_type_expression
 	;
 	
 unbound_type_name
-	: IDENTIFIER generic_dimension
+	: identifier_inside_body generic_dimension
 	  {  
 		var lt = (Tokenizer.LocatedToken) $1;
 
 		$$ = new SimpleName (lt.Value, (int) $2, lt.Location);
 	  }
-	| qualified_alias_member IDENTIFIER generic_dimension
+	| qualified_alias_member identifier_inside_body generic_dimension
 	  {
 		var lt1 = (Tokenizer.LocatedToken) $1;
 		var lt2 = (Tokenizer.LocatedToken) $2;
@@ -3723,7 +3702,7 @@ unbound_type_name
 		$$ = new QualifiedAliasMember (lt1.Value, lt2.Value, (int) $3, lt1.Location);
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
-	| unbound_type_name DOT IDENTIFIER
+	| unbound_type_name DOT identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
@@ -3731,7 +3710,7 @@ unbound_type_name
 			DotLocation = GetLocation ($2)
 		};
 	  }
-	| unbound_type_name DOT IDENTIFIER generic_dimension
+	| unbound_type_name DOT identifier_inside_body generic_dimension
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		
@@ -3739,16 +3718,16 @@ unbound_type_name
 			DotLocation = GetLocation ($2)
 		};
 	  }
-	| namespace_or_type_name DOT IDENTIFIER generic_dimension
+	| namespace_or_type_expr DOT identifier_inside_body generic_dimension
 	  {
-		var te = ((MemberName) $1).GetTypeExpression ();
-		if (te.HasTypeArguments)
+		var tne = (ATypeNameExpression) $1;
+		if (tne.HasTypeArguments)
 			Error_TypeExpected (GetLocation ($4));
 
 		var lt = (Tokenizer.LocatedToken) $3;
-		$$ = new MemberAccess (te, lt.Value, (int) $4, lt.Location) {
+		$$ = new MemberAccess (tne, lt.Value, (int) $4, lt.Location) {
 			DotLocation = GetLocation ($2)
-		};
+		};		
 	  }
 	;
 
@@ -3878,22 +3857,20 @@ unary_expression
 	  {
 		$$ = new Unary (Unary.Operator.OnesComplement, (Expression) $2, GetLocation ($1));
 	  }
-	| cast_expression
-	| await_expression
-	;
-
-cast_expression
-	: OPEN_PARENS_CAST type CLOSE_PARENS prefixed_unary_expression
+	| OPEN_PARENS_CAST type CLOSE_PARENS prefixed_unary_expression
 	  {
 		$$ = new Cast ((FullNamedExpression) $2, (Expression) $4, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($3));
 	  }
-	;
-	
-await_expression
-	: AWAIT unary_expression
+	| AWAIT prefixed_unary_expression
 	  {
-		current_block.ParametersBlock.IsAsync = true;
+		if (!async_block) {
+			report.Error (1992, GetLocation ($1),
+				"The `await' operator can only be used when its containing method or lambda expression is marked with the `async' modifier");
+		} else {
+			current_block.Explicit.RegisterAsyncAwait ();
+		}
+		
 		$$ = new Await ((Expression) $2, GetLocation ($1));
 	  }
 	;
@@ -4173,13 +4150,13 @@ lambda_parameter_list
 	;
 
 lambda_parameter
-	: parameter_modifier parameter_type IDENTIFIER
+	: parameter_modifier parameter_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 
 		$$ = new Parameter ((FullNamedExpression) $2, lt.Value, (Parameter.Modifier) $1, null, lt.Location);
 	  }
-	| parameter_type IDENTIFIER
+	| parameter_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 
@@ -4240,7 +4217,7 @@ lambda_expression
 		$$ = end_anonymous ((ParametersBlock) $4);
 		lbag.AddLocation ($$, GetLocation ($2));
 	  }
-	| ASYNC IDENTIFIER ARROW
+	| ASYNC identifier_inside_body ARROW
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		Parameter p = new ImplicitLambdaParameter (lt.Value, lt.Location);
@@ -4345,14 +4322,15 @@ class_declaration
 		}
 		
 		push_current_class (c, $3);
-		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 	  }
 	  opt_class_base
 	  opt_type_parameter_constraints_clauses
 	  {
 		lexer.ConstraintsParsing = false;
 
-		current_class.SetParameterInfo ((List<Constraints>) $9);
+		if ($9 != null)
+			current_class.SetConstraints ((List<Constraints>) $9);
+		lbag.AddMember (current_class, GetModifierLocations (), GetLocation ($4));
 
 		if (doc_support) {
 			current_container.DocComment = Lexer.consume_doc_comment ();
@@ -4620,7 +4598,7 @@ opt_type_parameter_variance
 	  {
 		if (lang_version <= LanguageVersion.V_3)
 			FeatureIsNotAvailable (lexer.Location, "generic type variance");
-
+		
 		$$ = $1;
 	  }
 	;
@@ -4710,6 +4688,16 @@ statement
 		current_block.AddStatement ((Statement) $1);
 	  }
 	| labeled_statement
+// WORKAROUND:Remove that rule, if it is >really< fixed.
+	| IDENTIFIER error
+	{
+		Error_SyntaxError (yyToken);
+		var lt =(Tokenizer.LocatedToken) $1;
+		var sn = new SimpleName (lt.Value, lt.Location);
+		current_block.AddStatement(new StatementErrorExpression (sn));
+		$$ = null;
+	}
+////////
 	| error
 	  {
 		Error_SyntaxError (yyToken);
@@ -4800,7 +4788,7 @@ empty_statement
 	;
 
 labeled_statement
-	: IDENTIFIER COLON 
+	: identifier_inside_body COLON 
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		LabeledStatement labeled = new LabeledStatement (lt.Value, current_block, lt.Location);
@@ -4908,8 +4896,19 @@ pointer_star
 	  }
 	;
 
+identifier_inside_body
+	: IDENTIFIER
+	| AWAIT
+	  {
+		if (async_block) {
+			report.Error (4003, GetLocation ($1), "`await' cannot be used as an identifier within an async method or lambda expression");
+			$$ = Tokenizer.LocatedToken.Create ("await", GetLocation ($1));
+		}
+	  }
+	;
+
 block_variable_declaration
-	: variable_type IDENTIFIER
+	: variable_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		var li = new LocalVariable (current_block, lt.Value, lt.Location);
@@ -4922,7 +4921,7 @@ block_variable_declaration
 		current_variable = null;
 		lbag.AppendTo ($$, GetLocation ($6));
 	  }
-	| CONST variable_type IDENTIFIER
+	| CONST variable_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		var li = new LocalVariable (current_block, lt.Value, LocalVariable.Flags.Constant, lt.Location);
@@ -4946,6 +4945,20 @@ opt_local_variable_initializer
 	| ASSIGN block_variable_initializer
 	  {
 		current_variable.Initializer = (Expression) $2;
+		lbag.AppendTo (current_variable, GetLocation ($1));
+	  }
+	| ASSIGN error
+	  {
+	  	if (yyToken == Token.OPEN_BRACKET_EXPR) {
+			report.Error (650, lexer.Location,
+				"Syntax error, bad array declarator. To declare a managed array the rank specifier precedes the variable's identifier. To declare a fixed size buffer field, use the fixed keyword before the field type");
+			current_variable.Initializer = ErrorExpression.Create (650, lexer.Location,
+					"Syntax error, bad array declarator. To declare a managed array the rank specifier precedes the variable's identifier. To declare a fixed size buffer field, use the fixed keyword before the field type");
+		} else {
+			Error_SyntaxError (yyToken);
+			current_variable.Initializer = ErrorExpression.Create (0, lexer.Location,
+					"Syntax error");
+		}
 		lbag.AppendTo (current_variable, GetLocation ($1));
 	  }
 	| error
@@ -4981,7 +4994,7 @@ variable_declarators
 	;
 	
 variable_declarator
-	: COMMA IDENTIFIER
+	: COMMA identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;	  
 		var li = new LocalVariable (current_variable.Variable, lt.Value, lt.Location);
@@ -4990,7 +5003,7 @@ variable_declarator
 		current_block.AddLocalName (li);
 	  	lbag.AddLocation (d, GetLocation ($1));
 	  }
-	| COMMA IDENTIFIER ASSIGN block_variable_initializer
+	| COMMA identifier_inside_body ASSIGN block_variable_initializer
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;	  
 		var li = new LocalVariable (current_variable.Variable, lt.Value, lt.Location);
@@ -5024,7 +5037,7 @@ const_declarators
 	;
 	
 const_declarator
-	: COMMA IDENTIFIER ASSIGN constant_initializer_expr
+	: COMMA identifier_inside_body ASSIGN constant_initializer_expr
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;	  
 		var li = new LocalVariable (current_block, lt.Value, LocalVariable.Flags.Constant, lt.Location);
@@ -5073,7 +5086,7 @@ statement_expression
 		ExpressionStatement s = $1 as ExpressionStatement;
 		if (s == null) {
 			Expression.Error_InvalidExpressionStatement (report, GetLocation ($1));
-			$$ = new StatementExpression (EmptyExpressionStatement.Instance);
+			$$ = new StatementErrorExpression ($1 as Expression);
 		} else {
 			$$ = new StatementExpression (s);
 		}
@@ -5122,6 +5135,13 @@ if_statement
 		if ($7 is EmptyStatement)
 			Warning_EmptyStatement (GetLocation ($7));
 	  }
+	| IF open_parens_any boolean_expression error
+	  {
+		Error_SyntaxError (yyToken);
+		
+		$$ = new If ((BooleanExpression) $3, null, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($2));
+	  }
 	;
 
 switch_statement
@@ -5134,6 +5154,13 @@ switch_statement
 		$$ = new Switch ((Expression) $3, (ExplicitBlock) current_block.Explicit, (List<SwitchSection>) $7, GetLocation ($1));	
 		end_block (GetLocation ($8));
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4), GetLocation ($5), GetLocation ($8));
+	  }
+	| SWITCH open_parens_any expression error
+	  {
+		Error_SyntaxError (yyToken);
+	  
+		$$ = new Switch ((Expression) $3, null, null, GetLocation ($1));	
+		lbag.AddStatement ($$, GetLocation ($2));
 	  }
 	;
 
@@ -5163,7 +5190,7 @@ switch_sections
 	  }
 	| error
 	  {
-		Error_SyntaxError (yyToken);	  
+		Error_SyntaxError (yyToken);
 		$$ = new List<SwitchSection> ();
 	  } 
 	;
@@ -5224,14 +5251,32 @@ while_statement
 		$$ = new While ((BooleanExpression) $3, (Statement) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
+	| WHILE open_parens_any boolean_expression error
+	  {
+		Error_SyntaxError (yyToken);
+		
+		$$ = new While ((BooleanExpression) $3, null, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($2));
+	  }
 	;
 
 do_statement
-	: DO embedded_statement 
-	  WHILE open_parens_any boolean_expression CLOSE_PARENS SEMICOLON
+	: DO embedded_statement WHILE open_parens_any boolean_expression CLOSE_PARENS SEMICOLON
 	  {
 		$$ = new Do ((Statement) $2, (BooleanExpression) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($3), GetLocation ($4), GetLocation ($6), GetLocation ($7));
+	  }
+	| DO embedded_statement error
+	  {
+		Error_SyntaxError (yyToken);
+		$$ = new Do ((Statement) $2, null, GetLocation ($1));
+	  }
+	| DO embedded_statement WHILE open_parens_any boolean_expression error
+	  {
+		Error_SyntaxError (yyToken);
+	  
+		$$ = new Do ((Statement) $2, (BooleanExpression) $5, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($3), GetLocation ($4));
 	  }
 	;
 
@@ -5240,6 +5285,9 @@ for_statement
 	  {
 		start_block (GetLocation ($2));
 		current_block.IsCompilerGenerated = true;
+		For f = new For (GetLocation ($1));
+		current_block.AddStatement (f);
+		$$ = f;
 	  }
 	  for_statement_cont
 	  {
@@ -5250,17 +5298,25 @@ for_statement
 // Has to use be extra rule to recover started block
 for_statement_cont
 	: opt_for_initializer SEMICOLON
+	  {
+		((For) $0).Initializer = (Statement) $1;
+	  }
 	  opt_for_condition SEMICOLON
+	  {
+		((For) $0).Condition = (BooleanExpression) $4;
+	  }
 	  opt_for_iterator CLOSE_PARENS
+	  {
+		((For) $0).Iterator = (Statement) $7;
+	  }
 	  embedded_statement
 	  {
-		if ($7 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
-			Warning_EmptyStatement (GetLocation ($7));
+		if ($10 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
+			Warning_EmptyStatement (GetLocation ($10));
 	  
-		For f = new For ((Statement) $1, (BooleanExpression) $3, (Statement) $5, (Statement) $7, GetLocation ($-2));
-		current_block.AddStatement (f);
-		
-		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2), GetLocation ($4), GetLocation ($6));
+		For f = ((For) $0);
+		f.Statement = (Statement) $10;
+		lbag.AddStatement (f, current_block.StartLocation, GetLocation ($2), GetLocation ($5), GetLocation ($8));
 
 		$$ = end_block (GetLocation ($2));
 	  }
@@ -5277,7 +5333,7 @@ opt_for_initializer
 	;
 
 for_initializer
-	: variable_type IDENTIFIER
+	: variable_type identifier_inside_body
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		var li = new LocalVariable (current_block, lt.Value, lt.Location);
@@ -5324,12 +5380,37 @@ statement_expression_list
 	;
 
 foreach_statement
-	: FOREACH open_parens_any type IN expression CLOSE_PARENS
+	: FOREACH open_parens_any type error
 	  {
 		report.Error (230, GetLocation ($1), "Type and identifier are both required in a foreach statement");
-		$$ = null;
+
+		start_block (GetLocation ($2));
+		current_block.IsCompilerGenerated = true;
+		
+		Foreach f = new Foreach ((Expression) $3, null, null, null, GetLocation ($1));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, GetLocation ($2));
+		$$ = end_block (GetLocation ($4));
 	  }
-	| FOREACH open_parens_any type IDENTIFIER IN expression CLOSE_PARENS 
+	| FOREACH open_parens_any type identifier_inside_body error
+	  {
+		Error_SyntaxError (yyToken);
+	  
+		start_block (GetLocation ($2));
+		current_block.IsCompilerGenerated = true;
+		
+		var lt = (Tokenizer.LocatedToken) $4;
+		var li = new LocalVariable (current_block, lt.Value, LocalVariable.Flags.ForeachVariable | LocalVariable.Flags.Used, lt.Location);
+		current_block.AddLocalName (li);
+		
+		Foreach f = new Foreach ((Expression) $3, li, null, null, GetLocation ($1));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, GetLocation ($2));
+		$$ = end_block (GetLocation ($5));
+	  }
+	| FOREACH open_parens_any type identifier_inside_body IN expression CLOSE_PARENS 
 	  {
 		start_block (GetLocation ($2));
 		current_block.IsCompilerGenerated = true;
@@ -5348,6 +5429,27 @@ foreach_statement
 		
 		lbag.AddStatement (f, GetLocation ($2), GetLocation ($5), GetLocation ($7));
 		$$ = end_block (GetLocation ($7));
+	  }
+	| FOREACH open_parens_any type identifier_inside_body error
+	  {
+		start_block (GetLocation ($2));
+		current_block.IsCompilerGenerated = true;
+		var lt = $4 as Tokenizer.LocatedToken;
+		var li = lt != null ? new LocalVariable (current_block, lt.Value, LocalVariable.Flags.ForeachVariable | LocalVariable.Flags.Used, lt.Location) : null;
+		
+		Foreach f = new Foreach ((Expression) $3, li, null, null, GetLocation ($1));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, GetLocation ($2));
+		$$ = end_block (GetLocation ($5));
+	  }
+	| FOREACH open_parens_any type error
+	  {
+		Foreach f = new Foreach ((Expression) $3, null, null, null, GetLocation ($1));
+		current_block.AddStatement (f);
+		
+		lbag.AddStatement (f, GetLocation ($2));
+		$$ = f;
 	  }
 	;
 
@@ -5377,7 +5479,7 @@ continue_statement
 	;
 
 goto_statement
-	: GOTO IDENTIFIER SEMICOLON 
+	: GOTO identifier_inside_body SEMICOLON 
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		$$ = new Goto (lt.Value, GetLocation ($1));
@@ -5412,7 +5514,7 @@ throw_statement
 	;
 
 yield_statement 
-	: IDENTIFIER RETURN opt_expression SEMICOLON
+	: identifier_inside_body RETURN opt_expression SEMICOLON
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		string s = lt.Value;
@@ -5424,11 +5526,11 @@ yield_statement
 			FeatureIsNotAvailable (lt.Location, "iterators");
 		}
 		
-		current_block.ParametersBlock.TopBlock.IsIterator = true;
+		current_block.Explicit.RegisterIteratorYield ();
 		$$ = new Yield ((Expression) $3, lt.Location);
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
-	| IDENTIFIER BREAK SEMICOLON
+	| identifier_inside_body BREAK SEMICOLON
 	  {
 		var lt = (Tokenizer.LocatedToken) $1;
 		string s = lt.Value;
@@ -5438,7 +5540,7 @@ yield_statement
 			FeatureIsNotAvailable (lt.Location, "iterators");
 		}
 		
-		current_block.ParametersBlock.TopBlock.IsIterator = true;
+		current_block.Explicit.RegisterIteratorYield ();
 		$$ = new YieldBreak (lt.Location);
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($3));
 	  }
@@ -5464,10 +5566,10 @@ try_statement
 		$$ = new TryFinally (new TryCatch ((Block) $2, (List<Catch>) $3, GetLocation ($1), true), (Block) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($4));
 	  }
-	| TRY block error 
+	| TRY block error
 	  {
-		report.Error (1524, GetLocation ($1), "Expected catch or finally");
-		$$ = null;
+		Error_SyntaxError (1524, yyToken);
+		$$ = new TryCatch ((Block) $2, null, GetLocation ($1), false);
 	  }
 	;
 
@@ -5484,22 +5586,18 @@ catch_clauses
 		var l = (List<Catch>) $1;
 		
 		Catch c = (Catch) $2;
-		if (l [0].IsGeneral) {
+		if (l [l.Count - 1].IsGeneral) {
 			report.Error (1017, c.loc, "Try statement already has an empty catch block");
-		} else {
-			if (c.IsGeneral)
-				l.Insert (0, c);
-			else
-				l.Add (c);
 		}
 		
+		l.Add (c);
 		$$ = l;
 	  }
 	;
 
 opt_identifier
 	: /* empty */
-	| IDENTIFIER
+	| identifier_inside_body
 	;
 
 catch_clause 
@@ -5572,10 +5670,17 @@ lock_statement
 		$$ = new Lock ((Expression) $3, (Statement) $5, GetLocation ($1));
 		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
 	  }
+	| LOCK open_parens_any expression error
+	  {
+		Error_SyntaxError (yyToken);
+
+		$$ = new Lock ((Expression) $3, null, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($2));
+	  }
 	;
 
 fixed_statement
-	: FIXED open_parens_any variable_type IDENTIFIER
+	: FIXED open_parens_any variable_type identifier_inside_body
 	  {
 	    start_block (GetLocation ($2));
 	    
@@ -5603,7 +5708,7 @@ fixed_statement
 	;
 
 using_statement
-	: USING open_parens_any variable_type IDENTIFIER
+	: USING open_parens_any variable_type identifier_inside_body
 	  {
 	    start_block (GetLocation ($2));
 	    
@@ -5613,29 +5718,44 @@ using_statement
 		current_block.AddLocalName (li);
 		current_variable = new Using.VariableDeclaration ((FullNamedExpression) $3, li);
 	  }
-	  using_or_fixed_variable_initializer opt_using_or_fixed_variable_declarators CLOSE_PARENS
+	  using_initialization CLOSE_PARENS
 	  {
 		$$ = current_variable;	  
 		current_variable = null;
 	  }
 	  embedded_statement
 	  {
-		if ($10 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
-			Warning_EmptyStatement (GetLocation ($10));
+		if ($9 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
+			Warning_EmptyStatement (GetLocation ($9));
 	  
-		Using u = new Using ((Using.VariableDeclaration) $9, (Statement) $10, GetLocation ($1));
-		lbag.AddStatement (u, GetLocation ($2), GetLocation ($8));
+		Using u = new Using ((Using.VariableDeclaration) $8, (Statement) $9, GetLocation ($1));
+		lbag.AddStatement (u, GetLocation ($2), GetLocation ($7));
 		current_block.AddStatement (u);
-		$$ = end_block (GetLocation ($8));
+		$$ = end_block (GetLocation ($7));
 	  }
 	| USING open_parens_any expression CLOSE_PARENS embedded_statement
 	  {
 		if ($5 is EmptyStatement && lexer.peek_token () == Token.OPEN_BRACE)
 			Warning_EmptyStatement (GetLocation ($5));
 	  
-		Using u = new Using ((Expression) $3, (Statement) $5, GetLocation ($1));
-		lbag.AddStatement (u, GetLocation ($2), GetLocation ($4));
-		$$ = u;
+		$$ = new Using ((Expression) $3, (Statement) $5, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($2), GetLocation ($4));
+	  }
+	| USING open_parens_any expression error
+	  {
+		Error_SyntaxError (yyToken);
+		
+		$$ = new Using ((Expression) $3, null, GetLocation ($1));
+		lbag.AddStatement ($$, GetLocation ($2));
+	  }
+	;
+	
+using_initialization
+	: using_or_fixed_variable_initializer opt_using_or_fixed_variable_declarators
+	| error
+	  {
+		// It has to be here for the parent to safely restore artificial block
+	  	Error_SyntaxError (yyToken);
 	  }
 	;
 	
@@ -5695,7 +5815,7 @@ query_expression
 	;
 	
 first_from_clause
-	: FROM_FIRST IDENTIFIER IN expression
+	: FROM_FIRST identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5703,7 +5823,7 @@ first_from_clause
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
 		$$ = new Linq.QueryExpression (new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1)));
 	  }
-	| FROM_FIRST type IDENTIFIER IN expression
+	| FROM_FIRST type identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5718,7 +5838,7 @@ first_from_clause
 	;
 
 nested_from_clause
-	: FROM IDENTIFIER IN expression
+	: FROM identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5726,7 +5846,7 @@ nested_from_clause
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
 		$$ = new Linq.QueryExpression (new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1)));
 	  }
-	| FROM type IDENTIFIER IN expression
+	| FROM type identifier_inside_body IN expression
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  
@@ -5741,7 +5861,7 @@ nested_from_clause
 	;
 	
 from_clause
-	: FROM IDENTIFIER IN
+	: FROM identifier_inside_body IN
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
@@ -5756,7 +5876,7 @@ from_clause
 		
 		((Linq.QueryBlock)current_block).AddRangeVariable (sn);
 	  }	  
-	| FROM type IDENTIFIER IN
+	| FROM type identifier_inside_body IN
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
@@ -5860,7 +5980,7 @@ query_body_clause
 	;
 	
 let_clause
-	: LET IDENTIFIER ASSIGN 
+	: LET identifier_inside_body ASSIGN 
 	  {
 	  	current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
@@ -5870,7 +5990,7 @@ let_clause
 		var sn = new Linq.RangeVariable (lt.Value, lt.Location);
 	  	$$ = new Linq.Let ((Linq.QueryBlock) current_block, sn, (Expression)$5, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($3));
-		
+	  	
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
 		
@@ -5893,7 +6013,7 @@ where_clause
 	;
 	
 join_clause
-	: JOIN IDENTIFIER IN
+	: JOIN identifier_inside_body IN
 	  {
 		if (linq_clause_blocks == null)
 			linq_clause_blocks = new Stack<Linq.QueryBlock> ();
@@ -5955,7 +6075,7 @@ join_clause
 		current_block = block.Parent;
 		((Linq.QueryBlock)current_block).AddRangeVariable (into);
 	  }
-	| JOIN type IDENTIFIER IN
+	| JOIN type identifier_inside_body IN
 	  {
 		if (linq_clause_blocks == null)
 			linq_clause_blocks = new Stack<Linq.QueryBlock> ();
@@ -6023,7 +6143,7 @@ join_clause
 	
 opt_join_into
 	: /* empty */
-	| INTO IDENTIFIER
+	| INTO identifier_inside_body
 	  {
 		$$ = $2;
 	  }
@@ -6112,7 +6232,7 @@ then_by
 
 opt_query_continuation
 	: /* empty */
-	| INTO IDENTIFIER
+	| INTO identifier_inside_body
 	  {
 		// query continuation block is not linked with query block but with block
 		// before. This means each query can use same range variable names for
@@ -6172,7 +6292,6 @@ interactive_parsing
 		current_local_parameters = pars;
 		Method method = new Method (
 			current_class,
-			null, // generic
 			new TypeExpression (compiler.BuiltinTypes.Void, Location.Null),
 			mods,
 			new MemberName ("Host"),
@@ -6243,7 +6362,7 @@ doc_cref
 	  }
 	| doc_type_declaration_name DOT THIS
 	  {
-		$$ = new MemberName ((MemberName) $1, new MemberName (MemberCache.IndexerNameAlias));
+		$$ = new MemberName ((MemberName) $1, MemberCache.IndexerNameAlias, Location.Null);
 	  }
 	| doc_type_declaration_name DOT THIS OPEN_BRACKET
 	  {
@@ -6252,7 +6371,7 @@ doc_cref
 	  opt_doc_parameters CLOSE_BRACKET
 	  {
 		module.DocumentationBuilder.ParsedParameters = (List<DocumentationParameter>)$6;
-		$$ = new MemberName ((MemberName) $1, new MemberName (MemberCache.IndexerNameAlias));
+		$$ = new MemberName ((MemberName) $1, MemberCache.IndexerNameAlias, Location.Null);
 	  }
 	| EXPLICIT OPERATOR type opt_doc_method_sig
 	  {
@@ -6415,9 +6534,9 @@ void push_current_class (TypeContainer tc, object partial_token)
 	ubag.PushTypeDeclaration (tc);
 }
 
-DeclSpace pop_current_class ()
+TypeContainer pop_current_class ()
 {
-	DeclSpace retval = current_class;
+	var retval = current_class;
 
 	current_class = current_class.Parent;
 	current_container = current_class.PartialContainer;
@@ -6433,11 +6552,9 @@ DeclSpace pop_current_class ()
 MemberName
 MakeName (MemberName class_name)
 {
-	Namespace ns = current_namespace.NS;
-
 	if (current_container == module) {
-		if (ns.Name.Length != 0)
-			return new MemberName (ns.MemberName, class_name);
+		if (current_namespace.MemberName != MemberName.Null)
+			return new MemberName (current_namespace.NS.MemberName, class_name);
 		else
 			return class_name;
 	} else {
@@ -6651,22 +6768,23 @@ void start_anonymous (bool isLambda, ParametersCompiled parameters, bool isAsync
 	oob_stack.Push (current_anonymous_method);
 	oob_stack.Push (current_local_parameters);
 	oob_stack.Push (current_variable);
-	oob_stack.Push (lexer.async_block);
+	oob_stack.Push (async_block);
 
 	current_local_parameters = parameters;
 	if (isLambda) {
 		if (lang_version <= LanguageVersion.ISO_2)
 			FeatureIsNotAvailable (loc, "lambda expressions");
 
-		current_anonymous_method = new LambdaExpression (isAsync, loc);
+		current_anonymous_method = new LambdaExpression (loc);
 	} else {
 		if (lang_version == LanguageVersion.ISO_1)
 			FeatureIsNotAvailable (loc, "anonymous methods");
 			
-		current_anonymous_method = new AnonymousMethodExpression (isAsync, loc);
+		current_anonymous_method = new AnonymousMethodExpression (loc);
 	}
-
-	lexer.async_block = isAsync;
+	current_anonymous_method.IsAsync = isAsync;
+	
+	async_block = isAsync;
 	// Force the next block to be created as a ToplevelBlock
 	parsing_anonymous_method = true;
 }
@@ -6679,10 +6797,13 @@ AnonymousMethodExpression end_anonymous (ParametersBlock anon_block)
 {
 	AnonymousMethodExpression retval;
 
+	if (async_block)
+		anon_block.IsAsync = true;
+
 	current_anonymous_method.Block = anon_block;
 	retval = current_anonymous_method;
 
-	lexer.async_block = (bool) oob_stack.Pop ();
+	async_block = (bool) oob_stack.Pop ();
 	current_variable = (BlockVariableDeclaration) oob_stack.Pop ();
 	current_local_parameters = (ParametersCompiled) oob_stack.Pop ();
 	current_anonymous_method = (AnonymousMethodExpression) oob_stack.Pop ();
@@ -6692,7 +6813,12 @@ AnonymousMethodExpression end_anonymous (ParametersBlock anon_block)
 
 void Error_SyntaxError (int token)
 {
-	Error_SyntaxError (0, token, "Unexpected symbol");
+	Error_SyntaxError (0, token);
+}
+
+void Error_SyntaxError (int error_code, int token)
+{
+	Error_SyntaxError (error_code, token, "Unexpected symbol");
 }
 
 void Error_SyntaxError (int error_code, int token, string msg)
@@ -6901,8 +7027,6 @@ static string GetTokenName (int token)
 		return "add";
 	case Token.ASYNC:
 		return "async";
-	case Token.AWAIT:
-		return "await";		
 	case Token.BASE:
 		return "base";
 	case Token.BREAK:
@@ -7164,6 +7288,7 @@ static string GetTokenName (int token)
 	case Token.LITERAL:
 		return "value";
 	case Token.IDENTIFIER:
+	case Token.AWAIT:
 		return "identifier";
 
 	case Token.EOF:

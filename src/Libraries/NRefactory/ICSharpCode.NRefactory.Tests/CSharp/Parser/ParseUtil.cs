@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static T ParseGlobal<T>(string code, bool expectErrors = false) where T : AstNode
 		{
 			CSharpParser parser = new CSharpParser();
-			CompilationUnit cu = parser.Parse(new StringReader(code));
+			CompilationUnit cu = parser.Parse(new StringReader(code), "parsed.cs");
 			
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (err => Console.WriteLine (err.Message));

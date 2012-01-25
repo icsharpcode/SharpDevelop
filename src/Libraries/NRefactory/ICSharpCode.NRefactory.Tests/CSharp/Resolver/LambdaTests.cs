@@ -373,11 +373,51 @@ class TestClass {
 			Assert.IsFalse(rr.IsError);
 			SpecializedMethod m = (SpecializedMethod)rr.Member;
 			Assert.AreEqual("System.Int32", m.TypeArguments[0].ReflectionName);
-			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", m.Parameters[0].Type.Resolve(context).ReflectionName);
+			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", m.Parameters[0].Type.ReflectionName);
 			
 			var crr = (ConversionResolveResult)rr.Arguments[0];
 			Assert.IsTrue(crr.Conversion.IsAnonymousFunctionConversion);
 			Assert.AreEqual("System.Converter`2[[``0],[System.Int32]]", crr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void AnonymousMethodWithoutParameterList()
+		{
+			string program = @"using System;
+class TestClass {
+	event EventHandler Ev = $delegate {}$;
+}";
+			var rr = Resolve<LambdaResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsFalse(rr.HasParameterList);
+		}
+		
+		[Test]
+		public void NonVoidMethodInActionLambdaIsValidConversion()
+		{
+			string program = @"using System;
+class TestClass {
+	void Run(Action a) { }
+	int M() {
+		Run(() => $M()$);
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
+		public void NonVoidMethodInImplicitlyTypedActionLambdaIsValidConversion()
+		{
+			string program = @"using System;
+class TestClass {
+	void Run(Action<string> a) { }
+	int M() {
+		Run(x => $M()$);
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
 		}
 		
 		/* TODO write test for this

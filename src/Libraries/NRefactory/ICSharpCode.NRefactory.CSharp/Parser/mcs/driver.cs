@@ -9,6 +9,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004, 2005, 2006, 2007, 2008 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -299,7 +300,7 @@ namespace Mono.CSharp
 
 			tr.Start (TimeReporter.TimerType.UsingResolve);
 			foreach (var source_file in ctx.SourceFiles) {
-				source_file.NamespaceContainer.Resolve ();
+				source_file.NamespaceContainer.Define ();
 			}
 			tr.Stop (TimeReporter.TimerType.UsingResolve);
 
@@ -461,8 +462,7 @@ namespace Mono.CSharp
 						ModuleCompiled = RootContext.ToplevelTypes,
 						LocationsBag = parser.LocationsBag, 
 						UsingsBag = parser.UsingsBag, 
-						SpecialsBag = parser.Lexer.sbag,
-						LastYYValue = parser.LastYYVal
+						SpecialsBag = parser.Lexer.sbag
 					};
 				} finally {
 					Reset ();

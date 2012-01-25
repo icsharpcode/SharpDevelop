@@ -40,6 +40,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public TypeTestAttribute(int a1, Type a2, Type a3) {}
 	}
 	
+	[Params(1, StringComparison.CurrentCulture, null, 4.0, "Test")]
+	public class ParamsAttribute : Attribute
+	{
+		public ParamsAttribute(params object[] x) {}
+	}
+	
+	[Double(1)]
+	public class DoubleAttribute : Attribute
+	{
+		public DoubleAttribute(double val) {}
+	}
+	
 	public unsafe class DynamicTest
 	{
 		public dynamic SimpleProperty { get; set; }
@@ -77,10 +89,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		CombinedFlags = Flag1 | Flag2
 	}
 	
-	public class Base<T> {
+	public class Base<T>
+	{
 		public class Nested<X> {}
+		
+		public virtual void GenericMethodWithConstraints<X>(T a) where X : IComparer<T>, new() {}
 	}
-	public class Derived<A, B> : Base<B> {}
+	public class Derived<A, B> : Base<B>
+	{
+		public override void GenericMethodWithConstraints<Y>(B a) { }
+	}
 	
 	public struct MyStructWithCtor
 	{
@@ -112,6 +130,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		public void MethodWithOutParameter(out int x) { x = 0; }
 		public void MethodWithParamsArray(params object[] x) {}
+		public void MethodWithOptionalParameter(int x = 4) {}
+		public void MethodWithEnumOptionalParameter(StringComparison x = StringComparison.OrdinalIgnoreCase) {}
 	}
 	
 	[ComImport(), Guid("21B8916C-F28E-11D2-A473-00C04F8EF448"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -125,6 +145,37 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		public const int Answer = 42;
 		
+		public const StringComparison EnumFromAnotherAssembly = StringComparison.OrdinalIgnoreCase;
+		
 		public const string NullString = null;
+	}
+	
+	public class OuterGeneric<X>
+	{
+		public class Inner {
+			public OuterGeneric<X> referenceToOuter;
+			public Inner(OuterGeneric<X> referenceToOuter) {}
+		}
+		
+		public OuterGeneric<X>.Inner Field1;
+		public Inner Field2;
+		public OuterGeneric<OuterGeneric<X>.Inner>.Inner Field3;
+	}
+	
+	public class ExplicitDisposableImplementation : IDisposable
+	{
+		void IDisposable.Dispose() {}
+	}
+	
+	public interface IGenericInterface<T>
+	{
+		void Test<S>(T a, S b) where S : T;
+		void Test<S>(T a, ref S b);
+	}
+	
+	public class ExplicitGenericInterfaceImplementation : IGenericInterface<string>
+	{
+		void IGenericInterface<string>.Test<T>(string a, T b) {}
+		void IGenericInterface<string>.Test<T>(string a, ref T b) {}
 	}
 }

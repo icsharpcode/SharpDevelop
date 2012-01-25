@@ -30,58 +30,54 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void TypeParameterDerivingFromOtherTypeParameterDoesNotInheritReferenceConstraint()
 		{
 			// class C<T, U> where T : class where U : T
-			DefaultTypeDefinition c = new DefaultTypeDefinition(MinimalResolveContext.Instance, string.Empty, "C");
-			DefaultTypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T");
-			DefaultTypeParameter u = new DefaultTypeParameter(EntityType.TypeDefinition, 1, "U");
-			c.TypeParameters.Add(t);
-			c.TypeParameters.Add(u);
-			t.HasReferenceTypeConstraint = true;
-			u.Constraints.Add(t);
+			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U") {
+			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+			                     });
 			
+			ITypeDefinition resolvedC = new SimpleCompilation(CecilLoaderTests.Mscorlib).MainAssembly.GetTypeDefinition(c);
 			// At runtime, we might have T=System.ValueType and U=int, so C# can't inherit the 'class' constraint
 			// from one type parameter to another.
-			Assert.AreEqual(true, t.IsReferenceType(MinimalResolveContext.Instance));
-			Assert.IsNull(u.IsReferenceType(MinimalResolveContext.Instance));
+			Assert.AreEqual(true, resolvedC.TypeParameters[0].IsReferenceType);
+			Assert.IsNull(resolvedC.TypeParameters[1].IsReferenceType);
 		}
 		
 		[Test]
 		public void ValueTypeParameterDerivingFromReferenceTypeParameter()
 		{
-			// class C<T, U> where T : class where U : T
-			DefaultTypeDefinition c = new DefaultTypeDefinition(MinimalResolveContext.Instance, string.Empty, "C");
-			DefaultTypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T");
-			DefaultTypeParameter u = new DefaultTypeParameter(EntityType.TypeDefinition, 1, "U");
-			c.TypeParameters.Add(t);
-			c.TypeParameters.Add(u);
-			t.HasReferenceTypeConstraint = true;
-			u.HasValueTypeConstraint = true;
-			u.Constraints.Add(t);
+			// class C<T, U> where T : class where U : struct, T
+			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") { HasReferenceTypeConstraint = true });
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U") {
+			                     	HasValueTypeConstraint = true,
+			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+			                     });
 			
+			ITypeDefinition resolvedC = new SimpleCompilation(CecilLoaderTests.Mscorlib).MainAssembly.GetTypeDefinition(c);
 			// At runtime, we might have T=System.ValueType and U=int, so C# can't inherit the 'class' constraint
 			// from one type parameter to another.
-			Assert.AreEqual(true, t.IsReferenceType(MinimalResolveContext.Instance));
-			Assert.AreEqual(false, u.IsReferenceType(MinimalResolveContext.Instance));
+			Assert.AreEqual(true, resolvedC.TypeParameters[0].IsReferenceType);
+			Assert.AreEqual(false, resolvedC.TypeParameters[1].IsReferenceType);
 		}
 		
 		[Test]
 		public void TypeParameterDerivingFromOtherTypeParameterInheritsEffectiveBaseClass()
 		{
-			// class C<T, U> where T : class where U : T
-			ITypeResolveContext context = CecilLoaderTests.Mscorlib;
-			DefaultTypeDefinition c = new DefaultTypeDefinition(CecilLoaderTests.Mscorlib, string.Empty, "C");
-			DefaultTypeParameter t = new DefaultTypeParameter(EntityType.TypeDefinition, 0, "T");
-			DefaultTypeParameter u = new DefaultTypeParameter(EntityType.TypeDefinition, 1, "U");
-			c.TypeParameters.Add(t);
-			c.TypeParameters.Add(u);
-			t.Constraints.Add(typeof(List<string>).ToTypeReference());
-			u.Constraints.Add(t);
+			// class C<T, U> where T : List<string> where U : T
+			var c = new DefaultUnresolvedTypeDefinition(string.Empty, "C");
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 0, "T") {
+			                     	Constraints = { typeof(List<string>).ToTypeReference() }
+			                     });
+			c.TypeParameters.Add(new DefaultUnresolvedTypeParameter(EntityType.TypeDefinition, 1, "U") {
+			                     	Constraints = { new TypeParameterReference(EntityType.TypeDefinition, 0) }
+			                     });
 			
-			// At runtime, we might have T=System.ValueType and U=int, so C# can't inherit the 'class' constraint
-			// from one type parameter to another.
-			Assert.AreEqual(true, t.IsReferenceType(context));
-			Assert.AreEqual(true, u.IsReferenceType(context));
-			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", t.GetEffectiveBaseClass(context).ReflectionName);
-			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", u.GetEffectiveBaseClass(context).ReflectionName);
+			ITypeDefinition resolvedC = new SimpleCompilation(CecilLoaderTests.Mscorlib).MainAssembly.GetTypeDefinition(c);
+			Assert.AreEqual(true, resolvedC.TypeParameters[0].IsReferenceType);
+			Assert.AreEqual(true, resolvedC.TypeParameters[1].IsReferenceType);
+			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", resolvedC.TypeParameters[0].EffectiveBaseClass.ReflectionName);
+			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", resolvedC.TypeParameters[1].EffectiveBaseClass.ReflectionName);
 		}
 	}
 }

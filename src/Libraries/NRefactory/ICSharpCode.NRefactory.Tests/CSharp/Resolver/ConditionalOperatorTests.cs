@@ -29,6 +29,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public class ConditionalOperatorTests : ResolverTestBase
 	{
+		CSharpResolver resolver;
+		
+		public override void SetUp()
+		{
+			base.SetUp();
+			resolver = new CSharpResolver(compilation);
+		}
+		
 		void TestOperator(ResolveResult condition, ResolveResult trueExpr, ResolveResult falseExpr,
 		                  Conversion conditionConv, Conversion trueConv, Conversion falseConv,
 		                  Type expectedResultType)
@@ -135,6 +143,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			AssertType(typeof(long), resolver.ResolveConditional(
 				MakeConstant(true), MakeConstant(1), MakeResult(typeof(long))));
+		}
+		
+		[Test]
+		public void EnumAndZeroLiteral()
+		{
+			AssertType(typeof(StringComparison), resolver.ResolveConditional(
+				MakeResult(typeof(bool)), MakeResult(typeof(StringComparison)), MakeConstant(0)));
 		}
 	}
 }

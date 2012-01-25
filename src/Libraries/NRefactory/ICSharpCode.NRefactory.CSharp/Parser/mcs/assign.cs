@@ -10,6 +10,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 using System;
 
@@ -342,7 +343,7 @@ namespace Mono.CSharp {
 			type = target_type;
 
 			if (!(target is IAssignMethod)) {
-				Error_ValueAssignment (ec, loc);
+				Error_ValueAssignment (ec, source);
 				return null;
 			}
 
@@ -417,6 +418,11 @@ namespace Mono.CSharp {
 			_target.target = target.Clone (clonectx);
 			_target.source = source.Clone (clonectx);
 		}
+
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
+		}
 	}
 
 	public class SimpleAssign : Assign
@@ -482,6 +488,16 @@ namespace Mono.CSharp {
 		public CompilerAssign (Expression target, Expression source, Location loc)
 			: base (target, source, loc)
 		{
+		}
+
+		protected override Expression DoResolve (ResolveContext ec)
+		{
+			var expr = base.DoResolve (ec);
+			var vr = target as VariableReference;
+			if (vr != null && vr.VariableInfo != null)
+				vr.VariableInfo.IsEverAssigned = false;
+
+			return expr;
 		}
 
 		public void UpdateSource (Expression source)
@@ -642,6 +658,12 @@ namespace Mono.CSharp {
 			this.left = left;
 		}
 
+		public Binary.Operator Operator {
+			get {
+				return op;
+			}
+		}
+
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			right = right.Resolve (ec);
@@ -800,10 +822,10 @@ namespace Mono.CSharp {
 			ctarget.right = ctarget.source = source.Clone (clonectx);
 			ctarget.target = target.Clone (clonectx);
 		}
+
 		public override object Accept (StructuralVisitor visitor)
 		{
 			return visitor.Visit (this);
 		}
-
 	}
 }

@@ -8,6 +8,7 @@
 //
 // Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2003-2008 Novell, Inc. 
+// Copyright 2011 Xamarin Inc
 //
 //
 using System;
@@ -233,10 +234,7 @@ namespace Mono.CSharp {
 		TemporaryVariableReference expr_tree_variable;
 
 		HoistedVariable hoisted_variant;
-		
-		public Modifier ParameterModifier { get { return modFlags; }}
-		public Expression DefaultExpression { get { return default_expr; }}
-		
+
 		public Parameter (FullNamedExpression type, string name, Modifier mod, Attributes attrs, Location loc)
 		{
 			this.name = name;
@@ -249,6 +247,12 @@ namespace Mono.CSharp {
 		}
 
 		#region Properties
+
+		public Expression DefaultExpression {
+			get {
+				return default_expr;
+			}
+		}
 
 		public DefaultParameterValueExpression DefaultValue {
 			get {
@@ -275,6 +279,12 @@ namespace Mono.CSharp {
 		public Location Location {
 			get {
 				return loc;
+			}
+		}
+
+		public Modifier ParameterModifier {
+			get {
+				return modFlags;
 			}
 		}
 
@@ -1211,7 +1221,7 @@ namespace Mono.CSharp {
 
 	//
 	// Default parameter value expression. We need this wrapper to handle
-	// default parameter values of folded constants when for indexer parameters
+	// default parameter values of folded constants (e.g. indexer parameters).
 	// The expression is resolved only once but applied to two methods which
 	// both share reference to this expression and we ensure that resolving
 	// this expression always returns same instance
