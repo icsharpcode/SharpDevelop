@@ -4291,5 +4291,42 @@ class Test
 			Assert.AreEqual ("AClass", list[2].DisplayText);
 			Assert.AreEqual ("System.Object", list[3].DisplayText);
 		}
+		
+		[Test()]
+		public void TestAsExpressionContext ()
+		{
+			var provider = CreateProvider (
+@"class CClass : BClass
+{
+	public int C;
+}
+
+class BClass : AClass
+{
+	public int B;
+}
+
+class AClass
+{
+	public int A;
+}
+
+class Test
+{
+	public void TestMethod ()
+	{
+		AClass a;
+		$a as A$
+	}
+}");
+			Assert.IsNotNull (provider, "provider not found.");
+			
+			Assert.IsNotNull (provider.Find ("AClass"), "'AClass' not found.");
+			Assert.IsNotNull (provider.Find ("BClass"), "'BClass' not found.");
+			Assert.IsNotNull (provider.Find ("CClass"), "'CClass' not found.");
+			Assert.IsNotNull (provider.Find ("Test"), "'Test' not found.");
+			Assert.IsNull (provider.Find ("TestMethod"), "'TestMethod' found.");
+			
+		}
 	}
 }
