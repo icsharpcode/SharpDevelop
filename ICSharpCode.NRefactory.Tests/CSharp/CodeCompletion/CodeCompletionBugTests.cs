@@ -183,7 +183,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				return new CompletionData (m.Name);
 			}
-
+			
+			public ICompletionData CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
+			{
+				return new CompletionData (m.Name);
+			}
+			
 			public System.Collections.Generic.IEnumerable<ICompletionData> CreateCodeTemplateCompletionData ()
 			{
 				return Enumerable.Empty<ICompletionData> ();
@@ -4026,7 +4031,6 @@ void TestMethod ()
 			Assert.IsNotNull (provider.Find ("TF1"));
 		}
 		
-		[Ignore("Partial handling missing.")]
 		[Test()]
 		public void TestPartialCompletionData ()
 		{
