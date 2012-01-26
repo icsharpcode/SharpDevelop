@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="ICSharpCode.CodeQuality.Gui.NodeDescription"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Border BorderBrush="Black" CornerRadius="8"  BorderThickness="3" >
+		<Grid>
+			<Grid Margin="5">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition></RowDefinition>
+					<RowDefinition></RowDefinition>
+					<RowDefinition></RowDefinition>
+					<RowDefinition></RowDefinition>
+				</Grid.RowDefinitions>
+				<TextBlock Text="Class" ></TextBlock>
+				<TextBlock Text="Children" Grid.Row="1"></TextBlock>
+				<TextBlock Text="Uses" Grid.Row="2"></TextBlock>
+				<TextBlock Text="Usedby" Grid.Row="3"></TextBlock>
+				
+				<TextBlock Text="{Binding Node.Name}" Grid.Column="1"></TextBlock>
+				<TextBlock Text="{Binding Node.Children.Count}" Grid.Column="1" Grid.Row="1" ></TextBlock>
+				<TextBlock Text="{Binding Uses}" Grid.Column="1" Grid.Row="2"></TextBlock>
+				<TextBlock Text="{Binding UsedBy}" Grid.Column="1" Grid.Row="3"></TextBlock>
+			</Grid>
+		</Grid>
+	</Border>
+</UserControl>

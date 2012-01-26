@@ -67,6 +67,10 @@
     <Compile Include="Engine\ILAnalyzer.cs" />
     <Compile Include="Engine\AssemblyAnalyzer.cs" />
     <Compile Include="Gui\AnalyzeCodeQualityViewContent.cs" />
+    <Compile Include="Gui\NodeDescription.xaml.cs">
+      <DependentUpon>NodeDescription.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Gui\Commands\AnalyzeCodeQualityCommand.cs" />
     <Compile Include="Gui\Controls\DependencyMatrix.cs" />
     <Compile Include="Gui\Controls\DependencyMatrixControl.cs" />
@@ -82,6 +86,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Gui\MatrixTreeNode.cs" />
+    <Compile Include="Gui\NodeDescriptionViewModel.cs" />
     <Compile Include="Gui\NodeIconService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\DependencyColorizer.cs" />
@@ -126,6 +131,10 @@
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\Dom" />
@@ -136,6 +145,7 @@
     <Folder Include="Utils" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Gui\NodeDescription.xaml" />
     <Page Include="Gui\DependencyMatrixView.xaml" />
     <Page Include="Gui\MainView.xaml" />
   </ItemGroup>

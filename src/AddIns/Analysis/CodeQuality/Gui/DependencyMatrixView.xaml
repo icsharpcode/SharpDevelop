@@ -14,24 +14,37 @@
 			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition Width="2*" />
 		</Grid.ColumnDefinitions>
+		
+		<gui:NodeDescription  x:Name="inform"
+			Grid.Row="0" Grid.Column="0"
+		HorizontalAlignment="Stretch"
+		VerticalAlignment="Stretch"></gui:NodeDescription>
+		
 		<!-- Top TreeView -->
-		<tv:SharpTreeView Name="topTree" Grid.Column="2" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="TopTreeMouseMove" ScrollViewer.ScrollChanged="ViewScrollChanged">
+		<tv:SharpTreeView Name="topTree" Grid.Column="2" 
+			ScrollViewer.HorizontalScrollBarVisibility="Visible"
+			ScrollViewer.VerticalScrollBarVisibility="Hidden"
+			MouseMove="TopTreeMouseMove" 
+			ScrollViewer.ScrollChanged="ViewScrollChanged">
 			<tv:SharpTreeView.LayoutTransform>
 				<RotateTransform Angle="-90" />
 			</tv:SharpTreeView.LayoutTransform>
 		</tv:SharpTreeView>
+		<!-- -->
 		<GridSplitter Grid.Column="1"
 		              Grid.RowSpan="3"
 		              HorizontalAlignment="Center"
 		              VerticalAlignment="Stretch"
 		              ShowsPreview="True"
-		              Width="1" />
+		              Width="5" />
+		
+		<!-- -->
 		<GridSplitter Grid.Row="1"
 		              Grid.ColumnSpan="3"
 		              VerticalAlignment="Center"
 		              HorizontalAlignment="Stretch"
 		              ShowsPreview="True"
-		              Height="1" />
+		              Height="5" />
 		<!-- Left TreeView -->
 		<tv:SharpTreeView Name="leftTree" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="LeftTreeMouseMove" ScrollViewer.ScrollChanged="ViewScrollChanged">
 		</tv:SharpTreeView>

@@ -8,10 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 using ICSharpCode.CodeQuality;
@@ -27,11 +29,13 @@ namespace ICSharpCode.CodeQuality.Gui
 	public partial class DependencyMatrixView : UserControl
 	{
 		ScrollViewer topTreeScrollViewer, leftTreeScrollViewer;
+		NodeDescriptionViewModel nodeDescriptionViewModel;
 		
 		public DependencyMatrixView()
 		{
 			InitializeComponent();
-			
+			nodeDescriptionViewModel = new NodeDescriptionViewModel();
+			this.inform.DataContext = nodeDescriptionViewModel;
 			topTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			leftTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			matrix.Colorizer = new DependencyColorizer();
@@ -126,6 +130,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		{
 			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
 			if (n != null) {
+				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Rows, n.Node);
 				leftTree.SelectedItem = n;
 			}
@@ -135,6 +140,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		{
 			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
 			if (n != null) {
+				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Columns, n.Node);
 				topTree.SelectedItem = n;
 			}
