@@ -166,4 +166,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		void IDisposable.Dispose() {}
 	}
+	
+	public interface IGenericInterface<T>
+	{
+		void Test<S>(T a, S b) where S : T;
+		void Test<S>(T a, ref S b);
+	}
+	
+	public class ExplicitGenericInterfaceImplementation : IGenericInterface<string>
+	{
+		void IGenericInterface<string>.Test<T>(string a, T b) {}
+		void IGenericInterface<string>.Test<T>(string a, ref T b) {}
+	}
 }

@@ -92,6 +92,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IType ReturnType {
 			get { return returnType; }
+			protected set { returnType = value; }
 		}
 		
 		public bool IsVirtual {

@@ -50,8 +50,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.AllFiles.Count(),
 			                  solution.Projects.Count);
 			
-			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
-			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
+			RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
+			//RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);

@@ -342,6 +342,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.InEquality, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeResult(typeof(bool?)), MakeConstant(null)));
 		}
 		
 		[Test]
@@ -365,6 +368,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.LessThan, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
+			
+			TestOperator(MakeResult(typeof(int?)), BinaryOperatorType.LessThan, MakeResult(typeof(int)),
+			             Conversion.IdentityConversion, Conversion.ImplicitNullableConversion, typeof(bool));
 		}
 		
 		[Test]
@@ -578,6 +584,38 @@ class Test {
 			Assert.AreEqual(System.Linq.Expressions.ExpressionType.AddAssign, irr.OperatorType);
 			Assert.IsNull(irr.UserDefinedOperatorMethod);
 			Assert.AreEqual("System.Byte", irr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void CompareNullableStructWithNullLiteral()
+		{
+			string program = @"
+struct X { }
+class Test {
+	static void Inc(X? x) {
+		var c = $x == null$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
+		}
+		
+		[Test]
+		public void LiftedEqualityOperator()
+		{
+			string program = @"
+struct X {
+	public static bool operator ==(X a, X b) {}
+}
+class Test {
+	static void Inc(X? x) {
+		var c = $x == x$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
 		}
 	}
 }

@@ -392,6 +392,34 @@ class TestClass {
 			Assert.IsFalse(rr.HasParameterList);
 		}
 		
+		[Test]
+		public void NonVoidMethodInActionLambdaIsValidConversion()
+		{
+			string program = @"using System;
+class TestClass {
+	void Run(Action a) { }
+	int M() {
+		Run(() => $M()$);
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
+		public void NonVoidMethodInImplicitlyTypedActionLambdaIsValidConversion()
+		{
+			string program = @"using System;
+class TestClass {
+	void Run(Action<string> a) { }
+	int M() {
+		Run(x => $M()$);
+	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
 		/* TODO write test for this
 class A
 {
