@@ -29,19 +29,15 @@ namespace Mono.CSharp
 			
 		}
 
-		void VisitTypeContainer (TypeContainer tc)
+		void VisitTypeDefinition (TypeDefinition tc)
 		{
-			if (tc.Containers == null)
-				return;
-			foreach (var container in tc.Containers) {
-				if (container != null)
-					container.Accept (this);
+			foreach (var container in tc.Members) {
+				container.Accept (this);
 			}
 		}
 		
 		public virtual void Visit (NamespaceContainer ns)
 		{
-			VisitTypeContainer (ns);
 		}
 
 		public virtual void Visit (UsingNamespace un)
@@ -58,18 +54,18 @@ namespace Mono.CSharp
 		
 		public virtual void Visit (Class c)
 		{
-			VisitTypeContainer (c);
+			VisitTypeDefinition (c);
 		}
 
 		public virtual void Visit (Struct s)
 		{
-			VisitTypeContainer (s);
+			VisitTypeDefinition (s);
 		}
 
 
 		public virtual void Visit (Interface i)
 		{
-			VisitTypeContainer (i);
+			VisitTypeDefinition (i);
 		}
 
 		public virtual void Visit (Delegate d)
@@ -78,7 +74,7 @@ namespace Mono.CSharp
 
 		public virtual void Visit (Enum e)
 		{
-			VisitTypeContainer (e);
+			VisitTypeDefinition (e);
 		}
 
 		public virtual void Visit (FixedField f)

@@ -299,23 +299,36 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override void Visit (NamespaceContainer nspace)
 			{
 				NamespaceDeclaration nDecl = null;
+				var loc = LocationsBag.GetLocations (nspace);
+				
 				if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
 					nDecl = new NamespaceDeclaration ();
-//					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
-					ConvertNamespaceName (nspace.NS.MemberName, nDecl);
-//					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
+					if (loc != null)
+						nDecl.AddChild (new CSharpTokenNode (Convert (loc[0]), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
+					ConvertNamespaceName (nspace.RealMemberName, nDecl);
+					if (loc != null && loc.Count > 1)
+						nDecl.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), NamespaceDeclaration.Roles.LBrace);
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
 				}
+				if (nspace.Usings != null) {
+					foreach (var us in nspace.Usings) {
+						us.Accept (this);
+					}
+				}
 				
-				foreach (var container in nspace.Containers) {
-					container.Accept (this);
+				if (nspace.Containers != null) {
+					foreach (var container in nspace.Containers) {
+						Console.WriteLine ("add container:"+ container);
+						container.Accept (this);
+					}
 				}
 				
 				if (nDecl != null) {
-//					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.CloseBrace), 1), NamespaceDeclaration.Roles.RBrace);
-//					if (!nspace.OptSemicolon.IsNull)
-//						nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OptSemicolon), 1), NamespaceDeclaration.Roles.Semicolon);
+					if (loc != null && loc.Count > 2)
+						nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
+					if (loc != null && loc.Count > 3)
+						nDecl.AddChild (new CSharpTokenNode (Convert (loc[3]), 1), NamespaceDeclaration.Roles.Semicolon);
 					
 					namespaceStack.Pop ();
 				}
@@ -347,35 +360,44 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-//			public override void Visit (UsingsBag.Using u)
-//			{
-//				UsingDeclaration ud = new UsingDeclaration ();
-//				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
-//				ud.AddChild (ConvertToType (u.NSpace), UsingDeclaration.ImportRole);
-//				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
-//				AddToNamespace (ud);
-//			}
-			
-//			public override void Visit (UsingsBag.AliasUsing u)
-//			{
-//				UsingAliasDeclaration ud = new UsingAliasDeclaration ();
-//				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
-//				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
-//				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
-//				ud.AddChild (ConvertToType (u.Nspace), UsingAliasDeclaration.ImportRole);
-//				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
-//				AddToNamespace (ud);
-//			}
-//
-//			public override void Visit (UsingsBag.ExternAlias u)
-//			{
-//				var ud = new ExternAliasDeclaration ();
-//				ud.AddChild (new CSharpTokenNode (Convert (u.ExternLocation), "extern".Length), ExternAliasDeclaration.Roles.Keyword);
-//				ud.AddChild (new CSharpTokenNode (Convert (u.AliasLocation), "alias".Length), ExternAliasDeclaration.AliasRole);
-//				ud.AddChild (Identifier.Create (u.Identifier.Value, Convert (u.Identifier.Location)), ExternAliasDeclaration.Roles.Identifier);
-//				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
-//				AddToNamespace (ud);
-//			}
+		public override void Visit (UsingNamespace un)
+		{
+			var ud = new UsingDeclaration ();
+			var loc = LocationsBag.GetLocations (un);
+			ud.AddChild (new CSharpTokenNode (Convert (un.Location), "using".Length), UsingDeclaration.Roles.Keyword);
+			ud.AddChild (ConvertToType (un.NamespaceExpression), UsingDeclaration.ImportRole);
+			if (loc != null)
+				ud.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), UsingDeclaration.Roles.Semicolon);
+			AddToNamespace (ud);
+		}
+
+		public override void Visit (UsingAliasNamespace uan)
+		{
+			var ud = new UsingAliasDeclaration ();
+			var loc = LocationsBag.GetLocations (uan);
+				
+			ud.AddChild (new CSharpTokenNode (Convert (uan.Location), "using".Length), UsingAliasDeclaration.Roles.Keyword);
+			ud.AddChild (Identifier.Create (uan.Alias.Value, Convert (uan.Alias.Location)), UsingAliasDeclaration.AliasRole);
+			if (loc != null)
+				ud.AddChild (new CSharpTokenNode (Convert (loc[0]), 1), UsingAliasDeclaration.Roles.Assign);
+			ud.AddChild (ConvertToType (uan.NamespaceExpression), UsingAliasDeclaration.ImportRole);
+			if (loc != null && loc.Count > 1)
+				ud.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), UsingAliasDeclaration.Roles.Semicolon);
+			AddToNamespace (ud);
+		}
+		
+		public override void Visit (UsingExternAlias uea)
+		{
+			var ud = new ExternAliasDeclaration ();
+			var loc = LocationsBag.GetLocations (uea);
+			ud.AddChild (new CSharpTokenNode (Convert (uea.Location), "extern".Length), ExternAliasDeclaration.Roles.Keyword);
+			if (loc != null)
+				ud.AddChild (new CSharpTokenNode (Convert (loc[0]), "alias".Length), ExternAliasDeclaration.AliasRole);
+			ud.AddChild (Identifier.Create (uea.Alias.Value, Convert (uea.Alias.Location)), ExternAliasDeclaration.Roles.Identifier);
+			if (loc != null && loc.Count > 1)
+				ud.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), UsingAliasDeclaration.Roles.Semicolon);
+			AddToNamespace (ud);
+		}
 
 			AstType ConvertImport (MemberName memberName)
 			{
@@ -613,7 +635,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				
-				foreach (EnumMember member in e.OrderedAllMembers) {
+				foreach (EnumMember member in e.Members) {
 					Visit (member);
 					if (location != null && curLoc < location.Count - 1) //last one is closing brace
 						newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.Comma);
@@ -3517,6 +3539,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				};
 				var unit = Parse (top, fileName, lineModifier);		
 				unit.Errors.AddRange (errorReportPrinter.Errors);
+				CompilerCallableEntryPoint.Reset ();
 				return unit;
 			}
 		}

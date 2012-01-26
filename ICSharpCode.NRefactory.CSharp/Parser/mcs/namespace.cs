@@ -83,6 +83,7 @@ namespace Mono.CSharp {
 		string fullname;
 		protected Dictionary<string, Namespace> namespaces;
 		protected Dictionary<string, IList<TypeSpec>> types;
+		List<TypeSpec> extension_method_types;
 		Dictionary<string, TypeExpr> cached_types;
 		RootNamespace root;
 		bool cls_checked;
@@ -403,27 +404,35 @@ namespace Mono.CSharp {
 		//
 		public List<MethodSpec> LookupExtensionMethod (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity)
 		{
-			if (types == null)
+			if (extension_method_types == null)
 				return null;
 
 			List<MethodSpec> found = null;
+			for (int i = 0; i < extension_method_types.Count; ++i) {
+				var ts = extension_method_types[i];
 
-			// TODO: Add per namespace flag when at least 1 type has extension
-
-			foreach (var tgroup in types.Values) {
-				foreach (var ts in tgroup) {
-					if ((ts.Modifiers & Modifiers.METHOD_EXTENSION) == 0)
-						continue;
-
-					var res = ts.MemberCache.FindExtensionMethods (invocationContext, extensionType, name, arity);
-					if (res == null)
-						continue;
-
-					if (found == null) {
-						found = res;
-					} else {
-						found.AddRange (res);
+				//
+				// When the list was built we didn't know what members the type
+				// contains
+				//
+				if ((ts.Modifiers & Modifiers.METHOD_EXTENSION) == 0) {
+					if (extension_method_types.Count == 1) {
+						extension_method_types = null;
+						return found;
 					}
+
+					extension_method_types.RemoveAt (i--);
+					continue;
+				}
+
+				var res = ts.MemberCache.FindExtensionMethods (invocationContext, extensionType, name, arity);
+				if (res == null)
+					continue;
+
+				if (found == null) {
+					found = res;
+				} else {
+					found.AddRange (res);
 				}
 			}
 
@@ -434,6 +443,14 @@ namespace Mono.CSharp {
 		{
 			if (types == null) {
 				types = new Dictionary<string, IList<TypeSpec>> (64);
+			}
+
+			if (ts.IsStatic && ts.Arity == 0 &&
+				(ts.MemberDefinition.DeclaringAssembly == null || ts.MemberDefinition.DeclaringAssembly.HasExtensionMethod)) {
+				if (extension_method_types == null)
+					extension_method_types = new List<TypeSpec> ();
+
+				extension_method_types.Add (ts);
 			}
 
 			var name = ts.Name;
@@ -604,10 +621,12 @@ namespace Mono.CSharp {
 
 		Namespace[] namespace_using_table;
 		Dictionary<string, UsingAliasNamespace> aliases;
-
+		public readonly MemberName RealMemberName;
+		
 		public NamespaceContainer (MemberName name, ModuleContainer module, NamespaceContainer parent, CompilationSourceFile sourceFile)
 			: base ((TypeContainer) parent ?? module, name, null, MemberKind.Namespace)
 		{
+			this.RealMemberName = name;
 			this.module = module;
 			this.Parent = parent;
 			this.file = sourceFile;
@@ -759,15 +778,6 @@ namespace Mono.CSharp {
 			VerifyClsCompliance ();
 
 			base.EmitContainer ();
-		}
-
-		//
-		// Does extension methods look up to find a method which matches name and extensionType.
-		// Search starts from this namespace and continues hierarchically up to top level.
-		//
-		protected override ExtensionMethodCandidates LookupExtensionMethod (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity)
-		{
-			return LookupExtensionMethod (invocationContext, extensionType, name, arity, this, 0);
 		}
 
 		public ExtensionMethodCandidates LookupExtensionMethod (IMemberContext invocationContext, TypeSpec extensionType, string name, int arity, NamespaceContainer container, int position)
@@ -1180,10 +1190,10 @@ namespace Mono.CSharp {
 			return MemberName == null ? "global::" : base.GetSignatureForError ();
 		}
 
-		public override void RemoveContainer (TypeContainer next_part)
+		public override void RemoveContainer (TypeContainer cont)
 		{
-			base.RemoveContainer (next_part);
-			NS.RemoveContainer (next_part);
+			base.RemoveContainer (cont);
+			NS.RemoveContainer (cont);
 		}
 
 		protected override bool VerifyClsCompliance ()
@@ -1265,7 +1275,7 @@ namespace Mono.CSharp {
 			}
 		}
 		
-		public void Accept (StructuralVisitor visitor)
+		public virtual void Accept (StructuralVisitor visitor)
 		{
 			visitor.Visit (this);
 		}
@@ -1288,7 +1298,7 @@ namespace Mono.CSharp {
 			}
 		}
 		
-		public void Accept (StructuralVisitor visitor)
+		public override void Accept (StructuralVisitor visitor)
 		{
 			visitor.Visit (this);
 		}
@@ -1422,7 +1432,7 @@ namespace Mono.CSharp {
 			resolved = NamespaceExpression.ResolveAsTypeOrNamespace (new AliasContext (ctx));
 		}
 		
-		public void Accept (StructuralVisitor visitor)
+		public override void Accept (StructuralVisitor visitor)
 		{
 			visitor.Visit (this);
 		}

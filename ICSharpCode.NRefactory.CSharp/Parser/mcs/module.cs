@@ -39,7 +39,7 @@ namespace Mono.CSharp
 		sealed class StaticDataContainer : CompilerGeneratedClass
 		{
 			readonly Dictionary<int, Struct> size_types;
-			new int fields;
+			int fields;
 
 			public StaticDataContainer (ModuleContainer module)
 				: base (module, new MemberName ("<PrivateImplementationDetails>" + module.builder.ModuleVersionId.ToString ("B"), Location.Null), Modifiers.STATIC)
@@ -179,6 +179,11 @@ namespace Mono.CSharp
 				return context;
 			}
 		}
+
+		public int CounterAnonymousTypes { get; set; }
+		public int CounterAnonymousMethods { get; set; }
+		public int CounterAnonymousContainers { get; set; }
+		public int CounterSwitchTypes { get; set; }
 
 		public AssemblyDefinition DeclaringAssembly {
 			get {
@@ -423,7 +428,8 @@ namespace Mono.CSharp
 
 			base.EmitContainer ();
 
-			VerifyMembers ();
+			if (Compiler.Report.Errors == 0)
+				VerifyMembers ();
 
 			if (anonymous_types != null) {
 				foreach (var atypes in anonymous_types)

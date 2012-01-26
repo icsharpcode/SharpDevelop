@@ -86,7 +86,7 @@ namespace Mono.CSharp
 		///
 		/// Controls the verbosity of the errors produced by the parser
 		///
-		static public int yacc_verbose_flag;
+		int yacc_verbose_flag;
 
 		/// 
 		/// Used by the interactive shell, flags whether EOF was reached
@@ -978,7 +978,7 @@ constant_declaration
 		var lt = (Tokenizer.LocatedToken) $5;
 		var mod = (Modifiers) $2;
 		current_field = new Const (current_type, (FullNamedExpression) $4, mod, new MemberName (lt.Value, lt.Location), (Attributes) $1);
-		current_container.PartialContainer.AddConstant ((Const) current_field);
+		current_type.AddMember (current_field);
 		
 		if ((mod & Modifiers.STATIC) != 0) {
 			report.Error (504, current_field.Location, "The constant `{0}' cannot be marked static", current_field.GetSignatureForError ());
@@ -1060,7 +1060,7 @@ field_declaration
 			
 		var lt = (Tokenizer.LocatedToken) $4;
 		current_field = new Field (current_type, type, (Modifiers) $2, new MemberName (lt.Value, lt.Location), (Attributes) $1);
-		current_container.PartialContainer.AddField (current_field);
+		current_type.AddField (current_field);
 		$$ = current_field;
 	  }
 	  opt_field_initializer
@@ -1087,7 +1087,7 @@ field_declaration
 		current_field = new FixedField (current_type, (FullNamedExpression) $4, (Modifiers) $2,
 			new MemberName (lt.Value, lt.Location), (Attributes) $1);
 			
-		current_container.PartialContainer.AddField (current_field);
+		current_type.AddField (current_field);
 	  }
 	  fixed_field_size opt_fixed_field_declarators SEMICOLON
 	  {
@@ -1227,7 +1227,7 @@ method_declaration
 		// Add it early in the case of body being eof for full ast
 		Method m = (Method) $1;
 		async_block = (m.ModFlags & Modifiers.ASYNC) != 0;
-		current_container.PartialContainer.AddMethod (m);
+		current_type.AddMember (m);
 	  }
 	  method_body
 	  {
@@ -1678,7 +1678,7 @@ property_declaration
 		if (type.Type != null && type.Type.Kind == MemberKind.Void)
 			report.Error (547, GetLocation ($3), "`{0}': property or indexer cannot have void type", current_property.GetSignatureForError ());					
 			
-		current_container.PartialContainer.AddProperty ((Property)current_property);
+		current_type.AddMember (current_property);
 		lbag.AddMember (current_property, GetModifierLocations (), GetLocation ($6));
 		
 		lexer.PropertyParsing = true;
@@ -1712,7 +1712,7 @@ indexer_declaration
 			
 		current_property = indexer;
 
-  		current_container.PartialContainer.AddIndexer (indexer);
+  		current_type.AddIndexer (indexer);
 		lbag.AddMember (current_property, GetModifierLocations (), GetLocation ($5), GetLocation ($8), GetLocation ($9));
   		
 		if (type.Type != null && type.Type.Kind == MemberKind.Void)
@@ -1988,7 +1988,7 @@ operator_declaration
 			}
 
 			// Note again, checking is done in semantic analysis
-			current_container.PartialContainer.AddOperator (op);
+			current_type.AddOperator (op);
 
 			lbag.AddMember (op, GetModifierLocations (), lbag.GetLocations (decl));
 			if ($5 == null) { // Semicolon
@@ -2190,7 +2190,7 @@ constructor_declarator
 			}
 		}
 
-		current_container.PartialContainer.AddConstructor (c);
+		current_type.AddConstructor (c);
 		lbag.AddMember (c, GetModifierLocations (), GetLocation ($5), GetLocation ($7));
 		$$ = c;
 
@@ -2286,7 +2286,7 @@ destructor_declaration
 			d.DocComment = ConsumeStoredComment ();
 		  
 		d.Block = (ToplevelBlock) $8;
-		current_container.PartialContainer.AddMethod (d);
+		current_type.AddMember (d);
 		lbag.AddMember (d, GetModifierLocations (), GetLocation ($3), GetLocation ($6), GetLocation ($7));
 
 		current_local_parameters = null;
@@ -2299,7 +2299,7 @@ event_declaration
 	  EVENT type member_declaration_name
 	  {
 		current_event_field = new EventField (current_type, (FullNamedExpression) $4, (Modifiers) $2, (MemberName) $5, (Attributes) $1);
-		current_container.PartialContainer.AddEvent (current_event_field);
+		current_type.AddMember (current_event_field);
 		
 		if (current_event_field.MemberName.ExplicitInterface != null) {
 			report.Error (71, current_event_field.Location, "`{0}': An explicit interface implementation of an event must use property syntax",
@@ -2326,7 +2326,7 @@ event_declaration
 	  OPEN_BRACE
 	  {
 		current_event = new EventProperty (current_type, (FullNamedExpression) $4, (Modifiers) $2, (MemberName) $5, (Attributes) $1);
-		current_container.PartialContainer.AddEvent (current_event);
+		current_type.AddMember (current_event);
 		lbag.AddMember (current_event, GetModifierLocations (), GetLocation ($3), GetLocation ($6));
 		
 		lexer.EventParsing = true;
@@ -2649,7 +2649,7 @@ delegate_declaration
 
 		p.CheckParameters (del);
 
-		(current_container.PartialContainer ?? current_container).AddTypeContainer (del);
+		current_container.AddTypeContainer (del);
 
 		current_delegate = del;
 		lexer.ConstraintsParsing = true;
@@ -5062,9 +5062,11 @@ expression_statement
 	  }
 	| statement_expression COMPLETE_COMPLETION { $$ = $1; }
 	| statement_expression CLOSE_BRACE {
-		$$ = $1;
-		report.Error (1525, "Unexpected symbol '}', expecting ';'");
-	}	
+        $$ = $1;
+		lbag.AddStatement ($$, GetLocation ($2));
+		report.Error (1525, "Unexpected symbol '}' after statement, expecting ';'");
+		lexer.putback ('}');
+	  }
 	;
 
 interactive_expression_statement
@@ -5861,7 +5863,7 @@ from_clause
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression
+	  expression_or_error
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		var sn = new Linq.RangeVariable (lt.Value, lt.Location);
@@ -5876,7 +5878,7 @@ from_clause
 	  {
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression
+	  expression_or_error
 	  {
 		var lt = (Tokenizer.LocatedToken) $3;
 		var sn = new Linq.RangeVariable (lt.Value, lt.Location);
@@ -5921,7 +5923,7 @@ select_or_group_clause
 	  {
 	  	current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression
+	  expression_or_error
 	  {
 		$$ = new Linq.Select ((Linq.QueryBlock)current_block, (Expression)$3, GetLocation ($1));
 
@@ -5936,14 +5938,14 @@ select_or_group_clause
 	  	current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  	linq_clause_blocks.Push ((Linq.QueryBlock)current_block);
 	  }
-	  expression
+	  expression_or_error
 	  {
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
 	  
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  BY expression
+	  BY expression_or_error
 	  {
 		$$ = new Linq.GroupBy ((Linq.QueryBlock)current_block, (Expression)$3, linq_clause_blocks.Pop (), (Expression)$6, GetLocation ($1));
 		lbag.AddLocation ($$, GetLocation ($5));
@@ -5980,7 +5982,7 @@ let_clause
 	  {
 	  	current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression
+	  expression_or_error
 	  {
 		var lt = (Tokenizer.LocatedToken) $2;
 		var sn = new Linq.RangeVariable (lt.Value, lt.Location);
@@ -5999,7 +6001,7 @@ where_clause
 	  {
 	  	current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression
+	  expression_or_error
 	  {
 		$$ = new Linq.Where ((Linq.QueryBlock)current_block, (Expression)$3, GetLocation ($1));
 
@@ -6017,7 +6019,7 @@ join_clause
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 		linq_clause_blocks.Push ((Linq.QueryBlock) current_block);
 	  }
-	  expression ON
+	  expression_or_error ON
 	  {
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
@@ -6025,7 +6027,7 @@ join_clause
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 		linq_clause_blocks.Push ((Linq.QueryBlock) current_block);
 	  }
-	  expression EQUALS
+	  expression_or_error EQUALS
 	  {
 		current_block.AddStatement (new ContextualReturn ((Expression) $8));
 		current_block.SetEndLocation (lexer.Location);
@@ -6033,7 +6035,7 @@ join_clause
 
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression opt_join_into
+	  expression_or_error opt_join_into
 	  {
 		current_block.AddStatement (new ContextualReturn ((Expression) $11));
 		current_block.SetEndLocation (lexer.Location);
@@ -6079,7 +6081,7 @@ join_clause
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 		linq_clause_blocks.Push ((Linq.QueryBlock) current_block);
 	  }
-	  expression ON
+	  expression_or_error ON
 	  {
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
@@ -6087,7 +6089,7 @@ join_clause
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 		linq_clause_blocks.Push ((Linq.QueryBlock) current_block);
 	  }
-	  expression EQUALS
+	  expression_or_error EQUALS
 	  {
 		current_block.AddStatement (new ContextualReturn ((Expression) $9));
 		current_block.SetEndLocation (lexer.Location);
@@ -6095,7 +6097,7 @@ join_clause
 
 		current_block = new Linq.QueryBlock (current_block, lexer.Location);
 	  }
-	  expression opt_join_into
+	  expression_or_error opt_join_into
 	  {
 		current_block.AddStatement (new ContextualReturn ((Expression) $12));
 		current_block.SetEndLocation (lexer.Location);
@@ -6293,7 +6295,7 @@ interactive_parsing
 			pars,
 			null /* attributes */);
 			
-		current_container.PartialContainer.AddMethod (method);			
+		current_type.AddMember (method);			
 
 		oob_stack.Push (method);
 		++lexer.parsing_block;
@@ -6520,12 +6522,10 @@ void push_current_container (TypeDefinition tc, object partial_token)
 		undo.AddTypeContainer (current_container, tc);
 	}
 	
-	var main_container = current_container.PartialContainer ?? current_container;
-
 	if (partial_token != null)
-		main_container.AddPartial (tc);
+		current_container.AddPartial (tc);
 	else
-		main_container.AddTypeContainer (tc);
+		current_container.AddTypeContainer (tc);
 		
 	++lexer.parsing_declaration;
 	current_container = tc;
@@ -6624,6 +6624,7 @@ public CSharpParser (SeekableStreamReader reader, CompilationSourceFile file, Re
 	this.report = report;
 	
 	lang_version = settings.Version;
+	yacc_verbose_flag = settings.VerboseParserFlag;
 	doc_support = settings.DocumentationFile != null;
 	oob_stack.Clear ();
 	lexer = new Tokenizer (reader, file, compiler);

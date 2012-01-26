@@ -183,7 +183,6 @@ namespace Mono.CSharp {
 
 		// Unique storey ID
 		public readonly int ID;
-		static int unique_id;
 
 		public readonly Block OriginalSourceBlock;
 
@@ -202,11 +201,11 @@ namespace Mono.CSharp {
 		public Expression Instance;
 
 		public AnonymousMethodStorey (Block block, TypeDefinition parent, MemberBase host, TypeParameters tparams, string name)
-			: base (parent, MakeMemberName (host, name, unique_id, tparams, block.StartLocation),
+			: base (parent, MakeMemberName (host, name, parent.Module.CounterAnonymousContainers, tparams, block.StartLocation),
 				tparams, Modifiers.SEALED)
 		{
 			OriginalSourceBlock = block;
-			ID = unique_id++;
+			ID = parent.Module.CounterAnonymousContainers++;
 		}
 
 		public void AddCapturedThisField (EmitContext ec)
@@ -497,8 +496,10 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public override void EmitContainer ()
+		public override void Emit ()
 		{
+			base.Emit ();
+
 			SymbolWriter.DefineAnonymousScope (ID);
 
 			if (hoisted_this != null)
@@ -519,8 +520,6 @@ namespace Mono.CSharp {
 					SymbolWriter.DefineCapturedScope (ID, sf.Storey.ID, sf.Field.Name);
 				}
 			}
-
-			base.EmitContainer ();
 		}
 
 		//
@@ -597,11 +596,6 @@ namespace Mono.CSharp {
 		public IList<ExplicitBlock> ReferencesFromChildrenBlock {
 			get { return children_references; }
 		}
-
-		public static void Reset ()
-		{
-			unique_id = 0;
-		}		
 	}
 
 	public abstract class HoistedVariable
@@ -1337,7 +1331,7 @@ namespace Mono.CSharp {
 				this.Storey = storey;
 				this.RealName = real_name;
 
-				Parent.PartialContainer.AddMethod (this);
+				Parent.PartialContainer.Members.Add (this);
 				Block = new ToplevelBlock (am.block, parameters);
 			}
 
@@ -1496,8 +1490,6 @@ namespace Mono.CSharp {
 		string block_name;
 		TypeInferenceContext return_inference;
 
-		static int unique_id;
-
 		public AnonymousMethodBody (ParametersCompiled parameters,
 					ParametersBlock block, TypeSpec return_type, TypeSpec delegate_type,
 					Location loc)
@@ -1587,7 +1579,7 @@ namespace Mono.CSharp {
 
 			MemberCore mc = ec.MemberContext as MemberCore;
 			string name = CompilerGeneratedClass.MakeName (parent != storey ? block_name : null,
-				"m", null, unique_id++);
+				"m", null, ec.Module.CounterAnonymousMethods++);
 
 			MemberName member_name;
 			if (storey == null && ec.CurrentTypeParameters != null) {
@@ -1643,7 +1635,7 @@ namespace Mono.CSharp {
 				//
 				if (!method.MemberName.IsGeneric) {
 					var parent = method.Parent.PartialContainer;
-					int id = parent.Fields == null ? 0 : parent.Fields.Count;
+					int id = parent.AnonymousMethodsCounter++;
 					var cache_type = storey != null && storey.Mutator != null ? storey.Mutator.Mutate (type) : type;
 
 					am_cache = new Field (parent, new TypeExpression (cache_type, loc),
@@ -1752,11 +1744,6 @@ namespace Mono.CSharp {
 		{
 			return TypeManager.CSharpName (type);
 		}
-
-		public static void Reset ()
-		{
-			unique_id = 0;
-		}
 	}
 
 	//
@@ -1764,7 +1751,6 @@ namespace Mono.CSharp {
 	//
 	public class AnonymousTypeClass : CompilerGeneratedClass
 	{
-		static int types_counter;
 		public const string ClassNamePrefix = "<>__AnonType";
 		public const string SignatureForError = "anonymous type";
 		
@@ -1778,7 +1764,7 @@ namespace Mono.CSharp {
 
 		public static AnonymousTypeClass Create (TypeContainer parent, IList<AnonymousTypeParameter> parameters, Location loc)
 		{
-			string name = ClassNamePrefix + types_counter++;
+			string name = ClassNamePrefix + parent.Module.CounterAnonymousTypes++;
 
 			ParametersCompiled all_parameters;
 			TypeParameters tparams = null;
@@ -1850,7 +1836,7 @@ namespace Mono.CSharp {
 					new MemberName (p.Name, p.Location), null);
 				prop.Get = new Property.GetMethod (prop, 0, null, p.Location);
 				prop.Get.Block = get_block;
-				a_type.AddProperty (prop);
+				a_type.AddMember (prop);
 			}
 
 			if (error)
@@ -1860,11 +1846,6 @@ namespace Mono.CSharp {
 			return a_type;
 		}
 		
-		public static void Reset ()
-		{
-			types_counter = 0;
-		}
-
 		protected override bool DoDefineMembers ()
 		{
 			if (!base.DoDefineMembers ())
@@ -1911,7 +1892,7 @@ namespace Mono.CSharp {
 			Expression rs_hashcode = new IntConstant (Compiler.BuiltinTypes, -2128831035, loc);
 			for (int i = 0; i < parameters.Count; ++i) {
 				var p = parameters [i];
-				var f = Fields [i];
+				var f = (Field) Members [i * 2];
 
 				MemberAccess equality_comparer = new MemberAccess (new MemberAccess (
 					system_collections_generic, "EqualityComparer",
@@ -1988,7 +1969,7 @@ namespace Mono.CSharp {
 
 			equals.Block = equals_block;
 			equals.Define ();
-			AddMethod (equals);
+			Members.Add (equals);
 
 			//
 			// GetHashCode () override
@@ -2042,7 +2023,7 @@ namespace Mono.CSharp {
 			hashcode_block.AddStatement (new Return (hash_variable, loc));
 			hashcode.Block = hashcode_top;
 			hashcode.Define ();
-			AddMethod (hashcode);
+			Members.Add (hashcode);
 
 			//
 			// ToString () override
@@ -2052,7 +2033,7 @@ namespace Mono.CSharp {
 			tostring_block.AddStatement (new Return (string_concat, loc));
 			tostring.Block = tostring_block;
 			tostring.Define ();
-			AddMethod (tostring);
+			Members.Add (tostring);
 
 			return true;
 		}

@@ -358,5 +358,55 @@ namespace Mono.CSharp
 		public SpecialsBag SpecialsBag { get; set; }
 		public object LastYYValue { get; set; }
 	}
+
+	//
+	// This is the only public entry point
+	//
+	public class CompilerCallableEntryPoint : MarshalByRefObject
+	{
+		public static bool InvokeCompiler (string [] args, TextWriter error)
+		{
+			try {
+				var r = new Report (new StreamReportPrinter (error));
+				CommandLineParser cmd = new CommandLineParser (r, error);
+				var setting = cmd.ParseArguments (args);
+				if (setting == null || r.Errors > 0)
+					return false;
+
+				var d = new Driver (new CompilerContext (setting, r));
+				return d.Compile ();
+			} finally {
+				Reset ();
+			}
+		}
+
+		public static int[] AllWarningNumbers {
+			get {
+				return Report.AllWarnings;
+			}
+		}
+
+		public static void Reset ()
+		{
+			Reset (true);
+		}
+
+		public static void PartialReset ()
+		{
+			Reset (false);
+		}
+		
+		public static void Reset (bool full_flag)
+		{
+			Location.Reset ();
+			
+			if (!full_flag)
+				return;
+
+			SymbolWriter.Reset ();
+			Linq.QueryBlock.TransparentParameter.Reset ();
+			TypeInfo.Reset ();
+		}
+	}
 	
 }
