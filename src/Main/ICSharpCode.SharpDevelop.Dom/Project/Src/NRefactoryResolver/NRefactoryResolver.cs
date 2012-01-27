@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			this.ProjectContent = cu.ProjectContent;
 			
-			if (language == SupportedLanguage.VBNet) {
+			if (language == SupportedLanguage.VBNet && cu is IVBNetOptionProvider) {
 				IVBNetOptionProvider provider = (IVBNetOptionProvider)cu;
 				
 				inferAllowed = provider.OptionInfer ?? false;
