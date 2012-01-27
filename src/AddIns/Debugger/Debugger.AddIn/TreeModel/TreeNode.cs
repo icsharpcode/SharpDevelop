@@ -125,6 +125,21 @@ namespace Debugger.AddIn.TreeModel
 			this.childNodes = childNodes(this);
 		}
 		
+		#region Equals and GetHashCode implementation
+		public override bool Equals(object obj)
+		{
+			TreeNode other = obj as TreeNode;
+			if (other == null)
+				return false;
+			return this.FullName == other.FullName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return this.FullName.GetHashCode();
+		}
+		#endregion
+
 		public int CompareTo(ITreeNode other)
 		{
 			return this.FullName.CompareTo(other.FullName);
