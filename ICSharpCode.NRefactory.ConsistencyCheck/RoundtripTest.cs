@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				return; // skip due to completely messed up comment locations
 			if (file.FileName.Contains("FormattingTests") || file.FileName.Contains("ContextAction") || file.FileName.Contains("CodeCompletion"))
 				return; // skip due to AttributeSectionTests.AttributeWithEmptyParenthesis
-			if (file.FileName.EndsWith("TypeSystemTests.TestCase.cs"))
+			if (file.FileName.EndsWith("TypeSystemTests.TestCase.cs") || file.FileName.EndsWith("AssemblyInfo.cs"))
 				return; // skip due to AttributeSectionTests.AssemblyAttributeBeforeNamespace
 			if (file.FileName.EndsWith("dynamic.cs") || file.FileName.EndsWith("expression.cs"))
 				return; // skip due to PreprocessorDirectiveTests.NestedInactiveIf

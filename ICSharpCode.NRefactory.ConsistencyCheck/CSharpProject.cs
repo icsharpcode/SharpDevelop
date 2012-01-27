@@ -118,12 +118,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public CSharpParser CreateParser()
 		{
-			List<string> args = new List<string>();
-			if (AllowUnsafeBlocks)
-				args.Add("-unsafe");
+			var settings = new Mono.CSharp.CompilerSettings();
+			settings.Unsafe = AllowUnsafeBlocks;
 			foreach (string define in PreprocessorDefines)
-				args.Add("-d:" + define);
-			return new CSharpParser(args.ToArray());
+				settings.AddConditionalSymbol(define);
+			return new CSharpParser(settings);
 		}
 	}
 	
