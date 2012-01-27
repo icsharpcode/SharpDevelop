@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -1778,7 +1778,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 			} else {
-				foreach (var meths in state.GetAllExtensionMethods (type)) {
+				foreach (var meths in state.GetExtensionMethods (type)) {
 					foreach (var m in meths) {
 						result.AddMember (m);
 					}
