@@ -46,10 +46,32 @@
 		              ShowsPreview="True"
 		              Height="5" />
 		<!-- Left TreeView -->
-		<tv:SharpTreeView Name="leftTree" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="LeftTreeMouseMove" ScrollViewer.ScrollChanged="ViewScrollChanged">
+		<tv:SharpTreeView Name="leftTree"
+			Grid.Row="2" 
+			ScrollViewer.HorizontalScrollBarVisibility="Visible"
+			ScrollViewer.VerticalScrollBarVisibility="Hidden"
+			MouseMove="LeftTreeMouseMove"
+			ScrollViewer.ScrollChanged="ViewScrollChanged">
 		</tv:SharpTreeView>
-		<ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" Grid.Row="2" Grid.Column="2" Name="scrollViewer" CanContentScroll="True" ScrollChanged="ViewScrollChanged">
-			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged" />
+		
+		<Popup Name="popUp"
+		       PlacementTarget="{Binding ElementName=matrix}"
+		       Placement="Relative"
+		       VerticalOffset="30" HorizontalOffset="100"
+		       PopupAnimation="Slide" AllowsTransparency="True">
+			<Viewbox VerticalAlignment="Top">
+				<TextBlock x:Name="xx" Text="Please select an Assembly....." FontSize="15"/>
+			</Viewbox>
+		</Popup>
+		
+		<ScrollViewer Name="scrollViewer"
+			HorizontalScrollBarVisibility="Visible"
+		              VerticalScrollBarVisibility="Visible"
+		              Grid.Row="2" Grid.Column="2" 
+		              CanContentScroll="True"
+		              ScrollChanged="ViewScrollChanged">
+			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged"/>
+		
 		</ScrollViewer>
 	</Grid>
 </UserControl>

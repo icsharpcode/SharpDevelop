@@ -34,16 +34,26 @@ namespace ICSharpCode.CodeQuality.Gui
 		public DependencyMatrixView()
 		{
 			InitializeComponent();
+			Visibility = Visibility.Hidden;
+			 popUp.IsOpen = true;
+
 			nodeDescriptionViewModel = new NodeDescriptionViewModel();
 			this.inform.DataContext = nodeDescriptionViewModel;
 			topTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			leftTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			matrix.Colorizer = new DependencyColorizer();
 			matrix.ScrollOwner = scrollViewer;
+			
 		}
+		
 		
 		public void Update(IEnumerable<INode> nodes)
 		{
+			this.Visibility = Visibility.Visible;
+		
+			popUp.IsOpen = false;
+			popUp.StaysOpen = true;
+
 			Extensions.FillTree(topTree, nodes);
 			Extensions.FillTree(leftTree, nodes);
 			
@@ -58,6 +68,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			this.matrix.Matrix = matrix;
 			BuildLeftINodeList(null, null);
 			BuildTopINodeList(null, null);
+			
 		}
 
 		void AddChildrenToMatrix(DependencyMatrix matrix, IEnumerable<INode> nodes)

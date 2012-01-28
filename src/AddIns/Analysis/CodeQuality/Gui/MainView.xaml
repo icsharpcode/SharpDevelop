@@ -8,7 +8,7 @@
 		</ToolBar>
 		<TabControl>
 			<TabItem Header="Dependency Matrix">
-				<gui:DependencyMatrixView x:Name="matrix" />
+				<gui:DependencyMatrixView x:Name="matrix"/>
 			</TabItem>
 		</TabControl>
 	</DockPanel>
