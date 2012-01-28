@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.CodeQuality.Engine.Dom
@@ -16,9 +18,7 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		}
 		
 		public IList<INode> Children {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		public IEnumerable<INode> Uses {
@@ -38,6 +38,10 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 			Relationship r = new Relationship();
 			if (value == this)
 				r.AddRelationship(RelationshipType.Same);
+			if (Uses.Contains(value))
+				r.AddRelationship(RelationshipType.Uses);
+			if (UsedBy.Contains(value))
+				r.AddRelationship(RelationshipType.UsedBy);
 			return r;
 		}
 	}

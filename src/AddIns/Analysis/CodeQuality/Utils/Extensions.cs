@@ -6,9 +6,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.CodeQuality.Gui;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.CodeQuality
@@ -21,7 +22,8 @@ namespace ICSharpCode.CodeQuality
 		public static void FillTree(SharpTreeView tree, IEnumerable<INode> rootNodes)
 		{
 			tree.Root = new SharpTreeNode();
-			CreateItems(rootNodes, tree.Root);
+			if (rootNodes != null)
+				CreateItems(rootNodes, tree.Root);
 		}
 		
 		static void CreateItems(IEnumerable<INode> nodes, SharpTreeNode parent)
@@ -29,7 +31,8 @@ namespace ICSharpCode.CodeQuality
 			foreach (INode node in nodes) {
 				var item = new MatrixTreeNode(node);
 				parent.Children.Add(item);
-				CreateItems(node.Children, item);
+				if (node.Children != null)
+					CreateItems(node.Children, item);
 			}
 		}
 		
@@ -72,6 +75,13 @@ namespace ICSharpCode.CodeQuality
 				(byte)(c1.R * amountFrom + c2.R * percent),
 				(byte)(c1.G * amountFrom + c2.G * percent),
 				(byte)(c1.B * amountFrom + c2.B * percent));
+		}
+		
+		static readonly IAmbience amb = new CSharpAmbience() { ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowTypeParameterList };
+		
+		public static string PrintFullName(this IEntity entity)
+		{
+			return amb.ConvertEntity(entity);
 		}
 	}
 }

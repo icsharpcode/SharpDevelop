@@ -22,7 +22,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			
 			// add other way
 			foreach (var relationship in fromRelationship.Relationships) {
-				if (relationship == RelationshipType.UseThis)
+				if (relationship == RelationshipType.Uses)
 					toRelationship.AddRelationship(RelationshipType.UsedBy);
 			}
 			

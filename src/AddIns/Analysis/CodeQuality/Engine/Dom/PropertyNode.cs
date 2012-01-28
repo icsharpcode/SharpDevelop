@@ -16,9 +16,7 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		}
 		
 		public IList<INode> Children {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		public IEnumerable<INode> Uses {

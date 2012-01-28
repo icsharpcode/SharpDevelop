@@ -41,10 +41,10 @@ namespace ICSharpCode.CodeQuality
 			if (relationship == null)
 				return Colors.Transparent;
 			
-			if (relationship.Relationships.Any(r => r == RelationshipType.UseThis))
-				return Colors.LightBlue;
+			if (relationship.Relationships.Any(r => r == RelationshipType.Uses))
+				return Colors.LightGreen;
 			if (relationship.Relationships.Any(r => r == RelationshipType.UsedBy))
-				return Colors.Violet;
+				return Colors.LightBlue;
 			if (relationship.Relationships.Any(r => r == RelationshipType.Same))
 				return Colors.Gray;
 			

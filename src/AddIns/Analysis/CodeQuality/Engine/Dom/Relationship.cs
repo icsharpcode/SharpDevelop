@@ -30,7 +30,7 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		
 		public void AddRelationship(RelationshipType type)
 		{
-			if (type == RelationshipType.UseThis || type == RelationshipType.UsedBy)
+			if (type == RelationshipType.Uses || type == RelationshipType.UsedBy)
 				OccurrenceCount++;
 			
 			Relationships.Add(type);
@@ -48,13 +48,30 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		}
 	}
 	
+	/// <summary>
+	/// Type of relationship between two INodes.
+	/// </summary>
 	public enum RelationshipType
 	{
-		OneWayTo,
-		UseThis,
-		UsedBy,
-		Same,
+		/// <summary>
+		/// a and b are not related to each other.
+		/// </summary>
+		None,
+		/// <summary>
+		/// a contains b.
+		/// </summary>
 		Contains,
-		None
+		/// <summary>
+		/// a uses b.
+		/// </summary>
+		Uses,
+		/// <summary>
+		/// a is used by b.
+		/// </summary>
+		UsedBy, 
+		/// <summary>
+		/// a and b are the same INode
+		/// </summary>
+		Same
 	}
 }

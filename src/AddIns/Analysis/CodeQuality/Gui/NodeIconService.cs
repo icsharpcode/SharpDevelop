@@ -15,7 +15,7 @@ namespace ICSharpCode.CodeQuality.Gui
 	public static class NodeIconService
 	{
 		static readonly BitmapSource NamespaceNode = GetImage("Icons.16x16.NameSpace");
-		static readonly BitmapSource Assembly = GetImage("Icons.16x16.Assembly");
+		static readonly BitmapSource Assembly = GetImage("Icons.16x16.Reference");
 
 		static readonly BitmapSource Class = GetImage("Icons.16x16.Class");
 		static readonly BitmapSource InternalClass = GetImage("Icons.16x16.InternalClass");

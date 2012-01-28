@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.0.8363-alpha
+# SharpDevelop 4.2.0.8380-alpha
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -504,10 +504,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SourceAnalysis", "src\AddIn
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MachineSpecifications", "src\AddIns\Analysis\MachineSpecifications\MachineSpecifications\MachineSpecifications.csproj", "{D1DA3B8F-7313-4BDA-8880-461C5F007751}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeQuality", "CodeQuality", "{558479FB-A397-4EE9-A1AD-879F80D1FCD0}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeQuality", "src\AddIns\Analysis\CodeQuality\CodeQuality.csproj", "{3C532D80-32B4-40E5-B5FE-BC6BAE1A00E7}"
 EndProject
@@ -1266,7 +1262,6 @@ Global
 		{08CE9972-283B-44F4-82FA-966F7DFA6B7A} = {F355E45F-F54F-4B42-8916-9A633A392789}
 		{CE498514-D12D-4B6E-AE0E-FEC29BD43748} = {F355E45F-F54F-4B42-8916-9A633A392789}
 		{D1DA3B8F-7313-4BDA-8880-461C5F007751} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{558479FB-A397-4EE9-A1AD-879F80D1FCD0} = {F355E45F-F54F-4B42-8916-9A633A392789}
-		{3C532D80-32B4-40E5-B5FE-BC6BAE1A00E7} = {558479FB-A397-4EE9-A1AD-879F80D1FCD0}
+		{3C532D80-32B4-40E5-B5FE-BC6BAE1A00E7} = {F355E45F-F54F-4B42-8916-9A633A392789}
 	EndGlobalSection
 EndGlobal

@@ -70,7 +70,7 @@
 		              Grid.Row="2" Grid.Column="2" 
 		              CanContentScroll="True"
 		              ScrollChanged="ViewScrollChanged">
-			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged"/>
+			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged" MouseMove="MatrixMouseMove" MouseLeave="MatrixMouseLeave" />
 		
 		</ScrollViewer>
 	</Grid>

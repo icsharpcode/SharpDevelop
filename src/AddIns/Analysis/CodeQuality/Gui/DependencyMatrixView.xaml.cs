@@ -15,7 +15,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
 using ICSharpCode.CodeQuality;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.SharpDevelop;
@@ -30,6 +29,7 @@ namespace ICSharpCode.CodeQuality.Gui
 	{
 		ScrollViewer topTreeScrollViewer, leftTreeScrollViewer;
 		NodeDescriptionViewModel nodeDescriptionViewModel;
+		ToolTip infoTooltip;
 		
 		public DependencyMatrixView()
 		{
@@ -44,6 +44,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			matrix.Colorizer = new DependencyColorizer();
 			matrix.ScrollOwner = scrollViewer;
 			
+			infoTooltip = new ToolTip() { StaysOpen = false };
 		}
 		
 		
@@ -64,6 +65,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			topCol.CollectionChanged += BuildTopINodeList;
 			
 			var matrix = new DependencyMatrix();
+			if (nodes != null)
 			AddChildrenToMatrix(matrix, nodes);
 			this.matrix.Matrix = matrix;
 			BuildLeftINodeList(null, null);
@@ -76,6 +78,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			foreach (var node in nodes) {
 				matrix.AddColumn(node);
 				matrix.AddRow(node);
+				if (node.Children != null)
 				AddChildrenToMatrix(matrix, node.Children);
 			}
 		}
@@ -145,6 +148,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				matrix.HighlightLine(HeaderType.Rows, n.Node);
 				leftTree.SelectedItem = n;
 			}
+			infoTooltip.IsOpen = false;
 		}
 		
 		void TopTreeMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -155,6 +159,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				matrix.HighlightLine(HeaderType.Columns, n.Node);
 				topTree.SelectedItem = n;
 			}
+			infoTooltip.IsOpen = false;
 		}
 		
 		MatrixTreeNode ConvertNode(DependencyObject node)
@@ -174,6 +179,32 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (e.HoveredCell.ColumnIndex < topTree.Items.Count) {
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
+		}
+		
+		void MatrixMouseMove(object sender, MouseEventArgs e)
+		{
+			infoTooltip.Placement = PlacementMode.Relative;
+			infoTooltip.VerticalOffset = 15;
+			infoTooltip.PlacementTarget = this;
+			infoTooltip.Content = GetTooltip(matrix.HoveredCell.Value);
+			infoTooltip.IsOpen = true;
+		}
+		
+		object GetTooltip(Relationship relationship)
+		{
+			string text = "is not related to";
+			if (relationship.Relationships.Any(r => r == RelationshipType.Uses))
+				text = "uses";
+			else if (relationship.Relationships.Any(r => r == RelationshipType.UsedBy))
+				text = "is used by";
+			else if (relationship.Relationships.Any(r => r == RelationshipType.Same))
+				text = "is the same as";
+			return string.Format("{0} {1} {2}", relationship.From.Name, text, relationship.To.Name);
+		}
+		
+		void MatrixMouseLeave(object sender, MouseEventArgs e)
+		{
+			infoTooltip.IsOpen = false;
 		}
 		#endregion
 	}
