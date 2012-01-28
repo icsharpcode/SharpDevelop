@@ -118,6 +118,8 @@ namespace Debugger.AddIn.TreeModel
 		public TreeNode(IImage iconImage, string name, string text, string type, TreeNode parent, Func<TreeNode, IEnumerable<TreeNode>> childNodes)
 			: this(parent)
 		{
+			if (childNodes == null)
+				throw new ArgumentNullException("childNodes");
 			this.iconImage = iconImage;
 			this.name = name;
 			this.text = text;
