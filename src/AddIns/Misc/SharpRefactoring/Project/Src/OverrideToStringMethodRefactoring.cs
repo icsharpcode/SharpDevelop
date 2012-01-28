@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Ast;
@@ -46,6 +48,8 @@ namespace SharpRefactoring
 			if (current == null)
 				return;
 			
+			List<PropertyOrFieldWrapper> entities = FindFieldsAndProperties(current).ToList();
+			
 			using (textEditor.Document.OpenUndoGroup()) {
 				ITextAnchor endAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 				endAnchor.MovementType = AnchorMovementType.AfterInsertion;
@@ -67,13 +71,39 @@ namespace SharpRefactoring
 				
 				InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
 				
-				AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(insertionContext, textEditor, startAnchor, insertionPos, current.Fields, codeForBaseCall.Trim());
-				dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
-				
-				textEditor.Document.InsertNormalized(endAnchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
-				
-				insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
+				if (entities.Any()) {
+					AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(insertionContext, textEditor, startAnchor, insertionPos, entities, codeForBaseCall.Trim());
+					dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
+					
+					textEditor.Document.InsertNormalized(endAnchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
+					
+					insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
+				} else {
+					int startIndex = endAnchor.Offset;
+					textEditor.Document.InsertNormalized(startIndex, code.Substring(marker));
+					textEditor.Select(startIndex, codeForBaseCall.TrimEnd().Length);
+				}
 				insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
+			}
+		}
+		
+		IEnumerable<PropertyOrFieldWrapper> FindFieldsAndProperties(IClass sourceClass)
+		{
+			int i = 0;
+			
+			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst
+			                                           && field.IsStatic == sourceClass.IsStatic
+			                                           && field.ReturnType != null)) {
+				yield return new PropertyOrFieldWrapper(f) { Index = i };
+				i++;
+			}
+			
+			foreach (var p in sourceClass.Properties.Where(prop => prop.CanGet && !prop.IsIndexer
+			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
+			                                               && prop.IsStatic == sourceClass.IsStatic
+			                                               && prop.ReturnType != null)) {
+				yield return new PropertyOrFieldWrapper(p) { Index = i };
+				i++;
 			}
 		}
 		
