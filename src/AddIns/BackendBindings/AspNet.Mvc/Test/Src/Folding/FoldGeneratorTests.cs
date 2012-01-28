@@ -65,7 +65,7 @@ namespace AspNet.Mvc.Tests.Folding
 		}
 		
 		[Test]
-		public void Detach_TextEditor_ParseInformationIsEnabled()
+		public void Dispose_TextEditor_ParseInformationIsEnabled()
 		{
 			CreateFakeTextEditor();
 			CreateFoldGenerator();
@@ -106,6 +106,17 @@ namespace AspNet.Mvc.Tests.Folding
 			foldGenerator.GenerateFolds();
 			
 			AssertTextEditorUpdateFoldsWasNotCalled();
+		}
+		
+		[Test]
+		public void Dispose_TextEditor_TextEditorWithFoldingIsDisposed()
+		{
+			CreateFakeTextEditor();
+			CreateFoldGenerator();
+			
+			foldGenerator.Dispose();
+			
+			fakeTextEditor.AssertWasCalled(t => t.Dispose());
 		}
 	}
 }

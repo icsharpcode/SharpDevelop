@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public interface ITextEditorWithParseInformationFolding
+	public interface ITextEditorWithParseInformationFolding : IDisposable
 	{
 		bool IsParseInformationFoldingEnabled { get; set; }
 		

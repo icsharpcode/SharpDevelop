@@ -68,5 +68,10 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			return textEditor.Document.CreateSnapshot().Text;
 		}
+		
+		public void Dispose()
+		{
+			FoldingManager.Uninstall(foldingManager);
+		}
 	}
 }

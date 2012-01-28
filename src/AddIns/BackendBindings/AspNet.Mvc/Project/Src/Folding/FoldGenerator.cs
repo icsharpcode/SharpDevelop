@@ -30,6 +30,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		public void Dispose()
 		{
 			IsParseInformationFoldingEnabled = true;
+			textEditor.Dispose();
 		}
 		
 		public void GenerateFolds()
