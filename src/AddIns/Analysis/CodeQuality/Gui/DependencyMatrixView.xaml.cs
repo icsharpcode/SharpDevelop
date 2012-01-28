@@ -29,13 +29,12 @@ namespace ICSharpCode.CodeQuality.Gui
 	{
 		ScrollViewer topTreeScrollViewer, leftTreeScrollViewer;
 		NodeDescriptionViewModel nodeDescriptionViewModel;
-		ToolTip infoTooltip;
 		
 		public DependencyMatrixView()
 		{
 			InitializeComponent();
 			Visibility = Visibility.Hidden;
-			 popUp.IsOpen = true;
+			popUp.IsOpen = true;
 
 			nodeDescriptionViewModel = new NodeDescriptionViewModel();
 			this.inform.DataContext = nodeDescriptionViewModel;
@@ -43,15 +42,13 @@ namespace ICSharpCode.CodeQuality.Gui
 			leftTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			matrix.Colorizer = new DependencyColorizer();
 			matrix.ScrollOwner = scrollViewer;
-			
-			infoTooltip = new ToolTip() { StaysOpen = false };
 		}
 		
 		
 		public void Update(IEnumerable<INode> nodes)
 		{
 			this.Visibility = Visibility.Visible;
-		
+			
 			popUp.IsOpen = false;
 			popUp.StaysOpen = true;
 
@@ -66,7 +63,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			
 			var matrix = new DependencyMatrix();
 			if (nodes != null)
-			AddChildrenToMatrix(matrix, nodes);
+				AddChildrenToMatrix(matrix, nodes);
 			this.matrix.Matrix = matrix;
 			BuildLeftINodeList(null, null);
 			BuildTopINodeList(null, null);
@@ -79,7 +76,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				matrix.AddColumn(node);
 				matrix.AddRow(node);
 				if (node.Children != null)
-				AddChildrenToMatrix(matrix, node.Children);
+					AddChildrenToMatrix(matrix, node.Children);
 			}
 		}
 		
@@ -148,7 +145,6 @@ namespace ICSharpCode.CodeQuality.Gui
 				matrix.HighlightLine(HeaderType.Rows, n.Node);
 				leftTree.SelectedItem = n;
 			}
-			infoTooltip.IsOpen = false;
 		}
 		
 		void TopTreeMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -159,7 +155,6 @@ namespace ICSharpCode.CodeQuality.Gui
 				matrix.HighlightLine(HeaderType.Columns, n.Node);
 				topTree.SelectedItem = n;
 			}
-			infoTooltip.IsOpen = false;
 		}
 		
 		MatrixTreeNode ConvertNode(DependencyObject node)
@@ -179,32 +174,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (e.HoveredCell.ColumnIndex < topTree.Items.Count) {
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
-		}
-		
-		void MatrixMouseMove(object sender, MouseEventArgs e)
-		{
-			infoTooltip.Placement = PlacementMode.Relative;
-			infoTooltip.VerticalOffset = 15;
-			infoTooltip.PlacementTarget = this;
-			infoTooltip.Content = GetTooltip(matrix.HoveredCell.Value);
-			infoTooltip.IsOpen = true;
-		}
-		
-		object GetTooltip(Relationship relationship)
-		{
-			string text = "is not related to";
-			if (relationship.Relationships.Any(r => r == RelationshipType.Uses))
-				text = "uses";
-			else if (relationship.Relationships.Any(r => r == RelationshipType.UsedBy))
-				text = "is used by";
-			else if (relationship.Relationships.Any(r => r == RelationshipType.Same))
-				text = "is the same as";
-			return string.Format("{0} {1} {2}", relationship.From.Name, text, relationship.To.Name);
-		}
-		
-		void MatrixMouseLeave(object sender, MouseEventArgs e)
-		{
-			infoTooltip.IsOpen = false;
+			nodeDescriptionViewModel.Relationship = e.HoveredCell.Value;
 		}
 		#endregion
 	}

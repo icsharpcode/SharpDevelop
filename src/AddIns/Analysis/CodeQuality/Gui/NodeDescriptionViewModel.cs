@@ -24,9 +24,8 @@ using ICSharpCode.TreeView;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
-	public class NodeDescriptionViewModel:ViewModelBase
+	public class NodeDescriptionViewModel : ViewModelBase
 	{
-		
 		INode node;
 		
 		public INode Node
@@ -37,6 +36,16 @@ namespace ICSharpCode.CodeQuality.Gui
 //				Console.WriteLine("{0} - {1}",node.Uses.Count().ToString(),node.UsedBy.Count().ToString());
 				base.RaisePropertyChanged(()=>Node);
 				base.RaisePropertyChanged(()=>ClassType);
+			}
+		}
+		
+		Relationship relationship;
+		
+		public Relationship Relationship {
+			get { return relationship; }
+			set {
+				relationship = value;
+				base.RaisePropertyChanged(() => Relationship);
 			}
 		}
 		

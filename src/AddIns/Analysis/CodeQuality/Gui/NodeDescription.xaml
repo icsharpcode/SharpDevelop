@@ -5,16 +5,15 @@
 		<Grid>
 			<Grid Margin="5">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition></ColumnDefinition>
-					<ColumnDefinition></ColumnDefinition>
+					<ColumnDefinition />
+					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<Grid.RowDefinitions>
-					<RowDefinition></RowDefinition>
-					<RowDefinition></RowDefinition>
-					<RowDefinition></RowDefinition>
-				
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
 				</Grid.RowDefinitions>
-				
 				<TextBlock Text="Type :" ></TextBlock> 
 				<TextBlock Text="Class :" Grid.Row="1"></TextBlock> 
 				<TextBlock Text="Children :" Grid.Row="2"></TextBlock>
@@ -28,6 +27,7 @@
 				<!-- 
 				<TextBlock Text="{Binding Uses}" Grid.Column="1" Grid.Row="3"></TextBlock>
 				<TextBlock Text="{Binding UsedBy}" Grid.Column="1" Grid.Row="4"></TextBlock>-->
+				<TextBlock Text="{Binding Relationship.InfoText}" Grid.Row="3" Grid.ColumnSpan="2" />
 			</Grid>
 		</Grid>
 	</Border>
