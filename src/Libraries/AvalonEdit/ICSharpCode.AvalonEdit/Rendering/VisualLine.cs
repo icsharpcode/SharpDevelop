@@ -446,6 +446,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode, bool allowVirtualSpace)
 		{
+			if (!HasStopsInVirtualSpace(mode))
+				allowVirtualSpace = false;
+			
 			if (elements.Count == 0) {
 				// special handling for empty visual lines:
 				if (allowVirtualSpace) {
@@ -524,6 +527,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 			// we've found nothing, return -1 and let the caret search continue in the next line
 			return -1;
+		}
+		
+		static bool HasStopsInVirtualSpace(CaretPositioningMode mode)
+		{
+			return mode == CaretPositioningMode.Normal;
 		}
 		
 		static bool HasImplicitStopAtLineStart(CaretPositioningMode mode)

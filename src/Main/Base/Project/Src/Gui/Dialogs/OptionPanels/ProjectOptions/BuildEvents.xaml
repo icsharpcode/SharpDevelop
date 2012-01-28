@@ -12,14 +12,14 @@
 			<DockPanel>
 				<optionpanels:StorageLocationPicker Location="{Binding PreBuildEvent.Location}" DockPanel.Dock="Left" />
 				<TextBox Name="preBuild" Text="{Binding PreBuildEvent.Value, UpdateSourceTrigger=PropertyChanged}" Height="75"
-				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" />
+				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" />
 			</DockPanel>
 			
 			<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.PostBuild}" Target="{Binding ElementName=postBuild}"/>
 			<DockPanel>
 				<optionpanels:StorageLocationPicker Location="{Binding PostBuildEvent.Location}" DockPanel.Dock="Left" />
 				<TextBox Name="postBuild" Text="{Binding PostBuildEvent.Value, UpdateSourceTrigger=PropertyChanged}" Height="75"
-				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" />
+				         HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Visible" AcceptsReturn="True" />
 			</DockPanel>
 			
 			<Label Content="{core:Localize Dialog.ProjectOptions.BuildEvents.RunPostBuild}" />

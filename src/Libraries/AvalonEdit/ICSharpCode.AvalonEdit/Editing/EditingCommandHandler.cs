@@ -234,7 +234,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 					using (textArea.Document.RunUpdate()) {
 						if (textArea.Selection.IsEmpty) {
 							TextViewPosition oldCaretPosition = textArea.Caret.Position;
-							selectingCommand.Execute(args.Parameter, textArea);
+							if (textArea.Caret.IsInVirtualSpace && selectingCommand == EditingCommands.SelectRightByCharacter)
+								EditingCommands.SelectRightByWord.Execute(args.Parameter, textArea);
+							else
+								selectingCommand.Execute(args.Parameter, textArea);
 							bool hasSomethingDeletable = false;
 							foreach (ISegment s in textArea.Selection.Segments) {
 								if (textArea.GetDeletableSegments(s).Length > 0) {

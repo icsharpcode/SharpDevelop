@@ -871,19 +871,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-internal void RemoveSelectedText()
-{
-	if (this.Document == null)
-		throw ThrowUtil.NoDocumentAssigned();
-	selection.ReplaceSelectionWithText(string.Empty);
-	#if DEBUG
-	if (!selection.IsEmpty) {
-		foreach (ISegment s in selection.Segments) {
-			Debug.Assert(this.ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
+		internal void RemoveSelectedText()
+		{
+			if (this.Document == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			selection.ReplaceSelectionWithText(string.Empty);
+			#if DEBUG
+			if (!selection.IsEmpty) {
+				foreach (ISegment s in selection.Segments) {
+					Debug.Assert(this.ReadOnlySectionProvider.GetDeletableSegments(s).Count() == 0);
+				}
+			}
+			#endif
 		}
-	}
-	#endif
-}
 		
 		internal void ReplaceSelectionWithText(string newText)
 		{
