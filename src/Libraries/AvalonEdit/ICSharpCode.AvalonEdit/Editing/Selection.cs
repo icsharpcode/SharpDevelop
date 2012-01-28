@@ -79,13 +79,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// </summary>
 		public abstract void ReplaceSelectionWithText(string newText);
 		
-		internal string AddSpacesIfRequired(string newText, TextViewPosition pos)
+		internal string AddSpacesIfRequired(string newText, TextViewPosition start, TextViewPosition end)
 		{
-			if (EnableVirtualSpace && newText != "\r\n" && newText != "\n" && newText != "\r") {
-				var line = textArea.Document.GetLineByNumber(pos.Line);
+			if (EnableVirtualSpace && InsertVirtualSpaces(newText, start, end)) {
+				var line = textArea.Document.GetLineByNumber(start.Line);
 				string lineText = textArea.Document.GetText(line);
 				var vLine = textArea.TextView.GetOrConstructVisualLine(line);
-				int colDiff = pos.VisualColumn - vLine.VisualLengthWithEndOfLineMarker;
+				int colDiff = start.VisualColumn - vLine.VisualLengthWithEndOfLineMarker;
 				if (colDiff > 0) {
 					string additionalSpaces = "";
 					if (!textArea.Options.ConvertTabsToSpaces && lineText.Trim('\t').Length == 0) {
@@ -98,6 +98,19 @@ namespace ICSharpCode.AvalonEdit.Editing
 				}
 			}
 			return newText;
+		}
+		
+		bool InsertVirtualSpaces(string newText, TextViewPosition start, TextViewPosition end)
+		{
+			return (!string.IsNullOrEmpty(newText) || !(IsInVirtualSpace(start) && IsInVirtualSpace(end)))
+				&& newText != "\r\n"
+				&& newText != "\n" 
+				&& newText != "\r";
+		}
+		
+		bool IsInVirtualSpace(TextViewPosition pos)
+		{
+			return pos.VisualColumn > textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(pos.Line)).VisualLength;
 		}
 		
 		/// <summary>
