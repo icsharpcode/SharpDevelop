@@ -99,7 +99,7 @@ namespace SharpRefactoring
 			}
 			
 			foreach (var p in sourceClass.Properties.Where(prop => prop.CanGet && !prop.IsIndexer
-			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
+			                                               && prop.IsAutoImplemented()
 			                                               && prop.IsStatic == sourceClass.IsStatic
 			                                               && prop.ReturnType != null)) {
 				yield return new PropertyOrFieldWrapper(p) { Index = i };

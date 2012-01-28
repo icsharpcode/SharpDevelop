@@ -6,6 +6,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace SharpRefactoring
@@ -51,6 +52,56 @@ namespace SharpRefactoring
 			}
 			
 			return c;
+		}
+		
+		/// <summary>
+		/// Determines if the property is a so-called auto-implemented property.
+		/// </summary>
+		public static bool IsAutoImplemented(this IProperty property)
+		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+			
+			if (property.IsAbstract || property.DeclaringType.ClassType == ICSharpCode.SharpDevelop.Dom.ClassType.Interface)
+				return false;
+			
+			string fileName = property.CompilationUnit.FileName;
+			
+			if (fileName == null)
+				return false;
+			
+			IDocument document = DocumentUtilitites.LoadDocumentFromBuffer(ParserService.GetParseableFileContent(fileName));
+			bool isAutomatic = false;
+			
+			if (property.CanGet) {
+				if (property.GetterRegion.IsEmpty)
+					isAutomatic = true;
+				else {
+					int getterStartOffset = document.PositionToOffset(property.GetterRegion.BeginLine, property.GetterRegion.BeginColumn);
+					int getterEndOffset = document.PositionToOffset(property.GetterRegion.EndLine, property.GetterRegion.EndColumn);
+					
+					string text = document.GetText(getterStartOffset, getterEndOffset - getterStartOffset)
+						.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
+					
+					isAutomatic = text == "get;";
+				}
+			}
+			
+			if (property.CanSet) {
+				if (property.SetterRegion.IsEmpty)
+					isAutomatic |= true;
+				else {
+					int setterStartOffset = document.PositionToOffset(property.SetterRegion.BeginLine, property.SetterRegion.BeginColumn);
+					int setterEndOffset = document.PositionToOffset(property.SetterRegion.EndLine, property.SetterRegion.EndColumn);
+					
+					string text = document.GetText(setterStartOffset, setterEndOffset - setterStartOffset)
+						.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
+					
+					isAutomatic |= text == "set;";
+				}
+			}
+			
+			return isAutomatic;
 		}
 	}
 }

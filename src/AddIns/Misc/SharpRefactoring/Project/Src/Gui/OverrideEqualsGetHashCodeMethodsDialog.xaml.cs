@@ -336,7 +336,7 @@ namespace SharpRefactoring.Gui
 			}
 			
 			foreach (IProperty property in currentClass.Properties) {
-				if (property.IsStatic || !PropertyRefactoringMenuBuilder.IsAutomaticProperty(property)) continue;
+				if (property.IsStatic || !property.IsAutoImplemented()) continue;
 				if (expr == null) {
 					expr = TestEquality("other", property);
 				} else {
@@ -366,7 +366,7 @@ namespace SharpRefactoring.Gui
 			
 			getHashCodeMethod.Body.AddChild(new LocalVariableDeclaration(hashCodeVar));
 			
-			if (currentClass.Fields.Any(f => !f.IsStatic) || currentClass.Properties.Any(p => !p.IsStatic && PropertyRefactoringMenuBuilder.IsAutomaticProperty(p))) {
+			if (currentClass.Fields.Any(f => !f.IsStatic) || currentClass.Properties.Any(p => !p.IsStatic && p.IsAutoImplemented())) {
 				bool usePrimeMultiplication = currentClass.ProjectContent.Language == LanguageProperties.CSharp;
 				BlockStatement hashCalculationBlock;
 				
@@ -386,7 +386,7 @@ namespace SharpRefactoring.Gui
 				}
 				
 				foreach (IProperty property in currentClass.Properties) {
-					if (property.IsStatic || !PropertyRefactoringMenuBuilder.IsAutomaticProperty(property)) continue;
+					if (property.IsStatic || !property.IsAutoImplemented()) continue;
 					
 					AddToBlock(hashCodeVar, getHashCodeMethod, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, property);
 				}
