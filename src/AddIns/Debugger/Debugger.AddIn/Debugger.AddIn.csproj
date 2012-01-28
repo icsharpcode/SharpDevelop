@@ -110,6 +110,7 @@
     <Compile Include="Pads\Commands\ParallelStacksViewCommands.cs" />
     <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
     <Compile Include="Pads\Commands\WatchPadCommands.cs" />
+    <Compile Include="Pads\Controls\TreeNodeWrapper.cs" />
     <Compile Include="Pads\Controls\ConditionCell.xaml.cs">
       <DependentUpon>ConditionCell.xaml</DependentUpon>
     </Compile>
@@ -118,7 +119,6 @@
       <DependentUpon>SimpleListViewControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Pads\Controls\TreeListView.cs" />
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
     </Compile>
@@ -354,6 +354,10 @@
       <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
       <Name>Mono.Cecil</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
+      <Project>{DDE2A481-8271-4EAC-A330-8FA6A38D13D1}</Project>
+      <Name>ICSharpCode.TreeView</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>

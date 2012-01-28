@@ -5,6 +5,7 @@ using System;
 using System.Management.Automation;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.PackageManagement.Scripting;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Cmdlets.Tests.Helpers;
 using PackageManagement.Tests.Helpers;
@@ -55,7 +56,7 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.RemoveDependencies = new SwitchParameter(true);
 		}
 		
-		void SetVersionParameter(Version version)
+		void SetVersionParameter(SemanticVersion version)
 		{
 			cmdlet.Version = version;
 		}
@@ -148,11 +149,11 @@ namespace PackageManagement.Cmdlets.Tests
 			CreateCmdletWithActivePackageSourceAndProject();
 			
 			SetIdParameter("Test");
-			var version = new Version("1.0.1");
+			var version = new SemanticVersion("1.0.1");
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			var actualVersion = uninstallPackageAction.PackageVersion;
+			SemanticVersion actualVersion = uninstallPackageAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -165,7 +166,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetIdParameter("Test");
 			RunCmdlet();
 			
-			var actualVersion = uninstallPackageAction.PackageVersion;
+			SemanticVersion actualVersion = uninstallPackageAction.PackageVersion;
 			
 			Assert.IsNull(actualVersion);
 		}
@@ -179,7 +180,7 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
+			string actualProjectName = fakeConsoleHost.ProjectNamePassedToGetProject;
 			
 			Assert.AreEqual("MyProject", actualProjectName);
 		}
@@ -193,8 +194,8 @@ namespace PackageManagement.Cmdlets.Tests
 			SetProjectNameParameter("MyProject");
 			RunCmdlet();
 			
-			var actual = fakeConsoleHost.ProjectNamePassedToGetProject;
-			var expected = "MyProject";
+			string actual = fakeConsoleHost.ProjectNamePassedToGetProject;
+			string expected = "MyProject";
 			
 			Assert.AreEqual(expected, actual);
 		}
@@ -204,7 +205,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
+			PackageSource packageSource = AddPackageSourceToConsoleHost();
 			SetIdParameter("Test");
 			RunCmdlet();
 						
@@ -216,7 +217,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdletWithoutActiveProject();
 			AddDefaultProjectToConsoleHost();
-			var packageSource = AddPackageSourceToConsoleHost();
+			PackageSource packageSource = AddPackageSourceToConsoleHost();
 			SetIdParameter("Test");
 			RunCmdlet();
 			

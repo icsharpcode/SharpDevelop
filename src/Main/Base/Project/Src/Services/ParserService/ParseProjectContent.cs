@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop
 			}
 			foreach (IProjectContent referencedContent in referencedContents) {
 				if (referencedContent is ReflectionProjectContent) {
-					((ReflectionProjectContent)referencedContent).InitializeReferences();
+					((ReflectionProjectContent)referencedContent).InitializeReferences(referencedContents);
 				}
 			}
 		}
@@ -262,7 +262,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				foreach (IProjectContent referencedContent in referencedContents) {
 					if (referencedContent is ReflectionProjectContent) {
-						((ReflectionProjectContent)referencedContent).InitializeReferences();
+						((ReflectionProjectContent)referencedContent).InitializeReferences(referencedContents);
 					}
 				}
 				

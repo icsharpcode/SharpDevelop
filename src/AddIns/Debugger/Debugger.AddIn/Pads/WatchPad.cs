@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Serialization;
-
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.Pads.Controls;
@@ -51,14 +51,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void InitializeComponents()
 		{
-			watchList = new WatchList();
-			watchList.WatchType = WatchListType.Watch;
-			watchList.ParentPad = this;
+			watchList = new WatchList(WatchListType.Watch);
 			watchList.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			
-			watchList.AllowDrop = true;
-			watchList.DragEnter += watchList_DragOver;
-			watchList.Drop += watchList_Drop;
 			watchList.MouseDoubleClick += watchList_DoubleClick;
 			watchList.KeyUp += watchList_KeyUp;
 			watchList.WatchItems.CollectionChanged += OnWatchItemsCollectionChanged;
@@ -82,17 +77,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			
 			foreach (var element in props.Elements) {
-				watchList.WatchItems.Add(new TextNode(null, element, (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), props[element])));
+				watchList.WatchItems.Add(new TextNode(null, element, (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), props[element])).ToSharpTreeNode());
 			}
 		}
 
 		void OnWatchItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add) {
+			if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems.Count > 0) {
 				// add to saved data
-				var data = e.NewItems[0] as TextNode;
+				var data = e.NewItems.OfType<TextNode>().FirstOrDefault();
 				if (data != null) {
-					var props = GetSavedVariablesProperties(); 
+					var props = GetSavedVariablesProperties();
 					if (props == null) return;
 					props.Set(data.FullName, data.Language.ToString());
 				}
@@ -100,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			if (e.Action == NotifyCollectionChangedAction.Remove) {
 				// remove from saved data
-				var data = e.OldItems[0] as TextNode;
+				var data = e.OldItems.OfType<TextNode>().FirstOrDefault();
 				if (data != null) {
 					var props = GetSavedVariablesProperties();
 					if (props == null) return;
@@ -142,36 +137,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		void watchList_Drop(object sender, DragEventArgs e)
-		{
-			if (ProjectService.CurrentProject == null) return;
-			if (e.Data == null) return;
-			if (!e.Data.GetDataPresent(DataFormats.StringFormat)) return;
-			if (string.IsNullOrEmpty(e.Data.GetData(DataFormats.StringFormat).ToString())) return;
-			
-			string language = ProjectService.CurrentProject.Language;
-			
-			// FIXME languages
-			TextNode text = new TextNode(null, e.Data.GetData(DataFormats.StringFormat).ToString(),
-			                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
-
-			if (!watchList.WatchItems.Contains(text))
-				watchList.WatchItems.ContainsItem(text);
-			
-			this.RefreshPad();
-		}
-
-		void watchList_DragOver(object sender, DragEventArgs e)
-		{
-			if(e.Data.GetDataPresent(DataFormats.StringFormat)) {
-				e.Effects = DragDropEffects.Copy;
-			}
-			else {
-				e.Effects = DragDropEffects.None;
-				e.Handled = true;
-			}
-		}
-		
 		void watchList_DoubleClick(object sender, MouseEventArgs e)
 		{
 			if (watchList.SelectedNode == null)
@@ -194,10 +159,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				language = ProjectService.CurrentProject.Language;
 			
 			// rebuild list
-			var nodes = new List<TreeNode>();
-			foreach (var nod in watchList.WatchItems)
-				nodes.Add(new TextNode(null, nod.Name,
-				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp));
+			var nodes = new List<TreeNodeWrapper>();
+			foreach (var nod in watchList.WatchItems.OfType<TreeNodeWrapper>())
+				nodes.Add(new TextNode(null, nod.Node.Name,
+				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp)
+				          .ToSharpTreeNode());
 			
 			watchList.WatchItems.Clear();
 			foreach (var nod in nodes)
@@ -231,20 +197,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			using(new PrintTimes("Watch Pad refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
-					List<TreeNode> nodes = new List<TreeNode>();
+					List<TreeNodeWrapper> nodes = new List<TreeNodeWrapper>();
 					
-					foreach (var node in watchList.WatchItems) {
+					foreach (var node in watchList.WatchItems.OfType<TreeNodeWrapper>()) {
 						try {
-							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Name) ? "is null or empty!" : node.Name));
-							var nodExpression = debugger.GetExpression(node.Name);
+							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
+							var nodExpression = debugger.GetExpression(node.Node.Name);
 							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-							ExpressionNode valNode = new ExpressionNode(null, null, node.Name, nodExpression);
-							nodes.Add(valNode);
+							ExpressionNode valNode = new ExpressionNode(null, null, node.Node.Name, nodExpression);
+							nodes.Add(valNode.ToSharpTreeNode());
 						}
 						catch (GetValueException) {
-							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Name);
-							ErrorInfoNode infoNode = new ErrorInfoNode(node.Name, error);
-							nodes.Add(infoNode);
+							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
+							ErrorInfoNode infoNode = new ErrorInfoNode(node.Node.Name, error);
+							nodes.Add(infoNode.ToSharpTreeNode());
 						}
 					}
 					

@@ -5,11 +5,14 @@ using System;
 using System.ComponentModel;
 using System.IO;
 
+using ICSharpCode.Core;
+
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public sealed class WebReferencesProjectItem : FileProjectItem
 	{
-		public WebReferencesProjectItem(IProject project) : base(project, ItemType.WebReferences)
+		public WebReferencesProjectItem(IProject project)
+			: base(project, ItemType.WebReferences)
 		{
 		}
 		
@@ -20,9 +23,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[Browsable(false)]
 		public string Directory {
-			get {
-				return Path.Combine(Project.Directory, Include).Trim('\\', '/');
+			get { return Path.Combine(Project.Directory, Include).Trim('\\', '/'); }
+		}
+		
+		/// <summary>
+		/// Determines if the specified <paramref name="folder"/> is a
+		/// web reference folder in the specified <paramref name="project"/>.
+		/// </summary>
+		/// <param name="project">The project.</param>
+		/// <param name="folder">The full folder path.</param>
+		public static bool IsWebReferencesFolder(IProject project, string folder)
+		{
+			foreach (ProjectItem item in project.GetItemsOfType(ItemType.WebReferences)) {
+				var webReference = item as WebReferencesProjectItem;
+				if (webReference.IsDirectoryMatch(folder)) {
+					return true;
+				}
 			}
+			return false;
+		}
+		
+		public bool IsDirectoryMatch(string directory)
+		{
+			return FileUtility.IsEqualFileName(this.Directory, directory);
 		}
 	}
 }

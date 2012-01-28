@@ -91,7 +91,4 @@ namespace SharpRefactoring
 			}
 		}
 	}
-	
-
-
 }

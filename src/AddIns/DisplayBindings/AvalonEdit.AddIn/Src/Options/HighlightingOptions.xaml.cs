@@ -186,7 +186,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				CustomizableHighlightingColorizer.SelectedText,
 				ta => {
 					ta.Document.Text = "Selected text";
-					ta.Selection = new SimpleSelection(0, 13);
+					ta.Selection = Selection.Create(ta, 0, 13);
 				})
 			{
 				Foreground = SystemColors.HighlightTextColor,

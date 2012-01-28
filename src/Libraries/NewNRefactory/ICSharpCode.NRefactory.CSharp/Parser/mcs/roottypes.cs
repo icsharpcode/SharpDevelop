@@ -8,6 +8,7 @@
 //
 // Copyright 2001-2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2003-2008 Novell, Inc.
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -300,7 +301,7 @@ namespace Mono.CSharp
 
 		public override TypeContainer AddPartial (TypeContainer nextPart)
 		{
-			return AddPartial (nextPart, nextPart.Name);
+			return AddPartial (nextPart, nextPart.MemberName.GetName (true));
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
@@ -350,6 +351,12 @@ namespace Mono.CSharp
 				tc.CloseType ();
 			}
 
+			if (anonymous_types != null) {
+				foreach (var atypes in anonymous_types)
+					foreach (var at in atypes.Value)
+						at.CloseType ();
+			}
+
 			if (compiler_generated != null)
 				foreach (CompilerGeneratedClass c in compiler_generated)
 					c.CloseType ();
@@ -366,7 +373,7 @@ namespace Mono.CSharp
 		public RootNamespace CreateRootNamespace (string alias)
 		{
 			if (alias == global_ns.Alias) {
-				NamespaceContainer.Error_GlobalNamespaceRedefined (Location.Null, Report);
+				RootNamespace.Error_GlobalNamespaceRedefined (Report, Location.Null);
 				return global_ns;
 			}
 
@@ -399,8 +406,13 @@ namespace Mono.CSharp
 
 		public new void Define ()
 		{
-			foreach (TypeContainer tc in types)
-				tc.DefineType ();
+			foreach (TypeContainer tc in types) {
+				try {
+					tc.DefineType ();
+				} catch (Exception e) {
+					throw new InternalErrorException (tc, e);
+				}
+			}
 
 			foreach (TypeContainer tc in types)
 				tc.ResolveTypeParameters ();
@@ -438,6 +450,12 @@ namespace Mono.CSharp
 
 			foreach (TypeContainer tc in types)
 				tc.VerifyMembers ();
+
+			if (anonymous_types != null) {
+				foreach (var atypes in anonymous_types)
+					foreach (var at in atypes.Value)
+						at.EmitType ();
+			}
 
 			if (compiler_generated != null)
 				foreach (var c in compiler_generated)
@@ -498,7 +516,7 @@ namespace Mono.CSharp
 		{
 			if (AddTypesContainer (tc)) {
 				if ((tc.ModFlags & Modifiers.PARTIAL) != 0)
-					defined_names.Add (tc.Name, tc);
+					defined_names.Add (tc.MemberName.GetName (true), tc);
 
 				tc.NamespaceEntry.NS.AddType (this, tc.Definition);
 				return true;
@@ -534,7 +552,7 @@ namespace Mono.CSharp
 			}
 
 			string ns = mn.Left != null ? mn.Left.GetSignatureForError () : Module.GlobalRootNamespace.GetSignatureForError ();
-			mn = new MemberName (mn.Name, mn.TypeArguments, mn.Location);
+			mn = new MemberName (mn.Name, mn.TypeParameters, mn.Location);
 
 			Report.SymbolRelatedToPreviousError (found.Location, "");
 			Report.Error (101, container.Location,
@@ -585,11 +603,6 @@ namespace Mono.CSharp
 
 		public override string DocCommentHeader {
 			get { throw new InternalErrorException ("should not be called"); }
-		}
-
-		public override void DefineType ()
-		{
-			throw new InternalErrorException ("should not be called");
 		}
 
 		public override ModuleContainer Module {

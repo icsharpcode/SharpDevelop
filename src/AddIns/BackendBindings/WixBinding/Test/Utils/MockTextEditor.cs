@@ -21,12 +21,16 @@ namespace WixBinding.Tests.Utils
 		AvalonEditDocumentAdapter documentAdapter;
 		MockCaret caret = new MockCaret();
 		Location locationJumpedTo = Location.Empty;
-		SimpleSelection selection = new SimpleSelection(-1, -1);
+		Selection selection;
 		MockTextEditorOptions options = new MockTextEditorOptions();
+		TextArea textArea;
 				
 		public MockTextEditor()
 		{
 			documentAdapter = new AvalonEditDocumentAdapter(textDocument, null);
+			textArea = new TextArea();
+			textArea.Document = textDocument;
+			selection = Selection.Create(textArea, -1, -1);
 		}
 		
 		public event EventHandler SelectionChanged;
@@ -103,7 +107,7 @@ namespace WixBinding.Tests.Utils
 				if (selection.IsEmpty) {
 					return String.Empty;
 				}
-				return documentAdapter.GetText(selection.StartOffset, selection.Length);
+				return documentAdapter.GetText(selection.SurroundingSegment.Offset, selection.Length);
 			}
 			set {
 				throw new NotImplementedException();
@@ -130,13 +134,13 @@ namespace WixBinding.Tests.Utils
 		
 		public void Select(int selectionStart, int selectionLength)
 		{
-			selection = new SimpleSelection(selectionStart, selectionLength + selectionStart);
+			selection = Selection.Create(textArea, selectionStart, selectionLength + selectionStart);
 		}
 		
 		public void JumpTo(int line, int column)
 		{
 			locationJumpedTo = new Location(column, line);
-			selection = new SimpleSelection(-1, -1);
+			selection = Selection.Create(textArea, -1, -1);
 		}
 		
 		public Location LocationJumpedTo {

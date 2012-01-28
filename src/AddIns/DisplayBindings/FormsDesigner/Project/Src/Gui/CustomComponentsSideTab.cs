@@ -77,9 +77,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					ReflectionProjectContent rpc = pc as ReflectionProjectContent;
 					if (rpc == null)
 						continue;
-					if (rpc.AssemblyFullName == typeof(object).Assembly.FullName)
-						continue;
-					if (GacInterop.IsWithinGac(rpc.AssemblyLocation))
+					if (rpc.IsGacAssembly)
 						continue;
 				}
 				foreach (IClass c in pc.Classes) {

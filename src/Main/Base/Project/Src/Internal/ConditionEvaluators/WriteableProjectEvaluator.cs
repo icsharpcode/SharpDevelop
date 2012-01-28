@@ -15,6 +15,8 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
+			if (caller is ISolutionFolderNode)
+				return ProjectService.OpenSolution != null && !ProjectService.OpenSolution.ReadOnly;
 			IProject project = (caller as IProject) ?? ProjectService.CurrentProject;
 			return project != null && !project.ReadOnly;
 		}

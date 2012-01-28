@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					char ch = (char)nextChar;
 					#region XML mode
 					CheckXMLState(startLocation);
-					if (inXmlMode && xmlModeStack.Peek().level <= 0 && !xmlModeStack.Peek().isDocumentStart && !xmlModeStack.Peek().inXmlTag) {
+					if (inXmlMode && xmlModeStack.Count > 0 && xmlModeStack.Peek().level <= 0 && !xmlModeStack.Peek().isDocumentStart && !xmlModeStack.Peek().inXmlTag) {
 						XmlModeInfo info = xmlModeStack.Peek();
 						int peek = nextChar;
 						while (true) {
@@ -361,6 +361,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 
+		[Conditional("DEBUG")]
 		void CheckXMLState(Location startLocation)
 		{
 			if (inXmlMode && !xmlModeStack.Any())

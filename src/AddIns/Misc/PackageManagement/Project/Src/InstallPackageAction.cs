@@ -19,15 +19,16 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool IgnoreDependencies { get; set; }
+		public bool AllowPrereleaseVersions { get; set; }
 		
 		protected override IEnumerable<PackageOperation> GetPackageOperations()
 		{
-			return Project.GetInstallPackageOperations(Package, IgnoreDependencies);
+			return Project.GetInstallPackageOperations(Package, this);
 		}
 		
 		protected override void ExecuteCore()
 		{
-			Project.InstallPackage(Package, Operations, IgnoreDependencies);
+			Project.InstallPackage(Package, this);
 			OnParentPackageInstalled();
 		}
 	}

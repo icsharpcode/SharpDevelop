@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 		[Test]
 		public void WebReferencesFolderNodeDirectory()
 		{
-			Assert.AreEqual(Path.Combine(projectDirectory, "Web References\\"), webReferencesFolderNode.Directory);
+			Assert.AreEqual(Path.Combine(projectDirectory, "Web References"), webReferencesFolderNode.Directory);
 		}
 
 		[Test]

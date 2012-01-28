@@ -38,12 +38,12 @@ namespace ICSharpCode.PackageManagement.Design
 			package.LicenseUrl = new Uri("http://www.google.com/license");
 			package.ProjectUrl = new Uri("http://www.codeplex.com");
 			package.ReportAbuseUrl = new Uri("http://www.google.com");
-			package.Version = Version.Parse("1.0.4.5");
+			package.Version = SemanticVersion.Parse("1.0.4.5");
 			package.LastUpdated = new DateTime(2011, 1, 2);
 			package.AddAuthor("A User");
 			package.AddAuthor("B User");
-			package.AddDependency("NuGet.Package." + i, Version.Parse("1.0.0.1"), Version.Parse("1.2.0.2"));
-			package.AddDependency("NuGet.Package." + i + 1, Version.Parse("1.2.0.2"), Version.Parse("2.2.0.0"));
+			package.AddDependency("NuGet.Package." + i, SemanticVersion.Parse("1.0.0.1"), SemanticVersion.Parse("1.2.0.2"));
+			package.AddDependency("NuGet.Package." + i + 1, SemanticVersion.Parse("1.2.0.2"), SemanticVersion.Parse("2.2.0.0"));
 			return package;
 		}
 	}

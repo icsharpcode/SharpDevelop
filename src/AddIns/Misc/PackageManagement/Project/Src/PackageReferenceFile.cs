@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -23,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 			return file.GetPackageReferences();
 		}
 		
-		public void DeleteEntry(string id, Version version)
+		public void DeleteEntry(string id, SemanticVersion version)
 		{
 			file.DeleteEntry(id, version);
 		}

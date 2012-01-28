@@ -477,7 +477,8 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		{
 			Single,
 			Multi,
-			Documentation
+			Documentation,
+			InactiveCode
 		}
 		
 		public class Comment
@@ -545,6 +546,7 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		[Conditional ("FULL_AST")]
 		public void StartComment (CommentType type, bool startsLine, int startLine, int startCol)
 		{
+			inComment = true;
 			curComment = type;
 			this.startsLine = startsLine;
 			this.startLine = startLine;
@@ -565,15 +567,21 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			contentBuilder.Append (str);
 		}
 		
+		bool inComment;
 		[Conditional ("FULL_AST")]
 		public void EndComment (int endLine, int endColumn)
 		{
+			if (!inComment)
+				return;
+			inComment = false;
 			Specials.Add (new Comment (curComment, startsLine, startLine, startCol, endLine, endColumn, contentBuilder.ToString ()));
 		}
 		
 		[Conditional ("FULL_AST")]
 		public void AddPreProcessorDirective (int startLine, int startCol, int endLine, int endColumn, Tokenizer.PreprocessorDirective cmd, string arg)
 		{
+			if (inComment)
+				EndComment (startLine, startCol);
 			Specials.Add (new PreProcessorDirective (startLine, startCol, endLine, endColumn, cmd, arg));
 		}
 
@@ -788,10 +796,10 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 			public readonly Location UsingLocation;
 			public readonly Tokenizer.LocatedToken Identifier;
 			public readonly Location AssignLocation;
-			public readonly MemberName Nspace;
+			public readonly ATypeNameExpression Nspace;
 			public readonly Location SemicolonLocation;
 			
-			public AliasUsing (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, MemberName nspace, Location semicolonLocation)
+			public AliasUsing (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, ATypeNameExpression nspace, Location semicolonLocation)
 			{
 				this.UsingLocation = usingLocation;
 				this.Identifier = identifier;
@@ -809,10 +817,10 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		public class Using
 		{
 			public readonly Location UsingLocation;
-			public readonly MemberName NSpace;
+			public readonly ATypeNameExpression NSpace;
 			public readonly Location SemicolonLocation;
 
-			public Using (Location usingLocation, MemberName nSpace, Location semicolonLocation)
+			public Using (Location usingLocation, ATypeNameExpression nSpace, Location semicolonLocation)
 			{
 				this.UsingLocation = usingLocation;
 				this.NSpace = nSpace;
@@ -861,13 +869,13 @@ if (checkpoints.Length <= CheckpointIndex) throw new Exception (String.Format ("
 		}
 		
 		[Conditional ("FULL_AST")]
-		public void AddUsingAlias (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, MemberName nspace, Location semicolonLocation)
+		public void AddUsingAlias (Location usingLocation, Tokenizer.LocatedToken identifier, Location assignLocation, ATypeNameExpression nspace, Location semicolonLocation)
 		{
 			curNamespace.Peek ().usings.Add (new AliasUsing (usingLocation, identifier, assignLocation, nspace, semicolonLocation));
 		}
 		
 		[Conditional ("FULL_AST")]
-		public void AddUsing (Location usingLocation, MemberName nspace, Location semicolonLocation)
+		public void AddUsing (Location usingLocation, ATypeNameExpression nspace, Location semicolonLocation)
 		{
 			curNamespace.Peek ().usings.Add (new Using (usingLocation, nspace, semicolonLocation));
 		}

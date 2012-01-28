@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 12.10.2011
- * Time: 20:05
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,21 +18,18 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Widgets;
 using ICSharpCode.SharpDevelop.Widgets.Resources;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	/// <summary>
-	/// Description of AddServiceReferenceViewModel.
-	/// </summary>
-	public class AddServiceReferenceViewModel:ViewModelBase
+	public class AddServiceReferenceViewModel : ViewModelBase
 	{
 		string header1 = "To see a list of available services on a specific server, ";
 		string header2 = "enter a service URL and click Go. To browse for available services click Discover.";
@@ -48,11 +40,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		string serviceDescriptionMessage;
 		string namespacePrefix = String.Empty;
 		
-		private  ObservableCollection<ImageAndDescription> twoValues;
+		ObservableCollection<ImageAndDescription> twoValues;
 		
-		private List<string> mruServices = new List<string>();
-		private string selectedService;
-		private IProject project;
+		List<string> mruServices = new List<string>();
+		string selectedService;
+		IProject project;
 		
 		List<ServiceItem> items = new List <ServiceItem>();
 		ServiceItem myItem;
@@ -61,77 +53,75 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
 		CredentialCache credentialCache = new CredentialCache();
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
+		WebServiceMetadataSet serviceMetadata;
 		
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
-		delegate void AuthenticationHandler(Uri uri, string authenticationType);	
-		
+		delegate void AuthenticationHandler(Uri uri, string authenticationType);
 		
 		public AddServiceReferenceViewModel(IProject project)
 		{
-			project = project;
-			discoverButtonContend = "Disvover";
+			this.project = project;
+			discoverButtonContent = "Discover";
 			HeadLine = header1 + header2;
 			
 			MruServices = ServiceReferenceHelper.AddMruList();
 			SelectedService = MruServices[0];
 			
-			GoCommand = new RelayCommand(ExecuteGo,CanExecuteGo);
-			DiscoverCommand = new RelayCommand(ExecuteDiscover,CanExecuteDiscover);
-			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand,CanExecuteAdvancedDialogCommand);
+			GoCommand = new RelayCommand(ExecuteGo, CanExecuteGo);
+			DiscoverCommand = new RelayCommand(ExecuteDiscover, CanExecuteDiscover);
+			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand, CanExecuteAdvancedDialogCommand);
 			TwoValues = new ObservableCollection<ImageAndDescription>();
 		}
 		
+		#region Go Command
 		
-		#region Go
+		public System.Windows.Input.ICommand GoCommand { get; private set; }
 		
-		public System.Windows.Input.ICommand GoCommand {get; private set;}
-		
-		private void ExecuteGo ()
+		void ExecuteGo()
 		{
 			if (String.IsNullOrEmpty(SelectedService)) {
-				MessageBox.Show (noUrl);
+				MessageBox.Show(noUrl);
+				return;
 			}
 			ServiceDescriptionMessage = waitMessage;
 			Uri uri = new Uri(SelectedService);
 			StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
 		}
 		
-		
-		private bool CanExecuteGo()
+		bool CanExecuteGo()
 		{
 			return true;
 		}
 		
 		#endregion
 		
-		
 		#region Discover Command
 		
-		public System.Windows.Input.ICommand DiscoverCommand {get;private set;}
+		public System.Windows.Input.ICommand DiscoverCommand { get; private set; }
 		
-		private bool CanExecuteDiscover ()
+		bool CanExecuteDiscover()
 		{
 			return true;
 		}
 		
-		private void ExecuteDiscover ()
+		void ExecuteDiscover()
 		{
-			MessageBox.Show ("<Discover> is not implemented at the Moment");
+			MessageBox.Show("<Discover> is not implemented at the Moment");
 		}
 			
 		#endregion
 		
 		#region AdvancedDialogCommand
 		
-		public System.Windows.Input.ICommand AdvancedDialogCommand {get;private set;}
+		public System.Windows.Input.ICommand AdvancedDialogCommand { get; private set; }
 		
-		private bool CanExecuteAdvancedDialogCommand ()
+		bool CanExecuteAdvancedDialogCommand()
 		{
 			return true;
 		}
 		
-		private void ExecuteAdvancedDialogCommand ()
+		void ExecuteAdvancedDialogCommand()
 		{
 			var vm = new AdvancedServiceViewModel();
 			var view = new AdvancedServiceDialog();
@@ -140,7 +130,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 			
 		#endregion
-		
 		
 		#region discover service Code from Matt
 
@@ -162,7 +151,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		/// completed.
 		/// </summary>
 		/// 
-		
 		void DiscoveryCompleted(IAsyncResult result)
 		{
 			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
@@ -182,20 +170,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 					if (!state.Credential.IsDefaultAuthenticationType) {
 						AddCredential(state.Uri, state.Credential);
 					}
-					handler (protocol);
+					handler(protocol);
 				} catch (Exception ex) {
 					if (protocol.IsAuthenticationRequired) {
 						HttpAuthenticationHeader authHeader = protocol.GetAuthenticationHeader();
 						AuthenticationHandler authHandler = new AuthenticationHandler(AuthenticateUser);
 //	trouble					Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
 					} else {
+						ServiceDescriptionMessage = ex.Message;
 						LoggingService.Error("DiscoveryCompleted", ex);
 //	trouble					Invoke(handler, new object[] {null});
 					}
 				}
 			}
 		}
-		
 		
 		/// <summary>
 		/// Stops any outstanding asynchronous discovery requests.
@@ -218,7 +206,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		
 		void AuthenticateUser(Uri uri, string authenticationType)
 		{
 			DiscoveryNetworkCredential credential = (DiscoveryNetworkCredential)credentialCache.GetCredential(uri, authenticationType);
@@ -233,7 +220,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		
 		void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
 		{
 			NetworkCredential matchedCredential = credentialCache.GetCredential(uri, credential.AuthenticationType);
@@ -243,18 +229,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			credentialCache.Add(uri, credential.AuthenticationType, credential);
 		}
 		
-		
 		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
 		{
 			if (protocol != null) {
 				serviceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
+				serviceMetadata = new WebServiceMetadataSet(protocol);
 				
 				ServiceDescriptionMessage = String.Format("{0} service(s) found at address {1}",
 				                                          serviceDescriptionCollection.Count,
 				                                          discoveryUri);
-				DefaultNameSpace =  GetDefaultNamespace();
-				FillItems (serviceDescriptionCollection);
-				var referenceName = GetReferenceName(discoveryUri);
+				DefaultNameSpace = GetDefaultNamespace();
+				FillItems(serviceDescriptionCollection);
+				string referenceName = ServiceReferenceHelper.GetReferenceName(discoveryUri);
 			}
 		}
 		
@@ -271,101 +257,89 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return String.Empty;
 		}
 		
-		
-		static string GetReferenceName(Uri uri)
-		{
-			if (uri != null) {
-				return uri.Host;
-			}
-			return String.Empty;
-		}
-
 		#endregion
-		
-		
-		#region new binding
 		
 		public string Title
 		{
-			get {return title;}
-			set {title = value;
-				base.RaisePropertyChanged(() =>Title);
+			get { return title; }
+			set {
+				title = value;
+				base.RaisePropertyChanged(() => Title);
 			}
 		}
 		
-
-		public string HeadLine {get; set;}
+		public string HeadLine { get; set; }
 		
-		private string discoverButtonContend;
+		string discoverButtonContent;
 		
-		public string DiscoverButtonContend {
-			get { return discoverButtonContend; }
-			set { discoverButtonContend = value;
-			base.RaisePropertyChanged(() =>DiscoverButtonContend);}
+		public string DiscoverButtonContent {
+			get { return discoverButtonContent; }
+			set {
+				discoverButtonContent = value;
+				base.RaisePropertyChanged(() => DiscoverButtonContent);
+			}
 		}
-		
 		
 		public List<string> MruServices {
-			get {
-				return mruServices; }
-			set { mruServices = value;
-				base.RaisePropertyChanged(() =>MruServices);
+			get { return mruServices; }
+			set {
+				mruServices = value;
+				base.RaisePropertyChanged(() => MruServices);
 			}
 		}
-		
 		
 		public string SelectedService {
 			get { return selectedService; }
-			set { selectedService = value;
-				base.RaisePropertyChanged(() =>SelectedService);}
-		}
-	
-		
-		public List <ServiceItem> ServiceItems {
-			get {return items; }
-			
 			set {
-				items = value;
-				base.RaisePropertyChanged(() =>ServiceItems);
+				selectedService = value;
+				base.RaisePropertyChanged(() => SelectedService);
 			}
 		}
-		
+	
+		public List <ServiceItem> ServiceItems {
+			get { return items; }
+			set {
+				items = value;
+				base.RaisePropertyChanged(() => ServiceItems);
+			}
+		}
 		
 		public ServiceItem ServiceItem {
 			get { return myItem; }
-			set { myItem = value;
+			set {
+				myItem = value;
 				UpdateListView();
-				base.RaisePropertyChanged(() =>ServiceItem);
+				base.RaisePropertyChanged(() => ServiceItem);
 			}
 		}
-		
 		
 		public string ServiceDescriptionMessage {
 			get { return serviceDescriptionMessage; }
-			set { serviceDescriptionMessage = value;
-				base.RaisePropertyChanged(() =>ServiceDescriptionMessage);
+			set {
+				serviceDescriptionMessage = value;
+				base.RaisePropertyChanged(() => ServiceDescriptionMessage);
 			}
 		}
 		
-		
 		public string DefaultNameSpace {
 			get { return defaultNameSpace; }
-			set { defaultNameSpace = value;
-			base.RaisePropertyChanged(() =>DefaultNameSpace);}
+			set {
+				defaultNameSpace = value;
+				base.RaisePropertyChanged(() => DefaultNameSpace);
+			}
 		}
-		
 		
 		public ObservableCollection<ImageAndDescription> TwoValues {
 			get { return twoValues; }
 			set {
 				twoValues = value;
-				base.RaisePropertyChanged(() =>TwoValues);
+				base.RaisePropertyChanged(() => TwoValues);
 			}
 		}
 		
 		//http://mikehadlow.blogspot.com/2006/06/simple-wsdl-object.html
 		
-		void UpdateListView ()
+		void UpdateListView()
 		{
 			ServiceDescription desc = null;
 			TwoValues.Clear();
@@ -374,89 +348,84 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				var tv = new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),
 				                                 desc.RetrievalUrl);
 				TwoValues.Add(tv);
-			}
-			else if(ServiceItem.Tag is PortType)
-			{
+			} else if(ServiceItem.Tag is PortType) {
 				PortType portType = (PortType)ServiceItem.Tag;
-				foreach (Operation op in portType.Operations)
-				{
+				foreach (Operation op in portType.Operations) {
 					TwoValues.Add(new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Method"),
 					                                      op.Name));
 				}
 			}
 		}
-			
 		
-		void FillItems (ServiceDescriptionCollection descriptions)
+		void FillItems(ServiceDescriptionCollection descriptions)
 		{
-			foreach (ServiceDescription element in descriptions)
-			{
-				Add (element);
+			foreach(ServiceDescription element in descriptions) {
+				Add(element);
 			}
 		}
 		
-		
 		void Add(ServiceDescription description)
 		{
-			List<ServiceItem> l = new List<ServiceItem>();
+			List<ServiceItem> items = new List<ServiceItem>();
 			var name = ServiceReferenceHelper.GetServiceName(description);
-			var rootNode = new ServiceItem(null,name);
+			var rootNode = new ServiceItem(null, name);
 			rootNode.Tag = description;
 
 			foreach(Service service in description.Services) {
-				var serviceNode = new ServiceItem(null,service.Name);
+				var serviceNode = new ServiceItem(null, service.Name);
 				serviceNode.Tag = service;
-				l.Add(serviceNode);
+				items.Add(serviceNode);
 				foreach (PortType portType  in description.PortTypes) {
-					var portNode = new ServiceItem(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),portType.Name);
+					var portNode = new ServiceItem(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"), portType.Name);
 					portNode.Tag = portType;
 					serviceNode.SubItems.Add(portNode);
 				}
 			}
-			ServiceItems = l;
+			ServiceItems = items;
 		}
-
 		
-		#endregion
+		public void AddServiceReference()
+		{
+			var serviceGenerator = new ServiceReferenceGenerator(project);
+			serviceGenerator.Namespace = defaultNameSpace;
+			serviceGenerator.AddServiceReference(serviceMetadata);
+			new RefreshProjectBrowser().Run();
+		}
 	}
-	
 	
 	public class ImageAndDescription
 	{
-		public ImageAndDescription(BitmapSource bitmapSource,string description)
+		public ImageAndDescription(BitmapSource bitmapSource, string description)
 		{
 			Image = bitmapSource;
 			Description = description;
 		}
 		
-		public BitmapSource Image {get;set;}
-		public string Description {get;set;}
+		public BitmapSource Image { get; set; }
+		public string Description { get; set; }
 	}
 	
-
-	
-	public class ServiceItem:ImageAndDescription
+	public class ServiceItem : ImageAndDescription
 	{
-		public ServiceItem (BitmapSource bitmapSource,string description):base(bitmapSource,description)
+		public ServiceItem(BitmapSource bitmapSource, string description) : base(bitmapSource, description)
 		{
 			SubItems = new List<ServiceItem>();
 		}
-		public object Tag {get;set;}
-		public List<ServiceItem> SubItems {get;set;}
+		public object Tag { get; set; }
+		public List<ServiceItem> SubItems { get; set; }
 	}
 	
-	public class CheckableImageAndDescription :ImageAndDescription
+	public class CheckableImageAndDescription : ImageAndDescription
 	{
-		public CheckableImageAndDescription(BitmapSource bitmapSource,string description):base(bitmapSource,description)
+		public CheckableImageAndDescription(BitmapSource bitmapSource, string description) : base(bitmapSource, description)
 		{
-			
 		}
 		
-		private bool itemChecked;
+		bool itemChecked;
 		
 		public bool ItemChecked {
 			get { return itemChecked; }
-			set { itemChecked = value;}
+			set { itemChecked = value; }
 //			base.RaisePropertyChanged(() =>IsChecked);}
 		}
 		

@@ -37,8 +37,14 @@
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CutCopyWholeLine}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine}" />
 				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableVirtualSpace}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace}" />
+				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CtrlClickGoToDefinition}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.AutoInsertBlockEnd}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>

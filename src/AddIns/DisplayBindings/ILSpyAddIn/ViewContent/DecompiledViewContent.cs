@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,6 +11,7 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.ILSpyAddIn.LaunchILSpy;
 using ICSharpCode.ILSpyAddIn.ViewContent;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -40,6 +42,7 @@ namespace ICSharpCode.ILSpyAddIn
 		readonly CancellationTokenSource cancellation = new CancellationTokenSource();
 		
 		MemberReference decompiledType;
+		Dictionary<string, TextLocation> memberLocations;
 		
 		#region Constructor
 		public DecompiledViewContent(string assemblyFile, string fullTypeName, string entityTag)
@@ -125,7 +128,10 @@ namespace ICSharpCode.ILSpyAddIn
 				this.jumpToEntityTagWhenDecompilationFinished = entityTag;
 				return;
 			}
-			// TODO: implement this
+			if (memberLocations != null) {
+				var location = memberLocations[entityTag];
+				codeView.JumpTo(location.Line, location.Column);
+			}
 		}
 		#endregion
 		
@@ -134,7 +140,7 @@ namespace ICSharpCode.ILSpyAddIn
 		{
 			try {
 				StringWriter writer = new StringWriter();
-				RunDecompiler(assemblyFile, fullTypeName, new PlainTextOutput(writer), cancellation.Token);
+				RunDecompiler(assemblyFile, fullTypeName, new DebuggerTextOutput(new PlainTextOutput(writer)), cancellation.Token);
 				if (!cancellation.IsCancellationRequested) {
 					WorkbenchSingleton.SafeThreadAsyncCall(OnDecompilationFinished, writer);
 				}
@@ -155,7 +161,7 @@ namespace ICSharpCode.ILSpyAddIn
 			}
 		}
 		
-		void RunDecompiler(string assemblyFile, string fullTypeName, ITextOutput textOutput, CancellationToken cancellationToken)
+		void RunDecompiler(string assemblyFile, string fullTypeName, DebuggerTextOutput textOutput, CancellationToken cancellationToken)
 		{
 			ReaderParameters readerParameters = new ReaderParameters();
 			// Use new assembly resolver instance so that the AssemblyDefinitions can be garbage-collected
@@ -174,18 +180,7 @@ namespace ICSharpCode.ILSpyAddIn
 			
 			// save decompilation data
 			decompiledType = typeDefinition;
-			
-			/*
-			int token = decompiledType.MetadataToken.ToInt32();
-			var info = new DecompileInformation {
-				CodeMappings = astBuilder.CodeMappings,
-				LocalVariables = astBuilder.LocalVariables,
-				DecompiledMemberReferences = astBuilder.DecompiledMemberReferences
-			};
-			
-			// save the data
-			DebuggerDecompilerService.DebugInformation.AddOrUpdate(token, info, (k, v) => info);
-			*/
+			memberLocations = textOutput.MemberLocations;
 		}
 		
 		void OnDecompilationFinished(StringWriter output)

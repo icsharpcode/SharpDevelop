@@ -14,13 +14,15 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
+
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL.Attributes;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL.Type;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Association;
 using ICSharpCode.Data.EDMDesigner.Core.UI.Converters;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common;
-using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Association;
 
 #endregion
 

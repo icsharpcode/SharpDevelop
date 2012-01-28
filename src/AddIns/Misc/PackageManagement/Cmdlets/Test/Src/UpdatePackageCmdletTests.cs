@@ -103,12 +103,17 @@ namespace PackageManagement.Cmdlets.Tests
 			cmdlet.IgnoreDependencies = new SwitchParameter(true);
 		}
 		
+		void EnablePrereleaseParameter()
+		{
+			cmdlet.IncludePrerelease = new SwitchParameter(true);
+		}
+		
 		void SetSourceParameter(string source)
 		{
 			cmdlet.Source = source;
 		}
 		
-		void SetVersionParameter(Version version)
+		void SetVersionParameter(SemanticVersion version)
 		{
 			cmdlet.Version = version;
 		}
@@ -251,6 +256,35 @@ namespace PackageManagement.Cmdlets.Tests
 		}
 		
 		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndPreleaseParameterNotSet_AllowPrereleaseVersionsIsFalseWhenUpdatingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			RunCmdlet();
+			
+			bool result = UpdatePackageInSingleProjectAction.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void ProcessRecord_PackageIdAndProjectNameAndPreleaseParameterSet_AllowPrereleaseVersionsIsTrueWhenUpdatingPackage()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			
+			SetIdParameter("Test");
+			SetProjectNameParameter("MyProject");
+			EnablePrereleaseParameter();
+			RunCmdlet();
+			
+			bool result = UpdatePackageInSingleProjectAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
 		public void ProcessRecord_PackageIdAndProjectNameAndSourceParameterSet_CustomSourceUsedWhenUpdatingPackage()
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
@@ -273,11 +307,11 @@ namespace PackageManagement.Cmdlets.Tests
 			
 			SetIdParameter("Test");
 			SetProjectNameParameter("MyProject");
-			var version = new Version("1.0.1");
+			var version = new SemanticVersion("1.0.1");
 			SetVersionParameter(version);
 			RunCmdlet();
 			
-			Version actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
+			SemanticVersion actualVersion = UpdatePackageInSingleProjectAction.PackageVersion;
 			
 			Assert.AreEqual(version, actualVersion);
 		}
@@ -382,6 +416,20 @@ namespace PackageManagement.Cmdlets.Tests
 			bool update = fakeUpdateAllPackagesInProject.UpdateDependencies;
 			
 			Assert.IsFalse(update);
+		}
+		
+		[Test]
+		public void ProcessRecord_UpdateAllPackagesInProjectWhenOnePackageInProjectAndPrereleaseIsTrue_ActionAllowsPrereleaseVersions()
+		{
+			CreateCmdletWithActivePackageSourceAndProject();
+			SetProjectNameParameter("MyProject");
+			CreateUpdateActionWhenUpdatingAllPackagesInProject("PackageA");
+			EnablePrereleaseParameter();
+			RunCmdlet();
+			
+			bool allow = fakeUpdateAllPackagesInProject.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(allow);
 		}
 		
 		[Test]
@@ -658,7 +706,7 @@ namespace PackageManagement.Cmdlets.Tests
 		{
 			CreateCmdletWithActivePackageSourceAndProject();
 			SetIdParameter("MyPackage");
-			var expectedVersion = new Version("1.0");
+			var expectedVersion = new SemanticVersion("1.0");
 			SetVersionParameter(expectedVersion);
 			RunCmdlet();
 			

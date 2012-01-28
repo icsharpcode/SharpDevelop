@@ -264,8 +264,14 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Help Mode</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Help Library Manager was not found. Please check if it was installed correctly.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Installed Help Catalogs</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Launch Help Library Manager</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Help Viewer</value>
@@ -2757,6 +2763,9 @@ system. I don't think that it needs translation.</comment>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Cut or Copy entire line when nothing is selected</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Enable virtual space</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>&amp;Hide mouse cursor while typing</value>

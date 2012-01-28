@@ -72,5 +72,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return String.Empty;
 		}
 		
+		
+		public static string GetReferenceName(Uri uri)
+		{
+			if (uri != null) {
+				return uri.Host;
+			}
+			return String.Empty;
+		}
+		
 	}
 }

@@ -62,9 +62,9 @@ namespace PackageManagement.Tests
 		public void Version_WrappedPackageVersionIsOnePointOne_ReturnsOnePointOne()
 		{
 			CreatePackage();
-			var expectedVersion = new Version("1.1");
+			var expectedVersion = new SemanticVersion("1.1");
 			fakePackage.Version = expectedVersion;
-			Version version = package.Version;
+			SemanticVersion version = package.Version;
 			
 			Assert.AreEqual(expectedVersion, version);
 		}
@@ -243,26 +243,6 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void RatingsCount_WrappedPackageRatingsCountIsTen_ReturnsTen()
-		{
-			CreatePackage();
-			fakePackage.RatingsCount = 10;
-			int count = package.RatingsCount;
-			
-			Assert.AreEqual(10, count);
-		}
-		
-		[Test]
-		public void Rating_WrappedPackageRatingIsFive_ReturnsFive()
-		{
-			CreatePackage();
-			fakePackage.Rating = 5.0;
-			double rating = package.Rating;
-			
-			Assert.AreEqual(5.0, rating);
-		}
-		
-		[Test]
 		public void GetStream_WrappedPackageHasStream_ReturnsWrappedPackageStream()
 		{
 			CreatePackage();
@@ -368,6 +348,26 @@ namespace PackageManagement.Tests
 			string releaseNotes = package.ReleaseNotes;
 			
 			Assert.AreEqual("Test", releaseNotes);
+		}
+		
+		[Test]
+		public void IsAbsoluteLatestVersion_WrappedPackageIsAbsoluteLatestVersion_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.IsAbsoluteLatestVersion = true;
+			bool result = package.IsAbsoluteLatestVersion;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Listed_WrappedPackageIsListed_ReturnsTrue()
+		{
+			CreatePackage();
+			fakePackage.Listed = true;
+			bool result = package.Listed;
+			
+			Assert.IsTrue(result);
 		}
 	}
 }

@@ -5,9 +5,11 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 using NUnit.Framework;
 
 namespace PackageManagement.Tests
@@ -18,7 +20,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void ToString_IdAndVersionSpecified_ContainsIdAndVersion()
 		{
-			var recentPackageInfo = new RecentPackageInfo("id", new Version("1.0"));
+			var recentPackageInfo = new RecentPackageInfo("id", new SemanticVersion("1.0"));
 			
 			string actual = recentPackageInfo.ToString();
 						
@@ -30,7 +32,7 @@ namespace PackageManagement.Tests
 		public void IsMatch_PackageWithSameIdAndVersionPassed_ReturnsTrue()
 		{
 			string id = "id";
-			var version = new Version(1, 0);
+			var version = new SemanticVersion(1, 0, 0, 0);
 			var recentPackageInfo = new RecentPackageInfo(id, version);
 			var package = new FakePackage(id);
 			package.Version = version;
@@ -44,10 +46,10 @@ namespace PackageManagement.Tests
 		public void IsMatch_PackageWithSameIdButDifferentVersionPassed_ReturnsFalse()
 		{
 			string id = "id";
-			var version = new Version(1, 0);
+			var version = new SemanticVersion(1, 0, 0, 0);
 			var recentPackageInfo = new RecentPackageInfo(id, version);
 			var package = new FakePackage(id);
-			package.Version = new Version(2, 0);
+			package.Version = new SemanticVersion(2, 0, 0, 0);
 			
 			bool result = recentPackageInfo.IsMatch(package);
 			
@@ -57,7 +59,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void IsMatch_PackageWithDifferentIdButSameVersionPassed_ReturnsFalse()
 		{
-			var version = new Version(1, 0);
+			var version = new SemanticVersion(1, 0, 0, 0);
 			var recentPackageInfo = new RecentPackageInfo("id", version);
 			var package = new FakePackage("different-id");
 			package.Version = version;
@@ -70,7 +72,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Version_SerializeThenDeserializeRecentPackageInfoInPropertiesObject_ReturnsSameValueAfterDeserialization()
 		{
-			var version = new Version(1, 0);
+			var version = new SemanticVersion(1, 0, 0, 0);
 			var recentPackageInfo = new RecentPackageInfo("id", version);
 			var properties = new Properties();
 			properties.Set<RecentPackageInfo>("RecentPackageInfo", recentPackageInfo);

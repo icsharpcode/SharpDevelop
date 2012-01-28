@@ -39,10 +39,17 @@ namespace ICSharpCode.Profiler.AddIn.Dialogs
 				if (!Directory.Exists(txtWorkingDir.Text))
 					throw new DirectoryNotFoundException("directory '" + txtWorkingDir.Text + "' was not found!");
 				
-				string outputPath = Path.Combine(
-					Path.GetDirectoryName(txtExePath.Text),
-					@"ProfilingSessions\Session" +
-					DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".sdps");
+				string outputName = "Session" + DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".sdps";
+				string outputPath = "";
+				
+				SaveFileDialog sfd = new SaveFileDialog();
+				sfd.InitialDirectory = Path.GetDirectoryName(txtExePath.Text);
+				sfd.Filter = StringParser.Parse("${res:AddIns.Profiler.FileExtensionDescription}|*.sdps");
+				sfd.FileName = outputName;
+				if (sfd.ShowDialog() == true)
+					outputPath = sfd.FileName;
+				else
+					return;
 				
 				try {
 					Directory.CreateDirectory(Path.GetDirectoryName(outputPath));

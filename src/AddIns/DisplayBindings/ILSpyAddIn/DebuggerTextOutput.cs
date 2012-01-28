@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.Decompiler;
+using Mono.Cecil;
 
 namespace ICSharpCode.ILSpyAddIn
 {
@@ -12,6 +14,7 @@ namespace ICSharpCode.ILSpyAddIn
 		readonly ITextOutput output;
 		
 		public readonly List<MemberMapping> DebuggerMemberMappings = new List<MemberMapping>();
+		public readonly Dictionary<string, ICSharpCode.NRefactory.TextLocation> MemberLocations = new Dictionary<string, ICSharpCode.NRefactory.TextLocation>();
 		
 		public DebuggerTextOutput(ITextOutput output)
 		{
@@ -49,6 +52,9 @@ namespace ICSharpCode.ILSpyAddIn
 		
 		public void WriteDefinition(string text, object definition, bool isLocal)
 		{
+			if (definition is MemberReference) {
+				MemberLocations[XmlDocKeyProvider.GetKey((MemberReference)definition)] = Location;
+			}
 			output.WriteDefinition(text, definition, isLocal);
 		}
 		

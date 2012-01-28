@@ -37,7 +37,7 @@ namespace Mono.CSharp
 		//
 		// A scope type parameters either VAR or MVAR
 		//
-		TypeParameter[] CurrentTypeParameters { get; }
+		TypeParameters CurrentTypeParameters { get; }
 
 		//
 		// A member definition of the context. For partial types definition use
@@ -393,7 +393,7 @@ namespace Mono.CSharp
 			get { return MemberContext.CurrentType; }
 		}
 
-		public TypeParameter[] CurrentTypeParameters {
+		public TypeParameters CurrentTypeParameters {
 			get { return MemberContext.CurrentTypeParameters; }
 		}
 
@@ -469,10 +469,19 @@ namespace Mono.CSharp
 			if (CurrentAnonymousMethod == null)
 				return false;
 
-			// FIXME: IsIterator is too aggressive, we should capture only if child
-			// block contains yield
-			if (CurrentAnonymousMethod.IsIterator || CurrentAnonymousMethod is AsyncInitializer)
-				return true;
+			//
+			// Capture only if this or any of child blocks contain yield
+			// or it's a parameter
+			//
+			if (CurrentAnonymousMethod.IsIterator)
+				return local.IsParameter || CurrentBlock.Explicit.HasYield;
+
+			//
+			// Capture only if this or any of child blocks contain await
+			// or it's a parameter
+			//
+			if (CurrentAnonymousMethod is AsyncInitializer)
+				return CurrentBlock.Explicit.HasAwait;
 
 			return local.Block.ParametersBlock != CurrentBlock.ParametersBlock.Original;
 		}

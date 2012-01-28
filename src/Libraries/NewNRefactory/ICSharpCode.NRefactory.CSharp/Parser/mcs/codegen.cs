@@ -7,6 +7,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc.
 // Copyright 2004 Novell, Inc.
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -111,8 +112,8 @@ namespace Mono.CSharp
 			get { return member_context.CurrentType; }
 		}
 
-		public TypeParameter[] CurrentTypeParameters {
-			get { return member_context.CurrentTypeParameters; }
+		public TypeParameters CurrentTypeParameters {
+		    get { return member_context.CurrentTypeParameters; }
 		}
 
 		public MemberCore CurrentTypeDefinition {
@@ -237,7 +238,7 @@ namespace Mono.CSharp
 		{
 			if (dynamic_site_container == null) {
 				var mc = member_context.CurrentMemberDefinition as MemberBase;
-				dynamic_site_container = new DynamicSiteClass (CurrentTypeDefinition.Parent.PartialContainer, mc, CurrentTypeParameters);
+				dynamic_site_container = new DynamicSiteClass (CurrentTypeDefinition.Parent.PartialContainer, mc, member_context.CurrentTypeParameters);
 
 				CurrentTypeDefinition.Module.AddCompilerGeneratedClass (dynamic_site_container);
 				dynamic_site_container.CreateType ();
@@ -280,7 +281,7 @@ namespace Mono.CSharp
 		public FieldExpr GetTemporaryField (TypeSpec type)
 		{
 			var f = AsyncTaskStorey.AddCapturedLocalVariable (type);
-			var fexpr = new FieldExpr (f, Location.Null);
+			var fexpr = new StackFieldExpr (f);
 			fexpr.InstanceExpression = new CompilerGeneratedThis (CurrentType, Location.Null);
 			return fexpr;
 		}
@@ -958,7 +959,7 @@ namespace Mono.CSharp
 			//
 			// Push the instance expression
 			//
-			if ((instance_type.IsStruct && (callOpcode == OpCodes.Callvirt || (callOpcode == OpCodes.Call && declaringType == instance_type))) ||
+			if ((instance_type.IsStruct && (callOpcode == OpCodes.Callvirt || (callOpcode == OpCodes.Call && declaringType.IsStruct))) ||
 				instance_type.IsGenericParameter || declaringType.IsNullableType) {
 				//
 				// If the expression implements IMemoryLocation, then
@@ -975,7 +976,6 @@ namespace Mono.CSharp
 					instance.Emit (ec);
 					temp.Store (ec);
 					temp.AddressOf (ec, AddressOp.Load);
-					temp.Release (ec);
 				}
 
 				return ReferenceContainer.MakeType (ec.Module, instance_type);

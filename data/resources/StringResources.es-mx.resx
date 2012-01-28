@@ -669,6 +669,18 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Buscando ...</value>
   </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Agregar setter</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Seleccione los campos para los cuales quiere crear propiedades:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>Implementar INotifyPropertyChanged</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Crear propiedades</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraer método</value>
   </data>
@@ -2673,6 +2685,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Cortar o Copiar la línea entera cuando no haya nada seleccionado</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Habilitar espacio virtual</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>&amp;Esconder el puntero del ratón al escribir</value>

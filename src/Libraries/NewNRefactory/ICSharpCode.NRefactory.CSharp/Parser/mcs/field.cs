@@ -9,6 +9,7 @@
 //
 // Copyright 2001, 2002, 2003 Ximian, Inc (http://www.ximian.com)
 // Copyright 2004-2008 Novell, Inc
+// Copyright 2011 Xamarin Inc
 //
 
 using System;
@@ -61,10 +62,8 @@ namespace Mono.CSharp
 
 		static readonly string[] attribute_targets = new string [] { "field" };
 
-		protected FieldBase (DeclSpace parent, FullNamedExpression type, Modifiers mod,
-				     Modifiers allowed_mod, MemberName name, Attributes attrs)
-			: base (parent, null, type, mod, allowed_mod | Modifiers.ABSTRACT, Modifiers.PRIVATE,
-				name, attrs)
+		protected FieldBase (TypeContainer parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name, Attributes attrs)
+			: base (parent, type, mod, allowed_mod | Modifiers.ABSTRACT, Modifiers.PRIVATE, name, attrs)
 		{
 			if ((mod & Modifiers.ABSTRACT) != 0)
 				Report.Error (681, Location, "The modifier 'abstract' is not valid on fields. Try using a property instead");
@@ -84,6 +83,12 @@ namespace Mono.CSharp
 			}
 			set {
 				this.initializer = value;
+			}
+		}
+
+		public string Name {
+			get {
+				return MemberName.Name;
 			}
 		}
 
@@ -370,7 +375,7 @@ namespace Mono.CSharp
 			Modifiers.PRIVATE |
 			Modifiers.UNSAFE;
 
-		public FixedField (DeclSpace parent, FullNamedExpression type, Modifiers mod, MemberName name, Attributes attrs)
+		public FixedField (TypeContainer parent, FullNamedExpression type, Modifiers mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod, AllowedModifiers, name, attrs)
 		{
 		}
@@ -572,8 +577,7 @@ namespace Mono.CSharp
 			Modifiers.UNSAFE |
 			Modifiers.READONLY;
 
-		public Field (DeclSpace parent, FullNamedExpression type, Modifiers mod, MemberName name,
-			      Attributes attrs)
+		public Field (TypeContainer parent, FullNamedExpression type, Modifiers mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod, AllowedModifiers, name, attrs)
 		{
 		}
@@ -626,8 +630,11 @@ namespace Mono.CSharp
 
 			spec = new FieldSpec (Parent.Definition, this, MemberType, FieldBuilder, ModFlags);
 
-			// Don't cache inaccessible fields
-			if ((ModFlags & Modifiers.BACKING_FIELD) == 0) {
+			//
+			// Don't cache inaccessible fields except for struct where we
+			// need them for definitive assignment checks
+			//
+			if ((ModFlags & Modifiers.BACKING_FIELD) == 0 || Parent.Kind == MemberKind.Struct) {
 				Parent.MemberCache.AddMember (spec);
 			}
 
@@ -648,10 +655,6 @@ namespace Mono.CSharp
 				}
 			}
 
-/*
-			if ((ModFlags & (Modifiers.STATIC | Modifiers.READONLY | Modifiers.COMPILER_GENERATED)) == Modifiers.STATIC)
-				Console.WriteLine ("{0}: {1}", Location.ToString (), GetSignatureForError ());
-*/
 			return true;
 		}
 

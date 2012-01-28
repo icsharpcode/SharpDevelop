@@ -122,13 +122,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override List<IProperty> GetProperties()
 		{
 			List<IProperty> l = base.GetProperties();
-			ArrayIndexer property = new ArrayIndexer(elementType, this.BaseType.GetUnderlyingClass());
-			IReturnType int32 = pc.SystemTypes.Int32;
-			for (int i = 0; i < dimensions; ++i) {
-				property.Parameters.Add(new DefaultParameter("index", int32, DomRegion.Empty));
+			IClass systemArray = this.BaseType.GetUnderlyingClass();
+			if (systemArray != null) {
+				ArrayIndexer property = new ArrayIndexer(elementType, systemArray);
+				IReturnType int32 = pc.SystemTypes.Int32;
+				for (int i = 0; i < dimensions; ++i) {
+					property.Parameters.Add(new DefaultParameter("index", int32, DomRegion.Empty));
+				}
+				property.Freeze();
+				l.Add(property);
 			}
-			property.Freeze();
-			l.Add(property);
 			return l;
 		}
 		

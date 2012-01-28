@@ -189,7 +189,7 @@ namespace MSHelpSystem.Core
 			if (string.IsNullOrEmpty(searchWords)) {
 				throw new ArgumentNullException("searchWords");
 			}
-			string msdnUrl = string.Format(@"http://social.social.msdn.microsoft.com/Search/{0}/?query={1}&ac=3", CultureInfo.CurrentUICulture.ToString(), searchWords.Replace(" ", "+"));
+			string msdnUrl = string.Format(@"http://social.msdn.microsoft.com/Search/{0}/?query={1}&ac=3", CultureInfo.CurrentUICulture.ToString(), searchWords.Replace(" ", "+"));
 			BrowserPane browser = ActiveHelp3Browser();
 			if (browser != null) {
 				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", msdnUrl));

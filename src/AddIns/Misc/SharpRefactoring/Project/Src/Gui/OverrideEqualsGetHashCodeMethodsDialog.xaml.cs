@@ -107,6 +107,22 @@ namespace SharpRefactoring.Gui
 			}
 		}
 		
+		static Expression TestEquality(string other, IProperty property)
+		{
+			if (CanCompareEqualityWithOperator(property.ReturnType)) {
+				return new BinaryOperatorExpression(new MemberReferenceExpression(new ThisReferenceExpression(), property.Name),
+				                                    BinaryOperatorType.Equality,
+				                                    new MemberReferenceExpression(new IdentifierExpression(other), property.Name));
+			} else {
+				InvocationExpression ie = new InvocationExpression(
+					new MemberReferenceExpression(new TypeReferenceExpression(new TypeReference("System.Object", true)), "Equals")
+				);
+				ie.Arguments.Add(new MemberReferenceExpression(new ThisReferenceExpression(), property.Name));
+				ie.Arguments.Add(new MemberReferenceExpression(new IdentifierExpression(other), property.Name));
+				return ie;
+			}
+		}
+		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
 			StringBuilder code = new StringBuilder();
@@ -319,6 +335,16 @@ namespace SharpRefactoring.Gui
 				}
 			}
 			
+			foreach (IProperty property in currentClass.Properties) {
+				if (property.IsStatic || !PropertyRefactoringMenuBuilder.IsAutomaticProperty(property)) continue;
+				if (expr == null) {
+					expr = TestEquality("other", property);
+				} else {
+					expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
+					                                    TestEquality("other", property));
+				}
+			}
+			
 			method.Body.AddChild(new ReturnStatement(expr ?? new PrimitiveExpression(true, "true")));
 			
 			methods.Add(method);
@@ -340,7 +366,7 @@ namespace SharpRefactoring.Gui
 			
 			getHashCodeMethod.Body.AddChild(new LocalVariableDeclaration(hashCodeVar));
 			
-			if (currentClass.Fields.Any(f => !f.IsStatic)) {
+			if (currentClass.Fields.Any(f => !f.IsStatic) || currentClass.Properties.Any(p => !p.IsStatic && PropertyRefactoringMenuBuilder.IsAutomaticProperty(p))) {
 				bool usePrimeMultiplication = currentClass.ProjectContent.Language == LanguageProperties.CSharp;
 				BlockStatement hashCalculationBlock;
 				
@@ -352,40 +378,54 @@ namespace SharpRefactoring.Gui
 				}
 				
 				int fieldIndex = 0;
-				Expression expr;
 				
 				foreach (IField field in currentClass.Fields) {
 					if (field.IsStatic) continue;
 					
-					expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode"));
-					if (usePrimeMultiplication) {
-						int prime = largePrimes[fieldIndex++ % largePrimes.Length];
-						expr = new AssignmentExpression(
-							new IdentifierExpression(hashCodeVar.Name),
-							AssignmentOperatorType.Add,
-							new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()),
-							                             BinaryOperatorType.Multiply,
-							                             expr));
-					} else {
-						expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name),
-						                                AssignmentOperatorType.ExclusiveOr,
-						                                expr);
-					}
-					if (IsValueType(field.ReturnType)) {
-						hashCalculationBlock.AddChild(new ExpressionStatement(expr));
-					} else {
-						hashCalculationBlock.AddChild(new IfElseStatement(
-							new BinaryOperatorExpression(new IdentifierExpression(field.Name),
-							                             BinaryOperatorType.ReferenceInequality,
-							                             new PrimitiveExpression(null, "null")),
-							new ExpressionStatement(expr)
-						));
-					}
+					AddToBlock(hashCodeVar, getHashCodeMethod, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, field);
+				}
+				
+				foreach (IProperty property in currentClass.Properties) {
+					if (property.IsStatic || !PropertyRefactoringMenuBuilder.IsAutomaticProperty(property)) continue;
+					
+					AddToBlock(hashCodeVar, getHashCodeMethod, usePrimeMultiplication, hashCalculationBlock, ref fieldIndex, property);
 				}
 			}
 			
 			getHashCodeMethod.Body.AddChild(new ReturnStatement(new IdentifierExpression(hashCodeVar.Name)));
 			return getHashCodeMethod;
+		}
+
+		void AddToBlock(VariableDeclaration hashCodeVar, MethodDeclaration getHashCodeMethod, bool usePrimeMultiplication, BlockStatement hashCalculationBlock, ref int fieldIndex, IField field)
+		{
+			Expression expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(field.Name), "GetHashCode"));
+			if (usePrimeMultiplication) {
+				int prime = largePrimes[fieldIndex++ % largePrimes.Length];
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()), BinaryOperatorType.Multiply, expr));
+			} else {
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.ExclusiveOr, expr);
+			}
+			if (IsValueType(field.ReturnType)) {
+				hashCalculationBlock.AddChild(new ExpressionStatement(expr));
+			} else {
+				hashCalculationBlock.AddChild(new IfElseStatement(new BinaryOperatorExpression(new IdentifierExpression(field.Name), BinaryOperatorType.ReferenceInequality, new PrimitiveExpression(null, "null")), new ExpressionStatement(expr)));
+			}
+		}
+		
+		void AddToBlock(VariableDeclaration hashCodeVar, MethodDeclaration getHashCodeMethod, bool usePrimeMultiplication, BlockStatement hashCalculationBlock, ref int fieldIndex, IProperty property)
+		{
+			Expression expr = new InvocationExpression(new MemberReferenceExpression(new IdentifierExpression(property.Name), "GetHashCode"));
+			if (usePrimeMultiplication) {
+				int prime = largePrimes[fieldIndex++ % largePrimes.Length];
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(prime, prime.ToString()), BinaryOperatorType.Multiply, expr));
+			} else {
+				expr = new AssignmentExpression(new IdentifierExpression(hashCodeVar.Name), AssignmentOperatorType.ExclusiveOr, expr);
+			}
+			if (IsValueType(property.ReturnType)) {
+				hashCalculationBlock.AddChild(new ExpressionStatement(expr));
+			} else {
+				hashCalculationBlock.AddChild(new IfElseStatement(new BinaryOperatorExpression(new IdentifierExpression(property.Name), BinaryOperatorType.ReferenceInequality, new PrimitiveExpression(null, "null")), new ExpressionStatement(expr)));
+			}
 		}
 		
 		OperatorDeclaration CreateOperatorOverload(OverloadableOperatorType op, IClass currentClass, BlockStatement body)

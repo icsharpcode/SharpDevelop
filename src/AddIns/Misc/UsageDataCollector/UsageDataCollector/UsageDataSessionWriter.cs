@@ -69,7 +69,13 @@ namespace ICSharpCode.UsageDataCollector
 				if (isDisposed)
 					return;
 				try {
-					FlushOutstandingChanges();
+					try {
+						FlushOutstandingChanges();
+					} catch (SQLiteException ex) {
+						// Ignore exception if the DB file is locked
+						if (ex.ErrorCode != SQLiteErrorCode.Locked)
+							throw;
+					}
 				} catch (Exception ex) {
 					Action<Exception> onException = this.OnException;
 					if (onException != null)

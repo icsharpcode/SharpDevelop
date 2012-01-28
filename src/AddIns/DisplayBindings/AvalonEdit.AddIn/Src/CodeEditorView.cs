@@ -103,26 +103,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void HighlightBrackets(object sender, EventArgs e)
 		{
-			if (CodeEditorOptions.Instance.HighlightBrackets) {
-				/*
-				 * Special case: ITextEditor.Language guarantees that it never returns null.
-				 * In this case however it can be null, since this code may be called while the document is loaded.
-				 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
-				 * loading of the document has finished.
-				 * */
-				if (this.Adapter.Language != null) {
+			/*
+			 * Special case: ITextEditor.Language guarantees that it never returns null.
+			 * In this case however it can be null, since this code may be called while the document is loaded.
+			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
+			 * loading of the document has finished.
+			 * */
+			if (this.Adapter.Language != null) {
+				if (CodeEditorOptions.Instance.HighlightBrackets || CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 					var bracketSearchResult = this.Adapter.Language.BracketSearcher.SearchBracket(this.Adapter.Document, this.TextArea.Caret.Offset);
-					this.bracketRenderer.SetHighlight(bracketSearchResult);
-					
+					if (CodeEditorOptions.Instance.HighlightBrackets) {
+						this.bracketRenderer.SetHighlight(bracketSearchResult);
+					} else {
+						this.bracketRenderer.SetHighlight(null);
+					}
 					if (CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 						this.hiddenDefinitionRenderer.BracketSearchResult = bracketSearchResult;
 						this.hiddenDefinitionRenderer.Show();
 					} else {
 						this.hiddenDefinitionRenderer.ClosePopup();
 					}
+				} else {
+					this.bracketRenderer.SetHighlight(null);
+					this.hiddenDefinitionRenderer.ClosePopup();
 				}
-			} else {
-				this.bracketRenderer.SetHighlight(null);
 			}
 		}
 		#endregion
@@ -236,7 +240,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var pos = this.TextArea.TextView.GetPositionFloor(e.GetPosition(this.TextArea.TextView) + this.TextArea.TextView.ScrollOffset);
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
 			}
 			
 			if (args.InDocument) {
@@ -484,7 +488,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (position == null)
 					return;
 				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
-				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
+				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value.Location));
 				e.Handled = true;
 			}
 		}
@@ -500,7 +504,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Focus();
 			
 			if (CodeEditorOptions.Instance.EnableAnimations)
-				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
+				Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
 		}
 		
 		void DisplayCaretHighlightAnimation()
@@ -511,6 +515,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
+			
+			if (layer == null)
+				return;
+			
 			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			

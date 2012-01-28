@@ -29,6 +29,11 @@ namespace ICSharpCode.SharpDevelop
 		
 		public bool UseRegistryForProject(IProject project)
 		{
+			// codon.GetFailedAction is obsolete, it doesn't consider inherited
+			// conditions. However, I don't care to fix this as inherited conditions
+			// aren't used with project content registries, and this code
+			// will be removed in SD5.
+			#pragma warning disable 618
 			return codon.GetFailedAction(project) == ConditionFailedAction.Nothing;
 		}
 		

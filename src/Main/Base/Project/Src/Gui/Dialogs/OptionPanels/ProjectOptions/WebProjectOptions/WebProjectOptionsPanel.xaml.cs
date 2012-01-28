@@ -13,11 +13,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public partial class WebProjectOptionsPanel : UserControl
 	{
-		private readonly DebugOptions parentPanel;
+		private readonly aaDebugOptions parentPanel;
 		
-		public WebProjectOptionsPanel(DebugOptions parentPanel)
+		public WebProjectOptionsPanel()
 		{
 			InitializeComponent();
+			
+//			this.parentPanel = parentPanel;
+			
+			if (CurrentProjectDebugData == null)
+				CurrentProjectDebugData = new WebProjectDebugData();
+			
+			Loaded += OnLoaded;
+		}
+		
+		public WebProjectOptionsPanel(aaDebugOptions parentPanel):this()
+		{
+//			InitializeComponent();
 			
 			this.parentPanel = parentPanel;
 			

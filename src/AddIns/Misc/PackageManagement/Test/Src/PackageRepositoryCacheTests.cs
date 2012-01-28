@@ -59,7 +59,7 @@ namespace PackageManagement.Tests
 		
 		RecentPackageInfo AddOneRecentPackage()
 		{
-			var recentPackage = new RecentPackageInfo("Id", new Version("1.0"));
+			var recentPackage = new RecentPackageInfo("Id", new SemanticVersion("1.0"));
 			packageSourcesHelper.Options.RecentPackages.Add(recentPackage);
 			return recentPackage;
 		}

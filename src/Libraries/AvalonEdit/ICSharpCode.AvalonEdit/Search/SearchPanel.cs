@@ -279,7 +279,7 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (!string.IsNullOrEmpty(SearchPattern)) {
 				int offset = textArea.Caret.Offset;
 				if (changeSelection) {
-					textArea.Selection = SimpleSelection.Empty;
+					textArea.ClearSelection();
 				}
 				foreach (SearchResult result in strategy.FindAll(textArea.Document, 0, textArea.Document.TextLength)) {
 					if (currentResult == null && result.StartOffset >= offset) {
@@ -303,7 +303,7 @@ namespace ICSharpCode.AvalonEdit.Search
 		void SetResult(SearchResult result)
 		{
 			textArea.Caret.Offset = currentResult.StartOffset;
-			textArea.Selection = new SimpleSelection(currentResult.StartOffset, currentResult.EndOffset);
+			textArea.Selection = Selection.Create(textArea, currentResult.StartOffset, currentResult.EndOffset);
 			var foldingManager = textArea.GetService(typeof(FoldingManager)) as FoldingManager;
 			if (foldingManager != null) {
 				foreach (var folding in foldingManager.GetFoldingsContaining(result.StartOffset))

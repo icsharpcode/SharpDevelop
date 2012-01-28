@@ -3,6 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using Microsoft.Win32;
 using MSHelpSystem.Core;
 using MSHelpSystem.Controls;
 using ICSharpCode.Core;
@@ -11,8 +15,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace MSHelpSystem.Commands
 {
-	// <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
-	// <version>$Revision: 3555 $</version>
 	public class ShowErrorHelpCommand : AbstractMenuCommand
 	{
 		public override void Run()
@@ -33,8 +35,7 @@ namespace MSHelpSystem.Commands
 						DisplayHelp.Keywords(code);
 					else
 						DisplayHelp.ContextualHelp(code);
-				}
-				else {
+				} else {
 					LoggingService.Error("Help 3.0: Help system ist not initialized");
 				}
 			}
@@ -59,6 +60,25 @@ namespace MSHelpSystem.Commands
 		{
 			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(Help3SearchPad));
 			if (search != null) search.BringPadToFront();
+		}
+	}
+	
+	public class LaunchHelpLibraryManager : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			string path;
+			if (!RegistryService.GetRegistryValue(RegistryHive.LocalMachine, @"SOFTWARE\Microsoft\Help\v1.0",
+			                                      "AppRoot", RegistryValueKind.String, out path)) {
+				MessageService.ShowError("${res:AddIns.HelpViewer.HLMNotFound}");
+				return;
+			}
+			path = Path.Combine(path, "HelpLibManager.exe");
+			if (!File.Exists(path)) {
+				MessageService.ShowError("${res:AddIns.HelpViewer.HLMNotFound}");
+				return;
+			}
+			Process.Start(path, string.Format("/product {0} /version {1} /locale {2}", Help3Service.Config.ActiveCatalogId.Split('/')));
 		}
 	}
 }

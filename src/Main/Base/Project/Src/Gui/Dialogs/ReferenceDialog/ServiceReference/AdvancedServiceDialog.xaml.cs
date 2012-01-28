@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 02.11.2011
- * Time: 19:49
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,9 +13,6 @@ using System.Windows.Media;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	/// <summary>
-	/// Interaction logic for AdvancedServiceDialog.xaml
-	/// </summary>
 	public partial class AdvancedServiceDialog : Window
 	{
 		public AdvancedServiceDialog()

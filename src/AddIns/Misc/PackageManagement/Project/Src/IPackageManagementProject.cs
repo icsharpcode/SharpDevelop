@@ -29,11 +29,11 @@ namespace ICSharpCode.PackageManagement
 		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		
-		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies);
+		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
 		
-		void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies);
-		void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies);
-		void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies);
+		void InstallPackage(IPackage package, InstallPackageAction installAction);
+		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
+		void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction);
 		
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();

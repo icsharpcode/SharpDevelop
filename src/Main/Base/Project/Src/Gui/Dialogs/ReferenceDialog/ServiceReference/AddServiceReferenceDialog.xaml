@@ -22,9 +22,6 @@
 	<Window.Resources>
 		<HierarchicalDataTemplate x:Key="HeaderTemplate"
 			ItemsSource="{Binding SubItems}">
-			<!--
-			<TextBlock Grid.Row="0" Text="{Binding Path=Description}" />-->
-			
 			<StackPanel Orientation="Horizontal">
 				<Image Width="16" Height="16" Source="{Binding Image}"/>
 				<TextBlock Text="{Binding Description}"/>
@@ -60,12 +57,13 @@
 				<ColumnDefinition Width="*"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 			<ComboBox
+				x:Name="UrlComboBox"
 				Margin="4,0,4,0"
 				IsEditable="True"
 				ItemsSource="{Binding MruServices}"
-				IsSynchronizedWithCurrentItem="True"
 				LostFocus="Cbo_LostFocus"
-				SelectedItem="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
+				Loaded="UrlComboBoxLoaded"
+				Text="{Binding SelectedService, UpdateSourceTrigger=PropertyChanged}">
 			</ComboBox>
 			
 			<widgets:UniformGridWithSpacing 
@@ -74,11 +72,16 @@
 				HorizontalAlignment="Left"
 				Margin="4,0,4,0">
 				<Button
-					Content="Go" HorizontalContentAlignment="Center"
+					IsDefault="True"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Content="Go"
+					HorizontalContentAlignment="Center"
 					Command="{Binding GoCommand}" />
 				
 				<Button
-					Content="Discover" HorizontalContentAlignment="Center"
+					Content="Discover"
+					HorizontalContentAlignment="Center"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Command="{Binding DiscoverCommand}" />
 			
 			</widgets:UniformGridWithSpacing>
@@ -125,32 +128,14 @@
 				
 				</ListBox.ItemTemplate>
 			</ListBox>
-		<!-- 
-			<ListView
-				Grid.Column="1" Grid.Row="1"  Margin="4"
-				ItemsSource="{Binding Path=TwoValues}">
-				<ListView.View>
-					<GridView>
-						<GridViewColumn>
-						<GridViewColumn.CellTemplate>
-							<DataTemplate>
-								<StackPanel Orientation="Horizontal">
-									<Image Width="16" Height="16" Source="{Binding Image}"/>
-									<TextBlock Text="{Binding Description}"/>
-								</StackPanel>
-							</DataTemplate>
-						</GridViewColumn.CellTemplate>
-					</GridViewColumn>
-					</GridView>
-				</ListView.View>
-			</ListView>-->
+		
 		</Grid>
 		
 		<Border Grid.Row="5" Grid.ColumnSpan="3" Margin="4,0,4,0"  BorderThickness="2" BorderBrush="LightGray">
 			<TextBlock Text="{Binding ServiceDescriptionMessage}"></TextBlock>
 		</Border>
 		
-		<TextBlock Grid.Row="6" Text="NameSpace:" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
+		<TextBlock Grid.Row="6" Text="Namespace:" Margin="4,0,4,0" VerticalAlignment="Bottom"></TextBlock>
 		<TextBox Grid.Row="7" Grid.ColumnSpan="3"
 		         Margin="4" Background="White"
 		         Text="{Binding DefaultNameSpace}">
@@ -163,18 +148,16 @@
 			<Button Content="Advanced..."
 			        Command="{Binding AdvancedDialogCommand}"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
-					Margin="0,4,12,12">
+					Margin="4,4,12,12">
 			</Button>
 			
 			<widgets:UniformGridWithSpacing
-				
 				Columns="2"
 				Grid.Column="2"
 				HorizontalAlignment="Right"
 				Margin="0,4,12,12">
 				<Button
 					Content="{core:Localize Global.OKButtonText}"
-					IsDefault="True"
 					Name="okButton"
 					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Click="okButtonClick" />

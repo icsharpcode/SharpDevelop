@@ -2,6 +2,6 @@ NuGet Package Icon:
 License: Apache 2.0
 http://www.apache.org/licenses/LICENSE-2.0
 
-Silk icons:
-License: Creative Commons Attribution 2.5 License
-http://www.famfamfam.com/lab/icons/silk/
+Fugue Icons:
+License: Creative Commons Attribution 3.0 License
+http://p.yusukekamiyamane.com/
