@@ -8,7 +8,7 @@
 		<Name>Razor MVC Application</Name>
 		<Category>VB</Category>
 		<Subcategory>ASP.NET MVC</Subcategory>
-		<Icon>VBNet.Project.WebProject</Icon>
+		<Icon>VBNet.Project.MvcRazorProject</Icon>
 		<Description>ASP.NET MVC Application using Razor</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

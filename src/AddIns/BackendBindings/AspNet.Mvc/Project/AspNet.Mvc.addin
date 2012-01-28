@@ -66,11 +66,11 @@
 		<Icon
 			id="CSharp.Razor.File"
 			extensions=".cshtml"
-			resource="C#.FileIcon"/>
+			resource="C#.File.MvcRazorFile.Small"/>
 		<Icon
 			id="VisualBasic.Razor.File"
 			extensions=".vbhtml"
-			resource="VBNet.FileIcon"/>
+			resource="VBNet.File.MvcRazorFile.Small"/>
 	</Path>
 
 	<Path name="/SharpDevelop/Workbench/FileFilter">

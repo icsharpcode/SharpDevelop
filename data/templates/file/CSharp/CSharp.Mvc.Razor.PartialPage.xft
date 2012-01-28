@@ -3,7 +3,7 @@
 	
 	<Config
 		name="Razor Partial Page"
-		icon="C#.File.WebFile"
+		icon="C#.File.MvcRazorFile"
 		category="C#"
 		subcategory="ASP.NET MVC"
 		defaultname="_PartialPage${Number}.cshtml"
