@@ -15,7 +15,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	public enum IISVersion
 	{
 		None = 0,
-		IISExpress = 4,
 		IIS5 = 5,
 		IIS6,
 		IIS7,
@@ -76,89 +75,116 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the IIS worker process name.
 		/// </summary>
-		public static string WorkerProcessName {
-			get {
-				if (!IsIISInstalled)
-					return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
-				
-				try {
-					string name;
-					
-					switch(IISVersion)
-					{
-						case IISVersion.IIS5:
-							name = IIS_5_PROCESS_NAME;
-							break;
-						case IISVersion.IISExpress:
-							name = IIS_EXPRESS_PROCESS_NAME;
-							break;
-						default:
-							name = IIS_NEW_PROCESS_NAME;
-							break;
-					}
-					
-					return name;
+		public static string GetWorkerProcessName(WebServer webServer)
+		{
+			if (webServer == WebServer.IISExpress) {
+				return GetIISExpressWorkerProcessName();
+			}
+			return GetIISWorkerProcessName();
+		}
+		
+		public static string GetIISExpressWorkerProcessName()
+		{
+			if (!IsIISExpressInstalled)
+				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+			
+			return IIS_EXPRESS_PROCESS_NAME;
+		}
+		
+		public static string GetIISWorkerProcessName()
+		{
+			if (!IsIISInstalled)
+				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+			
+			try {
+				switch (IISVersion)
+				{
+					case IISVersion.IIS5:
+						return IIS_5_PROCESS_NAME;
+					default:
+						return IIS_NEW_PROCESS_NAME;
 				}
-				catch (Exception ex) {
-					return ex.Message;
-				}
+			}
+			catch (Exception ex) {
+				return ex.Message;
 			}
 		}
 		
-		public static string WorkerProcessLocation {
-			get {
-				if (!IsIISInstalled)
-					return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
-				
-				try {
-					string location;
-					
-					switch(IISVersion)
-					{
-						case IISVersion.IIS5:
-							location = FRAMEWORK_LOCATION + (Environment.Is64BitOperatingSystem ? FRAMEWORK64 : FRAMEWORK32);
-							
-							string frameworkString = "";
-							
-							RegistryService.GetRegistryValue<string>(
-								RegistryHive.LocalMachine,
-								ASPNET_REG_PATH,
-								ASPNET_ROOT_VER,
-								RegistryValueKind.String,
-								out frameworkString);
-							int ind = frameworkString.LastIndexOf('.');
-							location += "v" + frameworkString.Substring(0, ind) + "\\";
-							
-							break;
-							
-						default:
-							string regValue = "";
-							
-							RegistryService.GetRegistryValue<string>(
-								RegistryHive.LocalMachine,
-								IIS_LOCATION,
-								IIS_INSTALL_PATH,
-								RegistryValueKind.String,
-								out regValue);
-							location = regValue + "\\";
-							break;
-					}
-					
-					return location;
-				}
-				catch (Exception ex) {
-					return ex.Message;
-				}
+		public static string GetWorkerProcessLocation(WebServer webServer)
+		{
+			if (webServer == WebServer.IISExpress) {
+				return GetIISExpressWorkerProcessLocation();
 			}
+			return GetIISWorkerProcessLocation();
+		}
+		
+		public static string GetIISExpressWorkerProcessLocation()
+		{
+			if (!IsIISExpressInstalled)
+				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+					
+			return GetDefaultIISWorkerProcessLocation();
+		}
+		
+		public static string GetIISWorkerProcessLocation()
+		{
+			if (!IsIISInstalled)
+				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+			
+			try {
+				if (IISVersion == IISVersion.IIS5) {
+					return GetIIS5WorkerProcessLocation();
+				}
+				return GetDefaultIISWorkerProcessLocation();
+			}
+			catch (Exception ex) {
+				return ex.Message;
+			}
+		}
+		
+		public static string GetIIS5WorkerProcessLocation()
+		{
+			string location = FRAMEWORK_LOCATION + (Environment.Is64BitOperatingSystem ? FRAMEWORK64 : FRAMEWORK32);
+			
+			string frameworkString = "";
+			
+			RegistryService.GetRegistryValue<string>(
+				RegistryHive.LocalMachine,
+				ASPNET_REG_PATH,
+				ASPNET_ROOT_VER,
+				RegistryValueKind.String,
+				out frameworkString);
+			int ind = frameworkString.LastIndexOf('.');
+			location += "v" + frameworkString.Substring(0, ind) + "\\";
+			return location;
+		}
+		
+		public static string GetDefaultIISWorkerProcessLocation()
+		{
+			string regValue = "";
+			
+			RegistryService.GetRegistryValue<string>(
+				RegistryHive.LocalMachine,
+				IIS_LOCATION,
+				IIS_INSTALL_PATH,
+				RegistryValueKind.String,
+				out regValue);
+			return regValue + "\\";
 		}
 		
 		/// <summary>
 		/// Gets a value representing whether IIS is installed.
 		/// </summary>
 		public static bool IsIISInstalled {
-			get {
-				return (int)IISVersion >= 4;
-			}
+			get { return (int)IISVersion >= 4; }
+		}
+		
+		public static bool IsIISExpressInstalled {
+			get { return File.Exists(IISExpressProcessLocation); }
+		}
+		
+		public static bool IsIISOrIISExpressInstalled {
+			get { return IsIISInstalled || IsIISExpressInstalled; }
 		}
 		
 		/// <summary>
@@ -179,9 +205,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (regValue > 4)
 					return (IISVersion)regValue;
 				
-				if (File.Exists(IISExpressProcessLocation))
-					return IISVersion.IISExpress;
-				
 				return IISVersion.None;
 			}
 		}
@@ -192,11 +215,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="virtualDirectoryName">Virtual directory name.</param>
 		/// <param name="virtualDirectoryPath">Physical path.</param>
 		/// <returns>Error string or string null = no errors.</returns>
-		public static string CreateVirtualDirectory(string virtualDirectoryName, string physicalDirectoryPath)
+		public static string CreateVirtualDirectory(WebServer webServer, string virtualDirectoryName, string physicalDirectoryPath)
 		{
 			try {
 				string iisNotFoundError = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
-				if (!IsIISInstalled)
+				if (!IsIISOrIISExpressInstalled)
 					return iisNotFoundError;
 				
 				string error;
@@ -211,19 +234,22 @@ namespace ICSharpCode.SharpDevelop.Project
 						          virtualDirectoryName,
 						          out error);
 						break;
-					case IISVersion.None:
-						return iisNotFoundError;
 					default:
+						if (!IsIISExpressInstalled && (IISVersion == IISVersion.None))
+							return iisNotFoundError;
+
 						// TODO: find a better way to create IIS applications without Microsoft.Web.Administration.ServerManager
 						string name = "/" + virtualDirectoryName;
 						// load from GAC
 						Assembly webAdministrationAssembly = null;
 						try {
 							// iis installed
-							foreach(var assembly in GacInterop.GetAssemblyList()) {
+							foreach(DomAssemblyName assembly in GacInterop.GetAssemblyList()) {
 								if (assembly.FullName.Contains("Microsoft.Web.Administration")) {
-									webAdministrationAssembly = Assembly.Load(assembly.FullName);
-									break;
+									if (IsAssemblyForWebServer(webServer, assembly)) {
+										webAdministrationAssembly = Assembly.Load(assembly.FullName);
+										break;
+									}
 								}
 							}
 						} catch {
@@ -261,6 +287,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			catch (Exception ex) {
 				return ex.Message;
 			}
+		}
+		
+		static bool IsAssemblyForWebServer(WebServer webServer, DomAssemblyName assembly)
+		{
+			if (webServer == WebServer.IISExpress) {
+				return (assembly.Version.Major == 7) && (assembly.Version.Minor == 9);
+			}
+			return true;
 		}
 	}
 }

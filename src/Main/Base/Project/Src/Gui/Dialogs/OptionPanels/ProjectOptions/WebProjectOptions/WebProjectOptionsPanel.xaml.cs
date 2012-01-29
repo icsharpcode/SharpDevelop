@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		void OnLoaded(object sender, RoutedEventArgs e)
 		{
-			if (!WebProjectService.IsIISInstalled) {
+			if (!WebProjectService.IsIISOrIISExpressInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
 				return;
 			}
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			switch (CurrentProjectDebugData.WebServer)
 			{
 				case WebServer.IISExpress:
-					if (WebProjectService.IISVersion == IISVersion.IISExpress) {
+					if (WebProjectService.IsIISExpressInstalled) {
 						UseIISExpress.IsChecked = true;
 						PortTextBox.Text = CurrentProjectDebugData.Port ?? "8080";
 						
@@ -57,8 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					}
 					break;
 				case WebServer.IIS:
-					if (WebProjectService.IISVersion != IISVersion.IISExpress &&
-					    WebProjectService.IISVersion != IISVersion.None) {
+					if (WebProjectService.IISVersion != IISVersion.None) {
 						UseLocalIIS.IsChecked = true;
 						ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
 						
@@ -97,8 +96,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void CreateVirtualDirectory_Click(object sender, RoutedEventArgs e)
 		{
-			string error = WebProjectService.CreateVirtualDirectory(ProjectService.CurrentProject.Name,
-			                                                        Path.GetDirectoryName(ProjectService.CurrentProject.FileName));
+			string error = WebProjectService.CreateVirtualDirectory(
+				CurrentProjectDebugData.WebServer,
+				ProjectService.CurrentProject.Name,
+				Path.GetDirectoryName(ProjectService.CurrentProject.FileName));
 			
 			if (!string.IsNullOrEmpty(error))
 				MessageService.ShowError(error);
@@ -118,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			data.WebServer = WebServer.IISExpress;
 			data.Port = PortTextBox.Text;
 			data.ProjectUrl = string.Format(@"http://localhost:{0}/" + ProjectService.CurrentProject.Name, PortTextBox.Text);
-			bool isIISExpressInstalled = WebProjectService.IISVersion == IISVersion.IISExpress;
+			bool isIISExpressInstalled = WebProjectService.IsIISExpressInstalled;
 			
 			if (!isIISExpressInstalled) {
 				UseIISExpress.IsChecked = false;
@@ -144,8 +145,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IIS;
 			data.Port = string.Empty;
-			bool isIISInstalled = WebProjectService.IISVersion != IISVersion.IISExpress &&
-					    WebProjectService.IISVersion != IISVersion.None;
+			bool isIISInstalled = WebProjectService.IISVersion != IISVersion.None;
 			
 			if (!isIISInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
