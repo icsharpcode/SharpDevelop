@@ -10,7 +10,7 @@
 		<Name>WCF REST Service</Name>
 		<Category>C#</Category>
 		<Subcategory>WCF</Subcategory>
-		<Icon>C#.Project.Form</Icon>
+		<Icon>C#.Project.WCFServiceProject</Icon>
 		<Description>WCF REST Service</Description>
 		<SupportedTargetFrameworks>v3.5</SupportedTargetFrameworks>
 	</TemplateConfiguration>

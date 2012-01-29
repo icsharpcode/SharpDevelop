@@ -1,0 +1,55 @@
+﻿<#@ template language="C#" HostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#
+	MvcTextTemplateHost mvcHost = (MvcTextTemplateHost)Host;
+#>
+using System;
+using System.Web.Mvc;
+
+namespace <#= mvcHost.Namespace #>
+{
+	/// <summary>
+	/// Description of <#= mvcHost.ControllerName #>.
+	/// </summary>
+	public class <#= mvcHost.ControllerName #> : Controller
+	{
+		public ActionResult Index()
+		{
+			return View();
+		}
+<# if (mvcHost.AddActionMethods) { #>
+
+		public ActionResult Details(int id)
+		{
+			return View();
+		}
+		
+		public ActionResult Create()
+		{
+			return View();
+		}
+		
+		[HttpPost]
+		public ActionResult Create(FormCollection values)
+		{
+			return View();
+		}
+		
+		public ActionResult Edit(int id)
+		{
+			return View();
+		}
+		
+		[HttpPost]
+		public ActionResult Edit(int id, FormCollection values)
+		{
+			return View();
+		}
+		
+		public ActionResult Delete(int id)
+		{
+			return View();
+		}
+<# } #>
+	}
+}
