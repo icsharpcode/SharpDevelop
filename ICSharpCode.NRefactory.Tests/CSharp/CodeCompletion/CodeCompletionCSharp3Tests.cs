@@ -402,12 +402,13 @@ class A
 {
 	public static void Main (string[] args)
 	{
-		$from a in args select new { tes$
+		Test($from a in args select new { t$);
 	}
 }
 
 ");
-			Assert.IsTrue(provider == null || provider.Count == 0); // <--- here 0 item in the completion list
+			Assert.IsNotNull(provider);
+			Assert.IsFalse (provider.AutoSelect );
 		}
 		
 		[Test()]
@@ -427,6 +428,7 @@ class A
 
 ");
 			Assert.IsNotNull(provider); // <--- here 0 item in the completion list
+			Assert.IsTrue (provider.AutoSelect );
 			Assert.IsNotNull(provider.Find("a"), "'a' not found");
 			Assert.IsNotNull(provider.Find("new"), "'new' not found");
 			Assert.IsNotNull(provider.Find("args"), "'args' not found");

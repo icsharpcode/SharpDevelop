@@ -440,7 +440,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
-				
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,[](){}+-*/%^?:&|~!<>=";
@@ -470,6 +469,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				CSharpResolver csResolver;
 				AstNode n = identifierStart.Item2;
+				
+				if (n != null && n.Parent is AnonymousTypeCreateExpression) {
+					AutoSelect = false;
+				}
+				
 				// Handle foreach (type name _
 				if (n is IdentifierExpression) {
 					var prev = n.GetPrevNode () as ForeachStatement;
@@ -2019,10 +2023,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			// try expression in anonymous type "new { sample = x$" case
 			if (expr == null) {
-				baseUnit = ParseStub ("a };", false);
+				baseUnit = ParseStub ("a", false);
+				Print (baseUnit);
 				expr = baseUnit.GetNodeAt<AnonymousTypeCreateExpression> (location.Line, location.Column); 
 				if (expr != null)
-					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column); 
+					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
 			}
 			
 			if (expr == null)
