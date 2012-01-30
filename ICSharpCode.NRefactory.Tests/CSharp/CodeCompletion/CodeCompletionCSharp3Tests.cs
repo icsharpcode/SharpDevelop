@@ -450,5 +450,24 @@ class A
 ");
 			Assert.IsTrue(provider == null || provider.Count == 0); // <--- here 0 item in the completion list
 		}
+		
+		[Test()]
+		public void TestLinqExpressionContext () 
+		{
+			var provider = CodeCompletionBugTests.CreateProvider(
+@"
+using System.Collections.Generic;
+using System.Linq;
+class A
+{
+	public static void Main (string[] args)
+	{
+		$from a in args where a !$
+	}
+}
+
+");
+			Assert.IsTrue(provider == null || provider.Count == 0); // <--- here 0 item in the completion list
+		}
 	}
 }

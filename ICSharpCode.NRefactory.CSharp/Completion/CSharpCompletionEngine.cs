@@ -408,6 +408,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (IsInsideCommentOrString ())
 					return null;
 				if (IsInLinqContext (offset)) {
+					if (!controlSpace && !(char.IsLetter (completionChar) || completionChar == '_'))
+						return null;
 					tokenIndex = offset;
 					token = GetPreviousToken (ref tokenIndex, false); // token last typed
 					if (!char.IsWhiteSpace (completionChar) && !linqKeywords.Contains (token))
