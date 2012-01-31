@@ -24,7 +24,6 @@ namespace ICSharpCode.Reports.Core{
 		
 		public BaseRowItem():base()
 		{
-//			base.Visible = true;
 		}
 		
 		#region IExportColumnBuilder  implementation
