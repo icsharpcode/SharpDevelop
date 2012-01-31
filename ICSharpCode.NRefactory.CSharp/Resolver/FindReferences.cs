@@ -242,51 +242,57 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the file names that possibly contain references to the element being searched for.
 		/// </summary>
-		public IList<string> GetInterestingFileNames(IFindReferenceSearchScope searchScope, IEnumerable<ITypeDefinition> allTypes)
+		public IEnumerable<CSharpParsedFile> GetInterestingFiles(IFindReferenceSearchScope searchScope, ICompilation compilation)
 		{
-			IEnumerable<ITypeDefinition> interestingTypes;
+			if (searchScope == null)
+				throw new ArgumentNullException("searchScope");
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			var pc = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
+			if (pc == null)
+				throw new ArgumentException("Main assembly is not a project content");
 			if (searchScope.TopLevelTypeDefinition != null) {
+				ITypeDefinition topLevelTypeDef = compilation.Import(searchScope.TopLevelTypeDefinition);
+				if (topLevelTypeDef == null) {
+					// This compilation cannot have references to the target entity.
+					return EmptyList<CSharpParsedFile>.Instance;
+				}
 				switch (searchScope.Accessibility) {
 					case Accessibility.None:
 					case Accessibility.Private:
-						interestingTypes = new [] { searchScope.TopLevelTypeDefinition.GetDefinition() };
-						break;
+						return topLevelTypeDef.Parts.OfType<CSharpParsedFile>().Distinct();
 					case Accessibility.Protected:
-						interestingTypes = GetInterestingTypesProtected(allTypes, searchScope.TopLevelTypeDefinition);
-						break;
+						return GetInterestingFilesProtected(topLevelTypeDef);
 					case Accessibility.Internal:
-						interestingTypes = GetInterestingTypesInternal(allTypes, searchScope.TopLevelTypeDefinition.ParentAssembly);
-						break;
+						if (topLevelTypeDef.ParentAssembly.InternalsVisibleTo(compilation.MainAssembly))
+							return pc.Files.OfType<CSharpParsedFile>();
+						else
+							return EmptyList<CSharpParsedFile>.Instance;
 					case Accessibility.ProtectedAndInternal:
-						interestingTypes = GetInterestingTypesProtected(allTypes, searchScope.TopLevelTypeDefinition)
-							.Intersect(GetInterestingTypesInternal(allTypes, searchScope.TopLevelTypeDefinition.ParentAssembly));
-						break;
+						if (topLevelTypeDef.ParentAssembly.InternalsVisibleTo(compilation.MainAssembly))
+							return GetInterestingFilesProtected(topLevelTypeDef);
+						else
+							return EmptyList<CSharpParsedFile>.Instance;
 					case Accessibility.ProtectedOrInternal:
-						interestingTypes = GetInterestingTypesProtected(allTypes, searchScope.TopLevelTypeDefinition)
-							.Union(GetInterestingTypesInternal(allTypes, searchScope.TopLevelTypeDefinition.ParentAssembly));
-						break;
+						if (topLevelTypeDef.ParentAssembly.InternalsVisibleTo(compilation.MainAssembly))
+							return pc.Files.OfType<CSharpParsedFile>();
+						else
+							return GetInterestingFilesProtected(topLevelTypeDef);
 					default:
-						interestingTypes = allTypes;
-						break;
+						return pc.Files.OfType<CSharpParsedFile>();
 				}
 			} else {
-				interestingTypes = allTypes;
+				return pc.Files.OfType<CSharpParsedFile>();
 			}
-			return (from typeDef in interestingTypes
+		}
+		
+		IEnumerable<CSharpParsedFile> GetInterestingFilesProtected(ITypeDefinition referencedTypeDefinition)
+		{
+			return (from typeDef in referencedTypeDefinition.Compilation.MainAssembly.GetAllTypeDefinitions()
+			        where typeDef.IsDerivedFrom(referencedTypeDefinition)
 			        from part in typeDef.Parts
-			        where part.ParsedFile != null
-			        select part.ParsedFile.FileName
-			       ).Distinct(Platform.FileNameComparer).ToList();
-		}
-		
-		IEnumerable<ITypeDefinition> GetInterestingTypesProtected(IEnumerable<ITypeDefinition> allTypes, ITypeDefinition referencedTypeDefinition)
-		{
-			return allTypes.Where(t => t.IsDerivedFrom(referencedTypeDefinition));
-		}
-		
-		IEnumerable<ITypeDefinition> GetInterestingTypesInternal(IEnumerable<ITypeDefinition> allTypes, IAssembly referencedAssembly)
-		{
-			return allTypes.Where(t => referencedAssembly.InternalsVisibleTo(t.ParentAssembly));
+			        select part.ParsedFile
+			       ).OfType<CSharpParsedFile>();
 		}
 		#endregion
 		
