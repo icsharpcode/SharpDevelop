@@ -205,7 +205,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				newProject.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
 			}
 			solutionFolderNode.Container.AddFolder(newProject);
-			ParserService.RegisterProjectContentForAddedProject(newProject);
 			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
 			OnProjectAdded(new ProjectEventArgs(newProject));
 		}
@@ -671,7 +670,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			IProject project = folder as IProject;
 			if (project != null) {
 				OpenSolution.RemoveProjectConfigurations(project.IdGuid);
-				ParserService.RemoveProjectContentForRemovedProject(project);
 				OnProjectRemoved(new ProjectEventArgs(project));
 				project.Dispose();
 			}

@@ -254,11 +254,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 				case "RunCommand":
 					if (el.HasAttribute("path")) {
-						ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
-						return projectCreateInformation => {
-							command.Owner = projectCreateInformation;
-							command.Run();
-						};
+						try {
+							ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
+							return projectCreateInformation => {
+								command.Owner = projectCreateInformation;
+								command.Run();
+							};
+						} catch (TreePathNotFoundException ex) {
+							MessageService.ShowWarning(ex.Message + " - in " + el.OwnerDocument.DocumentElement.GetAttribute("fileName"));
+							return null;
+						}
 					} else {
 						WarnAttributeMissing(el, "path");
 						return null;

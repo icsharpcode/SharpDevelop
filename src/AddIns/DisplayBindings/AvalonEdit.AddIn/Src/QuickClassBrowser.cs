@@ -5,11 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -18,40 +21,37 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public partial class QuickClassBrowser : UserControl
 	{
-		// type codes are used for sorting entities by type
-		const int TYPE_CLASS = 0;
-		const int TYPE_CONSTRUCTOR = 1;
-		const int TYPE_METHOD = 2;
-		const int TYPE_PROPERTY = 3;
-		const int TYPE_FIELD = 4;
-		const int TYPE_EVENT = 5;
-		
 		/// <summary>
 		/// ViewModel used for combobox items.
 		/// </summary>
 		class EntityItem : IComparable<EntityItem>, System.ComponentModel.INotifyPropertyChanged
 		{
-			IEntity entity;
-			IImage image;
+			IUnresolvedEntity entity;
+			ImageSource image;
 			string text;
-			int typeCode; // type code is used for sorting entities by type
 			
-			public IEntity Entity {
+			public IUnresolvedEntity Entity {
 				get { return entity; }
 			}
 			
-			public EntityItem(IEntity entity, int typeCode)
+			public EntityItem(IUnresolvedTypeDefinition typeDef)
 			{
 				this.IsInSamePart = true;
-				this.entity = entity;
-				this.typeCode = typeCode;
-				IAmbience ambience = entity.ProjectContent.GetAmbience();
+				this.entity = typeDef;
+				this.text = typeDef.Name;
+				this.image = CompletionImage.GetImage(typeDef);
+			}
+			
+			public EntityItem(IMember member, IAmbience ambience)
+			{
+				this.IsInSamePart = true;
+				this.entity = member.UnresolvedMember;
 				if (entity is ITypeDefinition)
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.UseFullyQualifiedMemberNames;
 				else
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
-				text = ambience.ConvertEntity(entity, ParserService.GetProject(entity.ProjectContent).TypeResolveContext);
-				image = ClassBrowserIconService.GetIcon(entity);
+				text = ambience.ConvertEntity(member);
+				image = CompletionImage.GetImage(member);
 			}
 			
 			/// <summary>
@@ -66,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			/// </summary>
 			public ImageSource Image {
 				get {
-					return image.ImageSource;
+					return image;
 				}
 			}
 			
@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			public int CompareTo(EntityItem other)
 			{
-				int r = this.typeCode.CompareTo(other.typeCode);
+				int r = this.Entity.EntityType.CompareTo(other.Entity.EntityType);
 				if (r != 0)
 					return r;
 				r = string.Compare(text, other.text, StringComparison.OrdinalIgnoreCase);
@@ -163,10 +163,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		void AddClasses(IEnumerable<ITypeDefinition> classes)
+		void AddClasses(IEnumerable<IUnresolvedTypeDefinition> classes)
 		{
-			foreach (ITypeDefinition c in classes) {
-				classItems.Add(new EntityItem(c, TYPE_CLASS));
+			foreach (var c in classes) {
+				classItems.Add(new EntityItem(c));
 				AddClasses(c.NestedTypes);
 			}
 		}
@@ -189,7 +189,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			int nearestMatchDistance = int.MaxValue;
 			foreach (EntityItem item in classItems) {
 				if (item.IsInSamePart) {
-					ITypeDefinition c = (ITypeDefinition)item.Entity;
+					IUnresolvedTypeDefinition c = (IUnresolvedTypeDefinition)item.Entity;
 					if (c.Region.IsInside(location.Line, location.Column)) {
 						matchInside = item;
 						// when there are multiple matches inside (nested classes), use the last one
@@ -216,7 +216,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			matchInside = null;
 			foreach (EntityItem item in memberItems) {
 				if (item.IsInSamePart) {
-					IMember member = (IMember)item.Entity;
+					IUnresolvedMember member = (IUnresolvedMember)item.Entity;
 					if (member.Region.IsInside(location.Line, location.Column) || member.BodyRegion.IsInside(location.Line, location.Column)) {
 						matchInside = item;
 					}
@@ -237,35 +237,33 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// The selected class was changed.
 			// Update the list of member items to be the list of members of the current class.
 			EntityItem item = classComboBox.SelectedItem as EntityItem;
-			ITypeDefinition selectedClass = item != null ? item.Entity as ITypeDefinition : null;
+			IUnresolvedTypeDefinition selectedClass = item != null ? item.Entity as IUnresolvedTypeDefinition : null;
 			memberItems = new List<EntityItem>();
 			if (selectedClass != null) {
-				ITypeDefinition compoundClass = selectedClass.GetDefinition();
-				foreach (var m in compoundClass.Methods) {
-					AddMember(selectedClass, m, m.IsConstructor ? TYPE_CONSTRUCTOR : TYPE_METHOD);
-				}
-				foreach (var m in compoundClass.Properties) {
-					AddMember(selectedClass, m, TYPE_PROPERTY);
-				}
-				foreach (var m in compoundClass.Fields) {
-					AddMember(selectedClass, m, TYPE_FIELD);
-				}
-				foreach (var m in compoundClass.Events) {
-					AddMember(selectedClass, m, TYPE_EVENT);
-				}
-				memberItems.Sort();
-				if (jumpOnSelectionChange) {
-					AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
-					JumpTo(item, selectedClass.Region);
+				var project = ProjectService.OpenSolution.FindProjectContainingFile(FileName.Create(selectedClass.ParsedFile.FileName));
+				if (project != null) {
+					ICompilation c = ParserService.GetCompilation(project);
+					// HACK: Resolving an IUnresolvedTypeDefinition currently does strange things in NR5 if the unresolved typedef
+					// is not part of the compilation (e.g. replaced with newer version), so we need this hack to ensure we
+					// use it only as a type name:
+					var typeRef = ReflectionHelper.ParseReflectionName(selectedClass.ReflectionName);
+					var context = new SimpleTypeResolveContext(c.MainAssembly);
+					ITypeDefinition compoundClass = typeRef.Resolve(context).GetDefinition();
+					if (compoundClass != null) {
+						var ambience = project.GetAmbience();
+						foreach (var member in compoundClass.Members) {
+							bool isInSamePart = string.Equals(member.UnresolvedMember.ParsedFile.FileName, selectedClass.ParsedFile.FileName, StringComparison.OrdinalIgnoreCase);
+							memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
+						}
+						memberItems.Sort();
+						if (jumpOnSelectionChange) {
+							AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
+							JumpTo(item, selectedClass.Region);
+						}
+					}
 				}
 			}
 			membersComboBox.ItemsSource = memberItems;
-		}
-		
-		void AddMember(ITypeDefinition selectedClass, IMember member, int typeCode)
-		{
-			bool isInSamePart = (member.DeclaringType == selectedClass);
-			memberItems.Add(new EntityItem(member, typeCode) { IsInSamePart = isInSamePart });
 		}
 		
 		void membersComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)

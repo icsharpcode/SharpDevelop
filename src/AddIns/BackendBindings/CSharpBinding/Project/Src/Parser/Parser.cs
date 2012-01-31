@@ -4,14 +4,15 @@
 using System;
 using System.IO;
 using System.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -69,21 +70,19 @@ namespace CSharpBinding.Parser
 		}
 		 */
 		
-		public ParseInformation Parse(IProjectContent projectContent, FileName fileName, ITextSource fileContent,
-		                              bool fullParseInformationRequested)
+		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested)
 		{
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
 			CompilationUnit cu;
 			try {
-				cu = parser.Parse(fileContent.CreateReader());
+				cu = parser.Parse(fileContent.CreateReader(), fileName);
 			} catch (Exception ex) {
 				LoggingService.Error(ex);
 				cu = new CompilationUnit();
 			}
 			
-			TypeSystemConvertVisitor cv = new TypeSystemConvertVisitor(projectContent, fileName);
-			CSharpParsedFile file = cv.Convert(cu);
+			CSharpParsedFile file = cu.ToTypeSystem();
 			
 			ParseInformation info = new ParseInformation(file, fullParseInformationRequested);
 			if (fullParseInformationRequested)
@@ -101,7 +100,7 @@ namespace CSharpBinding.Parser
 		}
 		 */
 		
-		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ITypeResolveContext context, CancellationToken cancellationToken)
+		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
 			if (cu == null)
@@ -110,10 +109,10 @@ namespace CSharpBinding.Parser
 			if (parsedFile == null)
 				throw new ArgumentException("Parse info does not have a C# ParsedFile");
 			
-			return ResolveAtLocation.Resolve(context, parsedFile, cu, location, cancellationToken);
+			return ResolveAtLocation.Resolve(compilation, parsedFile, cu, location, cancellationToken);
 		}
 		
-		public void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ITypeResolveContext context, Action<Reference> callback)
+		public void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
 		{
 			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
 			if (cu == null)
@@ -124,11 +123,11 @@ namespace CSharpBinding.Parser
 				throw new ArgumentException("Parse info does not have a C# ParsedFile");
 			
 			new FindReferences().FindLocalReferences(
-				variable, parsedFile, cu, context,
+				variable, parsedFile, cu, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
 					callback(new Reference(region, result));
-				});
+				}, cancellationToken);
 		}
 	}
 }

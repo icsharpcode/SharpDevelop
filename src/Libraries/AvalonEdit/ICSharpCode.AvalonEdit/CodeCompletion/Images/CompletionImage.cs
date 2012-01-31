@@ -123,23 +123,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				throw new ArgumentNullException("entity");
 			switch (entity.EntityType) {
 				case EntityType.TypeDefinition:
-					switch (((ITypeDefinition)entity).Kind) {
-						case TypeKind.Interface:
-							return imageInterface;
-						case TypeKind.Struct:
-						case TypeKind.Void:
-							return imageStruct;
-						case TypeKind.Delegate:
-							return imageDelegate;
-						case TypeKind.Enum:
-							return imageEnum;
-						case TypeKind.Class:
-							return entity.IsStatic ? imageStaticClass : imageClass;
-						case TypeKind.Module:
-							return imageStaticClass;
-						default:
-							return null;
-					}
+					return GetCompletionImageForType(((ITypeDefinition)entity).Kind, entity.IsStatic);
 				case EntityType.Field:
 					IField field = (IField)entity;
 					if (field.IsConst) {
@@ -149,20 +133,80 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 							return imageLiteral;
 					}
 					return field.IsReadOnly ? imageFieldReadOnly : imageField;
+				case EntityType.Method:
+					IMethod method = (IMethod)entity;
+					return method.IsOverridable ? imageVirtualMethod : imageMethod;
 				case EntityType.Property:
 					return imageProperty;
 				case EntityType.Indexer:
 					return imageIndexer;
 				case EntityType.Event:
 					return imageEvent;
-				case EntityType.Method:
-					IMethod method = (IMethod)entity;
-					return method.IsOverridable ? imageVirtualMethod : imageMethod;
 				case EntityType.Operator:
 				case EntityType.Destructor:
 					return imageOperator;
 				case EntityType.Constructor:
 					return imageConstructor;
+				default:
+					return null;
+			}
+		}
+	
+		/// <summary>
+		/// Gets the CompletionImage instance for the specified entity.
+		/// Returns null when no image is available for the entity type.
+		/// </summary>
+		public static CompletionImage GetCompletionImage(IUnresolvedEntity entity)
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			switch (entity.EntityType) {
+				case EntityType.TypeDefinition:
+					return GetCompletionImageForType(((IUnresolvedTypeDefinition)entity).Kind, entity.IsStatic);
+				case EntityType.Field:
+					IUnresolvedField field = (IUnresolvedField)entity;
+					if (field.IsConst) {
+						if (field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Kind == TypeKind.Enum)
+							return imageEnumValue;
+						else
+							return imageLiteral;
+					}
+					return field.IsReadOnly ? imageFieldReadOnly : imageField;
+				case EntityType.Method:
+					IUnresolvedMethod method = (IUnresolvedMethod)entity;
+					return method.IsOverridable ? imageVirtualMethod : imageMethod;
+				case EntityType.Property:
+					return imageProperty;
+				case EntityType.Indexer:
+					return imageIndexer;
+				case EntityType.Event:
+					return imageEvent;
+				case EntityType.Operator:
+				case EntityType.Destructor:
+					return imageOperator;
+				case EntityType.Constructor:
+					return imageConstructor;
+				default:
+					return null;
+			}
+		}
+		
+		static CompletionImage GetCompletionImageForType(TypeKind typeKind, bool isStatic)
+		{
+			switch (typeKind) {
+				case TypeKind.Interface:
+					return imageInterface;
+				case TypeKind.Struct:
+				case TypeKind.Void:
+					return imageStruct;
+				case TypeKind.Delegate:
+					return imageDelegate;
+				case TypeKind.Enum:
+					return imageEnum;
+				case TypeKind.Class:
+					return isStatic ? imageStaticClass : imageClass;
+				case TypeKind.Module:
+					return imageStaticClass;
 				default:
 					return null;
 			}
@@ -180,6 +224,19 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			else
 				return null;
 		}
+		
+		/// <summary>
+		/// Gets the image for the specified entity.
+		/// Returns null when no image is available for the entity type.
+		/// </summary>
+		public static ImageSource GetImage(IUnresolvedEntity entity)
+		{
+			CompletionImage image = GetCompletionImage(entity);
+			if (image != null)
+				return image.GetImage(entity.Accessibility, entity.IsStatic);
+			else
+				return null;
+		}
 		#endregion
 		
 		#region Overlays
@@ -190,7 +247,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// </summary>
 		public ImageSource StaticOverlay { get { return overlayStatic; } }
 		
-		static readonly BitmapImage[] accessibilityOverlays = {
+		const int AccessibilityOverlaysLength = 5;
+		
+		static readonly BitmapImage[] accessibilityOverlays = new BitmapImage[AccessibilityOverlaysLength] {
 			null,
 			LoadBitmap("OverlayPrivate"),
 			LoadBitmap("OverlayProtected"),
@@ -235,7 +294,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			this.showStaticOverlay = showStaticOverlay;
 		}
 		
-		ImageSource[] images = new ImageSource[2 * accessibilityOverlays.Length];
+		ImageSource[] images = new ImageSource[2 * AccessibilityOverlaysLength];
 		// 0..N-1  = base image + accessibility overlay
 		// N..2N-1 = base image + static overlay + accessibility overlay
 		

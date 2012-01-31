@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static bool IsReadOnly(ITypeDefinition c)
 		{
-			return c.ParsedFile == null || c.IsSynthetic || c.GetDefinition().IsSynthetic;
+			return c.IsSynthetic || c.Parts.All(p => p.ParsedFile == null);
 		}
 		
 		[Obsolete("Use NavigationService.NavigateTo() instead")]

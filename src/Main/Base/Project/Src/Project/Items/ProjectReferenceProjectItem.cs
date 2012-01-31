@@ -5,20 +5,18 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class ProjectReferenceProjectItem : ReferenceProjectItem
+	public class ProjectReferenceProjectItem : ReferenceProjectItem, IAssemblyReference
 	{
-		volatile IProject referencedProject;
-		
 		[Browsable(false)]
 		public IProject ReferencedProject {
 			get {
 				// must be thread-safe because it's used by LoadSolutionProjectsThread
-				if (referencedProject == null)
-					referencedProject = ProjectService.GetProject(this.FileName);
-				return referencedProject;
+				return ProjectService.GetProject(this.FileName);
 			}
 		}
 		
@@ -80,8 +78,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Include = FileUtility.GetRelativePath(project.Directory, referenceTo.FileName);
 			ProjectGuid = referenceTo.IdGuid;
 			ProjectName = referenceTo.Name;
-			this.referencedProject = referenceTo;
 			this.DefaultCopyLocalValue = true;
+		}
+		
+		IAssembly IAssemblyReference.Resolve(ITypeResolveContext context)
+		{
+			IProject p = this.ReferencedProject;
+			if (p == null)
+				return null;
+			var snapshot = context.Compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			IProjectContent pc = (snapshot != null) ? snapshot.GetProjectContent(p) : p.ProjectContent;
+			return (pc != null) ? pc.Resolve(context) : null;
 		}
 	}
 }

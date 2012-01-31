@@ -100,8 +100,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			ParseInformation pi = ParserService.Parse(fileName);
 			if (pi == null || parser == null)
 				return;
-			var context = ParserService.GetTypeResolveContext(pi.ProjectContent);
-			parser.FindLocalReferences(pi, variable, context, callback);
+			var compilation = ParserService.GetCompilationForFile(fileName);
+			parser.FindLocalReferences(pi, variable, compilation, callback, CancellationToken.None);
 		}
 		#endregion
 		
@@ -117,28 +117,30 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			List<ITypeDefinition> results = new List<ITypeDefinition>();
 			
+			var solutionSnapshot = GetSolutionSnapshot(baseType.Compilation);
 			foreach (IProject project in GetProjectsThatCouldReferenceEntity(baseType)) {
-				using (var ctx = project.TypeResolveContext.Synchronize()) {
-					foreach (ITypeDefinition typeDef in project.ProjectContent.GetAllTypes()) {
-						bool isDerived;
-						if (directDerivationOnly) {
-							isDerived = false;
-							foreach (IType t in typeDef.GetBaseTypes(ctx)) {
-								ITypeDefinition tdef = baseType.GetDefinition();
-								if (tdef == baseType) {
-									isDerived = true;
-									break;
-								}
-							}
-						} else {
-							isDerived = typeDef.IsDerivedFrom(baseType, ctx);
-						}
-						if (isDerived)
-							results.Add(typeDef);
+				var compilation = solutionSnapshot.GetCompilation(project);
+				var importedBaseType = compilation.Import(baseType);
+				if (importedBaseType == null)
+					continue;
+				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
+					bool isDerived;
+					if (directDerivationOnly) {
+						isDerived = typeDef.DirectBaseTypes.Select(t => t.GetDefinition()).Contains(importedBaseType);
+					} else {
+						isDerived = typeDef.IsDerivedFrom(importedBaseType);
 					}
+					if (isDerived)
+						results.Add(typeDef);
 				}
 			}
 			return results;
+		}
+		
+		static SharpDevelopSolutionSnapshot GetSolutionSnapshot(ICompilation compilation)
+		{
+			var snapshot = compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			return snapshot ?? ParserService.GetCurrentSolutionSnapshot();
 		}
 		
 		
@@ -149,11 +151,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");
-			IEnumerable<IProjectContent> projectContents = GetProjectsThatCouldReferenceEntity(baseType).Select(p => p.ProjectContent);
-			projectContents = projectContents.Union(new [] { baseType.ProjectContent });
-			var graph = BuildTypeInheritanceGraph(projectContents);
+			var solutionSnapshot = GetSolutionSnapshot(baseType.Compilation);
+			var compilations = GetProjectsThatCouldReferenceEntity(baseType).Select(p => solutionSnapshot.GetCompilation(p));
+			var graph = BuildTypeInheritanceGraph(compilations);
 			TypeGraphNode node;
-			if (graph.TryGetValue(baseType, out node)) {
+			if (graph.TryGetValue(new TypeName(baseType), out node)) {
 				node.BaseTypes.Clear(); // only derived types were requested, so don't return the base types
 				return node;
 			} else {
@@ -165,28 +167,26 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// Builds a graph of all type definitions in the specified set of project contents.
 		/// </summary>
 		/// <remarks>The resulting graph may be cyclic if there are cyclic type definitions.</remarks>
-		public static Dictionary<ITypeDefinition, TypeGraphNode> BuildTypeInheritanceGraph(IEnumerable<IProjectContent> projectContents)
+		static Dictionary<TypeName, TypeGraphNode> BuildTypeInheritanceGraph(IEnumerable<ICompilation> compilations)
 		{
-			if (projectContents == null)
+			if (compilations == null)
 				throw new ArgumentNullException("projectContents");
-			Dictionary<ITypeDefinition, TypeGraphNode> dict = new Dictionary<ITypeDefinition, TypeGraphNode>();
-			using (var allContexts = new CompositeTypeResolveContext(projectContents).Synchronize()) { // lock all project contents
-				foreach (ITypeDefinition typeDef in allContexts.GetAllTypes()) {
-					dict.Add(typeDef, new TypeGraphNode(typeDef));
+			Dictionary<TypeName, TypeGraphNode> dict = new Dictionary<TypeName, TypeGraphNode>();
+			foreach (ICompilation compilation in compilations) {
+				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
+					dict.Add(new TypeName(typeDef), new TypeGraphNode(typeDef));
 				}
-				foreach (IProjectContent pc in projectContents) {
-					using (var context = ParserService.GetTypeResolveContext(pc).Synchronize()) {
-						foreach (ITypeDefinition typeDef in pc.GetAllTypes()) {
-							TypeGraphNode typeNode = dict[typeDef];
-							foreach (IType baseType in typeDef.GetBaseTypes(context)) {
-								ITypeDefinition baseTypeDef = baseType.GetDefinition();
-								if (baseTypeDef != null) {
-									TypeGraphNode baseTypeNode;
-									if (dict.TryGetValue(baseTypeDef, out baseTypeNode)) {
-										typeNode.BaseTypes.Add(baseTypeNode);
-										baseTypeNode.DerivedTypes.Add(typeNode);
-									}
-								}
+			}
+			foreach (ICompilation compilation in compilations) {
+				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
+					TypeGraphNode typeNode = dict[new TypeName(typeDef)];
+					foreach (IType baseType in typeDef.DirectBaseTypes) {
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null) {
+							TypeGraphNode baseTypeNode;
+							if (dict.TryGetValue(new TypeName(baseTypeDef), out baseTypeNode)) {
+								typeNode.BaseTypes.Add(baseTypeNode);
+								baseTypeNode.DerivedTypes.Add(typeNode);
 							}
 						}
 					}

@@ -50,21 +50,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			if (parseInfo == null)
 				return;
-			foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
+			foreach (var c in parseInfo.TopLevelTypeDefinitions) {
 				AddEntityBookmarks(c, document);
 			}
 		}
 		
-		void AddEntityBookmarks(ITypeDefinition c, IDocument document)
+		void AddEntityBookmarks(IUnresolvedTypeDefinition c, IDocument document)
 		{
 			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
 				bookmarks.Add(new EntityBookmark(c, document));
 			}
-			foreach (ITypeDefinition innerClass in c.NestedTypes) {
+			foreach (var innerClass in c.NestedTypes) {
 				AddEntityBookmarks(innerClass, document);
 			}
-			foreach (IMember m in c.Members) {
+			foreach (var m in c.Members) {
 				if (m.Region.IsEmpty || m.IsSynthetic) continue;
 				bookmarks.Add(new EntityBookmark(m, document));
 			}

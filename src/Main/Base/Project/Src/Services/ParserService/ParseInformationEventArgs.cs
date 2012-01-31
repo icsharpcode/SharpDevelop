@@ -23,15 +23,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		public IProjectContent ProjectContent {
-			get {
-				if (newParseInformation != null)
-					return newParseInformation.ProjectContent;
-				else
-					return oldParsedFile.ProjectContent;
-			}
-		}
-		
 		/// <summary>
 		/// The old parsed file.
 		/// Returns null if no old parse information exists (first parse run).
@@ -66,25 +57,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 			get { return this.NewParsedFile; }
 		}
 		
-		/// <summary>
-		/// Gets whether this parse information is the primary information for the given file.
-		/// Secondary parse informations exist when a single file is used in multiple projects.
-		/// </summary>
-		public bool IsPrimaryParseInfoForFile {
-			get; private set;
-		}
-		
-		public ParseInformationEventArgs(IParsedFile oldParsedFile, ParseInformation newParseInformation, bool isPrimaryParseInfoForFile)
+		public ParseInformationEventArgs(IParsedFile oldParsedFile, ParseInformation newParseInformation)
 		{
 			if (oldParsedFile == null && newParseInformation == null)
 				throw new ArgumentNullException();
 			if (oldParsedFile != null && newParseInformation != null) {
-				Debug.Assert(oldParsedFile.ProjectContent == newParseInformation.ProjectContent);
 				Debug.Assert(FileUtility.IsEqualFileName(oldParsedFile.FileName, newParseInformation.FileName));
 			}
 			this.oldParsedFile = oldParsedFile;
 			this.newParseInformation = newParseInformation;
-			this.IsPrimaryParseInfoForFile = isPrimaryParseInfoForFile;
 		}
 	}
 	

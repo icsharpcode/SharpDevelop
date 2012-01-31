@@ -413,18 +413,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridItem != null) {
 				Type component = gridItem.PropertyDescriptor.ComponentType;
 				if (component != null) {
-					using (var ctx = ParserService.CurrentTypeResolveContext.Synchronize()) {
-						ITypeDefinition c = ctx.GetTypeDefinition(component.Namespace, component.Name, 0, StringComparer.Ordinal);
-						if (c != null) {
-							foreach (IProperty p in c.GetProperties(ctx)) {
-								if (gridItem.PropertyDescriptor.Name == p.Name) {
-									HelpProvider.ShowHelp(p);
-									return;
-								}
-							}
-							HelpProvider.ShowHelp(c);
-						}
-					}
+					ICompilation compilation = ParserService.GetCompilation(ProjectService.CurrentProject);
+					IType componentType = compilation.FindType(component);
+					IProperty property = componentType.GetProperties(p => p.Name == gridItem.PropertyDescriptor.Name).FirstOrDefault();
+					if (property != null)
+						HelpProvider.ShowHelp(property);
+					else if (componentType.GetDefinition() != null)
+						HelpProvider.ShowHelp(componentType.GetDefinition());
 				}
 			}
 		}

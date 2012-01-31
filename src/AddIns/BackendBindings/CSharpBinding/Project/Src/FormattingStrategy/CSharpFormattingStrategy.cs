@@ -175,30 +175,30 @@ namespace CSharpBinding.FormattingStrategy
 		/// <summary>
 		/// Gets the next member after the specified caret position.
 		/// </summary>
-		IEntity GetMemberAfter(ITextEditor editor, int caretLine)
+		IUnresolvedEntity GetMemberAfter(ITextEditor editor, int caretLine)
 		{
 			FileName fileName = editor.FileName;
-			IEntity nextElement = null;
+			IUnresolvedEntity nextElement = null;
 			if (fileName != null) {
 				IParsedFile parsedFile = ParserService.ParseFile(fileName, editor.Document.CreateSnapshot());
 				if (parsedFile != null) {
-					ITypeDefinition currentClass = parsedFile.GetInnermostTypeDefinition(caretLine, 0);
+					var currentClass = parsedFile.GetInnermostTypeDefinition(caretLine, 0);
 					int nextElementLine = int.MaxValue;
 					if (currentClass == null) {
-						foreach (ITypeDefinition c in parsedFile.TopLevelTypeDefinitions) {
+						foreach (var c in parsedFile.TopLevelTypeDefinitions) {
 							if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
 								nextElementLine = c.Region.BeginLine;
 								nextElement = c;
 							}
 						}
 					} else {
-						foreach (ITypeDefinition c in currentClass.NestedTypes) {
+						foreach (var c in currentClass.NestedTypes) {
 							if (c.Region.BeginLine < nextElementLine && c.Region.BeginLine > caretLine) {
 								nextElementLine = c.Region.BeginLine;
 								nextElement = c;
 							}
 						}
-						foreach (IMember m in currentClass.Members) {
+						foreach (var m in currentClass.Members) {
 							if (m.Region.BeginLine < nextElementLine && m.Region.BeginLine > caretLine) {
 								nextElementLine = m.Region.BeginLine;
 								nextElement = m;
@@ -248,7 +248,7 @@ namespace CSharpBinding.FormattingStrategy
 				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 				if (curLineText != null && curLineText.EndsWith("///") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("///"))) {
 					string indentation = DocumentUtilitites.GetWhitespaceAfter(textArea.Document, curLine.Offset);
-					IEntity member = GetMemberAfter(textArea, lineNr);
+					IUnresolvedEntity member = GetMemberAfter(textArea, lineNr);
 					if (member != null) {
 						StringBuilder sb = new StringBuilder();
 						sb.Append(" <summary>");
@@ -259,20 +259,18 @@ namespace CSharpBinding.FormattingStrategy
 						sb.Append(indentation);
 						sb.Append("/// </summary>");
 						
-						if (member is IMethod) {
-							IMethod method = (IMethod)member;
-							if (method.Parameters != null && method.Parameters.Count > 0) {
-								for (int i = 0; i < method.Parameters.Count; ++i) {
-									sb.Append(terminator);
-									sb.Append(indentation);
-									sb.Append("/// <param name=\"");
-									sb.Append(method.Parameters[i].Name);
-									sb.Append("\"></param>");
-								}
+						if (member is IUnresolvedMethod) {
+							IUnresolvedMethod method = (IUnresolvedMethod)member;
+							for (int i = 0; i < method.Parameters.Count; ++i) {
+								sb.Append(terminator);
+								sb.Append(indentation);
+								sb.Append("/// <param name=\"");
+								sb.Append(method.Parameters[i].Name);
+								sb.Append("\"></param>");
 							}
 							if (!method.IsConstructor) {
-								IType returnType = method.ReturnType.Resolve(ParserService.CurrentTypeResolveContext);
-								if (returnType.Kind != TypeKind.Void) {
+								KnownTypeReference returnType = method.ReturnType as KnownTypeReference;
+								if (returnType == null || returnType.KnownTypeCode != KnownTypeCode.Void) {
 									sb.Append(terminator);
 									sb.Append(indentation);
 									sb.Append("/// <returns></returns>");

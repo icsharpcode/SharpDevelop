@@ -185,14 +185,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		static string GetValue(ITextEditor editor, string propertyName)
 		{
 			if ("ClassName".Equals(propertyName, StringComparison.OrdinalIgnoreCase)) {
-				ITypeDefinition c = GetCurrentClass(editor);
+				var c = GetCurrentClass(editor);
 				if (c != null)
 					return c.Name;
 			}
 			return Core.StringParser.GetValue(propertyName);
 		}
 		
-		static ITypeDefinition GetCurrentClass(ITextEditor editor)
+		static IUnresolvedTypeDefinition GetCurrentClass(ITextEditor editor)
 		{
 			var parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
 			if (parseInfo != null) {

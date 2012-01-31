@@ -350,7 +350,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					b.Append("constant ");
 				else
 					b.Append("local variable ");
-				b.Append(ambience.ConvertVariable(rr.Variable, ParserService.CurrentTypeResolveContext));
+				b.Append(ambience.ConvertVariable(rr.Variable));
 				if (!rr.IsCompileTimeConstant && currentDebugger != null) {
 					string currentValue = currentDebugger.GetValueAsString(e, rr);
 					if (currentValue != null) {
@@ -385,7 +385,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			bool tryDisplayValue = false;
 			debuggerCanShowValue = false;
 			StringBuilder text = new StringBuilder();
-			text.Append(ambience.ConvertEntity(member, ParserService.CurrentTypeResolveContext));
+			text.Append(ambience.ConvertEntity(member));
 			tryDisplayValue = ((member is IField && !((IField)member).IsConst) || member is IProperty);
 			
 			if (tryDisplayValue && currentDebugger != null) {

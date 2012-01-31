@@ -16,20 +16,21 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	public class ParseProjectContent : SimpleProjectContent, IDisposable
+	public class ParseProjectContentContainer : IDisposable
 	{
 		readonly MSBuildBasedProject project;
 		readonly object lockObj = new object();
-		volatile ITypeResolveContext typeResolveContext;
+		IProjectContent projectContent;
+		IAssemblyReference[] references = { MinimalCorlib.Instance };
 		bool initializing;
 		bool disposed;
 		
-		public ParseProjectContent(MSBuildBasedProject project)
+		public ParseProjectContentContainer(MSBuildBasedProject project, IProjectContent initialProjectContent)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
-			this.typeResolveContext = new CompositeTypeResolveContext(new ITypeResolveContext[] { this, MinimalResolveContext.Instance });
+			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName);
 			
 			this.initializing = true;
 			LoadSolutionProjects.AddJob(Initialize, "Loading " + project.Name + "...", GetInitializationWorkAmount());
@@ -45,20 +46,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 			initializing = false;
 		}
 		
-		public ITypeResolveContext TypeResolveContext {
-			get { return typeResolveContext; }
+		public IProjectContent ProjectContent {
+			get {
+				lock (lockObj) {
+					return projectContent;
+				}
+			}
 		}
 		
-		public override string AssemblyName {
-			get { return project.AssemblyName; }
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("[{0}: {1}]", GetType().Name, project.Name);
-		}
-		
-		const int LoadingReferencesWorkAmount = 15; // in number of C# files
+		const int LoadingReferencesWorkAmount = 15; // time necessary for loading references, in relation to time for a single C# file
 		
 		int GetInitializationWorkAmount()
 		{
@@ -108,10 +104,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 				fileName => {
 					// Don't read files we don't have a parser for.
 					// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
-					if (ParserService.GetParser(fileName) != null) {
+					if (ParserService.HasParser(fileName)) {
 						ITextSource content = finder.Create(fileName);
 						if (content != null)
-							ParserService.ParseFile(this, fileName, content);
+							ParserService.ParseFile(fileName, content);
 					}
 					lock (progressLock) {
 						progressMonitor.Progress += fileCountInverse;
@@ -130,21 +126,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 					progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 					
 					List<string> assemblyFiles = new List<string>();
+					List<IAssemblyReference> newReferences = new List<IAssemblyReference>();
+					
 					string mscorlib = project.MscorlibPath;
 					if (mscorlib != null)
 						assemblyFiles.Add(mscorlib);
 					
-					List<ITypeResolveContext> contexts = new List<ITypeResolveContext>();
-					contexts.Add(this);
 					foreach (ProjectItem item in projectItems) {
 						ReferenceProjectItem reference = item as ReferenceProjectItem;
 						if (reference != null) {
 							if (ItemType.ReferenceItemTypes.Contains(reference.ItemType)) {
 								ProjectReferenceProjectItem projectReference = reference as ProjectReferenceProjectItem;
 								if (projectReference != null) {
-									IProject p = projectReference.ReferencedProject;
-									if (p != null)
-										contexts.Add(p.ProjectContent);
+									newReferences.Add(projectReference);
 								} else {
 									assemblyFiles.Add(reference.FileName);
 								}
@@ -157,12 +151,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 						if (File.Exists(file)) {
 							var pc = AssemblyParserService.GetAssembly(FileName.Create(file), progressMonitor.CancellationToken);
 							if (pc != null) {
-								contexts.Add(pc);
+								newReferences.Add(pc);
 							}
 						}
 						progressMonitor.Progress += (1.0 - assemblyResolvingProgress) / assemblyFiles.Count;
 					}
-					this.typeResolveContext = new CompositeTypeResolveContext(contexts);
+					lock (lockObj) {
+						projectContent = projectContent.RemoveAssemblyReferences(this.references).AddAssemblyReferences(newReferences);
+						this.references = newReferences.ToArray();
+					}
 				}, progressMonitor.CancellationToken);
 		}
 		

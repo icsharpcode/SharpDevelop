@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 
 		public string[] Supportedextensions { get; private set; }
 
-		public bool CanParse(string fileName)
+		public bool CanParse(FileName fileName)
 		{
 			string fileExtension = Path.GetExtension(fileName);
 			foreach (string ext in Supportedextensions) {

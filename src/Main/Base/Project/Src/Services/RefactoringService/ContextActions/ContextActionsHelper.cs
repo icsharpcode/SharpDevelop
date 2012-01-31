@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -18,22 +19,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static ContextActionsPopup MakePopupWithDerivedClasses(ITypeDefinition baseClass)
 		{
 			var derivedClassesTree = FindReferenceService.BuildDerivedTypesGraph(baseClass).ConvertToDerivedTypeTree();
-			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
+			var popupViewModel = new ContextActionsViewModel();
+			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
+				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)));
 			popupViewModel.Actions = new PopupTreeViewModelBuilder().BuildTreeViewModel(derivedClassesTree.Children);
 			return new ContextActionsPopup { Actions = popupViewModel, Symbol = baseClass };
 		}
 		
 		public static ContextActionsPopup MakePopupWithBaseClasses(ITypeDefinition @class)
 		{
-			List<ITypeDefinition> baseClassList;
-			using (var context = ParserService.GetTypeResolveContext(@class.ProjectContent).Synchronize()) {
-				@class = @class.GetDefinition();
-				baseClassList = @class.GetAllBaseTypeDefinitions(context).Where(
-					baseClass => (baseClass != @class) && (baseClass.ParsedFile != null)).ToList();
-			}
-			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)))};
+			var baseClassList = @class.GetAllBaseTypeDefinitions().Where(baseClass => baseClass != @class).ToList();
+			var popupViewModel = new ContextActionsViewModel();
+			popupViewModel.Title = MenuService.ConvertLabel(StringParser.Parse(
+				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)));
 			popupViewModel.Actions = new PopupListViewModelBuilder().BuildListViewModel(baseClassList);
 			return new ContextActionsPopup { Actions = popupViewModel, Symbol = @class };
 		}
@@ -63,8 +61,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			protected ContextActionViewModel MakeGoToClassAction(ITypeDefinition @class, ObservableCollection<ContextActionViewModel> childActions)
 			{
 				return new ContextActionViewModel {
-					Action = new GoToClassAction(@class, this.LabelAmbience.ConvertEntity(@class, ParserService.CurrentTypeResolveContext)),
-					Image = ClassBrowserIconService.GetIcon(@class).ImageSource,
+					Action = new GoToClassAction(@class, this.LabelAmbience.ConvertEntity(@class)),
+					Image = CompletionImage.GetImage(@class),
 					Comment = string.Format("(in {0})", @class.Namespace),
 					ChildActions = childActions
 				};
@@ -103,13 +101,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			protected ContextActionViewModel MakeGoToMemberAction(ITypeDefinition containingClass, ObservableCollection<ContextActionViewModel> childActions)
 			{
-				IMember derivedMember = FindReferenceService.GetDerivedMember(member, containingClass);
+				IMember derivedMember = InheritanceHelper.GetDerivedMember(member, containingClass);
 				if (derivedMember == null)
 					return null;
 				
 				return new ContextActionViewModel {
 					Action = new GoToMemberAction(derivedMember, this.LabelAmbience),
-					Image = ClassBrowserIconService.GetIcon(derivedMember).ImageSource,
+					Image = CompletionImage.GetImage(derivedMember),
 					Comment = string.Format("(in {0})", containingClass.FullName),
 					ChildActions = childActions
 				};

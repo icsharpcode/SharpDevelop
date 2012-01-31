@@ -50,11 +50,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// SharpDevelop may call IParser.Parse in parallel. This will be done on the same IParser instance
 		/// if there are two parallel parse requests for the same file. Parser implementations must be thread-safe.
 		/// </remarks>
-		ParseInformation Parse(IProjectContent projectContent, FileName fileName, ITextSource fileContent,
-		                       bool fullParseInformationRequested);
+		ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested);
 		
-		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ITypeResolveContext context, CancellationToken cancellationToken);
+		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken);
 		
-		void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ITypeResolveContext context, Action<Reference> callback);
+		void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken);
 	}
 }

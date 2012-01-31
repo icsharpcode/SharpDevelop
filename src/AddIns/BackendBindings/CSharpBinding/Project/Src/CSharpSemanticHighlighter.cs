@@ -9,6 +9,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -20,7 +21,7 @@ namespace CSharpBinding
 	/// <summary>
 	/// Semantic highlighting for C#.
 	/// </summary>
-	public class CSharpSemanticHighlighter : DepthFirstAstVisitor<object, object>, IHighlighter, IResolveVisitorNavigator, IDisposable
+	public class CSharpSemanticHighlighter : DepthFirstAstVisitor<object, object>, IHighlighter, IDisposable
 	{
 		readonly ITextEditor textEditor;
 		readonly ISyntaxHighlighter syntaxHighlighter;
@@ -36,7 +37,7 @@ namespace CSharpBinding
 		
 		int lineNumber;
 		HighlightedLine line;
-		ResolveVisitor resolveVisitor;
+		CSharpAstResolver resolver;
 		
 		bool isInAccessor;
 		
@@ -214,24 +215,20 @@ namespace CSharpBinding
 				return null;
 			}
 			
-			using (var ctx = ParserService.GetTypeResolveContext(parseInfo.ProjectContent).Synchronize()) {
-				CSharpResolver resolver = new CSharpResolver(ctx);
-				resolveVisitor = new ResolveVisitor(resolver, parsedFile, this);
-				
-				resolveVisitor.Scan(cu);
-				
-				HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
-				this.line = line;
-				this.lineNumber = lineNumber;
-				cu.AcceptVisitor(this);
-				this.line = null;
-				this.resolveVisitor = null;
-				Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
-				if (textEditor.Document.Version != null) {
-					cachedLines.Add(new CachedLine(line, textEditor.Document.Version));
-				}
-				return line;
+			var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
+			resolver = new CSharpAstResolver(compilation, cu, parsedFile);
+			
+			HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
+			this.line = line;
+			this.lineNumber = lineNumber;
+			cu.AcceptVisitor(this);
+			this.line = null;
+			this.resolver = null;
+			Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
+			if (textEditor.Document.Version != null) {
+				cachedLines.Add(new CachedLine(line, textEditor.Document.Version));
 			}
+			return line;
 		}
 		#endregion
 		
@@ -239,7 +236,7 @@ namespace CSharpBinding
 		HighlightingColor GetColor(ResolveResult rr)
 		{
 			if (rr is TypeResolveResult) {
-				if (rr.Type.IsReferenceType(resolveVisitor.TypeResolveContext) == false)
+				if (rr.Type.IsReferenceType == false)
 					return valueTypeColor;
 				else
 					return referenceTypeColor;
@@ -281,32 +278,6 @@ namespace CSharpBinding
 		}
 		#endregion
 		
-		#region IResolveVisitorNavigator implementation
-		ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
-		{
-			if (node.StartLocation.Line <= lineNumber && node.EndLocation.Line >= lineNumber) {
-				if (node is SimpleType || node is MemberType
-				    || node is IdentifierExpression || node is MemberReferenceExpression
-				    || node is InvocationExpression)
-				{
-					return ResolveVisitorNavigationMode.Resolve;
-				} else {
-					return ResolveVisitorNavigationMode.Scan;
-				}
-			} else {
-				return ResolveVisitorNavigationMode.Skip;
-			}
-		}
-		
-		void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
-		{
-		}
-		
-		void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
-		{
-		}
-		#endregion
-		
 		#region AST Traversal
 		protected override object VisitChildren(AstNode node, object data)
 		{
@@ -319,7 +290,7 @@ namespace CSharpBinding
 		
 		public override object VisitSimpleType(SimpleType simpleType, object data)
 		{
-			Colorize(simpleType.IdentifierToken, GetColor(resolveVisitor.GetResolveResult(simpleType)));
+			Colorize(simpleType.IdentifierToken, GetColor(resolver.Resolve(simpleType)));
 			foreach (AstNode node in simpleType.TypeArguments)
 				node.AcceptVisitor(this);
 			return null;
@@ -330,7 +301,7 @@ namespace CSharpBinding
 			// Ensure we visit/colorize the children in the correct order.
 			// This is required so that the resulting HighlightedSections are sorted correctly.
 			memberType.Target.AcceptVisitor(this);
-			Colorize(memberType.MemberNameToken, GetColor(resolveVisitor.GetResolveResult(memberType)));
+			Colorize(memberType.MemberNameToken, GetColor(resolver.Resolve(memberType)));
 			foreach (AstNode node in memberType.TypeArguments)
 				node.AcceptVisitor(this);
 			return null;
@@ -342,7 +313,7 @@ namespace CSharpBinding
 			if (isInAccessor && identifierExpression.Identifier == "value") {
 				Colorize(ident, valueKeywordColor);
 			} else {
-				ResolveResult rr = resolveVisitor.GetResolveResult(identifierExpression);
+				ResolveResult rr = resolver.Resolve(identifierExpression);
 				Colorize(ident, GetColor(rr));
 			}
 			
@@ -355,7 +326,7 @@ namespace CSharpBinding
 		{
 			memberReferenceExpression.Target.AcceptVisitor(this);
 			
-			ResolveResult rr = resolveVisitor.GetResolveResult(memberReferenceExpression);
+			ResolveResult rr = resolver.Resolve(memberReferenceExpression);
 			Colorize(memberReferenceExpression.MemberNameToken, GetColor(rr));
 			
 			foreach (AstNode node in memberReferenceExpression.TypeArguments)
@@ -368,7 +339,7 @@ namespace CSharpBinding
 			Expression target = invocationExpression.Target;
 			target.AcceptVisitor(this);
 			
-			var rr = resolveVisitor.GetResolveResult(invocationExpression) as CSharpInvocationResolveResult;
+			var rr = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 			if (rr != null && !rr.IsDelegateInvocation) {
 				if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
 					Colorize(target.GetChildByRole(AstNode.Roles.Identifier),  methodCallColor);
@@ -430,7 +401,7 @@ namespace CSharpBinding
 			bool isValueType = false;
 			if (typeParameterDeclaration.Parent != null) {
 				foreach (var constraint in typeParameterDeclaration.Parent.GetChildrenByRole(AstNode.Roles.Constraint)) {
-					if (constraint.TypeParameter == typeParameterDeclaration.Name) {
+					if (constraint.TypeParameter.Identifier == typeParameterDeclaration.Name) {
 						isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
 					}
 				}
@@ -441,7 +412,7 @@ namespace CSharpBinding
 		
 		public override object VisitConstraint(Constraint constraint, object data)
 		{
-			if (constraint.Parent != null && constraint.Parent.GetChildrenByRole(AstNode.Roles.TypeParameter).Any(tp => tp.Name == constraint.TypeParameter)) {
+			if (constraint.Parent != null && constraint.Parent.GetChildrenByRole(AstNode.Roles.TypeParameter).Any(tp => tp.Name == constraint.TypeParameter.Identifier)) {
 				bool isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
 				Colorize(constraint.GetChildByRole(AstNode.Roles.Identifier), isValueType ? valueTypeColor : referenceTypeColor);
 			}

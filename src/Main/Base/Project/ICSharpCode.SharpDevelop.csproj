@@ -305,6 +305,7 @@
     <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Src\Services\AmbienceService\DefaultAmbience.cs" />
+    <Compile Include="Src\Services\ClassBrowserIcons\ImageSourceImage.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Src\Services\Debugger\DecompiledBreakpointBookmark.cs" />
@@ -339,6 +340,7 @@
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
+    <Compile Include="Src\Services\ParserService\SharpDevelopSolutionSnapshot.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\BoolToVisibilityConverter.cs" />
@@ -372,6 +374,7 @@
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeGraphNode.cs" />
+    <Compile Include="Src\Services\RefactoringService\TypeName.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />

@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static TaskListPad instance;
 		Dictionary<string, bool> displayedTokens;
-		ITypeDefinition oldClass;
+		IUnresolvedTypeDefinition oldClass;
 		int selectedScopeIndex = 0;
 		bool isInitialized = false;
 		
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (this.selectedScopeIndex > 2)
 			{
-				ITypeDefinition current = GetCurrentClass();
+				var current = GetCurrentClass();
 				
 				if (oldClass == null) oldClass = current;
 				
@@ -180,8 +180,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		bool IsInScope(Task item)
 		{
-			ITypeDefinition current = GetCurrentClass();
-			ITypeDefinition itemClass = GetCurrentClass(item);
+			var current = GetCurrentClass();
+			var itemClass = GetCurrentClass(item);
 			
 			switch (this.selectedScopeIndex) {
 				case 0:
@@ -205,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		ITypeDefinition GetCurrentClass()
+		IUnresolvedTypeDefinition GetCurrentClass()
 		{
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return null;
@@ -214,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (parseInfo != null) {
 				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 				if (positionable != null) {
-					ITypeDefinition c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
+					var c = parseInfo.GetInnermostTypeDefinition(positionable.Line, positionable.Column);
 					if (c != null) return c;
 				}
 			}
@@ -222,14 +222,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		ITypeDefinition GetCurrentClass(Task item)
+		IUnresolvedTypeDefinition GetCurrentClass(Task item)
 		{
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
 			IParsedFile parseInfo = ParserService.GetExistingParsedFile(item.FileName);
 			if (parseInfo != null) {
-				ITypeDefinition c = parseInfo.GetInnermostTypeDefinition(item.Line, item.Column);
+				var c = parseInfo.GetInnermostTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;
 			}
 			

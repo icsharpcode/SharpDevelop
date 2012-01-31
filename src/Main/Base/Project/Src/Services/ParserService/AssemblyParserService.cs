@@ -30,10 +30,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#region Get Assembly By File Name
 		sealed class LoadedAssembly
 		{
-			public readonly Task<IProjectContent> ProjectContent;
+			public readonly Task<IUnresolvedAssembly> ProjectContent;
 			public readonly DateTime AssemblyFileLastWriteTime;
 			
-			public LoadedAssembly(Task<IProjectContent> projectContent, DateTime assemblyFileLastWriteTime)
+			public LoadedAssembly(Task<IUnresolvedAssembly> projectContent, DateTime assemblyFileLastWriteTime)
 			{
 				this.ProjectContent = projectContent;
 				this.AssemblyFileLastWriteTime = assemblyFileLastWriteTime;
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		[ThreadStatic] static Dictionary<FileName, LoadedAssembly> up2dateProjectContents;
 		
-		public static IProjectContent GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		public static IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// We currently do not support cancelling the load operation itself, because another GetAssembly() call
 			// with a different cancellation token might request the same assembly.
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return asm.ProjectContent.Result;
 		}
 		
-		public static Task<IProjectContent> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		public static Task<IUnresolvedAssembly> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			bool isNewTask;
 			LoadedAssembly asm = GetLoadedAssembly(fileName, out isNewTask);
@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				} else {
 					asm = null;
 				}
-				var task = new Task<IProjectContent>(() => LoadAssembly(fileName, CancellationToken.None));
+				var task = new Task<IUnresolvedAssembly>(() => LoadAssembly(fileName, CancellationToken.None));
 				isNewTask = true;
 				asm = new LoadedAssembly(task, lastWriteTime);
 				
@@ -132,11 +132,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region Load Assembly
-		static IProjectContent LoadAssembly(FileName fileName, CancellationToken cancellationToken)
+		static IUnresolvedAssembly LoadAssembly(FileName fileName, CancellationToken cancellationToken)
 		{
 			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
 			string cacheFileName = GetCacheFileName(fileName);
-			IProjectContent pc = TryReadFromCache(cacheFileName, lastWriteTime);
+			IUnresolvedAssembly pc = TryReadFromCache(cacheFileName, lastWriteTime);
 			if (pc != null)
 				return pc;
 			
@@ -242,7 +242,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return cacheFileName;
 		}
 		
-		static IProjectContent TryReadFromCache(string cacheFileName, DateTime lastWriteTime)
+		static IUnresolvedAssembly TryReadFromCache(string cacheFileName, DateTime lastWriteTime)
 		{
 			if (cacheFileName == null || !File.Exists(cacheFileName))
 				return null;
@@ -256,7 +256,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 						}
 						FastSerializer s = new FastSerializer();
 						s.SerializationBinder = new MySerializationBinder();
-						return (IProjectContent)s.Deserialize(reader);
+						return (IUnresolvedAssembly)s.Deserialize(reader);
 					}
 				}
 			} catch (IOException ex) {
@@ -271,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		static void SaveToCache(string cacheFileName, DateTime lastWriteTime, IProjectContent pc)
+		static void SaveToCache(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)
 		{
 			if (cacheFileName == null)
 				return;

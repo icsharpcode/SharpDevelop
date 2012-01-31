@@ -59,10 +59,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 			get { return FileName.Create(parsedFile.FileName); }
 		}
 		
-		public IProjectContent ProjectContent {
-			get { return parsedFile.ProjectContent; }
-		}
-		
 		public IList<TagComment> TagComments {
 			get { return tagComments; }
 		}

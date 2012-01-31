@@ -538,6 +538,6 @@ namespace ICSharpCode.SharpDevelop
 			else
 				return AmbienceService.GetCurrentAmbience();
 		}
-#endregion		
+		#endregion		
 	}
 }

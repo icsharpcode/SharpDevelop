@@ -18,16 +18,16 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// </summary>
 	public class EntityBookmark : IBookmark
 	{
-		IEntity entity;
+		IUnresolvedEntity entity;
 		IDocumentLine line;
 		
-		public IEntity Entity {
+		public IUnresolvedEntity Entity {
 			get {
 				return entity;
 			}
 		}
 		
-		public EntityBookmark(IEntity entity, IDocument document)
+		public EntityBookmark(IUnresolvedEntity entity, IDocument document)
 		{
 			this.entity = entity;
 			int lineNr = entity.Region.BeginLine;

@@ -269,26 +269,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		IProjectContent ProjectContent { get; }
 		
 		/// <summary>
-		/// Gets the type resolve context associated with this project.
-		/// The context should include this project's ProjectContent, as well as any referenced assemblies.
-		/// </summary>
-		/// <remarks>
-		/// This property must not return null.
-		/// If no resolve context is available for this project, it should return a dummy context
-		/// (e.g. <see cref="ICSharpCode.NRefactory.CSharp.Analysis.MinimalResolveContext"/>).
-		/// 
-		/// This member is thread-safe.
-		/// The resulting type resolve context is thread-safe, but repeated locking on every access might be inefficient.
-		/// Use the following code pattern instead:
-		/// <code>
-		/// using (var context = ParserService.CurrentTypeResolveContext.Synchronize()) {
-		/// 	...
-		/// }
-		/// </code>
-		/// </remarks>
-		ITypeResolveContext TypeResolveContext { get; }
-		
-		/// <summary>
 		/// Gets the default namespace to use for a file with the specified name.
 		/// </summary>
 		/// <param name="fileName">Full file name for a new file being added to the project.</param>

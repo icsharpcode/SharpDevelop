@@ -285,7 +285,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return null;
 			}
 
-			IProject project = solution.FindProjectContainingFile(fileName);
+			IProject project = solution.FindProjectContainingFile(FileName.Create(fileName));
 			if (project == null) {
 				//LoggingService.Debug("no IProject found");
 				return null;

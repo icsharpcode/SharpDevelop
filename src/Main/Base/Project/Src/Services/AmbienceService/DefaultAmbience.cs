@@ -10,28 +10,23 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
-	/// Description of DefaultAmbience.
+	/// Dummy ambience implementation.
 	/// </summary>
 	internal class DefaultAmbience : IAmbience
 	{
 		public ConversionFlags ConversionFlags { get; set; }
 		
-		public string ConvertEntity(ICSharpCode.NRefactory.TypeSystem.IEntity e, ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext context)
+		public string ConvertEntity(IEntity e)
 		{
 			return e.Name;
 		}
 		
-		public string ConvertType(ICSharpCode.NRefactory.TypeSystem.IType type)
+		public string ConvertType(IType type)
 		{
 			return type.Name;
 		}
 		
-		public string ConvertType(ICSharpCode.NRefactory.TypeSystem.ITypeReference type, ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext context)
-		{
-			return type.Resolve(context).Name;
-		}
-		
-		public string ConvertVariable(ICSharpCode.NRefactory.TypeSystem.IVariable variable, ICSharpCode.NRefactory.TypeSystem.ITypeResolveContext context)
+		public string ConvertVariable(IVariable variable)
 		{
 			return variable.Name;
 		}

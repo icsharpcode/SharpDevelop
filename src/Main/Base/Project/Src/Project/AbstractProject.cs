@@ -468,12 +468,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public virtual ITypeResolveContext TypeResolveContext {
-			get {
-				return NRefactory.TypeSystem.Implementation.MinimalResolveContext.Instance;
-			}
-		}
-		
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>

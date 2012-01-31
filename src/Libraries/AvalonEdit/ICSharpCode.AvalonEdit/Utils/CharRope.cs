@@ -179,7 +179,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			if (searchText == null)
 				throw new ArgumentNullException("searchText");
 			rope.VerifyRange(startIndex, length);
-			int pos = rope.ToString(startIndex, length).IndexOf(searchText, startIndex, length, comparisonType);
+			int pos = rope.ToString(startIndex, length).IndexOf(searchText, comparisonType);
 			if (pos < 0)
 				return -1;
 			else
@@ -196,7 +196,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			if (searchText == null)
 				throw new ArgumentNullException("searchText");
 			rope.VerifyRange(startIndex, length);
-			int pos = rope.ToString(startIndex, length).LastIndexOf(searchText, startIndex, length, comparisonType);
+			int pos = rope.ToString(startIndex, length).LastIndexOf(searchText, comparisonType);
 			if (pos < 0)
 				return -1;
 			else

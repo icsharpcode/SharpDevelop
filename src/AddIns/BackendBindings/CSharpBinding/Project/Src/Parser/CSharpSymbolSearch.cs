@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -26,50 +28,22 @@ namespace CSharpBinding
 	public class CSharpSymbolSearch : ISymbolSearch
 	{
 		IProject project;
+		ICompilation compilation;
 		FindReferences fr = new FindReferences();
 		IList<IFindReferenceSearchScope> searchScopes;
 		IList<string>[] interestingFileNames;
 		int workAmount;
 		double workAmountInverse;
-		Action<Reference> callback;
 		
 		public CSharpSymbolSearch(IProject project, IEntity entity)
 		{
 			this.project = project;
 			searchScopes = fr.GetSearchScopes(entity);
+			compilation = ParserService.GetCompilation(project);
 			interestingFileNames = new IList<string>[searchScopes.Count];
-			using (var ctx = project.TypeResolveContext.Synchronize()) {
-				IProjectContent pc = project.ProjectContent;
-				for (int i = 0; i < searchScopes.Count; i++) {
-					// Check whether this project can reference the entity at all
-					bool canReferenceEntity;
-					switch (searchScopes[i].Accessibility) {
-						case Accessibility.None:
-						case Accessibility.Private:
-							canReferenceEntity = (pc == entity.ProjectContent);
-							break;
-						case Accessibility.Internal:
-						case Accessibility.ProtectedAndInternal:
-							canReferenceEntity = entity.ProjectContent.InternalsVisibleTo(pc, ctx);
-							break;
-						default:
-							ITypeDefinition typeDef = searchScopes[i].TopLevelTypeDefinition;
-							if (typeDef != null) {
-								ITypeDefinition typeDefInContext = ctx.GetTypeDefinition(typeDef.Namespace, typeDef.Name, typeDef.TypeParameterCount, StringComparer.Ordinal);
-								canReferenceEntity = (typeDefInContext == typeDef.GetDefinition());
-							} else {
-								canReferenceEntity = true;
-							}
-							break;
-					}
-					
-					if (canReferenceEntity) {
-						interestingFileNames[i] = fr.GetInterestingFileNames(searchScopes[i], pc.GetAllTypes(), ctx);
-						workAmount += interestingFileNames[i].Count;
-					} else {
-						interestingFileNames[i] = new string[0];
-					}
-				}
+			for (int i = 0; i < searchScopes.Count; i++) {
+				interestingFileNames[i] = fr.GetInterestingFiles(searchScopes[i], compilation).Select(f => f.FileName).ToList();
+				workAmount += interestingFileNames[i].Count;
 			}
 			workAmountInverse = 1.0 / workAmount;
 		}
@@ -82,9 +56,7 @@ namespace CSharpBinding
 		{
 			if (callback == null)
 				throw new ArgumentNullException("callback");
-			if (this.callback != null)
-				throw new InvalidOperationException("Cannot call FindReferences() twice");
-			this.callback = callback;
+			var cancellationToken = args.ProgressMonitor.CancellationToken;
 			
 			for (int i = 0; i < searchScopes.Count; i++) {
 				IFindReferenceSearchScope searchScope = searchScopes[i];
@@ -92,17 +64,18 @@ namespace CSharpBinding
 				Parallel.ForEach(
 					interestingFileNames[i],
 					new ParallelOptions {
-						MaxDegreeOfParallelism = Environment.ProcessorCount
+						MaxDegreeOfParallelism = Environment.ProcessorCount,
+						CancellationToken = cancellationToken
 					},
-					delegate (string file) {
-						FindReferencesInFile(args, searchScope, FileName.Create(file));
+					delegate (string fileName) {
+						FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
 						lock (progressLock)
 							args.ProgressMonitor.Progress += workAmountInverse;
 					});
 			}
 		}
 		
-		void FindReferencesInFile(SymbolSearchArgs args, IFindReferenceSearchScope searchScope, FileName fileName)
+		void FindReferencesInFile(SymbolSearchArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<Reference> callback, CancellationToken cancellationToken)
 		{
 			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
@@ -120,11 +93,11 @@ namespace CSharpBinding
 			if (parsedFile == null || cu == null)
 				return;
 			fr.FindReferencesInFile(
-				searchScope, parsedFile, cu, project.TypeResolveContext,
+				searchScope, parsedFile, cu, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
 					callback(new Reference(region, result));
-				});
+				}, cancellationToken);
 		}
 	}
 }

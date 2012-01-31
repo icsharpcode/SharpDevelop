@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				AddSourceFiles(file, lineNr);
 			} else {
 				AddSourceFiles(text, 0);
-				foreach (ITypeDefinition c in SearchClasses(text)) {
+				foreach (IUnresolvedTypeDefinition c in SearchClasses(text)) {
 					AddItem(c, GetMatchType(text, c.Name));
 				}
 				AddAllMembersMatchingText(text);
@@ -165,31 +165,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (editor != null) {
 				IParsedFile parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
 				if (parseInfo != null) {
-					foreach (ITypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
+					foreach (IUnresolvedTypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 						AddAllMembersMatchingText(c, text);
 					}
 				}
 			}
 		}
 
-		void AddAllMembersMatchingText(ITypeDefinition c, string text)
+		void AddAllMembersMatchingText(IUnresolvedTypeDefinition c, string text)
 		{
-			foreach (ITypeDefinition innerClass in c.NestedTypes) {
+			foreach (IUnresolvedTypeDefinition innerClass in c.NestedTypes) {
 				AddAllMembersMatchingText(innerClass, text);
 			}
-			foreach (IMethod m in c.Methods) {
-				if (!m.IsConstructor) {
-					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m));
+			foreach (IUnresolvedMember m in c.Members) {
+				if (m.EntityType != EntityType.Constructor) {
+					AddItemIfMatchText(text, m, ClassBrowserIconService.Method);
 				}
-			}
-			foreach (IField f in c.Fields) {
-				AddItemIfMatchText(text, f, ClassBrowserIconService.GetIcon(f));
-			}
-			foreach (IProperty p in c.Properties) {
-				AddItemIfMatchText(text, p, ClassBrowserIconService.GetIcon(p));
-			}
-			foreach (IEvent evt in c.Events) {
-				AddItemIfMatchText(text, evt, ClassBrowserIconService.GetIcon(evt));
 			}
 		}
 		
@@ -236,14 +227,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		List<ITypeDefinition> SearchClasses(string text)
+		List<IUnresolvedTypeDefinition> SearchClasses(string text)
 		{
-			List<ITypeDefinition> list = new List<ITypeDefinition>();
+			List<IUnresolvedTypeDefinition> list = new List<IUnresolvedTypeDefinition>();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = project.ProjectContent;
 					if (projectContent != null) {
-						foreach (ITypeDefinition c in projectContent.GetAllTypes()) {
+						#warning also consider nested types
+						foreach (IUnresolvedTypeDefinition c in projectContent.TopLevelTypeDefinitions) {
 							string className = c.Name;
 							if (className.Length >= text.Length) {
 								if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
@@ -303,12 +295,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			newItems.Add(item);
 		}
 		
-		void AddItem(ITypeDefinition c, int matchType)
+		void AddItem(IUnresolvedTypeDefinition c, int matchType)
 		{
 			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType);
 		}
 		
-		void AddItemIfMatchText(string text, IMember member, IImage image)
+		void AddItemIfMatchText(string text, IUnresolvedMember member, IImage image)
 		{
 			string name = member.Name;
 			int matchType = GetMatchType(text, name);
@@ -317,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(IEntity e, IImage image, int matchType)
+		void AddItem(IUnresolvedEntity e, IImage image, int matchType)
 		{
 			AddItem(e.Name + " (" + e.FullName + ")", image, e, matchType);
 		}

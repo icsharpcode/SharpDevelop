@@ -409,7 +409,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		void Reparse(bool references, bool code)
 		{
 			lock (SyncRoot) {
-				if (parseProjectContent == null)
+				if (parseProjectContentContainer == null)
 					return; // parsing hasn't started yet; no need to re-parse
 			}
 			#warning Reparse
@@ -654,34 +654,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Type System
-		volatile ParseProjectContent parseProjectContent;
+		volatile ParseProjectContentContainer parseProjectContentContainer;
 		
-		protected virtual ParseProjectContent CreateParseProjectContent()
-		{
-			return new ParseProjectContent(this);
-		}
+		protected abstract IProjectContent CreateProjectContent();
 		
-		ParseProjectContent GetParseProjectContent()
+		ParseProjectContentContainer GetParseProjectContentContainer()
 		{
-			if (parseProjectContent == null) {
+			if (parseProjectContentContainer == null) {
 				lock (SyncRoot) {
-					if (parseProjectContent == null) {
-						parseProjectContent = CreateParseProjectContent();
+					if (parseProjectContentContainer == null) {
+						parseProjectContentContainer = new ParseProjectContentContainer(this, CreateProjectContent());
 					}
 				}
 			}
-			return parseProjectContent;
+			return parseProjectContentContainer;
 		}
 		
 		public override IProjectContent ProjectContent {
 			get {
-				return GetParseProjectContent();
-			}
-		}
-		
-		public override ITypeResolveContext TypeResolveContext {
-			get {
-				return GetParseProjectContent().TypeResolveContext;
+				return GetParseProjectContentContainer().ProjectContent;
 			}
 		}
 		#endregion

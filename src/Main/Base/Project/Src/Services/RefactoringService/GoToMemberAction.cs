@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member == null)
 				throw new ArgumentNullException("member");
 			this.Member = member;
-			this.Title = ambience.ConvertEntity(member, ParserService.CurrentTypeResolveContext);
+			this.Title = ambience.ConvertEntity(member);
 		}
 		
 		public void Execute()

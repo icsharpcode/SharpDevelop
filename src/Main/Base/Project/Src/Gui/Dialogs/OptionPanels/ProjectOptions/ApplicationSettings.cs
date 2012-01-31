@@ -191,12 +191,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public static IList<ITypeDefinition> GetPossibleStartupObjects(IProject project)
+		public static IList<IUnresolvedTypeDefinition> GetPossibleStartupObjects(IProject project)
 		{
-			List<ITypeDefinition> results = new List<ITypeDefinition>();
+			List<IUnresolvedTypeDefinition> results = new List<IUnresolvedTypeDefinition>();
 			IProjectContent pc = project.ProjectContent;
 			if (pc != null) {
-				foreach (ITypeDefinition c in pc.GetTypes()) {
+				foreach (IUnresolvedTypeDefinition c in pc.TopLevelTypeDefinitions) {
 					foreach (IMethod m in c.Methods) {
 						if (m.IsStatic && m.Name == "Main") {
 							results.Add(c);

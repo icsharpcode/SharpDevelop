@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			List<NewFolding> newFoldMarkers = new List<NewFolding>();
 			if (parseInfo != null) {
-				foreach (ITypeDefinition c in parseInfo.ParsedFile.TopLevelTypeDefinitions) {
+				foreach (var c in parseInfo.ParsedFile.TopLevelTypeDefinitions) {
 					AddClassMembers(c, newFoldMarkers);
 				}
 				#warning Additional folding regions
@@ -78,7 +78,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			public NewFoldingDefinition(int start, int end) : base(start, end) {}
 		}
 		
-		void AddClassMembers(ITypeDefinition c, List<NewFolding> newFoldMarkers)
+		void AddClassMembers(IUnresolvedTypeDefinition c, List<NewFolding> newFoldMarkers)
 		{
 			if (c.Kind == TypeKind.Delegate) {
 				return;
@@ -90,11 +90,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				newFoldMarkers.Add(new NewFolding(GetOffset(cRegion.BeginLine, cRegion.BeginColumn),
 				                                  GetOffset(cRegion.EndLine, cRegion.EndColumn)));
 			}
-			foreach (ITypeDefinition innerClass in c.NestedTypes) {
+			foreach (var innerClass in c.NestedTypes) {
 				AddClassMembers(innerClass, newFoldMarkers);
 			}
 			
-			foreach (IMember m in c.Members) {
+			foreach (var m in c.Members) {
 				if (m.Region.EndLine < m.BodyRegion.EndLine) {
 					newFoldMarkers.Add(new NewFoldingDefinition(GetOffset(m.Region.EndLine, m.Region.EndColumn),
 					                                            GetOffset(m.BodyRegion.EndLine, m.BodyRegion.EndColumn)));
