@@ -3,34 +3,34 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.CodeQuality.Engine.Dom
 {
 	public class FieldNode : INode
 	{
+		public IField FieldDefinition { get; private set; }
+		
+		public FieldNode(IField fieldDefinition)
+		{
+			this.FieldDefinition = fieldDefinition;
+		}
+		
 		public string Name {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return FieldDefinition.PrintFullName(); }
 		}
 		
 		public IList<INode> Children {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		public IEnumerable<INode> Uses {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return Enumerable.Empty<INode>(); }
 		}
 		
 		public IEnumerable<INode> UsedBy {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return Enumerable.Empty<INode>(); }
 		}
 		
 		public Relationship GetRelationship(INode value)

@@ -8,7 +8,7 @@
 		<Name>Empty MVC Application</Name>
 		<Category>C#</Category>
 		<Subcategory>ASP.NET MVC</Subcategory>
-		<Icon>C#.Project.Form</Icon>
+		<Icon>C#.Project.WebProject</Icon>
 		<Description>Empty ASP.NET MVC Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

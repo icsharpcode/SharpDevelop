@@ -15,7 +15,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
 using ICSharpCode.CodeQuality;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.SharpDevelop;
@@ -35,7 +34,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		{
 			InitializeComponent();
 			Visibility = Visibility.Hidden;
-			 popUp.IsOpen = true;
+			popUp.IsOpen = true;
 
 			nodeDescriptionViewModel = new NodeDescriptionViewModel();
 			this.inform.DataContext = nodeDescriptionViewModel;
@@ -43,14 +42,13 @@ namespace ICSharpCode.CodeQuality.Gui
 			leftTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
 			matrix.Colorizer = new DependencyColorizer();
 			matrix.ScrollOwner = scrollViewer;
-			
 		}
 		
 		
 		public void Update(IEnumerable<INode> nodes)
 		{
 			this.Visibility = Visibility.Visible;
-		
+			
 			popUp.IsOpen = false;
 			popUp.StaysOpen = true;
 
@@ -64,7 +62,8 @@ namespace ICSharpCode.CodeQuality.Gui
 			topCol.CollectionChanged += BuildTopINodeList;
 			
 			var matrix = new DependencyMatrix();
-			AddChildrenToMatrix(matrix, nodes);
+			if (nodes != null)
+				AddChildrenToMatrix(matrix, nodes);
 			this.matrix.Matrix = matrix;
 			BuildLeftINodeList(null, null);
 			BuildTopINodeList(null, null);
@@ -76,7 +75,8 @@ namespace ICSharpCode.CodeQuality.Gui
 			foreach (var node in nodes) {
 				matrix.AddColumn(node);
 				matrix.AddRow(node);
-				AddChildrenToMatrix(matrix, node.Children);
+				if (node.Children != null)
+					AddChildrenToMatrix(matrix, node.Children);
 			}
 		}
 		
@@ -174,6 +174,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (e.HoveredCell.ColumnIndex < topTree.Items.Count) {
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
+			nodeDescriptionViewModel.Relationship = e.HoveredCell.Value;
 		}
 		#endregion
 	}

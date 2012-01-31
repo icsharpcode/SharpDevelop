@@ -331,6 +331,8 @@ backendicons\CSharp\file\EmptyFile.png
 backendicons\CSharp\file\Form.png
 backendicons\CSharp\file\FullFile.png
 backendicons\CSharp\file\Interface.png
+backendicons\CSharp\file\MvcRazorFile.png
+backendicons\CSharp\file\MvcRazorFile.Small.png
 backendicons\CSharp\file\NewClass.png
 backendicons\CSharp\file\WPFCustomControl.png
 backendicons\CSharp\file\WPFFlowDocument.png
@@ -347,6 +349,7 @@ backendicons\CSharp\project\EmptyProject.png
 backendicons\CSharp\project\Form.png
 backendicons\CSharp\project\FullProject.png
 backendicons\CSharp\project\Library.png
+backendicons\CSharp\project\MvcRazorProject.png
 backendicons\CSharp\project\ServiceProject.png
 backendicons\CSharp\project\UserControl.png
 backendicons\CSharp\project\WCFServiceProject.png
@@ -414,6 +417,8 @@ backendicons\VBNet\file\EmptyFile.png
 backendicons\VBNet\file\Form.png
 backendicons\VBNet\file\FullFile.png
 backendicons\VBNet\file\NewClass.png
+backendicons\VBNet\file\MvcRazorFile.png
+backendicons\VBNet\file\MvcRazorFile.Small.png
 backendicons\VBNet\file\WPFCustomControl.png
 backendicons\VBNet\file\WPFFlowDocument.png
 backendicons\VBNet\file\WPFPage.png
@@ -429,6 +434,7 @@ backendicons\VBNet\project\EmptyProject.png
 backendicons\VBNet\project\Form.png
 backendicons\VBNet\project\FullProject.png
 backendicons\VBNet\project\Library.png
+backendicons\VBNet\project\MvcRazorProject.png
 backendicons\VBNet\project\ServiceProject.png
 backendicons\VBNet\project\UserControl.png
 backendicons\VBNet\project\WCFServiceProject.png

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using ICSharpCode.NRefactory.TypeSystem;
@@ -30,10 +31,23 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		
 		public void AddRelationship(RelationshipType type)
 		{
-			if (type == RelationshipType.UseThis || type == RelationshipType.UsedBy)
+			if (type == RelationshipType.Uses || type == RelationshipType.UsedBy)
 				OccurrenceCount++;
 			
 			Relationships.Add(type);
+		}
+		
+		public string InfoText {
+			get {
+				string text = "is not related to";
+				if (Relationships.Any(r => r == RelationshipType.Uses))
+					text = "uses";
+				else if (Relationships.Any(r => r == RelationshipType.UsedBy))
+					text = "is used by";
+				else if (Relationships.Any(r => r == RelationshipType.Same))
+					text = "is the same as";
+				return string.Format("{0} {1} {2}", From.Name, text, To.Name);
+			}
 		}
 		
 		public override string ToString()
@@ -48,13 +62,30 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		}
 	}
 	
+	/// <summary>
+	/// Type of relationship between two INodes.
+	/// </summary>
 	public enum RelationshipType
 	{
-		OneWayTo,
-		UseThis,
-		UsedBy,
-		Same,
+		/// <summary>
+		/// a and b are not related to each other.
+		/// </summary>
+		None,
+		/// <summary>
+		/// a contains b.
+		/// </summary>
 		Contains,
-		None
+		/// <summary>
+		/// a uses b.
+		/// </summary>
+		Uses,
+		/// <summary>
+		/// a is used by b.
+		/// </summary>
+		UsedBy,
+		/// <summary>
+		/// a and b are the same INode
+		/// </summary>
+		Same
 	}
 }

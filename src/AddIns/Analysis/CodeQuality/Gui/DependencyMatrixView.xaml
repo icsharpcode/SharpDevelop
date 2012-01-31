@@ -17,14 +17,14 @@
 		
 		<gui:NodeDescription  x:Name="inform"
 			Grid.Row="0" Grid.Column="0"
-		HorizontalAlignment="Stretch"
-		VerticalAlignment="Stretch"></gui:NodeDescription>
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"></gui:NodeDescription>
 		
 		<!-- Top TreeView -->
-		<tv:SharpTreeView Name="topTree" Grid.Column="2" 
+		<tv:SharpTreeView Name="topTree" Grid.Column="2"
 			ScrollViewer.HorizontalScrollBarVisibility="Visible"
 			ScrollViewer.VerticalScrollBarVisibility="Hidden"
-			MouseMove="TopTreeMouseMove" 
+			MouseMove="TopTreeMouseMove"
 			ScrollViewer.ScrollChanged="ViewScrollChanged">
 			<tv:SharpTreeView.LayoutTransform>
 				<RotateTransform Angle="-90" />
@@ -47,7 +47,7 @@
 		              Height="5" />
 		<!-- Left TreeView -->
 		<tv:SharpTreeView Name="leftTree"
-			Grid.Row="2" 
+			Grid.Row="2"
 			ScrollViewer.HorizontalScrollBarVisibility="Visible"
 			ScrollViewer.VerticalScrollBarVisibility="Hidden"
 			MouseMove="LeftTreeMouseMove"
@@ -65,13 +65,12 @@
 		</Popup>
 		
 		<ScrollViewer Name="scrollViewer"
-			HorizontalScrollBarVisibility="Visible"
+		              HorizontalScrollBarVisibility="Visible"
 		              VerticalScrollBarVisibility="Visible"
-		              Grid.Row="2" Grid.Column="2" 
+		              Grid.Row="2" Grid.Column="2"
 		              CanContentScroll="True"
 		              ScrollChanged="ViewScrollChanged">
-			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged"/>
-		
+			<gui:DependencyMatrixControl x:Name="matrix" HoveredCellChanged="MatrixHoveredCellChanged" />
 		</ScrollViewer>
 	</Grid>
 </UserControl>

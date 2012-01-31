@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -185,6 +186,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			switch (this.selectedScopeIndex) {
 				case 0:
+					// Solution
 					if (ProjectService.OpenSolution != null) {
 						foreach (AbstractProject proj in ProjectService.OpenSolution.Projects) {
 							if (proj.FindFile(item.FileName) != null)
@@ -193,12 +195,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 					return false;
 				case 1:
+					// Project
 					return ProjectService.CurrentProject != null && ProjectService.CurrentProject.FindFile(item.FileName) != null;
 				case 2:
-					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == FileName.Create(item.FileName);
+					// All open documents
+					return WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>().Any(provider => item.FileName == provider.TextEditor.FileName);
 				case 3:
-					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
+					// Document
+					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == FileName.Create(item.FileName);
 				case 4:
+					// Namespace
+					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;
+				case 5:
+					// Class/Module
 					return current != null && itemClass != null && current == itemClass;
 			}
 			
