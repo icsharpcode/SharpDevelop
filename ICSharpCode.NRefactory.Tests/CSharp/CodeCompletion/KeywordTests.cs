@@ -26,6 +26,8 @@
 
 using System;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.Parser;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
