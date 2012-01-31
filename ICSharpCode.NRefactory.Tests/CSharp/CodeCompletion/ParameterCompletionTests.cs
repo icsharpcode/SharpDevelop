@@ -592,7 +592,7 @@ namespace Test
 		}
 		
 		[Test()]
-		public void TestTypeParameterParameter ()
+		public void TestSecondTypeParameter ()
 		{
 			IParameterDataProvider provider = CreateProvider (
 @"using System;
@@ -610,6 +610,89 @@ namespace Test
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (16, provider.OverloadCount);
 		}
+		
+		[Ignore("TODO")]
+		[Test()]
+		public void TestMethodTypeParameter ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"using System;
+
+namespace Test 
+{
+	class A
+	{
+		void TestMethod<T, S>()
+		{
+		}
+
+		void Method ()
+		{
+			$TestMethod<$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
+		[Ignore("TODO")]
+		[Test()]
+		public void TestSecondMethodTypeParameter ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"using System;
+
+namespace Test 
+{
+	class A
+	{
+		void TestMethod<T, S>()
+		{
+		}
+
+		void Method ()
+		{
+			$TestMethod<string,$
+		}
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}		
 	
+		[Test()]
+		public void TestArrayParameter ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+	public void Method()
+	{
+		int[,,,] arr;
+		$arr[$
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
+		[Test()]
+		public void TestSecondArrayParameter ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+	public void Method()
+	{
+		int[,,,] arr;
+		$arr[5,$
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
 	}
 }
