@@ -81,7 +81,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			return Field;
 		}
 		
-		public static BitmapSource GetIcon(INode node)
+		public static BitmapSource GetIcon(NodeBase node)
 		{
 			if (node is AssemblyNode) 
 				return GetIcon((AssemblyNode)node);

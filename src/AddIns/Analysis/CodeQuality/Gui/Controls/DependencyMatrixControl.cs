@@ -6,7 +6,7 @@ using ICSharpCode.CodeQuality.Engine.Dom;
 
 namespace ICSharpCode.CodeQuality.Gui
 {
-	public class DependencyMatrixControl : MatrixControl<VisibleMatrix<INode, Relationship>, INode, Relationship>
+	public class DependencyMatrixControl : MatrixControl<VisibleMatrix<NodeBase, Tuple<int, int>>, NodeBase, Tuple<int, int>>
 	{
 		
 	}

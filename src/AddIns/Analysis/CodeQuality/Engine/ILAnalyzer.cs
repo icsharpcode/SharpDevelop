@@ -27,9 +27,9 @@ namespace ICSharpCode.CodeQuality.Engine
 			this.mappings = mappings;
 		}
 		
-		public void Analyze(MethodBody body, MethodNode analyzedMethod, out int cyclomaticComplexity)
+		public void Analyze(MethodBody body, MethodNode analyzedMethod)
 		{
-			cyclomaticComplexity = 0;
+			analyzedMethod.CyclomaticComplexity = 0;
 			
 			if (body == null)
 				return;
@@ -37,42 +37,23 @@ namespace ICSharpCode.CodeQuality.Engine
 			foreach (var instruction in body.Instructions) {
 				// IL cyclomatic complexity
 				if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
-					cyclomaticComplexity++;
+					analyzedMethod.CyclomaticComplexity++;
 
 				var operand = ReadOperand(instruction);
 				
-				if (operand is MethodDefinition) {
-					var md = (MethodDefinition)operand;
-					if (assemblies.Contains(md.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(md)) {
-						var opMethod = (IMethod)mappings.cecilMappings[md];
-						var methodNode = mappings.methodMappings[opMethod];
-						analyzedMethod.uses.Add(methodNode);
-						methodNode.usedBy.Add(analyzedMethod);
+				if (operand is MethodReference) {
+					var md = ((MethodReference)operand).Resolve();
+					if (md != null && assemblies.Contains(md.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(md)) {
+						var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md.Resolve()]];
+						analyzedMethod.AddRelationship(methodNode);
+					}
+				} else if (operand is FieldReference) {
+					var fd = ((FieldReference)operand).Resolve();
+					if (fd != null && assemblies.Contains(fd.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(fd)) {
+						var fieldNode = mappings.fieldMappings[(IField)mappings.cecilMappings[fd]];
+						analyzedMethod.AddRelationship(fieldNode);
 					}
 				}
-//
-//				if (operand is MethodDefinition && ((MethodDefinition)operand).DeclaringType.Module.Assembly == assemblyDefinition) {
-//					var md = (MethodDefinition)operand;
-//					if (md.DeclaringType.Name == "" || md.DeclaringType.Name.StartsWith("<")) {
-//						// TODO : Handle generated members
-//					} else {
-//						var opMethod = (IMethod)cecilMappings[md];
-//						var methodNode = methodMappings[opMethod];
-//						m.typeUses.Add(methodNode.DeclaringType);
-//						m.methodUses.Add(methodNode);
-//					}
-//				}
-//
-//				if (operand is FieldDefinition && ((FieldDefinition)operand).DeclaringType.Module.Assembly == assemblyDefinition) {
-//					var fd = (FieldDefinition)operand;
-//					if (fd.DeclaringType.Name == "" || fd.DeclaringType.Name.StartsWith("<")) {
-//						// TODO : Handle generated members
-//					} else {
-//						var field = (IField)cecilMappings[fd];
-//						var fieldNode = fieldMappings[field];
-//						m.fieldUses.Add(fieldNode);
-//					}
-//				}
 			}
 		}
 		

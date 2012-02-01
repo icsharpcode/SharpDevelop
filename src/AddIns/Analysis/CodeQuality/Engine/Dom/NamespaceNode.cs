@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 using ICSharpCode.NRefactory.TypeSystem;
@@ -10,46 +11,24 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.CodeQuality.Engine.Dom
 {
-	public class NamespaceNode : INode
+	public class NamespaceNode : NodeBase
 	{
 		public NamespaceNode(string name)
 		{
-			this.Name = name;
-			types = new List<INode>();
+			this.name = name;
+			types = new List<NodeBase>();
 		}
 		
-		public string Name { get; private set; }
+		string name;
 		
-		List<INode> types;
+		public override string Name {
+			get { return name; }
+		}
+		
+		List<NodeBase> types;
 	
-		public IList<INode> Children {
+		public override IList<NodeBase> Children {
 			get { return types; }
-		}
-		
-		public IEnumerable<INode> Descendants {
-			get { return TreeTraversal.PreOrder(Children, node => node.Children); }
-		}
-		
-		public IEnumerable<INode> Uses {
-			get { return Descendants.SelectMany(node => node.Uses); }
-		}
-		
-		public IEnumerable<INode> UsedBy {
-			get { return Descendants.SelectMany(node => node.UsedBy); }
-		}
-		
-		public Relationship GetRelationship(INode value)
-		{
-			Relationship r = new Relationship();
-			if (value == this)
-				r.AddRelationship(RelationshipType.Same);
-			if (Uses.Contains(value))
-				r.AddRelationship(RelationshipType.Uses);
-			if (UsedBy.Contains(value))
-				r.AddRelationship(RelationshipType.UsedBy);
-			if (Descendants.Contains(value))
-				r.AddRelationship(RelationshipType.Contains);
-			return r;
 		}
 	}
 }

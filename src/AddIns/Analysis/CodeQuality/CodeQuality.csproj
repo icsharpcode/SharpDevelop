@@ -57,12 +57,10 @@
     <Compile Include="Engine\Dom\AssemblyNode.cs" />
     <Compile Include="Engine\Dom\EventNode.cs" />
     <Compile Include="Engine\Dom\FieldNode.cs" />
-    <Compile Include="Engine\Dom\INode.cs" />
-    <Compile Include="Engine\Dom\IValue.cs" />
+    <Compile Include="Engine\Dom\NodeBase.cs" />
     <Compile Include="Engine\Dom\MethodNode.cs" />
     <Compile Include="Engine\Dom\NamespaceNode.cs" />
     <Compile Include="Engine\Dom\PropertyNode.cs" />
-    <Compile Include="Engine\Dom\Relationship.cs" />
     <Compile Include="Engine\Dom\TypeNode.cs" />
     <Compile Include="Engine\ILAnalyzer.cs" />
     <Compile Include="Engine\AssemblyAnalyzer.cs" />
@@ -90,7 +88,6 @@
     <Compile Include="Gui\NodeIconService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\DependencyColorizer.cs" />
-    <Compile Include="Utils\DoubleKeyDictionary.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IColorizer.cs" />
     <Compile Include="Utils\Utils.cs" />

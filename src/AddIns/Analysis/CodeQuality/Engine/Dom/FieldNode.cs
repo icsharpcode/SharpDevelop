@@ -8,7 +8,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.CodeQuality.Engine.Dom
 {
-	public class FieldNode : INode
+	public class FieldNode : NodeBase
 	{
 		public IField FieldDefinition { get; private set; }
 		
@@ -17,28 +17,12 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 			this.FieldDefinition = fieldDefinition;
 		}
 		
-		public string Name {
+		public override string Name {
 			get { return FieldDefinition.PrintFullName(); }
 		}
 		
-		public IList<INode> Children {
+		public override IList<NodeBase> Children {
 			get { return null; }
-		}
-		
-		public IEnumerable<INode> Uses {
-			get { return Enumerable.Empty<INode>(); }
-		}
-		
-		public IEnumerable<INode> UsedBy {
-			get { return Enumerable.Empty<INode>(); }
-		}
-		
-		public Relationship GetRelationship(INode value)
-		{
-			Relationship r = new Relationship();
-			if (value == this)
-				r.AddRelationship(RelationshipType.Same);
-			return r;
 		}
 	}
 }

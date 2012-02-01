@@ -26,9 +26,9 @@ namespace ICSharpCode.CodeQuality.Gui
 {
 	public class NodeDescriptionViewModel : ViewModelBase
 	{
-		INode node;
+		NodeBase node;
 		
-		public INode Node
+		public NodeBase Node
 		{
 			get { return node; }
 			set {
@@ -39,26 +39,16 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		Relationship relationship;
-		
-		public Relationship Relationship {
-			get { return relationship; }
-			set {
-				relationship = value;
-				base.RaisePropertyChanged(() => Relationship);
-			}
-		}
-		
-		public int Uses {get {return Node.Uses.Count();}}
-		
-		public int UsesBy {get {return Node.UsedBy.Count();}}
+//		public int Uses {get {return Node.Uses.Count();}}
+//		
+//		public int UsesBy {get {return Node.UsedBy.Count();}}
 		
 		public string ClassType
 		{
 			get
 			{
 				var n = node.GetType().Name;
-				Console.WriteLine(n.Substring(0,n.Length -4));
+//				Console.WriteLine(n.Substring(0,n.Length -4));
 				return (n.Substring(0,n.Length -4));
 			}
 		}	

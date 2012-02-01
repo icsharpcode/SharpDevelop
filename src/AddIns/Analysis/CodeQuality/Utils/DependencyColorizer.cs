@@ -13,7 +13,7 @@ namespace ICSharpCode.CodeQuality
 	/// <summary>
 	/// Description of DependencyColorizer.
 	/// </summary>
-	public class DependencyColorizer : IColorizer<Relationship>
+	public class DependencyColorizer : IColorizer<Tuple<int, int>>
 	{
 		private Dictionary<Color, SolidColorBrush> cache;
 		
@@ -22,9 +22,9 @@ namespace ICSharpCode.CodeQuality
 			cache = new Dictionary<Color, SolidColorBrush>();
 		}
 		
-		public SolidColorBrush GetColorBrush(Relationship relationship)
+		public SolidColorBrush GetColorBrush(Tuple<int, int> value)
 		{
-			var color = GetColor(relationship);
+			var color = GetColor(value);
 			if (cache.ContainsKey(color))
 				return cache[color];
 			
@@ -36,24 +36,32 @@ namespace ICSharpCode.CodeQuality
 			return brush;
 		}
 		
-		public Color GetColor(Relationship relationship)
+		public Color GetColor(Tuple<int, int> value)
 		{
-			if (relationship == null)
+			// null or both = 0 => None
+			if (value == null)
 				return Colors.Transparent;
-			
-			if (relationship.Relationships.Any(r => r == RelationshipType.Uses))
-				return Colors.LightGreen;
-			if (relationship.Relationships.Any(r => r == RelationshipType.UsedBy))
-				return Colors.LightBlue;
-			if (relationship.Relationships.Any(r => r == RelationshipType.Same))
+			if (value.Item1 == 0 && value.Item2 == 0)
+				return Colors.Transparent;
+			// both = -1 => Same
+			if (value.Item1 == -1 && value.Item2 == -1)
 				return Colors.Gray;
+			// both > 0 => UsesAndUsedBy
+			if (value.Item1 > 0 && value.Item2 > 0)
+				return Colors.Turquoise;
+			// a > 0 => Uses
+			if (value.Item1 > 0)
+				return Colors.LightGreen;
+			// b > 0 => UsedBy
+			if (value.Item2 > 0)
+				return Colors.LightBlue;
 			
 			return Colors.Transparent;
 		}
 		
-		public SolidColorBrush GetColorBrushMixedWith(Color color, Relationship relationship)
+		public SolidColorBrush GetColorBrushMixedWith(Color color, Tuple<int, int> value)
 		{
-			var mixedColor = GetColor(relationship);
+			var mixedColor = GetColor(value);
 			mixedColor = mixedColor.MixedWith(color);
 			
 			if (cache.ContainsKey(mixedColor))
@@ -66,6 +74,28 @@ namespace ICSharpCode.CodeQuality
 			
 			return brush;
 		}
- 		                                      
+		
+		public string GetText(Tuple<int, int> value)
+		{
+			// null or both = 0 => None
+			if (value == null)
+				return "";
+			if (value.Item1 == 0 && value.Item2 == 0)
+				return "";
+			// both = -1 => Same
+			if (value.Item1 == -1 && value.Item2 == -1)
+				return "";
+			// both > 0 => UsesAndUsedBy
+			if (value.Item1 > 0 && value.Item2 > 0)
+				return value.Item1.ToString();
+			// a > 0 => Uses
+			if (value.Item1 > 0)
+				return value.Item1.ToString();
+			// b > 0 => UsedBy
+			if (value.Item2 > 0)
+				return value.Item2.ToString();
+			
+			return "";
+		}
 	}
 }

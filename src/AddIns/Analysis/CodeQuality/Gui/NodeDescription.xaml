@@ -27,7 +27,7 @@
 				<!-- 
 				<TextBlock Text="{Binding Uses}" Grid.Column="1" Grid.Row="3"></TextBlock>
 				<TextBlock Text="{Binding UsedBy}" Grid.Column="1" Grid.Row="4"></TextBlock>-->
-				<TextBlock Text="{Binding Relationship.InfoText}" Grid.Row="3" Grid.ColumnSpan="2" />
+				<TextBlock Text="{Binding InfoText}" Grid.Row="3" Grid.ColumnSpan="2" />
 			</Grid>
 		</Grid>
 	</Border>

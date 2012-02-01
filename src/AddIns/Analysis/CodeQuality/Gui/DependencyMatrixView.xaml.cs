@@ -45,7 +45,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		}
 		
 		
-		public void Update(IEnumerable<INode> nodes)
+		public void Update(IEnumerable<NodeBase> nodes)
 		{
 			this.Visibility = Visibility.Visible;
 			
@@ -70,7 +70,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			
 		}
 
-		void AddChildrenToMatrix(DependencyMatrix matrix, IEnumerable<INode> nodes)
+		void AddChildrenToMatrix(DependencyMatrix matrix, IEnumerable<NodeBase> nodes)
 		{
 			foreach (var node in nodes) {
 				matrix.AddColumn(node);
@@ -105,7 +105,7 @@ namespace ICSharpCode.CodeQuality.Gui
 
 		void SetVisibleItemsForRows()
 		{
-			List<INode> leftNodes = new List<INode>();
+			List<NodeBase> leftNodes = new List<NodeBase>();
 			foreach (MatrixTreeNode node in leftTree.Items.OfType<MatrixTreeNode>()) {
 				var n = node.Node;
 				leftNodes.Add(n);
@@ -126,7 +126,7 @@ namespace ICSharpCode.CodeQuality.Gui
 
 		void SetVisibleItemsForColumns()
 		{
-			List<INode> topNodes = new List<INode>();
+			List<NodeBase> topNodes = new List<NodeBase>();
 			foreach (MatrixTreeNode node in topTree.Items.OfType<MatrixTreeNode>()) {
 				var n = node.Node;
 				topNodes.Add(n);
@@ -165,7 +165,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			return null;
 		}
 		
-		void MatrixHoveredCellChanged(object sender, HoveredCellEventArgs<Relationship> e)
+		void MatrixHoveredCellChanged(object sender, HoveredCellEventArgs<Tuple<int, int>> e)
 		{
 			// need to add 1 to index, because first item in treeview is invisible root node
 			if (e.HoveredCell.RowIndex < leftTree.Items.Count) {
@@ -174,7 +174,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (e.HoveredCell.ColumnIndex < topTree.Items.Count) {
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
-			nodeDescriptionViewModel.Relationship = e.HoveredCell.Value;
+//			nodeDescriptionViewModel.Tuple<int, int> = e.HoveredCell.Value;
 		}
 		#endregion
 	}

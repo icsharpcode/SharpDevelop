@@ -49,39 +49,106 @@ namespace ICSharpCode.CodeQuality.Engine
 			methodMappings = new Dictionary<IMethod, MethodNode>();
 			cecilMappings = new Dictionary<MemberReference, IEntity>();
 			
+			// first we have to read all types so every method, field or property has a container
 			foreach (var type in compilation.GetAllTypeDefinitions()) {
-				ReadType(type);
-			}
-			foreach (TypeNode type in typeMappings.Values) {
-				foreach (var field in type.TypeDefinition.Fields) {
+				var tn = ReadType(type);
+				
+				foreach (var field in type.Fields) {
 					var node = new FieldNode(field);
 					fieldMappings.Add(field, node);
-					try {
-						var cecilObj = loader.GetCecilObject((IUnresolvedField)field.UnresolvedMember);
+					var cecilObj = loader.GetCecilObject((IUnresolvedField)field.UnresolvedMember);
+					if (cecilObj != null)
 						cecilMappings[cecilObj] = field;
-					} catch (InvalidOperationException) {}
-					type.Children.Add(node);
+					tn.AddChild(node);
 				}
 				
-				foreach (var method in type.TypeDefinition.Methods) {
+				foreach (var method in type.Methods) {
 					var node = new MethodNode(method);
 					methodMappings.Add(method, node);
-					try {
-						var cecilObj = loader.GetCecilObject((IUnresolvedMethod)method.UnresolvedMember);
+					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)method.UnresolvedMember);
+					if (cecilObj != null)
 						cecilMappings[cecilObj] = method;
-					} catch (InvalidOperationException) {}
-					type.Children.Add(node);
+					tn.AddChild(node);
 				}
 			}
+			
 			ILAnalyzer analyzer = new ILAnalyzer(loadedAssemblies.Select(asm => loader.GetCecilObject(asm)).ToArray(), this);
+			int count = methodMappings.Count + fieldMappings.Count;
+			int i  = 0;
+			
 			foreach (var element in methodMappings) {
-				int cc;
-				try {
-					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.UnresolvedMember);
-					analyzer.Analyze(cecilObj.Body, element.Value, out cc);
-				} catch (InvalidOperationException) {}
+				Console.WriteLine("{0} of {1}", ++i, count);
+				var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.UnresolvedMember);
+				if (cecilObj != null)
+					analyzer.Analyze(cecilObj.Body, element.Value);
+				var node = element.Value;
+				var method = element.Key;
+				AddRelationshipsForType(node, method.ReturnType);
+				AddRelationshipsForAttributes(method.Attributes, node);
+				AddRelationshipsForAttributes(method.ReturnTypeAttributes, node);
+				AddRelationshipsForTypeParameters(method.TypeParameters, node);
+				foreach (var param in method.Parameters) {
+					AddRelationshipsForType(node, param.Type);
+					AddRelationshipsForAttributes(param.Attributes, node);
+				}
 			}
+			
+			foreach (var element in fieldMappings) {
+				Console.WriteLine("{0} of {1}", ++i, count);
+				var node = element.Value;
+				var field = element.Key;
+				AddRelationshipsForType(node, field.Type);
+				AddRelationshipsForAttributes(field.Attributes, node);
+			}
+			
 			return new ReadOnlyCollection<AssemblyNode>(assemblyMappings.Values.ToList());
+		}
+		
+		void AddRelationshipsForTypeParameters(IList<ITypeParameter> typeParameters, NodeBase node)
+		{
+			foreach (var param in typeParameters) {
+				AddRelationshipsForAttributes(param.Attributes, node);
+				AddRelationshipsForType(node, param.EffectiveBaseClass);
+			}
+		}
+		
+		void AddRelationshipsForTypes(IEnumerable<IType> directBaseTypes, NodeBase node)
+		{
+			foreach (var baseType in directBaseTypes) {
+				AddRelationshipsForType(node, baseType);
+			}
+		}
+		
+		void AddRelationshipsForAttributes(IList<IAttribute> attributes, NodeBase node)
+		{
+			foreach (var attr in attributes) {
+				node.AddRelationship(methodMappings[attr.Constructor]);
+			}
+		}
+		
+		void AddRelationshipsForType(NodeBase node, IType type)
+		{
+			type.AcceptVisitor(new AnalysisTypeVisitor(this, node));
+		}
+		
+		class AnalysisTypeVisitor : TypeVisitor
+		{
+			NodeBase node;
+			AssemblyAnalyzer context;
+			
+			public AnalysisTypeVisitor(AssemblyAnalyzer context, NodeBase node)
+			{
+				this.context = context;
+				this.node = node;
+			}
+			
+			public override IType VisitTypeDefinition(ITypeDefinition type)
+			{
+				TypeNode  typeNode;
+				if (context.typeMappings.TryGetValue(type, out typeNode))
+					node.AddRelationship(typeNode);
+				return base.VisitTypeDefinition(type);
+			}
 		}
 		
 		IEnumerable<IUnresolvedAssembly> LoadAssemblies()
@@ -101,7 +168,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			var asmDef = loader.GetCecilObject(assembly.AssemblyInfo.UnresolvedAssembly);
 			if (!namespaceMappings.TryGetValue(namespaceName + "," + asmDef.FullName, out result)) {
 				result = new NamespaceNode(namespaceName);
-				assembly.Children.Add(result);
+				assembly.AddChild(result);
 				namespaceMappings.Add(namespaceName + "," + asmDef.FullName, result);
 			}
 			return result;
@@ -117,7 +184,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			return result;
 		}
 		
-		void ReadType(ITypeDefinition type)
+		TypeNode ReadType(ITypeDefinition type)
 		{
 			var asm = GetOrCreateAssembly(type.ParentAssembly);
 			var ns = GetOrCreateNamespace(asm, type.Namespace);
@@ -125,13 +192,14 @@ namespace ICSharpCode.CodeQuality.Engine
 			var node = new TypeNode(type);
 			if (type.DeclaringTypeDefinition != null) {
 				if (typeMappings.TryGetValue(type.DeclaringTypeDefinition, out parent))
-					parent.Children.Add(node);
+					parent.AddChild(node);
 				else
 					throw new Exception("TypeNode not found: " + type.DeclaringTypeDefinition.FullName);
 			} else
-				ns.Children.Add(node);
+				ns.AddChild(node);
 			cecilMappings[loader.GetCecilObject(type.Parts.First())] = type;
 			typeMappings.Add(type, node);
+			return node;
 		}
 		
 		class AssemblyResolver : DefaultAssemblyResolver

@@ -12,13 +12,13 @@ namespace ICSharpCode.CodeQuality.Gui
 	/// </summary>
 	public class MatrixTreeNode : SharpTreeNode
 	{
-		INode node;
+		NodeBase node;
 		
-		public INode Node {
+		public NodeBase Node {
 			get { return node; }
 		}
 		
-		public MatrixTreeNode(INode node)
+		public MatrixTreeNode(NodeBase node)
 		{
 			this.node = node;
 		}

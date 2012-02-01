@@ -19,16 +19,16 @@ namespace ICSharpCode.CodeQuality
 	/// </summary>
 	public static class Extensions
 	{
-		public static void FillTree(SharpTreeView tree, IEnumerable<INode> rootNodes)
+		public static void FillTree(SharpTreeView tree, IEnumerable<NodeBase> rootNodes)
 		{
 			tree.Root = new SharpTreeNode();
 			if (rootNodes != null)
 				CreateItems(rootNodes, tree.Root);
 		}
 		
-		static void CreateItems(IEnumerable<INode> nodes, SharpTreeNode parent)
+		static void CreateItems(IEnumerable<NodeBase> nodes, SharpTreeNode parent)
 		{
-			foreach (INode node in nodes) {
+			foreach (NodeBase node in nodes) {
 				var item = new MatrixTreeNode(node);
 				parent.Children.Add(item);
 				if (node.Children != null)

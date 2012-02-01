@@ -18,7 +18,6 @@ using PointF = System.Drawing.PointF;
 namespace ICSharpCode.CodeQuality.Gui
 {
 	public class MatrixControl<TMatrix, TItem, TValue> : FrameworkElement, IScrollInfo
-		where TValue : IValue
 		where TMatrix : Matrix<TItem, TValue>
 	{
 		public event EventHandler<HoveredCellEventArgs<TValue>> HoveredCellChanged;
@@ -94,7 +93,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				InvalidateVisual();
 		}
 		
-		public void HighlightLine(HeaderType type, INode node)
+		public void HighlightLine(HeaderType type, NodeBase node)
 		{
 			var items = type == HeaderType.Columns ? Matrix.HeaderColumns : Matrix.HeaderRows;
 			for (int i = 0; i < items.Count; i++) {
@@ -137,13 +136,13 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
-		{
-			base.OnMouseDown(e);
-			Relationship relationship = HoveredCell.Value as Relationship;
-			Console.WriteLine("To: " + relationship.To.Name);
-			Console.WriteLine("From:" + relationship.From.Name);
-		}
+//		protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+//		{
+//			base.OnMouseDown(e);
+//			Tuple<int, int> relationship = HoveredCell.Value as Tuple<int, int>;
+//			Console.WriteLine("To: " + relationship.To.Name);
+//			Console.WriteLine("From:" + relationship.From.Name);
+//		}
 		
 		protected void SetHoveredCell()
 		{
@@ -259,9 +258,10 @@ namespace ICSharpCode.CodeQuality.Gui
 						drawingContext.DrawRectangle(brush, null, rect);
 					}
 					
-					if (!RenderZeroes && value != null && value.Text != "0") // rendering zeroes would be distracting
+					string text = Colorizer.GetText(value);
+					if (!RenderZeroes && value != null && text != "0") // rendering zeroes would be distracting
 						drawingContext.DrawImage(
-							CreateText(value.Text),
+							CreateText(text),
 							new Rect(i * CellWidth - offsetDiffX, j * CellHeight - offsetDiffY, CellWidth, CellHeight));
 				}
 			}

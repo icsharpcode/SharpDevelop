@@ -43,5 +43,10 @@ namespace ICSharpCode.CodeQuality.Gui
 			context.AddAssemblyFiles(fileDialog.FileNames);
 			matrix.Update(context.Analyze());
 		}
+		
+		void RefreshClick(object sender, RoutedEventArgs e)
+		{
+			matrix.Update(context.Analyze());
+		}
 	}
 }

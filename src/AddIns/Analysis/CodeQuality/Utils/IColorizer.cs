@@ -16,5 +16,6 @@ namespace ICSharpCode.CodeQuality
 		SolidColorBrush GetColorBrush(TValue value);
 		SolidColorBrush GetColorBrushMixedWith(Color color, TValue value);
 		Color GetColor(TValue value);
+		string GetText(TValue value);
 	}
 }

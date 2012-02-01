@@ -27,13 +27,10 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		private DoubleKeyDictionary<TItem, TItem, TValue> cache;
-
 		protected Matrix()
 		{
 			headerRows = new List<Cell<TItem>>();
 			headerColumns = new List<Cell<TItem>>();
-			cache = new DoubleKeyDictionary<TItem, TItem, TValue>();
 		}
 		
 		public void AddRow(TItem value)
@@ -44,16 +41,6 @@ namespace ICSharpCode.CodeQuality.Gui
 		public void AddColumn(TItem value)
 		{
 			headerColumns.Add(new Cell<TItem>(value));
-		}
-		
-		private TValue GetFromCache(TItem rowIndex, TItem columnIndex)
-		{
-			return cache[rowIndex, columnIndex];
-		}
-		
-		private void SaveToCache(TItem rowIndex, TItem columnIndex, TValue result)
-		{
-			cache.Add(rowIndex, columnIndex, result);
 		}
 		
 		public TValue this[int rowIndex, int columnIndex]
@@ -67,12 +54,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				var from = HeaderRows[rowIndex].Value;
 				var to = HeaderColumns[columnIndex].Value;
 				
-				var cacheResult = GetFromCache(from, to);
-				if (cacheResult != null)
-					return cacheResult;
-				
 				var result = GetCellValue(rowIndex, columnIndex);
-				SaveToCache(from, to, result);
 				return result;
 			}
 		}
