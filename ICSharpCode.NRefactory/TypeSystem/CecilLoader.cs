@@ -1944,7 +1944,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new NotSupportedException ("This instance contains no cecil references.");
 			object result;
 			if (!typeSystemTranslationTable.TryGetValue (typeSystemObject, out result))
-				throw new InvalidOperationException ("No cecil reference stored for " + typeSystemObject);
+				return null;
 			return result as T;
 		}
 		
