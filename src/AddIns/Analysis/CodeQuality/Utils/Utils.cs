@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using ICSharpCode.CodeQuality.Engine.Dom;
 using Mono.Cecil;
 
 namespace ICSharpCode.CodeQuality
@@ -12,26 +13,32 @@ namespace ICSharpCode.CodeQuality
 	/// <summary>
 	/// Description of Utils.
 	/// </summary>
-	public class Utils
+	public static class Utils
 	{
 		[DllImport("gdi32.dll")]
 		public static extern bool DeleteObject(IntPtr hObject);
-	}
-	
-	public class AssemblyNameReferenceComparer : IEqualityComparer<AssemblyNameReference>
-	{
-		public bool Equals(AssemblyNameReference x, AssemblyNameReference y)
+		
+		public static string GetInfoText(this NodeBase left, NodeBase top)
 		{
-			if (x == y) return true;
-			if (x != null && y != null)
-				return x.FullName == y.FullName;
-			return false;
+			int item1 = left.GetUses(top);
+			int item2 = top.GetUses(left);
+			
+			string text = GetText(item1, item2);
+			
+			return string.Format("{0} {1} {2}", left.Name, text, top.Name);
 		}
 		
-		public int GetHashCode(AssemblyNameReference obj)
+		static string GetText(int item1, int item2)
 		{
-			if (obj == null) return 0;
-			return obj.FullName.GetHashCode();
+			if (item1 == -1 && item2 == -1)
+				return "is the same as";
+			if (item1 > 0 && item2 > 0)
+				return "uses and is used by";
+			if (item1 > 0)
+				return "uses";
+			if (item2 > 0)
+				return "is used by";
+			return "is not related to";
 		}
 	}
 }

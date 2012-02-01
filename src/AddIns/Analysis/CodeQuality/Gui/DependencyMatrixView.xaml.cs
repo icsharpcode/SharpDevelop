@@ -144,6 +144,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Rows, n.Node);
 				leftTree.SelectedItem = n;
+				UpdateInfoText();
 			}
 		}
 		
@@ -154,6 +155,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Columns, n.Node);
 				topTree.SelectedItem = n;
+				UpdateInfoText();
 			}
 		}
 		
@@ -174,7 +176,15 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (e.HoveredCell.ColumnIndex < topTree.Items.Count) {
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
-//			nodeDescriptionViewModel.Tuple<int, int> = e.HoveredCell.Value;
+			UpdateInfoText();
+		}
+
+		void UpdateInfoText()
+		{
+			var left = leftTree.SelectedItem as MatrixTreeNode;
+			var top = topTree.SelectedItem as MatrixTreeNode;
+			if (left != null && top != null)
+				nodeDescriptionViewModel.InfoText = left.Node.GetInfoText(top.Node);
 		}
 		#endregion
 	}

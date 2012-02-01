@@ -8,6 +8,7 @@ using System.Linq;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Gui;
 using Mono.Cecil;
 
 namespace ICSharpCode.CodeQuality.Engine
@@ -24,8 +25,11 @@ namespace ICSharpCode.CodeQuality.Engine
 		internal Dictionary<ITypeDefinition, TypeNode> typeMappings;
 		internal Dictionary<IMethod, MethodNode> methodMappings;
 		internal Dictionary<IField, FieldNode> fieldMappings;
+		internal Dictionary<IProperty, PropertyNode> propertyMappings;
 		internal Dictionary<MemberReference, IEntity> cecilMappings;
 		List<string> fileNames;
+		
+		internal IProgressMonitor progressMonitor;
 		
 		public AssemblyAnalyzer()
 		{
@@ -47,6 +51,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			typeMappings = new Dictionary<ITypeDefinition, TypeNode>();
 			fieldMappings = new Dictionary<IField, FieldNode>();
 			methodMappings = new Dictionary<IMethod, MethodNode>();
+			propertyMappings = new Dictionary<IProperty, PropertyNode>();
 			cecilMappings = new Dictionary<MemberReference, IEntity>();
 			
 			// first we have to read all types so every method, field or property has a container
@@ -70,14 +75,33 @@ namespace ICSharpCode.CodeQuality.Engine
 						cecilMappings[cecilObj] = method;
 					tn.AddChild(node);
 				}
+				
+				foreach (var property in type.Properties) {
+					var node = new PropertyNode(property);
+					propertyMappings.Add(property, node);
+					var cecilPropObj = loader.GetCecilObject((IUnresolvedProperty)property.UnresolvedMember);
+					if (cecilPropObj != null)
+						cecilMappings[cecilPropObj] = property;
+					if (property.CanGet) {
+						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)property.Getter.UnresolvedMember);
+						if (cecilMethodObj != null)
+							cecilMappings[cecilMethodObj] = property;
+					}
+					if (property.CanSet) {
+						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)property.Setter.UnresolvedMember);
+						if (cecilMethodObj != null)
+							cecilMappings[cecilMethodObj] = property;
+					}
+					tn.AddChild(node);
+				}
 			}
 			
 			ILAnalyzer analyzer = new ILAnalyzer(loadedAssemblies.Select(asm => loader.GetCecilObject(asm)).ToArray(), this);
-			int count = methodMappings.Count + fieldMappings.Count;
+			int count = methodMappings.Count + fieldMappings.Count + propertyMappings.Count;
 			int i  = 0;
 			
 			foreach (var element in methodMappings) {
-				Console.WriteLine("{0} of {1}", ++i, count);
+				ReportProgress(++i / (double)count);
 				var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.UnresolvedMember);
 				if (cecilObj != null)
 					analyzer.Analyze(cecilObj.Body, element.Value);
@@ -94,14 +118,39 @@ namespace ICSharpCode.CodeQuality.Engine
 			}
 			
 			foreach (var element in fieldMappings) {
-				Console.WriteLine("{0} of {1}", ++i, count);
+				ReportProgress(++i / (double)count);
 				var node = element.Value;
 				var field = element.Key;
 				AddRelationshipsForType(node, field.Type);
 				AddRelationshipsForAttributes(field.Attributes, node);
 			}
 			
+			foreach (var element in propertyMappings) {
+				ReportProgress(++i / (double)count);
+				var node = element.Value;
+				var property = element.Key;
+				if (property.CanGet) {
+					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.Getter.UnresolvedMember);
+					if (cecilObj != null)
+						analyzer.Analyze(cecilObj.Body, node);
+				}
+				if (property.CanSet) {
+					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)element.Key.Setter.UnresolvedMember);
+					if (cecilObj != null)
+						analyzer.Analyze(cecilObj.Body, node);
+				}
+				AddRelationshipsForType(node, property.ReturnType);
+				AddRelationshipsForAttributes(property.Attributes, node);
+			}
+			
 			return new ReadOnlyCollection<AssemblyNode>(assemblyMappings.Values.ToList());
+		}
+		
+		void ReportProgress(double progress)
+		{
+			if (progressMonitor != null) {
+				progressMonitor.Progress = progress;
+			}
 		}
 		
 		void AddRelationshipsForTypeParameters(IList<ITypeParameter> typeParameters, NodeBase node)

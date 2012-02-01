@@ -12,10 +12,15 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 {
 	public class PropertyNode : NodeBase
 	{
+		public IProperty PropertyDefinition { get; private set; }
+		
+		public PropertyNode(IProperty propertyDefinition)
+		{
+			this.PropertyDefinition = propertyDefinition;
+		}
+		
 		public override string Name {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return PropertyDefinition.PrintFullName(); }
 		}
 		
 		public override IList<NodeBase> Children {

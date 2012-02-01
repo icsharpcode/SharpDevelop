@@ -27,31 +27,37 @@ namespace ICSharpCode.CodeQuality.Engine
 			this.mappings = mappings;
 		}
 		
-		public void Analyze(MethodBody body, MethodNode analyzedMethod)
+		public void Analyze(MethodBody body, NodeBase analyzedNode)
 		{
-			analyzedMethod.CyclomaticComplexity = 0;
+			if (analyzedNode is MethodNode)
+				((MethodNode)analyzedNode).CyclomaticComplexity = 0;
 			
 			if (body == null)
 				return;
 			
 			foreach (var instruction in body.Instructions) {
 				// IL cyclomatic complexity
-				if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
-					analyzedMethod.CyclomaticComplexity++;
+				if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch && analyzedNode is MethodNode)
+					((MethodNode)analyzedNode).CyclomaticComplexity++;
 
 				var operand = ReadOperand(instruction);
 				
 				if (operand is MethodReference) {
 					var md = ((MethodReference)operand).Resolve();
 					if (md != null && assemblies.Contains(md.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(md)) {
-						var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md.Resolve()]];
-						analyzedMethod.AddRelationship(methodNode);
+						if (md.IsGetter || md.IsSetter) {
+							var propertyNode = mappings.propertyMappings[(IProperty)mappings.cecilMappings[md]];
+							analyzedNode.AddRelationship(propertyNode);
+						} else {
+							var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md]];
+							analyzedNode.AddRelationship(methodNode);
+						}
 					}
 				} else if (operand is FieldReference) {
 					var fd = ((FieldReference)operand).Resolve();
 					if (fd != null && assemblies.Contains(fd.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(fd)) {
 						var fieldNode = mappings.fieldMappings[(IField)mappings.cecilMappings[fd]];
-						analyzedMethod.AddRelationship(fieldNode);
+						analyzedNode.AddRelationship(fieldNode);
 					}
 				}
 			}

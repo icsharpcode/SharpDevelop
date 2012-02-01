@@ -11,6 +11,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.CodeQuality.Engine;
+using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQuality.Gui
@@ -41,12 +42,13 @@ namespace ICSharpCode.CodeQuality.Gui
 				return;
 			
 			context.AddAssemblyFiles(fileDialog.FileNames);
-			matrix.Update(context.Analyze());
+			RefreshClick(null, null);
 		}
 		
 		void RefreshClick(object sender, RoutedEventArgs e)
 		{
-			matrix.Update(context.Analyze());
+			using (context.progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("Analysis"))
+				matrix.Update(context.Analyze());
 		}
 	}
 }
