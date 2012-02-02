@@ -26,6 +26,7 @@ namespace ICSharpCode.CodeQuality.Engine
 		internal Dictionary<IMethod, MethodNode> methodMappings;
 		internal Dictionary<IField, FieldNode> fieldMappings;
 		internal Dictionary<IProperty, PropertyNode> propertyMappings;
+		internal Dictionary<IEvent, EventNode> eventMappings;
 		internal Dictionary<MemberReference, IEntity> cecilMappings;
 		List<string> fileNames;
 		
@@ -52,6 +53,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			fieldMappings = new Dictionary<IField, FieldNode>();
 			methodMappings = new Dictionary<IMethod, MethodNode>();
 			propertyMappings = new Dictionary<IProperty, PropertyNode>();
+			eventMappings = new Dictionary<IEvent, EventNode>();
 			cecilMappings = new Dictionary<MemberReference, IEntity>();
 			
 			// first we have to read all types so every method, field or property has a container
@@ -92,6 +94,15 @@ namespace ICSharpCode.CodeQuality.Engine
 						if (cecilMethodObj != null)
 							cecilMappings[cecilMethodObj] = property;
 					}
+					tn.AddChild(node);
+				}
+				
+				foreach (var @event in type.Events) {
+					var node = new EventNode(@event);
+					eventMappings.Add(@event, node);
+					var cecilObj = loader.GetCecilObject((IUnresolvedEvent)@event.UnresolvedMember);
+					if (cecilObj != null)
+						cecilMappings[cecilObj] = @event;
 					tn.AddChild(node);
 				}
 			}
@@ -141,6 +152,14 @@ namespace ICSharpCode.CodeQuality.Engine
 				}
 				AddRelationshipsForType(node, property.ReturnType);
 				AddRelationshipsForAttributes(property.Attributes, node);
+			}
+			
+			foreach (var element in eventMappings) {
+				ReportProgress(++i / (double)count);
+				var node = element.Value;
+				var @event = element.Key;
+				AddRelationshipsForType(node, @event.ReturnType);
+				AddRelationshipsForAttributes(@event.Attributes, node);
 			}
 			
 			return new ReadOnlyCollection<AssemblyNode>(assemblyMappings.Values.ToList());

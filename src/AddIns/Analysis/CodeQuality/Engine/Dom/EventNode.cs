@@ -12,10 +12,15 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 {
 	public class EventNode : NodeBase
 	{
+		public IEvent EventDefinition { get; private set; }
+		
+		public EventNode(IEvent eventDefinition)
+		{
+			this.EventDefinition = eventDefinition;
+		}
+		
 		public override string Name {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return EventDefinition.PrintFullName(); }
 		}
 		
 		public override IList<NodeBase> Children {
