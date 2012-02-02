@@ -307,12 +307,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				case "=":
 				case "==":
 					GetPreviousToken (ref tokenIndex, false);
-					
 					var expressionOrVariableDeclaration = GetExpressionAt (tokenIndex);
 					if (expressionOrVariableDeclaration == null)
 						return null;
 					
 					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					
 					if (resolveResult == null)
 						return null;
 					if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
@@ -509,6 +509,27 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
+				
+				if (n is IdentifierExpression) {
+					var bop = n.Parent as BinaryOperatorExpression;
+					Expression evaluationExpr = null;
+					
+					if (bop != null && bop.Right == n && (bop.Operator == BinaryOperatorType.Equality || bop.Operator == BinaryOperatorType.InEquality)) {
+						evaluationExpr = bop.Left;
+					}
+					// check for compare to enum case 
+					if (evaluationExpr != null) {
+						resolveResult = ResolveExpression (identifierStart.Item1, evaluationExpr, identifierStart.Item3);
+						if (resolveResult != null && resolveResult.Item1.Type.Kind == TypeKind.Enum) {
+							var wrapper = new CompletionDataWrapper (this);
+							AddContextCompletion (wrapper, resolveResult.Item2, evaluationExpr);
+							AddEnumMembers (wrapper, resolveResult.Item1.Type, resolveResult.Item2);
+							AutoCompleteEmptyMatch = false;
+							return wrapper.Result;
+						}
+					}
+				}
+				
 				
 				if (n is Identifier && n.Parent is ForeachStatement) {
 					if (controlSpace)
