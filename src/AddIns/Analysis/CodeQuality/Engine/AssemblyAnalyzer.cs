@@ -103,6 +103,21 @@ namespace ICSharpCode.CodeQuality.Engine
 					var cecilObj = loader.GetCecilObject((IUnresolvedEvent)@event.UnresolvedMember);
 					if (cecilObj != null)
 						cecilMappings[cecilObj] = @event;
+					if (@event.CanAdd) {
+						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)@event.AddAccessor.UnresolvedMember);
+						if (cecilMethodObj != null)
+							cecilMappings[cecilMethodObj] = @event;
+					}
+					if (@event.CanInvoke) {
+						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)@event.InvokeAccessor.UnresolvedMember);
+						if (cecilMethodObj != null)
+							cecilMappings[cecilMethodObj] = @event;
+					}
+					if (@event.CanRemove) {
+						var cecilMethodObj = loader.GetCecilObject((IUnresolvedMethod)@event.RemoveAccessor.UnresolvedMember);
+						if (cecilMethodObj != null)
+							cecilMappings[cecilMethodObj] = @event;
+					}
 					tn.AddChild(node);
 				}
 			}
@@ -158,6 +173,21 @@ namespace ICSharpCode.CodeQuality.Engine
 				ReportProgress(++i / (double)count);
 				var node = element.Value;
 				var @event = element.Key;
+				if (@event.CanAdd) {
+					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)@event.AddAccessor.UnresolvedMember);
+					if (cecilObj != null)
+						analyzer.Analyze(cecilObj.Body, node);
+				}
+				if (@event.CanInvoke) {
+					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)@event.InvokeAccessor.UnresolvedMember);
+					if (cecilObj != null)
+						analyzer.Analyze(cecilObj.Body, node);
+				}
+				if (@event.CanRemove) {
+					var cecilObj = loader.GetCecilObject((IUnresolvedMethod)@event.RemoveAccessor.UnresolvedMember);
+					if (cecilObj != null)
+						analyzer.Analyze(cecilObj.Body, node);
+				}
 				AddRelationshipsForType(node, @event.ReturnType);
 				AddRelationshipsForAttributes(@event.Attributes, node);
 			}

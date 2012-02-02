@@ -48,6 +48,9 @@ namespace ICSharpCode.CodeQuality.Engine
 						if (md.IsGetter || md.IsSetter) {
 							var propertyNode = mappings.propertyMappings[(IProperty)mappings.cecilMappings[md]];
 							analyzedNode.AddRelationship(propertyNode);
+						} else if (md.IsAddOn || md.IsRemoveOn) {
+							var eventNode = mappings.eventMappings[(IEvent)mappings.cecilMappings[md]];
+							analyzedNode.AddRelationship(eventNode);
 						} else {
 							var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md]];
 							analyzedNode.AddRelationship(methodNode);
@@ -63,7 +66,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			}
 		}
 		
-		public object ReadOperand(Instruction instruction)
+		object ReadOperand(Instruction instruction)
 		{
 			while (instruction.Operand is Instruction)
 				instruction = (Instruction)instruction.Operand;
