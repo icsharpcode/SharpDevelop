@@ -86,7 +86,12 @@ namespace ICSharpCode.NRefactory.GtkDemo
 			buttonGenerate.Clicked += CSharpGenerateCodeButtonClick;
 			HandleClicked (this, EventArgs.Empty);
 		}
-
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			Application.Quit ();
+		}
+		
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			var node = unit.GetNodeAt (editor.Caret.Line, editor.Caret.Column);
