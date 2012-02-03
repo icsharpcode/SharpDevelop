@@ -115,12 +115,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 
-		void MainFormActivated(object sender, EventArgs e)
+		static void MainFormActivated(object sender, EventArgs e)
 		{
 			if (wasChangedExternally) {
 				wasChangedExternally = false;
 
-				if (MessageService.ShowCustomDialog(MessageService.DefaultMessageBoxTitle, "${res:ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage}", 0, 1, "${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}") == 0) {
+				if (ProjectService.OpenSolution != null && MessageService.ShowCustomDialog(MessageService.DefaultMessageBoxTitle, "${res:ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage}", 0, 1, "${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}") == 0) {
 					ProjectService.LoadSolution(ProjectService.OpenSolution.FileName);
 				}
 			}
