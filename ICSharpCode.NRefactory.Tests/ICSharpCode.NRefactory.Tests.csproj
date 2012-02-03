@@ -208,6 +208,21 @@
     <Compile Include="CSharp\CodeCompletion\VariableDeclarationStatementTests.cs" />
     <Compile Include="CSharp\CodeCompletion\NameContextTests.cs" />
     <Compile Include="CSharp\ContextAction\SplitDeclarationAndAssignmentTests.cs" />
+    <Compile Include="CSharp\ContextAction\SplitStringTests.cs" />
+    <Compile Include="CSharp\ContextAction\ReplaceEmptyStringTests.cs" />
+    <Compile Include="CSharp\ContextAction\RemoveBracesTests.cs" />
+    <Compile Include="CSharp\ContextAction\RemoveBackingStoreTests.cs" />
+    <Compile Include="CSharp\ContextAction\InvertIfTests.cs" />
+    <Compile Include="CSharp\ContextAction\IntroduceFormatItemTests.cs" />
+    <Compile Include="CSharp\ContextAction\InsertAnonymousMethodSignatureTests.cs" />
+    <Compile Include="CSharp\ContextAction\GenerateSwitchLabelsTests.cs" />
+    <Compile Include="CSharp\ContextAction\GenerateGetterTests.cs" />
+    <Compile Include="CSharp\ContextAction\FlipOperatorArgumentsTests.cs" />
+    <Compile Include="CSharp\ContextAction\ConvertHexToDecTests.cs" />
+    <Compile Include="CSharp\ContextAction\ConvertDecToHexTests.cs" />
+    <Compile Include="CSharp\ContextAction\CheckIfParameterIsNullTests.cs" />
+    <Compile Include="CSharp\ContextAction\ConvertForeachToForTests.cs" />
+    <Compile Include="CSharp\ContextAction\AddAnotherAccessorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
@@ -227,4 +242,13 @@
     <Folder Include="CSharp\ContextAction\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

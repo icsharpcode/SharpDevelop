@@ -1,5 +1,5 @@
 // 
-// SplitDeclarationAndAssignmentTests.cs
+// ReplaceEmptyStringTests.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -30,18 +30,18 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
 	[TestFixture]
-	public class SplitDeclarationAndAssignmentTests : ContextActionTestBase
+	public class ReplaceEmptyStringTests : ContextActionTestBase
 	{
 		[Test()]
-		public void TestSimpleExpression ()
+		public void TestSimpleString()
 		{
 			string result = RunContextAction (
-				new SplitDeclarationAndAssignment (),
+				new ReplaceEmptyString (),
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		int $myInt = 5 + 3 * (2 - 10);" + Environment.NewLine +
+				"		string str = $\"\";" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}"
 			);
@@ -51,56 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		int myInt;" + Environment.NewLine +
-				"		myInt = 5 + 3 * (2 - 10);" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}", result);
-		}
-		
-		[Test()]
-		public void TestVarType ()
-		{
-			string result = RunContextAction (
-				new SplitDeclarationAndAssignment (),
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		var $aVar = this;" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}"
-			);
-			Assert.AreEqual (
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		var aVar;" + Environment.NewLine +
-				"		aVar = this;" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}", result);
-		}
-		
-		[Test()]
-		public void TestForStatement ()
-		{
-			string result = RunContextAction (
-				new SplitDeclarationAndAssignment (),
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		for (int $i = 1; i < 10; i++) {}" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}"
-			);
-			Assert.AreEqual (
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		int i;" + Environment.NewLine +
-				"		for (i = 1; i < 10; i++) {}" + Environment.NewLine +
+				"		string str = string.Empty;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
