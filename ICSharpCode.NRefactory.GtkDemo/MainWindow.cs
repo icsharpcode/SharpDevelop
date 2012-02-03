@@ -81,7 +81,8 @@ namespace ICSharpCode.NRefactory.GtkDemo
 			this.editor.Document.MimeType = "text/x-csharp";
 			this.editor.Options.FontName = "Mono 14";
 			this.editor.Caret.PositionChanged += HandlePositionChanged;
-			this.editor.Text = File.ReadAllText ("/Users/mike/work/NRefactory/ICSharpCode.NRefactory.GtkDemo/CSharpDemo.cs");
+			string path = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location), "CSharpDemo.cs");
+			this.editor.Text = File.ReadAllText (path);
 			buttonParse.Clicked += HandleClicked;
 			buttonGenerate.Clicked += CSharpGenerateCodeButtonClick;
 			HandleClicked (this, EventArgs.Empty);
