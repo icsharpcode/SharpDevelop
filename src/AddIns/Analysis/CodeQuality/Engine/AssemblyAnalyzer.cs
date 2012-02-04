@@ -46,6 +46,31 @@ namespace ICSharpCode.CodeQuality.Engine
 			fileNames.AddRange(files);
 		}
 		
+		HashSet<NodeBase> outgoingEdges = new HashSet<NodeBase>();
+		
+		public void AddEdge(NodeBase target)
+		{
+			// copies all ancestors of target into a hashset
+			// duplicates are removed
+			while (target != null) {
+				if (!outgoingEdges.Add(target))
+					break;
+				target = target.Parent;
+			}
+		}
+		
+		void CreateEdges(NodeBase source)
+		{
+			// add edges to source
+			while (source != null) {
+				foreach (NodeBase n in outgoingEdges) {
+					source.AddRelationship(n);
+				}
+				source = source.Parent;
+			}
+			outgoingEdges.Clear();
+		}
+		
 		public ReadOnlyCollection<AssemblyNode> Analyze()
 		{
 			IUnresolvedAssembly[] loadedAssemblies = LoadAssemblies().ToArray();
@@ -134,6 +159,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				ReportProgress(++i / (double)count);
 				AddRelationshipsForTypes(element.Key.DirectBaseTypes, element.Value);
 				AddRelationshipsForAttributes(element.Key.Attributes, element.Value);
+				CreateEdges(element.Value);
 			}
 			
 			foreach (var element in methodMappings) {
@@ -151,6 +177,7 @@ namespace ICSharpCode.CodeQuality.Engine
 					AddRelationshipsForType(node, param.Type);
 					AddRelationshipsForAttributes(param.Attributes, node);
 				}
+				CreateEdges(element.Value);
 			}
 			
 			foreach (var element in fieldMappings) {
@@ -159,6 +186,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				var field = element.Key;
 				AddRelationshipsForType(node, field.Type);
 				AddRelationshipsForAttributes(field.Attributes, node);
+				CreateEdges(element.Value);
 			}
 			
 			foreach (var element in propertyMappings) {
@@ -177,6 +205,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				}
 				AddRelationshipsForType(node, property.ReturnType);
 				AddRelationshipsForAttributes(property.Attributes, node);
+				CreateEdges(element.Value);
 			}
 			
 			foreach (var element in eventMappings) {
@@ -200,6 +229,7 @@ namespace ICSharpCode.CodeQuality.Engine
 				}
 				AddRelationshipsForType(node, @event.ReturnType);
 				AddRelationshipsForAttributes(@event.Attributes, node);
+				CreateEdges(element.Value);
 			}
 			
 			return new ReadOnlyCollection<AssemblyNode>(assemblyMappings.Values.ToList());
@@ -232,7 +262,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			try {
 				foreach (var attr in attributes) {
 					if (attr.Constructor != null)
-						node.AddRelationship(methodMappings[attr.Constructor]);
+						AddEdge(methodMappings[attr.Constructor]);
 				}
 			} catch (NotSupportedException nse) {
 				// HACK : workaround for bug in NR5's attribute blob parser.
@@ -260,7 +290,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			{
 				TypeNode typeNode;
 				if (context.typeMappings.TryGetValue(type, out typeNode))
-					node.AddRelationship(typeNode);
+					context.AddEdge(typeNode);
 				return base.VisitTypeDefinition(type);
 			}
 		}

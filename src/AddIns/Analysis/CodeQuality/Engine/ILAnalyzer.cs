@@ -49,20 +49,20 @@ namespace ICSharpCode.CodeQuality.Engine
 						if (md != null && assemblies.Contains(md.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(md)) {
 							if (md.IsGetter || md.IsSetter) {
 								var propertyNode = mappings.propertyMappings[(IProperty)mappings.cecilMappings[md]];
-								analyzedNode.AddRelationship(propertyNode);
+								mappings.AddEdge(propertyNode);
 							} else if (md.IsAddOn || md.IsRemoveOn) {
 								var eventNode = mappings.eventMappings[(IEvent)mappings.cecilMappings[md]];
-								analyzedNode.AddRelationship(eventNode);
+								mappings.AddEdge(eventNode);
 							} else {
 								var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md]];
-								analyzedNode.AddRelationship(methodNode);
+								mappings.AddEdge(methodNode);
 							}
 						}
 					} else if (operand is FieldReference) {
 						var fd = ((FieldReference)operand).Resolve();
 						if (fd != null && assemblies.Contains(fd.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(fd)) {
 							var fieldNode = mappings.fieldMappings[(IField)mappings.cecilMappings[fd]];
-							analyzedNode.AddRelationship(fieldNode);
+							mappings.AddEdge(fieldNode);
 						}
 					}
 				} catch (AssemblyResolutionException are) {

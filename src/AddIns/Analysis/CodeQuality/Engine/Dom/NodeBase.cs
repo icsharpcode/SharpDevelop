@@ -25,20 +25,9 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 			}
 		}
 		
-		public void AddRelationship(NodeBase reference)
-		{
-			foreach (NodeBase pa in AncestorsAndSelf) {
-				if (reference.AncestorsAndSelf.Contains(pa)) break;
-				foreach (NodeBase pb in reference.AncestorsAndSelf) {
-					if (AncestorsAndSelf.Contains(pb)) break;
-					pa.AddRelationshipInternal(pb);
-				}
-			}
-		}
-		
 		protected Dictionary<NodeBase, int> relationships = new Dictionary<NodeBase, int>();
 		
-		void AddRelationshipInternal(NodeBase reference)
+		public void AddRelationship(NodeBase reference)
 		{
 			if (!relationships.ContainsKey(reference))
 				relationships[reference] = 0;
