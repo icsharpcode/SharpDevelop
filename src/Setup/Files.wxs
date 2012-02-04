@@ -1017,7 +1017,7 @@
 								</Directory>
 								<Directory Id="CodeQualityFolder" Name="CodeQuality">
 									<Component Guid="E821D255-269F-44BB-992E-BC98B8349B1C" Id="CodeQualityFiles" DiskId="1">
-										<File Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.CodeQuality.dll" Id="ICSharpCode.CodeQuality.dll" Name="CodeQuality.dll" Assembly=".net" AssemblyApplication="ICSharpCode.CodeQuality.dll" AssemblyManifest="ICSharpCode.CodeQuality.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.CodeQuality.dll" Id="ICSharpCode.CodeQuality.dll" Name="ICSharpCode.CodeQuality.dll" Assembly=".net" AssemblyApplication="ICSharpCode.CodeQuality.dll" AssemblyManifest="ICSharpCode.CodeQuality.dll" KeyPath="yes" />
 										<File Id="ICSharpCode.NewNRefactory.dll_CQA" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.NewNRefactory.dll" />
 										<File Id="ICSharpCode.NRefactory.CSharp.dll_CQA" Name="ICSharpCode.NRefactory.CSharp.dll" Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.NRefactory.CSharp.dll" />
 										<File Source="..\..\AddIns\Analysis\CodeQuality\CodeQuality.addin" Id="CodeQuality.addin" Name="CodeQuality.addin" />
