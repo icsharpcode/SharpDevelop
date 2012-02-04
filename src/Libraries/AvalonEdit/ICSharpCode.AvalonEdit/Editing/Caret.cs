@@ -351,7 +351,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
 			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
-			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineBottom);
+			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);
 			
 			return new Rect(xPos,
 			                lineTop,
