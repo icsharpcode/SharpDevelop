@@ -47,8 +47,10 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		void RefreshClick(object sender, RoutedEventArgs e)
 		{
+			introBlock.Visibility = Visibility.Collapsed;
 			using (context.progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("Analysis"))
 				matrix.Update(context.Analyze());
+			matrix.Visibility = Visibility.Visible;
 		}
 	}
 }

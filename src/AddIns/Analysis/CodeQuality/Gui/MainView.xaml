@@ -9,7 +9,10 @@
 		</ToolBar>
 		<TabControl>
 			<TabItem Header="Dependency Matrix">
-				<gui:DependencyMatrixView x:Name="matrix"/>
+				<Grid>
+					<TextBlock x:Name="introBlock" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Please select an assembly ..." FontSize="15" />
+					<gui:DependencyMatrixView Visibility="Collapsed" x:Name="matrix" />
+				</Grid>
 			</TabItem>
 		</TabControl>
 	</DockPanel>

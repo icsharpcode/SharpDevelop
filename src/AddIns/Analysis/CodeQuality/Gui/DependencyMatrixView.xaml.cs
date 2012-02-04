@@ -33,9 +33,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		public DependencyMatrixView()
 		{
 			InitializeComponent();
-			Visibility = Visibility.Hidden;
-			popUp.IsOpen = true;
-
+			
 			nodeDescriptionViewModel = new NodeDescriptionViewModel();
 			this.inform.DataContext = nodeDescriptionViewModel;
 			topTree.Root = new ICSharpCode.TreeView.SharpTreeNode();
@@ -47,11 +45,6 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		public void Update(IEnumerable<NodeBase> nodes)
 		{
-			this.Visibility = Visibility.Visible;
-			
-			popUp.IsOpen = false;
-			popUp.StaysOpen = true;
-
 			Extensions.FillTree(topTree, nodes);
 			Extensions.FillTree(leftTree, nodes);
 			
