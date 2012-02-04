@@ -35,6 +35,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		TextBottom,
 		/// <summary>
+		/// The middle between TextTop and TextBottom.
+		/// </summary>
+		TextMiddle,
+		/// <summary>
 		/// Returns the baseline of the text.
 		/// </summary>
 		Baseline

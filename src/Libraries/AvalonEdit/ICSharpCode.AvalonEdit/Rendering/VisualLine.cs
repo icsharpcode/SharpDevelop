@@ -272,6 +272,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 							return pos + tl.Baseline - textView.DefaultBaseline;
 						case VisualYPosition.TextBottom:
 							return pos + tl.Baseline - textView.DefaultBaseline + textView.DefaultLineHeight;
+						case VisualYPosition.TextMiddle:
+							return pos + tl.Baseline - textView.DefaultBaseline + textView.DefaultLineHeight / 2;
 						case VisualYPosition.Baseline:
 							return pos + tl.Baseline;
 						default:
