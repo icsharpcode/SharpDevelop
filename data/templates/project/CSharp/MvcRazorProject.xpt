@@ -320,6 +320,10 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			</namespaces>
 		</pages>
 	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
 </configuration>
 ]]>
 			</File>

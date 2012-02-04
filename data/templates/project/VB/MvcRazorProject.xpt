@@ -334,6 +334,10 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			</namespaces>
 		</pages>
 	</system.web.webPages.razor>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
 </configuration>
 ]]>
       </File>

@@ -69,6 +69,10 @@ End Class
 			</namespaces>
 		</pages>
 	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
 </configuration>
 ]]>
 			</File>
