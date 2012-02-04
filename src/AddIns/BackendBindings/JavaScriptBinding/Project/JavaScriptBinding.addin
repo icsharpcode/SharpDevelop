@@ -22,4 +22,11 @@
 			projectfileextension=".csproj"
 			class="ICSharpCode.JavaScriptBinding.JavaScriptParser"/>
 	</Path>
+	
+	<Path name="/Workspace/Icons">
+		<Icon
+			id="JavaScript.File"
+			extensions=".js"
+			resource="JScript.FileIcon"/>
+	</Path>
 </AddIn>
