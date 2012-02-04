@@ -123,8 +123,14 @@ namespace ICSharpCode.CodeQuality.Engine
 			}
 			
 			ILAnalyzer analyzer = new ILAnalyzer(loadedAssemblies.Select(asm => loader.GetCecilObject(asm)).ToArray(), this);
-			int count = methodMappings.Count + fieldMappings.Count + propertyMappings.Count;
+			int count = typeMappings.Count + methodMappings.Count + fieldMappings.Count + propertyMappings.Count;
 			int i  = 0;
+			
+			foreach (var element in typeMappings) {
+				ReportProgress(++i / (double)count);
+				AddRelationshipsForTypes(element.Key.DirectBaseTypes, element.Value);
+				AddRelationshipsForAttributes(element.Key.Attributes, element.Value);
+			}
 			
 			foreach (var element in methodMappings) {
 				ReportProgress(++i / (double)count);
@@ -242,7 +248,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			
 			public override IType VisitTypeDefinition(ITypeDefinition type)
 			{
-				TypeNode  typeNode;
+				TypeNode typeNode;
 				if (context.typeMappings.TryGetValue(type, out typeNode))
 					node.AddRelationship(typeNode);
 				return base.VisitTypeDefinition(type);

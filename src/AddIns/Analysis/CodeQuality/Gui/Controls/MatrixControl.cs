@@ -284,7 +284,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				                                  i * CellHeight - offsetDiffY));
 		}
 		
-		public ImageSource CreateText(string text)
+		ImageSource CreateText(string text)
 		{
 			if (imgs.ContainsKey(text))
 				return imgs[text];

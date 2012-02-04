@@ -159,7 +159,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		MatrixTreeNode ConvertNode(DependencyObject node)
+		static MatrixTreeNode ConvertNode(DependencyObject node)
 		{
 			var c = Extensions.GetParent<SharpTreeViewItem>(node);
 			if (c != null)

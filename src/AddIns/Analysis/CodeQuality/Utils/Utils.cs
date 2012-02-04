@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.InteropServices;
-
 using ICSharpCode.CodeQuality.Engine.Dom;
 using Mono.Cecil;
 
@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeQuality
 			
 			string text = GetText(item1, item2);
 			
-			return string.Format("{0} {1} {2}", left.Name, text, top.Name);
+			return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", left.Name, text, top.Name);
 		}
 		
 		static string GetText(int item1, int item2)

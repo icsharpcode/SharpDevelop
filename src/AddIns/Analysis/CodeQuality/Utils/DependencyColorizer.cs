@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Media;
-
 using ICSharpCode.CodeQuality.Engine.Dom;
 
 namespace ICSharpCode.CodeQuality
@@ -87,13 +87,13 @@ namespace ICSharpCode.CodeQuality
 				return "";
 			// both > 0 => UsesAndUsedBy
 			if (value.Item1 > 0 && value.Item2 > 0)
-				return value.Item1.ToString();
+				return value.Item1.ToString(CultureInfo.InvariantCulture);
 			// a > 0 => Uses
 			if (value.Item1 > 0)
-				return value.Item1.ToString();
+				return value.Item1.ToString(CultureInfo.InvariantCulture);
 			// b > 0 => UsedBy
 			if (value.Item2 > 0)
-				return value.Item2.ToString();
+				return value.Item2.ToString(CultureInfo.InvariantCulture);
 			
 			return "";
 		}
