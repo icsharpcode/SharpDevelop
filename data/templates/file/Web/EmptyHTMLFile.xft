@@ -3,7 +3,7 @@
 	<Config
 		  name        = "${res:Templates.File.Html.EmptyHtml.Name}"
 		  icon        = "Icons.32x32.HTMLFileIcon"
-		  category    = "${res:Templates.File.Categories.Misc}"
+		  category    = "Web"
 		  defaultname = "Html${Number}.html"
 		  language    = "HTML"
 	/>

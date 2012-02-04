@@ -743,9 +743,6 @@
 										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
-										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
-											<File Source="..\..\data\templates\file\Misc\EmptyHTMLFile.xft" Id="EmptyHTMLFile.xft" Name="EmptyHTMLFile.xft" />
-										</Component>
 										<Component Guid="861BC115-F99D-4492-AB4E-E7DA2DF0C60A" Id="EmptyMsBuildFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyMsBuildFile.xft" Id="EmptyMsBuildFile.xft" Name="EmptyMsBuildFile.xft" />
 										</Component>
@@ -826,6 +823,17 @@
 										</Component>
 										<Component Id="VBMvcRazorViewPageFileTemplate" Guid="64BFEE23-D6CD-4832-899C-C3F8639526AF" DiskId="1">
 											<File Id="VB.Mvc.Razor.ViewPage.xft" Name="VB.Mvc.Razor.ViewPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.ViewPage.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="WebFileTemplatesFolder" Name="Web">
+										<Component Id="EmptyHTMLFileTemplate" Guid="4D820EE2-E443-4824-BEF9-2C031C59875C" DiskId="1">
+											<File Id="EmptyHTMLFile.xft" Name="EmptyHTMLFile.xft" Source="..\..\data\templates\file\Web\EmptyHTMLFile.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyJavaScriptFileTemplate" Guid="7C282AD2-E1B5-4266-AE23-CF60D275C7A4" DiskId="1">
+											<File Id="EmptyJavaScript.xft" Name="EmptyJavaScript.xft" Source="..\..\data\templates\file\Web\EmptyJavaScript.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyStyleSheetFileTemplate" Guid="80DF09D1-68A2-40C1-8694-35D9D467AFDA" DiskId="1">
+											<File Id="EmptyStyleSheet.xft" Name="EmptyStyleSheet.xft" Source="..\..\data\templates\file\Web\EmptyStyleSheet.xft" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
