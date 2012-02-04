@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -226,7 +228,8 @@ namespace ICSharpCode.CodeQuality.Engine
 		void AddRelationshipsForAttributes(IList<IAttribute> attributes, NodeBase node)
 		{
 			foreach (var attr in attributes) {
-				node.AddRelationship(methodMappings[attr.Constructor]);
+				if (attr.Constructor != null)
+					node.AddRelationship(methodMappings[attr.Constructor]);
 			}
 		}
 		
@@ -258,6 +261,8 @@ namespace ICSharpCode.CodeQuality.Engine
 		IEnumerable<IUnresolvedAssembly> LoadAssemblies()
 		{
 			var resolver = new AssemblyResolver();
+			foreach (var path in fileNames.Select(f => Path.GetDirectoryName(f)).Distinct(StringComparer.OrdinalIgnoreCase))
+				resolver.AddSearchDirectory(path);
 			List<AssemblyDefinition> assemblies = new List<AssemblyDefinition>();
 			foreach (var file in fileNames.Distinct(StringComparer.OrdinalIgnoreCase))
 				assemblies.Add(resolver.LoadAssemblyFile(file));
