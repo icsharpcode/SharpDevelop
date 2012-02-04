@@ -5,8 +5,10 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Data;
-using System.Globalization;
 
+using ICSharpCode.Reports.Core.DataAccess;
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.Reports.Core.ListStrategy;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
 /// <summary>
@@ -16,12 +18,12 @@ using ICSharpCode.Reports.Core.Project.Interfaces;
 /// 	created by - Forstmeier Peter
 /// 	created on - 16.10.2005 14:49:43
 /// </remarks>
-namespace ICSharpCode.Reports.Core {
+namespace ICSharpCode.Reports.Core
+{
 	
 	public interface IDataManager
 	{
-		DataNavigator GetNavigator
-		{get;}
+		DataNavigator GetNavigator {get;}
 	}
 	
 	
@@ -228,15 +230,6 @@ namespace ICSharpCode.Reports.Core {
 				return this.dataSource;
 			}
 		}
-		
-		
-		public bool IsSorted
-		{
-			get {
-				return this.dataViewStrategy.IsSorted;
-			}
-		}
-		
 	
 		#endregion
 		

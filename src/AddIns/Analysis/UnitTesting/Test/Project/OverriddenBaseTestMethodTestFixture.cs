@@ -59,19 +59,19 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void NonOverriddenVirtualBaseMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("BaseClass.VirtualNonOverriddenTestMethod"));
+			Assert.IsTrue(testClass.TestMembers.Contains("BaseClass.VirtualNonOverriddenTestMethod"));
 		}
 
 		[Test]
 		public void VirtualBaseMethodDoesNotExistSinceItIsOverriddenInDerivedClass()
 		{
-			Assert.IsFalse(testClass.TestMethods.Contains("BaseClass.VirtualTestMethod"));
+			Assert.IsFalse(testClass.TestMembers.Contains("BaseClass.VirtualTestMethod"));
 		}
 
 		[Test]
 		public void DerivedClassTestMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("VirtualTestMethod"));
+			Assert.IsTrue(testClass.TestMembers.Contains("VirtualTestMethod"));
 		}
 	}
 }

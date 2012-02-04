@@ -53,7 +53,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<IPackage> GetUpdatedPackages(IPackageRepository sourceRepository, IQueryable<IPackage> localPackages)
 		{
-			return sourceRepository.GetUpdates(localPackages);
+			return sourceRepository.GetUpdates(localPackages, false);
 		}
 	}
 }

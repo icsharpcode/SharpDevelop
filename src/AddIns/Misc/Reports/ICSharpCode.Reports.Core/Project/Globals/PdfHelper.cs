@@ -2,9 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using iTextSharp.text;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
 	/// <summary>
 	/// Description of PdHelper.
@@ -13,6 +12,7 @@ namespace ICSharpCode.Reports.Core
 	public class ScreenRectToPdfRectConverter :System.Drawing.RectangleConverter
 	{
 		ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
+		
 		
 		public ScreenRectToPdfRectConverter(ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
@@ -57,5 +57,6 @@ namespace ICSharpCode.Reports.Core
 			float ry = (float)ly + UnitConverter.FromPixel(r.Height).Point;
 			return  new iTextSharp.text.Rectangle(lx,ly,rx,ry);
 		}
+		
 	}
 }

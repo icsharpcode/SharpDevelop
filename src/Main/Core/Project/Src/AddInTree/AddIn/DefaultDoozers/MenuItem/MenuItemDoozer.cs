@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.Core
 {
@@ -61,9 +63,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return new MenuItemDescriptor(caller, codon, subItems);
+			return new MenuItemDescriptor(args.Caller, args.Codon, args.BuildSubItems<object>(), args.Conditions);
 		}
 	}
 	
@@ -76,14 +78,16 @@ namespace ICSharpCode.Core
 		public readonly object Caller;
 		public readonly Codon Codon;
 		public readonly IList SubItems;
+		public readonly IEnumerable<ICondition> Conditions;
 		
-		public MenuItemDescriptor(object caller, Codon codon, IList subItems)
+		public MenuItemDescriptor(object caller, Codon codon, IList subItems, IEnumerable<ICondition> conditions)
 		{
 			if (codon == null)
 				throw new ArgumentNullException("codon");
 			this.Caller = caller;
 			this.Codon = codon;
 			this.SubItems = subItems;
+			this.Conditions = conditions;
 		}
 	}
 }

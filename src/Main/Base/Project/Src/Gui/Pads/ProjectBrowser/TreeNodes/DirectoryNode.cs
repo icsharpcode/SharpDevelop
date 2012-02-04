@@ -56,6 +56,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	public enum SpecialFolder {
 		None,
 		AppDesigner,
+		ServiceReference,
+		ServiceReferencesFolder,
 		WebReference,
 		WebReferencesFolder
 	}
@@ -171,10 +173,12 @@ namespace ICSharpCode.SharpDevelop.Project
 							OpenedImage = "ProjectBrowser.PropertyFolder.Open";
 							ClosedImage = "ProjectBrowser.PropertyFolder.Closed";
 							break;
+						case SpecialFolder.ServiceReferencesFolder:
 						case SpecialFolder.WebReferencesFolder:
 							OpenedImage = "ProjectBrowser.WebReferenceFolder.Open";
 							ClosedImage = "ProjectBrowser.WebReferenceFolder.Closed";
 							break;
+						case SpecialFolder.ServiceReference:
 						case SpecialFolder.WebReference:
 							OpenedImage = "ProjectBrowser.WebReference";
 							ClosedImage = "ProjectBrowser.WebReference";
@@ -211,42 +215,33 @@ namespace ICSharpCode.SharpDevelop.Project
 			canLabelEdit = true;
 		}
 		
-		public DirectoryNode(string directory) : this(directory, FileNodeStatus.None)
+		public DirectoryNode(string directory)
+			: this(directory, FileNodeStatus.None)
 		{
 			sortOrder = 1;
 			canLabelEdit = true;
 		}
-		CustomNode removeMe = null;
+		
 		public DirectoryNode(string directory, FileNodeStatus fileNodeStatus)
+			: this(directory, fileNodeStatus, null)
+		{
+		}
+		
+		CustomNode removeMe = null;
+		
+		public DirectoryNode(string directory, FileNodeStatus fileNodeStatus, ProjectItem projectItem)
 		{
 			sortOrder = 1;
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode";
-			this.Directory = directory;
+			this.Directory = directory.Trim('\\', '/');
 			this.fileNodeStatus = fileNodeStatus;
+			this.ProjectItem = projectItem;
 			
 			removeMe = new CustomNode();
 			removeMe.AddTo(this);
 			
 			SetIcon();
 			canLabelEdit = true;
-		}
-		
-		/// <summary>
-		/// Determines if the specified <paramref name="folder"/> is a
-		/// web reference folder in the specified <paramref name="project"/>.
-		/// </summary>
-		/// <param name="project">The project.</param>
-		/// <param name="folder">The full folder path.</param>
-		public static bool IsWebReferencesFolder(IProject project, string folder)
-		{
-			foreach (ProjectItem item in project.Items) {
-				if (item.ItemType == ItemType.WebReferences) {
-					if (FileUtility.IsEqualFileName(Path.Combine(project.Directory, item.Include), folder)) {
-						return true;
-					}
-				}
-			}
-			return false;
 		}
 		
 		public void RecreateSubNodes()
@@ -332,7 +327,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					continue;
 				}
 				
-				if (item.ItemType == ItemType.Folder || item.ItemType == ItemType.WebReferences) {
+				if (item.ItemType.IsFolder()) {
 					DirectoryNode node;
 					if (directoryNodeList.TryGetValue(fileName, out node)) {
 						if (node.FileNodeStatus == FileNodeStatus.None) {

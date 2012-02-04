@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows.Forms;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop;
@@ -56,6 +58,9 @@ namespace SharpRefactoring
 			
 			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(current).ToList();
 			
+			if (!parameters.Any())
+				return null;
+			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
@@ -73,15 +78,15 @@ namespace SharpRefactoring
 			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst
 			                                           && field.IsStatic == sourceClass.IsStatic
 			                                           && field.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(f) { Index = i, IsSelected = true };
+				yield return new PropertyOrFieldWrapper(f) { Index = i };
 				i++;
 			}
 			
 			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer
-			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
+			                                               && prop.IsAutoImplemented()
 			                                               && prop.IsStatic == sourceClass.IsStatic
 			                                               && prop.ReturnType != null)) {
-				yield return new PropertyOrFieldWrapper(p) { Index = i, IsSelected = true };
+				yield return new PropertyOrFieldWrapper(p) { Index = i };
 				i++;
 			}
 		}

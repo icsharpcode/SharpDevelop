@@ -20,7 +20,7 @@ namespace ICSharpCode.TreeView
 		static SharpTreeNodeView()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(SharpTreeNodeView),
-				new FrameworkPropertyMetadata(typeof(SharpTreeNodeView)));
+			                                         new FrameworkPropertyMetadata(typeof(SharpTreeNodeView)));
 		}
 
 		public static readonly DependencyProperty TextBackgroundProperty =
@@ -38,6 +38,15 @@ namespace ICSharpCode.TreeView
 		}
 
 		public SharpTreeViewItem ParentItem { get; private set; }
+		
+		public static readonly DependencyProperty CellEditorProperty =
+			DependencyProperty.Register("CellEditor", typeof(Control), typeof(SharpTreeNodeView),
+			                            new FrameworkPropertyMetadata());
+		
+		public Control CellEditor {
+			get { return (Control)GetValue(CellEditorProperty); }
+			set { SetValue(CellEditorProperty, value); }
+		}
 
 		public SharpTreeView ParentTreeView
 		{
@@ -71,14 +80,12 @@ namespace ICSharpCode.TreeView
 		void UpdateDataContext(SharpTreeNode oldNode, SharpTreeNode newNode)
 		{
 			if (newNode != null) {
-				newNode.Collapsing += Node_Collapsing;
 				newNode.PropertyChanged += Node_PropertyChanged;
 				if (Template != null) {
 					UpdateTemplate();
 				}
 			}
 			if (oldNode != null) {
-				oldNode.Collapsing -= Node_Collapsing;
 				oldNode.PropertyChanged -= Node_PropertyChanged;
 			}
 		}
@@ -87,29 +94,29 @@ namespace ICSharpCode.TreeView
 		{
 			if (e.PropertyName == "IsEditing") {
 				OnIsEditingChanged();
-			}
-			else if (e.PropertyName == "IsLast") {
+			} else if (e.PropertyName == "IsLast") {
 				if (ParentTreeView.ShowLines) {
-					foreach (var child in Node.ExpandedDescendantsAndSelf()) {
+					foreach (var child in Node.VisibleDescendantsAndSelf()) {
 						var container = ParentTreeView.ItemContainerGenerator.ContainerFromItem(child) as SharpTreeViewItem;
 						if (container != null) {
 							container.NodeView.LinesRenderer.InvalidateVisual();
 						}
 					}
 				}
+			} else if (e.PropertyName == "IsExpanded") {
+				if (Node.IsExpanded)
+					ParentTreeView.HandleExpanding(Node);
 			}
 		}
-
-		void Node_Collapsing(object sender, EventArgs e)
-		{
-			ParentTreeView.HandleCollapsing(Node);
-		}		
 
 		void OnIsEditingChanged()
 		{
 			var textEditorContainer = Template.FindName("textEditorContainer", this) as Border;
 			if (Node.IsEditing) {
-				textEditorContainer.Child = new EditTextBox() { Item = ParentItem };
+				if (CellEditor == null)
+					textEditorContainer.Child = new EditTextBox() { Item = ParentItem };
+				else
+					textEditorContainer.Child = CellEditor;
 			}
 			else {
 				textEditorContainer.Child = null;
@@ -143,7 +150,9 @@ namespace ICSharpCode.TreeView
 			else {
 				result -= 19;
 			}
+			if (result < 0)
+				throw new InvalidOperationException();
 			return result;
-		}		
+		}
 	}
 }

@@ -25,6 +25,9 @@ namespace PackageManagement.Tests
 		FakeProjectManager fakeProjectManager;
 		FakePackageManager fakePackageManager;
 		FakePackageManagementEvents fakePackageManagementEvents;
+		FakeInstallPackageAction fakeInstallAction;
+		FakeUninstallPackageAction fakeUninstallAction;
+		FakeUpdatePackageAction fakeUpdateAction;
 		
 		void CreateProject()
 		{
@@ -40,6 +43,24 @@ namespace PackageManagement.Tests
 				fakeMSBuildProject,
 				fakePackageManagementEvents,
 				fakePackageManagerFactory);
+		}
+		
+		FakeInstallPackageAction CreateFakeInstallAction()
+		{
+			fakeInstallAction = new FakeInstallPackageAction();
+			return fakeInstallAction;
+		}
+		
+		FakeUninstallPackageAction CreateFakeUninstallAction()
+		{
+			fakeUninstallAction = new FakeUninstallPackageAction(project);
+			return fakeUninstallAction;
+		}
+		
+		FakeUpdatePackageAction CreateFakeUpdateAction()
+		{
+			fakeUpdateAction = new FakeUpdatePackageAction(project);
+			return fakeUpdateAction;
 		}
 		
 		[Test]
@@ -120,8 +141,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var package = new FakePackage();
+			CreateFakeInstallAction()
+				.IgnoreDependencies = true;
 			
-			project.GetInstallPackageOperations(package, true);
+			project.GetInstallPackageOperations(package, fakeInstallAction);
 			
 			Assert.IsTrue(fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations);
 		}
@@ -131,8 +154,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var package = new FakePackage();
+			CreateFakeInstallAction()
+				.IgnoreDependencies = false;
 			
-			project.GetInstallPackageOperations(package, false);
+			project.GetInstallPackageOperations(package, fakeInstallAction);
 			
 			Assert.IsFalse(fakePackageManager.IgnoreDependenciesPassedToGetInstallPackageOperations);
 		}
@@ -142,8 +167,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var expectedPackage = new FakePackage();
-			
-			project.GetInstallPackageOperations(expectedPackage, true);
+			CreateFakeInstallAction()
+				.IgnoreDependencies = true;
+
+			project.GetInstallPackageOperations(expectedPackage, fakeInstallAction);
 			
 			IPackage actualPackage = fakePackageManager.PackagePassedToGetInstallPackageOperations;
 			
@@ -155,8 +182,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var package = new FakePackage();
-			
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, true);
+			CreateFakeInstallAction()
+				.IgnoreDependencies = true;
+
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, fakeInstallAction);
 			
 			IEnumerable<PackageOperation> expectedOperations = fakePackageManager.PackageOperationsToReturnFromGetInstallPackageOperations;
 			
@@ -190,8 +219,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var package = new FakePackage();
+			CreateFakeInstallAction()
+				.Package = package;
 			
-			project.InstallPackage(package, null, true);
+			project.InstallPackage(package, fakeInstallAction);
 			
 			IPackage expectedPackage = fakePackageManager.PackagePassedToInstallPackage;
 			
@@ -202,7 +233,9 @@ namespace PackageManagement.Tests
 		public void InstallPackage_IgnoreDependenciesIsTrue_DependenciesAreIgnoredWhenPackageIsInstalled()
 		{
 			CreateProject();
-			project.InstallPackage(null, null, true);
+			CreateFakeInstallAction()
+				.IgnoreDependencies = true;
+			project.InstallPackage(null, fakeInstallAction);
 			
 			Assert.IsTrue(fakePackageManager.IgnoreDependenciesPassedToInstallPackage);
 		}
@@ -211,7 +244,9 @@ namespace PackageManagement.Tests
 		public void InstallPackage_IgnoreDependenciesIsFalse_DependenciesAreNotIgnoredWhenPackageIsInstalled()
 		{
 			CreateProject();
-			project.InstallPackage(null, null, false);
+			CreateFakeInstallAction()
+				.IgnoreDependencies = false;
+			project.InstallPackage(null, fakeInstallAction);
 			
 			Assert.IsFalse(fakePackageManager.IgnoreDependenciesPassedToInstallPackage);
 		}
@@ -221,7 +256,9 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var expectedOperations = new List<PackageOperation>();
-			project.InstallPackage(null, expectedOperations, false);
+			CreateFakeInstallAction()
+				.Operations = expectedOperations;
+			project.InstallPackage(null, fakeInstallAction);
 			
 			IEnumerable<PackageOperation> actualOperations = fakePackageManager.PackageOperationsPassedToInstallPackage;
 			
@@ -241,9 +278,12 @@ namespace PackageManagement.Tests
 		public void UninstallPackage_PackagePassed_PackageUninstalled()
 		{
 			CreateProject();
+			CreateFakeUninstallAction();
+			fakeUninstallAction.ForceRemove = true;
+			fakeUninstallAction.RemoveDependencies = true;
 			var package = new FakePackage();
 			
-			project.UninstallPackage(package, true, true);
+			project.UninstallPackage(package, fakeUninstallAction);
 			
 			IPackage expectedPackage = fakePackageManager.PackagePassedToUninstallPackage;
 			
@@ -254,7 +294,11 @@ namespace PackageManagement.Tests
 		public void UninstallPackage_ForceRemoveIsTrue_PackageUninstallIsForced()
 		{
 			CreateProject();
-			project.UninstallPackage(null, forceRemove: true, removeDependencies: false);
+			CreateFakeUninstallAction();
+			fakeUninstallAction.ForceRemove = true;
+			fakeUninstallAction.RemoveDependencies = false;
+			
+			project.UninstallPackage(null, fakeUninstallAction);
 			
 			Assert.IsTrue(fakePackageManager.ForceRemovePassedToUninstallPackage);
 		}
@@ -263,7 +307,11 @@ namespace PackageManagement.Tests
 		public void UninstallPackage_ForceRemoveIsFalse_PackageUninstallIsNotForced()
 		{
 			CreateProject();
-			project.UninstallPackage(null, forceRemove: false, removeDependencies: true);
+			CreateFakeUninstallAction();
+			fakeUninstallAction.ForceRemove = false;
+			fakeUninstallAction.RemoveDependencies = true;
+			
+			project.UninstallPackage(null, fakeUninstallAction);
 			
 			Assert.IsFalse(fakePackageManager.ForceRemovePassedToUninstallPackage);
 		}
@@ -272,7 +320,11 @@ namespace PackageManagement.Tests
 		public void UninstallPackage_RemoveDependenciesIsTrue_PackageDependenciesIsRemoved()
 		{
 			CreateProject();
-			project.UninstallPackage(null, forceRemove: false, removeDependencies: true);
+			CreateFakeUninstallAction();
+			fakeUninstallAction.ForceRemove = false;
+			fakeUninstallAction.RemoveDependencies = true;
+
+			project.UninstallPackage(null, fakeUninstallAction);
 			
 			Assert.IsTrue(fakePackageManager.RemoveDependenciesPassedToUninstallPackage);
 		}
@@ -281,7 +333,11 @@ namespace PackageManagement.Tests
 		public void UninstallPackage_RemoveDependenciesIsFalse_PackageDependenciesNotRemoved()
 		{
 			CreateProject();
-			project.UninstallPackage(null, forceRemove: true, removeDependencies: false);
+			CreateFakeUninstallAction();
+			fakeUninstallAction.ForceRemove = true;
+			fakeUninstallAction.RemoveDependencies = false;
+
+			project.UninstallPackage(null, fakeUninstallAction);
 			
 			Assert.IsFalse(fakePackageManager.RemoveDependenciesPassedToUninstallPackage);
 		}
@@ -291,8 +347,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var package = new FakePackage();
+			CreateFakeUpdateAction()
+				.UpdateDependencies = true;
 			
-			project.UpdatePackage(package, null, true);
+			project.UpdatePackage(package, fakeUpdateAction);
 			
 			IPackage expectedPackage = fakePackageManager.PackagePassedToUpdatePackage;
 			
@@ -303,7 +361,10 @@ namespace PackageManagement.Tests
 		public void UpdatePackage_UpdateDependenciesIsTrue_DependenciesUpdatedWhenPackageIsUpdated()
 		{
 			CreateProject();
-			project.UpdatePackage(null, null, true);
+			CreateFakeUpdateAction()
+				.UpdateDependencies = true;
+			
+			project.UpdatePackage(null, fakeUpdateAction);
 			
 			Assert.IsTrue(fakePackageManager.UpdateDependenciesPassedToUpdatePackage);
 		}
@@ -312,7 +373,10 @@ namespace PackageManagement.Tests
 		public void UpdatePackage_UpdateDependenciesIsFalse_DependenciesAreNotUpdatedWhenPackageIsUpdated()
 		{
 			CreateProject();
-			project.UpdatePackage(null, null, false);
+			CreateFakeUpdateAction()
+				.UpdateDependencies = false;
+
+			project.UpdatePackage(null, fakeUpdateAction);
 			
 			Assert.IsFalse(fakePackageManager.UpdateDependenciesPassedToUpdatePackage);
 		}
@@ -322,7 +386,10 @@ namespace PackageManagement.Tests
 		{
 			CreateProject();
 			var expectedOperations = new List<PackageOperation>();
-			project.UpdatePackage(null, expectedOperations, false);
+			CreateFakeUpdateAction()
+				.Operations = expectedOperations;
+
+			project.UpdatePackage(null, fakeUpdateAction);
 			
 			IEnumerable<PackageOperation> actualOperations = fakePackageManager.PackageOperationsPassedToUpdatePackage;
 			
@@ -499,6 +566,78 @@ namespace PackageManagement.Tests
 			IEnumerable<IPackage> packages = project.GetPackagesInReverseDependencyOrder();
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, packages);
+		}
+		
+		[Test]
+		public void InstallPackage_AllowPrereleaseVersionsIsTrue_PrereleaseVersionsAreNotAllowedWhenPackageIsInstalled()
+		{
+			CreateProject();
+			CreateFakeInstallAction()
+				.AllowPrereleaseVersions = false;
+			project.InstallPackage(null, fakeInstallAction);
+			
+			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void InstallPackage_AllowPrereleaseVersionsIsFalse_PrereleaseVersionsAreAllowedWhenPackageIsInstalled()
+		{
+			CreateProject();
+			CreateFakeInstallAction()
+				.AllowPrereleaseVersions = true;
+			project.InstallPackage(null, fakeInstallAction);
+			
+			Assert.IsTrue(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsTrue_PrereleaseVersionsAllowedWhenRetrievingPackageOperations()
+		{
+			CreateProject();
+			var package = new FakePackage();
+			CreateFakeInstallAction()
+				.AllowPrereleaseVersions = true;
+			
+			project.GetInstallPackageOperations(package, fakeInstallAction);
+			
+			Assert.IsTrue(fakePackageManager.AllowPrereleaseVersionsPassedToGetInstallPackageOperations);
+		}
+		
+		[Test]
+		public void GetInstallPackageOperations_AllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedWhenRetrievingPackageOperations()
+		{
+			CreateProject();
+			var package = new FakePackage();
+			CreateFakeInstallAction()
+				.AllowPrereleaseVersions = false;
+
+			project.GetInstallPackageOperations(package, fakeInstallAction);
+			
+			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToGetInstallPackageOperations);
+		}
+		
+		[Test]
+		public void UpdatePackage_AllowPrereleaseVersionsIsTrue_PrereleaseVersionsNotAllowedWhenPackageIsUpdated()
+		{
+			CreateProject();
+			CreateFakeUpdateAction()
+				.AllowPrereleaseVersions = true;
+
+			project.UpdatePackage(null, fakeUpdateAction);
+			
+			Assert.IsTrue(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
+		
+		[Test]
+		public void UpdatePackage_AllowPrereleaseVersionsIsFalse_PrereleaseVersionsNotAllowedWhenPackageIsUpdated()
+		{
+			CreateProject();
+			CreateFakeUpdateAction()
+				.AllowPrereleaseVersions = false;
+
+			project.UpdatePackage(null, fakeUpdateAction);
+			
+			Assert.IsFalse(fakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
 		}
 	}
 }

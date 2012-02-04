@@ -31,6 +31,8 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public abstract class CompilableProject : MSBuildBasedProject, IUpgradableProject
 	{
+		public const string LocalHost = "http://localhost";
+		
 		#region Static methods
 		/// <summary>
 		/// Gets the file extension of the assembly created when building a project
@@ -206,8 +208,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent newProjectContent = new ParseProjectContent(this);
-			var mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(this, "mscorlib")).Mscorlib;
-			newProjectContent.AddReferencedContent(mscorlib);
 			return newProjectContent;
 		}
 		
@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			switch (this.StartAction) {
 				case StartAction.Project:
 					if (IsWebProject)
-						return new ProcessStartInfo("http://localhost");
+						return new ProcessStartInfo(LocalHost);
 					
 					return CreateStartInfo(this.OutputAssemblyFullPath);
 				case StartAction.Program:
@@ -359,7 +359,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool IsSilverlightProject {
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
+				return guids.ToUpperInvariant().Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
 			}
 		}
 		
@@ -367,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override bool IsWebProject {
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.Contains("349c5851-65df-11da-9384-00065b846f21");
+				return guids.ToUpperInvariant().Contains("349C5851-65DF-11DA-9384-00065B846F21");
 			}
 		}
 		

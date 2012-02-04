@@ -244,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (el.HasAttribute("filename")) {
 						string fileName = el.GetAttribute("filename");
 						return projectCreateInformation => {
-							string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
+							string parsedFileName = StringParser.Parse(fileName, new StringTagPair("ProjectName", projectCreateInformation.ProjectName));
 							string path = Path.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
 							FileService.OpenFile(path);
 						};
@@ -302,9 +302,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			} else if (projectDescriptor != null) {
 				bool createNewSolution = projectCreateInformation.Solution == null;
 				if (createNewSolution) {
-					projectCreateInformation.Solution = new Solution();
+					string fileName = Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln");
+					projectCreateInformation.Solution = new Solution(new ProjectChangeWatcher(fileName));
 					projectCreateInformation.Solution.Name = projectCreateInformation.SolutionName;
-					projectCreateInformation.Solution.FileName = Path.Combine(projectCreateInformation.SolutionPath, projectCreateInformation.SolutionName + ".sln");
+					projectCreateInformation.Solution.FileName = fileName;
 				}
 				IProject project = projectDescriptor.CreateProject(projectCreateInformation, this.languagename);
 				if (project != null) {

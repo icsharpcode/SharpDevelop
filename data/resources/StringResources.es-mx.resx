@@ -229,6 +229,18 @@ Descargue un complemento de Internet, luego haga clic en "Instalar AddIn" y sele
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de archivo desconocido:</value>
   </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Error:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Buscar siguiente</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Buscar anterior</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Usar expresiones regulares</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
@@ -297,6 +309,15 @@ Descargue un complemento de Internet, luego haga clic en "Instalar AddIn" y sele
   </data>
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Sistema numérico</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadecimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Octal</value>
   </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Ajustar al ancho actual</value>
@@ -433,9 +454,6 @@ Necesita instalar el .NET Framework SDK para obtener el sistema de ayuda.</value
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Buscar</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Buscar...</value>
   </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Buscar solamente en los tópicos encontrados previamente</value>
@@ -648,6 +666,21 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
     <value>Ejecutar con el analizador</value>
   </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Buscando ...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Agregar setter</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Seleccione los campos para los cuales quiere crear propiedades:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>Implementar INotifyPropertyChanged</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Crear propiedades</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extraer método</value>
   </data>
@@ -781,9 +814,6 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
     <value>'{0}' fue quitado de la lista de ignorados.</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Mantener abierta la solución antigua</value>
-  </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Bloquear</value>
   </data>
@@ -810,13 +840,6 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   </data>
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Mostrar el tab &amp;historial para archivos de control de versión</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Recargar solución</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop detectó que la operación de control de versión cambió archivos de proyecto.
-Debería recargar la solución.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Realojar</value>
@@ -978,9 +1001,6 @@ SharpDevelop puede obtener esta información y enviarla automáticamente.
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Archivo</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Línea</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Acerca de</value>
@@ -1477,6 +1497,9 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Esperando a que se Inicie la Aplicación</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Análisis de Calidad de Código</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Inserta una referencia a un método explicito; presione tabulador o enter otra vez para insertar una nueva porción de método.</value>
@@ -2420,6 +2443,12 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Depuración</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Excepciones</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pausar en excepciones controladas</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Paso por Instrucciones</value>
   </data>
@@ -2618,6 +2647,15 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Apariencia</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Expandir referencias de proyectos (reflect references)</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>Opciones de Interfaz Gráfica de Sharp Develop</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Opciones de Interfaz Gráfica de Sharp Develop</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Etiquetas de comentarios</value>
   </data>
@@ -2647,6 +2685,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Cortar o Copiar la línea entera cuando no haya nada seleccionado</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Habilitar espacio virtual</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>&amp;Esconder el puntero del ratón al escribir</value>
@@ -2695,6 +2736,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>&amp;Desplegar fuente con bordes suavizados</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Habilita Cambio de Marcador de Margen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Activar autocompletar el &amp;código</value>
@@ -2973,7 +3017,7 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
     <value>Procesador Intel Itanium de 64-bits</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Procesador AMD de 64-bits</value>
+    <value>Procesador x86-64</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Procesador Intel-compatible de 32-bits</value>
@@ -3487,6 +3531,9 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Iniciar</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Línea</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Actualizar</value>
   </data>
@@ -3762,9 +3809,6 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Línea Final</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Línea</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Si NCover está instalado, por favor especifique la ubicación de la aplicación en las opciones de Cobertura de Código.</value>
@@ -4282,7 +4326,7 @@ Por favor configure la ubicación del archivo ejecutable de NAnt en las opciones
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
     <value>El archivo
 ${File}
-ha sido cambiado de manera externa, ¿desea recargarlo?</value>
+ha sido cambiado de manera externa. ¿Desea recargarlo?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Búsqueda Incremental:</value>
@@ -4801,6 +4845,15 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Cargando ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Mantener abierta la solución antigua</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Recargar solución</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage" xml:space="preserve">
+    <value>La solución ha sido cambiada externamente.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
     <value>Convertir &amp;proyectos seleccionados a:</value>
   </data>
@@ -4906,7 +4959,7 @@ Vaya a 'Opciones-&gt;Estilo Visual' y cambie el lenguaje del ambiente.</value>
     <value>No se encontró el proceso ASP.NET/IIS (Express) ({0}).</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>No hay ningún url de proyecto ni programa externo especificado. Verifique el servidor web en Propiedades del Proyecto -&amp;gt; Depurar.</value>
+    <value>No hay ninguna url de proyecto ni programa externo especificado. Verifique el servidor web en la pestaña Propiedades del Proyecto - Depurar.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
     <value>Puerto de servidor:</value>
@@ -5335,6 +5388,24 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>Salida XSLT</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy no se pudo encontrar en la ubicación especificada, o SharpDevelop no tiene suficientes permisos para acceder a dicha ubicación.</value>
+  </data>
+  <data name="ILSpyAddIn.ILSpyPathNotSet" xml:space="preserve">
+    <value>La ruta a ILSpy aun no ha sido establecida.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>Abrir ILSpy</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>Esta caracteristica requiere ILSpy. Si aun no la tiene, puede descargarlo gratuitamente aquí:</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.PathToILSpyExe" xml:space="preserve">
+    <value>Ruta completa a ILSpy.exe</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialogTitle" xml:space="preserve">
+    <value>Establecer ruta a ILSpy</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>No se pudo cargar el archivo de configuración de herramientas externas.</value>
   </data>
@@ -5494,6 +5565,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>No pude cambiar a una función sin símbolos.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>No puede cambiar a una función sin símbolos sin haber habilitado opciones de decompilación de código.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Métodos Externos]</value>
   </data>
@@ -5503,6 +5577,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Lenguaje</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Módulo</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Mostrar nombres de argumentos</value>
   </data>
@@ -5511,6 +5588,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Mostrar métodos externos</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Mostrar número de línea</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Mostrar nombres de módulos</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Preguntar</value>
@@ -5659,6 +5742,39 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Miembros Estáticos (Static)</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Memoria</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>La dirección {0} no se encontró!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Mostrar tamaño en bytes:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Saltar a la dirección:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Siguientes direcciones virtuales</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>No hay mapeo para direcciones de memoria!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Ninguna depuración o proceso esta en ejecución!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Anteriores direcciones virtuales</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Leyendo desde {0} hasta {1} - tamaño {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Actualizar direcciones actuales</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Incapaz de leer la dirección {0} de tamaño {1}.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Módulos cargados</value>
   </data>
@@ -5698,6 +5814,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Establecer la instrucción actual</value>
   </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>¿Quiere detener la depuración?</value>
+  </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>¿Desasociar del proceso o terminarlo?</value>
   </data>
@@ -5710,8 +5829,14 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>No se puede establecer la siguiente instrucción  porque no hay una función activa seleccionada</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>No puede cambiar a un proceso que no tiene un marco disponible.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>No puede cambiar entre sub-procesos mientras el depurador se esta ejecutando.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>No puede cambiar a un proceso en código decompilado sin haber habilitado opciones de decompilación de código.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Congelar</value>
@@ -5987,7 +6112,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Copiar ruta/nombre de archivo</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Abrir Carpeta Contenedora en el Explorador</value>
+    <value>Abrir carpeta contenedora en el Explorador</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Colapsar todos los nodos</value>
@@ -6103,6 +6228,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
     <value>Nueva &amp;Carpeta de Solución</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.NotAWebProject" xml:space="preserve">
+    <value>Este proyecto no es un proyecto web.</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
     <value>A&amp;brir</value>
   </data>
@@ -6123,6 +6251,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Establecer como Proyecto &amp;Inicial</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Ver en el navegador</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Nueva Carpeta</value>
@@ -7043,6 +7174,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Archivo Vacío</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Crea una nueva clase Excepcion.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Excepción</value>
   </data>
@@ -7174,6 +7308,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>Formulario Web ASP.NET</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Crea un WebHandler ASP.NET con código subyacente.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>Manejador Web ASP.NET</value>
@@ -7501,6 +7638,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Eliminar todos los puntos de interrupción</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Ejecutar último build</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Ejecutar &amp;sin depurador</value>
@@ -8039,15 +8179,6 @@ Error al iniciar:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Usuario:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>¡Debería estar atento a nuevas versiones de SharpDevelop y decirle a sus amigos lo bueno que es para crear programas en C#!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>¿Que puede abrir la ventana de plantillas de código con Ctrl+J?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>¿Que puedes escribir "? nombre=...;" (C#) o "Dim nombre As ?=..." (VB) y SharpDevelop reemplazará el símbolo de interrogación por el tipo de "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opciones del búfer</value>

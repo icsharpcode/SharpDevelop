@@ -20,7 +20,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			var r = projectContent as ReflectionProjectContent;
 			if (r != null) {
-				return r.AssemblyLocation;
+				return r.RealAssemblyLocation;
 			}
 			var p = projectContent.Project as IProject;
 			if (p != null) {

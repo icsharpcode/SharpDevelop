@@ -12,6 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public IPackage PackagePassedToAddPackageReference;
 		public bool IgnoreDependenciesPassedToAddPackageReference;
+		public bool AllowPrereleaseVersionsPassedToAddPackageReference;
 		
 		public IPackage PackagePassedToRemovePackageReference;
 		public bool ForcePassedToRemovePackageReference;
@@ -19,6 +20,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IPackage PackagePassedToUpdatePackageReference;
 		public bool UpdateDependenciesPassedToUpdatePackageReference;
+		public bool AllowPrereleaseVersionsPassedToUpdatePackageReference;
 		
 		public FakePackageRepository FakeLocalRepository {
 			get { return LocalRepository as FakePackageRepository; }
@@ -32,19 +34,21 @@ namespace PackageManagement.Tests.Helpers
 		{
 		}
 		
-		public override void AddPackageReference(string packageId, Version version, bool ignoreDependencies)
+		public override void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			var package = new FakePackage();
 			package.Id = packageId;
 			package.Version = version;
 			PackagePassedToAddPackageReference = package;
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToAddPackageReference = allowPrereleaseVersions;
 		}
 		
-		public override void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public override void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			PackagePassedToAddPackageReference = package;
 			IgnoreDependenciesPassedToAddPackageReference = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToAddPackageReference = allowPrereleaseVersions;
 		}
 		
 		public override void RemovePackageReference(IPackage package, bool force, bool removeDependencies)
@@ -54,7 +58,7 @@ namespace PackageManagement.Tests.Helpers
 			RemoveDependenciesPassedToRemovePackageReference = removeDependencies;
 		}
 		
-		public override void UpdatePackageReference(string packageId, Version version, bool updateDependencies)
+		public override void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
 		{
 			var package = new FakePackage();
 			package.Id = packageId;
@@ -62,6 +66,7 @@ namespace PackageManagement.Tests.Helpers
 			
 			PackagePassedToUpdatePackageReference = package;
 			UpdateDependenciesPassedToUpdatePackageReference = updateDependencies;
+			AllowPrereleaseVersionsPassedToUpdatePackageReference = allowPrereleaseVersions;
 		}
 		
 		public FakePackage AddFakePackageToProjectLocalRepository(string packageId, string version)

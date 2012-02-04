@@ -2,18 +2,26 @@
 <package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>AvalonEdit.Sample</id>
-    <version>4.0.0.7070</version>
+    <version>4.1.0.8000</version>
     <authors>Daniel Grunwald</authors>
     <owners>SharpDevelop</owners>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
     <projectUrl>http://www.avalonedit.net</projectUrl>
     <iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Sample code for AvalonEdit the WPF-based text editor used in SharpDevelop 4.0.</description>
+    <description>Sample code for AvalonEdit the WPF-based text editor used in SharpDevelop 4.0.
+Modify your App.xaml file so the StartupUri points to the AvalonEdit Sample window: 
+
+StartupUri="/Samples/AvalonEdit/Window1.xaml"</description>
     <summary>Sample code for AvalonEdit the WPF-based text editor used in SharpDevelop 4.0.</summary>
     <language>en-US</language>
     <dependencies>
-      <dependency id="AvalonEdit" version="4.0.0.7070" />
+      <dependency id="AvalonEdit" version="4.1.0.8000" />
     </dependencies>
+		<frameworkAssemblies>
+			<frameworkAssembly assemblyName="System.Windows.Forms" />
+			<frameworkAssembly assemblyName="WindowsFormsIntegration" />
+		</frameworkAssemblies>
+		<tags>WPF Text Editor SharpDevelop AvalonEdit</tags>
   </metadata>
 </package>

@@ -10,7 +10,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		public LineDecorator(BaseShape shape) : base(shape)
 		{
-
 		}
 
 		public Point From { get; set; }

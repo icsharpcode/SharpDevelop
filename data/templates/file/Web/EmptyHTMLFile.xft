@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	<Config
+		  name        = "${res:Templates.File.Html.EmptyHtml.Name}"
+		  icon        = "Icons.32x32.HTMLFileIcon"
+		  category    = "Web"
+		  defaultname = "Html${Number}.html"
+		  language    = "HTML"
+	/>
+	
+	<Description>${res:Templates.File.Html.EmptyHtmlFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="HTML"><![CDATA[
+<html>
+	<head>
+		<title></title>
+	</head>
+	<body>
+	</body>
+</html>]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

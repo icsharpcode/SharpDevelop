@@ -4,11 +4,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class References : IEnumerable<Reference>
+	public class References : MarshalByRefObject, IEnumerable<Reference>
 	{
 		MSBuildBasedProject msbuildProject;
 		IPackageManagementProjectService projectService;
@@ -44,6 +46,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public IEnumerator<Reference> GetEnumerator()
+		{
+			List<Reference> references = GetReferences().ToList();
+			return references.GetEnumerator();
+		}
+		
+		IEnumerable<Reference> GetReferences()
 		{
 			foreach (ReferenceProjectItem referenceProjectItem in project.GetReferences()) {
 				yield return new Reference(project, referenceProjectItem);

@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<Template
+	author="Eusebiu Marcu"
+	created="13/09/2011"
+	lastModified="13/09/2011"
+	version="1.0">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>WCF REST Service</Name>
+		<Category>VB</Category>
+		<Subcategory>WCF</Subcategory>
+		<Icon>VBNet.Project.WCFServiceProject</Icon>
+		<Description>WCF REST Service</Description>
+		<SupportedTargetFrameworks>v3.5</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename="Service.svc.vb"/>
+	</Actions>
+
+	<Project language="VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.ServiceModel" />
+			<Reference Include="System.ServiceModel.Web" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{3D9AD99F-2412-4246-B90B-4EAA41C64699};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+			<File name="Service.svc">
+<![CDATA[
+<%@ServiceHost language="VB" Debug="true" Service="${StandardNamespace}.Service"%>
+]]>
+			</File>
+			<File name="Service.svc.vb" DependentUpon="Service.svc">
+<![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.ServiceModel
+Imports System.ServiceModel.Web
+
+<ServiceContract> _
+Public Interface IService
+	<OperationContract> _
+	<WebGet(UriTemplate := "operation/{name}")> _
+	Function MyOperation(name As String) As String
+End Interface
+
+Public Class Service
+	Implements IService
+	Function MyOperation(name As String) As String Implements IService.MyOperation
+		' implement the operation
+		Return String.Format("Operation name: {0}", name)
+	End Function
+End Class
+]]>
+			</File>
+			<File name="web.config">
+<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.serviceModel>
+    <services>
+      <service name="${StandardNamespace}.Service">
+        <endpoint address=""
+                  binding="webHttpBinding"
+                  contract="${StandardNamespace}.IService"
+				  behaviorConfiguration="webHttp" />
+      </service>
+    </services>
+	<behaviors>
+	  <endpointBehaviors>
+        <behavior name="webHttp">
+            <webHttp/>
+        </behavior>
+      </endpointBehaviors>
+     </behaviors>
+  </system.serviceModel>
+
+</configuration>
+]]>
+			</File>
+		</Files>
+	</Project>
+</Template>

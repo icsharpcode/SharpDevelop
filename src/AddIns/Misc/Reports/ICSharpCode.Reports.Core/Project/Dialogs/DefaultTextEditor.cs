@@ -6,7 +6,10 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 
-namespace ICSharpCode.Reports.Core
+using ICSharpCode.Reports.Core.Dialogs;
+using ICSharpCode.Reports.Core.Interfaces;
+
+namespace ICSharpCode.Reports.Core.Dialogs
 {
 	/// <summary>
 	/// Description of UISettingsEditor.

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -11,12 +12,14 @@ namespace ICSharpCode.Core.WinForms
 		object caller;
 		Codon codon;
 		ICommand menuCommand = null;
+		IEnumerable<ICondition> conditions;
 		
-		public ToolBarCommand(Codon codon, object caller, bool createCommand)
+		public ToolBarCommand(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
 			this.codon         = codon;
+			this.conditions  = conditions;
 			
 			if (createCommand) {
 				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
@@ -49,7 +52,7 @@ namespace ICSharpCode.Core.WinForms
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				if (isEnabled && menuCommand != null && menuCommand is IMenuCommand) {

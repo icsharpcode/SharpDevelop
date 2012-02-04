@@ -20,9 +20,21 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateDTE()
 		{
 			fakeProjectService = new FakePackageManagementProjectService();
-			fakeProjectService.OpenSolution = new SD.Solution();
+			fakeProjectService.OpenSolution = new SD.Solution(new SD.MockProjectChangeWatcher());
 			fakeFileService = new FakeFileService(null);
 			dte = new DTE(fakeProjectService, fakeFileService);
+		}
+		
+		void NoOpenSolution()
+		{
+			fakeProjectService.OpenSolution = null;
+		}
+		
+		TestableProject AddProjectToSolution(string projectName)
+		{
+			TestableProject project = ProjectHelper.CreateTestProject(projectName);
+			fakeProjectService.AddFakeProject(project);
+			return project;
 		}
 		
 		[Test]
@@ -53,7 +65,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Solution_NoOpenSolution_ReturnsNull()
 		{
 			CreateDTE();
-			fakeProjectService.OpenSolution = null;
+			NoOpenSolution();
 			
 			Solution solution = dte.Solution;
 			
@@ -88,6 +100,42 @@ namespace PackageManagement.Tests.EnvDTE
 			Properties properties = dte.Properties("FONTSANDCOLORS", "TEXTEDITOR");
 			
 			Assert.IsNotNull(properties);
+		}
+		
+		[Test]
+		public void ActiveSolutionProjects_NoSolutionOpen_ReturnsEmptyArray()
+		{
+			CreateDTE();
+			NoOpenSolution();
+			
+			Array projects = dte.ActiveSolutionProjects as Array;
+			
+			Assert.AreEqual(0, projects.Length);
+		}
+		
+		[Test]
+		public void ActiveSolutionProjects_SolutionHasOneProject_ReturnsArrayWithOneItem()
+		{
+			CreateDTE();
+			AddProjectToSolution("ProjectA");
+			
+			Array projects = dte.ActiveSolutionProjects as Array;
+			
+			Assert.AreEqual(1, projects.Length);
+		}
+		
+		[Test]
+		public void ActiveSolutionProjects_SolutionHasOneProject_ReturnsArrayContainingProject()
+		{
+			CreateDTE();
+			TestableProject expectedProject = AddProjectToSolution("ProjectA");
+			
+			Array projects = dte.ActiveSolutionProjects as Array;
+			
+			Project project = projects.GetValue(0) as Project;
+			string name = project.Name;
+			
+			Assert.AreEqual("ProjectA", name);
 		}
 	}
 }

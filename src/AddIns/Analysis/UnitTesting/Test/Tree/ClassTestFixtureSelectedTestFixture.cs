@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -40,9 +42,9 @@ namespace UnitTesting.Tests.Tree
 		public void SelectedTestsHasOneProject()
 		{
 			IProject[] expectedProjects = new IProject[] { project };
-			List<IProject> actualProjects = new List<IProject>(selectedTests.Projects);
+			var actualProjects = selectedTests.Projects.ToArray();
 			
-			Assert.AreEqual(expectedProjects, actualProjects.ToArray());
+			Assert.AreEqual(expectedProjects, actualProjects);
 		}
 		
 		[Test]

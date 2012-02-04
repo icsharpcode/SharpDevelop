@@ -1,0 +1,167 @@
+﻿<#@ template language="VB" HostSpecific="true" #>
+<#@ import namespace="ICSharpCode.AspNet.Mvc" #>
+<#@ import namespace="Microsoft.VisualBasic.Constants" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<# If MvcHost.IsPartialView Then #>
+<%@ Control Language="VB" Inherits="System.Web.Mvc.ViewUserControl<#= GetViewPageType() #>" %>
+
+<# ElseIf MvcHost.IsContentPage Then #>
+<%@ Page Language="VB" MasterPageFile="<#= MvcHost.MasterPageFile #>" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="Title" runat="server">
+<#= MvcHost.ViewName #>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="<#= MvcHost.PrimaryContentPlaceHolderID #>" runat="server">
+<#
+		PushIndent(vbTab)
+	Else
+#>
+<%@ Page Language="VB" Inherits="System.Web.Mvc.ViewPage<#= GetViewPageType() #>" %>
+
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title><#= MvcHost.ViewName #></title>
+	</head>
+	<body>
+<# 
+		PushIndent(vbTab & vbTab)
+	End If
+#>
+<% Using Html.BeginForm() %>
+	<%: Html.ValidationSummary(True) %>
+	<fieldset>
+		<legend><#= MvcHost.ViewDataType.Name #></legend>
+<# If ModelHasPrimaryKey Then #>
+		
+		<%: Html.HiddenFor(Function(model) model.<#= ModelPrimaryKeyName #>) %>
+<# End If #>
+<#
+	For Each modelProperty As ModelProperty in ModelProperties
+		If Not modelProperty.IsPrimaryKey Then
+#>
+	
+		<div class="editor-label">
+			<%: Html.LabelFor(Function(model) model.<#= modelProperty.Name #>) %>
+		</div>
+		<div class="editor-field">
+			<%: Html.EditorFor(Function(model) model.<#= modelProperty.Name #>) %>
+			<%: Html.ValidationMessageFor(Function(model) model.<#= modelProperty.Name #>) %>
+		</div>
+<#
+		End If
+	Next
+#>
+		
+		<p>
+			<input type="submit" value="Save"/>
+		</p>
+	</fieldset>
+<% End Using %>
+<div>
+	<%: Html.ActionLink("Back", "Index") %>
+</div>
+<#
+	If MvcHost.IsPartialView Then
+		' Do nothing.
+	ElseIf MvcHost.IsContentPage Then
+		PopIndent()
+#>
+</asp:Content>
+<#
+	Else
+		PopIndent()
+#>
+	</body>
+</html>
+<# End If #>
+<#+
+	ReadOnly Property MvcHost As MvcTextTemplateHost
+		Get
+			Return DirectCast(Host, MvcTextTemplateHost)
+		End Get
+	End Property
+	
+	Public Class ModelProperty
+		Public Property Name() As String
+		Public Property IsPrimaryKey() As Boolean
+		
+		Public Sub New(ByVal propertyInfo As PropertyInfo)
+			Me.Name = propertyInfo.Name
+			Me.IsPrimaryKey = IsPrimaryKeyProperty(propertyInfo)
+		End Sub
+		
+		Function IsPrimaryKeyProperty(ByVal propertyInfo As PropertyInfo) As Boolean
+			Return IsIdProperty(propertyInfo) Or _
+				IsIdPropertyPrefixedWithClassName(propertyInfo)
+		End Function
+		
+		Function IsIdProperty(ByVal propertyInfo As PropertyInfo) As Boolean
+			Return IsMatchIgnoringCase(propertyInfo.Name, "id")
+		End Function
+		
+		Function IsIdPropertyPrefixedWithClassName(ByVal propertyInfo As PropertyInfo) As Boolean
+			Dim prefixedIdPropertyName As String = propertyInfo.DeclaringType.Name + "id"
+			Return IsMatchIgnoringCase(propertyInfo.Name, prefixedIdPropertyName)
+		End Function
+		
+		Shared Function IsMatchIgnoringCase(ByVal a As String, ByVal b as String) As Boolean
+			Return String.Equals(a, b, StringComparison.OrdinalIgnoreCase)
+		End Function
+	End Class
+	
+	Public Function GetViewPageType() As String
+		Dim viewDataTypeName As String = MvcHost.ViewDataTypeName
+		If Not String.IsNullOrEmpty(viewDataTypeName) Then
+			Return String.Format("(Of {0})", viewDataTypeName)
+		End If
+		Return String.Empty
+	End Function
+	
+	Private modelPropertiesList As List(Of ModelProperty)
+	
+	ReadOnly Property ModelProperties() As List(Of ModelProperty)
+		Get
+			If modelPropertiesList Is Nothing Then
+				modelPropertiesList = New List(Of ModelProperty)(GetModelProperties())
+			End If
+			Return modelPropertiesList
+		End Get
+	End Property
+	
+	Public Function GetModelProperties() As IEnumerable(Of ModelProperty)
+		Dim properties = New List(Of ModelProperty)()
+		For Each propertyInfo As PropertyInfo In MvcHost.GetViewDataTypeProperties()
+			properties.Add(new ModelProperty(propertyInfo))
+		Next
+		Return properties
+	End Function
+	
+	ReadOnly Property ModelHasPrimaryKey As Boolean
+		Get
+			Return ModelPrimaryKeyName.Length > 0
+		End Get
+	End Property
+
+	Private modelPrimaryKeyNameValue As String
+	
+	ReadOnly Property ModelPrimaryKeyName() As String
+		Get
+			If modelPrimaryKeyNameValue Is Nothing Then
+				modelPrimaryKeyNameValue = GetModelPrimaryKeyName()
+			End If
+			Return modelPrimaryKeyNameValue
+		End Get
+	End Property
+	
+	Public Function GetModelPrimaryKeyName() As String
+		For Each modelProperty As ModelProperty in ModelProperties
+			If modelProperty.IsPrimaryKey Then
+				Return modelProperty.Name
+			End If
+		Next
+		Return ""
+	End Function
+#>

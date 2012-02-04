@@ -70,13 +70,13 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseMethodExists()
 		{
-			Assert.IsTrue(testClass.TestMethods.Contains("ReflectionOrCecilLayerTests.InheritanceTests"));
+			Assert.IsTrue(testClass.TestMembers.Contains("ReflectionOrCecilLayerTests.InheritanceTests"));
 		}
 
 		[Test]
 		public void NonTestBaseMethodDoesNotExist()
 		{
-			Assert.IsFalse(testClass.TestMethods.Contains("ReflectionOrCecilLayerTests.NonTestMethod"));
+			Assert.IsFalse(testClass.TestMembers.Contains("ReflectionOrCecilLayerTests.NonTestMethod"));
 		}
 		
 		/// <summary>
@@ -88,8 +88,8 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void BaseMethodDeclaringTypeIsDerivedClass()
 		{
-			TestMethod method = testClass.TestMethods["ReflectionOrCecilLayerTests.InheritanceTests"];
-			Assert.AreEqual(c, method.Method.DeclaringType);
+			TestMember method = testClass.TestMembers["ReflectionOrCecilLayerTests.InheritanceTests"];
+			Assert.AreEqual(c, method.Member.DeclaringType);
 		}
 
 		[Test]

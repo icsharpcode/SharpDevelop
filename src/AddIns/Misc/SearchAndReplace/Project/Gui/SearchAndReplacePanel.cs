@@ -1,43 +1,27 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace SearchAndReplace
 {
-	class StoredSelection
-	{
-		public readonly int Offset, Length;
-		
-		public int EndOffset {
-			get { return Offset + Length; }
-		}
-		
-		public bool IsTextSelected {
-			get { return Length > 0; }
-		}
-		
-		public StoredSelection(int offset, int length)
-		{
-			this.Offset = offset;
-			this.Length = length;
-		}
-	}
-	
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
-		SearchAndReplaceMode  searchAndReplaceMode;
-		StoredSelection selection;
-		ITextEditor textEditor;
-		bool ignoreSelectionChanges;
-		bool findFirst;
+		SearchAndReplaceMode searchAndReplaceMode;
 		
 		public SearchAndReplaceMode SearchAndReplaceMode {
 			get {
@@ -77,16 +61,9 @@ namespace SearchAndReplace
 		{
 		}
 		
-		protected override void Dispose(bool disposing)
-		{
-			RemoveSelectionChangedHandler();
-			RemoveActiveWindowChangedHandler();
-			base.Dispose(disposing);
-		}
-		
-		public DocumentIteratorType DocumentIteratorType {
+		public SearchTarget SearchTarget {
 			get {
-				return (DocumentIteratorType)(Get<ComboBox>("lookIn").SelectedIndex);
+				return (SearchTarget)(Get<ComboBox>("lookIn").SelectedIndex);
 			}
 			set {
 				Get<ComboBox>("lookIn").SelectedIndex = (int)value;
@@ -104,86 +81,88 @@ namespace SearchAndReplace
 			}
 		}
 		
+		SearchResultMatch lastMatch;
+		
 		void FindNextButtonClicked(object sender, EventArgs e)
 		{
-			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					FindNextInSelection();
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-					SearchReplaceManager.FindNext(monitor);
-				}
+			try {
+				WritebackOptions();
+				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+				lastMatch = SearchManager.FindNext(strategy, location);
+				SearchManager.SelectResult(lastMatch);
+				Focus();
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
 			}
-			Focus();
 		}
 		
 		void FindAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					RunAllInSelection(0);
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-					SearchInFilesManager.FindAll(monitor);
-				}
+			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
+				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
+				try {
+					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
+					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+					var results = SearchManager.FindAllParallel(strategy, location, monitor);
+					SearchManager.ShowSearchResults(SearchOptions.FindPattern, results);
+				} catch (SearchPatternException ex) {
+					MessageService.ShowError(ex.Message);
+				} catch (OperationCanceledException) {}
 			}
 		}
 		
 		void BookmarkAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					RunAllInSelection(1);
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-					SearchReplaceManager.MarkAll(monitor);
-				}
+			using (var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor()) {
+				monitor.TaskName = StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}");
+				try {
+					var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(false) : null);
+					var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+					var results = SearchManager.FindAllParallel(strategy, location, monitor);
+					SearchManager.MarkAll(results);
+				} catch (SearchPatternException ex) {
+					MessageService.ShowError(ex.Message);
+				} catch (OperationCanceledException) {}
 			}
 		}
 		
 		void ReplaceAllButtonClicked(object sender, EventArgs e)
 		{
 			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					RunAllInSelection(2);
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-					SearchReplaceManager.ReplaceAll(monitor);
-				}
+			int count = -1;
+			try {
+				AsynchronousWaitDialog.RunInCancellableWaitDialog(
+					StringParser.Parse("${res:AddIns.SearchReplace.SearchProgressTitle}"), null,
+					monitor => {
+						var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+						var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+						var results = SearchManager.FindAll(strategy, location, monitor);
+						count = SearchManager.ReplaceAll(results, SearchOptions.ReplacePattern, monitor.CancellationToken);
+					});
+				if (count != -1)
+					SearchManager.ShowReplaceDoneMessage(count);
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
 			}
 		}
 		
 		void ReplaceButtonClicked(object sender, EventArgs e)
 		{
-			WritebackOptions();
-			if (IsSelectionSearch) {
-				if (selection.IsTextSelected) {
-					ReplaceInSelection();
-				}
-			} else {
-				using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("Search", true))
-				{
-					monitor.Progress = double.NaN; // progress not implemented, use indeterminate progress
-					SearchReplaceManager.Replace(monitor);
-				}
+			try {
+				WritebackOptions();
+				if (SearchManager.IsResultSelected(lastMatch))
+					SearchManager.Replace(lastMatch, SearchOptions.ReplacePattern);
+				var location = new SearchLocation(SearchOptions.SearchTarget, SearchOptions.LookIn, SearchOptions.LookInFiletypes, SearchOptions.IncludeSubdirectories, SearchOptions.SearchTarget == SearchTarget.CurrentSelection ? SearchManager.GetActiveSelection(true) : null);
+				var strategy = SearchStrategyFactory.Create(SearchOptions.FindPattern, !SearchOptions.MatchCase, SearchOptions.MatchWholeWord, SearchOptions.SearchMode);
+				lastMatch = SearchManager.FindNext(strategy, location);
+				SearchManager.SelectResult(lastMatch);
+				Focus();
+			} catch (SearchPatternException ex) {
+				MessageService.ShowError(ex.Message);
 			}
-			Focus();
 		}
 		
 		void WritebackOptions()
@@ -202,11 +181,11 @@ namespace SearchAndReplace
 			SearchOptions.MatchWholeWord = Get<CheckBox>("matchWholeWord").Checked;
 			SearchOptions.IncludeSubdirectories = Get<CheckBox>("includeSubFolder").Checked;
 			
-			SearchOptions.SearchStrategyType = (SearchStrategyType)Get<ComboBox>("use").SelectedIndex;
+			SearchOptions.SearchMode = (SearchMode)Get<ComboBox>("use").SelectedIndex;
 			if (Get<ComboBox>("lookIn").DropDownStyle == ComboBoxStyle.DropDown) {
-				SearchOptions.DocumentIteratorType = DocumentIteratorType.Directory;
+				SearchOptions.SearchTarget = SearchTarget.Directory;
 			} else {
-				SearchOptions.DocumentIteratorType = (DocumentIteratorType)Get<ComboBox>("lookIn").SelectedIndex;
+				SearchOptions.SearchTarget = (SearchTarget)Get<ComboBox>("lookIn").SelectedIndex;
 			}
 		}
 		
@@ -232,27 +211,19 @@ namespace SearchAndReplace
 			}
 			
 			Get<ComboBox>("lookIn").Text = SearchOptions.LookIn;
-			string[] lookInTexts = {
-				// must be in the same order as the DocumentIteratorType enum
-				"${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.CurrentSelection}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}",
-				"${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"
-			};
-			foreach (string lookInText in lookInTexts) {
+			foreach (string lookInText in typeof(SearchTarget).GetFields().SelectMany(f => f.GetCustomAttributes(false).OfType<DescriptionAttribute>()).Select(da => da.Description)) {
 				Get<ComboBox>("lookIn").Items.Add(StringParser.Parse(lookInText));
 			}
 			Get<ComboBox>("lookIn").Items.Add(SearchOptions.LookIn);
 			Get<ComboBox>("lookIn").SelectedIndexChanged += new EventHandler(LookInSelectedIndexChanged);
 			
-			if (IsMultipleLineSelection(SearchReplaceUtilities.GetActiveTextEditor())) {
-				DocumentIteratorType = DocumentIteratorType.CurrentSelection;
+			if (IsMultipleLineSelection(SearchManager.GetActiveTextEditor())) {
+				SearchTarget = SearchTarget.CurrentSelection;
 			} else {
-				if (SearchOptions.DocumentIteratorType == DocumentIteratorType.CurrentSelection) {
-					SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
+				if (SearchOptions.SearchTarget == SearchTarget.CurrentSelection) {
+					SearchOptions.SearchTarget = SearchTarget.CurrentDocument;
 				}
-				DocumentIteratorType = SearchOptions.DocumentIteratorType;
+				SearchTarget = SearchOptions.SearchTarget;
 			}
 			
 			Get<ComboBox>("fileTypes").Text         = SearchOptions.LookInFiletypes;
@@ -264,11 +235,11 @@ namespace SearchAndReplace
 			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.Standard}"));
 			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.RegexSearch}"));
 			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.WildcardSearch}"));
-			switch (SearchOptions.SearchStrategyType) {
-				case SearchStrategyType.RegEx:
+			switch (SearchOptions.SearchMode) {
+				case SearchMode.RegEx:
 					Get<ComboBox>("use").SelectedIndex = 1;
 					break;
-				case SearchStrategyType.Wildcard:
+				case SearchMode.Wildcard:
 					Get<ComboBox>("use").SelectedIndex = 2;
 					break;
 				default:
@@ -290,17 +261,6 @@ namespace SearchAndReplace
 				Get<ComboBox>("fileTypes").Enabled = false;
 				Get<Label>("lookAtTypes").Enabled = false;
 			}
-			if (IsSelectionSearch) {
-				InitSelectionSearch();
-			} else {
-				RemoveSelectionSearchHandlers();
-			}
-		}
-		
-		bool IsSelectionSearch {
-			get {
-				return DocumentIteratorType == DocumentIteratorType.CurrentSelection;
-			}
 		}
 		
 		/// <summary>
@@ -314,157 +274,16 @@ namespace SearchAndReplace
 				return editor.SelectedText.IndexOf('\n') != -1;
 		}
 		
-		void FindNextInSelection()
-		{
-			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
-			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
-			
-			if (findFirst) {
-				textEditor.Caret.Offset = startOffset;
-			}
-			
-			try {
-				ignoreSelectionChanges = true;
-				if (findFirst) {
-					findFirst = false;
-					SearchReplaceManager.FindFirstInSelection(startOffset, endOffset - startOffset, null);
-				} else {
-					findFirst = !SearchReplaceManager.FindNextInSelection(null);
-					if (findFirst) {
-						textEditor.Select(startOffset, endOffset - startOffset);
-					}
-				}
-			} finally {
-				ignoreSelectionChanges = false;
-			}
-		}
-		
 		/// <summary>
 		/// Returns the first ISelection object from the currently active text editor
 		/// </summary>
-		static StoredSelection GetCurrentTextSelection()
+		static ISegment GetCurrentTextSelection()
 		{
-			ITextEditor textArea = SearchReplaceUtilities.GetActiveTextEditor();
+			ITextEditor textArea = SearchManager.GetActiveTextEditor();
 			if (textArea != null) {
-				return new StoredSelection(textArea.SelectionStart, textArea.SelectionLength);
+				return new TextSegment { StartOffset = textArea.SelectionStart, Length = textArea.SelectionLength };
 			}
 			return null;
-		}
-		
-		void WorkbenchActiveViewContentChanged(object source, EventArgs e)
-		{
-			ITextEditor activeTextEditorControl = SearchReplaceUtilities.GetActiveTextEditor();
-			if (activeTextEditorControl != this.textEditor) {
-				AddSelectionChangedHandler(activeTextEditorControl);
-				TextSelectionChanged(source, e);
-			}
-		}
-		
-		void AddSelectionChangedHandler(ITextEditor textEditor)
-		{
-			RemoveSelectionChangedHandler();
-			
-			this.textEditor = textEditor;
-			if (textEditor != null) {
-				this.textEditor.SelectionChanged += TextSelectionChanged;
-			}
-		}
-		
-		void RemoveSelectionChangedHandler()
-		{
-			if (textEditor != null) {
-				textEditor.SelectionChanged -= TextSelectionChanged;
-			}
-		}
-		
-		void RemoveActiveWindowChangedHandler()
-		{
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchActiveViewContentChanged;
-		}
-		
-		/// <summary>
-		/// When the selected text is changed make sure the 'Current Selection'
-		/// option is not selected if no text is selected.
-		/// </summary>
-		/// <remarks>The text selection can change either when the user
-		/// selects different text in the editor or the active window is
-		/// changed.</remarks>
-		void TextSelectionChanged(object source, EventArgs e)
-		{
-			if (!ignoreSelectionChanges) {
-				LoggingService.Debug("TextSelectionChanged.");
-				selection = GetCurrentTextSelection();
-				findFirst = true;
-			}
-		}
-		
-		void InitSelectionSearch()
-		{
-			findFirst = true;
-			selection = GetCurrentTextSelection();
-			AddSelectionChangedHandler(SearchReplaceUtilities.GetActiveTextEditor());
-			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchActiveViewContentChanged;
-		}
-		
-		void RemoveSelectionSearchHandlers()
-		{
-			RemoveSelectionChangedHandler();
-			RemoveActiveWindowChangedHandler();
-		}
-		
-		/// <summary>
-		/// action: 0 = find, 1 = mark, 2 = replace
-		/// </summary>
-		void RunAllInSelection(int action)
-		{
-			const IProgressMonitor monitor = null;
-			
-			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
-			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
-			
-			textEditor.Select(startOffset, endOffset - startOffset);
-			
-			try {
-				ignoreSelectionChanges = true;
-				if (action == 0) {
-					SearchInFilesManager.FindAll(startOffset, endOffset - startOffset, monitor);
-				} else if (action == 1) {
-					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset, monitor);
-				} else if (action == 2) {
-					// use anchor for endOffset because the replacement might change the text length
-					var anchor = textEditor.Document.CreateAnchor(endOffset);
-					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset, monitor);
-					endOffset = anchor.Offset;
-				}
-				textEditor.Select(startOffset, endOffset - startOffset);
-			} finally {
-				ignoreSelectionChanges = false;
-			}
-		}
-		
-		void ReplaceInSelection()
-		{
-			int startOffset = Math.Min(selection.Offset, selection.EndOffset);
-			int endOffset = Math.Max(selection.Offset, selection.EndOffset);
-			
-			if (findFirst) {
-				textEditor.Caret.Offset = startOffset;
-			}
-			
-			try {
-				ignoreSelectionChanges = true;
-				if (findFirst) {
-					findFirst = false;
-					SearchReplaceManager.ReplaceFirstInSelection(startOffset, endOffset - startOffset, null);
-				} else {
-					findFirst = !SearchReplaceManager.ReplaceNextInSelection(null);
-					if (findFirst) {
-						textEditor.Select(startOffset, endOffset - startOffset);
-					}
-				}
-			} finally {
-				ignoreSelectionChanges = false;
-			}
 		}
 		
 		/// <summary>

@@ -87,16 +87,10 @@ namespace ICSharpCode.FormsDesigner
 			const string missingReferenceMessage = "Your project is missing a reference to '${Name}' - please add it using 'Project > Add Reference'.";
 			
 			if (formClass.ProjectContent.GetClass("System.Drawing.Point", 0) == null) {
-				throw new FormsDesignerLoadException(
-					StringParser.Parse(
-						missingReferenceMessage, new string[,] {{ "Name" , "System.Drawing"}}
-					));
+				throw new FormsDesignerLoadException(StringParser.Parse(missingReferenceMessage, new StringTagPair("Name", "System.Drawing")));
 			}
 			if (formClass.ProjectContent.GetClass("System.Windows.Forms.Form", 0) == null) {
-				throw new FormsDesignerLoadException(
-					StringParser.Parse(
-						missingReferenceMessage, new string[,] {{ "Name" , "System.Windows.Forms"}}
-					));
+				throw new FormsDesignerLoadException(StringParser.Parse(missingReferenceMessage, new StringTagPair("Name" , "System.Windows.Forms")));
 			}
 			
 			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();

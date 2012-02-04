@@ -56,7 +56,7 @@ namespace UnitTesting.Tests.Project
 			// Make sure test methods are created, otherwise
 			// the Test2 method will never be looked at due to lazy evaluation
 			// of test method.
-			int count = testProject.TestClasses[0].TestMethods.Count;
+			int count = testProject.TestClasses[0].TestMembers.Count;
 			
 			// Change the name of the second test class.
 			DefaultCompilationUnit oldUnit = new DefaultCompilationUnit(projectContent);
@@ -99,13 +99,13 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void OldTestClassHasOneMethod()
 		{
-			Assert.AreEqual(1, GetTestClass("RootNamespace.MyTestFixture").TestMethods.Count);
+			Assert.AreEqual(1, GetTestClass("RootNamespace.MyTestFixture").TestMembers.Count);
 		}
 		
 		[Test]
 		public void OldTestClassHasOneMethodCalledTest1()
 		{
-			Assert.AreEqual("Test1", GetTestClass("RootNamespace.MyTestFixture").TestMethods[0].Name);
+			Assert.AreEqual("Test1", GetTestClass("RootNamespace.MyTestFixture").TestMembers[0].Name);
 		}		
 		
 		void AssertTestClassFound(string name)

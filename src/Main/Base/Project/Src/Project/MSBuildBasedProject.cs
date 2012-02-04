@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using ICSharpCode.Core;
@@ -139,7 +140,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ResolveAssemblyReferences()
 		{
-			MSBuildInternals.ResolveAssemblyReferences(this, null);
+			MSBuildInternals.ResolveAssemblyReferences(this);
+		}
+		
+		public override IEnumerable<ReferenceProjectItem> ResolveAssemblyReferences(CancellationToken cancellationToken)
+		{
+			ReferenceProjectItem[] additionalItems = {
+				new ReferenceProjectItem(this, "mscorlib")
+			};
+			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
 		}
 		
 		#region CreateProjectItem
@@ -171,6 +180,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 				case "WebReferences":
 					return new WebReferencesProjectItem(this, item);
+					
+				case "WCFMetadata":
+					return new ServiceReferencesProjectItem(this, item);
+					
+				case "WCFMetadataStorage":
+					return new ServiceReferenceProjectItem(this, item);
 					
 				default:
 					if (this.AvailableFileItemTypes.Contains(item.ItemType)
@@ -1176,7 +1191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			AddInTreeNode node = AddInTree.GetTreeNode(MSBuildEngine.AdditionalPropertiesPath, false);
 			if (node != null) {
 				foreach (Codon codon in node.Codons) {
-					object item = codon.BuildItem(null, new System.Collections.ArrayList());
+					object item = node.BuildChildItem(codon, null);
 					if (item != null) {
 						string text = item.ToString();
 						globalProperties[codon.Id] = text;
@@ -1247,6 +1262,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Save(string fileName)
 		{
 			lock (SyncRoot) {
+				watcher.Disable();
+				watcher.Rename(fileName);
 				// we need the global lock - if the file is being renamed,
 				// MSBuild will update the global project collection
 				lock (MSBuildInternals.SolutionProjectCollectionLock) {
@@ -1257,6 +1274,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						userProjectFile.Save(userFile);
 					}
 				}
+				watcher.Enable();
 			}
 			FileUtility.RaiseFileSaved(new FileNameEventArgs(fileName));
 		}
@@ -1378,7 +1396,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (ProjectPropertyGroupElement g in projectFile.PropertyGroups.Concat(userProjectFile.PropertyGroups)) {
 					// Rename the default configuration setting
 					var prop = g.Properties.FirstOrDefault(p => p.Name == "Configuration");
-						if (prop != null && prop.Value == oldName) {
+					if (prop != null && prop.Value == oldName) {
 						prop.Value = newName;
 					}
 					
@@ -1402,7 +1420,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (ProjectPropertyGroupElement g in projectFile.PropertyGroups.Concat(userProjectFile.PropertyGroups)) {
 					// Rename the default platform setting
 					var prop = g.Properties.FirstOrDefault(p => p.Name == "Platform");
-						if (prop != null && prop.Value == oldName) {
+					if (prop != null && prop.Value == oldName) {
 						prop.Value = newName;
 					}
 					

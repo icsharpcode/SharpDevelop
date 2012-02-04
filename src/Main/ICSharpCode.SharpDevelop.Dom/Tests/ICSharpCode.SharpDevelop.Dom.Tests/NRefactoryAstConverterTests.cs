@@ -308,7 +308,7 @@ Module StringExtensions
 	End Sub
 End Module";
 			ICompilationUnit cu = Parse(code, SupportedLanguage.VBNet, SharedProjectContentRegistryForTests.Instance.Mscorlib,
-			                            SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System.Core", "System.Core"));
+			                            SharedProjectContentRegistryForTests.Instance.GetProjectContentForReference("System.Core", typeof(System.Linq.Enumerable).Module.FullyQualifiedName));
 			Assert.Greater(cu.Classes.Count, 0);
 			Assert.AreEqual("StringExtensions", cu.Classes[0].Name);
 			Assert.AreEqual(ClassType.Module, cu.Classes[0].ClassType);

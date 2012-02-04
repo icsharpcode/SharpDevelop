@@ -12,7 +12,7 @@ namespace TextTemplating.Tests.Helpers
 		public static TestableProject CreateProject()
 		{
 			var info = new ProjectCreateInformation();
-			info.Solution = new Solution();
+			info.Solution = new Solution(new MockProjectChangeWatcher());
 			info.OutputProjectFileName = @"d:\projects\MyProject\MyProject.csproj";
 			info.ProjectName = "MyProject";
 			return new TestableProject(info);

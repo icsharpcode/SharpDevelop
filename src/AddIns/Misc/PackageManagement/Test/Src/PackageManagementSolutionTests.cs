@@ -326,7 +326,7 @@ namespace PackageManagement.Tests
 		public void IsOpen_SolutionIsOpen_ReturnsTrue()
 		{
 			CreateSolution();
-			fakeProjectService.OpenSolution = new Solution();
+			fakeProjectService.OpenSolution = new Solution(new MockProjectChangeWatcher());
 			
 			bool open = solution.IsOpen;
 			
@@ -374,7 +374,7 @@ namespace PackageManagement.Tests
 		public void FileName_SolutionHasFileName_ReturnsSolutionFileName()
 		{
 			CreateSolution();
-			var solution = new Solution();
+			var solution = new Solution(new MockProjectChangeWatcher());
 			string expectedFileName = @"d:\projects\myproject\Project.sln";
 			solution.FileName = expectedFileName;
 			fakeProjectService.OpenSolution = solution;

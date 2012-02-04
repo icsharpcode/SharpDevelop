@@ -88,6 +88,27 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(e.ReturnType.IsNull);
 		}
 		
+		[Test]
+		public void AsyncLambdaWithParentheses()
+		{
+			LambdaExpression e = ParseCSharp("async (x) => x + 1");
+			Assert.IsTrue(e.IsAsync);
+			Assert.AreEqual("x", e.Parameters[0].ParameterName);
+			Assert.IsTrue(e.Parameters[0].TypeReference.IsNull);
+			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
+			Assert.IsTrue(e.ReturnType.IsNull);
+		}
+		
+		[Test]
+		public void AsyncLambdaWithoutParentheses()
+		{
+			LambdaExpression e = ParseCSharp("async x => x + 1");
+			Assert.IsTrue(e.IsAsync);
+			Assert.AreEqual("x", e.Parameters[0].ParameterName);
+			Assert.IsTrue(e.Parameters[0].TypeReference.IsNull);
+			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
+			Assert.IsTrue(e.ReturnType.IsNull);
+		}
 		#endregion
 		
 		#region VB.NET

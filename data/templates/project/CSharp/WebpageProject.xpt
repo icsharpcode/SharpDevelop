@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.WebPage.Name}</Name>
 		<Category>C#</Category>
 		<Subcategory>ASP.NET</Subcategory>
-		<Icon>C#.Project.Form</Icon>
+		<Icon>C#.Project.WebProject</Icon>
 		<Description>${res:Templates.Project.WebPage.Description}</Description>
 		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

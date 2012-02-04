@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		public ExportImage (BaseStyleDecorator itemStyle):base(itemStyle,false) 
+		public ExportImage (BaseStyleDecorator itemStyle):base(itemStyle) 
 		{
 			
 		}

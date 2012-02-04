@@ -205,7 +205,7 @@ namespace Debugger
 				return true;
 			} catch
 				#if DEBUG
-				(System.Exception ex)
+				(System.Exception)
 				#endif
 			{
 				return false;

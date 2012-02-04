@@ -4,8 +4,9 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {

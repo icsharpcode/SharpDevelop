@@ -11,7 +11,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of DesignerHelper.
 	/// </summary>
-	public sealed class DesignerHelper
+	internal sealed class DesignerHelper
 	{
 		
 		private DesignerHelper()
@@ -48,6 +48,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 			properties.Remove("TabStop");
 			properties.Remove("Tag");
 			properties.Remove("UseWaitCursor");
+			properties.Remove("Visible");
 		}
 		
 		public static void Remove (IDictionary properties,string[] toRemove)
@@ -76,15 +77,19 @@ namespace ICSharpCode.Reports.Addin.Designer
 			prop = props.Find("BackColor",true);
 			allProperties.Add(prop);
 			
+			prop = props.Find ("VisibleInReport",true);
+			allProperties.Add(prop);
+			
+			
 			// need this for Contextmenu's
 			prop = props.Find("ContextMenu",true);
 			allProperties.Add(prop);
 		}
 		
-		public static void AddTextbasedProperties (List<PropertyDescriptor> allProperties,
+		public static void AddTextBasedProperties (List<PropertyDescriptor> allProperties,
 		                                          PropertyDescriptorCollection props)
 		{
-			PropertyDescriptor prop = prop = props.Find("Font",true);
+			PropertyDescriptor prop = props.Find("Font",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("FormatString",true);
@@ -103,6 +108,23 @@ namespace ICSharpCode.Reports.Addin.Designer
 			allProperties.Add(prop);
 			
 			prop = props.Find("DataType",true);
+			allProperties.Add(prop);
+			
+			prop = props.Find("RTL",true);
+			allProperties.Add(prop);
+		}
+		
+		public static void AddGraphicProperties (List<PropertyDescriptor> allProperties,
+		                                         PropertyDescriptorCollection props)
+		{
+			PropertyDescriptor prop = null;
+			prop = props.Find("ForeColor",true);
+			allProperties.Add(prop);
+			
+			prop = props.Find("DashStyle",true);
+			allProperties.Add(prop);
+			
+			prop = props.Find("Thickness",true);
 			allProperties.Add(prop);
 		}
 	}

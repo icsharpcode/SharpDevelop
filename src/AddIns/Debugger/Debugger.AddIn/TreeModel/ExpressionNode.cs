@@ -143,7 +143,8 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 
-		public ExpressionNode(IImage image, string name, Expression expression)
+		public ExpressionNode(TreeNode parent, IImage image, string name, Expression expression)
+			: base(parent)
 		{
 			this.IconImage = image;
 			this.Name = name;
@@ -157,10 +158,11 @@ namespace Debugger.AddIn.TreeModel
 			Value val;
 			try {
 				var process = WindowsDebugger.DebuggedProcess;
-				var context = !process.IsInExternalCode ? process.SelectedStackFrame : process.SelectedThread.MostRecentStackFrame;
+				StackFrame frame = process.GetCurrentExecutingFrame();
+				if (frame == null) return;
 				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(context.MethodInfo.DeclaringType.MetadataToken, 
-				                                                                       context.MethodInfo.MetadataToken, 
+				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+				                                                                       frame.MethodInfo.MetadataToken,
 				                                                                       Name);
 				
 				if (expression is MemberReferenceExpression) {
@@ -188,24 +190,24 @@ namespace Debugger.AddIn.TreeModel
 			} else if (val.Type.IsPrimitive || val.Type.FullName == typeof(string).FullName) { // Must be before IsClass
 			} else if (val.Type.IsArray) { // Must be before IsClass
 				if (val.ArrayLength > 0)
-					this.ChildNodes = Utils.LazyGetChildNodesOfArray(this.Expression, val.ArrayDimensions);
+					this.childNodes = Utils.LazyGetChildNodesOfArray(this, this.Expression, val.ArrayDimensions);
 			} else if (val.Type.IsClass || val.Type.IsValueType) {
 				if (val.Type.FullNameWithoutGenericArguments == typeof(List<>).FullName) {
 					if ((int)val.GetMemberValue("_size").PrimitiveValue > 0)
-						this.ChildNodes = Utils.LazyGetItemsOfIList(this.expression);
+						this.childNodes = Utils.LazyGetItemsOfIList(this, this.expression);
 				} else {
-					this.ChildNodes = Utils.LazyGetChildNodesOfObject(this.Expression, val.Type);
+					this.childNodes = Utils.LazyGetChildNodesOfObject(this, this.Expression, val.Type);
 				}
 			} else if (val.Type.IsPointer) {
 				Value deRef = val.Dereference();
 				if (deRef != null) {
-					this.ChildNodes = new ExpressionNode [] { new ExpressionNode(this.IconImage, "*" + this.Name, this.Expression.AppendDereference()) };
+					this.childNodes = new ExpressionNode [] { new ExpressionNode(this, this.IconImage, "*" + this.Name, this.Expression.AppendDereference()) };
 				}
 			}
 			
 			if (DebuggingOptions.Instance.ICorDebugVisualizerEnabled) {
 				TreeNode info = ICorDebug.GetDebugInfoRoot(val.AppDomain, val.CorValue);
-				this.ChildNodes = Utils.PrependNode(info, this.ChildNodes);
+				this.childNodes = Utils.PrependNode(info, this.ChildNodes);
 			}
 			
 			// Do last since it may expire the object

@@ -51,6 +51,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static readonly ItemType Resource = new ItemType("Resource");
 		public static readonly ItemType Folder = new ItemType("Folder");
 		public static readonly ItemType WebReferences = new ItemType("WebReferences");
+		public static readonly ItemType ServiceReferences = new ItemType("WCFMetadata");
+		public static readonly ItemType ServiceReference = new ItemType("WCFMetadataStorage");
 		
 		/// <summary>
 		/// Gets a collection of item types that are known not to be used for files.
@@ -112,6 +114,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		public int CompareTo(ItemType other)
 		{
 			return itemName.CompareTo(other.itemName);
+		}
+		
+		public bool IsFolder()
+		{
+			return
+				(this == ItemType.Folder) ||
+				(this == ItemType.WebReferences) ||
+				(this == ItemType.ServiceReferences);
 		}
 	}
 }

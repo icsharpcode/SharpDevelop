@@ -23,7 +23,7 @@ namespace ICSharpCode.PackageManagement
 		public IPackageManagementProject Project { get; set; }
 		public ILogger Logger { get; set; }
 		public IPackage Package { get; set; }
-		public Version PackageVersion { get; set; }
+		public SemanticVersion PackageVersion { get; set; }
 		public string PackageId { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		

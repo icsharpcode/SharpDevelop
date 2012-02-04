@@ -434,9 +434,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Ara</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Ara...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Sadece daha önce bulunan başlıklarda ara</value>
   </data>
@@ -548,6 +545,9 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
     <value>Süre:</value>
   </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Ara...</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Çıkartma yöntemi</value>
   </data>
@@ -614,9 +614,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   <data name="AddIns.Subversion.History" xml:space="preserve">
     <value>Geçmiş</value>
   </data>
-  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
-    <value>Eski çözümü açık tut</value>
-  </data>
   <data name="AddIns.Subversion.Merge" xml:space="preserve">
     <value>Birleştir</value>
   </data>
@@ -628,12 +625,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   </data>
   <data name="AddIns.Subversion.Options.Title" xml:space="preserve">
     <value>Yansürüm Ayarları</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
-    <value>Çözümü yenile</value>
-  </data>
-  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
-    <value>SharpDevelop sürüm kontrol işleminin proje dosyalarını değiştirdiğini algıladı. Bu çözümü yenilemeniz gerekiyor.</value>
   </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Yerleştir</value>
@@ -701,9 +692,6 @@ SharpDevelop bu bilgileri otomatik olarak toplayıp gönderebilir.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Dosya</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Satır</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Hakkında</value>
@@ -2929,6 +2917,9 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Başla</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Satır</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Güncelle</value>
   </data>
@@ -3141,9 +3132,6 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Satır Sonu</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Satır</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>NCover konsol uygulaması bulunamadı.
@@ -4007,6 +3995,12 @@ Sadece harf,rakam, boşluk, '.' yada '_' kullanabilirsiniz.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Yüklüyor ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
+    <value>Eski çözümü açık tut</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.ReloadSolution" xml:space="preserve">
+    <value>Çözümü yenile</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
     <value>Derleyici Sürümü</value>
@@ -6790,15 +6784,6 @@ Program:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Kullanıcı:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Yeni SharpDevelop sürümlerini inceleyip sonrada bütün millete SharpDevelop'ın ne kadar iyi olduğunu anlatabilir ve onunla etkileyici programlar yazabilirsiniz!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Ctrl+J ile şablon tamamlama penceresini açabilirsiniz.</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>"? isim = ...;" (C#) yada "Dim isim As ? = ..." (VB) yazıp, SharpDevelop'ın soru işaretini "..."? türüyle değiştirmesini sağlayabilirsiniz.</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Ara Bellek Seçenekleri</value>

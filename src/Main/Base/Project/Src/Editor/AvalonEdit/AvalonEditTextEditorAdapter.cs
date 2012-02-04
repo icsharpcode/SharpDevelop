@@ -168,6 +168,12 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 				add    { avalonEditOptions.PropertyChanged += value; }
 				remove { avalonEditOptions.PropertyChanged -= value; }
 			}
+			
+			public string FontFamily {
+				get {
+					return "Consolas";
+				}
+			}
 		}
 		
 		public virtual ICSharpCode.Core.FileName FileName {
@@ -218,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public void JumpTo(int line, int column)
 		{
-			textEditor.TextArea.Selection = Selection.Empty;
+			textEditor.TextArea.ClearSelection();
 			textEditor.TextArea.Caret.Position = new TextViewPosition(line, column);
 			// might have jumped to a different location if column was outside the valid range
 			TextLocation actualLocation = textEditor.TextArea.Caret.Location;

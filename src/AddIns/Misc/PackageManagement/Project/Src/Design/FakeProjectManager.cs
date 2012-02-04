@@ -61,17 +61,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public FakeProjectSystem FakeProjectSystem = new FakeProjectSystem();
 		
-		public void AddPackageReference(string packageId, Version version, bool ignoreDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public void RemovePackageReference(string packageId, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackageReference(string packageId, Version version, bool updateDependencies)
 		{
 			throw new NotImplementedException();
 		}
@@ -102,7 +92,7 @@ namespace ICSharpCode.PackageManagement.Design
 			OnPackageReferenceRemoved(package);
 		}
 		
-		public void AddPackageReference(IPackage package, bool ignoreDependencies)
+		public void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			throw new NotImplementedException();
 		}
@@ -112,7 +102,17 @@ namespace ICSharpCode.PackageManagement.Design
 			throw new NotImplementedException();
 		}
 		
-		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies)
+		public void AddPackageReference(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackageReference(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackageReference(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
 		{
 			throw new NotImplementedException();
 		}

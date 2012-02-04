@@ -67,6 +67,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Tick += TimerMoveTick;
 			this.editorView.TextArea.Caret.PositionChanged += CaretPositionChanged;
+			// fixes SD-1873 - Unhandled WPF Exception when deleting text in text editor
+			// clear highlights to avoid exceptions when trying to draw highlights in
+			// locations that have been deleted already.
+			this.editorView.Document.Changed += delegate { lastResolveResult = null; ClearHighlight(); };
 		}
 		
 		public void ClearHighlight()
@@ -137,6 +141,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		List<Reference> FindReferencesInCurrentFile(ResolveResult resolveResult)
 		{
+			if (resolveResult == null)
+				return null;
 			var cancellationTokenSource = new CancellationTokenSource();
 			using (new Timer(
 				delegate {

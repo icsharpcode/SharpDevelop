@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="ICSharpCode.CodeQuality.Gui.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:gui="clr-namespace:ICSharpCode.CodeQuality.Gui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<DockPanel>
+		<ToolBar DockPanel.Dock="Top">
+			<Button Click="AddAssemblyClick">Add Assembly</Button>
+			<Button Click="RefreshClick">Refresh</Button>
+		</ToolBar>
+		<TabControl>
+			<TabItem Header="Dependency Matrix">
+				<gui:DependencyMatrixView x:Name="matrix"/>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</UserControl>

@@ -368,9 +368,6 @@ Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői k
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Keresés</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Keresés...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Keresés az előző keresési eredményben</value>
   </data>
@@ -400,6 +397,9 @@ Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői k
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Használja a jelenlegi Projekt nyelvét</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Keresés...</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Metódus kiemelése</value>
@@ -439,9 +439,6 @@ Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői k
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fájl</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Sor</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Névjegy</value>
@@ -2537,6 +2534,9 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Indítás</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Sor</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>&amp;Módosítás</value>
   </data>
@@ -2632,9 +2632,6 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Záró Sor</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Sor</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
     <value>Nem található az NCover konzol alkalmazás.
@@ -5910,15 +5907,6 @@ Hiba az indításkor:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Felhasználó:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Hogy mindig keresd a legújabb SharpDevelop verziókat és mondd el minden barátodnak, milyen jó a SharpDevelop és írj menő C# programokat vele!</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Hogy a sablon kiegészítő ablakot megnyithatod a Ctrl+J kombinációval?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Tudta-e, hogy beírhatja "? nev = ...;" (C#) vagy "Dim nev As ? = ..." (VB) és SharpDevelop helyettesíti a kérdőjelet a "..." típusával?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Puffer beállítások</value>

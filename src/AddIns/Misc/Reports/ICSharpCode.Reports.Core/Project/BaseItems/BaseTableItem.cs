@@ -29,7 +29,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region IExportColumnBuilder
 		
-		public ICSharpCode.Reports.Core.Exporter.BaseExportColumn CreateExportColumn()
+		public IBaseExportColumn CreateExportColumn()
 		{
 			BaseStyleDecorator st = this.CreateItemStyle();
 			ExportContainer item = new ExportContainer(st);

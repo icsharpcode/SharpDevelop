@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
@@ -162,7 +162,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="baseProject">The base project.</param>
 		/// <param name="referenceReplacements">A different set of references to use instead of those in the project.
 		/// Used by the GacReferencePanel.</param>
-		internal static void ResolveAssemblyReferences(MSBuildBasedProject baseProject, ReferenceProjectItem[] referenceReplacements)
+		public static IList<ReferenceProjectItem> ResolveAssemblyReferences(
+			MSBuildBasedProject baseProject,
+			ReferenceProjectItem[] additionalReferences = null, bool resolveOnlyAdditionalReferences = false,
+			bool logErrorsToOutputPad = true)
 		{
 			ProjectInstance project = baseProject.CreateProjectInstance();
 			project.SetProperty("BuildingProject", "false");
@@ -173,30 +176,35 @@ namespace ICSharpCode.SharpDevelop.Project
 				select item
 			).ToList();
 			
-			ReferenceProjectItem[] referenceProjectItems;
+			List<ReferenceProjectItem> referenceProjectItems;
 			
-			if (referenceReplacements == null) {
+			if (resolveOnlyAdditionalReferences) {
+				// Remove existing references from project
+				foreach (ProjectItemInstance reference in references) {
+					project.RemoveItem(reference);
+				}
+				references.Clear();
+				referenceProjectItems = new List<ReferenceProjectItem>();
+			} else {
 				// Remove the "Private" meta data.
 				// This is necessary to detect the default value for "Private"
 				foreach (ProjectItemInstance reference in references) {
 					reference.RemoveMetadata("Private");
 				}
-				
-				referenceProjectItems = baseProject.Items.OfType<ReferenceProjectItem>().ToArray();
-			} else {
-				foreach (ProjectItemInstance reference in references) {
-					project.RemoveItem(reference);
+				referenceProjectItems = baseProject.Items.OfType<ReferenceProjectItem>().ToList();
+			}
+			
+			if (additionalReferences != null) {
+				referenceProjectItems.AddRange(additionalReferences);
+				foreach (ReferenceProjectItem item in additionalReferences) {
+					references.Add(project.AddItem("Reference", item.Include));
 				}
-				foreach (ReferenceProjectItem item in referenceReplacements) {
-					project.AddItem("Reference", item.Include);
-				}
-				referenceProjectItems = referenceReplacements;
 			}
 			
 			string[] targets = { "ResolveAssemblyReferences" };
 			BuildRequestData requestData = new BuildRequestData(project, targets, new HostServices());
 			List<ILogger> loggers = new List<ILogger>();
-			if (referenceReplacements == null)
+			if (logErrorsToOutputPad)
 				loggers.Add(new SimpleErrorLogger());
 			lock (SolutionProjectCollectionLock) {
 				BuildParameters parameters = new BuildParameters(baseProject.MSBuildProjectCollection);
@@ -209,28 +217,43 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
 			}
 			
-			var referenceDict = new Dictionary<string, ReferenceProjectItem>();
-			foreach (ReferenceProjectItem item in referenceProjectItems) {
-				// references could be duplicate, so we cannot use referenceDict.Add or reference.ToDictionary
-				referenceDict[item.Include] = item;
-			}
+			IEnumerable<ProjectItemInstance> resolvedAssemblyProjectItems = project.GetItems("_ResolveAssemblyReferenceResolvedFiles");
 			
-			
-			foreach (ProjectItemInstance item in project.GetItems("_ResolveAssemblyReferenceResolvedFiles")) {
-				string originalInclude = item.GetMetadataValue("OriginalItemSpec");
-				ReferenceProjectItem reference;
-				if (referenceDict.TryGetValue(originalInclude, out reference)) {
-					reference.AssemblyName = new Dom.DomAssemblyName(item.GetMetadataValue("FusionName"));
-					//string fullPath = item.GetEvaluatedMetadata("FullPath"); is incorrect for relative paths
-					string fullPath = FileUtility.GetAbsolutePath(baseProject.Directory, item.GetMetadataValue("Identity"));
-					reference.FileName = fullPath;
-					reference.Redist = item.GetMetadataValue("Redist");
-					LoggingService.Debug("Got information about " + originalInclude + "; fullpath=" + fullPath);
-					reference.DefaultCopyLocalValue = bool.Parse(item.GetMetadataValue("CopyLocal"));
+			var query =
+				from msbuildItem in resolvedAssemblyProjectItems
+				let originalInclude = msbuildItem.GetMetadataValue("OriginalItemSpec")
+				join item in referenceProjectItems.Where(p => p.ItemType != ItemType.ProjectReference) on originalInclude equals item.Include into referenceItems
+				select new {
+				OriginalInclude = originalInclude,
+				AssemblyName = new DomAssemblyName(msbuildItem.GetMetadataValue("FusionName")),
+				FullPath = FileUtility.GetAbsolutePath(baseProject.Directory, msbuildItem.GetMetadataValue("Identity")),
+				Redist = msbuildItem.GetMetadataValue("Redist"),
+				CopyLocal = bool.Parse(msbuildItem.GetMetadataValue("CopyLocal")),
+				ReferenceItems = referenceItems
+			};
+			List<ReferenceProjectItem> resolvedAssemblies = new List<ReferenceProjectItem>();
+			List<ReferenceProjectItem> handledReferenceItems = new List<ReferenceProjectItem>();
+			foreach (var assembly in query) {
+				LoggingService.Debug("Got information about " + assembly.OriginalInclude + "; fullpath=" + assembly.FullPath);
+				foreach (var referenceItem in assembly.ReferenceItems) {
+					referenceItem.AssemblyName = assembly.AssemblyName;
+					referenceItem.FileName = assembly.FullPath;
+					referenceItem.Redist = assembly.Redist;
+					referenceItem.DefaultCopyLocalValue = assembly.CopyLocal;
+					handledReferenceItems.Add(referenceItem);
+				}
+				ReferenceProjectItem firstItem = assembly.ReferenceItems.FirstOrDefault();
+				if (firstItem != null) {
+					resolvedAssemblies.Add(firstItem);
 				} else {
-					LoggingService.Warn("Unknown item " + originalInclude);
+					resolvedAssemblies.Add(new ReferenceProjectItem(baseProject, assembly.OriginalInclude) { FileName = assembly.FullPath });
 				}
 			}
+			// Add any assemblies that weren't resolved yet. This is important - for example, this adds back project references.
+			foreach (var referenceItem in referenceProjectItems.Except(handledReferenceItems)) {
+				resolvedAssemblies.Add(referenceItem);
+			}
+			return resolvedAssemblies;
 		}
 		
 		sealed class SimpleErrorLogger : ILogger

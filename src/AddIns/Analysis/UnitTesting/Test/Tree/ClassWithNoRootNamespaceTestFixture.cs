@@ -36,7 +36,7 @@ namespace UnitTesting.Tests.Tree
 		public void SetUp()
 		{
 			// Create solution.
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			
 			// Create a project to display in the test tree view.
 			project = new MockCSharpProject();
@@ -194,8 +194,8 @@ namespace UnitTesting.Tests.Tree
 			Assert.AreEqual(0, testClassNode.Nodes.Count);
 			MockClass c = MockClass.CreateMockClassWithoutAnyAttributes();
 			MockMethod mockMethod = new MockMethod(c, "Method");
-			TestMethod testMethod = new TestMethod(mockMethod);
-			testClass.TestMethods.Add(testMethod);
+			TestMember testMethod = new TestMember(mockMethod);
+			testClass.TestMembers.Add(testMethod);
 			
 			Assert.AreEqual(0, testClassNode.Nodes.Count);
 		}

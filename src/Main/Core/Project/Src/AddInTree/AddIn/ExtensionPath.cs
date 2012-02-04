@@ -57,12 +57,12 @@ namespace ICSharpCode.Core
 
 		public static void SetUp(ExtensionPath extensionPath, XmlReader reader, string endElement)
 		{
-			Stack<ICondition> conditionStack = new Stack<ICondition>();
-			extensionPath.DoSetUp(reader, endElement, conditionStack);
+			extensionPath.DoSetUp(reader, endElement);
 		}
 		
-		void DoSetUp(XmlReader reader, string endElement, Stack<ICondition> conditionStack)
+		void DoSetUp(XmlReader reader, string endElement)
 		{
+			Stack<ICondition> conditionStack = new Stack<ICondition>();
 			List<Codon> innerCodons = new List<Codon>();
 			while (reader.Read()) {
 				switch (reader.NodeType) {
@@ -86,7 +86,7 @@ namespace ICSharpCode.Core
 							innerCodons.Add(newCodon);
 							if (!reader.IsEmptyElement) {
 								ExtensionPath subPath = this.AddIn.GetExtensionPath(this.Name + "/" + newCodon.Id);
-								subPath.DoSetUp(reader, elementName, conditionStack);
+								subPath.DoSetUp(reader, elementName);
 							}
 						}
 						break;

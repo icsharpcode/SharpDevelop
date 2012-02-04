@@ -27,17 +27,16 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public FakePackage(string id)
+			: this(id, "1.0.0.0")
 		{
-			this.Id = id;
-			this.Description = String.Empty;
-			this.Version = new Version(1, 0, 0, 0);
 		}
 		
 		public FakePackage(string id, string version)
 		{
 			this.Id = id;
 			this.Description = String.Empty;
-			this.Version = new Version(version);
+			this.Version = new SemanticVersion(version);
+			this.Listed = true;
 		}
 		
 		public static FakePackage CreatePackageWithVersion(string version)
@@ -47,16 +46,11 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public static FakePackage CreatePackageWithVersion(string id, string version)
 		{
-			var package = new FakePackage() {
-				Id = id,
-				Description = String.Empty,
-				Version = new Version(version)
-			};
-			return package;
+			return new FakePackage(id, version);
 		}
 		
 		public string Id { get; set; }
-		public Version Version { get; set; }
+		public SemanticVersion Version { get; set; }
 		public string Title { get; set; }		
 		public Uri IconUrl { get; set; }
 		public Uri LicenseUrl { get; set; }
@@ -121,7 +115,7 @@ namespace ICSharpCode.PackageManagement.Design
 			AuthorsList.Add(author);
 		}
 		
-		public void AddDependency(string id, Version minVersion, Version maxVersion)
+		public void AddDependency(string id, SemanticVersion minVersion, SemanticVersion maxVersion)
 		{
 			var versionSpec = new VersionSpec();
 			versionSpec.MinVersion = minVersion;
@@ -158,5 +152,11 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public DateTime? LastUpdated { get; set; }
+		public bool IsLatestVersion { get; set; }
+		public Nullable<DateTimeOffset> Published { get; set; }
+		public string ReleaseNotes { get; set; }
+		public string Copyright { get; set; }
+		public bool IsAbsoluteLatestVersion { get; set; }
+		public bool Listed { get; set; }
 	}
 }

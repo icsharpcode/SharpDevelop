@@ -39,14 +39,17 @@
           <maml:name>ProjectName</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" position="named">
+        <command:parameter required="false" position="2">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" position="named">
+        <command:parameter required="false" position="3">
           <maml:name>Source</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
+          <command:parameter required="false" position="named">
+              <maml:name>IncludePrerelease</maml:name>
+          </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -95,6 +98,12 @@
           string
         </command:parameterValue>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>IncludePrerelease</maml:name>
+            <maml:description>
+                <maml:para>Indicates whether this command will consider prerelease packages. If omitted, only stable packages are considered.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
 
     <!-- Examples section  -->
@@ -192,6 +201,9 @@ c:\temp\packages to find the package.
           <maml:name>Updates</maml:name>
         </command:parameter>
         <command:parameter required="false" position="named">
+            <maml:name>ProjectName</maml:name>
+        </command:parameter>
+        <command:parameter required="false" position="named">
           <maml:name>Recent</maml:name>
         </command:parameter>
         <command:parameter required="false" position="named">
@@ -209,6 +221,9 @@ c:\temp\packages to find the package.
         <command:parameter required="false" position="named">
           <maml:name>AllVersions</maml:name>
         </command:parameter>
+          <command:parameter required="false" position="named">
+              <maml:name>IncludePrerelease</maml:name>
+          </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -228,6 +243,12 @@ c:\temp\packages to find the package.
         <maml:description>
           <maml:para>Gets packages available from the online package source.</maml:para>
         </maml:description>
+      </command:parameter>
+      <command:parameter required="false">
+         <maml:name>ProjectName</maml:name>
+         <maml:description>
+           <maml:para>Specifies the project to get installed packages from. If ommitted, the command will return installed projects for the entire solution.</maml:para>
+         </maml:description>
       </command:parameter>
       <command:parameter required="false" position="named">
         <maml:name>Recent</maml:name>
@@ -265,6 +286,12 @@ c:\temp\packages to find the package.
           <maml:para>Displays all available versions of a package. The latest version of each package is listed by default. </maml:para>
         </maml:description>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>IncludePrerelease</maml:name>
+            <maml:description>
+                <maml:para>Indicates whether to include prerelease packages in the returned results.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
     
     <!-- Examples section  -->
@@ -276,7 +303,7 @@ c:\temp\packages to find the package.
           <maml:para>
 Description
 ------------------------------------------------------------------
-Returns the packages installed in the default project.
+Returns packages installed in the current solution.
           </maml:para>
           <maml:para></maml:para>
           <maml:para></maml:para>
@@ -284,6 +311,19 @@ Returns the packages installed in the default project.
       </command:example>
       <command:example>
         <maml:title>----------  EXAMPLE 2  ----------</maml:title>
+        <dev:code>PM&gt; Get-Package -ProjectName MyProject</dev:code>
+        <dev:remarks>
+            <maml:para>
+Description
+------------------------------------------------------------------
+Returns packages installed in the "MyProject" project.
+            </maml:para>
+            <maml:para></maml:para>
+            <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>----------  EXAMPLE 3  ----------</maml:title>
         <dev:code>PM&gt; Get-Package -ListAvailable</dev:code>
         <dev:remarks>
           <maml:para>
@@ -296,7 +336,7 @@ Returns a list of packages available online in the current package source.
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>----------  EXAMPLE 3  ----------</maml:title>
+        <maml:title>----------  EXAMPLE 4  ----------</maml:title>
         <dev:code>PM&gt; Get-Package -ListAvailable -Filter Ninject</dev:code>
         <dev:remarks>
           <maml:para>
@@ -308,7 +348,7 @@ Returns a list of packages available online using "Ninject" as a search term.
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>----------  EXAMPLE 4  ----------</maml:title>
+        <maml:title>----------  EXAMPLE 5  ----------</maml:title>
         <dev:code>PS&gt; Get-Package -Updates</dev:code>
         <dev:remarks>
           <maml:para>
@@ -321,7 +361,7 @@ Returns a list of packages installed in the default project that have updates av
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>----------  EXAMPLE 5  ----------</maml:title>
+        <maml:title>----------  EXAMPLE 6  ----------</maml:title>
         <dev:code>PM&gt; Get-Package -Recent</dev:code>
         <dev:remarks>
           <maml:para>
@@ -532,6 +572,9 @@ Uninstalls the Elmah package even if another package depends on it.
           <maml:name>Source</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
+          <command:parameter required="false" position="named">
+              <maml:name>IncludePrerelease</maml:name>
+          </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -586,6 +629,12 @@ Uninstalls the Elmah package even if another package depends on it.
           string
         </command:parameterValue>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>IncludePrerelease</maml:name>
+            <maml:description>
+                <maml:para>Indicates whether to include prereleases when searching for updates. If omitted, only stable packages are considered.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
 
     <command:examples>

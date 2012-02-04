@@ -15,56 +15,59 @@ namespace Debugger.AddIn.TreeModel
 		{
 			List<TreeNode> children;
 			
-			public InfoNode(string name, string text): this(name, text, null)
+			public InfoNode(TreeNode parent, string name, string text)
+				: this(parent, name, text, _ => null)
 			{
 				
 			}
 			
-			public InfoNode(string name, string text, List<TreeNode> children)
+			public InfoNode(TreeNode parent, string name, string text, Func<TreeNode, List<TreeNode>> children)
+				: base(parent)
 			{
 				this.Name = name;
 				this.Text = text;
-				this.ChildNodes = children;
-				this.children = children;
+				this.children = children(this);
+			}
+			
+			public override IEnumerable<TreeNode> ChildNodes {
+				get { return children; }
 			}
 			
 			public void AddChild(string name, string text)
 			{
 				if (children == null) {
 					children = new List<TreeNode>();
-					this.ChildNodes = children;
 				}
-				children.Add(new InfoNode(name, text));
+				children.Add(new InfoNode(this, name, text));
 			}
 			
-			public void AddChild(string name, string text, List<TreeNode> subChildren)
+			public void AddChild(string name, string text, Func<TreeNode, List<TreeNode>> subChildren)
 			{
 				if (children == null) {
 					children = new List<TreeNode>();
-					this.ChildNodes = children;
 				}
-				children.Add(new InfoNode(name, text, subChildren));
+				children.Add(new InfoNode(this, name, text, p => subChildren(p)));
 			}
 		}
 		
 		public static InfoNode GetDebugInfoRoot(AppDomain appDomain, ICorDebugValue corValue)
 		{
-			return new InfoNode("ICorDebug", "", GetDebugInfo(appDomain, corValue));
+			return new InfoNode(null, "ICorDebug", "", p => GetDebugInfo(p, appDomain, corValue));
 		}
 		
-		public static List<TreeNode> GetDebugInfo(AppDomain appDomain, ICorDebugValue corValue)
+		public static List<TreeNode> GetDebugInfo(TreeNode parent, AppDomain appDomain, ICorDebugValue corValue)
 		{
 			List<TreeNode> items = new List<TreeNode>();
 			
 			if (corValue is ICorDebugValue) {
-				InfoNode info = new InfoNode("ICorDebugValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugValue", "");
 				info.AddChild("Address", corValue.GetAddress().ToString("X8"));
 				info.AddChild("Type", ((CorElementType)corValue.GetTheType()).ToString());
 				info.AddChild("Size", corValue.GetSize().ToString());
 				items.Add(info);
 			}
 			if (corValue is ICorDebugValue2) {
-				InfoNode info = new InfoNode("ICorDebugValue2", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugValue2", "");
 				ICorDebugValue2 corValue2 = (ICorDebugValue2)corValue;
 				string fullname;
 				try {
@@ -76,7 +79,7 @@ namespace Debugger.AddIn.TreeModel
 				items.Add(info);
 			}
 			if (corValue is ICorDebugGenericValue) {
-				InfoNode info = new InfoNode("ICorDebugGenericValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugGenericValue", "");
 				try {
 					byte[] bytes = ((ICorDebugGenericValue)corValue).GetRawValue();
 					for(int i = 0; i < bytes.Length; i += 8) {
@@ -92,13 +95,13 @@ namespace Debugger.AddIn.TreeModel
 				items.Add(info);
 			}
 			if (corValue is ICorDebugReferenceValue) {
-				InfoNode info = new InfoNode("ICorDebugReferenceValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugReferenceValue", "");
 				ICorDebugReferenceValue refValue = (ICorDebugReferenceValue)corValue;
 				info.AddChild("IsNull", (refValue.IsNull() != 0).ToString());
 				if (refValue.IsNull() == 0) {
 					info.AddChild("Value", refValue.GetValue().ToString("X8"));
 					if (refValue.Dereference() != null) {
-						info.AddChild("Dereference", "", GetDebugInfo(appDomain, refValue.Dereference()));
+						info.AddChild("Dereference", "", p => GetDebugInfo(p, appDomain, refValue.Dereference()));
 					} else {
 						info.AddChild("Dereference", "N/A");
 					}
@@ -106,44 +109,44 @@ namespace Debugger.AddIn.TreeModel
 				items.Add(info);
 			}
 			if (corValue is ICorDebugHeapValue) {
-				InfoNode info = new InfoNode("ICorDebugHeapValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugHeapValue", "");
 				items.Add(info);
 			}
 			if (corValue is ICorDebugHeapValue2) {
-				InfoNode info = new InfoNode("ICorDebugHeapValue2", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugHeapValue2", "");
 				items.Add(info);
 			}
 			if (corValue is ICorDebugObjectValue) {
-				InfoNode info = new InfoNode("ICorDebugObjectValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugObjectValue", "");
 				ICorDebugObjectValue objValue = (ICorDebugObjectValue)corValue;
 				info.AddChild("Class", objValue.GetClass().GetToken().ToString("X8"));
 				info.AddChild("IsValueClass", (objValue.IsValueClass() != 0).ToString());
 				items.Add(info);
 			}
 			if (corValue is ICorDebugObjectValue2) {
-				InfoNode info = new InfoNode("ICorDebugObjectValue2", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugObjectValue2", "");
 				items.Add(info);
 			}
 			if (corValue is ICorDebugBoxValue) {
-				InfoNode info = new InfoNode("ICorDebugBoxValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugBoxValue", "");
 				ICorDebugBoxValue boxValue = (ICorDebugBoxValue)corValue;
-				info.AddChild("Object", "", GetDebugInfo(appDomain, boxValue.GetObject()));
+				info.AddChild("Object", "", p => GetDebugInfo(p, appDomain, boxValue.GetObject()));
 				items.Add(info);
 			}
 			if (corValue is ICorDebugStringValue) {
-				InfoNode info = new InfoNode("ICorDebugStringValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugStringValue", "");
 				ICorDebugStringValue stringValue = (ICorDebugStringValue)corValue;
 				info.AddChild("Length", stringValue.GetLength().ToString());
 				info.AddChild("String", stringValue.GetString());
 				items.Add(info);
 			}
 			if (corValue is ICorDebugArrayValue) {
-				InfoNode info = new InfoNode("ICorDebugArrayValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugArrayValue", "");
 				info.AddChild("...", "...");
 				items.Add(info);
 			}
 			if (corValue is ICorDebugHandleValue) {
-				InfoNode info = new InfoNode("ICorDebugHandleValue", "");
+				InfoNode info = new InfoNode(parent, "ICorDebugHandleValue", "");
 				ICorDebugHandleValue handleValue = (ICorDebugHandleValue)corValue;
 				info.AddChild("HandleType", handleValue.GetHandleType().ToString());
 				items.Add(info);

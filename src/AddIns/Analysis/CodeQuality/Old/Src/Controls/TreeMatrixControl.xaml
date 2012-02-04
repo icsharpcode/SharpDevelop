@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.CodeQualityAnalysis.Controls.TreeMatrixControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:Controls="clr-namespace:ICSharpCode.CodeQualityAnalysis.Controls"
+	xmlns:tree="http://icsharpcode.net/sharpdevelop/treeview">
+	<UserControl.Resources>
+		<Style TargetType="{x:Type tree:SharpTreeNodeView}">
+			<Setter Property="Height" Value="{Binding ElementName=matrixControl, Path=CellHeight}" />
+		</Style>
+	</UserControl.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="70" />
+			<RowDefinition
+				Height="3" />
+			<RowDefinition
+				Height="*" />
+		</Grid.RowDefinitions>
+		
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition
+				Width="70" />
+			<ColumnDefinition
+				Width="3" />
+			<ColumnDefinition
+				Width="*" />
+		</Grid.ColumnDefinitions>
+		
+		<tree:SharpTreeView
+			Name="leftTree"
+			Grid.Row="2"
+			ScrollViewer.ScrollChanged="LeftTree_ScrollChanged"
+			MouseMove="LeftTree_MouseMove"
+			Grid.Column="0">
+		</tree:SharpTreeView>
+		
+		<GridSplitter Grid.Column="1" Width="3"
+		              Grid.RowSpan="3"
+		              ResizeDirection="Columns"
+		              HorizontalAlignment="Stretch"
+		              VerticalAlignment="Stretch"
+		              Style="{DynamicResource GridSplitterStyle1}"></GridSplitter>
+		
+		<tree:SharpTreeView
+			Name="topTree"
+			Grid.Row="0"
+			Grid.Column="2"
+			Loaded="Trees_Loaded"
+			ScrollViewer.ScrollChanged="TopTree_ScrollChanged">
+			<tree:SharpTreeView.LayoutTransform>
+				<RotateTransform
+					Angle="-90" />
+			</tree:SharpTreeView.LayoutTransform>
+		</tree:SharpTreeView>
+		
+		<GridSplitter Grid.Row="1" Grid.Column="2"		             
+		              Height="3"
+		              ResizeDirection="Rows"
+		              HorizontalAlignment="Stretch"		
+					Background="LightGray"></GridSplitter>		
+		<ScrollViewer Name="scrollViewer"
+		              Grid.Column="2"
+		              Grid.Row="2"
+		              CanContentScroll="True"
+		              VerticalScrollBarVisibility="Visible"
+		              HorizontalScrollBarVisibility="Visible"
+		              ScrollChanged="ScrollViewer_ScrollChanged">
+			<Controls:DependencyMatrixControl
+				x:Name="matrixControl" />
+		</ScrollViewer>
+	</Grid>
+</UserControl>

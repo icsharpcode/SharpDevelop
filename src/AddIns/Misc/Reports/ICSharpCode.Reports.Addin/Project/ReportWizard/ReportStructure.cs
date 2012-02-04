@@ -5,7 +5,9 @@ using System;
 using System.Data;
 using System.Drawing;
 
+using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This class creates settings for a report
@@ -58,10 +60,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return model;
 		}
 		
+		
 		private void CreateGrouping(ReportSettings settings)
 		{
-			if (!String.IsNullOrEmpty(this.Grouping)){
-				GroupColumn g = new GroupColumn(Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
+			if (!String.IsNullOrEmpty(this.Grouping))
+			{
+				string s = "=[" + this.Grouping + "]";
+				//GroupColumn g = new GroupColumn(this.Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
+				GroupColumn g = new GroupColumn(s,1,System.ComponentModel.ListSortDirection.Ascending);
 				settings.GroupColumnsCollection.Add(g);
 			}
 		}
@@ -74,7 +80,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public string ReportName {get;set;}
 		
 	
-		public ICSharpCode.Reports.Core.GlobalEnums.ReportType ReportType {get;set;}
+		public ICSharpCode.Reports.Core.Globals.GlobalEnums.ReportType ReportType {get;set;}
 		
 		public string FileName {get;set;}
 		
@@ -93,9 +99,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public CommandType CommandType {get;set;}
 	
-		public ICSharpCode.Reports.Core.GlobalEnums.PushPullModel DataModel {get;set;}
+		public ICSharpCode.Reports.Core.Globals.GlobalEnums.PushPullModel DataModel {get;set;}
 			
-
+		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
+		
 		public ParameterCollection SqlQueryParameters {
 			get {
 				if (this.queryParameters == null) {
@@ -162,11 +169,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					this.queryParameters = null;
 					
 				}
-				
-//				if (this.SharpQueryProcedure != null) {
-//					this.SharpQueryProcedure = null;
-//				}
-				
 			}
 		
 			// Release unmanaged resources.

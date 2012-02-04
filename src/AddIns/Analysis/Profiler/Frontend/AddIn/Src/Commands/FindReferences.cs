@@ -35,9 +35,9 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 			string memberName = member.DeclaringType.Name + "." + member.Name;
 			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
 			{
-				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                                                                     new string[,] {{ "Name", memberName }}),
-				                                                  RefactoringService.FindReferences(member, monitor));
+				FindReferencesAndRenameHelper.ShowAsSearchResults(
+					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", memberName)),
+					RefactoringService.FindReferences(member, monitor));
 			}
 		}
 	}

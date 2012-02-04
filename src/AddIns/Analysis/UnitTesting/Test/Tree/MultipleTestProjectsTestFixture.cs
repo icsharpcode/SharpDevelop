@@ -33,7 +33,7 @@ namespace UnitTesting.Tests.Tree
 			treeView = new DummyParserServiceTestTreeView(testFrameworks);
 			
 			// Create a solution with two test projects.
-			solution = new Solution();
+			solution = new Solution(new MockProjectChangeWatcher());
 			
 			// Create the first test project.
 			firstProject = new MockCSharpProject(solution, "FirstTestProject");

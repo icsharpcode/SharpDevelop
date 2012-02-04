@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -13,10 +14,12 @@ namespace ICSharpCode.UnitTesting
 		ITestRunner CreateTestRunner(IProject project);
 		ITestRunner CreateTestDebugger(IProject project);
 		
-		bool IsTestMethod(IMember member);
+		bool IsTestMember(IMember member);
 		bool IsTestClass(IClass c);
 		bool IsTestProject(IProject project);
 		
-		bool IsBuildNeededBeforeTestRunForProject(IProject project);
+		IEnumerable<TestMember> GetTestMembersFor(IClass @class);
+
+		bool IsBuildNeededBeforeTestRunForProject(IProject project);		
 	}
 }

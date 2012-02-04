@@ -33,8 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void InitializeComponents()
 		{
-			localVarList = new WatchList();
-			localVarList.WatchType = WatchListType.LocalVar;
+			localVarList = new WatchList(WatchListType.LocalVar);
 			panel.Children.Add(localVarList);
 		}
 		
@@ -62,13 +61,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			localVarList.WatchItems.Clear();
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
-					var frame = !debuggedProcess.IsInExternalCode ? debuggedProcess.SelectedStackFrame : debuggedProcess.SelectedThread.MostRecentStackFrame;
+					StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+					if (frame == null) return;
+					
+					localVarList.WatchItems.Clear();
 					foreach (var item in new StackFrameNode(frame).ChildNodes) {
-						localVarList.WatchItems.Add(item);
+						localVarList.WatchItems.Add(item.ToSharpTreeNode());
 					}
 				} 
 				catch(AbortedBecauseDebuggeeResumedException) { } 
@@ -80,18 +81,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 				}
 			}
-		}
-	}
-	
-	public static class ExtensionForWatchItems
-	{
-		public static bool ContainsItem(this ObservableCollection<TreeNode> collection, TreeNode node)
-		{
-			foreach (var item in collection)
-				if (item.CompareTo(node) == 0)
-					return true;
-			
-			return false;
 		}
 	}
 }

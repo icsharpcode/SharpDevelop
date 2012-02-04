@@ -147,9 +147,26 @@ namespace ICSharpCode.Svn.Commands
 		
 		internal static bool CanBeVersionControlledDirectory(string directory)
 		{
+			return FindWorkingCopyRoot(directory) != null;
+		}
+		
+		static string FindWorkingCopyRoot(string directory)
+		{
 			if (OverlayIconManager.SubversionDisabled)
-				return false;
-			return Directory.Exists(Path.Combine(directory, ".svn")) || Directory.Exists(Path.Combine(directory, "_svn"));
+				return null;
+			try {
+				if (!Path.IsPathRooted(directory))
+					return null;
+			} catch (ArgumentException) {
+				return null;
+			}
+			DirectoryInfo info = new DirectoryInfo(directory);
+			while (info != null) {
+				if (Directory.Exists(Path.Combine(info.FullName, ".svn")))
+					return info.FullName;
+				info = info.Parent;
+			}
+			return null;
 		}
 		
 		void FileSaved(object sender, FileNameEventArgs e)
@@ -196,8 +213,8 @@ namespace ICSharpCode.Svn.Commands
 							break;
 					}
 				}
-			} catch (Exception ex) {
-				MessageService.ShowError("File add exception: " + ex);
+			} catch (SvnClientException ex) {
+				MessageService.ShowError(ex.Message);
 			}
 		}
 		
@@ -235,7 +252,8 @@ namespace ICSharpCode.Svn.Commands
 								    || ex.IsKnownError(KnownError.CannotDeleteFileNotUnderVersionControl))
 								{
 									if (MessageService.ShowCustomDialog("${res:AddIns.Subversion.DeleteDirectory}",
-									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n", new string[,] { { "File", fullName } }) +
+									                                    StringParser.Parse("${res:AddIns.Subversion.ErrorDelete}:\n",
+									                                                       new StringTagPair("File", fullName)) +
 									                                    ex.Message, 0, 1,
 									                                    "${res:AddIns.Subversion.ForceDelete}", "${res:Global.CancelButtonText}")
 									    == 0)

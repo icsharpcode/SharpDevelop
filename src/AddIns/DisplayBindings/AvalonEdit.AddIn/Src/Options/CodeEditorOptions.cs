@@ -66,6 +66,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool enableChangeMarkerMargin = true;
+		
+		[DefaultValue(true)]
+		public bool EnableChangeMarkerMargin {
+			get { return enableChangeMarkerMargin; }
+			set {
+				if (enableChangeMarkerMargin != value) {
+					enableChangeMarkerMargin = value;
+					OnPropertyChanged("EnableChangeMarkerMargin");
+				}
+			}
+		}
+		
 		bool wordWrap;
 		
 		[DefaultValue(false)]
@@ -218,8 +231,17 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			editor.SetBinding(TextEditor.WordWrapProperty, new Binding("WordWrap") { Source = this });
 		}
 		
-		bool ITextEditorOptions.AutoInsertBlockEnd {
-			get { return true; }
+		bool autoInsertBlockEnd = true;
+		
+		[DefaultValue(true)]
+		public bool AutoInsertBlockEnd {
+			get { return autoInsertBlockEnd; }
+			set {
+				if (autoInsertBlockEnd != value) {
+					autoInsertBlockEnd = value;
+					OnPropertyChanged("AutoInsertBlockEnd");
+				}
+			}
 		}
 		
 		int ITextEditorOptions.VerticalRulerColumn {

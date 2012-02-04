@@ -9,6 +9,7 @@ using System.IO;
 using System.Xml;
 
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin

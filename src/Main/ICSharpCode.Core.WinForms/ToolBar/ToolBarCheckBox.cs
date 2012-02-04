@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -12,6 +13,7 @@ namespace ICSharpCode.Core.WinForms
 		Codon  codon;
 		string description   = String.Empty;
 		ICheckableMenuCommand menuCommand = null;
+		IEnumerable<ICondition> conditions;
 		
 		public ICheckableMenuCommand MenuCommand {
 			get {
@@ -40,11 +42,12 @@ namespace ICSharpCode.Core.WinForms
 			Text = text;
 		}
 		
-		public ToolBarCheckBox(Codon codon, object caller)
+		public ToolBarCheckBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller = caller;
 			this.codon  = codon;
+			this.conditions = conditions;
 			try {
 				menuCommand = (ICheckableMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			} catch (Exception) {
@@ -78,7 +81,7 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				return failedAction != ConditionFailedAction.Disable;
 			}
 		}
@@ -86,7 +89,7 @@ namespace ICSharpCode.Core.WinForms
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				bool isVisible = failedAction != ConditionFailedAction.Exclude;
 				if (isVisible != Visible)
 					Visible = isVisible;

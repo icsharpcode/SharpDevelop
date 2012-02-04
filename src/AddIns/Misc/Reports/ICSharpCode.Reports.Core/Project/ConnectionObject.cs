@@ -4,7 +4,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-//using System.Data.OleDb;
 
 /// <summary>
 /// This class handles the connection to a DataBase 
@@ -14,9 +13,19 @@ using System.Data.Common;
 /// 	created on - 17.10.2005 22:59:39
 /// </remarks>
 
-namespace ICSharpCode.Reports.Core {
+namespace ICSharpCode.Reports.Core
+{
 	
-	public class ConnectionObject : object,IDisposable {
+	public interface IConnectionObject
+	{
+		IDbDataAdapter CreateDataAdapter(IDbCommand command);
+		string QueryString { get; set; }
+		IDbConnection Connection { get; }
+		DbProviderFactory ProviderFactory { get; }
+	}
+	
+	
+	public class ConnectionObject :IConnectionObject, IDisposable {
 		IDbConnection connection;
 		DbProviderFactory providerFactory;
 		
@@ -34,27 +43,12 @@ namespace ICSharpCode.Reports.Core {
 			
 			IDbConnection con = providerFactory.CreateConnection();
 			con.ConnectionString = connectionString;
-			
-			return ConnectionObject.CreateInstance(con,providerFactory);
-		}
-		
-		
-		public static ConnectionObject CreateInstance (IDbConnection connection,
-		                                               DbProviderFactory providerFactory)
-		{
-			if (connection == null) {
-				throw new ArgumentNullException("connection");
-			}
-			if (providerFactory == null) {
-				throw new ArgumentNullException("providerFactory");
-			}
 			ConnectionObject instance = new ConnectionObject ();
-			instance.connection = connection;
+			instance.connection = con;
 			instance.providerFactory = providerFactory;
 			return instance;
-		
 		}
-
+		
 		
 		private ConnectionObject () {
 			

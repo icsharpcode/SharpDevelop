@@ -206,12 +206,25 @@ namespace Debugger
 		{
 			if (!(this.CorThread is ICorDebugThread2)) return false; // Is the debuggee .NET 2.0?
 			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
+			if (this.currentException == null) return false;
 			if (this.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
+			
+			// Intercepting an exception on an optimized/NGENed frame seems to sometimes
+			// freeze the debugee (as of .NET 4.0, it was ok in .NET 2.0)
+			// eg. Convert.ToInt64(ulong.MaxValue) causes such freeze
+			StackFrame mostRecentUnoptimized = null;
+			foreach(StackFrame sf in this.Callstack) {
+				if (sf.MethodInfo.DebugModule.CorModule2.GetJITCompilerFlags() != 1) { // CORDEBUG_JIT_DEFAULT 
+					mostRecentUnoptimized = sf;
+					break;
+				}
+			}
+			if (mostRecentUnoptimized == null) return false;
 			
 			try {
 				// Interception will expire the CorValue so keep permanent reference
 				currentException.MakeValuePermanent();
-				((ICorDebugThread2)this.CorThread).InterceptCurrentException(this.MostRecentStackFrame.CorILFrame);
+				((ICorDebugThread2)this.CorThread).InterceptCurrentException(mostRecentUnoptimized.CorILFrame);
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception
 				if ((uint)e.ErrorCode == 0x80131C02)
@@ -337,9 +350,6 @@ namespace Debugger
 				return selectedStackFrame;
 			}
 			set {
-				if (value != null && !value.HasSymbols) {
-					throw new DebuggerException("SelectedFunction must have symbols");
-				}
 				selectedStackFrame = value;
 			}
 		}

@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -10,12 +13,21 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyTestFramework : ITestFramework
 	{
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
-			if (member != null) {
-				return member.Name.StartsWith("test");
-			}
+			var method = member as IMethod;
+			if (method != null)
+				return IsTestMethod(method);
 			return false;
+		}
+		
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			return @class.Methods.Where(IsTestMethod).Select(method => new TestMember(method));
+		}
+
+		bool IsTestMethod(IMethod method)
+		{
+			return method.Name.StartsWith("test");
 		}
 		
 		public bool IsTestClass(IClass c)

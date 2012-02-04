@@ -48,7 +48,7 @@ namespace SharpRefactoring
 			ITextEditor editor = FindReferencesAndRenameHelper.OpenDefinitionFile(property, false);
 			string field = null;
 			PropertyDeclaration astProp = null;
-			if (IsAutomaticProperty(property)) {
+			if (property.IsAutoImplemented()) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ExpandAutomaticProperty}", ExpandAutomaticProperty);
 				cmd.Tag = property;
 				items.Add(cmd);
@@ -66,51 +66,6 @@ namespace SharpRefactoring
 			}
 			
 			return items.ToArray();
-		}
-		
-		#region ExpandAutomaticProperty
-		internal static bool IsAutomaticProperty(IProperty property)
-		{
-			if (property.IsAbstract || property.DeclaringType.ClassType == ICSharpCode.SharpDevelop.Dom.ClassType.Interface)
-				return false;
-			
-			string fileName = property.CompilationUnit.FileName;
-			
-			if (fileName == null)
-				return false;
-			
-			IDocument document = DocumentUtilitites.LoadDocumentFromBuffer(ParserService.GetParseableFileContent(fileName));
-			bool isAutomatic = false;
-			
-			if (property.CanGet) {
-				if (property.GetterRegion.IsEmpty)
-					isAutomatic = true;
-				else {
-					int getterStartOffset = document.PositionToOffset(property.GetterRegion.BeginLine, property.GetterRegion.BeginColumn);
-					int getterEndOffset = document.PositionToOffset(property.GetterRegion.EndLine, property.GetterRegion.EndColumn);
-					
-					string text = document.GetText(getterStartOffset, getterEndOffset - getterStartOffset)
-						.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
-					
-					isAutomatic = text == "get;";
-				}
-			}
-			
-			if (property.CanSet) {
-				if (property.SetterRegion.IsEmpty)
-					isAutomatic |= true;
-				else {
-					int setterStartOffset = document.PositionToOffset(property.SetterRegion.BeginLine, property.SetterRegion.BeginColumn);
-					int setterEndOffset = document.PositionToOffset(property.SetterRegion.EndLine, property.SetterRegion.EndColumn);
-					
-					string text = document.GetText(setterStartOffset, setterEndOffset - setterStartOffset)
-						.Replace(" ", "").Replace("\t", "").Replace("\n", "").Replace("\r", "");
-					
-					isAutomatic |= text == "set;";
-				}
-			}
-			
-			return isAutomatic;
 		}
 		
 		void ExpandAutomaticProperty(object sender, EventArgs e)
@@ -161,7 +116,6 @@ namespace SharpRefactoring
 				ParserService.ParseCurrentViewContent();
 			}
 		}
-		#endregion
 		
 		#region ConvertToAutomaticProperty
 		bool IsSimpleProperty(ITextEditor editor, IProperty property, out Ast.PropertyDeclaration astProperty, out string fieldName)

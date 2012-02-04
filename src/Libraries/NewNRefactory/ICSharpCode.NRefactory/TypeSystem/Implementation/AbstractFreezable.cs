@@ -1,5 +1,20 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -8,21 +23,45 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	/// <summary>
-	/// Base class for immutable objects. Provides implementation for IFreezable that reports the
-	/// object as always-frozen.
-	/// </summary>
-	public abstract class Immutable : IFreezable
+	public static class FreezableHelper
 	{
-		bool IFreezable.IsFrozen {
-			get { return true; }
+		public static void ThrowIfFrozen(IFreezable freezable)
+		{
+			if (freezable.IsFrozen)
+				throw new InvalidOperationException("Cannot mutate frozen " + freezable.GetType().Name);
 		}
 		
-		void IFreezable.Freeze()
+		public static IList<T> FreezeListAndElements<T>(IList<T> list)
 		{
+			if (list != null) {
+				foreach (T item in list)
+					Freeze(item);
+			}
+			return FreezeList(list);
+		}
+		
+		public static IList<T> FreezeList<T>(IList<T> list)
+		{
+			if (list == null || list.Count == 0)
+				return EmptyList<T>.Instance;
+			if (list.IsReadOnly) {
+				// If the list is already read-only, return it directly.
+				// This is important, otherwise we might undo the effects of interning.
+				return list;
+			} else {
+				return new ReadOnlyCollection<T>(list.ToArray());
+			}
+		}
+		
+		public static void Freeze(object item)
+		{
+			IFreezable f = item as IFreezable;
+			if (f != null)
+				f.Freeze();
 		}
 	}
-	
+
+	[Serializable]
 	public abstract class AbstractFreezable : IFreezable
 	{
 		bool isFrozen;
@@ -49,45 +88,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
-		protected void CheckBeforeMutation()
-		{
-			if (isFrozen)
-				throw new InvalidOperationException("Cannot mutate frozen " + GetType().Name);
-		}
-		
+		/*
 		protected static IList<T> CopyList<T>(IList<T> inputList)
 		{
 			if (inputList == null || inputList.Count == 0)
 				return null;
 			else
 				return new List<T>(inputList);
-		}
-		
-		protected static ReadOnlyCollection<T> FreezeList<T>(IList<T> list) where T : IFreezable
-		{
-			if (list == null || list.Count == 0)
-				return EmptyList<T>.Instance;
-			var result = new ReadOnlyCollection<T>(list.ToArray());
-			foreach (T item in result) {
-				item.Freeze();
-			}
-			return result;
-		}
-		
-		protected static ReadOnlyCollection<string> FreezeList(IList<string> list)
-		{
-			if (list == null || list.Count == 0)
-				return EmptyList<string>.Instance;
-			else
-				return new ReadOnlyCollection<string>(list.ToArray());
-		}
-		
-		protected static ReadOnlyCollection<ITypeReference> FreezeList(IList<ITypeReference> list)
-		{
-			if (list == null || list.Count == 0)
-				return EmptyList<ITypeReference>.Instance;
-			else
-				return new ReadOnlyCollection<ITypeReference>(list.ToArray());
-		}
+		}*/
 	}
 }

@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.HiddenDefinition
 		
 		public void ClosePopup()
 		{
-			if (popup.IsOpen)
+			if (popup != null && popup.IsOpen)
 				popup.IsOpen = false;
 		}
 		

@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Cut & Paste
 		public override bool EnableDelete {
 			get {
-				return true;
+				return !Project.ReadOnly;
 			}
 		}
 		

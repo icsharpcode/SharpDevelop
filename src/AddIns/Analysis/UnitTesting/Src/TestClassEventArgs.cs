@@ -6,7 +6,7 @@ using System;
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
-	/// Represents the method that will handle the TestCollection's
+	/// Represents the class that will handle the TestCollection's
 	/// TestClassAdded or TestClassRemoved events.
 	/// </summary>
 	public delegate void TestClassEventHandler(object source, TestClassEventArgs e);
@@ -24,9 +24,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public TestClass TestClass {
-			get {
-				return testClass;
-			}
+			get { return testClass; }
 		}
 	}
 }

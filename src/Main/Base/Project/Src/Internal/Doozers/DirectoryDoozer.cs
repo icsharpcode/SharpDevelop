@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public bool HandleConditions { get { return false; } }
 		
-		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		public object BuildItem(BuildItemArgs args)
 		{
-			return Path.Combine(Path.GetDirectoryName(codon.AddIn.FileName), codon.Properties["path"]);
+			return Path.Combine(Path.GetDirectoryName(args.AddIn.FileName), args.Codon["path"]);
 		}
 	}
 }

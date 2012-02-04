@@ -34,7 +34,7 @@ namespace UnitTesting.Tests.Project
 			projectContent.Classes.Add(c);
 			
 			// Add first method.
-			MockMethod method = new MockMethod(c, "MyTest");
+			var method = new MockMethod(c, "MyTest");
 			method.Attributes.Add(new MockAttribute("Test"));
 			c.Methods.Add(method);
 			
@@ -46,8 +46,10 @@ namespace UnitTesting.Tests.Project
 			baseClass.Attributes.Add(new MockAttribute("TestFixture"));
 			projectContent.Classes.Add(baseClass);
 			c.AddBaseClass(baseClass);
-			baseClass.Methods.Add(method);
-			baseClass.Methods.Add(method);
+			var baseClassMethod = new MockMethod(baseClass, "MyTest");
+			baseClassMethod.Attributes.Add(new MockAttribute("Test"));
+			baseClass.Methods.Add(baseClassMethod);
+			baseClass.Methods.Add(baseClassMethod);
 			
 			// Create test class.
 			testClass = new TestClass(c, testFrameworks);
@@ -59,19 +61,19 @@ namespace UnitTesting.Tests.Project
 		[Test]
 		public void TwoTestMethods()
 		{
-			Assert.AreEqual(2, testClass.TestMethods.Count);
+			Assert.AreEqual(2, testClass.TestMembers.Count);
 		}
 		
 		[Test]
 		public void TestMethodName()
 		{
-			Assert.AreEqual("MyTest", testClass.TestMethods[0].Name);
+			Assert.AreEqual("MyTest", testClass.TestMembers[0].Name);
 		}
 		
 		[Test]
 		public void BaseClassTestMethodName()
 		{
-			Assert.AreEqual("MyTestFixtureBase.MyTest", testClass.TestMethods[1].Name);
+			Assert.AreEqual("MyTestFixtureBase.MyTest", testClass.TestMembers[1].Name);
 		}
 	}
 }

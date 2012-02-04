@@ -361,9 +361,6 @@ Pentru aceasta trebuie să instalaţi .NET Framework SDK.</value>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Caută</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
-    <value>Caută...</value>
-  </data>
   <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
     <value>Caută doar în subiectele găsite anterior</value>
   </data>
@@ -393,6 +390,9 @@ Pentru aceasta trebuie să instalaţi .NET Framework SDK.</value>
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Foloseste limbajul proiectului curent</value>
+  </data>
+  <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
+    <value>Caută...</value>
   </data>
   <data name="AddIns.Subversion.CleanUp" xml:space="preserve">
     <value>Curăţă</value>
@@ -442,9 +442,6 @@ Puteţi specifica o comandă de executat în opţiunile proiectului.</value>
   </data>
   <data name="CompilerResultView.FileText" xml:space="preserve">
     <value>Fişier</value>
-  </data>
-  <data name="CompilerResultView.LineText" xml:space="preserve">
-    <value>Linie</value>
   </data>
   <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
     <value>Despre</value>
@@ -2006,6 +2003,9 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   <data name="Global.StartButtonText" xml:space="preserve">
     <value>Start</value>
   </data>
+  <data name="Global.TextLine" xml:space="preserve">
+    <value>Linie</value>
+  </data>
   <data name="Global.UpdateButtonText" xml:space="preserve">
     <value>Act&amp;ualizare</value>
   </data>
@@ -2068,9 +2068,6 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Sfârşit de linie</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.Line" xml:space="preserve">
-    <value>Linie</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
     <value>&amp;Comandă:</value>
@@ -4515,15 +4512,6 @@ Eroare la pornire:</value>
   </data>
   <data name="XML.StandardHeader.User" xml:space="preserve">
     <value>Utilizator:</value>
-  </data>
-  <data name="XML.StartupTips.Tip1" xml:space="preserve">
-    <value>Ar trebui să urmăriţi noile versiuni şi să spuneţi prietenilor cât de indicat este SharpDevelop la scrierea programelor C# ?</value>
-  </data>
-  <data name="XML.StartupTips.Tip2" xml:space="preserve">
-    <value>Puteţi deschide fereastra de completare şablon folosind Ctrl+J ?</value>
-  </data>
-  <data name="XML.StartupTips.Tip3" xml:space="preserve">
-    <value>Că puteţi tasta "? name = ...;" (C#) sau "Dim name As ? = ..." (VB) iar SharpDevelop va substitui semnul de întrebare cu tipul "..."?</value>
   </data>
   <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
     <value>Opţiuni Buffer</value>

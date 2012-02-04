@@ -24,7 +24,7 @@ namespace UnitTesting.Tests.Tree
 			method.DeclaringType.CompilationUnit.FileName = @"c:\projects\mytest.cs";
 			
 			treeView = new MockTestTreeView();
-			treeView.SelectedMethod = method;
+			treeView.SelectedMember = method;
 			fileService = new MockFileService();
 			gotoDefinitionCommand = new GotoDefinitionCommand(fileService);
 			gotoDefinitionCommand.Owner = treeView;

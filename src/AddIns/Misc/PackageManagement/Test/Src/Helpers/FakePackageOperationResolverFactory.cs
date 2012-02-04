@@ -14,17 +14,19 @@ namespace PackageManagement.Tests.Helpers
 		public IPackageRepository SourceRepositoryPassedToCreateInstallPackageOperationsResolver;
 		public ILogger LoggerPassedToCreateInstallPackageOperationResolver;
 		public bool IgnoreDependenciesPassedToCreateInstallPackageOperationResolver;
+		public bool AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver;
 		
 		public IPackageOperationResolver CreateInstallPackageOperationResolver(
 			IPackageRepository localRepository,
 			IPackageRepository sourceRepository,
 			ILogger logger,
-			bool ignoreDependencies)
+			InstallPackageAction installAction)
 		{
 			LocalRepositoryPassedToCreateInstallPackageOperationsResolver = localRepository;
 			SourceRepositoryPassedToCreateInstallPackageOperationsResolver = sourceRepository;
 			LoggerPassedToCreateInstallPackageOperationResolver = logger;
-			IgnoreDependenciesPassedToCreateInstallPackageOperationResolver = ignoreDependencies;
+			IgnoreDependenciesPassedToCreateInstallPackageOperationResolver = installAction.IgnoreDependencies;
+			AllowPrereleaseVersionsPassedToCreateInstallPackageOperationResolver = installAction.AllowPrereleaseVersions;
 			
 			return FakeInstallPackageOperationResolver;
 		}

@@ -20,7 +20,7 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="{sd:Localize MainWindow.Windows.Debug.CallStack.LineString}">
+					<GridViewColumn Header="{sd:Localize Global.TextLine}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding Line}" Foreground="{Binding FontColor}" />

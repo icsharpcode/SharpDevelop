@@ -14,7 +14,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <BaseAddress>88080384</BaseAddress>
@@ -60,6 +60,12 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -189,8 +195,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
-    <Compile Include="Src\Gui\Components\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Components\ColorPickerButton.xaml.cs">
+      <DependentUpon>ColorPickerButton.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\StringParserPropertyContainer.cs" />
@@ -243,10 +249,51 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
+      <DependentUpon>DebugOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
       <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml.cs">
+      <DependentUpon>AddServiceReferenceDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml.cs">
+      <DependentUpon>AdvancedServiceDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceViewModel.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ClientOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ICodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IFileSystem.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IProjectWithServiceReferences.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceCodeDomBuilder.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceFileGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceMapGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceProxyGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\MetadataFile.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\MetadataSource.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ProjectWithServiceReferences.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomBuilder.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileName.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileSystem.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFile.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileName.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileProjectItem.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceProxyGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\WebServiceMetadataSet.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
       <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
@@ -264,11 +311,15 @@
       <DependentUpon>TreeViewOptionsDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\EnumBinding.cs" />
     <Compile Include="Src\Gui\IImage.cs" />
     <Compile Include="Src\Gui\Pads\AbstractConsolePad.cs" />
     <Compile Include="Src\Gui\Pads\BaseWatchBox.cs" />
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\SpecialFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferenceNode.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferencesFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
@@ -279,6 +330,7 @@
     <Compile Include="Src\Gui\Workbench\Layouts\AvalonWorkbenchWindow.cs" />
     <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Src\Gui\Workbench\WpfWorkbench.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\ViewInBrowserConditionEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\IOptionPanel.cs" />
@@ -297,7 +349,10 @@
     </Compile>
     <Compile Include="Src\Project\Converter\UpgradeViewContent.cs" />
     <Compile Include="Src\Project\IBuildFeedbackSink.cs" />
+    <Compile Include="Src\Project\IProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\IProjectItemBackendStore.cs" />
+    <Compile Include="Src\Project\Items\ServiceReferenceProjectItem.cs" />
+    <Compile Include="Src\Project\Items\ServiceReferencesProjectItem.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildAdditionalLogger.cs" />
     <Compile Include="Src\Project\MSBuildEngine\MSBuildLoggerFilter.cs" />
     <Compile Include="Src\Project\MSBuildEngine\SDConsoleLogger.cs" />
@@ -307,6 +362,7 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
@@ -320,6 +376,7 @@
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
+    <Compile Include="Src\Services\DisplayBinding\AutoDetectDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -338,6 +395,7 @@
     <Compile Include="Src\Internal\Doozers\IOptionPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
+    <Compile Include="Src\Services\MimeTypeDetection.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
@@ -470,6 +528,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ProjectReferencePanel.cs">
       <SubType>Component</SubType>
+      <DependentUpon>SelectReferenceDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.cs">
       <SubType>Form</SubType>
@@ -661,7 +720,6 @@
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
     <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectOptions\BuildEvents.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs">
       <SubType>UserControl</SubType>
@@ -672,11 +730,12 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\aaDebugOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
       <SubType>UserControl</SubType>
+      <DependentUpon>BuildEvents.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\SchemeExtension.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
@@ -736,6 +795,7 @@
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
     <Compile Include="Src\Services\WebProjectService\WebProjectService.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
+    <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />
@@ -816,10 +876,18 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
+      <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
+    </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml" />
+    <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
+    <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />
+    <Page Include="themes\generic.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
       <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
       <Name>AvalonDock</Name>
@@ -844,6 +912,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
+    <Folder Include="themes" />
     <Folder Include="Src\Bookmarks\Pad\Controls" />
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />
@@ -879,7 +949,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Page Include="Src\Gui\App.xaml" />
-    <Page Include="Src\Gui\Components\ColorPicker.xaml" />
+    <Page Include="Src\Gui\Components\ColorPickerButton.xaml" />
     <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
       <DependentUpon>GotoDialog.cs</DependentUpon>
     </Page>

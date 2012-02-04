@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="Debugger.AddIn.Tooltips.DebuggerTooltipControl" 
+	x:Class="Debugger.AddIn.Tooltips.DebuggerTooltipControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
@@ -187,7 +187,18 @@
 								Style="{StaticResource TextStyle}"
 								IsEnabled="{Binding CanSetText}"
 								KeyUp="TextBox_KeyUp"
-								Text="{Binding Path=Text}" />
+								ContextMenuService.ShowOnDisabled="True"
+								Text="{Binding Path=Text}">
+								<TextBox.ContextMenu>
+									<ContextMenu>
+										<MenuItem Header="{core:Localize XML.MainMenu.EditMenu.Copy}" DataContext="{Binding}" Click="CopyMenuItemClick">
+											<MenuItem.Icon>
+												<Image Source="{core:GetBitmap Icons.16x16.CopyIcon}" />
+											</MenuItem.Icon>
+										</MenuItem>
+									</ContextMenu>
+								</TextBox.ContextMenu>
+							</TextBox>
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
 				</DataGridTemplateColumn>

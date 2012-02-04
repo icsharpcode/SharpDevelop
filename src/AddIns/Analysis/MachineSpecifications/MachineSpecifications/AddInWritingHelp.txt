@@ -1,0 +1,24 @@
+﻿You have created a new SharpDevelop AddIn project.
+
+We would like to point out that there are three locations where you can get information on how
+to write SharpDevelop AddIns:
+- http://wiki.sharpdevelop.net/ (section Developer Zone)
+- The folder "doc/technotes" in the SharpDevelop source code download
+- You can ask questions about AddIn development in the SharpDevelop forum:
+   http://community.sharpdevelop.net/forums/
+
+The next steps:
+- First, you have to add references to the SharpDevelop assemblies.
+  An AddIn will work with the SharpDevelop version it was compiled for, or later service releases.
+  You might want to compile against SharpDevelop 3.0.0.3800 (the first official release of SharpDevelop 3)
+  to ensure your AddIn runs with all later 3.x versions of SharpDevelop.
+
+- Include a <Manifest> section to your .addin for use with the SharpDevelop AddIn Manager.
+    See SharpDevelop/doc/technotes/AddInManager.rtf for more information.
+
+- Once you have published your AddIn on the Internet, please add it to the SharpDevelop wiki to let other users know!
+    http://wiki.sharpdevelop.net/3rdPartyAddins.ashx
+
+
+This file serves as a reminder for you on how to find information on SharpDevelop AddIn development, you can
+remove it from your project if you don't need it anymore.

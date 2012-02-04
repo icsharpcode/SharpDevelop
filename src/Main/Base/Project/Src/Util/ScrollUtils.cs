@@ -20,8 +20,8 @@ namespace ICSharpCode.SharpDevelop
 		public static ScrollViewer GetScrollViewer(this DependencyObject o)
 		{
 			var scrollViewer = o as ScrollViewer;
-			if (scrollViewer != null)	{ 
-				return scrollViewer; 
+			if (scrollViewer != null)	{
+				return scrollViewer;
 			}
 
 			for (int i = 0; i < VisualTreeHelper.GetChildrenCount(o); i++)
@@ -60,5 +60,81 @@ namespace ICSharpCode.SharpDevelop
 		{
 			scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + offset);
 		}
+		
+		public static void SynchronizeScroll(this ScrollViewer target, ScrollViewer source, ScrollSyncOption option, bool proportional = true)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+			if (target == null)
+				throw new ArgumentNullException("target");
+			double newScrollOffset;
+			switch (option) {
+				case ScrollSyncOption.Vertical:
+					if (proportional)
+						newScrollOffset = source.VerticalOffset / source.ScrollableHeight * target.ScrollableHeight;
+					else
+						newScrollOffset = source.VerticalOffset;
+					target.ScrollToVerticalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					break;
+				case ScrollSyncOption.Horizontal:
+					if (proportional)
+						newScrollOffset = source.HorizontalOffset / source.ScrollableWidth * target.ScrollableWidth;
+					else
+						newScrollOffset = source.HorizontalOffset;
+					target.ScrollToHorizontalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					break;
+				case ScrollSyncOption.VerticalToHorizontal:
+					if (proportional)
+						newScrollOffset = source.VerticalOffset / source.ScrollableHeight * target.ScrollableWidth;
+					else
+						newScrollOffset = source.VerticalOffset;
+					target.ScrollToHorizontalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					break;
+				case ScrollSyncOption.HorizontalToVertical:
+					if (proportional)
+						newScrollOffset = source.HorizontalOffset / source.ScrollableWidth * target.ScrollableHeight;
+					else
+						newScrollOffset = source.HorizontalOffset;
+					target.ScrollToVerticalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					break;
+				case ScrollSyncOption.Both:
+					if (proportional)
+						newScrollOffset = source.VerticalOffset / source.ScrollableHeight * target.ScrollableHeight;
+					else
+						newScrollOffset = source.VerticalOffset;
+					target.ScrollToVerticalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					if (proportional)
+						newScrollOffset = source.HorizontalOffset / source.ScrollableWidth * target.ScrollableWidth;
+					else
+						newScrollOffset = source.HorizontalOffset;
+					target.ScrollToHorizontalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					break;
+				case ScrollSyncOption.BothInterchanged:
+					if (proportional)
+						newScrollOffset = source.VerticalOffset / source.ScrollableHeight * target.ScrollableWidth;
+					else
+						newScrollOffset = source.VerticalOffset;
+					target.ScrollToHorizontalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					if (proportional)
+						newScrollOffset = source.HorizontalOffset / source.ScrollableWidth * target.ScrollableHeight;
+					else
+						newScrollOffset = source.HorizontalOffset;
+					target.ScrollToVerticalOffset(double.IsNaN(newScrollOffset) ? 0 : newScrollOffset);
+					break;
+				default:
+					throw new Exception("Invalid value for ScrollSyncOption");
+			}
+		}
+		
+	}
+	
+	public enum ScrollSyncOption
+	{
+		Vertical,
+		Horizontal,
+		VerticalToHorizontal,
+		HorizontalToVertical,
+		Both,
+		BothInterchanged
 	}
 }

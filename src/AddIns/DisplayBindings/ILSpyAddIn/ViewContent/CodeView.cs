@@ -7,16 +7,17 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn.ViewContent
 {
@@ -25,17 +26,17 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		public DecompiledTextEditorAdapter(TextEditor textEditor) : base(textEditor)
 		{}
 		
-		public string DecompiledFullTypeName { get; set; }
+		public string DecompiledFileName { get; set; }
 		
 		public override ICSharpCode.Core.FileName FileName {
-			get { return ICSharpCode.Core.FileName.Create(DecompiledFullTypeName); }
+			get { return ICSharpCode.Core.FileName.Create(DecompiledFileName); }
 		}
 	}
 	
 	/// <summary>
 	/// Equivalent to AE.AddIn CodeEditor, but without editing capabilities.
 	/// </summary>
-	public class CodeView : Grid, IDisposable, ICodeEditor
+	class CodeView : Grid, IDisposable, ICodeEditor, IPositionable
 	{
 		public event EventHandler DocumentChanged;
 		
@@ -44,11 +45,10 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		readonly IconBarMargin iconMargin;
 		readonly TextMarkerService textMarkerService;
 		
-		public CodeView(string decompiledFullTypeName)
+		public CodeView(string decompiledFileName)
 		{
-			DecompiledFullTypeName = decompiledFullTypeName;
 			this.adapter = new DecompiledTextEditorAdapter(new SharpDevelopTextEditor { IsReadOnly = true }) {
-				DecompiledFullTypeName = decompiledFullTypeName
+				DecompiledFileName = decompiledFileName
 			};
 			this.Children.Add(adapter.TextEditor);
 			adapter.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
@@ -64,11 +64,14 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			this.adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
 			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
+			// DON'T add the editor in textview ervices - will mess the setting of breakpoints
 			
 			// add events
 			this.adapter.TextEditor.MouseHover += TextEditorMouseHover;
 			this.adapter.TextEditor.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.adapter.TextEditor.MouseLeave += TextEditorMouseLeave;
+			
+			this.adapter.TextEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(this.adapter.TextEditor.TextArea));
 		}
 
 		#region Popup
@@ -81,7 +84,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			var pos = adapter.TextEditor.GetPositionFromPoint(e.GetPosition(this));
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
 			}
 			
 			if (!args.Handled) {
@@ -230,16 +233,6 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			get { return iconBarManager; }
 		}
 		
-		public AvalonEditTextEditorAdapter Adapter {
-			get {
-				return adapter;
-			}
-		}
-		
-		public string DecompiledFullTypeName {
-			get; private set; 
-		}
-		
 		public void Dispose()
 		{
 		}
@@ -249,9 +242,9 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			if (lineNumber <= 0 || lineNumber > adapter.Document.TotalNumberOfLines)
 				return;
 			
-			//var line = adapter.TextEditor.Document.GetLineByNumber(lineNumber);
+//			var line = adapter.TextEditor.Document.GetLineByNumber(lineNumber);
 			
-			// unfold
+//			// unfold
 //			var foldings = foldingManager.GetFoldingsContaining(line.Offset);
 //			if (foldings != null) {
 //				foreach (var folding in foldings) {
@@ -260,6 +253,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 //					}
 //				}
 //			}
+			
 			// scroll to
 			adapter.TextEditor.ScrollTo(lineNumber, 0);
 		}
@@ -267,6 +261,23 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		public void Redraw(ISegment segment, System.Windows.Threading.DispatcherPriority priority)
 		{
 			this.adapter.TextEditor.TextArea.TextView.Redraw(segment, priority);
+		}
+		
+		public int Line {
+			get {
+				return this.adapter.Caret.Line;
+			}
+		}
+		
+		public int Column {
+			get {
+				return this.adapter.Caret.Column;
+			}
+		}
+		
+		public void JumpTo(int line, int column)
+		{
+			this.adapter.JumpTo(line, column);
 		}
 	}
 }

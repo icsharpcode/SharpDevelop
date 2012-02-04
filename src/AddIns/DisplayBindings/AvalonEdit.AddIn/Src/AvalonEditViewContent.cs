@@ -135,7 +135,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			isLoading = true;
 			try {
-				BookmarksDetach();
+//				BookmarksDetach();
 				codeEditor.SyntaxHighlighting =
 					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
 				
@@ -207,8 +207,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		#region Bookmark Handling
+		bool bookmarksAttached;
+		
 		void BookmarksAttach()
 		{
+			if (bookmarksAttached) return;
+			bookmarksAttached = true;
 			foreach (SDBookmark bookmark in BookmarkManager.GetBookmarks(codeEditor.FileName)) {
 				bookmark.Document = codeEditor.DocumentAdapter;
 				codeEditor.IconBarManager.Bookmarks.Add(bookmark);

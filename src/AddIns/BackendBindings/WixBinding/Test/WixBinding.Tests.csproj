@@ -107,6 +107,7 @@
     <Compile Include="Project\GetWixFileProjectItemsTestFixture.cs" />
     <Compile Include="Project\WixBuilderCannotBuildNonWixProjectTestFixture.cs" />
     <Compile Include="Gui\WixProjectWithUnexpandedLibraryItemsTestFixture.cs" />
+    <Compile Include="Project\WixProjectTests.cs" />
     <Compile Include="Utils\DerivedAddElementCommand.cs" />
     <Compile Include="Utils\MockCaret.cs" />
     <Compile Include="Utils\MockFormsDesignerView.cs" />

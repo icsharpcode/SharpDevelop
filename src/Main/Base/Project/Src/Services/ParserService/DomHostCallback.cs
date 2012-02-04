@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop
 			TaskService.BuildMessageViewCategory.AppendText(
 				StringParser.Parse(
 					"${res:ICSharpCode.SharpDevelop.ErrorLoadingCodeCompletionInformation}",
-					new string[,] { {"Assembly", include}, {"Filename", fileName}}
+					new StringTagPair("Assembly", include), new StringTagPair("Filename", fileName)
 				) + "\r\n" + message + "\r\n"
 			);
 		}

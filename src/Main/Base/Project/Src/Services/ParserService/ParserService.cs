@@ -406,7 +406,20 @@ namespace ICSharpCode.SharpDevelop
 				if (fileContent == null) {
 					// GetParseableFileContent must not be called inside any lock
 					// (otherwise we'd risk deadlocks because GetParseableFileContent must invoke on the main thread)
-					fileContent = GetParseableFileContent(fileName);
+					try {
+						fileContent = GetParseableFileContent(fileName);
+					} catch (System.Reflection.TargetInvocationException ex) {
+						// It is possible that the file gets deleted/becomes inaccessible while a background parse
+						// operation is enqueued, so we have to handle IO exceptions.
+						if (ex.InnerException is IOException || ex.InnerException is UnauthorizedAccessException)
+							return null;
+						else
+							throw;
+					} catch (IOException) {
+						return null;
+					} catch (UnauthorizedAccessException) {
+						return null;
+					}
 				}
 				
 				ITextBufferVersion fileContentVersion = fileContent.Version;

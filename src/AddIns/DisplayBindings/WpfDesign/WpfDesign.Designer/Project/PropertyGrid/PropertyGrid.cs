@@ -92,6 +92,10 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			RaisePropertyChanged("Name");
 		}
+		
+		public string OldName {
+			get; private set;
+		}
 
 		public string Name {
 			get {
@@ -104,8 +108,10 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 				if (SingleItem != null) {
 					try {
 						if (string.IsNullOrEmpty(value)) {
+							OldName = null;
 							SingleItem.Properties["Name"].Reset();
 						} else {
+							OldName = SingleItem.Name;
 							SingleItem.Name = value;
 						}
 						IsNameCorrect = true;

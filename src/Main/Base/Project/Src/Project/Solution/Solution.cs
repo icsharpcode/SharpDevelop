@@ -25,13 +25,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		bool isLoading;
 		string fileName = String.Empty;
+		IProjectChangeWatcher changeWatcher;
 		
-		public Solution()
+		public Solution(IProjectChangeWatcher changeWatcher)
 		{
 			preferences = new SolutionPreferences(this);
 			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
+			this.changeWatcher = changeWatcher;
 		}
 		
+		[BrowsableAttribute(false)]
 		public Microsoft.Build.Evaluation.ProjectCollection MSBuildProjectCollection { get; private set; }
 		
 		#region Enumerate projects/folders
@@ -183,7 +186,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				return fileName;
 			}
 			set {
+				changeWatcher.Disable();
 				fileName = value;
+				changeWatcher.Rename(fileName);
+				changeWatcher.Enable();
 			}
 		}
 		
@@ -288,8 +294,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Save()
 		{
 			try {
+				changeWatcher.Disable();
 				Save(fileName);
-				return;
+				changeWatcher.Enable();
 			} catch (IOException ex) {
 				MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.CannotSave.IOException}", fileName, ex.Message);
 			} catch (UnauthorizedAccessException ex) {
@@ -307,7 +314,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Save(string fileName)
 		{
+			changeWatcher.Disable();
+			changeWatcher.Rename(fileName);
 			this.fileName = fileName;
+			UpdateMSBuildProperties();
 			string outputDirectory = Path.GetDirectoryName(fileName);
 			if (!System.IO.Directory.Exists(outputDirectory)) {
 				System.IO.Directory.CreateDirectory(outputDirectory);
@@ -351,11 +361,14 @@ namespace ICSharpCode.SharpDevelop.Project
 					
 					SaveProjectSections(folder.Sections, projectSection);
 					
-					ISolutionFolder subFolder;
+					// Push the sub folders in reverse order so that we pop them
+					// in the correct order.
 					for (int i = folder.Folders.Count - 1; i >= 0; i--) {
-						//foreach (ISolutionFolder subFolder in folder.Folders) {
-						subFolder = folder.Folders[i];
-						stack.Push(subFolder);
+						stack.Push(folder.Folders[i]);
+					}
+					// But use normal order for printing the nested projects section
+					for (int i = 0; i < folder.Folders.Count; i++) {
+						ISolutionFolder subFolder = folder.Folders[i];
 						nestedProjectsSection.Append("\t\t");
 						nestedProjectsSection.Append(subFolder.IdGuid);
 						nestedProjectsSection.Append(" = ");
@@ -415,6 +428,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				sw.WriteLine("EndGlobal");
 			}
+			changeWatcher.Enable();
 		}
 		
 		static void SaveProjectSections(IEnumerable<ProjectSection> sections, StringBuilder projectSection)
@@ -1159,12 +1173,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static Solution Load(string fileName)
 		{
-			Solution newSolution = new Solution();
-			solutionBeingLoaded = newSolution;
+			Solution newSolution = new Solution(new ProjectChangeWatcher(fileName));
+			solutionBeingLoaded  = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			
 			string extension = Path.GetExtension(fileName).ToUpperInvariant();
 			newSolution.fileName = fileName;
+			newSolution.UpdateMSBuildProperties();
 			newSolution.isLoading = true;
 			try {
 				if (!SetupSolution(newSolution)) {
@@ -1177,11 +1192,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			solutionBeingLoaded = null;
 			return newSolution;
 		}
+		
+		public void UpdateMSBuildProperties()
+		{
+			MSBuildProjectCollection.SetGlobalProperty("SolutionDir", Directory + @"\");
+		}
+		
 		#endregion
 		
 		#region System.IDisposable interface implementation
 		public void Dispose()
 		{
+			changeWatcher.Dispose();
 			foreach (IProject project in Projects) {
 				project.Dispose();
 			}

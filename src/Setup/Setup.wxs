@@ -195,7 +195,6 @@
 				<ComponentRef Id="ICSharpCodeTreeViewDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker35Exe"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
-				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
 				<ComponentRef Id="GraphSharpDll"/>
 				<ComponentRef Id="GraphSharpControlsDll"/>
@@ -313,7 +312,20 @@
 				<ComponentRef Id="VBMvcViewContentPageFileTemplate"/>
 				<ComponentRef Id="VBMvcViewMasterPageFileTemplate"/>
 				<ComponentRef Id="VBMvcViewUserControlFileTemplate"/>
+				
+				<ComponentRef Id="CSharpWcfServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfServiceFileTemplate"/>
+				
+				<ComponentRef Id="CSharpWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="CSharpWcfRestServiceFileTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceProjectTemplate"/>
+				<ComponentRef Id="VBWcfRestServiceFileTemplate"/>
+				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
+				<ComponentRef Id="EmptyStyleSheetFileTemplate"/>
+				<ComponentRef Id="EmptyJavaScriptFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
 				<ComponentRef Id="EmptyTextFileTemplate"/>
@@ -379,6 +391,7 @@
 				<ComponentRef Id="AddInManagerSharpZipLibDll"/>
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
+				<ComponentRef Id="CodeQualityFiles"/>
 				<ComponentRef Id="CodeCoverageFiles"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
@@ -542,6 +555,58 @@
 				<ComponentRef Id="TextTemplatingDll"/>
 				<ComponentRef Id="CSharpTextTemplateFileTemplate"/>
 				<ComponentRef Id="VBTextTemplateFileTemplate"/>
+			
+				<ComponentRef Id="MachineSpecificationsAddIn"/>
+				<ComponentRef Id="MachineSpecificationsCommandLineDll"/>
+				<ComponentRef Id="MachineSpecificationsDll"/>
+				<ComponentRef Id="MachineSpecificationsLicenseTxt"/>
+				<ComponentRef Id="ToolsMachineSpecificationsDll"/>
+				<ComponentRef Id="MachineSpecificationsReportingDll"/>
+				<ComponentRef Id="MachineSpecificationsSparkDll"/>
+				<ComponentRef Id="Mspec_clr4Exe"/>
+				<ComponentRef Id="Mspec_x86_clr4Exe"/>
+				<ComponentRef Id="Mspec_x86Exe"/>
+				<ComponentRef Id="MspecExe"/>
+				
+				<ComponentRef Id="AspNetMvcAddin"/>
+				<ComponentRef Id="AspNetMvcDll"/>
+				<ComponentRef Id="AspNetMvcMonoTextTemplatingDll"/>
+				<ComponentRef Id="SystemWebRazorDll"/>
+				<ComponentRef Id="AspNetMvcTextTemplatingDll"/>
+				<ComponentRef Id="AspNetMvcCSharpControllerTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpEditTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxCSharpListTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpEditTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorCSharpListTemplate"/>
+				<ComponentRef Id="AspNetMvcVisualBasicControllerTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicEditTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcAspxVisualBasicListTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicCreateTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicDeleteTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicDetailsTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicEditTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicEmptyTemplate"/>
+				<ComponentRef Id="AspNetMvcRazorVisualBasicListTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorLayoutPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorPartialPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorViewPageFileTemplate"/>
+				<ComponentRef Id="VBMvcRazorLayoutPageFileTemplate"/>
+				<ComponentRef Id="VBMvcRazorPartialPageFileTemplate"/>
+				<ComponentRef Id="VBMvcRazorViewPageFileTemplate"/>
+				<ComponentRef Id="CSharpMvcRazorProjectTemplate"/>
+				<ComponentRef Id="VBMvcRazorProjectTemplate"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

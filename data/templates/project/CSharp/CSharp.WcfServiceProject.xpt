@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<Template
+	author="Eusebiu Marcu"
+	created="03/08/2011"
+	lastModified="03/08/2011"
+	version="1.0">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>WCF Service</Name>
+		<Category>C#</Category>
+		<Subcategory>WCF</Subcategory>
+		<Icon>C#.Project.WCFServiceProject</Icon>
+		<Description>WCF Service</Description>
+		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename="Service.svc.cs"/>
+	</Actions>
+
+	<Project language="C#">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.ServiceModel" />
+		</ProjectItems>
+		
+		<PropertyGroup escapeValue="False">
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{3D9AD99F-2412-4246-B90B-4EAA41C64699};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<Files>
+			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />
+			<File name="Service.svc">
+<![CDATA[
+<%@ServiceHost language="C#" Debug="true" Service="${StandardNamespace}.Service"%>
+]]>
+			</File>
+			<File name="Service.svc.cs" DependentUpon="Service.svc">
+<![CDATA[${StandardHeader.C#}
+using System;
+using System.ServiceModel;
+
+namespace ${StandardNamespace}
+{
+	[ServiceContract]
+	public interface IService
+	{
+	   [OperationContract]
+	   void MyOperation();
+	}
+	
+	public class Service : IService
+	{
+	   public void MyOperation()
+	   {
+		  // implement the operation
+	   }
+	} 
+}
+]]>
+			</File>
+			<File name="web.config">
+<![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <system.serviceModel>
+    <services>
+      <service name="${StandardNamespace}.Service">
+        <endpoint address=""
+                  binding="wsHttpBinding"
+                  contract="${StandardNamespace}.IService" />
+      </service>
+    </services>
+  </system.serviceModel>
+
+</configuration>
+]]>
+			</File>
+		</Files>
+	</Project>
+</Template>

@@ -246,7 +246,18 @@ namespace ICSharpCode.Svn
 				statusCache.Add(filename, result);
 				return result;
 			} catch (SvnException ex) {
-				throw new SvnClientException(ex);
+				switch (ex.SvnErrorCode) {
+					case SvnErrorCode.SVN_ERR_WC_UPGRADE_REQUIRED:
+						result = new Status { TextStatus = StatusKind.None };
+						break;
+					case SvnErrorCode.SVN_ERR_WC_NOT_WORKING_COPY:
+						result = new Status { TextStatus = StatusKind.Unversioned };
+						break;
+					default:
+						throw new SvnClientException(ex);
+				}
+				statusCache.Add(filename, result);
+				return result;
 			} finally {
 				AfterOperation();
 			}

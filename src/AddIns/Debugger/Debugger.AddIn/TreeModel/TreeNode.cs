@@ -15,7 +15,7 @@ namespace Debugger.AddIn.TreeModel
 {
 	/// <summary>
 	/// A node in the variable tree.
-	/// The node is imutable.
+	/// The node is immutable.
 	/// </summary>
 	public class TreeNode : ITreeNode
 	{
@@ -24,7 +24,7 @@ namespace Debugger.AddIn.TreeModel
 		string imageName = string.Empty;
 		string text  = string.Empty;
 		string type  = string.Empty;
-		IEnumerable<TreeNode> childNodes = null;
+		protected IEnumerable<TreeNode> childNodes = null;
 		
 		/// <summary>
 		/// The image displayed for this node.
@@ -78,9 +78,10 @@ namespace Debugger.AddIn.TreeModel
 			protected set { type = value; }
 		}
 		
+		public virtual TreeNode Parent { get; protected set; }
+		
 		public virtual IEnumerable<TreeNode> ChildNodes {
 			get { return childNodes; }
-			protected set { childNodes = value; }
 		}
 		
 		IEnumerable<ITreeNode> ITreeNode.ChildNodes {
@@ -109,19 +110,38 @@ namespace Debugger.AddIn.TreeModel
 		
 		public bool IsPinned { get; set; }
 		
-		public TreeNode()
+		public TreeNode(TreeNode parent)
 		{
+			this.Parent = parent;
 		}
 		
-		public TreeNode(IImage iconImage, string name, string text, string type, IEnumerable<TreeNode> childNodes)
+		public TreeNode(IImage iconImage, string name, string text, string type, TreeNode parent, Func<TreeNode, IEnumerable<TreeNode>> childNodes)
+			: this(parent)
 		{
+			if (childNodes == null)
+				throw new ArgumentNullException("childNodes");
 			this.iconImage = iconImage;
 			this.name = name;
 			this.text = text;
 			this.type = type;
-			this.childNodes = childNodes;
+			this.childNodes = childNodes(this);
 		}
 		
+		#region Equals and GetHashCode implementation
+		public override bool Equals(object obj)
+		{
+			TreeNode other = obj as TreeNode;
+			if (other == null)
+				return false;
+			return this.FullName == other.FullName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return this.FullName.GetHashCode();
+		}
+		#endregion
+
 		public int CompareTo(ITreeNode other)
 		{
 			return this.FullName.CompareTo(other.FullName);

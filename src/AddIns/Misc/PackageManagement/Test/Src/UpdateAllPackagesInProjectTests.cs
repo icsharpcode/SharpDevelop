@@ -84,7 +84,7 @@ namespace PackageManagement.Tests
 			AddPackageToProject("Test");
 			CallCreateActions();
 			
-			Version version = FirstUpdateAction.PackageVersion;
+			SemanticVersion version = FirstUpdateAction.PackageVersion;
 			
 			Assert.IsNull(version);
 		}
@@ -154,6 +154,43 @@ namespace PackageManagement.Tests
 			bool update = updateAllPackagesInProject.UpdateDependencies;
 			
 			Assert.IsTrue(update);
+		}
+		
+		[Test]
+		public void CreateActions_OnePackageInProjectAndAllowPrereleaseVersionsSetToFalse_ActionPrereleaseVersionsIsFalse()
+		{
+			CreateUpdateAllPackagesInProject();
+			AddPackageToProject("Test");
+			updateAllPackagesInProject.AllowPrereleaseVersions = false;
+			
+			CallCreateActions();
+			
+			bool allow = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(allow);
+		}
+		
+		[Test]
+		public void CreateActions_OnePackageInProjectAndAllowPrereleaseVersionsSetToTrue_ActionPrereleaseVersionsIsTrue()
+		{
+			CreateUpdateAllPackagesInProject();
+			AddPackageToProject("Test");
+			updateAllPackagesInProject.AllowPrereleaseVersions = true;
+			
+			CallCreateActions();
+			
+			bool allow = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(allow);
+		}
+		
+		[Test]
+		public void AllowPrereleaseVersions_NewInstance_ReturnsFalse()
+		{
+			CreateUpdateAllPackagesInProject();
+			bool allow = updateAllPackagesInProject.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(allow);
 		}
 		
 		[Test]

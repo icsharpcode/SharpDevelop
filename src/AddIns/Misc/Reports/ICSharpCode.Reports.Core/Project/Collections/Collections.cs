@@ -33,21 +33,21 @@ namespace ICSharpCode.Reports.Core{
 	/// (Line by Line)
 	/// </summary>
 	internal class LocationSorter : IComparer<BaseReportItem>  {
-		public int Compare(BaseReportItem x, BaseReportItem y){
-			if (x == null){
-				if (y == null){
+		public int Compare(BaseReportItem lhs, BaseReportItem rhs){
+			if (lhs == null){
+				if (rhs == null){
 					return 0;
 				}
 				return -1;
 			}
-			if (y == null){
+			if (rhs == null){
 				return 1;
 			}
 			
-			if (x.Location.Y == y.Location.Y){
-				return x.Location.X - y.Location.X;
+			if (lhs.Location.Y == rhs.Location.Y){
+				return lhs.Location.X - rhs.Location.X;
 			}
-			return x.Location.Y - y.Location.Y;
+			return lhs.Location.Y - rhs.Location.Y;
 		}
 	}
 	
@@ -65,7 +65,7 @@ namespace ICSharpCode.Reports.Core{
 			get { return (List<BaseReportItem>)base.Items; }
 		}
 		
-		public void Sort(IComparer<BaseReportItem> comparer)
+		private void Sort(IComparer<BaseReportItem> comparer)
 		{
 			InnerList.Sort(comparer);
 		}
@@ -147,15 +147,19 @@ namespace ICSharpCode.Reports.Core{
 		}
 	
 		#region Grouphandling
-		
-		public bool IsGrouped
-		{
-			get {
-				return (this[0] is GroupHeader) ;
-			}
-		}
-		
-		
+
+        public  Collection<GroupHeader> FindGroupHeader()
+        {
+            return new Collection<GroupHeader>(this.Items.OfType<GroupHeader>().ToList());
+        }
+
+
+        public  Collection<GroupFooter> FindGroupFooter()
+        {
+            return new Collection<GroupFooter>(this.Items.OfType<GroupFooter>().ToList());
+        }
+
+      
 		private Collection<BaseDataItem> CreateGroupedList ()
 		{
 			Collection<BaseDataItem> inheritedReportItems = null;
@@ -304,6 +308,34 @@ namespace ICSharpCode.Reports.Core{
 	}
 	
 
+	public class SqlParameterCollection : Collection<SqlParameter>
+	{
+		public SqlParameterCollection()
+		{
+		}
+		
+		public SqlParameter Find (string parameterName)
+		{
+			if (String.IsNullOrEmpty(parameterName)) {
+				throw new ArgumentNullException("parameterName");
+			}
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
+		}
+		
+		
+		public void AddRange (IEnumerable<SqlParameter> items)
+		{
+			foreach (SqlParameter item in items){
+				this.Add(item);
+			}
+		}
+		
+		public static CultureInfo Culture
+		{
+			get { return System.Globalization.CultureInfo.CurrentCulture; }
+		}
+		
+	}
 	
 	public class ParameterCollection: Collection<BasicParameter>{
 		
@@ -317,7 +349,6 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(parameterName)) {
 				throw new ArgumentNullException("parameterName");
 			}
-			
 			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
 		}
 		
@@ -330,15 +361,6 @@ namespace ICSharpCode.Reports.Core{
 			}
 			return ht;
 		}
-		
-		
-		public System.Collections.Generic.List<SqlParameter> ExtractSqlParameters ()
-		{
-			System.Collections.Generic.List<SqlParameter> sql = new List<SqlParameter>();
-			sql = (from t in this where t is SqlParameter select (SqlParameter)t).ToList<SqlParameter>();
-			return sql;
-		}
-		
 		
 		public static CultureInfo Culture
 		{
@@ -355,15 +377,12 @@ namespace ICSharpCode.Reports.Core{
 	}
 	
 	#region ExporterCollection
+	
 	public class ExporterCollection : Collection<BaseExportColumn>
 	{
 		
 		public void AddRange (IEnumerable <BaseExportColumn> items){
 			foreach (var item in items) {
-				IExportContainer container = item as IExportContainer;
-				if (container != null) {
-					AddRange(container.Items);
-				}
 				this.Add (item);
 			}
 		}

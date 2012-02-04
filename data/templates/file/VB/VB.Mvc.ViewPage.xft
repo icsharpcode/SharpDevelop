@@ -3,7 +3,7 @@
 
 	<Config
 		name="MVC View Page"
-		icon="VBNet.File.NewClass"
+		icon="VBNet.File.WebFile"
 		category="VB"
 		subcategory="ASP.NET MVC"
 		defaultname="ViewPage${Number}.aspx"

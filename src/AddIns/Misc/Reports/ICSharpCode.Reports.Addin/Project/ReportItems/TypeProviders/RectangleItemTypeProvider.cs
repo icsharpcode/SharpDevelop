@@ -46,19 +46,16 @@ namespace ICSharpCode.Reports.Addin.TypeProviders
 			System.Collections.Generic.List<PropertyDescriptor> allProperties = new System.Collections.Generic.List<PropertyDescriptor>();
 			
 			DesignerHelper.AddDefaultProperties(allProperties,props);
+			DesignerHelper.AddGraphicProperties(allProperties,props);
 			
 			PropertyDescriptor prop = null;
-			prop = props.Find("ForeColor",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("DashStyle",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Thickness",true);
-			allProperties.Add(prop);
-			
+
 			prop = props.Find("CornerRadius",true);
 			allProperties.Add(prop);
+			
+			prop = props.Find("Controls",true);
+			allProperties.Add(prop);
+			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

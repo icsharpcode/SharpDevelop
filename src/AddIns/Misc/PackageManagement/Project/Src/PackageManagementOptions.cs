@@ -26,7 +26,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public PackageManagementOptions(Properties properties)
-			: this(properties, Settings.UserSettings)
+			: this(properties, Settings.DefaultSettings)
 		{
 		}
 		

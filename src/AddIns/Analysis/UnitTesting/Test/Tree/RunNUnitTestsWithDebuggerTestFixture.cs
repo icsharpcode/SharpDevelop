@@ -23,7 +23,7 @@ namespace UnitTesting.Tests.Tree
 		[SetUp]
 		public void Init()
 		{
-			selectedTests = SelectedTestsHelper.CreateSelectedTestMethod();
+			selectedTests = SelectedTestsHelper.CreateSelectedTestMember();
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 			
 			messageService = new MockMessageService();

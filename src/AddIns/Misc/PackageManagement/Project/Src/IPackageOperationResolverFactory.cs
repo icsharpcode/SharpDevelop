@@ -12,6 +12,6 @@ namespace ICSharpCode.PackageManagement
 			IPackageRepository localRepository,
 			IPackageRepository sourceRepository,
 			ILogger logger,
-			bool ignoreDependencies);
+			InstallPackageAction installAction);
 	}
 }

@@ -32,6 +32,11 @@ namespace PackageManagement.Tests
 			return fakeProject.FakeSourceRepository.AddFakePackage(packageId);
 		}
 		
+		FakePackage AddOnePackageToProjectSourceRepository(string packageId, string version)
+		{
+			return fakeProject.FakeSourceRepository.AddFakePackageWithVersion(packageId, version);
+		}
+		
 		void AddFileToPackageBeingUninstalled(string fileName)
 		{
 			var package = new FakePackage();
@@ -149,17 +154,11 @@ namespace PackageManagement.Tests
 		{
 			CreateAction();
 			
-			var recentPackage = AddOnePackageToProjectSourceRepository("PackageId");
-			recentPackage.Version = new Version("1.2.0");
+			FakePackage recentPackage = AddOnePackageToProjectSourceRepository("PackageId", "1.2.0.0");
+			FakePackage oldPackage = AddOnePackageToProjectSourceRepository("PackageId", "1.0.0.0");
+			FakePackage package = AddOnePackageToProjectSourceRepository("PackageId", "1.1.0");
 			
-			var oldPackage = AddOnePackageToProjectSourceRepository("PackageId");
-			oldPackage.Version = new Version("1.0.0");
-			
-			var package = AddOnePackageToProjectSourceRepository("PackageId");
-			var version = new Version("1.1.0");
-			package.Version = version;
-			
-			uninstallPackageHelper.Version = version;
+			uninstallPackageHelper.Version = package.Version;
 			uninstallPackageHelper.UninstallPackageById("PackageId");
 			
 			var actualPackage = fakeProject.PackagePassedToUninstallPackage;

@@ -296,7 +296,7 @@
     <Compile Include="Testing\RubyConsoleApplicationTests.cs" />
     <Compile Include="Testing\RubyTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestClassTests.cs" />
-    <Compile Include="Testing\RubyTestFrameworkIsTestMethodTests.cs" />
+    <Compile Include="Testing\RubyTestFrameworkIsTestMemberTests.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestProjectTests.cs" />
     <Compile Include="Testing\RubyTestResultFailureTestFixture.cs" />
     <Compile Include="Testing\RubyTestRunnerApplicationTests.cs" />

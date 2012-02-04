@@ -18,17 +18,17 @@ namespace PackageManagement.Tests.Helpers
 			throw new NotImplementedException();
 		}
 		
+		public string GetPackageDirectory(string packageId, SemanticVersion version)
+		{
+			throw new NotImplementedException();
+		}
+		
 		public string GetPackageFileName(IPackage package)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public string GetPackageDirectory(string packageId, Version version)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public string GetPackageFileName(string packageId, Version version)
+		public string GetPackageFileName(string packageId, SemanticVersion version)
 		{
 			throw new NotImplementedException();
 		}

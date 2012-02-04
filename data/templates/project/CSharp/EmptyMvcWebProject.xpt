@@ -5,10 +5,10 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Empty ASP.NET MVC Application</Name>
+		<Name>Empty MVC Application</Name>
 		<Category>C#</Category>
-		<Subcategory>ASP.NET</Subcategory>
-		<Icon>C#.Project.Form</Icon>
+		<Subcategory>ASP.NET MVC</Subcategory>
+		<Icon>C#.Project.WebProject</Icon>
 		<Description>Empty ASP.NET MVC Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -71,6 +71,10 @@ namespace ${StandardNamespace}
 			</namespaces>
 		</pages>
 	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
 </configuration>
 ]]>
 			</File>

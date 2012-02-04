@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -30,14 +32,14 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void SelectedTestsHaveThreeProjects()
 		{
-			Assert.AreEqual(3, selectedTests.Projects.Count);
+			Assert.AreEqual(3, selectedTests.ProjectsCount);
 		}
 		
 		[Test]
 		public void SelectedProjectsMatchProjectsPassedToConstructor()
 		{
-			List<IProject> actualProjects = new List<IProject>(selectedTests.Projects);
-			Assert.AreEqual(projects.ToArray(), actualProjects.ToArray());
+			var actualProjects = selectedTests.Projects.ToArray();
+			Assert.AreEqual(projects.ToArray(), actualProjects);
 		}
 		
 		[Test]

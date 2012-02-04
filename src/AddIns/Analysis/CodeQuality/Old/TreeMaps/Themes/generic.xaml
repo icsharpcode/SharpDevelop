@@ -1,0 +1,126 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="clr-namespace:TreeMaps.Controls"
+    >
+  <Style TargetType="{x:Type l:TreeMaps}">
+    
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <l:SquarifiedTreeMapsPanel  SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type l:TreeMaps}">
+          <Border
+            Name="Bd"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Background="{TemplateBinding Background}"
+            Padding="{TemplateBinding Padding}"
+            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+            >
+            <ItemsPresenter/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+
+    <Style.Triggers>
+      <Trigger Property="TreeMapMode" Value="Standard">
+        <Setter Property="ItemsPanel">
+          <Setter.Value>
+            <ItemsPanelTemplate>
+              <l:TreeMapsPanel  SnapsToDevicePixels="True"/>
+            </ItemsPanelTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+    </Style.Triggers>
+
+  </Style>
+
+  <Style TargetType="{x:Type l:TreeMapItem}">
+
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <l:SquarifiedTreeMapsPanel SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type l:TreeMapItem}">
+          <Border
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Padding="{TemplateBinding Padding}"
+            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+            Visibility="{TemplateBinding Visibility}"
+            Margin="{TemplateBinding Margin}"
+            >
+            <Grid>
+              <ContentPresenter
+                x:Name="PART_Header"
+                ContentSource="Header"
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                />
+              <ItemsPresenter
+                x:Name="ItemsHost"
+                Grid.Row="1"
+              />
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="ShouldRecurse" Value="false">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type l:TreeMapItem}">
+              <Border
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                Padding="{TemplateBinding Padding}"
+                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                Visibility="{TemplateBinding Visibility}"
+                Margin="{TemplateBinding Margin}"
+                >
+                <Grid>
+                  <ContentPresenter
+                    x:Name="PART_Header"
+                    ContentSource="Header"
+                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                />
+                </Grid>
+              </Border>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      
+      <Trigger Property="TreeMapMode" Value="Standard">
+        <Setter Property="ItemsPanel">
+          <Setter.Value>
+            <ItemsPanelTemplate>
+              <l:TreeMapsPanel  SnapsToDevicePixels="True"/>
+            </ItemsPanelTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+      
+    </Style.Triggers>
+
+  </Style>
+  
+</ResourceDictionary>

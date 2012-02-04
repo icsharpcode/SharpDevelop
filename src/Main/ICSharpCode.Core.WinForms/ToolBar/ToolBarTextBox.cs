@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.Core.WinForms
@@ -12,6 +13,7 @@ namespace ICSharpCode.Core.WinForms
 		Codon  codon;
 		string description   = String.Empty;
 		ITextBoxCommand menuCommand = null;
+		IEnumerable<ICondition> conditions;
 		
 		public object Caller {
 			get {
@@ -34,11 +36,12 @@ namespace ICSharpCode.Core.WinForms
 			}
 		}
 
-		public ToolBarTextBox(Codon codon, object caller)
+		public ToolBarTextBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;			
 			this.caller  = caller;
 			this.codon   = codon;
+			this.conditions = conditions;
 
 			TextBox.KeyDown += new KeyEventHandler(TextBox_KeyDown);
 
@@ -64,7 +67,7 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
@@ -80,7 +83,7 @@ namespace ICSharpCode.Core.WinForms
 		{
 			bool isVisible = base.Visible;
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				isVisible &= failedAction != ConditionFailedAction.Exclude;
 			}
 			if (base.Visible != isVisible) {

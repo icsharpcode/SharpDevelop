@@ -37,9 +37,18 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					if (e.ChangedButton == MouseButton.Left && MouseGestureBase.IsOnlyButtonPressed(e, MouseButton.Left)) {
 						e.Handled = true;
 						ISelectionService selectionService = designPanel.Context.Services.Selection;
-						selectionService.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
+						bool setSelectionIfNotMoving = false;
 						if (selectionService.IsComponentSelected(result.ModelHit)) {
-							new DragMoveMouseGesture(result.ModelHit, e.ClickCount == 2).Start(designPanel, e);
+							setSelectionIfNotMoving = true;
+							// There might be multiple components selected. We might have
+							// to set the selection to only the item clicked on
+							// (or deselect the item clicked on if Ctrl is pressed),
+							// but we should do so only if the user isn't performing a drag operation.
+						} else {
+							selectionService.SetSelectedComponents(new DesignItem[] { result.ModelHit }, SelectionTypes.Auto);
+						}
+						if (selectionService.IsComponentSelected(result.ModelHit)) {
+							new DragMoveMouseGesture(result.ModelHit, e.ClickCount == 2, setSelectionIfNotMoving).Start(designPanel, e);
 						}
 					}
 				}

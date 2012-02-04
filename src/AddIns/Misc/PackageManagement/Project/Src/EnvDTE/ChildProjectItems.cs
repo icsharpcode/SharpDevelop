@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -29,12 +30,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public IEnumerator<ProjectItem> GetEnumerator()
 		{
+			List<ProjectItem> projectItems = GetProjectItems().ToList();
+			return projectItems.GetEnumerator();
+		}
+		
+		IEnumerable<ProjectItem> GetProjectItems()
+		{
 			foreach (SD.ProjectItem msbuildProjectItem in Project.MSBuildProject.Items) {
 				ProjectItem item = ConvertToProjectItem(msbuildProjectItem);
 				if (item != null) {
 					yield return item;
 				}
-			}
+			}	
 		}
 		
 		ProjectItem ConvertToProjectItem(SD.ProjectItem msbuildProjectItem)

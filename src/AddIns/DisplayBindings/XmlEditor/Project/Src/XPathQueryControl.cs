@@ -502,7 +502,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void InitStrings()
 		{
-			lineColumnHeader.Text = StringParser.Parse("${res:CompilerResultView.LineText}");
+			lineColumnHeader.Text = StringParser.Parse("${res:Global.TextLine}");
 			matchColumnHeader.Text = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.XPathMatchColumnHeaderTitle}");
 			prefixColumn.HeaderText = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.PrefixColumnHeaderTitle}");
 			namespaceColumn.HeaderText = StringParser.Parse("${res:ICSharpCode.XmlEditor.XPathQueryPad.NamespaceColumnHeaderTitle}");

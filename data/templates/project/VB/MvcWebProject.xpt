@@ -5,10 +5,10 @@
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>ASP.NET MVC Application</Name>
+		<Name>MVC Application</Name>
 		<Category>VB</Category>
-		<Subcategory>ASP.NET</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Subcategory>ASP.NET MVC</Subcategory>
+		<Icon>VBNet.Project.WebProject</Icon>
 		<Description>ASP.NET MVC Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -315,6 +315,10 @@ End Class
 			</namespaces>
 		</pages>
 	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
 </configuration>
 ]]>
 			</File>

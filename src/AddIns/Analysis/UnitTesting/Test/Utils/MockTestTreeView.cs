@@ -10,14 +10,14 @@ namespace UnitTesting.Tests.Utils
 {
 	public class MockTestTreeView : ITestTreeView
 	{
-		IMember selectedMethod;
+		IMember selectedMember;
 		IClass selectedClass;
 		IProject selectedProject;
 		string selectedNamespace;
 		
-		public IMember SelectedMethod {
-			get { return selectedMethod; }
-			set { selectedMethod = value; }
+		public IMember SelectedMember {
+			get { return selectedMember; }
+			set { selectedMember = value; }
 		}
 		
 		public IClass SelectedClass {
