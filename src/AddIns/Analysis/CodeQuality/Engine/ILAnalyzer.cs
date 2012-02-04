@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.CodeQuality.Engine.Dom;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -42,26 +43,30 @@ namespace ICSharpCode.CodeQuality.Engine
 
 				var operand = ReadOperand(instruction);
 				
-				if (operand is MethodReference) {
-					var md = ((MethodReference)operand).Resolve();
-					if (md != null && assemblies.Contains(md.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(md)) {
-						if (md.IsGetter || md.IsSetter) {
-							var propertyNode = mappings.propertyMappings[(IProperty)mappings.cecilMappings[md]];
-							analyzedNode.AddRelationship(propertyNode);
-						} else if (md.IsAddOn || md.IsRemoveOn) {
-							var eventNode = mappings.eventMappings[(IEvent)mappings.cecilMappings[md]];
-							analyzedNode.AddRelationship(eventNode);
-						} else {
-							var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md]];
-							analyzedNode.AddRelationship(methodNode);
+				try {
+					if (operand is MethodReference) {
+						var md = ((MethodReference)operand).Resolve();
+						if (md != null && assemblies.Contains(md.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(md)) {
+							if (md.IsGetter || md.IsSetter) {
+								var propertyNode = mappings.propertyMappings[(IProperty)mappings.cecilMappings[md]];
+								analyzedNode.AddRelationship(propertyNode);
+							} else if (md.IsAddOn || md.IsRemoveOn) {
+								var eventNode = mappings.eventMappings[(IEvent)mappings.cecilMappings[md]];
+								analyzedNode.AddRelationship(eventNode);
+							} else {
+								var methodNode = mappings.methodMappings[(IMethod)mappings.cecilMappings[md]];
+								analyzedNode.AddRelationship(methodNode);
+							}
+						}
+					} else if (operand is FieldReference) {
+						var fd = ((FieldReference)operand).Resolve();
+						if (fd != null && assemblies.Contains(fd.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(fd)) {
+							var fieldNode = mappings.fieldMappings[(IField)mappings.cecilMappings[fd]];
+							analyzedNode.AddRelationship(fieldNode);
 						}
 					}
-				} else if (operand is FieldReference) {
-					var fd = ((FieldReference)operand).Resolve();
-					if (fd != null && assemblies.Contains(fd.DeclaringType.Module.Assembly) && mappings.cecilMappings.ContainsKey(fd)) {
-						var fieldNode = mappings.fieldMappings[(IField)mappings.cecilMappings[fd]];
-						analyzedNode.AddRelationship(fieldNode);
-					}
+				} catch (AssemblyResolutionException are) {
+					LoggingService.InfoFormatted("CQA: Skipping operand reference: {0}\r\nException:\r\n{1}", operand, are);
 				}
 			}
 		}

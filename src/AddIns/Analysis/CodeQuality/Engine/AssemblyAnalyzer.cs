@@ -8,8 +8,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ICSharpCode.CodeQuality.Engine.Dom;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using Mono.Cecil;
 
@@ -46,7 +48,7 @@ namespace ICSharpCode.CodeQuality.Engine
 		
 		public ReadOnlyCollection<AssemblyNode> Analyze()
 		{
-			var loadedAssemblies = LoadAssemblies().ToArray();
+			IUnresolvedAssembly[] loadedAssemblies = LoadAssemblies().ToArray();
 			compilation = new SimpleCompilation(loadedAssemblies.First(), loadedAssemblies.Skip(1));
 			
 			assemblyMappings = new Dictionary<IAssembly, AssemblyNode>();
@@ -227,9 +229,14 @@ namespace ICSharpCode.CodeQuality.Engine
 		
 		void AddRelationshipsForAttributes(IList<IAttribute> attributes, NodeBase node)
 		{
-			foreach (var attr in attributes) {
-				if (attr.Constructor != null)
-					node.AddRelationship(methodMappings[attr.Constructor]);
+			try {
+				foreach (var attr in attributes) {
+					if (attr.Constructor != null)
+						node.AddRelationship(methodMappings[attr.Constructor]);
+				}
+			} catch (NotSupportedException nse) {
+				// HACK : workaround for bug in NR5's attribute blob parser.
+				LoggingService.DebugFormatted("CQA: Skipping attributes of: {0}\r\nException:\r\n{1}", node.Name, nse);
 			}
 		}
 		
@@ -267,7 +274,7 @@ namespace ICSharpCode.CodeQuality.Engine
 			foreach (var file in fileNames.Distinct(StringComparer.OrdinalIgnoreCase))
 				assemblies.Add(resolver.LoadAssemblyFile(file));
 			foreach (var asm in assemblies.ToArray())
-				assemblies.AddRange(asm.Modules.SelectMany(m => m.AssemblyReferences).Select(r => resolver.Resolve(r)));
+				assemblies.AddRange(asm.Modules.SelectMany(m => m.AssemblyReferences).Select(r => resolver.TryResolve(r)).Where(r => r != null));
 			return assemblies.Distinct().Select(asm => loader.LoadAssembly(asm));
 		}
 		
@@ -318,6 +325,17 @@ namespace ICSharpCode.CodeQuality.Engine
 				var assembly = AssemblyDefinition.ReadAssembly(fileName, new ReaderParameters { AssemblyResolver = this });
 				RegisterAssembly(assembly);
 				return assembly;
+			}
+			
+			public AssemblyDefinition TryResolve(AssemblyNameReference reference)
+			{
+				try {
+					return Resolve(reference);
+				} catch (AssemblyResolutionException are) {
+					LoggingService.DebugFormatted("CQA: Skipping assembly reference: {0}\r\nException:\r\n{1}", reference, are);
+					TaskService.Add(new Task(null, are.Message, 0, 0, TaskType.Warning));
+					return null;
+				}
 			}
 		}
 	}
