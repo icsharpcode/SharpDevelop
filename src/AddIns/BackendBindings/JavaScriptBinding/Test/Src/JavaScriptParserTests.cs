@@ -25,7 +25,7 @@ namespace JavaScriptBinding.Tests
 		IProject CreateCSharpProject()
 		{
 			var createInfo = new ProjectCreateInformation();
-			createInfo.Solution = new Solution();
+			createInfo.Solution = new Solution(new MockProjectChangeWatcher());
 			createInfo.OutputProjectFileName = @"d:\projects\MyProject\MyProject.csproj";
 			return new MSBuildBasedProject(createInfo);
 		}
