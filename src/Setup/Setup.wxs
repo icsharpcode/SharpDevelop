@@ -607,6 +607,10 @@
 				<ComponentRef Id="VBMvcRazorViewPageFileTemplate"/>
 				<ComponentRef Id="CSharpMvcRazorProjectTemplate"/>
 				<ComponentRef Id="VBMvcRazorProjectTemplate"/>
+
+				<ComponentRef Id="JavaScriptBindingDll"/>
+				<ComponentRef Id="JavaScriptBindingAddin"/>
+				<ComponentRef Id="Antlr3RuntimeDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

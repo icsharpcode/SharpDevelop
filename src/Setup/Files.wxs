@@ -1514,6 +1514,17 @@
 										</Directory>
 									</Directory>
 								</Directory>
+								<Directory Id="JavaScriptBinding" Name="JavaScriptBinding">
+									<Component Id="Antlr3RuntimeDll" Guid="CD73166D-0ACB-4A3D-8023-06DAC6CB903A" DiskId="1">
+										<File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\Antlr3.Runtime.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Antlr3.Runtime.dll" AssemblyManifest="Antlr3.Runtime.dll" />
+									</Component>
+									<Component Id="JavaScriptBindingAddin" Guid="36874185-9C8E-4E3D-BC22-FAF59EA52B1A" DiskId="1">
+										<File Id="JavaScriptBinding.addin" Name="JavaScriptBinding.addin" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\JavaScriptBinding.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="JavaScriptBindingDll" Guid="A1EC7B85-0DFB-4CCD-8A60-49A481F0FAEC" DiskId="1">
+										<File Id="JavaScriptBinding.dll" Name="JavaScriptBinding.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\JavaScriptBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="JavaScriptBinding.dll" AssemblyManifest="JavaScriptBinding.dll" />
+									</Component>
+								</Directory>
 							</Directory>
 							<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
 								<Directory Id="FormsDesignerFolder" Name="FormsDesigner">
