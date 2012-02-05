@@ -262,8 +262,14 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Modalità di Aiuto</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Aiuto in linea non trovato. Per favore controlla che sia installato correttamente.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Cataloghi di Aiuto installati</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Esegui Aiuto in Linea</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Help Viewer</value>

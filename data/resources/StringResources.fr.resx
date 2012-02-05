@@ -262,8 +262,14 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Mode d'Aide</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Gestionnaire de la bibliothèque d'aide introuvable. Vérifiez s'il est correctement installé.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Installer les Catalogues d'Aide</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Lancer le gestionnaire de la bibliothèque d'aide</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Visionneuse de l'aide Microsoft</value>
