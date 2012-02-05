@@ -290,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				var item = new System.Windows.Controls.MenuItem() {
 					IsChecked = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == window,
 					IsCheckable = true,
-					Header = StringParser.Parse(window.Title)
+					Header = StringParser.Parse(window.Title).Replace("_", "__")
 				};
 				item.Click += delegate {
 					window.SelectWindow();
