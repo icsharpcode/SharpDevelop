@@ -261,7 +261,7 @@ namespace ICSharpCode.CodeQuality.Gui
 						drawingContext.DrawRectangle(brush, null, rect);
 					}
 					
-					string text = Colorizer.GetText(value);
+					string text = Colorizer.GetUsesText(value);
 					if (!RenderZeroes && value != null && text != "0") // rendering zeroes would be distracting
 						drawingContext.DrawImage(
 							CreateText(text),

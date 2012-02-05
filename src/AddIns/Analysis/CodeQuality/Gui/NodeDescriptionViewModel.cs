@@ -50,9 +50,9 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		string infoText;
+		object infoText;
 		
-		public string InfoText {
+		public object InfoText {
 			get { return infoText; }
 			set {
 				infoText = value;

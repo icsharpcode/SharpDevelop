@@ -40,9 +40,9 @@ namespace ICSharpCode.CodeQuality
 		{
 			// null or both = 0 => None
 			if (value == null)
-				return Colors.Transparent;
+				return Colors.LightGray;
 			if (value.Item1 == 0 && value.Item2 == 0)
-				return Colors.Transparent;
+				return Colors.LightGray;
 			// both = -1 => Same
 			if (value.Item1 == -1 && value.Item2 == -1)
 				return Colors.Gray;
@@ -56,7 +56,7 @@ namespace ICSharpCode.CodeQuality
 			if (value.Item2 > 0)
 				return Colors.LightBlue;
 			
-			return Colors.Transparent;
+			return Colors.LightGray;
 		}
 		
 		public SolidColorBrush GetColorBrushMixedWith(Color color, Tuple<int, int> value)
@@ -75,7 +75,7 @@ namespace ICSharpCode.CodeQuality
 			return brush;
 		}
 		
-		public string GetText(Tuple<int, int> value)
+		public string GetUsesText(Tuple<int, int> value)
 		{
 			// null or both = 0 => None
 			if (value == null)
@@ -96,6 +96,19 @@ namespace ICSharpCode.CodeQuality
 				return value.Item2.ToString(CultureInfo.InvariantCulture);
 			
 			return "";
+		}
+		
+		public string GetDescription(Tuple<int, int> value)
+		{
+			if (value.Item1 == -1 && value.Item2 == -1)
+				return "is the same as";
+			if (value.Item1 > 0 && value.Item2 > 0)
+				return "uses and is used by";
+			if (value.Item1 > 0)
+				return "uses";
+			if (value.Item2 > 0)
+				return "is used by";
+			return "is not related to";
 		}
 	}
 }

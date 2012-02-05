@@ -145,11 +145,10 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		
 		void TopTreeMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
 		{
 			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
-			if (n != null) { 
+			if (n != null) {
 				SetTooltip (e.OriginalSource as DependencyObject);
 				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Columns, n.Node);
@@ -158,18 +157,15 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-		
-		static void SetTooltip (DependencyObject node)
+		static void SetTooltip(DependencyObject node)
 		{
 			var c = Extensions.GetParent<SharpTreeViewItem>(node);
 			var n = c.Node as MatrixTreeNode;
-			if (n != null)
-			{
-				c.ToolTip = string.Format("Name : {0} has Children : {1}",n.Node.Name,n.Node.Children.Count);
-			}	
+			if (n != null) {
+				c.ToolTip = string.Format("Name : {0} has Children : {1}", n.Node.Name, n.Node.Children.Count);
+			}
 		}
-			
-			
+		
 		static MatrixTreeNode ConvertNode(DependencyObject node)
 		{
 			var c = Extensions.GetParent<SharpTreeViewItem>(node);
@@ -189,6 +185,7 @@ namespace ICSharpCode.CodeQuality.Gui
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
 			UpdateInfoText();
+			matrix.ToolTip = nodeDescriptionViewModel.InfoText;
 		}
 
 		void UpdateInfoText()

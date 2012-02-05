@@ -42,10 +42,10 @@
 					Text="{Binding Node.Children.Count}"
 					Grid.Column="1"
 					Grid.Row="2"></TextBlock>
-				<TextBlock
-					Text="{Binding InfoText}"
+<!--				<TextBlock
+					x:Name=""
 					Grid.Row="3"
-					Grid.ColumnSpan="2" />
+					Grid.ColumnSpan="2" />-->
 			</Grid>
 		</Grid>
 	</Border>

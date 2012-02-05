@@ -15,6 +15,8 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		public abstract IList<NodeBase> Children { get; }
 		public NodeBase Parent { get; private set; }
 		
+		public static readonly ReadOnlyCollection<NodeBase> EmptyChildren = new ReadOnlyCollection<NodeBase>(Enumerable.Empty<NodeBase>().ToList());
+		
 		internal IEnumerable<NodeBase> AncestorsAndSelf {
 			get {
 				var node = this;

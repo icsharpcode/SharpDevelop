@@ -22,7 +22,7 @@ namespace ICSharpCode.CodeQuality.Engine.Dom
 		}
 		
 		public override IList<NodeBase> Children {
-			get { return null; }
+			get { return EmptyChildren; }
 		}
 	}
 }
