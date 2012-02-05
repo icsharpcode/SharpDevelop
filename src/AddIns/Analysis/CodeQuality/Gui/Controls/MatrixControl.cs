@@ -57,7 +57,10 @@ namespace ICSharpCode.CodeQuality.Gui
 		
 		public MatrixControl()
 		{
-			CellHeight = CellWidth = 17;
+			//CellHeight = CellWidth = 17;
+			//only for testing
+			CellHeight = CellWidth = 25;
+			
 			matrixWidth = 0;
 			matrixHeight = 0;
 			fontSize = CellHeight / 3;

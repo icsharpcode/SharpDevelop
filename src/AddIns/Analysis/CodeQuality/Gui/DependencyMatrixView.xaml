@@ -26,8 +26,9 @@
 			ScrollViewer.VerticalScrollBarVisibility="Hidden"
 			MouseMove="TopTreeMouseMove"
 			ScrollViewer.ScrollChanged="ViewScrollChanged">
+		
 			<tv:SharpTreeView.LayoutTransform>
-				<RotateTransform Angle="-90" />
+				<RotateTransform Angle="-90"/>
 			</tv:SharpTreeView.LayoutTransform>
 		</tv:SharpTreeView>
 		<!-- -->

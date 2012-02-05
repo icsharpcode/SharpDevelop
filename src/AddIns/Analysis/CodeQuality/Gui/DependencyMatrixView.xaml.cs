@@ -33,6 +33,9 @@ namespace ICSharpCode.CodeQuality.Gui
 		public DependencyMatrixView()
 		{
 			InitializeComponent();
+			//only for testing
+			topTree.FontSize = 18;
+			leftTree.FontSize = 18;
 			
 			nodeDescriptionViewModel = new NodeDescriptionViewModel();
 			this.inform.DataContext = nodeDescriptionViewModel;
@@ -134,6 +137,7 @@ namespace ICSharpCode.CodeQuality.Gui
 		{
 			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
 			if (n != null) {
+				SetTooltip (e.OriginalSource as DependencyObject);
 				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Rows, n.Node);
 				leftTree.SelectedItem = n;
@@ -141,10 +145,12 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
+		
 		void TopTreeMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
 		{
 			MatrixTreeNode n = ConvertNode(e.OriginalSource as DependencyObject);
-			if (n != null) {
+			if (n != null) { 
+				SetTooltip (e.OriginalSource as DependencyObject);
 				nodeDescriptionViewModel.Node = n.Node;
 				matrix.HighlightLine(HeaderType.Columns, n.Node);
 				topTree.SelectedItem = n;
@@ -152,11 +158,24 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
+		
+		static void SetTooltip (DependencyObject node)
+		{
+			var c = Extensions.GetParent<SharpTreeViewItem>(node);
+			var n = c.Node as MatrixTreeNode;
+			if (n != null)
+			{
+				c.ToolTip = string.Format("Name : {0} has Children : {1}",n.Node.Name,n.Node.Children.Count);
+			}	
+		}
+			
+			
 		static MatrixTreeNode ConvertNode(DependencyObject node)
 		{
 			var c = Extensions.GetParent<SharpTreeViewItem>(node);
 			if (c != null)
 				return c.Node as MatrixTreeNode;
+			
 			return null;
 		}
 		
