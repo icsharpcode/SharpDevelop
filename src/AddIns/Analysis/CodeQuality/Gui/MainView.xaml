@@ -5,7 +5,9 @@
 	<DockPanel>
 		<ToolBar DockPanel.Dock="Top">
 			<Button Click="AddAssemblyClick">Add Assembly</Button>
+			<!--
 			<Button Click="RefreshClick">Refresh</Button>
+-->
 		</ToolBar>
 		<TabControl>
 			<TabItem Header="Dependency Matrix">

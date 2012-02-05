@@ -40,11 +40,12 @@ namespace ICSharpCode.CodeQuality.Gui
 
 			if (fileDialog.ShowDialog() != true || fileDialog.FileNames.Length == 0)
 				return;
-			
+			introBlock.Visibility = Visibility.Collapsed;
 			context.AddAssemblyFiles(fileDialog.FileNames);
 			RefreshClick(null, null);
 		}
 		
+	
 		void RefreshClick(object sender, RoutedEventArgs e)
 		{
 			introBlock.Visibility = Visibility.Collapsed;
