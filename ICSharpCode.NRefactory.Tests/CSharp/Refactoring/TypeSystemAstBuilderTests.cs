@@ -160,8 +160,8 @@ namespace OtherNS {
 		{
 			var type = new ParameterizedType(nestedClass, new[] { compilation.FindType(KnownTypeCode.Char), compilation.FindType(KnownTypeCode.String) });
 			Assert.AreEqual("Base<char>.Nested<string>", TypeToString(type));
-			Assert.AreEqual("Nested<string>", TypeToString(type, baseClass));
-			Assert.AreEqual("Nested<string>", TypeToString(type, nestedClass));
+			Assert.AreEqual("Base<char>.Nested<string>", TypeToString(type, baseClass));
+			Assert.AreEqual("Base<char>.Nested<string>", TypeToString(type, nestedClass));
 			Assert.AreEqual("Base<char>.Nested<string>", TypeToString(type, derivedClass));
 		}
 		
