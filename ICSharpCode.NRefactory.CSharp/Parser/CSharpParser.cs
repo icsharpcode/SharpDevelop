@@ -68,11 +68,53 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit (ModuleContainer mc)
 			{
-				AddAttributeSection (Unit, mc);
+				bool first = true;
 				foreach (var container in mc.Containers) {
-					container.Accept (this);
+					var nspace = container as NamespaceContainer;
+					if (nspace == null) {
+						container.Accept (this);
+						continue;
+					}
+					NamespaceDeclaration nDecl = null;
+					var loc = LocationsBag.GetLocations (nspace);
+					
+					if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
+						nDecl = new NamespaceDeclaration ();
+						if (loc != null)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[0]), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
+						ConvertNamespaceName (nspace.RealMemberName, nDecl);
+						if (loc != null && loc.Count > 1)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[1]), 1), NamespaceDeclaration.Roles.LBrace);
+						AddToNamespace (nDecl);
+						namespaceStack.Push (nDecl);
+					}
+					
+					if (nspace.Usings != null) {
+						foreach (var us in nspace.Usings) {
+							us.Accept (this);
+						}
+					}
+					
+					if (first) {
+						first = false;
+						AddAttributeSection (Unit, mc);
+					}
+					
+					if (nspace.Containers != null) {
+						foreach (var subContainer in nspace.Containers) {
+							subContainer.Accept (this);
+						}
+					}
+					
+					if (nDecl != null) {
+						if (loc != null && loc.Count > 2)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
+						if (loc != null && loc.Count > 3)
+							nDecl.AddChild (new CSharpTokenNode (Convert (loc[3]), 1), NamespaceDeclaration.Roles.Semicolon);
+						
+						namespaceStack.Pop ();
+					}
 				}
-				
 			}
 			
 			#region Global
