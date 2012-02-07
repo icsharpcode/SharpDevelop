@@ -3574,10 +3574,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
-				var ctx = new CompilerContext (CompilerSettings, new Report (errorReportPrinter));
+				var ctx = new CompilerContext (CompilerSettings, errorReportPrinter);
+				ctx.Settings.TabSize = 1;
 				var reader = new SeekableStreamReader (stream, Encoding.UTF8);
-				var file = new CompilationSourceFile (fileName, fileName, 0);
-				Location.Initialize (new List<CompilationSourceFile> (new [] { file }));
+				var file = new SourceFile (fileName, fileName, 0);
+				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var driver = new Driver (ctx);
 				var parser = driver.Parse (reader, file, module);
