@@ -80,6 +80,17 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.AreEqual(genericInterfaceOfString, interfaceMethod2.DeclaringType);
 			Assert.IsTrue(interfaceMethod2.Parameters[1].IsRef);
 		}
+		
+		[Test]
+		public void IndexerParameters()
+		{
+			var testClass = GetTypeDefinition(typeof(NRefactory.TypeSystem.TestCase.IndexerTest));
+			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
+			Assert.AreEqual("Item", p.Name);
+			
+			Assert.AreEqual(new[] { "index" }, p.Getter.Parameters.Select(x => x.Name).ToArray());
+			Assert.AreEqual(new[] { "index", "value" }, p.Setter.Parameters.Select(x => x.Name).ToArray());
+		}
 	}
 	
 	[TestFixture]
