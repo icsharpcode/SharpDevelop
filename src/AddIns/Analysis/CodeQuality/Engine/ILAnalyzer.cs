@@ -50,7 +50,7 @@ namespace ICSharpCode.CodeQuality.Engine
 							if (md.IsGetter || md.IsSetter) {
 								var propertyNode = mappings.propertyMappings[(IProperty)mappings.cecilMappings[md]];
 								mappings.AddEdge(propertyNode);
-							} else if (md.IsAddOn || md.IsRemoveOn) {
+							} else if (md.IsAddOn || md.IsRemoveOn || md.IsFire || md.IsOther) {
 								var eventNode = mappings.eventMappings[(IEvent)mappings.cecilMappings[md]];
 								mappings.AddEdge(eventNode);
 							} else {
