@@ -67,6 +67,24 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			return msbuildProject.Items.Single(item => item.FileName == fileName) as FileProjectItem;
 		}
 		
+		ReferenceProjectItem GetReferenceFromMSBuildProject(string name)
+		{
+			return msbuildProject
+				.GetItemsOfType(ItemType.Reference)
+				.SingleOrDefault(item => item.Include == name) as ReferenceProjectItem;
+		}
+		
+		void AddAssemblyReferenceToMSBuildProject(string name)
+		{
+			var item = new ReferenceProjectItem(msbuildProject, name);
+			ProjectService.AddProjectItem(msbuildProject, item);
+		}
+		
+		int CountAssemblyReferencesInMSBuildProject()
+		{
+			return msbuildProject.GetItemsOfType(ItemType.Reference).Count();
+		}
+		
 		[Test]
 		public void ServiceReferencesFolder_ProjectHasNoServiceReferences_ReturnsServiceReferencesFolderAsProjectSubFolder()
 		{
@@ -187,6 +205,70 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			Assert.AreEqual(ItemType.None, item.ItemType);
 			Assert.AreEqual("Reference.cs", lastGenOutput);
 			Assert.AreEqual("WCF Proxy Generator", generator);
+		}
+		
+		[Test]
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectWithoutReference_AssemblyReferenceAdded()
+		{
+			CreateProjectWithMSBuildProject();
+			
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			ReferenceProjectItem item = GetReferenceFromMSBuildProject("System.ServiceModel");
+			
+			Assert.IsNotNull(item);
+		}
+		
+		[Test]
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReference_AssemblyReferenceIsNotAdded()
+		{
+			CreateProjectWithMSBuildProject();
+			AddAssemblyReferenceToMSBuildProject("System.ServiceModel");
+			
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			int count = CountAssemblyReferencesInMSBuildProject();
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasOneReferenceToSystemXml_ProjectHasTwoReferences()
+		{
+			CreateProjectWithMSBuildProject();
+			AddAssemblyReferenceToMSBuildProject("System.Xml");
+			
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			int count = CountAssemblyReferencesInMSBuildProject();
+			
+			Assert.AreEqual(2, count);
+		}
+		
+		[Test]
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReferenceInDifferentCase_AssemblyReferenceIsNotAdded()
+		{
+			CreateProjectWithMSBuildProject();
+			AddAssemblyReferenceToMSBuildProject("system.serviceModel");
+			
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			int count = CountAssemblyReferencesInMSBuildProject();
+			
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReferenceUsingFullAssemblyNa_AssemblyReferenceIsNotAdded()
+		{
+			CreateProjectWithMSBuildProject();
+			AddAssemblyReferenceToMSBuildProject("System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+			
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			int count = CountAssemblyReferencesInMSBuildProject();
+			
+			Assert.AreEqual(1, count);
 		}
 	}
 }

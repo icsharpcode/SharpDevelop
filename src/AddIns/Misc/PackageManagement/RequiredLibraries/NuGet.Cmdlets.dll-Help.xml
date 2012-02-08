@@ -39,14 +39,17 @@
           <maml:name>ProjectName</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" position="named">
+        <command:parameter required="false" position="2">
           <maml:name>Version</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
-        <command:parameter required="false" position="named">
+        <command:parameter required="false" position="3">
           <maml:name>Source</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
+          <command:parameter required="false" position="named">
+              <maml:name>IncludePrerelease</maml:name>
+          </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -95,6 +98,12 @@
           string
         </command:parameterValue>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>IncludePrerelease</maml:name>
+            <maml:description>
+                <maml:para>Indicates whether this command will consider prerelease packages. If omitted, only stable packages are considered.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
 
     <!-- Examples section  -->
@@ -212,6 +221,9 @@ c:\temp\packages to find the package.
         <command:parameter required="false" position="named">
           <maml:name>AllVersions</maml:name>
         </command:parameter>
+          <command:parameter required="false" position="named">
+              <maml:name>IncludePrerelease</maml:name>
+          </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -274,6 +286,12 @@ c:\temp\packages to find the package.
           <maml:para>Displays all available versions of a package. The latest version of each package is listed by default. </maml:para>
         </maml:description>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>IncludePrerelease</maml:name>
+            <maml:description>
+                <maml:para>Indicates whether to include prerelease packages in the returned results.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
     
     <!-- Examples section  -->
@@ -554,6 +572,9 @@ Uninstalls the Elmah package even if another package depends on it.
           <maml:name>Source</maml:name>
           <command:parameterValue required="true">string</command:parameterValue>
         </command:parameter>
+          <command:parameter required="false" position="named">
+              <maml:name>IncludePrerelease</maml:name>
+          </command:parameter>
       </command:syntaxItem>
     </command:syntax>
 
@@ -608,6 +629,12 @@ Uninstalls the Elmah package even if another package depends on it.
           string
         </command:parameterValue>
       </command:parameter>
+        <command:parameter required="false" position="named">
+            <maml:name>IncludePrerelease</maml:name>
+            <maml:description>
+                <maml:para>Indicates whether to include prereleases when searching for updates. If omitted, only stable packages are considered.</maml:para>
+            </maml:description>
+        </command:parameter>
     </command:parameters>
 
     <command:examples>

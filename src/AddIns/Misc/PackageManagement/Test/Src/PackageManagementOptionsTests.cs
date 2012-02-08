@@ -67,7 +67,7 @@ namespace PackageManagement.Tests
 		
 		RecentPackageInfo AddRecentPackageToOptions(string id, string version)
 		{
-			var recentPackage = new RecentPackageInfo(id, new Version(version));
+			var recentPackage = new RecentPackageInfo(id, new SemanticVersion(version));
 			options.RecentPackages.Add(recentPackage);
 			return recentPackage;
 		}

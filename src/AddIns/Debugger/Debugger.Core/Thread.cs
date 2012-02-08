@@ -206,6 +206,7 @@ namespace Debugger
 		{
 			if (!(this.CorThread is ICorDebugThread2)) return false; // Is the debuggee .NET 2.0?
 			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
+			if (this.currentException == null) return false;
 			if (this.MostRecentStackFrame == null) return false; // Is frame available?  It is not at StackOverflow
 			
 			// Intercepting an exception on an optimized/NGENed frame seems to sometimes

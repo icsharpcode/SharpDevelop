@@ -10,7 +10,7 @@
 		<Name>WCF Service</Name>
 		<Category>VB</Category>
 		<Subcategory>WCF</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VBNet.Project.WCFServiceProject</Icon>
 		<Description>WCF Service</Description>
 		<SupportedTargetFrameworks>v3.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

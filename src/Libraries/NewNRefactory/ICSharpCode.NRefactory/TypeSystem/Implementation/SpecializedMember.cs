@@ -70,12 +70,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return type.AcceptVisitor(substitution);
 		}
 		
+		internal IMethod WrapAccessor(IMethod accessorDefinition)
+		{
+			if (accessorDefinition == null)
+				return null;
+			else
+				return new SpecializedMethod(declaringType, accessorDefinition);
+		}
+		
 		public IType DeclaringType {
 			get { return declaringType; }
 		}
 		
 		public IMember MemberDefinition {
-			get { return memberDefinition; }
+			get { return memberDefinition.MemberDefinition; }
+		}
+		
+		public IUnresolvedMember UnresolvedMember {
+			get { return memberDefinition.UnresolvedMember; }
 		}
 		
 		public IType ReturnType {
@@ -114,7 +126,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition.Attributes; }
 		}
 		
-		public IList<IMember> InterfaceImplementations {
+		IList<IMember> IMember.InterfaceImplementations {
 			get { throw new NotImplementedException(); }
 		}
 		

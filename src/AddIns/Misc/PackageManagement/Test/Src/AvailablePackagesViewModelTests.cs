@@ -111,18 +111,10 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			
-			var package1 = new FakePackage() {
-             	Id = "Test",
-             	Version = new Version(0, 1, 0, 0)
-            };
-			var package2 = new FakePackage() {
-				Id = "Test",
-				Version = new Version(0, 2, 0, 0)
-			};
-			var package3 = new FakePackage() {
-				Id = "Test",
-				Version = new Version(0, 3, 0, 0)
-			};
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var package3 = new FakePackage("Test", "0.3.0.0");
+			
 			var packages = new FakePackage[] {
 				package1, package2, package3
 			};
@@ -151,21 +143,10 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			
-			var package1 = new FakePackage() {
-             	Id = "Test",
-             	Description = "",
-             	Version = new Version(0, 1, 0, 0)
-            };
-			var package2 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 2, 0, 0)
-			};
-			var package3 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 3, 0, 0)
-			};
+			var package1 = new FakePackage("Test", "0.1.0.0");
+			var package2 = new FakePackage("Test", "0.2.0.0");
+			var package3 = new FakePackage("Test", "0.3.0.0");
+			
 			var packages = new FakePackage[] {
 				package1, package2, package3
 			};
@@ -189,26 +170,11 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.PageSize = 2;
 			
-			var package1 = new FakePackage() {
-             	Id = "First",
-             	Description = "",
-             	Version = new Version(0, 1, 0, 0)
-            };
-			var package2 = new FakePackage() {
-				Id = "Secon",
-             	Description = "",
-				Version = new Version(0, 2, 0, 0)
-			};
-			var package3 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 3, 0, 0)
-			};
-			var package4 = new FakePackage() {
-				Id = "Test",
-             	Description = "",
-				Version = new Version(0, 4, 0, 0)
-			};
+			var package1 = new FakePackage("First", "0.1.0.0");
+			var package2 = new FakePackage("Second", "0.2.0.0");
+			var package3 = new FakePackage("Test", "0.3.0.0");
+			var package4 = new FakePackage("Test", "0.4.0.0");
+			
 			var packages = new FakePackage[] {
 				package1, package2, package3, package4
 			};

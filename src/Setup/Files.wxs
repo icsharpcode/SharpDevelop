@@ -493,7 +493,6 @@
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
 								<File Source="..\..\doc\BuiltWithSharpDevelop.png" Id="BuiltWithSharpDevelop.png" Name="BuiltWithSharpDevelop.png" />
-								<File Source="..\..\doc\ChangeLog.html" Id="ChangeLog.html" Name="ChangeLog.html" />
 								<File Source="..\..\doc\copyright.txt" Id="copyright.txt" Name="copyright.txt" />
 								<File Source="..\..\doc\license.txt" Name="license.txt" Id="DocFolderLicense.txt" />
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
@@ -733,11 +732,17 @@
 										<Component Id="CSharpWcfRestServiceFileTemplate" Guid="00AE5E3C-DD9C-11E0-A234-EEB74724019B" DiskId="1">
 											<File Id="CSharp.WcfRestService.xft" Name="CSharp.WcfRestService.xft" Source="..\..\data\templates\file\CSharp\CSharp.WcfRestService.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpMvcRazorLayoutPageFileTemplate" Guid="B64FE4CA-0BFC-40F9-89D9-B8B5967D155C" DiskId="1">
+											<File Id="CSharp.Mvc.Razor.LayoutPage.xft" Name="CSharp.Mvc.Razor.LayoutPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Razor.LayoutPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcRazorPartialPageFileTemplate" Guid="42531CD9-8CCC-4A9F-8250-B3DDADA5FA08" DiskId="1">
+											<File Id="CSharp.Mvc.Razor.PartialPage.xft" Name="CSharp.Mvc.Razor.PartialPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Razor.PartialPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="CSharpMvcRazorViewPageFileTemplate" Guid="A288D1B3-FC55-4E98-91C0-DCF10C80ACB7" DiskId="1">
+											<File Id="CSharp.Mvc.Razor.ViewPage.xft" Name="CSharp.Mvc.Razor.ViewPage.xft" Source="..\..\data\templates\file\CSharp\CSharp.Mvc.Razor.ViewPage.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscFileTemplatesFolder" Name="Misc">
-										<Component Guid="F47EE9EB-321F-4D98-A373-BFE2C2D801D0" Id="EmptyHTMLFileTemplate" DiskId="1">
-											<File Source="..\..\data\templates\file\Misc\EmptyHTMLFile.xft" Id="EmptyHTMLFile.xft" Name="EmptyHTMLFile.xft" />
-										</Component>
 										<Component Guid="861BC115-F99D-4492-AB4E-E7DA2DF0C60A" Id="EmptyMsBuildFileTemplate" DiskId="1">
 											<File Source="..\..\data\templates\file\Misc\EmptyMsBuildFile.xft" Id="EmptyMsBuildFile.xft" Name="EmptyMsBuildFile.xft" />
 										</Component>
@@ -810,6 +815,26 @@
 										<Component Id="VBWcfRestServiceFileTemplate" Guid="28AB44B8-DD9C-11E0-AEE3-30B84724019B" DiskId="1">
 											<File Id="VB.WcfRestService.xft" Name="VB.WcfRestService.xft" Source="..\..\data\templates\file\VB\VB.WcfRestService.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="VBMvcRazorLayoutPageFileTemplate" Guid="2A31914B-FB21-423D-BD2F-7CC3B8D76998" DiskId="1">
+											<File Id="VB.Mvc.Razor.LayoutPage.xft" Name="VB.Mvc.Razor.LayoutPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.LayoutPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcRazorPartialPageFileTemplate" Guid="B16D8404-5BFC-4875-BBB0-5952693067E2" DiskId="1">
+											<File Id="VB.Mvc.Razor.PartialPage.xft" Name="VB.Mvc.Razor.PartialPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.PartialPage.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcRazorViewPageFileTemplate" Guid="64BFEE23-D6CD-4832-899C-C3F8639526AF" DiskId="1">
+											<File Id="VB.Mvc.Razor.ViewPage.xft" Name="VB.Mvc.Razor.ViewPage.xft" Source="..\..\data\templates\file\VB\VB.Mvc.Razor.ViewPage.xft" KeyPath="yes" />
+										</Component>
+									</Directory>
+									<Directory Id="WebFileTemplatesFolder" Name="Web">
+										<Component Id="EmptyHTMLFileTemplate" Guid="4D820EE2-E443-4824-BEF9-2C031C59875C" DiskId="1">
+											<File Id="EmptyHTMLFile.xft" Name="EmptyHTMLFile.xft" Source="..\..\data\templates\file\Web\EmptyHTMLFile.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyJavaScriptFileTemplate" Guid="7C282AD2-E1B5-4266-AE23-CF60D275C7A4" DiskId="1">
+											<File Id="EmptyJavaScript.xft" Name="EmptyJavaScript.xft" Source="..\..\data\templates\file\Web\EmptyJavaScript.xft" KeyPath="yes" />
+										</Component>
+										<Component Id="EmptyStyleSheetFileTemplate" Guid="80DF09D1-68A2-40C1-8694-35D9D467AFDA" DiskId="1">
+											<File Id="EmptyStyleSheet.xft" Name="EmptyStyleSheet.xft" Source="..\..\data\templates\file\Web\EmptyStyleSheet.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
@@ -857,6 +882,9 @@
 										<Component Id="CSharpWcfRestServiceProjectTemplate" Guid="8FEE65EC-DD9C-11E0-8968-81B84724019B" DiskId="1">
 											<File Id="CSharp.WcfRestServiceProject.xpt" Name="CSharp.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\CSharp\CSharp.WcfRestServiceProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="CSharpMvcRazorProjectTemplate" Guid="827EB7DD-A67C-4043-81A4-F4AC9CE92F8D" DiskId="1">
+											<File Id="CSharp.MvcR.azorProject.xpt" Name="MvcRazorProject.xpt" Source="..\..\data\templates\project\CSharp\MvcRazorProject.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
@@ -900,6 +928,9 @@
 										</Component>
 										<Component Id="VBWcfRestServiceProjectTemplate" Guid="A45203E0-DD9C-11E0-974A-93B84724019B" DiskId="1">
 											<File Id="VB.WcfRestServiceProject.xpt" Name="VB.WcfRestServiceProject.xpt" Source="..\..\data\templates\project\VB\VB.WcfRestServiceProject.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="VBMvcRazorProjectTemplate" Guid="253A22C3-31B7-44AD-8F4D-8B55511487A1" DiskId="1">
+											<File Id="VB.MvcRazorProject.xpt" Name="MvcRazorProject.xpt" Source="..\..\data\templates\project\VB\MvcRazorProject.xpt" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
@@ -991,6 +1022,14 @@
 											</Component>
 										</Directory>
 									</Directory>
+								</Directory>
+								<Directory Id="CodeQualityFolder" Name="CodeQuality">
+									<Component Guid="E821D255-269F-44BB-992E-BC98B8349B1C" Id="CodeQualityFiles" DiskId="1">
+										<File Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.CodeQuality.dll" Id="ICSharpCode.CodeQuality.dll" Name="ICSharpCode.CodeQuality.dll" Assembly=".net" AssemblyApplication="ICSharpCode.CodeQuality.dll" AssemblyManifest="ICSharpCode.CodeQuality.dll" KeyPath="yes" />
+										<File Id="ICSharpCode.NewNRefactory.dll_CQA" Name="ICSharpCode.NewNRefactory.dll" Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.NewNRefactory.dll" />
+										<File Id="ICSharpCode.NRefactory.CSharp.dll_CQA" Name="ICSharpCode.NRefactory.CSharp.dll" Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.NRefactory.CSharp.dll" />
+										<File Source="..\..\AddIns\Analysis\CodeQuality\CodeQuality.addin" Id="CodeQuality.addin" Name="CodeQuality.addin" />
+									</Component>
 								</Directory>
 							</Directory>
 							<Directory Id="BackendBindingsFolder" Name="BackendBindings">
@@ -1353,6 +1392,138 @@
 											<File Source="..\..\AddIns\BackendBindings\CppBinding\Templates\UnmanagedConsoleProject.xpt" Name="UnmanagedConsoleProject.xpt" Id="UnmanagedConsoleProject.xpt" />
 										</Component>
 									</Directory>
+								</Directory>
+								<Directory Id="AspNet.Mvc" Name="AspNet.Mvc">
+									<Component Id="AspNetMvcAddin" Guid="2ADAB116-3E40-4A12-B6CD-EE41C482807A" DiskId="1">
+										<File Id="AspNet.Mvc.addin" Name="AspNet.Mvc.addin" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\AspNet.Mvc.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="AspNetMvcDll" Guid="82AC3FE9-9E23-4B9D-9186-8F2F1BF77391" DiskId="1">
+										<File Id="AspNet.Mvc.dll" Name="AspNet.Mvc.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\AspNet.Mvc.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AspNet.Mvc.dll" AssemblyManifest="AspNet.Mvc.dll" />
+									</Component>
+									<Component Id="AspNetMvcMonoTextTemplatingDll" Guid="6FD58851-E8C9-4479-88AE-953FBC80313B" DiskId="1">
+										<File Id="AspNet.Mvc.Mono.TextTemplating.dll" Name="Mono.TextTemplating.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\Mono.TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AspNet.Mvc.Mono.TextTemplating.dll" AssemblyManifest="AspNet.Mvc.Mono.TextTemplating.dll" />
+									</Component>
+									<Component Id="SystemWebRazorDll" Guid="A37AB289-9804-4643-AD11-EAEA3733ACEF" DiskId="1">
+										<File Id="System.Web.Razor.dll" Name="System.Web.Razor.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\System.Web.Razor.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="System.Web.Razor.dll" AssemblyManifest="System.Web.Razor.dll" />
+									</Component>
+									<Component Id="AspNetMvcTextTemplatingDll" Guid="1DDE71EB-EFF3-4190-9F8C-20D2C1EFEC34" DiskId="1">
+										<File Id="AspNet.Mvc.TextTemplating.dll" Name="TextTemplating.dll" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\TextTemplating.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="AspNet.Mvc.TextTemplating.dll" AssemblyManifest="AspNet.Mvc.TextTemplating.dll" />
+									</Component>
+									<Directory Id="AspNetMvcItemTemplates" Name="ItemTemplates">
+										<Directory Id="AspNetMvcCSharpItemTemplates" Name="CSharp">
+											<Directory Id="AspNetMvcCSharpCodeTemplates" Name="CodeTemplates">
+												<Directory Id="AspNetMvcCSharpControllerTemplates" Name="AddController">
+													<Component Id="AspNetMvcCSharpControllerTemplate" Guid="C6B007F6-3D25-442F-A6CF-523A88975B8F" DiskId="1">
+														<File Id="Asp.Net.Mvc.CSharp.Controller.tt" Name="Controller.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddController\Controller.tt" KeyPath="yes" />
+													</Component>
+												</Directory>
+												<Directory Id="AspNetMvcCSharpAddViewTemplates" Name="AddView">
+													<Directory Id="AspNetMvcAddViewAspxCSharpTemplates" Name="AspxCSharp">
+														<Component Id="AspNetMvcAspxCSharpCreateTemplate" Guid="886DF077-C542-47FB-BF93-1F127C0A8473" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpDeleteTemplate" Guid="25C742E0-6725-4A63-BBCC-F5FAF44488DF" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpDetailsTemplate" Guid="6A146749-A263-4AF9-A6EC-5D10D39373E2" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpEditTemplate" Guid="185D314C-A513-4C01-9CAC-0FC03C26006F" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpEmptyTemplate" Guid="575EC741-AED2-4A86-9CA7-33A0F3F92CE4" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxCSharpListTemplate" Guid="5C0A2D20-4B10-45B8-B576-C5BBA3D7BC36" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.CSharp.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\AspxCSharp\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+													<Directory Id="AspNetMvcAddViewCSharpRazorTemplates" Name="CSHTML">
+														<Component Id="AspNetMvcRazorCSharpCreateTemplate" Guid="CE522D36-3446-4E06-8A40-26777C5C3549" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpDeleteTemplate" Guid="B01503A5-41DE-4DAD-A8B1-2EB751C0C291" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpDetailsTemplate" Guid="C6CE8ECD-CB7E-450D-95B2-C803BF05F7BE" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpEditTemplate" Guid="8AF10FAC-FB95-41D4-9793-3B54CE266A6B" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpEmptyTemplate" Guid="F6978D6B-73C9-44EC-84F7-186E345BD0BD" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorCSharpListTemplate" Guid="3B409AAC-73D3-4B99-88F4-0A3FE742D41A" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.CSharp.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\CSharp\CodeTemplates\AddView\CSHTML\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+												</Directory>
+											</Directory>
+										</Directory>
+										<Directory Id="AspNetMvcVisualBasicItemTemplates" Name="VisualBasic">
+											<Directory Id="AspNetMvcVisualBasicCodeTemplates" Name="CodeTemplates">
+												<Directory Id="AspNetVisualBasicControllerTemplates" Name="AddController">
+													<Component Id="AspNetMvcVisualBasicControllerTemplate" Guid="493833D0-B6DE-45C0-8CAD-6F0EB0CDBCAD" DiskId="1">
+														<File Id="Asp.Net.Mvc.VisualBasic.Controller.tt" Name="Controller.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddController\Controller.tt" KeyPath="yes" />
+													</Component>
+												</Directory>
+												<Directory Id="AspNetMvcVisualBasicAddViewTemplates" Name="AddView">
+													<Directory Id="AspNetMvcAddViewAspxVisualBasicTemplates" Name="AspxVisualBasic">
+														<Component Id="AspNetMvcAspxVisualBasicCreateTemplate" Guid="8AD83D56-7243-447F-9754-211B1B01CDA4" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicDeleteTemplate" Guid="216C98E8-9230-4DE8-BCA9-FFE102855086" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicDetailsTemplate" Guid="D28A3F26-2C94-446B-931C-AC9BC1CE7630" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicEditTemplate" Guid="A8DB75CC-A862-410C-9D23-838C949C384E" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicEmptyTemplate" Guid="8869AD33-91FA-40A5-916F-6CEC75B0C24B" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcAspxVisualBasicListTemplate" Guid="467B5C1F-6049-4959-9644-324C8B864F8D" DiskId="1">
+															<File Id="Asp.Net.Mvc.Aspx.VisualBasic.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\AspxVisualBasic\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+													<Directory Id="AspNetMvcAddViewVisualBasicRazorTemplates" Name="VBHTML">
+														<Component Id="AspNetMvcRazorVisualBasicCreateTemplate" Guid="BE295D71-42BE-4BE1-8176-AB986A70E05F" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Create.tt" Name="Create.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Create.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicDeleteTemplate" Guid="5953BC09-0E95-433D-AFD9-E941FB5A5D7E" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Delete.tt" Name="Delete.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Delete.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicDetailsTemplate" Guid="7BE25182-E032-49C5-AFC4-48CA5265F36C" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Details.tt" Name="Details.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Details.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicEditTemplate" Guid="79751B4D-9B92-41AB-A3B5-44765CE14104" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Edit.tt" Name="Edit.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Edit.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicEmptyTemplate" Guid="8DCDA6A0-214F-4E71-9D83-F9DD713E3A99" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.Empty.tt" Name="Empty.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\Empty.tt" KeyPath="yes" />
+														</Component>
+														<Component Id="AspNetMvcRazorVisualBasicListTemplate" Guid="215BCC21-6976-4358-9E54-E0D6CB4BDE66" DiskId="1">
+															<File Id="Asp.Net.Mvc.Razor.VisualBasic.List.tt" Name="List.tt" Source="..\..\AddIns\BackendBindings\AspNet.Mvc\ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML\List.tt" KeyPath="yes" />
+														</Component>
+													</Directory>
+												</Directory>
+											</Directory>
+										</Directory>
+									</Directory>
+								</Directory>
+								<Directory Id="JavaScriptBinding" Name="JavaScriptBinding">
+									<Component Id="Antlr3RuntimeDll" Guid="CD73166D-0ACB-4A3D-8023-06DAC6CB903A" DiskId="1">
+										<File Id="Antlr3.Runtime.dll" Name="Antlr3.Runtime.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\Antlr3.Runtime.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Antlr3.Runtime.dll" AssemblyManifest="Antlr3.Runtime.dll" />
+									</Component>
+									<Component Id="JavaScriptBindingAddin" Guid="36874185-9C8E-4E3D-BC22-FAF59EA52B1A" DiskId="1">
+										<File Id="JavaScriptBinding.addin" Name="JavaScriptBinding.addin" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\JavaScriptBinding.addin" KeyPath="yes" />
+									</Component>
+									<Component Id="JavaScriptBindingDll" Guid="A1EC7B85-0DFB-4CCD-8A60-49A481F0FAEC" DiskId="1">
+										<File Id="JavaScriptBinding.dll" Name="JavaScriptBinding.dll" Source="..\..\AddIns\BackendBindings\JavaScriptBinding\JavaScriptBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="JavaScriptBinding.dll" AssemblyManifest="JavaScriptBinding.dll" />
+									</Component>
 								</Directory>
 							</Directory>
 							<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">

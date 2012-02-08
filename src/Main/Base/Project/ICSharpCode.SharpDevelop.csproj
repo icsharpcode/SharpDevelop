@@ -60,6 +60,9 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -525,6 +528,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ProjectReferencePanel.cs">
       <SubType>Component</SubType>
+      <DependentUpon>SelectReferenceDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.cs">
       <SubType>Form</SubType>

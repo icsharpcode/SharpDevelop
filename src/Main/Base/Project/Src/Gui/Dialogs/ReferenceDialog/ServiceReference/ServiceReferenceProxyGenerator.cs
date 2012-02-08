@@ -26,7 +26,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.codeDomBuilder = codeDomBuilder;
 		}
 		
-		public string ServiceReferenceNamespace { get; set; }
+		public string ServiceReferenceNamespace {
+			get { return codeDomBuilder.Namespace; }
+			set { codeDomBuilder.Namespace = value; }
+		}
 		
 		public void GenerateProxyFile(MetadataSet metadata, string proxyFileName)
 		{

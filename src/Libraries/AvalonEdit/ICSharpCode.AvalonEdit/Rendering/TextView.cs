@@ -115,7 +115,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
 				formatter = TextFormatterFactory.Create(this);
-				heightTree = new HeightTree(newValue, DefaultLineHeight); // measuring DefaultLineHeight depends on formatter
+				InvalidateDefaultTextMetrics(); // measuring DefaultLineHeight depends on formatter
+				heightTree = new HeightTree(newValue, DefaultLineHeight);
 				cachedElements = new TextViewCachedElements();
 			}
 			InvalidateMeasure(DispatcherPriority.Normal);
@@ -1369,29 +1370,64 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			OnScrollChange();
 		}
 		
+		bool defaultTextMetricsValid;
 		double wideSpaceWidth; // Width of an 'x'. Used as basis for the tab width, and for scrolling.
 		double defaultLineHeight; // Height of a line containing 'x'. Used for scrolling.
+		double defaultBaseline; // Baseline of a line containing 'x'. Used for TextTop/TextBottom calculation.
 		
-		internal double WideSpaceWidth {
+		/// <summary>
+		/// Gets the width of a 'wide space' (the space width used for calculating the tab size).
+		/// </summary>
+		/// <remarks>
+		/// This is the width of an 'x' in the current font.
+		/// We do not measure the width of an actual space as that would lead to tiny tabs in
+		/// some proportional fonts.
+		/// For monospaced fonts, this property will return the expected value, as 'x' and ' ' have the same width.
+		/// </remarks>
+		public double WideSpaceWidth {
 			get {
-				if (wideSpaceWidth == 0) {
-					MeasureWideSpaceWidthAndDefaultLineHeight();
-				}
+				CalculateDefaultTextMetrics();
 				return wideSpaceWidth;
 			}
 		}
 		
-		double DefaultLineHeight {
+		/// <summary>
+		/// Gets the default line height. This is the height of an empty line or a line containing regular text.
+		/// Lines that include formatted text or custom UI elements may have a different line height.
+		/// </summary>
+		public double DefaultLineHeight {
 			get {
-				if (defaultLineHeight == 0) {
-					MeasureWideSpaceWidthAndDefaultLineHeight();
-				}
+				CalculateDefaultTextMetrics();
 				return defaultLineHeight;
 			}
 		}
 		
-		void MeasureWideSpaceWidthAndDefaultLineHeight()
+		/// <summary>
+		/// Gets the default baseline position. This is the difference between <see cref="VisualYPosition.TextTop"/>
+		/// and <see cref="VisualYPosition.Baseline"/> for a line containing regular text.
+		/// Lines that include formatted text or custom UI elements may have a different baseline.
+		/// </summary>
+		public double DefaultBaseline {
+			get {
+				CalculateDefaultTextMetrics();
+				return defaultBaseline;
+			}
+		}
+		
+		void InvalidateDefaultTextMetrics()
 		{
+			defaultTextMetricsValid = false;
+			if (heightTree != null) {
+				// calculate immediately so that height tree gets updated
+				CalculateDefaultTextMetrics();
+			}
+		}
+		
+		void CalculateDefaultTextMetrics()
+		{
+			if (defaultTextMetricsValid)
+				return;
+			defaultTextMetricsValid = true;
 			if (formatter != null) {
 				var textRunProperties = CreateGlobalTextRunProperties();
 				using (var line = formatter.FormatLine(
@@ -1401,10 +1437,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					null))
 				{
 					wideSpaceWidth = Math.Max(1, line.WidthIncludingTrailingWhitespace);
+					defaultBaseline = Math.Max(1, line.Baseline);
 					defaultLineHeight = Math.Max(1, line.Height);
 				}
 			} else {
 				wideSpaceWidth = FontSize / 2;
+				defaultBaseline = FontSize;
 				defaultLineHeight = FontSize + 3;
 			}
 			// Update heightTree.DefaultLineHeight, if a document is loaded.
@@ -1831,7 +1869,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// changing text formatter requires recreating the cached elements
 				RecreateCachedElements();
 				// and we need to re-measure the font metrics:
-				MeasureWideSpaceWidthAndDefaultLineHeight();
+				InvalidateDefaultTextMetrics();
 			} else if (e.Property == Control.ForegroundProperty
 			           || e.Property == TextView.NonPrintableCharacterBrushProperty)
 			{
@@ -1848,7 +1886,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// changing font properties requires recreating cached elements
 				RecreateCachedElements();
 				// and we need to re-measure the font metrics:
-				MeasureWideSpaceWidthAndDefaultLineHeight();
+				InvalidateDefaultTextMetrics();
 				Redraw();
 			}
 		}

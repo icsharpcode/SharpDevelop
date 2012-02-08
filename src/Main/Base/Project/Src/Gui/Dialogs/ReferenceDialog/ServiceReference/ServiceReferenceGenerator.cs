@@ -43,6 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public void AddServiceReference(MetadataSet metadata)
 		{
 			GenerateServiceReferenceProxy(metadata);
+			project.AddAssemblyReference("System.ServiceModel");
+			project.Save();
 		}
 		
 		void GenerateServiceReferenceProxy(MetadataSet metadata)
@@ -50,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(Namespace);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
+			fileGenerator.ServiceReferenceNamespace = Namespace;
 			fileGenerator.GenerateProxyFile(metadata, referenceFileName.Path);
 			
 			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(Namespace);
@@ -58,8 +61,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			
 			project.AddServiceReferenceProxyFile(referenceFileName);
 			project.AddServiceReferenceMapFile(mapFileName);
-			
-			project.Save();
 		}
 		
 		void CreateFolderForFileIfFolderMissing(string fileName)

@@ -262,8 +262,14 @@ Descargue un complemento de Internet, luego haga clic en 'Instalar Complemento' 
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Modo de Ayuda</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>No se encontró Help Library Manager. Por favor verifique que halla sido instalado correctamente.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Catálogos de Ayuda Instalados</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Ejecutar Help Library Manager</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Visor de Ayuda de Microsoft</value>

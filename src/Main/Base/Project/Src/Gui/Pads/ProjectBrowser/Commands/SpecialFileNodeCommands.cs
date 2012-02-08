@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				return;
 			}
 			
-			if (!WebProjectService.IsIISInstalled) {
+			if (!WebProjectService.IsIISOrIISExpressInstalled) {
 				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.IISNotFound}");
 				return;
 			}
@@ -43,11 +43,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			// set web server options
 			string projectName = project.Name;
-			var existingOptions = WebProjectsOptions.Instance.GetWebProjectOptions(projectName);
+			WebProjectOptions existingOptions = WebProjectsOptions.Instance.GetWebProjectOptions(projectName);
 				
 			var options = new WebProjectOptions {
 				Data = new WebProjectDebugData {
-					WebServer = WebProjectService.IISVersion == IISVersion.IISExpress ? WebServer.IISExpress : WebServer.IIS,
+					WebServer = WebProjectService.IsIISExpressInstalled ? WebServer.IISExpress : WebServer.IIS,
 					Port = (existingOptions != null && existingOptions.Data != null) ? existingOptions.Data.Port : "8080", //TODO: port collision detection
 					ProjectUrl = string.Format("{0}/{1}", CompilableProject.LocalHost, project.Name)				
 				},
@@ -63,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			// create virtual directory
 			string error = WebProjectService.CreateVirtualDirectory(
+				options.Data.WebServer,
 				projectName,
 				Path.GetDirectoryName(ProjectService.CurrentProject.FileName));
 			LoggingService.Info(error ?? string.Empty);

@@ -62,8 +62,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 						lineNumber.ToString(CultureInfo.CurrentCulture),
 						typeface, emSize, foreground
 					);
-					drawingContext.DrawText(text, new Point(renderSize.Width - text.Width,
-					                                        line.VisualTop - textView.VerticalOffset));
+					double y = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextTop);
+					drawingContext.DrawText(text, new Point(renderSize.Width - text.Width, y - textView.VerticalOffset));
 				}
 			}
 		}

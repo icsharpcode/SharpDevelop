@@ -118,6 +118,8 @@ namespace Debugger.AddIn.TreeModel
 		public TreeNode(IImage iconImage, string name, string text, string type, TreeNode parent, Func<TreeNode, IEnumerable<TreeNode>> childNodes)
 			: this(parent)
 		{
+			if (childNodes == null)
+				throw new ArgumentNullException("childNodes");
 			this.iconImage = iconImage;
 			this.name = name;
 			this.text = text;
@@ -125,6 +127,21 @@ namespace Debugger.AddIn.TreeModel
 			this.childNodes = childNodes(this);
 		}
 		
+		#region Equals and GetHashCode implementation
+		public override bool Equals(object obj)
+		{
+			TreeNode other = obj as TreeNode;
+			if (other == null)
+				return false;
+			return this.FullName == other.FullName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return this.FullName.GetHashCode();
+		}
+		#endregion
+
 		public int CompareTo(ITreeNode other)
 		{
 			return this.FullName.CompareTo(other.FullName);

@@ -4,6 +4,8 @@
 using System;
 using System.CodeDom.Compiler;
 using System.IO;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
@@ -95,6 +97,31 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			var projectItem = new ServiceReferenceMapFileProjectItem(project, fileName.Path);
 			AddProjectItemToProject(projectItem);
+		}
+		
+		public void AddAssemblyReference(string referenceName)
+		{
+			if (!AssemblyReferenceExists(referenceName)) {
+				var projectItem = new ReferenceProjectItem(project, referenceName);
+				AddProjectItemToProject(projectItem);
+			}
+		}
+		
+		bool AssemblyReferenceExists(string referenceName)
+		{
+			return project
+				.GetItemsOfType(ItemType.Reference)
+				.Any(item => IsAssemblyReferenceMatch((ReferenceProjectItem)item, referenceName));
+		}
+		
+		bool IsAssemblyReferenceMatch(ReferenceProjectItem item, string referenceName)
+		{
+			return IsMatchIgnoringCase(item.AssemblyName.ShortName, referenceName);
+		}
+		
+		static bool IsMatchIgnoringCase(string a, string b)
+		{
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

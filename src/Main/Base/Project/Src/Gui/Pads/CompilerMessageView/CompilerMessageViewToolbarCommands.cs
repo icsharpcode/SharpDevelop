@@ -71,7 +71,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class ToggleMessageViewWordWrap : AbstractCheckableMenuCommand
 	{
-
 		public override bool IsChecked {
 			get {
 				return CompilerMessageView.Instance.WordWrap;

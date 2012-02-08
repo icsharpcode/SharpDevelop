@@ -54,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				for (int i = segmentsToDelete.Length - 1; i >= 0; i--) {
 					if (i == segmentsToDelete.Length - 1) {
 						if (segmentsToDelete[i].Offset == SurroundingSegment.Offset && segmentsToDelete[i].Length == SurroundingSegment.Length) {
-							newText = AddSpacesIfRequired(newText, start);
+							newText = AddSpacesIfRequired(newText, start, end);
 						}
 						int vc = textArea.Caret.VisualColumn;
 						textArea.Caret.Offset = segmentsToDelete[i].EndOffset;

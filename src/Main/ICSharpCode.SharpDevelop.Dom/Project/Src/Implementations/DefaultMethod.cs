@@ -113,9 +113,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 					b.Append('(');
 					for (int i = 0; i < paras.Count; ++i) {
 						if (i > 0) b.Append(',');
-						IReturnType rt = paras[i].ReturnType;
+						var para = paras[i];
+						IReturnType rt = para.ReturnType;
 						if (rt != null) {
 							b.Append(rt.DotNetName);
+						}
+						if (para.IsOut || para.IsRef) {
+							b.Append('@');
 						}
 					}
 					b.Append(')');

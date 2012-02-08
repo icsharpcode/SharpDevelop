@@ -1,11 +1,11 @@
 ﻿<UserControl x:Class="ICSharpCode.Data.SQLServer.ControlPanel.SQLServerControlPanel"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="clr-namespace:ICSharpCode.Data.SQLServer.Converters"
+    xmlns:core="http://icsharpcode.net/sharpdevelop/core"
     x:Name="This">
     <UserControl.Resources>
         <ResourceDictionary>
-            <converters:OppositeBoolConverter x:Key="OppositeBoolConverter" />
+            <core:NotBoolConverter x:Key="OppositeBoolConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>

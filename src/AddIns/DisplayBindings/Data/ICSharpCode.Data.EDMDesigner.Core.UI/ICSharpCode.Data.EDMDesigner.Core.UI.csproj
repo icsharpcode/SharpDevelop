@@ -103,7 +103,6 @@
     <Compile Include="Converters\IUITypeToBackgroundConverter.cs" />
     <Compile Include="Converters\IUITypeToBorderBrushConverter.cs" />
     <Compile Include="Converters\MenuSeparatorToMenuSeparatorVisibilityConverter.cs" />
-    <Compile Include="Converters\NotBoolConverter.cs" />
     <Compile Include="Converters\ObjectToVisibilityConverter.cs" />
     <Compile Include="Converters\RelationToXYConverterBase.cs" />
     <Compile Include="Converters\ExpanderHeightConverter.cs" />

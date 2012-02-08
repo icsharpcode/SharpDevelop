@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -29,7 +30,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		protected new readonly IUnresolvedMember unresolved;
 		protected readonly ITypeResolveContext context;
 		volatile IType returnType;
-		
+		IList<IMember> interfaceImplementations;
+			
 		protected AbstractResolvedMember(IUnresolvedMember unresolved, ITypeResolveContext parentContext)
 			: base(unresolved, parentContext)
 		{
@@ -47,8 +49,27 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public IUnresolvedMember UnresolvedMember {
+			get { return unresolved; }
+		}
+		
 		public IList<IMember> InterfaceImplementations {
 			get {
+				IList<IMember> result = this.interfaceImplementations;
+				if (result != null) {
+					LazyInit.ReadBarrier();
+					return result;
+				} else {
+					return LazyInit.GetOrSet(ref interfaceImplementations, FindInterfaceImplementations());
+				}
+			}
+		}
+		
+		IList<IMember> FindInterfaceImplementations()
+		{
+			if (unresolved.IsExplicitInterfaceImplementation) {
+				return unresolved.ExplicitInterfaceImplementations.Resolve(context);
+			} else {
 				throw new NotImplementedException();
 			}
 		}
@@ -72,6 +93,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IMemberReference ToMemberReference()
 		{
 			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
+		}
+		
+		internal IMethod GetAccessor(ref IMethod accessorField, IUnresolvedMethod unresolvedAccessor)
+		{
+			if (unresolvedAccessor == null)
+				return null;
+			IMethod result = accessorField;
+			if (result != null) {
+				LazyInit.ReadBarrier();
+				return result;
+			} else {
+				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));
+			}
 		}
 	}
 }

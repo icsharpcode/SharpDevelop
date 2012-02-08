@@ -24,13 +24,13 @@ namespace SharpRefactoring.Gui
 		string baseCall;
 		string insertedCode;
 		
-		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields, string baseCall)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<PropertyOrFieldWrapper> fields, string baseCall)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
 			this.baseCall = baseCall;
-			this.listBox.ItemsSource = fields.Where(f => f.ReturnType != null).Select(f => new PropertyOrFieldWrapper(f)).ToList();
+			this.listBox.ItemsSource = fields;
 			
 			listBox.SelectAll();
 		}

@@ -1,0 +1,32 @@
+﻿<AddIn
+	name="Python Binding"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="Language binding for JavaScript"
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.JavaScript"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="JavaScriptBinding.dll"/>
+	</Runtime>
+	
+	<!-- JavaScript parser -->
+	<Path name="/Workspace/Parser">
+		<Parser
+			id="JavaScript"
+			supportedextensions=".js"
+			projectfileextension=".csproj"
+			class="ICSharpCode.JavaScriptBinding.JavaScriptParser"/>
+	</Path>
+	
+	<Path name="/Workspace/Icons">
+		<Icon
+			id="JavaScript.File"
+			extensions=".js"
+			resource="JScript.FileIcon"/>
+	</Path>
+</AddIn>

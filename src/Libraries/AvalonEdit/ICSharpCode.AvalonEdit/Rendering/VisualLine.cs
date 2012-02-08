@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Utils;
 using System;
@@ -268,7 +269,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						case VisualYPosition.LineBottom:
 							return pos + tl.Height;
 						case VisualYPosition.TextTop:
-							return pos + tl.Height - textView.FontSize;
+							return pos + tl.Baseline - textView.DefaultBaseline;
+						case VisualYPosition.TextBottom:
+							return pos + tl.Baseline - textView.DefaultBaseline + textView.DefaultLineHeight;
+						case VisualYPosition.TextMiddle:
+							return pos + tl.Baseline - textView.DefaultBaseline + textView.DefaultLineHeight / 2;
+						case VisualYPosition.Baseline:
+							return pos + tl.Baseline;
 						default:
 							throw new ArgumentException("Invalid yPositionMode:" + yPositionMode);
 					}
@@ -446,6 +453,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode, bool allowVirtualSpace)
 		{
+			if (!HasStopsInVirtualSpace(mode))
+				allowVirtualSpace = false;
+			
 			if (elements.Count == 0) {
 				// special handling for empty visual lines:
 				if (allowVirtualSpace) {
@@ -524,6 +534,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 			// we've found nothing, return -1 and let the caret search continue in the next line
 			return -1;
+		}
+		
+		static bool HasStopsInVirtualSpace(CaretPositioningMode mode)
+		{
+			return mode == CaretPositioningMode.Normal;
 		}
 		
 		static bool HasImplicitStopAtLineStart(CaretPositioningMode mode)

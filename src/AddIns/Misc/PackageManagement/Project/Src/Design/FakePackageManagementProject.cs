@@ -62,11 +62,13 @@ namespace ICSharpCode.PackageManagement.Design
 		public List<FakePackageOperation> FakeInstallOperations = new List<FakePackageOperation>();
 		public IPackage PackagePassedToGetInstallPackageOperations;
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
+		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 		
-		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public virtual IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
-			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
+			IgnoreDependenciesPassedToGetInstallPackageOperations = installAction.IgnoreDependencies;
+			AllowPrereleaseVersionsPassedToGetInstallPackageOperations = installAction.AllowPrereleaseVersions;
 			
 			return FakeInstallOperations;
 		}
@@ -76,12 +78,14 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackage PackagePassedToInstallPackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
 		public bool IgnoreDependenciesPassedToInstallPackage;
+		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
+		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
 			PackagePassedToInstallPackage = package;
-			PackageOperationsPassedToInstallPackage = operations;
-			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
+			PackageOperationsPassedToInstallPackage = installAction.Operations;
+			IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
+			AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
 		}
 		
 		public FakePackageOperation AddFakeInstallOperation()
@@ -110,23 +114,25 @@ namespace ICSharpCode.PackageManagement.Design
 		public bool ForceRemovePassedToUninstallPackage;
 		public bool RemoveDependenciesPassedToUninstallPackage;
 		
-		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
+		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
 		{
 			PackagePassedToUninstallPackage = package;
-			ForceRemovePassedToUninstallPackage = forceRemove;
-			RemoveDependenciesPassedToUninstallPackage = removeDependencies;
+			ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
+			RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
 		}
 		
 		public IPackage PackagePassedToUpdatePackage;
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
 		public bool UpdateDependenciesPassedToUpdatePackage;
+		public bool AllowPrereleaseVersionsPassedToUpdatePackage;
 		public bool IsUpdatePackageCalled;
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
+		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
 			PackagePassedToUpdatePackage = package;
-			PackageOperationsPassedToUpdatePackage = operations;
-			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+			PackageOperationsPassedToUpdatePackage = updateAction.Operations;
+			UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
+			AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
 			IsUpdatePackageCalled = true;
 		}
 		

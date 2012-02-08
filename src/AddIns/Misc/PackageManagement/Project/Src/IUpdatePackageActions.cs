@@ -10,6 +10,7 @@ namespace ICSharpCode.PackageManagement
 	public interface IUpdatePackageActions
 	{
 		bool UpdateDependencies { get; set; }
+		bool AllowPrereleaseVersions { get; set; }
 		IPackageScriptRunner PackageScriptRunner { get; set; }
 		
 		IEnumerable<UpdatePackageAction> CreateActions();

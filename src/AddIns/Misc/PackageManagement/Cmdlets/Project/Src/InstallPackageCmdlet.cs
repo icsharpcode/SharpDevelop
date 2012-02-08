@@ -33,13 +33,16 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		public string ProjectName { get; set; }
 		
 		[Parameter(Position = 2)]
-		public Version Version { get; set; }
+		public SemanticVersion Version { get; set; }
 		
 		[Parameter(Position = 3)]
 		public string Source { get; set; }
 		
 		[Parameter]
 		public SwitchParameter IgnoreDependencies { get; set; }
+		
+		[Parameter, Alias("Prerelease")]
+		public SwitchParameter IncludePrerelease { get; set; }
 		
 		protected override void ProcessRecord()
 		{
@@ -65,6 +68,7 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 			action.PackageId = Id;
 			action.PackageVersion = Version;
 			action.IgnoreDependencies = IgnoreDependencies.IsPresent;
+			action.AllowPrereleaseVersions = IncludePrerelease.IsPresent;
 			action.PackageScriptRunner = this;
 			return action;
 		}

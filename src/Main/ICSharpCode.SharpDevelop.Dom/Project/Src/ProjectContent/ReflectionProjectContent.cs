@@ -19,20 +19,62 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string assemblyLocation;
 		ProjectContentRegistry registry;
 		
+		/// <summary>
+		/// Gets the file path to the (reference) assembly.
+		/// </summary>
 		public string AssemblyLocation {
 			get {
 				return assemblyLocation;
 			}
 		}
 		
+		/// <summary>
+		/// Gets the full assembly name (e.g. "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")
+		/// </summary>
 		public string AssemblyFullName {
 			get {
 				return assemblyFullName;
 			}
 		}
 		
+		/// <summary>
+		/// Gets the short assembly name (e.g. "System")
+		/// </summary>
 		public override string AssemblyName {
 			get { return assemblyName; }
+		}
+		
+		volatile string assemblyLocationInGAC;
+		
+		string GetAssemblyLocationInGAC()
+		{
+			if (assemblyLocationInGAC == null) {
+				assemblyLocationInGAC = GacInterop.FindAssemblyInNetGac(new DomAssemblyName(assemblyFullName)) ?? string.Empty;
+			}
+			return assemblyLocationInGAC;
+		}
+		
+		/// <summary>
+		/// Gets the real assembly location.
+		/// For reference assemblies of GAC assemblies, this is the assembly in the GAC.
+		/// Otherwise, this is the same as AssemblyLocation.
+		/// </summary>
+		public string RealAssemblyLocation {
+			get {
+				string gacAssembly = GetAssemblyLocationInGAC();
+				if (string.IsNullOrEmpty(gacAssembly))
+					return this.AssemblyLocation;
+				else
+					return gacAssembly;
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether this assembly is available in the GAC.
+		/// This property also returns true for reference assemblies when the corresponding real assembly is available in the GAC.
+		/// </summary>
+		public bool IsGacAssembly {
+			get { return !string.IsNullOrEmpty(GetAssemblyLocationInGAC()); }
 		}
 		
 		/// <summary>

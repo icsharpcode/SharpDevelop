@@ -44,16 +44,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				window.SourceInitialized += delegate {
 					bounds = Validate(bounds.TransformToDevice(window).ToSystemDrawing())
 						.ToWpf().TransformFromDevice(window);
+					window.Left = bounds.X;
+					window.Top = bounds.Y;
+					window.Width = bounds.Width;
+					window.Height = bounds.Height;
 				};
-				window.Left = bounds.X;
-				window.Top = bounds.Y;
-				window.Width = bounds.Width;
-				window.Height = bounds.Height;
 			} else {
-				Size size = new Size(window.ActualWidth, window.ActualHeight);
-				Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
-				location.Offset(ownerLocation.X, ownerLocation.Y);
 				window.SourceInitialized += delegate {
+					Size size = new Size(window.ActualWidth, window.ActualHeight);
+					Point location = PropertyService.Get(propertyName, GetDefaultLocation(window));
+					location.Offset(ownerLocation.X, ownerLocation.Y);
 					var bounds = Validate(new Rect(location, size).TransformToDevice(window).ToSystemDrawing())
 						.ToWpf().TransformFromDevice(window);
 					window.Left = bounds.X;

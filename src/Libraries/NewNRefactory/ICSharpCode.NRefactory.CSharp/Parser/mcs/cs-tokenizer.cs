@@ -324,7 +324,7 @@ namespace Mono.CSharp
 			escaped_identifiers.Add (loc);
 		}
 
-		public bool IsEscapedIdentifier (MemberName name)
+		public bool IsEscapedIdentifier (ATypeNameExpression name)
 		{
 			return escaped_identifiers != null && escaped_identifiers.Contains (name.Location);
 		}
@@ -1514,6 +1514,7 @@ namespace Mono.CSharp
 #endif
 			number_pos = 0;
 			var loc = Location;
+			bool hasLeadingDot = c == '.';
 
 			if (c >= '0' && c <= '9'){
 				if (c == '0'){
@@ -1545,7 +1546,6 @@ namespace Mono.CSharp
 					putback ('.');
 					number_pos--;
 					val = res = adjust_int (-1, loc);
-
 #if FULL_AST
 					res.ParsedValue = reader.ReadChars (read_start, reader.Position - 1);
 #endif
@@ -1595,9 +1595,11 @@ namespace Mono.CSharp
 			}
 
 			val = res;
-
 #if FULL_AST
-			res.ParsedValue = reader.ReadChars (read_start, reader.Position - (type == TypeCode.Empty ? 1 : 0));
+			var endPos = reader.Position - (type == TypeCode.Empty ? 1 : 0);
+			if (reader.GetChar (endPos - 1) == '\r')
+				endPos--;
+			res.ParsedValue = reader.ReadChars (hasLeadingDot ? read_start - 1 : read_start, endPos);
 #endif
 
 			return Token.LITERAL;

@@ -38,7 +38,7 @@ namespace PackageManagement.Tests
 		
 		void AddPackageReference(string packageId, string version)
 		{
-			var packageReference = new PackageReference(packageId, new Version(version), null);
+			var packageReference = new PackageReference(packageId, new SemanticVersion(version), null);
 			packageReferences.Add(packageReference);
 		}
 		
@@ -52,7 +52,7 @@ namespace PackageManagement.Tests
 			var actions = new List<ProcessPackageAction>(fakeActionRunner.ActionsRunInOneCall);
 			var action = actions[0] as InstallPackageAction;
 			
-			var expectedVersion = new Version("1.3.4.5");
+			var expectedVersion = new SemanticVersion("1.3.4.5");
 			
 			Assert.AreEqual("PackageId", action.PackageId);
 			Assert.AreEqual(expectedVersion, action.PackageVersion);

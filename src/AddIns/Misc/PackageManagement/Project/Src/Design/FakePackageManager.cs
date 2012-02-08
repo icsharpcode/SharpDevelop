@@ -18,23 +18,9 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public IPackage PackagePassedToInstallPackage;
 		public bool IgnoreDependenciesPassedToInstallPackage;
-		
-		public InstallPackageParameters ParametersPassedToInstallPackage;
+		public bool AllowPrereleaseVersionsPassedToInstallPackage;
 		
 		public IPackage PackagePassedToUninstallPackage;
-		
-		public struct InstallPackageParameters {
-			public IPackage PackagePassedToInstallPackage;
-			public bool IgnoreDependenciesPassedToInstallPackage;
-			public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
-			
-			public override string ToString()
-			{
-				return String.Format("Package: {0}, IgnoreDependencies: {1}",
-					PackagePassedToInstallPackage,
-					IgnoreDependenciesPassedToInstallPackage);
-			}
-		}
 		
 		#pragma warning disable 67
 		public event EventHandler<PackageOperationEventArgs> PackageInstalled;
@@ -63,59 +49,31 @@ namespace ICSharpCode.PackageManagement.Design
 			SourceRepository = FakeSourceRepository;
 		}
 		
-		public void InstallPackage(IPackage package, bool ignoreDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void InstallPackage(string packageId, Version version, bool ignoreDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public bool ForceRemovePassedToUninstallPackage;
 		public bool RemoveDependenciesPassedToUninstallPackage;
 		
-		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
+		public void UninstallPackage(IPackage package, UninstallPackageAction uninstallAction)
 		{
 			PackagePassedToUninstallPackage = package;
-			ForceRemovePassedToUninstallPackage = forceRemove;
-			RemoveDependenciesPassedToUninstallPackage = removeDependencies;
+			ForceRemovePassedToUninstallPackage = uninstallAction.ForceRemove;
+			RemoveDependenciesPassedToUninstallPackage = uninstallAction.RemoveDependencies;
 			IsRefreshProjectBrowserCalledWhenUninstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
 		
-		public void UninstallPackage(string packageId, Version version, bool forceRemove, bool removeDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UninstallPackage(IPackage package)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackage(IPackage oldPackage, IPackage newPackage, bool updateDependencies)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void UpdatePackage(string packageId, Version version, bool updateDependencies)
+		public void UninstallPackage(IPackage package, bool forceRemove, bool removeDependencies)
 		{
 			throw new NotImplementedException();
 		}
 		
 		public IEnumerable<PackageOperation> PackageOperationsPassedToInstallPackage;
 		
-		public void InstallPackage(IPackage package, IEnumerable<PackageOperation> operations, bool ignoreDependencies)
+		public void InstallPackage(IPackage package, InstallPackageAction installAction)
 		{
 			PackagePassedToInstallPackage = package;
 			
-			ParametersPassedToInstallPackage = new InstallPackageParameters();
-			ParametersPassedToInstallPackage.PackagePassedToInstallPackage = package;
-			ParametersPassedToInstallPackage.PackageOperationsPassedToInstallPackage = operations;
-			
-			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
-			PackageOperationsPassedToInstallPackage = operations;
+			IgnoreDependenciesPassedToInstallPackage = installAction.IgnoreDependencies;
+			PackageOperationsPassedToInstallPackage = installAction.Operations;
+			AllowPrereleaseVersionsPassedToInstallPackage = installAction.AllowPrereleaseVersions;
 			
 			IsRefreshProjectBrowserCalledWhenInstallPackageCalled = FakeProjectService.IsRefreshProjectBrowserCalled;
 		}
@@ -123,11 +81,13 @@ namespace ICSharpCode.PackageManagement.Design
 		public List<PackageOperation> PackageOperationsToReturnFromGetInstallPackageOperations = new List<PackageOperation>();
 		public IPackage PackagePassedToGetInstallPackageOperations;
 		public bool IgnoreDependenciesPassedToGetInstallPackageOperations;
+		public bool AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
 		
-		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			PackagePassedToGetInstallPackageOperations = package;
-			IgnoreDependenciesPassedToGetInstallPackageOperations = ignoreDependencies;
+			IgnoreDependenciesPassedToGetInstallPackageOperations = installAction.IgnoreDependencies;
+			AllowPrereleaseVersionsPassedToGetInstallPackageOperations = installAction.AllowPrereleaseVersions;
 			return PackageOperationsToReturnFromGetInstallPackageOperations;
 		}
 		
@@ -135,11 +95,12 @@ namespace ICSharpCode.PackageManagement.Design
 		public IEnumerable<PackageOperation> PackageOperationsPassedToUpdatePackage;
 		public bool UpdateDependenciesPassedToUpdatePackage;
 		
-		public void UpdatePackage(IPackage package, IEnumerable<PackageOperation> operations, bool updateDependencies)
+		public void UpdatePackage(IPackage package, UpdatePackageAction updateAction)
 		{
 			PackagePassedToUpdatePackage = package;
-			PackageOperationsPassedToUpdatePackage = operations;
-			UpdateDependenciesPassedToUpdatePackage = updateDependencies;
+			PackageOperationsPassedToUpdatePackage = updateAction.Operations;
+			UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
+			AllowPrereleaseVersionsPassedToInstallPackage = updateAction.AllowPrereleaseVersions;
 		}
 		
 		public void FirePackageInstalled(PackageOperationEventArgs e)
@@ -164,6 +125,36 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void InstallPackage(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void InstallPackage(string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackage(IPackage newPackage, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackage(string packageId, SemanticVersion version, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
 		{
 			throw new NotImplementedException();
 		}

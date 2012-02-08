@@ -100,7 +100,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					int lineNumber = line.FirstDocumentLine.LineNumber;
 					IBookmark bm;
 					if (bookmarkDict.TryGetValue(lineNumber, out bm)) {
-						Rect rect = new Rect(0, PixelSnapHelpers.Round(line.VisualTop - textView.VerticalOffset, pixelSize.Height), 16, 16);
+						double lineMiddle = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextMiddle) - textView.VerticalOffset;
+						Rect rect = new Rect(0, PixelSnapHelpers.Round(lineMiddle - 8, pixelSize.Height), 16, 16);
 						if (dragDropBookmark == bm && dragStarted)
 							drawingContext.PushOpacity(0.5);
 						drawingContext.DrawImage((bm.Image ?? BookmarkBase.DefaultBookmarkImage).ImageSource, rect);

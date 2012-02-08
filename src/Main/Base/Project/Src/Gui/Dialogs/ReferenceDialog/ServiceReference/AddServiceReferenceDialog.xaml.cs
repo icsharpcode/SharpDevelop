@@ -14,6 +14,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			InitializeComponent();
 		}
 		
+		void UrlComboBoxLoaded(object sender, RoutedEventArgs e)
+		{
+			TextBox textBox = UrlComboBox.Template.FindName("PART_EditableTextBox", UrlComboBox) as TextBox;
+			textBox.Focus();
+		}
+		
 		void okButtonClick(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = true;

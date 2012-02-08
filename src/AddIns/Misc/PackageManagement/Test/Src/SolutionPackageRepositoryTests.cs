@@ -65,6 +65,12 @@ namespace PackageManagement.Tests
 			return sharedRepository.AddFakePackage(packageId);
 		}
 		
+		FakePackage AddPackageToSharedRepository(string packageId, string version)
+		{
+			FakeSharedPackageRepository sharedRepository = fakeRepositoryFactory.FakeSharedRepository;
+			return sharedRepository.AddFakePackageWithVersion(packageId, version);
+		}
+		
 		[Test]
 		public void GetInstallPath_GetInstallPathForPackage_ReturnsPackagePathInsideSolutionPackagesRepository()
 		{
@@ -101,8 +107,7 @@ namespace PackageManagement.Tests
 		{
 			CreateSolution(@"d:\projects\myproject\myproject.sln");
 			CreateRepository(solution);
-			FakePackage package = AddPackageToSharedRepository("Test");
-			package.Version = new Version("1.0");
+			FakePackage package = AddPackageToSharedRepository("Test", "1.0");
 						
 			List<IPackage> actualPackages = repository.GetPackagesByDependencyOrder().ToList();
 			

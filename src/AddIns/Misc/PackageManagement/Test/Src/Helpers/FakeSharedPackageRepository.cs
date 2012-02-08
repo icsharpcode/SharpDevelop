@@ -15,9 +15,9 @@ namespace PackageManagement.Tests.Helpers
 		
 		public List<string> PackageIdsReferences = new List<string>();
 		public string PackageIdPassedToIsReferenced;
-		public Version VersionPassedToIsReferenced;
+		public SemanticVersion VersionPassedToIsReferenced;
 		
-		public bool IsReferenced(string packageId, Version version)
+		public bool IsReferenced(string packageId, SemanticVersion version)
 		{
 			PackageIdPassedToIsReferenced = packageId;
 			VersionPassedToIsReferenced = version;

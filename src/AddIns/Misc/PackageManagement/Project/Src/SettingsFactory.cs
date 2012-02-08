@@ -11,7 +11,7 @@ namespace ICSharpCode.PackageManagement
 		public ISettings CreateSettings(string directory)
 		{
 			var fileSystem = new PhysicalFileSystem(directory);
-			return new UserSettings(fileSystem);
+			return new Settings(fileSystem);
 		}
 	}
 }

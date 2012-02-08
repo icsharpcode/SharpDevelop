@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WebService.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>ASP.NET</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VBNet.Project.WebService</Icon>
 		<Description>${res:Templates.Project.WebService.Description}</Description>
 	</TemplateConfiguration>
 

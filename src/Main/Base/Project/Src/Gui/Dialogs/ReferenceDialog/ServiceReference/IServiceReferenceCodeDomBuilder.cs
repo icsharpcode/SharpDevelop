@@ -9,7 +9,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public interface IServiceReferenceCodeDomBuilder
 	{
+		string Namespace { get; set; }
 		CodeCompileUnit GenerateCompileUnit(MetadataSet metadata);
-		
 	}
 }

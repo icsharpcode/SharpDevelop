@@ -1,0 +1,8 @@
+XML Editor Icons are taken from
+Fugue Icons Library:
+License: Creative Commons Attribution 3.0 License
+http://p.yusukekamiyamane.com/
+
+Icons created by the SharpDevelop Team:
+XmlCommentTreeNodeIcon.png
+XmlElementTreeNodeIcon.png

@@ -48,5 +48,17 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			
 			fakeCodeDomProvider.AssertWasCalled(p => p.GenerateCodeFromCompileUnit(compileUnit, expectedProxyFileName));
 		}
+		
+		[Test]
+		public void GenerateProxyFile_ProxyToBeGeneratedForMetadata_NamespaceUsedWhenGeneratingCodeDom()
+		{
+			CreateProxyGenerator();
+			CreateCompileUnitToReturnFromCodeDomBuilder(metadata);
+			proxyGenerator.ServiceReferenceNamespace = "Test";
+			
+			proxyGenerator.GenerateProxyFile(metadata, "Reference.cs");
+			
+			Assert.AreEqual("Test", fakeCodeDomBuilder.Namespace);
+		}
 	}
 }

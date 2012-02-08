@@ -82,6 +82,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			if (String.IsNullOrEmpty(SelectedService)) {
 				MessageBox.Show(noUrl);
+				return;
 			}
 			ServiceDescriptionMessage = waitMessage;
 			Uri uri = new Uri(SelectedService);
@@ -169,13 +170,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 					if (!state.Credential.IsDefaultAuthenticationType) {
 						AddCredential(state.Uri, state.Credential);
 					}
-					handler (protocol);
+					handler(protocol);
 				} catch (Exception ex) {
 					if (protocol.IsAuthenticationRequired) {
 						HttpAuthenticationHeader authHeader = protocol.GetAuthenticationHeader();
 						AuthenticationHandler authHandler = new AuthenticationHandler(AuthenticateUser);
 //	trouble					Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
 					} else {
+						ServiceDescriptionMessage = ex.Message;
 						LoggingService.Error("DiscoveryCompleted", ex);
 //	trouble					Invoke(handler, new object[] {null});
 					}

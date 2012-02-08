@@ -39,11 +39,11 @@ namespace Debugger.AddIn
 					
 					string language = ProjectService.CurrentProject.Language;
 					
-					TextNode text = new TextNode(null, input,
-					                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
+					var text = new TextNode(null, input,
+					                        language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp).ToSharpTreeNode();
 					var list = pad.WatchList;
 					
-					if(!list.WatchItems.ContainsItem(text))
+					if(!list.WatchItems.Contains(text))
 						list.WatchItems.Add(text);
 				}
 				
@@ -98,9 +98,9 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var list =  pad.WatchList;
-				if (list.SelectedNode is ExpressionNode) {
-					string text = ((ExpressionNode)list.SelectedNode).FullText;
+				var node =  pad.WatchList.SelectedNode;
+				if (node != null && node.Node is ExpressionNode) {
+					string text = ((ExpressionNode)node.Node).FullText;
 					ClipboardWrapper.SetText(text);
 				}
 			}
@@ -115,12 +115,11 @@ namespace Debugger.AddIn
 			
 			if (owner is WatchPad) {
 				WatchPad pad = (WatchPad)owner;
-
-				var node = pad.WatchList.SelectedNode;
 				
-				if (node == null)
+				if (pad.WatchList.SelectedNode == null)
 					return items.ToArray();
 				
+				var node = pad.WatchList.SelectedNode.Node;
 				
 				while (node.Parent != null && node.Parent.Parent != null)
 				{

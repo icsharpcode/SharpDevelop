@@ -24,10 +24,10 @@ namespace PackageManagement.Tests
 		
 		void CreateUpdatePackageInAllProjects(string packageId)
 		{
-			CreateUpdatePackageInAllProjects(packageId, new Version("1.0"));
+			CreateUpdatePackageInAllProjects(packageId, new SemanticVersion("1.0"));
 		}
 		
-		void CreateUpdatePackageInAllProjects(string packageId, Version version)
+		void CreateUpdatePackageInAllProjects(string packageId, SemanticVersion version)
 		{
 			fakeSolution = new FakePackageManagementSolution();
 			fakeSourceRepository = new FakePackageRepository();
@@ -146,12 +146,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void CreateActions_SolutionHasOneProject_PackageVersionSetInUpdateAction()
 		{
-			var expectedVersion = new Version("1.2.3.4");
+			var expectedVersion = new SemanticVersion("1.2.3.4");
 			CreateUpdatePackageInAllProjects("MyPackage", expectedVersion);
 			AddProjectToSolution("MyProject");
 			CallCreateActions();
 			
-			Version version = FirstUpdateAction.PackageVersion;
+			SemanticVersion version = FirstUpdateAction.PackageVersion;
 			
 			Assert.AreEqual(expectedVersion, version);
 		}
@@ -206,6 +206,32 @@ namespace PackageManagement.Tests
 			bool updateDependencies = FirstUpdateAction.UpdateDependencies;
 			
 			Assert.IsTrue(updateDependencies);
+		}
+		
+		[Test]
+		public void CreateActions_SolutionHasOneProjectAndAllowPrereleaseVersionsIsFalse_UpdateActionDoesNotAllowPrereleaseVersions()
+		{
+			CreateUpdatePackageInAllProjects();
+			AddProjectToSolution("MyProject");
+			updatePackageInAllProjects.AllowPrereleaseVersions = false;
+			CallCreateActions();
+			
+			bool allowPrereleases = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsFalse(allowPrereleases);
+		}
+		
+		[Test]
+		public void CreateActions_SolutionHasOneProjectAndAllowPrereleaseVersionsIsTrue_UpdateActionDoesAllowPrereleaseVersions()
+		{
+			CreateUpdatePackageInAllProjects();
+			AddProjectToSolution("MyProject");
+			updatePackageInAllProjects.AllowPrereleaseVersions = true;
+			CallCreateActions();
+			
+			bool allowPrereleases = FirstUpdateAction.AllowPrereleaseVersions;
+			
+			Assert.IsTrue(allowPrereleases);
 		}
 	}
 }

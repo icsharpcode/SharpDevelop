@@ -117,9 +117,9 @@ namespace Debugger.AddIn.TreeModel
 				error = e;
 			}
 			if (error != null) {
-				yield return new TreeNode(null, "(error)", error.Message, null, null, null);
+				yield return new TreeNode(null, "(error)", error.Message, null, null, _ => null);
 			} else if (count == 0) {
-				yield return new TreeNode(null, "(empty)", null, null, null, null);
+				yield return new TreeNode(null, "(empty)", null, null, null, _ => null);
 			} else {
 				for(int i = 0; i < count; i++) {
 					string imageName;

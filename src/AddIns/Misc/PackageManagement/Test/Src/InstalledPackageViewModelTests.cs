@@ -102,7 +102,7 @@ namespace PackageManagement.Tests
 		void SetPackageIdAndVersion(string id, string version)
 		{
 			fakePackage.Id = id;
-			fakePackage.Version = new Version(version);
+			fakePackage.Version = new SemanticVersion(version);
 		}
 		
 		[Test]

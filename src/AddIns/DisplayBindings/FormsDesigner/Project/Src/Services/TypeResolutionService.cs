@@ -109,18 +109,18 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.formSourceFileName = formSourceFileName;
 		}
 		
-		static readonly Dictionary<IProjectContent, object> projectContentsCurrentlyLoadingAssembly = new Dictionary<IProjectContent, object>();
+		readonly HashSet<IProjectContent> projectContentsCurrentlyLoadingAssembly = new HashSet<IProjectContent>();
 		
 		/// <summary>
 		/// Loads the assembly represented by the project content. Returns null on failure.
 		/// </summary>
 		public Assembly LoadAssembly(IProjectContent pc)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			// prevent StackOverflow when project contents have cyclic dependencies
-			// Very popular example of cyclic dependency: System <-> System.Xml (yes, really!)
-			if (projectContentsCurrentlyLoadingAssembly.ContainsKey(pc))
+			// Very popular example of cyclic dependency: System <-> System.Xml
+			if (!projectContentsCurrentlyLoadingAssembly.Add(pc))
 				return null;
-			projectContentsCurrentlyLoadingAssembly.Add(pc, null);
 			
 			try {
 				// load dependencies of current assembly
@@ -129,9 +129,7 @@ namespace ICSharpCode.FormsDesigner.Services
 						LoadAssembly(rpc);
 					} else if (rpc is ReflectionProjectContent) {
 						ReflectionProjectContent rrpc = (ReflectionProjectContent)rpc;
-						if (rrpc.AssemblyFullName != typeof(object).FullName
-						    && !GacInterop.IsWithinGac(rrpc.AssemblyLocation))
-						{
+						if (!rrpc.IsGacAssembly) {
 							LoadAssembly(rpc);
 						}
 					}
@@ -144,7 +142,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return LoadAssembly(((IProject)pc.Project).OutputAssemblyFullPath);
 			} else if (pc is ReflectionProjectContent) {
 				ReflectionProjectContent rpc = (ReflectionProjectContent)pc;
-				if (GacInterop.IsWithinGac(rpc.AssemblyLocation))
+				if (rpc.IsGacAssembly)
 					return LoadAssembly(new AssemblyName(rpc.AssemblyFullName), false);
 				else
 					return LoadAssembly(rpc.AssemblyLocation);

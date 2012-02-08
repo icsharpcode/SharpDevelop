@@ -12,9 +12,14 @@ namespace ICSharpCode.PackageManagement
 			IPackageRepository localRepository,
 			IPackageRepository sourceRepository,
 			ILogger logger,
-			bool ignoreDependencies)
+			InstallPackageAction installAction)
 		{
-			return new InstallWalker(localRepository, sourceRepository, logger, ignoreDependencies);
+			return new InstallWalker(
+				localRepository,
+				sourceRepository,
+				logger,
+				installAction.IgnoreDependencies,
+				installAction.AllowPrereleaseVersions);
 		}
 	}
 }

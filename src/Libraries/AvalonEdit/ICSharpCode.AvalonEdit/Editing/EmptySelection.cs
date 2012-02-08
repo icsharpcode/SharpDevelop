@@ -50,7 +50,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (newText == null)
 				throw new ArgumentNullException("newText");
-			newText = AddSpacesIfRequired(newText, textArea.Caret.Position);
+			newText = AddSpacesIfRequired(newText, textArea.Caret.Position, textArea.Caret.Position);
 			if (newText.Length > 0) {
 				if (textArea.ReadOnlySectionProvider.CanInsert(textArea.Caret.Offset)) {
 					textArea.Document.Insert(textArea.Caret.Offset, newText);

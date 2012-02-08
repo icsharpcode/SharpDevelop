@@ -1,0 +1,299 @@
+﻿<SyntaxDefinition
+	xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008"
+	name="C#/Razor"
+	extensions=".cshtml">
+	
+	<Color name="CommentBlockStartEndTags" foreground="Black" background="Yellow" />
+	<Color name="CodeBlockStartEndTags" foreground="Black" background="Yellow" />
+	<Color name="RazorCodeMarker" foreground="Black" background="Yellow" />
+	<Color name="DirectiveKeywords" foreground="Brown" fontWeight="bold" />
+	<Color name="AttributeName" foreground="Red" />
+	<Color name="AttributeValue" foreground="Blue" />
+	<Color name="Entity" foreground="Teal" />
+	<Color name="BrokenEntity" foreground="Olive" />
+
+	<Color name="Comment" foreground="Green" />
+	<Color name="String" foreground="Blue" />
+	<Color name="Char" foreground="Magenta" />
+	<Color name="Punctuation" foreground="DarkGreen" />
+	<Color name="ValueTypes" fontWeight="bold" foreground="Red" />
+	<Color name="ReferenceTypes" foreground="Red" />
+	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" />
+	<Color name="NumberLiteral" foreground="DarkBlue" />
+	<Color name="ThisOrBaseReference" fontWeight="bold" />
+	<Color name="NullOrValueKeywords" fontWeight="bold" />
+	<Color name="Keywords" fontWeight="bold" foreground="Blue" />
+	<Color name="GotoKeywords" foreground="Navy" />
+	<Color name="ContextKeywords" foreground="Navy" />
+	<Color name="ExceptionKeywords" fontWeight="bold" foreground="Teal" />
+	<Color name="CheckedKeyword" fontWeight="bold" foreground="DarkGray" />
+	<Color name="UnsafeKeywords" foreground="Olive" />
+	<Color name="OperatorKeywords" fontWeight="bold" foreground="Pink" />
+	<Color name="ParameterModifiers" fontWeight="bold" foreground="DeepPink" />
+	<Color name="Modifiers" foreground="Brown" />
+	<Color name="Visibility" fontWeight="bold" foreground="Blue" />
+	<Color name="NamespaceKeywords" fontWeight="bold" foreground="Green" />
+	<Color name="GetSetAddRemove" foreground="SaddleBrown" />
+	<Color name="TrueFalse" fontWeight="bold" foreground="DarkCyan" />
+	<Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan" />
+	
+	<RuleSet ignoreCase="true">
+		
+		<!-- Razor comment block -->
+		<Span ruleSet="RazorCommentBlock" multiline="true">
+			<Begin color="CommentBlockStartEndTags">\@\*</Begin>
+			<End color="CommentBlockStartEndTags">\*\@</End>
+		</Span>
+		
+		<!-- Razor code block -->
+		<Span ruleSet="RazorCode" multiline="true">
+			<Begin color="CodeBlockStartEndTags">\@\{</Begin>
+			<End color="CodeBlockStartEndTags">\}</End>
+		</Span>
+
+		<!-- Razor explicit expression block -->
+		<Span ruleSet="RazorCode" multiline="true">
+			<Begin color="CodeBlockStartEndTags">\@\(</Begin>
+			<End color="CodeBlockStartEndTags">\)</End>
+		</Span>
+		
+		<!-- Escaping Razor code marker -->
+		<Span>
+			<Begin>@@</Begin>
+		</Span>
+		
+		<Span ruleSet="RazorCode" multiline="false">
+			<Begin color="RazorCodeMarker">\@</Begin>
+			<End>\)|\&lt;</End>
+		</Span>
+		
+		<Import ruleSet="HTML/" />
+	</RuleSet>
+
+	<RuleSet name="RazorCommentBlock">
+		<Rule color="Comment">.</Rule>
+	</RuleSet>
+
+	<RuleSet name="EntitySet">
+		<Rule color="Entity">
+			&amp;
+			[\w\d\#]+
+			;
+		</Rule>
+
+		<Rule color="BrokenEntity">
+			&amp;
+			[\w\d\#]*
+			#missing ;
+		</Rule>
+	</RuleSet>
+
+	<RuleSet name="RazorCode">		
+		<Span>
+			<Begin>@@</Begin>
+		</Span>
+		
+		<Span ruleSet="RazorCommentBlock" multiline="true">
+			<Begin color="CommentBlockStartEndTags">\@\*</Begin>
+			<End color="CommentBlockStartEndTags">\*\@</End>
+		</Span>
+		
+		<Rule color="RazorCodeMarker">@</Rule>
+		
+		<Span color="String">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<!-- span for escape sequences -->
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+		
+		<Span color="Char">
+			<Begin>'</Begin>
+			<End>'</End>
+			<RuleSet>
+				<!-- span for escape sequences -->
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+		
+		<Keywords color="ThisOrBaseReference">
+			<Word>this</Word>
+			<Word>base</Word>
+		</Keywords>
+		
+		<Keywords color="TypeKeywords">
+			<Word>as</Word>
+			<Word>is</Word>
+			<Word>new</Word>
+			<Word>sizeof</Word>
+			<Word>typeof</Word>
+			<Word>stackalloc</Word>
+		</Keywords>
+		
+		<Keywords color="TrueFalse">
+			<Word>true</Word>
+			<Word>false</Word>
+		</Keywords>
+		
+		<Keywords color="Keywords">
+			<Word>else</Word>
+			<Word>if</Word>
+			<Word>switch</Word>
+			<Word>case</Word>
+			<Word>default</Word>
+			<Word>do</Word>
+			<Word>for</Word>
+			<Word>foreach</Word>
+			<Word>in</Word>
+			<Word>while</Word>
+			<Word>lock</Word>
+		</Keywords>
+		
+		<Keywords color="GotoKeywords">
+			<Word>break</Word>
+			<Word>continue</Word>
+			<Word>goto</Word>
+			<Word>return</Word>
+		</Keywords>
+		
+		<Keywords color="ContextKeywords">
+			<Word>yield</Word>
+			<Word>partial</Word>
+			<Word>global</Word>
+			<Word>where</Word>
+			<Word>select</Word>
+			<Word>group</Word>
+			<Word>by</Word>
+			<Word>into</Word>
+			<Word>from</Word>
+			<Word>ascending</Word>
+			<Word>descending</Word>
+			<Word>orderby</Word>
+			<Word>let</Word>
+			<Word>join</Word>
+			<Word>on</Word>
+			<Word>equals</Word>
+			<Word>var</Word>
+			<Word>dynamic</Word>
+		</Keywords>
+		
+		<Keywords color="ExceptionKeywords">
+			<Word>try</Word>
+			<Word>throw</Word>
+			<Word>catch</Word>
+			<Word>finally</Word>
+		</Keywords>
+		
+		<Keywords color="CheckedKeyword">
+			<Word>checked</Word>
+			<Word>unchecked</Word>
+		</Keywords>
+		
+		<Keywords color="UnsafeKeywords">
+			<Word>fixed</Word>
+			<Word>unsafe</Word>
+		</Keywords>
+		
+		<Keywords color="ValueTypes">
+			<Word>bool</Word>
+			<Word>byte</Word>
+			<Word>char</Word>
+			<Word>decimal</Word>
+			<Word>double</Word>
+			<Word>enum</Word>
+			<Word>float</Word>
+			<Word>int</Word>
+			<Word>long</Word>
+			<Word>sbyte</Word>
+			<Word>short</Word>
+			<Word>struct</Word>
+			<Word>uint</Word>
+			<Word>ushort</Word>
+			<Word>ulong</Word>
+		</Keywords>
+		
+		<Keywords color="ReferenceTypes">
+			<Word>class</Word>
+			<Word>interface</Word>
+			<Word>delegate</Word>
+			<Word>object</Word>
+			<Word>string</Word>
+			<Word>void</Word>
+		</Keywords>
+		
+		<Keywords color="OperatorKeywords">
+			<Word>explicit</Word>
+			<Word>implicit</Word>
+			<Word>operator</Word>
+		</Keywords>
+		
+		<Keywords color="ParameterModifiers">
+			<Word>params</Word>
+			<Word>ref</Word>
+			<Word>out</Word>
+		</Keywords>
+		
+		<Keywords color="Modifiers">
+			<Word>abstract</Word>
+			<Word>const</Word>
+			<Word>event</Word>
+			<Word>extern</Word>
+			<Word>override</Word>
+			<Word>readonly</Word>
+			<Word>sealed</Word>
+			<Word>static</Word>
+			<Word>virtual</Word>
+			<Word>volatile</Word>
+		</Keywords>
+		
+		<Keywords color="Visibility">
+			<Word>public</Word>
+			<Word>protected</Word>
+			<Word>private</Word>
+			<Word>internal</Word>
+		</Keywords>
+		
+		<Keywords color="NamespaceKeywords">
+			<Word>namespace</Word>
+			<Word>using</Word>
+		</Keywords>
+		
+		<Keywords color="GetSetAddRemove">
+			<Word>get</Word>
+			<Word>set</Word>
+			<Word>add</Word>
+			<Word>remove</Word>
+		</Keywords>
+		
+		<Keywords color="NullOrValueKeywords">
+			<Word>null</Word>
+			<Word>value</Word>
+		</Keywords>
+		
+		<!-- Mark previous rule-->
+		<Rule color="MethodCall">
+		\b
+		[\d\w_]+  # an identifier
+		(?=\s*\() # followed by (
+		</Rule>
+		
+		<!-- Digits -->
+		<Rule color="NumberLiteral">
+			\b0[xX][0-9a-fA-F]+  # hex number
+		|	
+			(	\b\d+(\.[0-9]+)?   #number with optional floating point
+			|	\.[0-9]+           #or just starting with floating point
+			)
+			([eE][+-]?[0-9]+)? # optional exponent
+		</Rule>
+		
+		<Rule color="Punctuation">
+			[?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+		</Rule>
+	
+		<Import ruleSet="HTML/" />
+
+	</RuleSet>
+</SyntaxDefinition>

@@ -55,8 +55,7 @@ namespace Mono.CSharp {
 			Modifiers.UNSAFE |
 			Modifiers.PRIVATE;
 
- 		public Delegate (NamespaceContainer ns, DeclSpace parent, FullNamedExpression type,
-				 Modifiers mod_flags, MemberName name, ParametersCompiled param_list,
+ 		public Delegate (NamespaceContainer ns, TypeContainer parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, ParametersCompiled param_list,
 				 Attributes attrs)
 			: base (ns, parent, name, attrs, MemberKind.Delegate)
 
@@ -81,6 +80,13 @@ namespace Mono.CSharp {
 				return parameters;
 			}
 		}
+
+		public FullNamedExpression TypExpression {
+			get {
+				return ReturnType;
+			}
+		}
+
 		#endregion
 
 		public override void Accept (StructuralVisitor visitor)
@@ -123,7 +129,7 @@ namespace Mono.CSharp {
 			);
 
 			Constructor = new Constructor (this, Constructor.ConstructorName,
-				Modifiers.PUBLIC, null, ctor_parameters, null, Location);
+				Modifiers.PUBLIC, null, ctor_parameters, Location);
 			Constructor.Define ();
 
 			//
@@ -178,7 +184,7 @@ namespace Mono.CSharp {
 			TypeManager.CheckTypeVariance (ret_type, Variance.Covariant, this);
 
 			var resolved_rt = new TypeExpression (ret_type, Location);
-			InvokeBuilder = new Method (this, null, resolved_rt, MethodModifiers, new MemberName (InvokeMethodName), p, null);
+			InvokeBuilder = new Method (this, resolved_rt, MethodModifiers, new MemberName (InvokeMethodName), p, null);
 			InvokeBuilder.Define ();
 
 			//
@@ -232,7 +238,7 @@ namespace Mono.CSharp {
 				}
 			);
 
-			BeginInvokeBuilder = new Method (this, null,
+			BeginInvokeBuilder = new Method (this,
 				new TypeExpression (iasync_result.TypeSpec, Location), MethodModifiers,
 				new MemberName ("BeginInvoke"), async_parameters, null);
 			BeginInvokeBuilder.Define ();
@@ -282,7 +288,7 @@ namespace Mono.CSharp {
 			//
 			// Create method, define parameters, register parameters with type system
 			//
-			EndInvokeBuilder = new Method (this, null, returnType, MethodModifiers, new MemberName ("EndInvoke"), end_parameters, null);
+			EndInvokeBuilder = new Method (this, returnType, MethodModifiers, new MemberName ("EndInvoke"), end_parameters, null);
 			EndInvokeBuilder.Define ();
 		}
 

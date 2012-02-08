@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WinFXNavigationApplication.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>WPF</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VBNet.Project.WPFNavigationProject</Icon>
 		<Description>${res:Templates.Project.WinFXNavigationApplication.Description}</Description>
 		<SupportedTargetFrameworks>v3.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>

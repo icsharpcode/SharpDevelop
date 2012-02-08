@@ -142,6 +142,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
+		bool isInVirtualSpace;
+		
+		/// <summary>
+		/// Gets whether the caret is in virtual space.
+		/// </summary>
+		public bool IsInVirtualSpace {
+			get {
+				ValidateVisualColumn();
+				return isInVirtualSpace;
+			}
+		}
+		
 		int storedCaretOffset;
 		
 		internal void OnDocumentChanging()
@@ -327,6 +339,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				}
 				this.Position = new TextViewPosition(textView.Document.GetLocation(newOffset), newVisualColumn);
 			}
+			isInVirtualSpace = (position.VisualColumn > visualLine.VisualLength);
 		}
 		
 		Rect CalcCaretRectangle(VisualLine visualLine)
@@ -338,7 +351,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
 			double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
 			double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
-			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.LineBottom);
+			double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);
 			
 			return new Rect(xPos,
 			                lineTop,
