@@ -359,6 +359,7 @@
     <Compile Include="Src\UpdatedPackageViewModel.cs" />
     <Compile Include="Src\UpdatedPackageViewModelFactory.cs" />
     <Compile Include="Src\UpdatePackageAction.cs" />
+    <Compile Include="Src\UpdatePackageActions.cs" />
     <Compile Include="Src\UpdatePackageActionsFactory.cs" />
     <Compile Include="Src\UpdatePackageInAllProjects.cs" />
     <Compile Include="Src\ViewModelBase.cs" />

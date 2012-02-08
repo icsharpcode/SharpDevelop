@@ -149,6 +149,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+		public string BaseDirectory
+		{
+			get {return project.Directory;}
+		}
+			
 		public event EventHandler IsDirtyChanged;
 		
 		#region Manage MSBuild properties

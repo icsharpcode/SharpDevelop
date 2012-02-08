@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -15,7 +15,7 @@ namespace ICSharpCode.Core.Presentation
 {
 	class CommandWrapper : System.Windows.Input.ICommand
 	{
-		public static System.Windows.Input.ICommand GetCommand(Codon codon, object caller, bool createCommand)
+		public static System.Windows.Input.ICommand GetCommand(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
 		{
 			string commandName = codon.Properties["command"];
 			if (!string.IsNullOrEmpty(commandName)) {
@@ -25,32 +25,39 @@ namespace ICSharpCode.Core.Presentation
 				} else {
 					MessageService.ShowError("Could not find WPF command '" + commandName + "'.");
 					// return dummy command
-					return new CommandWrapper(codon, caller, null);
+					return new CommandWrapper(codon, caller, null, conditions);
 				}
 			}
-			return new CommandWrapper(codon, caller, createCommand);
+			return new CommandWrapper(codon, caller, createCommand, conditions);
 		}
 		
 		bool commandCreated;
 		ICommand addInCommand;
+		IEnumerable<ICondition> conditions;
 		readonly Codon codon;
 		readonly object caller;
 		
-		public CommandWrapper(Codon codon, object caller, bool createCommand)
+		public CommandWrapper(Codon codon, object caller, bool createCommand, IEnumerable<ICondition> conditions)
 		{
+			if (conditions == null)
+				throw new ArgumentNullException("conditions");
 			this.codon = codon;
 			this.caller = caller;
+			this.conditions = conditions;
 			if (createCommand) {
 				commandCreated = true;
 				CreateCommand();
 			}
 		}
 		
-		public CommandWrapper(Codon codon, object caller, ICommand command)
+		public CommandWrapper(Codon codon, object caller, ICommand command, IEnumerable<ICondition> conditions)
 		{
+			if (conditions == null)
+				throw new ArgumentNullException("conditions");
 			this.codon = codon;
 			this.caller = caller;
 			this.addInCommand = command;
+			this.conditions = conditions;
 			commandCreated = true;
 		}
 		
@@ -103,7 +110,7 @@ namespace ICSharpCode.Core.Presentation
 		public bool CanExecute(object parameter)
 		{
 			//LoggingService.Debug("CanExecute " + codon.Id);
-			if (codon.GetFailedAction(caller) != ConditionFailedAction.Nothing)
+			if (Condition.GetFailedAction(conditions, caller) != ConditionFailedAction.Nothing)
 				return false;
 			if (!commandCreated)
 				return true;
@@ -122,10 +129,10 @@ namespace ICSharpCode.Core.Presentation
 	{
 		readonly string ActivationMethod;
 		
-		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, string activationMethod) : base(codon, caller)
+		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, string activationMethod, IEnumerable<ICondition> conditions) : base(codon, caller, conditions)
 		{
 			this.ActivationMethod = activationMethod;
-			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand, conditions);
 			
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);

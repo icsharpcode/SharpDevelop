@@ -86,6 +86,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// validate after PresentationSource is initialized
 			Rect bounds = new Rect(Left, Top, Width, Height);
 			bounds = FormLocationHelper.Validate(bounds.TransformToDevice(this).ToSystemDrawing()).ToWpf().TransformFromDevice(this);
+			SetBounds(bounds);
+			// Set WindowState after PresentationSource is initialized, because now bounds and location are properly set.
+			this.WindowState = lastNonMinimizedWindowState;
+		}
+
+		void SetBounds(Rect bounds)
+		{
 			this.Left = bounds.Left;
 			this.Top = bounds.Top;
 			this.Width = bounds.Width;
@@ -563,12 +570,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			Rect bounds = memento.Get("Bounds", new Rect(10, 10, 750, 550));
 			// bounds are validated after PresentationSource is initialized (see OnSourceInitialized)
-			this.Left = bounds.Left;
-			this.Top = bounds.Top;
-			this.Width = bounds.Width;
-			this.Height = bounds.Height;
 			lastNonMinimizedWindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
-			this.WindowState = lastNonMinimizedWindowState;
+			SetBounds(bounds);
 		}
 		
 		protected override void OnClosing(CancelEventArgs e)

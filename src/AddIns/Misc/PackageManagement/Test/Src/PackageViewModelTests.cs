@@ -94,7 +94,7 @@ namespace PackageManagement.Tests
 		void SetPackageIdAndVersion(string id, string version)
 		{
 			fakePackage.Id = id;
-			fakePackage.Version = new Version(version);
+			fakePackage.Version = new SemanticVersion(version);
 		}
 		
 		void UserCancelsProjectSelection()
@@ -512,7 +512,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			fakePackage.Id = "Test.Package";
-			fakePackage.Version = new Version(1, 2, 0, 55);
+			fakePackage.Version = new SemanticVersion(1, 2, 0, 55);
 			viewModel.AddPackage();
 			
 			string expectedMessage = "------- Installing...Test.Package 1.2.0.55 -------";
@@ -553,7 +553,7 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
 			fakePackage.Id = "Test.Package";
-			fakePackage.Version = new Version(1, 2, 0, 55);
+			fakePackage.Version = new SemanticVersion(1, 2, 0, 55);
 			viewModel.RemovePackage();
 			
 			string expectedMessage = "------- Uninstalling...Test.Package 1.2.0.55 -------";
@@ -701,6 +701,20 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AddPackage_PackagesInstalledSuccessfully_PrereleaseVersionsNotAllowedWhenCheckingForPackageOperations()
+		{
+			CreateViewModel();
+			viewModel.AddOneFakeInstallPackageOperationForViewModelPackage();
+			viewModel.AddPackage();
+			
+			bool result = fakeSolution
+				.FakeProjectToReturnFromGetProject
+				.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
 		public void RemovePackage_PackageRemovedSuccessfully_PackageIsRemoved()
 		{
 			CreateViewModel();
@@ -743,6 +757,19 @@ namespace PackageManagement.Tests
 		{
 			CreateFakeSolution();
 			AddProjectToSolution();
+			AddProjectToSolution();
+			fakeSolution.NoProjectsSelected();
+			CreateViewModel(fakeSolution);
+			
+			bool managed = viewModel.IsManaged;
+			
+			Assert.IsTrue(managed);
+		}
+		
+		[Test]
+		public void IsManaged_SolutionSelectedContainingOneProject_ReturnsTrue()
+		{
+			CreateFakeSolution();
 			AddProjectToSolution();
 			fakeSolution.NoProjectsSelected();
 			CreateViewModel(fakeSolution);
@@ -921,6 +948,24 @@ namespace PackageManagement.Tests
 			bool ignored = selectedProject.FakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(ignored);
+		}
+		
+		[Test]
+		public void ManagePackagesForSelectedProjects_FirstProjectIsSelectedAndPackageOperationRequiresLicenseAcceptance_PrereleaseVersionsAreNotAllowed()
+		{
+			CreateViewModel();
+			CreateTwoFakeSelectedProjects();
+			FakeSelectedProject selectedProject = fakeSelectedProjects[0];
+			selectedProject.IsSelected = true;
+			FakePackageOperation operation = selectedProject.AddFakeInstallPackageOperation();
+			operation.FakePackage.RequireLicenseAcceptance = true;
+			fakePackageManagementEvents.OnAcceptLicensesReturnValue = false;
+			
+			viewModel.ManagePackagesForSelectedProjects(fakeSelectedProjects);
+			
+			bool allowed = selectedProject.FakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(allowed);
 		}
 		
 		[Test]
@@ -1134,7 +1179,7 @@ namespace PackageManagement.Tests
 			CreateViewModelWithTwoProjectsSelected("Project A", "Project B");
 			UserAcceptsProjectSelection();
 			fakePackage.Id = "Test.Package";
-			fakePackage.Version = new Version(1, 2, 0, 55);
+			fakePackage.Version = new SemanticVersion(1, 2, 0, 55);
 			viewModel.ManagePackage();
 			
 			string expectedMessage = "------- Managing...Test.Package 1.2.0.55 -------";

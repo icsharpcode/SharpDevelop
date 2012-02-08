@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -34,7 +36,7 @@ namespace UnitTesting.Tests.Tree
 			MockTestTreeView treeView = new MockTestTreeView();
 			treeView.SelectedProject = project;
 			treeView.SelectedNamespace = "MyNamespace";
-			treeView.SelectedMethod = method;
+			treeView.SelectedMember = method;
 			
 			selectedTests = new SelectedTests(treeView, projects.ToArray());
 		}
@@ -43,9 +45,9 @@ namespace UnitTesting.Tests.Tree
 		public void SelectedTestsHasOneProject()
 		{
 			IProject[] expectedProjects = new IProject[] { project };
-			List<IProject> actualProjects = new List<IProject>(selectedTests.Projects);
+			var actualProjects = selectedTests.Projects.ToArray();
 			
-			Assert.AreEqual(expectedProjects, actualProjects.ToArray());
+			Assert.AreEqual(expectedProjects, actualProjects);
 		}
 		
 		[Test]
@@ -63,7 +65,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void MethodPropertyReturnsSelectedMethod()
 		{
-			Assert.AreEqual(method, selectedTests.Method);
+			Assert.AreEqual(method, selectedTests.Member);
 		}
 		
 		[Test]

@@ -17,7 +17,10 @@ namespace PackageManagement.Tests.Helpers
 
 		public override InstallPackageAction CreateInstallPackageAction()
 		{
-			throw ExceptionToThrowWhenCreateInstallPackageActionCalled;
+			if (ExceptionToThrowWhenCreateInstallPackageActionCalled != null) {
+				throw ExceptionToThrowWhenCreateInstallPackageActionCalled;
+			}
+			return base.CreateInstallPackageAction();
 		}
 		
 		public override UninstallPackageAction CreateUninstallPackageAction()
@@ -25,12 +28,12 @@ namespace PackageManagement.Tests.Helpers
 			throw ExceptionToThrowWhenCreateUninstallPackageActionCalled;
 		}
 		
-		public override IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, bool ignoreDependencies)
+		public override IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction)
 		{
 			if (ExceptionToThrowWhenGetInstallPackageOperationsCalled != null) {
 				throw ExceptionToThrowWhenGetInstallPackageOperationsCalled;
 			}
-			return base.GetInstallPackageOperations(package, ignoreDependencies);
+			return base.GetInstallPackageOperations(package, installAction);
 		}
 	}
 }

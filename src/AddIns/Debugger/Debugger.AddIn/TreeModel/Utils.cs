@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Threading;
-
+using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Services;
@@ -68,6 +68,14 @@ namespace Debugger.AddIn.TreeModel
 		{
 			stopwatch.Stop();
 			LoggingService.InfoFormatted("{0} ({1} ms)", text, stopwatch.ElapsedMilliseconds);
+		}
+	}
+	
+	public static class ExtensionMethods
+	{
+		public static TreeNodeWrapper ToSharpTreeNode(this TreeNode node)
+		{
+			return new TreeNodeWrapper(node);
 		}
 	}
 }

@@ -192,12 +192,7 @@ namespace ICSharpCode.Svn
 					}
 				}
 				
-				try {
-					return client.SingleStatus(fileName).TextStatus;
-				} catch (SvnClientException ex) {
-					LoggingService.Warn("Error getting status of " + fileName, ex);
-					return StatusKind.None;
-				}
+				return client.SingleStatus(fileName).TextStatus;
 			}
 		}
 		

@@ -150,10 +150,10 @@ namespace ICSharpCode.SharpDevelop.Services
 				// we deal with a WebProject
 				try {
 					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-					var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+					WebProjectOptions options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 					System.Diagnostics.Process defaultAppProcess = null;
 					
-					string processName = WebProjectService.WorkerProcessName;
+					string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
 					
 					// try find the worker process directly or using the process monitor callback
 					var processes = System.Diagnostics.Process.GetProcesses();
@@ -169,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						
 						if (options.Data.WebServer == WebServer.IISExpress) {
 							// start IIS express and attach to it
-							if (WebProjectService.IISVersion == IISVersion.IISExpress) {
+							if (WebProjectService.IsIISExpressInstalled) {
 								System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
 							} else {
 								DisposeProcessMonitor();
@@ -333,13 +333,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				// we deal with a WebProject
 				try {
 					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-					var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+					WebProjectOptions options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 					
-					string processName = WebProjectService.WorkerProcessName;
+					string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
 					
 					if (options.Data.WebServer == WebServer.IISExpress) {
 						// start IIS express
-						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+						if (WebProjectService.IsIISExpressInstalled)
 							System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
 						else {
 							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
@@ -437,11 +437,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			return true;
 		}
 		
-		void OnProcessCreated(System.Diagnostics.Process defaultAppProcess, WebProjectOptions debugData)
+		void OnProcessCreated(System.Diagnostics.Process defaultAppProcess, WebProjectOptions options)
 		{
 			if (attached)
 				return;
-			string processName = WebProjectService.WorkerProcessName;
+			string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
 			var processes = System.Diagnostics.Process.GetProcesses();
 			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 			if (index == -1)
@@ -449,7 +449,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			Attach(processes[index]);
 			
 			if (!attached) {
-				if(debugData.Data.WebServer == WebServer.IIS) {
+				if(options.Data.WebServer == WebServer.IIS) {
 					string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
 					MessageService.ShowMessage(string.Format(format, processName));
 				} else {

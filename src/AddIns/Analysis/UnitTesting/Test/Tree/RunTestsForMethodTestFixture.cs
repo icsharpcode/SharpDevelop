@@ -35,7 +35,7 @@ namespace UnitTesting.Tests.Tree
 			
 			treeView = new MockTestTreeView();
 			treeView.SelectedProject = project;
-			treeView.SelectedMethod = methodToTest;
+			treeView.SelectedMember = methodToTest;
 			
 			runTestCommand.Owner = treeView;
 			
@@ -57,7 +57,7 @@ namespace UnitTesting.Tests.Tree
 		public void SelectedTestsHasTestMethodConfigured()
 		{
 			SelectedTests tests = runTestCommand.TestRunnersCreated[0].SelectedTestsPassedToStartMethod;
-			Assert.AreEqual(methodToTest, tests.Method);
+			Assert.AreEqual(methodToTest, tests.Member);
 		}
 		
 		[Test]

@@ -13,6 +13,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+
+using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -287,12 +289,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (UseFixedEncoding) {
 				using (StreamReader reader = new StreamReader(stream, primaryTextEditor.Encoding, detectEncodingFromByteOrderMarks: false)) {
-					primaryTextEditor.Text = reader.ReadToEnd();
+					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
 				}
 			} else {
 				// do encoding auto-detection
 				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? FileService.DefaultFileEncoding.GetEncoding())) {
-					primaryTextEditor.Text = reader.ReadToEnd();
+					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
@@ -300,6 +302,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (LoadedFileContent != null)
 				LoadedFileContent(this, EventArgs.Empty);
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
+		}
+		
+		void ReloadDocument(TextDocument document, string newContent)
+		{
+			var diff = new MyersDiffAlgorithm(new StringSequence(document.Text), new StringSequence(newContent));
+			document.Replace(0, document.TextLength, newContent, diff.GetEdits().ToOffsetChangeMap());
+			document.UndoStack.ClearAll();
 		}
 		
 		public event EventHandler LoadedFileContent;

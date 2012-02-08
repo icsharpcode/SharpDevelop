@@ -12,6 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	public class FakeUpdatePackageActions : IUpdatePackageActions
 	{
 		public bool UpdateDependencies { get; set; }
+		public bool AllowPrereleaseVersions { get; set; }
 		public IPackageScriptRunner PackageScriptRunner { get; set; }
 		
 		public List<FakeUpdatePackageAction> FakeActions = new List<FakeUpdatePackageAction>();

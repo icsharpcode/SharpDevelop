@@ -197,7 +197,7 @@ namespace PackageManagement.Tests
 		{
 			var package1 = CreateRepositoryWithOneRecentPackageSavedInOptions();
 			var package2 = new FakePackage(package1.Id);
-			package2.Version = new Version(2, 0);
+			package2.Version = new SemanticVersion(2, 0, 0, 0);
 			aggregateRepository.FakePackages.Add(package2);
 			
 			var recentPackages = repository.GetPackages();

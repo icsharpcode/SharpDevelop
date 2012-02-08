@@ -77,7 +77,7 @@ namespace PackageManagement.Tests
 			CreatePackageManager();
 			
 			FakePackage package = new FakePackage("Test.Package");
-			package.Version = new Version(1, 0, 0, 0);
+			package.Version = new SemanticVersion(1, 0, 0, 0);
 			string expectedDirectory = @"c:\projects\MyProject\MyPackages\Test.Package.1.0.0.0";
 			string actualDirectory = 
 				fakePackageRepositoryFactory
@@ -106,9 +106,7 @@ namespace PackageManagement.Tests
 			options.PackagesDirectory = "packages";
 			CreatePackageManager();
 			
-			FakePackage package = new FakePackage();
-			package.Id = "TestPackage";
-			package.Version = new Version(1, 0, 0, 0);
+			var package = new FakePackage("TestPackage", "1.0.0.0");
 			
 			string expectedDirectory = @"c:\projects\MyProject\packages\TestPackage.1.0.0.0";
 			

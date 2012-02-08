@@ -68,7 +68,7 @@ namespace ICSharpCode.CppBinding.Project
 			{
 				string outputPath = GetEvaluatedProperty("OutDir") ?? "";
 				if (!Path.IsPathRooted(outputPath))
-					return FileUtility.NormalizePath(Path.Combine(Path.Combine(Path.Combine(Directory, ".."), outputPath),
+					return FileUtility.NormalizePath(Path.Combine(ParentSolution.Directory, outputPath,
 					                                              AssemblyName + GetExtension(OutputType)));
 				else
 				{

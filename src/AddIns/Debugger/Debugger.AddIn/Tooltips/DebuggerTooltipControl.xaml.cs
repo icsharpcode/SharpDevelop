@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-
+using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
@@ -362,6 +362,14 @@ namespace Debugger.AddIn.Tooltips
 					
 					BookmarkManager.RemoveMark(pin);
 				}
+			}
+		}
+		
+		void CopyMenuItemClick(object sender, RoutedEventArgs e)
+		{
+			ExpressionNode node = ((MenuItem)sender).DataContext as ExpressionNode;
+			if (node != null) {
+				Clipboard.SetText(node.FullText);
 			}
 		}
 		

@@ -68,30 +68,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\SearchMainMenuCommands.cs" />
-    <Compile Include="Commands\SearchToolbarCommands.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Engine\DocumentIterator\AllOpenDocumentIterator.cs" />
-    <Compile Include="Engine\DocumentIterator\CurrentDocumentIterator.cs" />
-    <Compile Include="Engine\DocumentIterator\DirectoryDocumentIterator.cs" />
-    <Compile Include="Engine\DocumentIterator\IDocumentIterator.cs" />
-    <Compile Include="Engine\DocumentIterator\WholeProjectDocumentIterator.cs" />
-    <Compile Include="Engine\DocumentIterator\WholeSolutionDocumentIterator.cs" />
-    <Compile Include="Engine\ITextIteratorBuilder.cs" />
-    <Compile Include="Engine\Search.cs" />
-    <Compile Include="Engine\SearchReplaceInFilesManager.cs" />
-    <Compile Include="Engine\SearchReplaceManager.cs" />
-    <Compile Include="Engine\SearchReplaceUtilities.cs" />
-    <Compile Include="Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
-    <Compile Include="Engine\SearchStrategy\BruteForceSearchStrategy.cs" />
-    <Compile Include="Engine\SearchStrategy\ISearchStrategy.cs" />
-    <Compile Include="Engine\SearchStrategy\KMPSearchStrategy.cs" />
-    <Compile Include="Engine\SearchStrategy\RegExSearchStrategy.cs" />
-    <Compile Include="Engine\SearchStrategy\WildcardSearchStrategy.cs" />
-    <Compile Include="Engine\TextIterator\ForwardTextIterator.cs" />
-    <Compile Include="Engine\TextIterator\ForwardTextIteratorBuilder.cs" />
-    <Compile Include="Engine\TextIterator\ITextIterator.cs" />
-    <Compile Include="Engine\TextSelection.cs" />
+    <Compile Include="Engine\Enums.cs" />
+    <Compile Include="Engine\SearchLocation.cs" />
+    <Compile Include="Engine\SearchManager.cs" />
     <Compile Include="Gui\DefaultSearchResult.cs" />
+    <Compile Include="Gui\ObserverSearchResult.cs" />
     <Compile Include="Gui\ResultsTreeView.cs">
       <SubType>Code</SubType>
       <DependentUpon>ResultsTreeView.xaml</DependentUpon>
@@ -107,9 +89,6 @@
   <ItemGroup>
     <Folder Include="Commands" />
     <Folder Include="Engine" />
-    <Folder Include="Engine\DocumentIterator" />
-    <Folder Include="Engine\SearchStrategy" />
-    <Folder Include="Engine\TextIterator" />
     <Folder Include="Gui" />
     <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
@@ -144,5 +123,10 @@
     </ProjectReference>
     <Page Include="Gui\ResultsTreeView.xaml">
     </Page>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

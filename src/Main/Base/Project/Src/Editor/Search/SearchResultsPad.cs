@@ -1,12 +1,19 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
@@ -104,6 +111,11 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			ShowSearchResults(CreateSearchResult(title, matches));
 		}
 		
+		public void ShowSearchResults(string title, IObservable<SearchedFile> matches)
+		{
+			ShowSearchResults(CreateSearchResult(title, matches));
+		}
+		
 		public event EventHandler SearchResultsShown;
 		
 		public static ISearchResult CreateSearchResult(string title, IEnumerable<SearchResultMatch> matches)
@@ -118,6 +130,51 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 					return result;
 			}
 			return new DummySearchResult { Text = title };
+		}
+		
+		
+		public static ISearchResult CreateSearchResult(string title, IObservable<SearchedFile> matches)
+		{
+			if (title == null)
+				throw new ArgumentNullException("title");
+			if (matches == null)
+				throw new ArgumentNullException("matches");
+			foreach (ISearchResultFactory factory in AddInTree.BuildItems<ISearchResultFactory>("/SharpDevelop/Pads/SearchResultPad/Factories", null, false)) {
+				ISearchResult result = factory.CreateSearchResult(title, matches);
+				if (result != null)
+					return result;
+			}
+			return new DummySearchResult { Text = title };
+		}
+		
+		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, TextDocument document, IHighlighter highlighter)
+		{
+			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
+				var matchedLine = document.GetLineByNumber(startPosition.Line);
+				HighlightedInlineBuilder inlineBuilder = new HighlightedInlineBuilder(document.GetText(matchedLine));
+				if (highlighter != null) {
+					HighlightedLine highlightedLine = highlighter.HighlightLine(startPosition.Line);
+					int startOffset = highlightedLine.DocumentLine.Offset;
+					// copy only the foreground color
+					foreach (HighlightedSection section in highlightedLine.Sections) {
+						if (section.Color.Foreground != null) {
+							inlineBuilder.SetForeground(section.Offset - startOffset, section.Length, section.Color.Foreground.GetBrush(null));
+						}
+					}
+				}
+				
+				// now highlight the match in bold
+				if (startPosition.Column >= 1) {
+					if (endPosition.Line == startPosition.Line && endPosition.Column > startPosition.Column) {
+						// subtract one from the column to get the offset inside the line's text
+						int startOffset = startPosition.Column - 1;
+						int endOffset = Math.Min(inlineBuilder.Text.Length, endPosition.Column - 1);
+						inlineBuilder.SetFontWeight(startOffset, endOffset - startOffset, FontWeights.Bold);
+					}
+				}
+				return inlineBuilder;
+			}
+			return null;
 		}
 		
 		sealed class DummySearchResult : ISearchResult

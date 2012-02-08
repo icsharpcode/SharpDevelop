@@ -102,8 +102,8 @@ namespace ICSharpCode.Scripting.Tests.Console
 			avalonEditTextEditor.Text = "te000xt";
 			int startOffset = 2;
 			int endOffset = 5;
-			SimpleSelection expectedSelection = new SimpleSelection(startOffset, endOffset);
-			avalonEditTextEditor.SelectionStart = expectedSelection.StartOffset;
+			Selection expectedSelection = Selection.Create(avalonEditTextEditor.TextArea, startOffset, endOffset);
+			avalonEditTextEditor.SelectionStart = expectedSelection.SurroundingSegment.Offset;
 			avalonEditTextEditor.SelectionLength = expectedSelection.Length;
 			
 			// Sanity check.
@@ -112,10 +112,10 @@ namespace ICSharpCode.Scripting.Tests.Console
 			AssertSelectionsAreEqual(expectedSelection, consoleTextEditor);
 		}
 		
-		void AssertSelectionsAreEqual(SimpleSelection expectedSelection, IScriptingConsoleTextEditor consoleTextEditor)
+		void AssertSelectionsAreEqual(Selection expectedSelection, IScriptingConsoleTextEditor consoleTextEditor)
 		{
-			int selectionLength = consoleTextEditor.SelectionStart + consoleTextEditor.SelectionLength;
-			SimpleSelection actualSelection = new SimpleSelection(consoleTextEditor.SelectionStart, selectionLength);
+			int selectionEnd = consoleTextEditor.SelectionStart + consoleTextEditor.SelectionLength;
+			Selection actualSelection = Selection.Create(avalonEditTextEditor.TextArea, consoleTextEditor.SelectionStart, selectionEnd);
 			Assert.AreEqual(expectedSelection, actualSelection);
 		}
 		
@@ -126,7 +126,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			avalonEditTextEditor.TextArea.Caret.Column = 1;
 			avalonEditTextEditor.SelectionLength = 0;
 			
-			SimpleSelection expectedSelection = new SimpleSelection(1, 1);
+			Selection expectedSelection = Selection.Create(avalonEditTextEditor.TextArea, 1, 1);
 			AssertSelectionsAreEqual(expectedSelection, consoleTextEditor);
 		}
 

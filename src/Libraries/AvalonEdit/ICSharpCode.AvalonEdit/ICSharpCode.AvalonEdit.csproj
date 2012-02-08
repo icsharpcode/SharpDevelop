@@ -144,6 +144,10 @@
     <Compile Include="Editing\DottedLineMargin.cs" />
     <Compile Include="Editing\DragDropException.cs" />
     <Compile Include="Editing\EditingCommandHandler.cs" />
+    <Compile Include="Editing\EmptySelection.cs">
+      <DependentUpon>Selection.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editing\SelectionSegment.cs" />
     <Compile Include="Folding\AbstractFoldingStrategy.cs" />
     <Compile Include="Folding\FoldingElementGenerator.cs" />
     <Compile Include="Folding\FoldingManager.cs" />
@@ -258,7 +262,6 @@
     </Compile>
     <Compile Include="Rendering\LinkElementGenerator.cs" />
     <Compile Include="Rendering\MouseHoverLogic.cs" />
-    <Compile Include="Rendering\NewLineElementGenerator.cs" />
     <Compile Include="Rendering\SimpleTextSource.cs">
       <DependentUpon>FormattedTextElement.cs</DependentUpon>
     </Compile>
@@ -290,13 +293,13 @@
     <Compile Include="Rendering\VisualYPosition.cs">
       <DependentUpon>VisualLine.cs</DependentUpon>
     </Compile>
+    <Compile Include="Search\Localization.cs" />
     <Compile Include="Search\RegexSearchStrategy.cs" />
     <Compile Include="Search\DropDownButton.cs" />
     <Compile Include="Search\ISearchStrategy.cs" />
     <Compile Include="Search\SearchCommands.cs" />
     <Compile Include="Search\SearchResultBackgroundRenderer.cs" />
-    <Compile Include="Search\SearchPanel.xaml.cs">
-      <DependentUpon>SearchPanel.xaml</DependentUpon>
+    <Compile Include="Search\SearchPanel.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Search\SearchStrategyFactory.cs" />
@@ -336,7 +339,9 @@
     </Compile>
     <Compile Include="TextViewPosition.cs" />
     <Compile Include="Utils\Boxes.cs" />
-    <Compile Include="Utils\BusyManager.cs" />
+    <Compile Include="Utils\BusyManager.cs">
+      <DependentUpon>ObserveAddRemoveCollection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\CharRope.cs" />
     <Compile Include="Utils\CompressingTreeList.cs" />
     <Compile Include="Utils\Constants.cs" />
@@ -415,7 +420,9 @@
   <ItemGroup>
     <Page Include="CodeCompletion\CompletionList.xaml" />
     <Page Include="CodeCompletion\InsightWindow.xaml" />
-    <Page Include="Search\SearchPanel.xaml" />
+    <Page Include="Search\SearchPanel.xaml">
+      <DependentUpon>SearchPanel.cs</DependentUpon>
+    </Page>
     <Page Include="Search\DropDownButton.xaml">
       <DependentUpon>DropDownButton.cs</DependentUpon>
     </Page>

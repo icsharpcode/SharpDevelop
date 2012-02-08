@@ -104,7 +104,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void HighlightBrackets(object sender, EventArgs e)
 		{
-			if (CodeEditorOptions.Instance.HighlightBrackets) {
 				/*
 				 * Special case: ITextEditor.Language guarantees that it never returns null.
 				 * In this case however it can be null, since this code may be called while the document is loaded.
@@ -112,19 +111,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				 * loading of the document has finished.
 				 * */
 				if (this.Adapter.Language != null) {
+				if (CodeEditorOptions.Instance.HighlightBrackets || CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 					var bracketSearchResult = this.Adapter.Language.BracketSearcher.SearchBracket(this.Adapter.Document, this.TextArea.Caret.Offset);
+					if (CodeEditorOptions.Instance.HighlightBrackets) {
 					this.bracketRenderer.SetHighlight(bracketSearchResult);
-					
+					} else {
+						this.bracketRenderer.SetHighlight(null);
+					}
 					if (CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 						this.hiddenDefinitionRenderer.BracketSearchResult = bracketSearchResult;
 						this.hiddenDefinitionRenderer.Show();
 					} else {
 						this.hiddenDefinitionRenderer.ClosePopup();
 					}
-				}
 			} else {
 				this.bracketRenderer.SetHighlight(null);
+					this.hiddenDefinitionRenderer.ClosePopup();
 			}
+		}
 		}
 		#endregion
 		
@@ -239,7 +243,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			var pos = this.TextArea.TextView.GetPositionFloor(e.GetPosition(this.TextArea.TextView) + this.TextArea.TextView.ScrollOffset);
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = pos.Value;
+				args.LogicalPosition = pos.Value.Location;
 			}
 			
 			if (args.InDocument) {
@@ -457,6 +461,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				current = current.NextLine;
 				lineCount++;
 			}
+			if (current != endLine.NextLine)
+				builder.Append("...");
 			
 			return builder.ToString();
 		}
@@ -483,28 +489,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
-		#region CTRL+W extend selection
-		protected override void OnKeyUp(KeyEventArgs e)
-		{
-			base.OnKeyUp(e);
-			if (e.Handled) return;
-			#warning Reimplement CodeManipulation
-			// TODO put these in some menu so that they are discoverable
-			/*
-			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
-				CodeManipulation.ExtendSelection(this.Adapter);
-			}
-			if (e.SystemKey == Key.Up && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-				// Left Alt + Up (probably will have different shortcut)
-				CodeManipulation.MoveStatementUp(this.Adapter);
-			}
-			if (e.SystemKey == Key.Down && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
-				// Left Alt + Down (probably will have different shortcut)
-				CodeManipulation.MoveStatementDown(this.Adapter);
-			}*/
-		}
-		#endregion
-		
 		public void JumpTo(int line, int column)
 		{
 			// closes Debugger popup on debugger step
@@ -515,7 +499,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Focus();
 			
 			if (CodeEditorOptions.Instance.EnableAnimations)
-				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
+				Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
 		}
 		
 		void DisplayCaretHighlightAnimation()
@@ -526,6 +510,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
+			
+			if (layer == null)
+				return;
+			
 			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			

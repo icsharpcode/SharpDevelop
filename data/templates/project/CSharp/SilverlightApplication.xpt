@@ -5,7 +5,7 @@
 		<Name>Silverlight Application</Name>
 		<Category>C#</Category>
 		<Subcategory>Silverlight</Subcategory>
-		<Icon>C#.Project.Form</Icon>
+		<Icon>C#.Project.WebProject</Icon>
 		<Description>Default Silverlight Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

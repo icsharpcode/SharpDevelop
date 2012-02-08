@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class SelectScopeCommand : AbstractComboBoxCommand
 	{
 		private ComboBox comboBox;
-		private static string[] viewTypes = new string[] {"Solution", "Project", "Document", "Namespace", "Class/Module"};
+		private static string[] viewTypes = new string[] {"Solution", "Project", "All open documents", "Document", "Namespace", "Class/Module"};
 		
 		protected override void OnOwnerChanged(EventArgs e)
 		{

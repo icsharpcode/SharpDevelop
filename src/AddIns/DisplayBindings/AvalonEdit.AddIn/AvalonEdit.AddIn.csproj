@@ -101,7 +101,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
-    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
     <Compile Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml.cs">
       <DependentUpon>HiddenDefinitionControl.xaml</DependentUpon>
@@ -112,13 +111,13 @@
     <Compile Include="Src\MyersDiff\DocumentSequence.cs" />
     <Compile Include="Src\MyersDiff\Edit.cs" />
     <Compile Include="Src\MyersDiff\ISequence.cs" />
-    <Compile Include="Src\MyersDiff\MyersDiff.cs" />
+    <Compile Include="Src\MyersDiff\MyersDiffAlgorithm.cs" />
     <Compile Include="Src\MyersDiff\StringSequence.cs" />
     <Compile Include="Src\MyersDiff\Utils.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
+    <Compile Include="Src\SearchPanelLocalization.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
-    <Compile Include="Src\Commands\RunIncrementalSearch.cs" />
     <Compile Include="Src\Commands\SaveFileWithEncoding.cs" />
     <Compile Include="Src\Commands\SortOptionsDialog.xaml.cs">
       <DependentUpon>SortOptionsDialog.xaml</DependentUpon>
@@ -130,7 +129,6 @@
     <Compile Include="Src\CustomizableHighlightingColorizer.cs" />
     <Compile Include="Src\CustomizedHighlightingColor.cs" />
     <Compile Include="Src\DocumentPrinter.cs" />
-    <Compile Include="Src\IncrementalSearch.cs" />
     <Compile Include="Src\InlineUIElementGenerator.cs" />
     <Compile Include="Src\IconBarManager.cs" />
     <Compile Include="Src\IconBarMargin.cs" />

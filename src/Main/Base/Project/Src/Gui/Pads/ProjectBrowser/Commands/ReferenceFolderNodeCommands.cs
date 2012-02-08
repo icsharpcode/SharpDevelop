@@ -7,8 +7,10 @@ using System.Net;
 using System.Web.Services.Discovery;
 using System.Windows.Forms;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
@@ -178,26 +180,33 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	}
 	
 	
-	
-	public class AddServiceReferenceToProject: AbstractMenuCommand
+	public class ShowServiceInBrowser: AbstractMenuCommand
 	{
 		private static string NodePath = "//system.serviceModel//client//endpoint";
 		
 		public override void Run()
 		{
+			//	hack try  url fvoid  = LoadConfigDocument(f);
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			var f = CompilableProject.GetAppConfigFile(node.Project,false);
+			if (!String.IsNullOrEmpty(f))
+			{
 			
 			var configFile = LoadConfigDocument(f);
-			
 			var endPoint = configFile.SelectSingleNode(NodePath).Attributes["address"].Value;
-				
 			ProcessStartInfo startInfo = new ProcessStartInfo("IExplore.exe");
 			startInfo.WindowStyle = ProcessWindowStyle.Normal;
 			startInfo.Arguments = endPoint;
+
 			Process.Start(startInfo);
+				
+				
+				
+			} else
+			{
+				MessageService.ShowError("No app.config File found");
 		}
-		
+		}
 		
 		static XmlDocument LoadConfigDocument(string fileName)
         {
@@ -213,9 +222,29 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
             {
                 throw new Exception("No configuration file found.", e);
             }
-        } 
 	}
+	}
+
 	
+	public class AddServiceReferenceToProject : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			var node = Owner as AbstractProjectBrowserTreeNode;
+			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
+			if (project == null) {
+				return;
+			}
+	
+			var vm = new AddServiceReferenceViewModel(project);
+			var dialog = new AddServiceReferenceDialog();
+			dialog.DataContext = vm;
+			dialog.Owner = WorkbenchSingleton.MainWindow;
+			if (dialog.ShowDialog() ?? true) {
+				vm.AddServiceReference();
+			}
+		}
+	}
 	
 	
 	public class RefreshReference : AbstractMenuCommand

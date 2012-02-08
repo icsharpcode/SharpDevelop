@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,14 +16,16 @@ namespace ICSharpCode.Core.Presentation
 		readonly Codon codon;
 		readonly object caller;
 		BindingExpressionBase isCheckedBinding;
+		readonly IEnumerable<ICondition> conditions;
 		
-		public ToolBarCheckBox(Codon codon, object caller)
+		public ToolBarCheckBox(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
 			this.codon = codon;
 			this.caller = caller;
-			this.Command = CommandWrapper.GetCommand(codon, caller, true);
+			this.conditions = conditions;
+			this.Command = CommandWrapper.GetCommand(codon, caller, true, conditions);
 			CommandWrapper wrapper = this.Command as CommandWrapper;
 			if (wrapper != null) {
 				ICheckableMenuCommand cmd = wrapper.GetAddInCommand() as ICheckableMenuCommand;
@@ -49,7 +52,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public void UpdateStatus()
 		{
-			if (codon.GetFailedAction(caller) == ConditionFailedAction.Exclude)
+			if (Condition.GetFailedAction(conditions, caller) == ConditionFailedAction.Exclude)
 				this.Visibility = Visibility.Collapsed;
 			else
 				this.Visibility = Visibility.Visible;

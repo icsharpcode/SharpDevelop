@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -18,13 +19,15 @@ namespace ICSharpCode.Core.WinForms
 		Image imgButtonDisabled = null;
 		bool buttonEnabled = true;
 		bool dropDownEnabled = true;
+		IEnumerable<ICondition> conditions;
 		
-		public ToolBarSplitButton(Codon codon, object caller, ArrayList subItems)
+		public ToolBarSplitButton(Codon codon, object caller, ArrayList subItems, IEnumerable<ICondition> conditions)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
-			this.caller        = caller;
-			this.codon         = codon;
-			this.subItems	   = subItems;
+			this.caller      = caller;
+			this.codon       = codon;
+			this.subItems	 = subItems;
+			this.conditions  = conditions;
 
 			if (codon.Properties.Contains("label")){
 				Text = StringParser.Parse(codon.Properties["label"]);
@@ -96,7 +99,7 @@ namespace ICSharpCode.Core.WinForms
 				if (codon == null) {
 					return base.Enabled;
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
@@ -138,7 +141,7 @@ namespace ICSharpCode.Core.WinForms
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
+				ConditionFailedAction failedAction = Condition.GetFailedAction(conditions, caller);
 				bool isVisible = failedAction != ConditionFailedAction.Exclude;
 				if (base.Visible != isVisible) {
 					base.Visible = isVisible;

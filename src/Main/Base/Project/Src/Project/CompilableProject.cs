@@ -352,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool IsSilverlightProject {
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
+				return guids.ToUpperInvariant().Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
 			}
 		}
 		
@@ -360,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override bool IsWebProject {
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.Contains("349c5851-65df-11da-9384-00065b846f21");
+				return guids.ToUpperInvariant().Contains("349C5851-65DF-11DA-9384-00065B846F21");
 			}
 		}
 		

@@ -8,7 +8,7 @@
 		<Name>MVC Application</Name>
 		<Category>C#</Category>
 		<Subcategory>ASP.NET MVC</Subcategory>
-		<Icon>C#.Project.Form</Icon>
+		<Icon>C#.Project.WebProject</Icon>
 		<Description>ASP.NET MVC Application</Description>
 		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
@@ -323,6 +323,10 @@ namespace ${StandardNamespace}
 			</namespaces>
 		</pages>
 	</system.web>
+	
+	<system.webServer>
+		<modules runAllManagedModulesForAllRequests="true"/>
+	</system.webServer>
 </configuration>
 ]]>
 			</File>

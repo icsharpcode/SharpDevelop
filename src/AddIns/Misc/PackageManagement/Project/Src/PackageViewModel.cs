@@ -133,17 +133,12 @@ namespace ICSharpCode.PackageManagement
 			get { return package.Summary; }
 		}
 		
-		public Version Version {
-	
+		public SemanticVersion Version {
 			get { return package.Version; }
 		}
 		
 		public int DownloadCount {
 			get { return package.DownloadCount; }
-		}
-		
-		public double Rating {
-			get { return package.Rating; }
 		}
 		
 		public string Description {
@@ -175,7 +170,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = GetSingleProjectSelected();
 			project.Logger = logger;
-			packageOperations = project.GetInstallPackageOperations(package, false);
+			var installAction = project.CreateInstallPackageAction();
+			packageOperations = project.GetInstallPackageOperations(package, installAction);
 		}
 		
 		IPackageManagementProject GetSingleProjectSelected()
@@ -292,7 +288,12 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool IsManaged {
-			get { return selectedProjects.HasMultipleProjects(); }
+			get {
+				if (selectedProjects.HasMultipleProjects()) {
+					return true;
+				}
+				return !selectedProjects.HasSingleProjectSelected();
+			}
 		}
 		
 		public void ManagePackage()
@@ -409,7 +410,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			IPackageManagementProject project = selectedProject.Project;
 			project.Logger = logger;
-			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, false);
+			IEnumerable<PackageOperation> operations = project.GetInstallPackageOperations(package, project.CreateInstallPackageAction());
 			return GetPackagesRequiringLicenseAcceptance(operations);
 		}
 		

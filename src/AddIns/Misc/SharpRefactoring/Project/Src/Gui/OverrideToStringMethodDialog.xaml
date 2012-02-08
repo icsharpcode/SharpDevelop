@@ -5,23 +5,60 @@
 	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<DockPanel Cursor="Arrow">
-		<TextBlock DockPanel.Dock="Top" Margin="3"
+	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
+		<Grid.Resources>
+			<Style x:Key="ListBoxItemFocusHighlight" TargetType="{x:Type ListBoxItem}">
+				<!-- This style replaces the default ListBoxItem template with one that highlights the focused item instead of the selected item -->
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="{x:Type ListBoxItem}">
+							<Border Name="Bd"
+							        Background="{TemplateBinding Background}"
+							        BorderBrush="{TemplateBinding BorderBrush}"
+							        BorderThickness="{TemplateBinding BorderThickness}"
+							        Padding="{TemplateBinding Padding}"
+							        SnapsToDevicePixels="true">
+								<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+							</Border>
+							<ControlTemplate.Triggers>
+								<Trigger Property="IsKeyboardFocusWithin"
+								         Value="true">
+									<Setter TargetName="Bd"
+									        Property="Background"
+									        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+									<Setter Property="Foreground"
+									        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+		</Grid.Resources>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock Margin="3"
 		           Text="{sd:Localize AddIns.SharpRefactoring.OverrideToStringMethod.Description}"
 		           TextWrapping="Wrap" />
-		<widgets:UniformGridWithSpacing Columns="3" Margin="3" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-			<Button Content="{sd:Localize Global.OKButtonText}" Click="OKButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
-			<Button Content="{sd:Localize Global.CancelButtonText}" Click="CancelButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
-			<ToggleButton Content="{sd:Localize Global.SelectAllButtonText}" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:OverrideToStringMethodDialog}}, Mode=OneWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
-		</widgets:UniformGridWithSpacing>
-		<ListBox Margin="4" x:Name="listBox">
+		<ListBox Grid.Row="1" Margin="4" SelectionMode="Multiple" ItemContainerStyle="{StaticResource ListBoxItemFocusHighlight}" x:Name="listBox">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<CheckBox
-						Content="{Binding Text}"
-						IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+					<!-- The checkbox is toggling the actual IsSelected property on the container (ListBoxItem), so it'll update ListBox.SelectedItems -->
+					<!-- Focusable=false because the ListViewItem is already focusable -->
+					<CheckBox Content="{Binding Text}"
+					          IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsSelected}" />
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-	</DockPanel>
+		<widgets:UniformGridWithSpacing Grid.Row="2" Columns="3" Margin="3" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+			<Button Content="{sd:Localize Global.OKButtonText}" Click="OKButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<Button Content="{sd:Localize Global.CancelButtonText}" Click="CancelButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<ToggleButton x:Name="selectAll" Content="{sd:Localize Global.SelectAllButtonText}" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:OverrideToStringMethodDialog}}, Mode=TwoWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
+		</widgets:UniformGridWithSpacing>
+	</Grid>
 </gui:AbstractInlineRefactorDialog>

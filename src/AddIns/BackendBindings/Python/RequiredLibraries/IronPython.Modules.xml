@@ -2177,6 +2177,13 @@
             Base class used for iterator wrappers.
             </summary>
         </member>
+        <member name="M:IronPython.Modules.PythonCsvModule.GetDialects(IronPython.Runtime.CodeContext)">
+            <summary>
+            Returns the dialects from the code context.
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
         <member name="M:IronPython.Modules.PythonLocale.LocaleInfo.CreateConventionsDict">
             <summary>
             Popupates the given directory w/ the locale information from the given
@@ -2732,6 +2739,9 @@
         <member name="F:IronPython.Modules.CTypes.SimpleTypeKind.VariantBool">
             <summary> 'v' </summary>
         </member>
+        <member name="F:IronPython.Modules.CTypes.SimpleTypeKind.BStr">
+            <summary> 'X' </summary>
+        </member>
         <member name="T:IronPython.Modules.CTypes.CData">
             <summary>
             Base class for all ctypes interop types.
@@ -2818,6 +2828,11 @@
             tuple is the ordinal or function name.  The second is an object with
             a _handle property.  The _handle property is the handle of the module
             from which the function will be loaded.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.CTypes._CFuncPtr.#ctor(System.Int32,System.String)">
+            <summary>
+            Creates a new CFuncPtr which calls a COM method.
             </summary>
         </member>
         <member name="M:IronPython.Modules.CTypes._CFuncPtr.#ctor(System.Int32)">
@@ -3010,6 +3025,13 @@
         <member name="T:IronPython.Modules.PythonStruct.Format">
             <summary>
             Struct used to store the format and the number of times it should be repeated.
+            </summary>
+        </member>
+        <member name="M:IronPython.Modules.PythonThread.interrupt_main(IronPython.Runtime.CodeContext)">
+            <summary>
+            Stops execution of Python or other .NET code on the main thread.  If the thread is
+            blocked in native code the thread will be interrupted after it returns back to Python
+            or other .NET code.  
             </summary>
         </member>
         <member name="T:IronPython.Modules.PythonThread._local.ThreadLocalDictionaryStorage">

@@ -27,7 +27,7 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override void ExecuteCore()
 		{
-			Project.UninstallPackage(Package, ForceRemove, RemoveDependencies);
+			Project.UninstallPackage(Package, this);
 			OnParentPackageUninstalled();
 		}
 		

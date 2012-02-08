@@ -22,7 +22,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (project != null) {
 				foreach (TestFrameworkDescriptor descriptor in testFrameworkDescriptors) {
-					if (descriptor.IsSupportedProject(project)) {
+					if (descriptor.IsSupportedProject(project) && descriptor.TestFramework.IsTestProject(project)) {
 						return descriptor.TestFramework;
 					}
 				}
@@ -30,13 +30,20 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public bool IsTestMethod(IMember member)
+		public bool IsTestMember(IMember member)
 		{
 			ITestFramework testFramework = GetTestFramework(member);
 			if (testFramework != null) {
-				return testFramework.IsTestMethod(member);
+				return testFramework.IsTestMember(member);
 			}
 			return false;
+		}
+		
+		public IEnumerable<TestMember> GetTestMembersFor(IClass @class) {
+			ITestFramework testFramework = GetTestFramework(@class);
+			if (testFramework != null)
+				return testFramework.GetTestMembersFor(@class);
+			return new TestMember[0];
 		}
 		
 		ITestFramework GetTestFramework(IMember member)

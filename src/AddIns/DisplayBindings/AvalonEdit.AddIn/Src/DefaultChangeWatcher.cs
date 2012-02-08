@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				Dictionary<string, int> hashes = new Dictionary<string, int>();
 				
-				MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(
+				MyersDiffAlgorithm diff = new MyersDiffAlgorithm(
 					new DocumentSequence(baseDocument, hashes),
 					new DocumentSequence(document, hashes)
 				);

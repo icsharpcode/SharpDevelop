@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
@@ -14,7 +16,6 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -355,8 +356,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
+			TextDocument document = null;
+			FileName fileName = null;
+			IHighlighter highlighter = null;
 			foreach (Reference r in list) {
-				SearchResultMatch res = new SearchResultMatch(GetDocumentInformation(r.FileName), r.Region.Begin, r.Region.End);
+				if (document == null || fileName != r.FileName) {
+					document = new TextDocument(ParserService.GetParseableFileContent(r.FileName));
+					fileName = r.FileName;
+					var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(r.FileName));
+					if (def != null)
+						highlighter = new DocumentHighlighter(document, def.MainRuleSet);
+					else
+						highlighter = null;
+				}
+				var start = r.Region.Begin;
+				var end = r.Region.End;
+				var startOffset = document.GetOffset(start);
+				var endOffset = document.GetOffset(end);
+				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
+				SearchResultMatch res = new SearchResultMatch(fileName, start, end, startOffset, endOffset - startOffset, builder);
 				results.Add(res);
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 
 using ICSharpCode.SharpDevelop.Dom;
@@ -60,7 +61,7 @@ namespace ICSharpCode.WixBinding
 			base.Start(false); // debugging not supported
 		}
 		
-		public override System.Diagnostics.ProcessStartInfo CreateStartInfo()
+		public override ProcessStartInfo CreateStartInfo()
 		{
 			switch (StartAction) {
 				case StartAction.Project:
@@ -109,11 +110,20 @@ namespace ICSharpCode.WixBinding
 		/// </summary>
 		public string GetInstallerFullPath()
 		{
-			string outputPath = GetEvaluatedProperty("OutputPath") ?? String.Empty;
-			string outputType = GetEvaluatedProperty("OutputType") ?? String.Empty;
-			string outputName = GetEvaluatedProperty("OutputName") ?? String.Empty;
+			string outputPath = GetEvaluatedPropertyOrEmptyString("OutputPath");
+			string outputType = GetEvaluatedPropertyOrEmptyString("OutputType");
+			string outputName = GetEvaluatedPropertyOrEmptyString("OutputName");
 			string fileName = String.Concat(outputName, GetInstallerExtension(outputType));
 			return Path.Combine(Directory, outputPath, fileName);
+		}
+		
+		string GetEvaluatedPropertyOrEmptyString(string propertyName)
+		{
+			return GetEvaluatedProperty(propertyName) ?? String.Empty;
+		}
+		
+		public override string OutputAssemblyFullPath {
+			get { return GetInstallerFullPath(); }
 		}
 	
 		/// <summary>
@@ -177,7 +187,7 @@ namespace ICSharpCode.WixBinding
 		/// </remarks>
 		public string GetPreprocessorVariableValue(string name)
 		{
-			string constants = GetEvaluatedProperty("DefineConstants") ?? String.Empty;
+			string constants = GetEvaluatedProperty("DefineConstants");
 			NameValuePairCollection nameValuePairs = new NameValuePairCollection(constants);
 			return WixPropertyParser.Parse(nameValuePairs.GetValue(name), this);
 		}
@@ -214,7 +224,7 @@ namespace ICSharpCode.WixBinding
 		/// AssemblyName must be implemented correctly - used when renaming projects.
 		/// </summary>
 		public override string AssemblyName {
-			get { return GetEvaluatedProperty("OutputName") ?? Name; }
+			get { return GetEvaluatedProperty("OutputName"); }
 			set { SetProperty("OutputName", value); }
 		}
 		

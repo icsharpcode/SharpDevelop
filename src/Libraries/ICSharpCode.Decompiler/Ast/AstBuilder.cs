@@ -641,6 +641,10 @@ namespace ICSharpCode.Decompiler.Ast
 					modifiers |= Modifiers.Readonly;
 			}
 			
+			RequiredModifierType modreq = fieldDef.FieldType as RequiredModifierType;
+			if (modreq != null && modreq.ModifierType.FullName == typeof(IsVolatile).FullName)
+				modifiers |= Modifiers.Volatile;
+			
 			return modifiers;
 		}
 		
@@ -793,7 +797,7 @@ namespace ICSharpCode.Decompiler.Ast
 		{
 			foreach (var gp in genericParameters) {
 				Constraint c = new Constraint();
-				c.TypeParameter = CleanName(gp.Name);
+				c.TypeParameter = new SimpleType(CleanName(gp.Name));
 				// class/struct must be first
 				if (gp.HasReferenceTypeConstraint)
 					c.BaseTypes.Add(new PrimitiveType("class"));

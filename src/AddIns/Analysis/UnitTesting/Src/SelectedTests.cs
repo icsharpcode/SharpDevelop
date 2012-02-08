@@ -12,14 +12,14 @@ namespace ICSharpCode.UnitTesting
 	{
 		string namespaceFilter;
 		IClass c;
-		IMember method;
+		IMember member;
 		List<IProject> projects = new List<IProject>();
 		
-		public SelectedTests(IProject project, string namespaceFilter, IClass c, IMember method)
+		public SelectedTests(IProject project, string namespaceFilter, IClass c, IMember member)
 		{
 			this.namespaceFilter = namespaceFilter;
 			this.c = c;
-			this.method = method;
+			this.member = member;
 			
 			if (project != null) {
 				projects.Add(project);
@@ -40,8 +40,8 @@ namespace ICSharpCode.UnitTesting
 				projects.AddRange(selectedProjects);
 			}
 			
-			method = TestableCondition.GetMember(owner);
-			c = GetClass(method, owner);
+			member = TestableCondition.GetMember(owner);
+			c = GetClass(member, owner);
 			namespaceFilter = TestableCondition.GetNamespace(owner);
 		}
 		
@@ -64,8 +64,12 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
-		public IList<IProject> Projects {
+		public IEnumerable<IProject> Projects {
 			get { return projects; }
+		}
+		
+		public int ProjectsCount {
+			get {return projects.Count;}
 		}
 		
 		public IProject Project {
@@ -85,8 +89,8 @@ namespace ICSharpCode.UnitTesting
 			get { return c; }
 		}
 		
-		public IMember Method {
-			get { return method; }
+		public IMember Member {
+			get { return member; }
 		}
 	}
 }

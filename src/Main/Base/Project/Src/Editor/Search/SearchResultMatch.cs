@@ -2,60 +2,53 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
 {
 	public class SearchResultMatch
 	{
-		ProvidedDocumentInformation providedDocumentInformation;
+		FileName fileName;
 		int offset;
 		int length;
 		TextLocation startLocation;
 		TextLocation endLocation;
-		
-		public ProvidedDocumentInformation ProvidedDocumentInformation {
-			set { providedDocumentInformation = value; }
-		}
+		HighlightedInlineBuilder builder;
 		
 		public FileName FileName {
-			get {
-				return providedDocumentInformation.FileName;
-			}
-		}
-		
-		public int Offset {
-			get {
-				if (offset < 0)
-					offset = providedDocumentInformation.Document.GetOffset(startLocation);
-				return offset;
-			}
-		}
-		
-		public int Length {
-			get {
-				if (length < 0)
-					length = providedDocumentInformation.Document.GetOffset(endLocation) - this.Offset;
-				return length;
-			}
+			get { return fileName; }
 		}
 		
 		public TextLocation StartLocation {
-			get { 
-				if (startLocation.IsEmpty)
-					startLocation = providedDocumentInformation.Document.GetLocation(offset);
-				return startLocation; 
-			}
+			get { return startLocation; }
 		}
 		
 		public TextLocation EndLocation {
-			get { 
-				if (endLocation.IsEmpty)
-					endLocation = providedDocumentInformation.Document.GetLocation(offset + length);
-				return endLocation; 
-			}
+			get { return endLocation; }
+		}
+		
+		public HighlightedInlineBuilder Builder {
+			get { return builder; }
+		}
+		
+		public int StartOffset {
+			get { return offset; }
+		}
+		
+		public int Length {
+			get { return length; }
+		}
+		
+		public int EndOffset {
+			get { return offset + length; }
 		}
 		
 		public virtual string TransformReplacePattern(string pattern)
@@ -63,58 +56,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return pattern;
 		}
 		
-		public IDocument CreateDocument()
+		public SearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder)
 		{
-			return providedDocumentInformation.Document;
-		}
-		
-		public SearchResultMatch(int offset, int length)
-		{
-			if (length < 0)
-				throw new ArgumentOutOfRangeException("length");
-			if (offset < 0)
-				throw new ArgumentOutOfRangeException("offset");
-			this.offset   = offset;
-			this.length   = length;
-		}
-		
-		public SearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, int offset, int length)
-		{
-			if (providedDocumentInformation == null)
-				throw new ArgumentNullException("providedDocumentInformation");
-			if (length < 0)
-				throw new ArgumentOutOfRangeException("length");
-			if (offset < 0)
-				throw new ArgumentOutOfRangeException("offset");
-			this.providedDocumentInformation = providedDocumentInformation;
-			this.offset   = offset;
-			this.length   = length;
-		}
-		
-		
-		public SearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, TextLocation startLocation, TextLocation endLocation)
-		{
-			if (providedDocumentInformation == null)
-				throw new ArgumentNullException("providedDocumentInformation");
-			if (length < 0)
-				throw new ArgumentOutOfRangeException("length");
-			this.offset = -1;
-			this.length = -1;
-			this.providedDocumentInformation = providedDocumentInformation;
+			this.fileName = fileName;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
-		}
-		
-		[Obsolete("Use the StartLocation property instead")]
-		public virtual TextLocation GetStartPosition(IDocument document)
-		{
-			return document.GetLocation(Math.Min(Offset, document.TextLength));
-		}
-		
-		[Obsolete("Use the EndLocation property instead")]
-		public virtual TextLocation GetEndPosition(IDocument document)
-		{
-			return document.GetLocation(Math.Min(Offset + Length, document.TextLength));
+			this.offset = offset;
+			this.length = length;
+			this.builder = builder;
 		}
 		
 		/// <summary>
@@ -128,8 +77,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public override string ToString()
 		{
-			return String.Format("[{3}: FileName={0}, Offset={1}, Length={2}]",
-			                     FileName, Offset, Length,
+			return String.Format("[{3}: FileName={0}, StartLocation={1}, EndLocation={2}]",
+			                     fileName, startLocation, endLocation,
 			                     GetType().Name);
 		}
 	}
@@ -144,10 +93,43 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
-		public SimpleSearchResultMatch(ProvidedDocumentInformation providedDocumentInformation, string displayText, TextLocation position)
-			: base(providedDocumentInformation, position, position)
+		public SimpleSearchResultMatch(FileName fileName, TextLocation position, int offset, string displayText)
+			: base(fileName, position, position, offset, 0, null)
 		{
 			this.displayText = displayText;
+		}
+	}
+	
+	public class AvalonEditSearchResultMatch : SearchResultMatch
+	{
+		ICSharpCode.AvalonEdit.Search.ISearchResult match;
+		
+		public AvalonEditSearchResultMatch(FileName fileName, TextLocation startLocation, TextLocation endLocation, int offset, int length, HighlightedInlineBuilder builder, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+			: base(fileName, startLocation, endLocation, offset, length, builder)
+		{
+			this.match = match;
+		}
+		
+		public override string TransformReplacePattern(string pattern)
+		{
+			return match.ReplaceWith(pattern);
+		}
+	}
+	
+	public class SearchedFile
+	{
+		public FileName FileName { get; private set; }
+		
+		public IList<SearchResultMatch> Matches { get; private set; }
+		
+		public SearchedFile(FileName fileName, IList<SearchResultMatch> matches)
+		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (matches == null)
+				throw new ArgumentNullException("matches");
+			this.FileName = fileName;
+			this.Matches = matches;
 		}
 	}
 }

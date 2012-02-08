@@ -8,18 +8,51 @@
 	<gui:AbstractInlineRefactorDialog.Resources>
 		<gui:IntToBoolConverter x:Key="intToBoolConverter" />
 		<Style TargetType="Button" BasedOn="{x:Static sd:GlobalStyles.ButtonStyle}"/>
+		
+		<Style x:Key="ListViewItemFocusHighlight" TargetType="{x:Type ListViewItem}">
+			<!-- This style replaces the default ListViewItem template with one that highlights the focused item instead of the selected items -->
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ListViewItem}">
+						<Border Name="Bd"
+						        Background="{TemplateBinding Background}"
+						        BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        Padding="{TemplateBinding Padding}"
+						        SnapsToDevicePixels="true">
+							<GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsKeyboardFocusWithin"
+							         Value="true">
+								<Setter TargetName="Bd"
+								        Property="Background"
+								        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+								<Setter Property="Foreground"
+								        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 	</gui:AbstractInlineRefactorDialog.Resources>
-	<StackPanel Cursor="Arrow">
-		<TextBlock DockPanel.Dock="Top" Margin="3"
+	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<TextBlock Margin="3"
 		           Text="{sd:Localize AddIns.SharpRefactoring.InsertCtor.Description}"
 		           TextWrapping="Wrap" />
-		<ListView x:Name="varList" MaxHeight="300">
+		<ListView x:Name="varList" Grid.Row="1" SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ListViewItemFocusHighlight}" MaxHeight="300">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
-								<CheckBox Content="{Binding Text}" IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+								<CheckBox Content="{Binding Text}" IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsSelected}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
@@ -40,12 +73,12 @@
 				</GridView>
 			</ListView.View>
 		</ListView>
-		<DockPanel LastChildFill="False">
+		<DockPanel Grid.Row="2" LastChildFill="False">
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
-			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveDown}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
-			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveUp}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
-			<ToggleButton DockPanel.Dock="Right" Content="{sd:Localize Global.SelectAllButtonText}" Margin="3" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:InsertCtorDialog}}, Mode=OneWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
+			<Button x:Name="moveDown" DockPanel.Dock="Right" Content="{sd:Localize Global.MoveDown}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
+			<Button x:Name="moveUp" DockPanel.Dock="Right" Content="{sd:Localize Global.MoveUp}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
+			<ToggleButton x:Name="selectAll" DockPanel.Dock="Right" Content="{sd:Localize Global.SelectAllButtonText}" Margin="3" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:InsertCtorDialog}}, Mode=OneWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
 		</DockPanel>
-	</StackPanel>
+	</Grid>
 </gui:AbstractInlineRefactorDialog>

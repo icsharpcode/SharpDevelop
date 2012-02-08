@@ -514,7 +514,7 @@ namespace ICSharpCode.SharpDevelop
 			return newContent;
 		}
 		
-#region Dom, AST, Editor, Document		
+		#region Dom, AST, Editor, Document
 		public static string GetText(this IDocument document, TextLocation startPos, TextLocation endPos)
 		{
 			int startOffset = document.GetOffset(startPos);
@@ -538,6 +538,6 @@ namespace ICSharpCode.SharpDevelop
 			else
 				return AmbienceService.GetCurrentAmbience();
 		}
-		#endregion		
+		#endregion
 	}
 }

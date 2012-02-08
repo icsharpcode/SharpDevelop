@@ -32,7 +32,7 @@ namespace UnitTesting.Tests.Frameworks
 			memberNodeForMethodWithTestAttribute = new MockMemberNode(methodWithTestAttribute);
 			
 			testFrameworks = new MockRegisteredTestFrameworks();
-			testFrameworks.AddTestMethod(methodWithTestAttribute);
+			testFrameworks.AddTestMember(methodWithTestAttribute);
 			
 			testableCondition = new TestableCondition(testFrameworks);
 		}
@@ -57,7 +57,7 @@ namespace UnitTesting.Tests.Frameworks
 			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
 			MockMemberNode memberNode = new MockMemberNode(method);
 			testableCondition.IsValid(memberNode, null);
-			Assert.AreEqual(method, testFrameworks.IsTestMethodMemberParameterUsed);
+			Assert.AreEqual(method, testFrameworks.IsTestMemberParameterUsed);
 		}
 	}
 }

@@ -59,6 +59,13 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
+		public void AllowPrereleaseVersions_DefaultValue_ReturnsFalse()
+		{
+			CreateSolution();
+			Assert.IsFalse(action.AllowPrereleaseVersions);
+		}
+		
+		[Test]
 		public void Execute_PackageAndRepositoryPassed_PackageOperationsUsedToUpdatePackage()
 		{
 			CreateSolution();
@@ -78,6 +85,30 @@ namespace PackageManagement.Tests
 			updatePackageHelper.UpdateTestPackage();
 			
 			bool result = fakeProject.UpdateDependenciesPassedToUpdatePackage;
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void Execute_PackageAndRepositoryPassed_PrereleaseVersionsNotAllowed()
+		{
+			CreateSolution();
+			updatePackageHelper.AllowPrereleaseVersions = false;
+			updatePackageHelper.UpdateTestPackage();
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToUpdatePackage;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_PackageAndRepositoryPassedAndAllowPrereleaseVersions_PrereleaseVersionsAllowed()
+		{
+			CreateSolution();
+			updatePackageHelper.AllowPrereleaseVersions = true;
+			updatePackageHelper.UpdateTestPackage();
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToUpdatePackage;
 			
 			Assert.IsTrue(result);
 		}
@@ -181,6 +212,32 @@ namespace PackageManagement.Tests
 			bool result = fakeProject.IgnoreDependenciesPassedToGetInstallPackageOperations;
 			
 			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_AllowPrereleaseVersionsIsFalseAndNoPackageOperations_PrereleaseVersionsNotAllowedWhenGettingPackageOperations()
+		{
+			CreateSolution();
+			
+			updatePackageHelper.AllowPrereleaseVersions = false;
+			updatePackageHelper.UpdatePackageById("PackageId");
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Execute_AllowPrereleaseVersionsIsTrueAndNoPackageOperations_PrereleaseVersionsAllowedWhenGettingPackageOperations()
+		{
+			CreateSolution();
+			
+			updatePackageHelper.AllowPrereleaseVersions = true;
+			updatePackageHelper.UpdatePackageById("PackageId");
+			
+			bool result = fakeProject.AllowPrereleaseVersionsPassedToGetInstallPackageOperations;
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]

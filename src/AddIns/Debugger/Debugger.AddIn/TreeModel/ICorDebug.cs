@@ -16,7 +16,7 @@ namespace Debugger.AddIn.TreeModel
 			List<TreeNode> children;
 			
 			public InfoNode(TreeNode parent, string name, string text)
-				: this(parent, name, text, null)
+				: this(parent, name, text, _ => null)
 			{
 				
 			}

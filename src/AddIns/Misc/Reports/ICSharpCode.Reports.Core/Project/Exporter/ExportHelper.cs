@@ -51,15 +51,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (items == null) {
 				throw new ArgumentNullException("items");
 			}
+
 			ExporterCollection col = new ExporterCollection();
 			if (items.Count > 0) {
-				
+				items.SortByLocation();
 				foreach(BaseReportItem item in items)
 				{
 					var converteditem = ExportHelper.ConvertLineItem(item,offset);
-					if (converteditem != null) {
-						col.Add((BaseExportColumn)ExportHelper.ConvertLineItem(item,offset));
-					}
+					col.Add((BaseExportColumn)converteditem);
 				}
 			}
 			return col;

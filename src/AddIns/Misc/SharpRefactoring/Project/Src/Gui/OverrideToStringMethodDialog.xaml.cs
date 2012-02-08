@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop.Dom;
@@ -20,26 +21,23 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
-		List<PropertyOrFieldWrapper> fields;
 		string baseCall;
 		string insertedCode;
 		
-		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields, string baseCall)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<PropertyOrFieldWrapper> fields, string baseCall)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
 			this.baseCall = baseCall;
-			this.fields = fields.Where(f => f.ReturnType != null).Select(f => new PropertyOrFieldWrapper(f) { IsSelected = true }).ToList();
-			this.listBox.ItemsSource = this.fields;
+			this.listBox.ItemsSource = fields;
+			
+			listBox.SelectAll();
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			string[] fields = this.fields
-				.Where(f => f.IsSelected)
-				.Select(f2 => f2.MemberName)
-				.ToArray();
+			string[] fields = listBox.SelectedItems.OfType<PropertyOrFieldWrapper>().Select(f2 => f2.MemberName).ToArray();
 			
 			Ast.PrimitiveExpression formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
 			List<Ast.Expression> param = new List<Ast.Expression>() { formatString };
@@ -75,20 +73,31 @@ namespace SharpRefactoring.Gui
 		
 		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			foreach (PropertyOrFieldWrapper field in fields) {
-				field.IsSelected = true;
-			}
+			listBox.SelectAll();
 		}
 		
 		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			foreach (PropertyOrFieldWrapper field in fields) {
-				field.IsSelected = false;
-			}
+			listBox.UnselectAll();
 		}
 		
-		public bool AllSelected {
-			get { return fields.All(f => f.IsSelected); }
+		bool AllSelected {
+			get { return listBox.SelectedItems.Count == listBox.Items.Count; }
+		}
+		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			Key? allAccessKey = GetAccessKeyFromButton(selectAll);
+			
+			if ((e.KeyboardDevice.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt && allAccessKey == e.SystemKey) {
+				if (AllSelected)
+					listBox.UnselectAll();
+				else
+					listBox.SelectAll();
+				e.Handled = true;
+			}
+			
+			base.OnKeyDown(e);
 		}
 		
 		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)

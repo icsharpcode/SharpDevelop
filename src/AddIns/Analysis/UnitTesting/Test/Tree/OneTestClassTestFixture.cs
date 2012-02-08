@@ -174,7 +174,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void SelectedMethod()
 		{
-			Assert.IsNull(treeView.SelectedMethod);
+			Assert.IsNull(treeView.SelectedMember);
 		}
 		
 		[Test]
@@ -282,7 +282,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void TestMethodIsTestMethodNode()
 		{
-			Assert.IsInstanceOf(typeof(TestMethodTreeNode), testNode);
+			Assert.IsInstanceOf(typeof(TestMemberTreeNode), testNode);
 		}
 		
 		[Test]
@@ -302,7 +302,7 @@ namespace UnitTesting.Tests.Tree
 		public void SelectedMethodWhenMethodSelected()
 		{
 			treeView.SelectedNode = testNode;
-			Assert.AreSame(testMethod, treeView.SelectedMethod);
+			Assert.AreSame(testMethod, treeView.SelectedMember);
 		}
 		
 		[Test]
@@ -374,7 +374,7 @@ namespace UnitTesting.Tests.Tree
 			
 			MockMethod method = new MockMethod(testClass.Class, "NewMethod");
 			method.Attributes.Add(new MockAttribute("Test"));
-			testClass.TestMethods.Add(new TestMethod(method));
+			testClass.TestMembers.Add(new TestMember(method));
 			
 			ExtTreeNode newMethodNode = null;
 			foreach (ExtTreeNode node in testFixtureNode.Nodes) {
@@ -386,7 +386,7 @@ namespace UnitTesting.Tests.Tree
 			
 			Assert.AreEqual(2, testFixtureNode.Nodes.Count);
 			Assert.IsNotNull(newMethodNode);
-			Assert.IsInstanceOf(typeof(TestMethodTreeNode), newMethodNode);
+			Assert.IsInstanceOf(typeof(TestMemberTreeNode), newMethodNode);
 		}
 		
 		/// <summary>
@@ -399,9 +399,9 @@ namespace UnitTesting.Tests.Tree
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			TestClass testClass = projectNode.TestProject.TestClasses["RootNamespace.Tests.MyTestFixture"];		
 			
-			TestMethodTreeNode methodNode = (TestMethodTreeNode)testFixtureNode.Nodes[0];
-			TestMethod testMethod = testClass.TestMethods[0];
-			testClass.TestMethods.Remove(testMethod);
+			TestMemberTreeNode methodNode = (TestMemberTreeNode)testFixtureNode.Nodes[0];
+			TestMember testMethod = testClass.TestMembers[0];
+			testClass.TestMembers.Remove(testMethod);
 			
 			Assert.AreEqual(0, testFixtureNode.Nodes.Count);
 			Assert.IsTrue(methodNode.IsDisposed);
@@ -430,7 +430,7 @@ namespace UnitTesting.Tests.Tree
 		{
 			TestProjectTreeNode projectNode = (TestProjectTreeNode)rootNode;
 			TestClass testClass = projectNode.TestProject.TestClasses["RootNamespace.Tests.MyTestFixture"];		
-			TestMethodTreeNode methodNode = (TestMethodTreeNode)testFixtureNode.Nodes[0];
+			TestMemberTreeNode methodNode = (TestMemberTreeNode)testFixtureNode.Nodes[0];
 			
 			testFixtureNode.Expanding();
 			
@@ -445,7 +445,7 @@ namespace UnitTesting.Tests.Tree
 			
 			// Make sure the TestClass.Dispose call removes all
 			// event handlers.
-			testClass.TestMethods.RemoveAt(0);
+			testClass.TestMembers.RemoveAt(0);
 			
 			Assert.AreEqual(1, testFixtureNode.Nodes.Count,
 				"Should still have one child node.");

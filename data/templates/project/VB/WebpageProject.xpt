@@ -6,7 +6,7 @@
 		<Name>${res:Templates.Project.WebPage.Name}</Name>
 		<Category>VB</Category>
 		<Subcategory>ASP.NET</Subcategory>
-		<Icon>VBNet.Project.Form</Icon>
+		<Icon>VBNet.Project.WebProject</Icon>
 		<Description>${res:Templates.Project.WebPage.Description}</Description>
 		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>

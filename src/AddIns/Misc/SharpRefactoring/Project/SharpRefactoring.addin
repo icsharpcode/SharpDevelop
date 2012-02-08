@@ -29,11 +29,15 @@
 		<MenuItem id = "ExtractMethod"
 		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"
 		          class = "SharpRefactoring.ExtractMethodCommand" />
+		<MenuItem id = "CreateProperties"
+		          label = "${res:AddIns.SharpRefactoring.CreateProperties.Title}"
+		          class = "SharpRefactoring.CreatePropertiesCommand" />
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="ctor" class="SharpRefactoring.InsertCtorSnippetRefactoring" />
 		<Class id="switch" class="SharpRefactoring.SwitchSnippetProvider" />
+		<Class id="propall" class="SharpRefactoring.CreateProperties" />
 	</Path>
 	
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActions">

@@ -89,6 +89,8 @@
     <Compile Include="Src\ContextActions\ParamCheckForNull.cs" />
     <Compile Include="Src\ContextActions\ParamRangeCheck.cs" />
     <Compile Include="Src\ContextActions\RenameFileToMatchClassName.cs" />
+    <Compile Include="Src\CreateProperties.cs" />
+    <Compile Include="Src\CreatePropertiesCommand.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
@@ -100,6 +102,11 @@
     </Compile>
     <Compile Include="Src\GenerateCode.cs" />
     <Compile Include="Src\Gui\AbstractInlineRefactorDialog.cs" />
+    <Compile Include="Src\Gui\CreatePropertiesDialog.xaml.cs">
+      <DependentUpon>CreatePropertiesDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\FieldWrapper.cs" />
     <Compile Include="Src\Gui\PropertyOrFieldWrapper.cs" />
     <Compile Include="Src\Gui\InlineRefactorSnippetElement.cs" />
     <Compile Include="Src\Gui\InsertCtorDialog.xaml.cs">
@@ -144,6 +151,7 @@
     <Folder Include="Src\MenuItemFactories" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Gui\CreatePropertiesDialog.xaml" />
     <Page Include="Src\Gui\InsertCtorDialog.xaml" />
     <Page Include="Src\Gui\IntroduceMethodDialog.xaml" />
     <Page Include="Src\Gui\OverrideEqualsGetHashCodeMethodsDialog.xaml" />

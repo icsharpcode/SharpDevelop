@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,6 +17,7 @@ namespace ICSharpCode.Core.Presentation
 	{
 		protected readonly Codon codon;
 		protected readonly object caller;
+		protected readonly IEnumerable<ICondition> conditions;
 		
 		/// <summary>
 		/// If true, UpdateStatus() sets the enabled flag.
@@ -23,10 +25,11 @@ namespace ICSharpCode.Core.Presentation
 		/// </summary>
 		internal bool SetEnabled;
 		
-		public CoreMenuItem(Codon codon, object caller)
+		public CoreMenuItem(Codon codon, object caller, IEnumerable<ICondition> conditions)
 		{
 			this.codon = codon;
 			this.caller = caller;
+			this.conditions = conditions;
 			
 			if (codon.Properties.Contains("icon")) {
 				try {
@@ -47,7 +50,7 @@ namespace ICSharpCode.Core.Presentation
 		
 		public virtual void UpdateStatus()
 		{
-			ConditionFailedAction result = codon.GetFailedAction(caller);
+			ConditionFailedAction result = Condition.GetFailedAction(conditions, caller);
 			if (result == ConditionFailedAction.Exclude)
 				this.Visibility = Visibility.Collapsed;
 			else

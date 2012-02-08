@@ -16,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public ProjectProperty<string> PreBuildEvent {
 			get { return GetProperty("PreBuildEvent", "", TextBoxEditMode.EditRawProperty); }
+			
 		}
 		
 		public ProjectProperty<string> PostBuildEvent {

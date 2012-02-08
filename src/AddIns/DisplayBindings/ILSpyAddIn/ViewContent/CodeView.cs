@@ -7,16 +7,17 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.ILSpyAddIn.ViewContent
 {
@@ -35,7 +36,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 	/// <summary>
 	/// Equivalent to AE.AddIn CodeEditor, but without editing capabilities.
 	/// </summary>
-	class CodeView : Grid, IDisposable, ICodeEditor
+	class CodeView : Grid, IDisposable, ICodeEditor, IPositionable
 	{
 		public event EventHandler DocumentChanged;
 		
@@ -69,6 +70,8 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			this.adapter.TextEditor.MouseHover += TextEditorMouseHover;
 			this.adapter.TextEditor.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.adapter.TextEditor.MouseLeave += TextEditorMouseLeave;
+			
+			this.adapter.TextEditor.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(this.adapter.TextEditor.TextArea));
 		}
 
 		#region Popup
@@ -81,7 +84,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			var pos = adapter.TextEditor.GetPositionFromPoint(e.GetPosition(this));
 			args.InDocument = pos.HasValue;
 			if (pos.HasValue) {
-				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value);
+				args.LogicalPosition = AvalonEditDocumentAdapter.ToLocation(pos.Value.Location);
 			}
 			
 			if (!args.Handled) {
@@ -258,6 +261,23 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		public void Redraw(ISegment segment, System.Windows.Threading.DispatcherPriority priority)
 		{
 			this.adapter.TextEditor.TextArea.TextView.Redraw(segment, priority);
+		}
+		
+		public int Line {
+			get {
+				return this.adapter.Caret.Line;
+			}
+		}
+		
+		public int Column {
+			get {
+				return this.adapter.Caret.Column;
+			}
+		}
+		
+		public void JumpTo(int line, int column)
+		{
+			this.adapter.JumpTo(line, column);
 		}
 	}
 }

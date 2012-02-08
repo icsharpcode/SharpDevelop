@@ -41,10 +41,6 @@ namespace UpdateAssemblyInfo
 				Output = "src/Setup/SharpDevelop.Setup.wixproj.user"
 			},
 			new TemplateFile {
-				Input = "doc/ChangeLog.template.html",
-				Output = "doc/ChangeLog.html"
-			},
-			new TemplateFile {
 				Input = "src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.template",
 				Output = "src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.cs"
 			}

@@ -2,12 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
@@ -34,6 +35,14 @@ namespace ICSharpCode.AvalonEdit.Search
 			"FindPrevious", typeof(SearchPanel),
 			new InputGestureCollection { new KeyGesture(Key.F3, ModifierKeys.Shift) }
 		);
+		
+		/// <summary>
+		/// Closes the SearchPanel.
+		/// </summary>
+		public static readonly RoutedCommand CloseSearchPanel = new RoutedCommand(
+			"CloseSearchPanel", typeof(SearchPanel),
+			new InputGestureCollection { new KeyGesture(Key.Escape) }
+		);
 	}
 	
 	/// <summary>
@@ -47,32 +56,46 @@ namespace ICSharpCode.AvalonEdit.Search
 		public SearchInputHandler(TextArea textArea)
 			: base(textArea)
 		{
-			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
-			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext));
-			this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, ExecuteFindPrevious));
+			RegisterCommands(this.CommandBindings);
 		}
+		
+		void RegisterCommands(ICollection<CommandBinding> commandBindings)
+		{
+			commandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
+			commandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext));
+			commandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, ExecuteFindPrevious));
+			commandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, ExecuteCloseSearchPanel));
+		}
+		
+		SearchPanel panel;
 		
 		void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
 		{
-			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
-			if (panel == null)
-				new SearchPanel(TextArea);
-			else
-				panel.Reactivate();
+			if (panel == null || panel.IsClosed) {
+				panel = new SearchPanel();
+				panel.Attach(TextArea);
+			}
+			panel.SearchPattern = TextArea.Selection.GetText();
+			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Input, (Action)delegate { panel.Reactivate(); });
 		}
 		
 		void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
 		{
-			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
 			if (panel != null)
 				panel.FindNext();
 		}
 		
 		void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
 		{
-			var panel = TextArea.TextView.Layers.OfType<SearchPanel>().FirstOrDefault();
 			if (panel != null)
 				panel.FindPrevious();
+		}
+		
+		void ExecuteCloseSearchPanel(object sender, ExecutedRoutedEventArgs e)
+		{
+			if (panel != null)
+				panel.Close();
+			panel = null;
 		}
 	}
 }

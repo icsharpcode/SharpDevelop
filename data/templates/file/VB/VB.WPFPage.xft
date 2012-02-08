@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.WinFXPage.Name}"
-		  icon        = "Icons.32x32.XMLFileIcon"
+		  icon        = "VBNet.File.WPFPage"
 		  category    = "VB"
 		  subcategory = "WPF"
 		  defaultname = "Page${Number}.xaml"

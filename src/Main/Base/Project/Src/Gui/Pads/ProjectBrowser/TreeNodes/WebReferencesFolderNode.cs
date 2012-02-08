@@ -7,16 +7,29 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class WebReferencesFolderNode : DirectoryNode
 	{		
-		public WebReferencesFolderNode(WebReferencesProjectItem projectItem) : this(projectItem.Directory)
+		public WebReferencesFolderNode(WebReferencesProjectItem projectItem)
+			: this(projectItem, FileNodeStatus.None)
+		{
+		}
+		
+		public WebReferencesFolderNode(WebReferencesProjectItem projectItem, FileNodeStatus status)
+			: this(projectItem.Directory, status)
 		{
 			ProjectItem = projectItem;
 		}
 		
-		public WebReferencesFolderNode(string directory) : base(directory)
+		public WebReferencesFolderNode(string directory)
+			: this(directory, FileNodeStatus.None)
 		{
+		}
+		
+		public WebReferencesFolderNode(string directory, FileNodeStatus status)
+			: base(directory)
+		{
+			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WebReferencesFolderNode";
+			FileNodeStatus = status;
 			sortOrder = 0;
 			SpecialFolder = SpecialFolder.WebReferencesFolder;
-			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WebReferencesFolderNode";
 		}
 	}
 }

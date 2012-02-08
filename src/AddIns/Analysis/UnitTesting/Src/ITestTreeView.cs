@@ -10,9 +10,9 @@ namespace ICSharpCode.UnitTesting
 	public interface ITestTreeView
 	{
 		/// <summary>
-		/// Gets the selected method in the test tree view.
+		/// Gets the selected member in the test tree view.
 		/// </summary>
-		IMember SelectedMethod {get;}
+		IMember SelectedMember {get;}
 		
 		/// <summary>
 		/// Gets the selected class in the test tree view.

@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 using NUnit.Framework;
 
 namespace PackageManagement.Tests
@@ -25,9 +26,9 @@ namespace PackageManagement.Tests
 		public void Equals_IdAndVersionAreSame_ReturnsTrue()
 		{
 			lhs.Id = "Test";
-			lhs.Version = new Version(1, 0, 0, 0);
+			lhs.Version = new SemanticVersion(1, 0, 0, 0);
 			rhs.Id = "Test";
-			rhs.Version = new Version(1, 0, 0, 0);
+			rhs.Version = new SemanticVersion(1, 0, 0, 0);
 			
 			bool result = lhs.Equals(rhs);
 			
@@ -38,9 +39,9 @@ namespace PackageManagement.Tests
 		public void Equals_DifferentIds_ReturnsFalse()
 		{
 			lhs.Id = "id 1";
-			lhs.Version = new Version(1, 0, 0, 0);
+			lhs.Version = new SemanticVersion(1, 0, 0, 0);
 			rhs.Id = "id 2";
-			rhs.Version = new Version(1, 0, 0, 0);
+			rhs.Version = new SemanticVersion(1, 0, 0, 0);
 			
 			bool result = lhs.Equals(rhs);
 			
@@ -51,9 +52,9 @@ namespace PackageManagement.Tests
 		public void Equals_DifferentVersions_ReturnsFalse()
 		{
 			lhs.Id = "test";
-			lhs.Version = new Version(1, 0, 0, 0);
+			lhs.Version = new SemanticVersion(1, 0, 0, 0);
 			rhs.Id = "test";
-			rhs.Version = new Version(2, 2, 0, 0);
+			rhs.Version = new SemanticVersion(2, 2, 0, 0);
 			
 			bool result = lhs.Equals(rhs);
 			

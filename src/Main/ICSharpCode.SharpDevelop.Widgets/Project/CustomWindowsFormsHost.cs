@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Widgets
 		
 		// We don't need most of that.
 		
-		// Bugs in the our implementation:
+		// Bugs in our implementation:
 		//  - Slight background color mismatch in project options
 		
 		static class Win32

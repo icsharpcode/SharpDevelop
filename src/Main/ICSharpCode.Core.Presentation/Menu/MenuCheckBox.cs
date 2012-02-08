@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
@@ -14,10 +15,10 @@ namespace ICSharpCode.Core.Presentation
 	{
 		BindingExpressionBase isCheckedBinding;
 		
-		public MenuCheckBox(UIElement inputBindingOwner, Codon codon, object caller)
-			: base(codon, caller)
+		public MenuCheckBox(UIElement inputBindingOwner, Codon codon, object caller, IEnumerable<ICondition> conditions)
+			: base(codon, caller, conditions)
 		{
-			this.Command = CommandWrapper.GetCommand(codon, caller, true);
+			this.Command = CommandWrapper.GetCommand(codon, caller, true, conditions);
 			CommandWrapper wrapper = this.Command as CommandWrapper;
 			if (wrapper != null) {
 				ICheckableMenuCommand cmd = wrapper.GetAddInCommand() as ICheckableMenuCommand;

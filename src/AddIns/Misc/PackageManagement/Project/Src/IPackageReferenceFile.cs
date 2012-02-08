@@ -10,7 +10,7 @@ namespace ICSharpCode.PackageManagement
 	public interface IPackageReferenceFile
 	{
 		IEnumerable<PackageReference> GetPackageReferences();
-		void DeleteEntry(string id, Version version);
+		void DeleteEntry(string id, SemanticVersion version);
 		void Delete();
 	}
 }

@@ -67,8 +67,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			WritePathsForReferencedProjects(selectedTests.Project);
 			
-			if (selectedTests.Method != null) {
-				WriteTest(selectedTests.Method.FullyQualifiedName);
+			if (selectedTests.Member != null) {
+				WriteTest(selectedTests.Member.FullyQualifiedName);
 			} else if (selectedTests.Class != null) {
 				WriteTest(selectedTests.Class.FullyQualifiedName);
 			} else if (!String.IsNullOrEmpty(selectedTests.NamespaceFilter)) {

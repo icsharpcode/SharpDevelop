@@ -63,33 +63,33 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void UpdateTestResult(TestResult testResult)
 		{
-			TestClass testClass = GetTestClassFromTestMethodName(testResult.Name);
+			TestClass testClass = GetTestClassFromTestMemberName(testResult.Name);
 			if (testClass != null) {
 				testClass.UpdateTestResult(testResult);
 			}
 		}
 		
 		/// <summary>
-		/// Gets the matching test method from this set of classes.
+		/// Gets the matching test member from this set of classes.
 		/// </summary>
 		/// <param name="fullyQualifiedName">The fully qualified 
 		/// method name (e.g. Namespace.ClassName.MethodName).</param>
 		/// <returns>Null if the method cannot be found.</returns>
-		public TestMethod GetTestMethod(string fullyQualifiedName)
+		public TestMember GetTestMember(string fullyQualifiedName)
 		{
-			string className = TestMethod.GetQualifiedClassName(fullyQualifiedName);
+			string className = TestMember.GetQualifiedClassName(fullyQualifiedName);
 			if (className != null) {
 				if (Contains(className)) {
 					TestClass testClass = this[className];
-					string methodName = TestMethod.GetMethodName(fullyQualifiedName);
-					if (methodName != null) {
-						return testClass.GetTestMethod(methodName);
+					string memberName = TestMember.GetMemberName(fullyQualifiedName);
+					if (memberName != null) {
+						return testClass.GetTestMember(memberName);
 					}
 				} else {
 					LoggingService.Debug("TestClass not found: " + className);
 				}
 			} else {
-				LoggingService.Debug("Invalid test method name: " + fullyQualifiedName);
+				LoggingService.Debug("Invalid test member name: " + fullyQualifiedName);
 			}
 			return null;
 		}
@@ -193,19 +193,19 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the test class from the specified test result.
 		/// </summary>
-		TestClass GetTestClassFromTestMethodName(string methodName)
+		TestClass GetTestClassFromTestMemberName(string memberName)
 		{
-			if (methodName != null) {
-				string className = TestMethod.GetQualifiedClassName(methodName);
+			if (memberName != null) {
+				string className = TestMember.GetQualifiedClassName(memberName);
 				if (className != null) {
 					if (Contains(className)) {
 						return this[className];
 					} else {
 						LoggingService.Debug("TestClass not found: " + className);
-						return GetTestClassFromTestMethodName(className);
+						return GetTestClassFromTestMemberName(className);
 					}
 				} else {
-					LoggingService.Debug("Invalid TestMethod.Name: " + methodName);
+					LoggingService.Debug("Invalid TestMember.Name: " + memberName);
 				}
 			}
 			return null;

@@ -28,7 +28,7 @@ namespace UnitTesting.Tests.Tree
 			method.Region = new DomRegion(methodBeginLine, methodBeginColumn);
 			
 			treeView = new MockTestTreeView();
-			treeView.SelectedMethod = method;
+			treeView.SelectedMember = method;
 			fileService = new MockFileService();
 			gotoDefinitionCommand = new GotoDefinitionCommand(fileService);
 			gotoDefinitionCommand.Owner = treeView;
@@ -48,7 +48,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ExceptionNotThrownWhenSelectedTestTreeMethodIsNull()
 		{
-			treeView.SelectedMethod = null;
+			treeView.SelectedMember = null;
 			Assert.DoesNotThrow(delegate { gotoDefinitionCommand.Run(); });
 		}
 		

@@ -97,15 +97,19 @@ namespace ICSharpCode.Profiler.Controller.Data
 		/// </summary>
 		public static string GetProcessInstanceName(int pid)
 		{
-			PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
+			try {
+				PerformanceCounterCategory cat = new PerformanceCounterCategory("Process");
 
-			string[] instances = cat.GetInstanceNames();
-			foreach (string instance in instances) {
-				using (PerformanceCounter procIdCounter = new PerformanceCounter("Process", "ID Process", instance, true)) {
-					int val = (int)procIdCounter.RawValue;
-					if (val == pid)
-						return instance;
+				string[] instances = cat.GetInstanceNames();
+				foreach (string instance in instances) {
+					using (PerformanceCounter procIdCounter = new PerformanceCounter("Process", "ID Process", instance, true)) {
+						int val = (int)procIdCounter.RawValue;
+						if (val == pid)
+							return instance;
+					}
 				}
+			} catch (Exception) {
+				return null;
 			}
 			
 			return null;
@@ -130,9 +134,11 @@ namespace ICSharpCode.Profiler.Controller.Data
 			
 			try {
 				this.Values.Add(counter.NextValue());
-			} catch (Exception e) {
 				#if DEBUG
+			} catch (Exception e) {
 				Console.WriteLine(e.ToString());
+				#else
+			} catch (Exception) {
 				#endif
 				this.Values.Add(defaultValue);
 			}
