@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 	public class RemoveBackingStoreTests : ContextActionTestBase
 	{
 		[Test()]
-		public void Test ()
+		public void TestSimpleStore ()
 		{
 			string result = RunContextAction (
 				new RemoveBackingStore (),
@@ -57,6 +57,47 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+		
+		/// <summary>
+		/// Bug 3292 -Error in analysis service
+		/// </summary>
+		[Test()]
+		public void TestBug3292 ()
+		{
+			TestWrongContext (
+				new RemoveBackingStore (),
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	int field;" + Environment.NewLine +
+				"	public int $Field {" + Environment.NewLine +
+				"		get { " +
+				"			Console.WriteLine(field);" +
+				"		}" + Environment.NewLine +
+				"		set { field = value; }" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}"
+			);
+		}
+		
+		[Test()]
+		public void TestBug3292Case2 ()
+		{
+			TestWrongContext (
+				new RemoveBackingStore (),
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	int field;" + Environment.NewLine +
+				"	public int $Field {" + Environment.NewLine +
+				"		get { " +
+				"			return field;" +
+				"		}" + Environment.NewLine +
+				"		set { Console.WriteLine(field); }" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}"
+			);
+		}
+		
+		
 	}
 }
 
