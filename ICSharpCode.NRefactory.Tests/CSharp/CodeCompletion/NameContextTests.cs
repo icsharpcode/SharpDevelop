@@ -94,6 +94,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
 		
+		[Test()]
+		public void TestCatchExceptionName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
+	void Test() 
+	{
+		$try {
+		} catch (Exception e$
+	}
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+		
 	}
 }
 
