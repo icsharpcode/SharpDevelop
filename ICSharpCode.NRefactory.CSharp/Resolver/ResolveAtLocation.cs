@@ -59,7 +59,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			if (resolvableNode != null && resolvableNode.Parent is ObjectCreateExpression) {
-				resolvableNode = resolvableNode.Parent;
+				var parent = resolvableNode.Parent as ObjectCreateExpression;
+				if (resolvableNode == parent.Type)
+					resolvableNode = parent;
 			}
 			
 			InvocationExpression parentInvocation = null;
