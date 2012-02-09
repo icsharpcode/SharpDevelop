@@ -1091,7 +1091,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			} else {
 				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 				// other pause reasons
-				if (frame.HasSymbols) {
+				if (frame != null && frame.HasSymbols) {
 					JumpToSourceCode();
 				} else {
 					// use most recent stack frame because we don't have the symbols
