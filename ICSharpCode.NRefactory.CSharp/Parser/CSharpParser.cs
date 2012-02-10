@@ -318,7 +318,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (loc != null)
 					result.AddChild (new CSharpTokenNode (Convert (loc [pos++]), 1), AttributeSection.Roles.LBracket);
 				
-				string target = optAttributes.First ().ExplicitTarget;
+				var first = optAttributes.FirstOrDefault ();
+				string target = first != null ? first.ExplicitTarget : null;
 				
 				if (!string.IsNullOrEmpty (target)) {
 					if (loc != null && pos < loc.Count - 1) {
