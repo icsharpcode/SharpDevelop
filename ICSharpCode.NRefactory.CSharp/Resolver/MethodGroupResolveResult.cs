@@ -197,8 +197,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				var extensionMethods = this.GetExtensionMethods();
 				
-				if (extensionMethods.Count > 0) {
-					Log.WriteLine("No candidate is applicable, trying {0} extension methods groups...", extensionMethods.Count);
+				if (extensionMethods.Any()) {
+					Log.WriteLine("No candidate is applicable, trying {0} extension methods groups...", extensionMethods.Count());
 					ResolveResult[] extArguments = new ResolveResult[arguments.Length + 1];
 					extArguments[0] = new ResolveResult(this.TargetType);
 					arguments.CopyTo(extArguments, 1);
