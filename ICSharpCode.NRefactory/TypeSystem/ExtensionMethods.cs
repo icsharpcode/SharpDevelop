@@ -96,6 +96,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static bool IsDerivedFrom(this ITypeDefinition type, ITypeDefinition baseType)
 		{
+			if (type.Compilation != baseType.Compilation) {
+				throw new InvalidOperationException("Both arguments to IsDerivedFrom() must be from the same compilation.");
+			}
 			return GetAllBaseTypeDefinitions(type).Contains(baseType);
 		}
 		#endregion

@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ICSharpCode.NRefactory.Editor;
 using Mono.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -3548,6 +3549,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return errorReportPrinter.WarningsCount > 0;
 			}
+		}
+		
+		public CompilationUnit Parse (ITextSource textSource, string fileName, int lineModifier = 0)
+		{
+			return Parse (textSource.CreateReader(), fileName, lineModifier);
 		}
 		
 		public CompilationUnit Parse (TextReader reader, string fileName, int lineModifier = 0)

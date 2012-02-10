@@ -1266,31 +1266,49 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		static readonly ITypeReference securityActionTypeReference = typeof(System.Security.Permissions.SecurityAction).ToTypeReference();
 		static readonly ITypeReference permissionSetAttributeTypeReference = typeof(System.Security.Permissions.PermissionSetAttribute).ToTypeReference();
 		
+		/// <summary>
+		/// Reads a security declaration.
+		/// </summary>
+		[CLSCompliant(false)]
+		public IList<IUnresolvedAttribute> ReadSecurityDeclaration(SecurityDeclaration secDecl)
+		{
+			if (secDecl == null)
+				throw new ArgumentNullException("secDecl");
+			var result = new List<IUnresolvedAttribute>();
+			AddSecurityAttributes(secDecl, result);
+			return result;
+		}
+		
 		void AddSecurityAttributes(Mono.Collections.Generic.Collection<SecurityDeclaration> securityDeclarations, IList<IUnresolvedAttribute> targetCollection)
 		{
 			foreach (var secDecl in securityDeclarations) {
-				byte[] blob = secDecl.GetBlob();
-				BlobReader reader = new BlobReader(blob, null);
-				var securityAction = new SimpleConstantValue(securityActionTypeReference, (int)secDecl.Action);
-				if (reader.ReadByte() == '.') {
-					// binary attribute
-					uint attributeCount = reader.ReadCompressedUInt32();
-					UnresolvedSecurityDeclaration unresolvedSecDecl = new UnresolvedSecurityDeclaration(securityAction, blob);
-					if (this.InterningProvider != null) {
-						unresolvedSecDecl = this.InterningProvider.Intern(unresolvedSecDecl);
-					}
-					for (uint i = 0; i < attributeCount; i++) {
-						targetCollection.Add(new UnresolvedSecurityAttribute(unresolvedSecDecl, (int)i));
-					}
-				} else {
-					// for backward compatibility with .NET 1.0: XML-encoded attribute
-					var attr = new DefaultUnresolvedAttribute(permissionSetAttributeTypeReference);
-					attr.ConstructorParameterTypes.Add(securityActionTypeReference);
-					attr.PositionalArguments.Add(securityAction);
-					string xml = System.Text.Encoding.Unicode.GetString(blob);
-					attr.AddNamedPropertyArgument("XML", KnownTypeReference.String, xml);
-					targetCollection.Add(attr);
+				AddSecurityAttributes(secDecl, targetCollection);
+			}
+		}
+		
+		void AddSecurityAttributes(SecurityDeclaration secDecl, IList<IUnresolvedAttribute> targetCollection)
+		{
+			byte[] blob = secDecl.GetBlob();
+			BlobReader reader = new BlobReader(blob, null);
+			var securityAction = new SimpleConstantValue(securityActionTypeReference, (int)secDecl.Action);
+			if (reader.ReadByte() == '.') {
+				// binary attribute
+				uint attributeCount = reader.ReadCompressedUInt32();
+				UnresolvedSecurityDeclaration unresolvedSecDecl = new UnresolvedSecurityDeclaration(securityAction, blob);
+				if (this.InterningProvider != null) {
+					unresolvedSecDecl = this.InterningProvider.Intern(unresolvedSecDecl);
 				}
+				for (uint i = 0; i < attributeCount; i++) {
+					targetCollection.Add(new UnresolvedSecurityAttribute(unresolvedSecDecl, (int)i));
+				}
+			} else {
+				// for backward compatibility with .NET 1.0: XML-encoded attribute
+				var attr = new DefaultUnresolvedAttribute(permissionSetAttributeTypeReference);
+				attr.ConstructorParameterTypes.Add(securityActionTypeReference);
+				attr.PositionalArguments.Add(securityAction);
+				string xml = System.Text.Encoding.Unicode.GetString(blob);
+				attr.AddNamedPropertyArgument("XML", KnownTypeReference.String, xml);
+				targetCollection.Add(attr);
 			}
 		}
 		
