@@ -175,6 +175,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			return null;
 		}
 		
+		
 		void MatrixHoveredCellChanged(object sender, HoveredCellEventArgs<Tuple<int, int>> e)
 		{
 			// need to add 1 to index, because first item in treeview is invisible root node
@@ -185,16 +186,21 @@ namespace ICSharpCode.CodeQuality.Gui
 				topTree.SelectedItem = topTree.Items[e.HoveredCell.ColumnIndex + 1];
 			}
 			UpdateInfoText();
-			matrix.ToolTip = nodeDescriptionViewModel.InfoText;
 		}
+
 
 		void UpdateInfoText()
 		{
 			var left = leftTree.SelectedItem as MatrixTreeNode;
 			var top = topTree.SelectedItem as MatrixTreeNode;
 			if (left != null && top != null)
+			{
 				nodeDescriptionViewModel.InfoText = left.Node.GetInfoText(top.Node);
+				matrix.ToolTip = nodeDescriptionViewModel.InfoText;
+			}
 		}
+		
+	
 		#endregion
 	}
 }
