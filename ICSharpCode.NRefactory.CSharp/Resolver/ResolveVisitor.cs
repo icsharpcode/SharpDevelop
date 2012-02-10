@@ -2529,9 +2529,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			StoreCurrentState(foreachStatement.VariableNameToken);
 			resolver = resolver.AddVariable(v);
+			
 			if (!resolveResultCache.ContainsKey(foreachStatement.VariableNameToken)) {
 				StoreResult(foreachStatement.VariableNameToken, new LocalResolveResult(v));
 			}
+			
 			Scan(foreachStatement.EmbeddedStatement);
 			resolver = resolver.PopBlock();
 			return voidResult;
@@ -3181,9 +3183,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult target;
 			if (memberType.IsDoubleColon && memberType.Target is SimpleType) {
 				SimpleType t = (SimpleType)memberType.Target;
-				StoreCurrentState(t);
+				bool storeResult = !resolveResultCache.ContainsKey(t);
+				if (storeResult) 
+					StoreCurrentState(t);
 				target = resolver.ResolveAlias(t.Identifier);
-				StoreResult(t, target);
+				if (storeResult) 
+					StoreResult(t, target);
 			} else {
 				target = Resolve(memberType.Target);
 			}
