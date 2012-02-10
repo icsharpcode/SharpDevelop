@@ -174,8 +174,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			public IParameterDataProvider CreateMethodDataProvider (ICSharpCode.NRefactory.CSharp.Resolver.MethodGroupResolveResult par1)
 			{
+				var methods = new List<IMethod> (par1.Methods);
+				foreach (var list in par1.GetExtensionMethods ())
+					methods.AddRange (list);
 				return new Provider () {
-					Data = par1.Methods
+					Data = methods
 				};
 			}
 
@@ -527,6 +530,65 @@ class TestClass
 			Assert.AreEqual (1, provider.OverloadCount);
 		}
 		
+		/// Bug 3307 - Chained linq methods do not work correctly
+		[Test()]
+		public void TestBug3307 ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Linq;
+
+class TestClass
+{
+	public static void Main (string[] args)
+	{
+		$args.Select ($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (6, provider.OverloadCount);
+		}
+		
+		[Test()]
+		public void TestBug3307FollowUp ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
+using System.Linq;
+
+public class MainClass
+{
+	static void TestMe (Action<int> act)
+	{
+	}
+	
+	public static void Main (string[] args)
+	{
+		$TestMe (x$
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.IsFalse (provider.AutoSelect, "auto select enabled !");
+		}
+		
+		[Test()]
+		public void TestBug3307FollowUp2 ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"using System;
+using System.Linq;
+
+public class MainClass
+{
+	public static void Main (string[] args)
+	{
+		$args.Select (x$
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.IsFalse (provider.AutoSelect, "auto select enabled !");
+		}
+		
 		[Test()]
 		public void TestConstructor ()
 		{
@@ -693,6 +755,21 @@ class TestClass
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);
+		}
+		
+		[Ignore("MCS TODO!")]
+		[Test()]
+		public void TestTypeParameterInBaseType ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"using System;
+
+namespace Test 
+{
+	$class A : Tuple<$
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (16, provider.OverloadCount);
 		}
 	}
 }
