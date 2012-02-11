@@ -29,6 +29,9 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
         
         private const string _getTables = @"SELECT TABLE_SCHEMA, TABLE_NAME from INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_NAME<>'dtproperties' ORDER BY TABLE_SCHEMA, TABLE_NAME";
 
+        //http://community.sharpdevelop.net/forums/p/12955/37213.aspx#37213
+        //clmns.is_column_set AS [IsColumnSet], 
+        
         private const string _getColumnsScript = @"DECLARE @tablename varchar(100) SET @tablename = N'{0}'
             SELECT
                 clmns.column_id AS [ColumnId],
@@ -40,7 +43,7 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                 CAST(clmns.precision AS int) AS [NumericPrecision],
                 clmns.default_object_id AS [DefaultObjectId],
                 clmns.is_ansi_padded AS [IsAnsiPadded],
-                clmns.is_column_set AS [IsColumnSet],
+             
                 clmns.is_computed AS [IsComputed],
                 clmns.is_dts_replicated AS [IsDtsReplicated],
                 clmns.is_filestream AS [IsFileStream],

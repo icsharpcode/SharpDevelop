@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ICSharpCode.Core;
 using ICSharpCode.Data.Core.Interfaces;
 using System;
 using System.Threading;
@@ -115,11 +116,21 @@ namespace ICSharpCode.Data.Core.UI.Windows
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { IsLoading = value; }));
 		}
 
+//		private void SetException(Exception exception)
+//		{
+//			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { DatasourceException = exception; }));
+//		}
+
 		private void SetException(Exception exception)
 		{
-			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { DatasourceException = exception; }));
+			if (exception!= null) {
+				
+			
+			Dispatcher.BeginInvoke(DispatcherPriority.Background,
+			                       new Action(() => {MessageService.ShowError(exception.Message);}));
+			}
 		}
-
+		
 		private void SetSelectedDatasource(IDatasource datasource)
 		{
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { SelectedDatasource = datasource; }));
@@ -163,7 +174,8 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 			                                           		try
 			                                           		{
-			                                           			SelectedDatabaseDriver.PopulateDatabases();
+//			                                           			SelectedDatabaseDriver.PopulateDatabases();
+			                                           			SelectedDatabaseDriver.PopulateDatabases(_selectedDatasource);
 			                                           		}
 			                                           		catch (Exception ex)
 			                                           		{
@@ -235,13 +247,13 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 		#region INotifyPropertyChanged
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 
 		protected void OnPropertyChanged(string property)
 		{
 			if (PropertyChanged != null)
 			{
-				PropertyChanged(this, new PropertyChangedEventArgs(property));
+				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(property));
 			}
 		}
 
