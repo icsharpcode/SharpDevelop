@@ -6,20 +6,22 @@ Commented code, needs to be ported and re-enabled:
 	Context Actions (EditorContext etc.)
 	RefactoringService
 	FindReferencesAndRenameHelper
-	NamespaceRefactoringsService
+	NamespaceRefactoringService
 	RefactoringMenuBuilder
 	TaskService.UpdateCommentTags
 	CodeManipulation.cs (btw, I think this doesn't belong into AvalonEdit.AddIn - more a job for a language binding)
 
+--> See TODO-list on Google Docs
+
 Stuff that was renamed/moved:
 	ICSharpCode.SharpDevelop.Dom -> the type system and resolvers now are part of ICSharpCode.NRefactory
-	IDocument, ITextEditor -> moved to ICSharpCode.Editor assembly
+	IDocument -> moved to ICSharpCode.NRefactory.Editor
 	IClass -> ITypeDefinition
 	ICompilationUnit -> IParsedFile
-	ITextBuffer -> ITextSource (in ICSharpCode.Editor assembly)
+	ITextBuffer -> ITextSource (in ICSharpCode.NRefactory.Editor)
 	IReturnType -> ITypeReference (unresolved) or IType (resolved)
-	Location -> TextLocation or AstLocation. Use AstLocation only when directly working with the AST, and TextLocation otherwise.
-	TextLocation -> moved to ICSharpCode.Editor assembly
+	Location -> TextLocation in ICSharpCode.NRefactory
+	TextLocation -> moved to ICSharpCode.NRefactory
 
 Functionality changes:
 	The result of a parser run (ParseInformation) now may contain a fully parsed AST.

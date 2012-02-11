@@ -386,6 +386,7 @@
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
     <Compile Include="Src\Services\ParserService\Fusion.cs" />
     <Compile Include="Src\Services\ParserService\GacInterop.cs" />
+    <Compile Include="Src\Services\ParserService\ParsedFileListener.cs" />
     <Compile Include="Src\Services\ParserService\IParser.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />

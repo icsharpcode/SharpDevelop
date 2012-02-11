@@ -166,6 +166,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void AddClasses(IEnumerable<IUnresolvedTypeDefinition> classes)
 		{
 			foreach (var c in classes) {
+				if (c.IsSynthetic)
+					continue;
 				classItems.Add(new EntityItem(c));
 				AddClasses(c.NestedTypes);
 			}
@@ -252,6 +254,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (compoundClass != null) {
 						var ambience = project.GetAmbience();
 						foreach (var member in compoundClass.Members) {
+							if (member.IsSynthetic)
+								continue;
 							bool isInSamePart = string.Equals(member.UnresolvedMember.ParsedFile.FileName, selectedClass.ParsedFile.FileName, StringComparison.OrdinalIgnoreCase);
 							memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
 						}

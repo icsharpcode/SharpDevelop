@@ -475,7 +475,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						// Immediately parse on enter.
 						// This ensures we have up-to-date CC info about the method boundary when a user
 						// types near the end of a method.
-						ParserService.ParseAsync(this.FileName, this.Document.CreateSnapshot());
+						ParserService.ParseAsync(this.FileName, this.Document.CreateSnapshot()).FireAndForget();
 					}
 				}
 			}
@@ -534,7 +534,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			ParseInformation parseInfo = ParserService.GetCachedParseInformation(this.FileName);
 			if (parseInfo == null) {
 				// if parse info is not yet available, start parsing on background
-				ParserService.ParseAsync(this.FileName, primaryTextEditorAdapter.Document);
+				ParserService.ParseAsync(this.FileName, primaryTextEditorAdapter.Document).FireAndForget();
 				// we'll receive the result using the ParseInformationUpdated event
 			}
 			ParseInformationUpdated(parseInfo);

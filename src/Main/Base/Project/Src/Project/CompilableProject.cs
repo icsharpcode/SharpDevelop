@@ -507,6 +507,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		public override void Dispose()
+		{
+			lock (SyncRoot) {
+				if (parseProjectContentContainer != null)
+					parseProjectContentContainer.Dispose();
+			}
+			base.Dispose();
+		}
+		
 		#region IUpgradableProject
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {

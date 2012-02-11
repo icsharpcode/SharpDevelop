@@ -261,11 +261,44 @@ namespace ICSharpCode.SharpDevelop.Parser
 			volatile ParseInformation cachedParseInformation;
 			ITextSourceVersion bufferVersion;
 			bool disposed;
+			ParsedFileListener activeListeners;
 			
 			public FileEntry(FileName fileName)
 			{
 				this.fileName = fileName;
 				this.parser = CreateParser(fileName);
+			}
+			
+			public void AddParsedFileListener(ParsedFileListener listener, bool startAsyncParse)
+			{
+				bool isNewEntry;
+				lock (this) {
+					isNewEntry = (this.activeListeners == null);
+					this.activeListeners += listener;
+					if (mainParsedFile != null) {
+						// We already have parse info: tell the new listener
+						listener(null, mainParsedFile);
+						// No need to start async parse.
+						isNewEntry = false;
+					}
+				}
+				if (isNewEntry && startAsyncParse)
+					ParseAsync(null).FireAndForget();
+			}
+			
+			public void RemoveParsedFileListener(ParsedFileListener listener)
+			{
+				lock (this) {
+					this.activeListeners += listener;
+				}
+			}
+			
+			public bool HasParseListeners {
+				get {
+					lock (this) {
+						return this.activeListeners != null;
+					}
+				}
 			}
 			
 			/// <summary>
@@ -418,25 +451,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 						}
 					}
 					
-					#warning How to update the PCs?
-					/*for (int i = 0; i < newUnits.Length; i++) {
-						IProjectContent pc = projectContents[i];
-						// update the compilation unit
-						IParsedFile oldUnit = oldUnits.FirstOrDefault(o => o.ProjectContent == pc);
-						// ensure the new unit is frozen beforewe make it visible to the outside world
-						newUnits[i].Freeze();
-						pc.UpdateProjectContent(oldUnit, newUnits[i]);
-					}*/
+					if (this.activeListeners != null)
+						this.activeListeners(mainParsedFile, resultParseInfo.ParsedFile);
 					RaiseParseInformationUpdated(new ParseInformationEventArgs(mainParsedFile, resultParseInfo));
-					
-					/*
-					// remove all old units that don't exist anymore
-					foreach (IParsedFile oldUnit in oldUnits) {
-						if (!newUnits.Any(n => n.ProjectContent == oldUnit.ProjectContent)) {
-							oldUnit.ProjectContent.UpdateProjectContent(oldUnit, null);
-							RaiseParseInformationUpdated(new ParseInformationEventArgs(oldUnit, null, false));
-						}
-					}*/
 					
 					this.bufferVersion = fileContentVersion;
 					this.mainParsedFile = resultUnit;
@@ -454,16 +471,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 				IParsedFile parseInfo;
 				lock (this) {
 					// by setting the disposed flag, we'll cause all running ParseFile() calls to return null and not
-					// call into the parser anymore, so we can do the remainder of the clean-up work outside the lock
+					// call into the parser anymore
 					this.disposed = true;
 					parseInfo = this.mainParsedFile;
 					this.bufferVersion = null;
 					this.mainParsedFile = null;
+					if (parseInfo != null && this.activeListeners != null)
+						this.activeListeners(parseInfo, null);
 				}
-				/*foreach (IParsedFile oldUnit in oldUnits) {
-					oldUnit.ProjectContent.UpdateProjectContent(oldUnit, null);
-					bool isPrimary = parseInfo == oldUnit;
-				}*/
 				RaiseParseInformationUpdated(new ParseInformationEventArgs(parseInfo, null));
 			}
 			
@@ -593,7 +608,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Removes all parse information (both IParsedFile and ParseInformation) for the specified file.
 		/// This method is thread-safe.
 		/// </summary>
-		public static void ClearParseInformation(FileName fileName)
+		/// <param name="force">Whether to remove the parse information even if there are listeners
+		/// registered for it.</param>
+		public static void ClearParseInformation(FileName fileName, bool force = false)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -603,11 +620,17 @@ namespace ICSharpCode.SharpDevelop.Parser
 			FileEntry entry;
 			lock (syncLock) {
 				if (fileEntryDict.TryGetValue(fileName, out entry)) {
-					fileEntryDict.Remove(fileName);
+					// avoid concurrent deregistration of parse listener between entry.HasParseListeners and entry.Clear()
+					lock (entry) {
+						if (force || !entry.HasParseListeners) {
+							fileEntryDict.Remove(fileName);
+							// Call entry.Clear() within the lock so that we don't have a race condition
+							// when the entry is immediately recreated by another thread.
+							entry.Clear();
+						}
+					}
 				}
 			}
-			if (entry != null)
-				entry.Clear();
 		}
 		
 		/// <summary>
@@ -953,6 +976,38 @@ namespace ICSharpCode.SharpDevelop.Parser
 			TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
 			tcs.SetResult(result);
 			return tcs.Task;
+		}
+		
+		/// <summary>
+		/// Adds a parsed file listener for the specified file.
+		/// If parse information for the file is already known, this method immediately invokes
+		/// <c>listener(null, existingParsedFile);</c>.
+		/// </summary>
+		/// <param name="startAsyncParse">If no parse information is already known, this parameter
+		/// controls whether an asynchronous parse operation is started.</param>
+		public static void AddParsedFileListener(FileName fileName, ParsedFileListener listener, bool startAsyncParse)
+		{
+			if (listener == null)
+				throw new ArgumentNullException("listener");
+			GetFileEntry(fileName, true).AddParsedFileListener(listener, startAsyncParse);
+		}
+		
+		/// <summary>
+		/// Removes a parsed file listener for the specified file.
+		/// This method invokes <c>listener(existingParsedFile, null);</c>. (unless existingParsedFile==null)
+		/// </summary>
+		/// <remarks>
+		/// When the last file listener is removed, the stored parse information is cleared.
+		/// </remarks>
+		public static void RemoveParsedFileListener(FileName fileName, ParsedFileListener listener)
+		{
+			if (listener == null)
+				throw new ArgumentNullException("listener");
+			FileEntry entry = GetFileEntry(fileName, false);
+			if (entry == null)
+				return;
+			entry.RemoveParsedFileListener(listener);
+			ClearParseInformation(fileName, force: false);
 		}
 	}
 }

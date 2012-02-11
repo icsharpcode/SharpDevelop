@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!ctl.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
-			ResolveResult res = ResolveAtCaret(e);
+			ResolveResult res = /* TODO await */ ResolveAtCaret(e);
 			if (res == null) return;
 			var pos = res.GetDefinitionRegion();
 			if (pos.IsEmpty) return;

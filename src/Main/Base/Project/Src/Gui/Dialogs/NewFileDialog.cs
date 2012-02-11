@@ -395,7 +395,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					File.Copy(binaryFileName, parsedFileName);
 				else
 					File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
-				ParserService.ParseFileAsync(FileName.Create(parsedFileName), new StringTextSource(parsedContent));
+				ParserService.ParseFileAsync(FileName.Create(parsedFileName), new StringTextSource(parsedContent)).FireAndForget();
 			} else {
 				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");

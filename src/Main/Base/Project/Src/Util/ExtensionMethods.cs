@@ -70,6 +70,16 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// If the task throws an exception, notifies the message service.
+		/// Call this method on asynchronous tasks if you do not care about the result, but do not want
+		/// unhandled exceptions to go unnoticed.
+		/// </summary>
+		public static void FireAndForget(this System.Threading.Tasks.Task task)
+		{
+			task.ContinueWith(t => { if (t.Exception != null) Core.MessageService.ShowException(t.Exception); });
+		}
+		
+		/// <summary>
 		/// Runs an action for all elements in the input.
 		/// </summary>
 		[Obsolete("Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.")]

@@ -176,7 +176,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				codeEditor.FileName = newFileName;
 				
-				ParserService.ParseAsync(file.FileName, codeEditor.Document);
+				ParserService.ParseAsync(file.FileName, codeEditor.Document).FireAndForget();
 			}
 		}
 		
