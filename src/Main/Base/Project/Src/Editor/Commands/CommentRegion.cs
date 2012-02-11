@@ -23,7 +23,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			if (provider == null)
 				return;
 			
-			provider.TextEditor.Language.FormattingStrategy.SurroundSelectionWithComment(provider.TextEditor);
+			using (provider.TextEditor.Document.OpenUndoGroup())
+				provider.TextEditor.Language.FormattingStrategy.SurroundSelectionWithComment(provider.TextEditor);
 		}
 	}
 }
