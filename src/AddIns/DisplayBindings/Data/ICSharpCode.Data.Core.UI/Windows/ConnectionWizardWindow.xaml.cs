@@ -115,21 +115,16 @@ namespace ICSharpCode.Data.Core.UI.Windows
 		{
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { IsLoading = value; }));
 		}
-
-//		private void SetException(Exception exception)
-//		{
-//			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { DatasourceException = exception; }));
-//		}
-
+		
+		
 		private void SetException(Exception exception)
 		{
 			if (exception!= null) {
-				
-			
-			Dispatcher.BeginInvoke(DispatcherPriority.Background,
-			                       new Action(() => {MessageService.ShowError(exception.Message);}));
+				Dispatcher.BeginInvoke(DispatcherPriority.Background,
+				                       new Action(() => {MessageService.ShowError(exception.Message);}));
 			}
 		}
+		
 		
 		private void SetSelectedDatasource(IDatasource datasource)
 		{
@@ -174,7 +169,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 			                                           		try
 			                                           		{
-//			                                           			SelectedDatabaseDriver.PopulateDatabases();
 			                                           			SelectedDatabaseDriver.PopulateDatabases(_selectedDatasource);
 			                                           		}
 			                                           		catch (Exception ex)
