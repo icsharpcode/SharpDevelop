@@ -15,6 +15,7 @@
 
 	<Project language="VBNet">
 		<ProjectItems>
+			<Reference Include="Microsoft.VisualBasic" />
 			<Reference Include="System" />
 			<Reference Include="System.Web" />
 			<Reference Include="System.Web.Mvc" />

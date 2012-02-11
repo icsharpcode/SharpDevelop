@@ -22,6 +22,7 @@
 
 	<Project language="C#">
 		<ProjectItems>
+			<Reference Include="Microsoft.CSharp" />
 			<Reference Include="System" />
 			<Reference Include="System.Web" />
 			<Reference Include="System.Web.Mvc" />
