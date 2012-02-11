@@ -8,7 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using ICSharpCode.Core;
+
 using ICSharpCode.Data.Core.Interfaces;
 using System;
 using System.Threading;
@@ -31,7 +31,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
 		private IDatasource _selectedDatasource = null;
 		private IDatabase _selectedDatabase = null;
 		private bool _isLoading = false;
-		private Exception _datasourceException = null;
 
 		#endregion
 
@@ -88,16 +87,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
 			}
 		}
 
-		public Exception DatasourceException
-		{
-			get { return _datasourceException; }
-			set
-			{
-				_datasourceException = value;
-				OnPropertyChanged("DatasourceException");
-			}
-		}
-
 		#endregion
 
 		#region Constructor
@@ -116,16 +105,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { IsLoading = value; }));
 		}
 		
-		
-		private void SetException(Exception exception)
-		{
-			if (exception!= null) {
-				Dispatcher.BeginInvoke(DispatcherPriority.Background,
-				                       new Action(() => {MessageService.ShowError(exception.Message);}));
-			}
-		}
-		
-		
 		private void SetSelectedDatasource(IDatasource datasource)
 		{
 			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => { SelectedDatasource = datasource; }));
@@ -133,8 +112,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 		private void PopulateDatasources()
 		{
-			SetException(null);
-			
 			Thread thread = new Thread(
 				new ThreadStart(
 					delegate() {
@@ -144,7 +121,10 @@ namespace ICSharpCode.Data.Core.UI.Windows
 								SelectedDatabaseDriver.PopulateDatasources();
 							}
 						} catch (Exception ex) {
-							SetException(ex);
+							Dispatcher.BeginInvoke(DispatcherPriority.Background,
+							                       new Action(() => {
+							                                  	MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+							                                  }));
 						} finally {
 							SetIsLoading(false);
 						}
@@ -159,29 +139,27 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 		private void PopulateDatabases()
 		{
-			SetException(null);
-			
-			Thread thread = new Thread(new ThreadStart(delegate()
-			                                           {
-			                                           	if (SelectedDatabaseDriver != null)
-			                                           	{
-			                                           		SetIsLoading(true);
+			Thread thread = new Thread(new ThreadStart(
+				delegate() {
+					if (SelectedDatabaseDriver != null)
+					{
+						SetIsLoading(true);
 
-			                                           		try
-			                                           		{
-			                                           			SelectedDatabaseDriver.PopulateDatabases(_selectedDatasource);
-			                                           		}
-			                                           		catch (Exception ex)
-			                                           		{
-			                                           			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
-			                                           			                                                                 {
-			                                           			                                                                 	MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
-			                                           			                                                                 }));
-			                                           		}
+						try
+						{
+							SelectedDatabaseDriver.PopulateDatabases(_selectedDatasource);
+						}
+						catch (Exception ex)
+						{
+							Dispatcher.BeginInvoke(DispatcherPriority.Background,
+							                       new Action(() => {
+							                                  	MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+							                                  }));
+						}
 
-			                                           		SetIsLoading(false);
-			                                           	}
-			                                           }));
+						SetIsLoading(false);
+					}
+				}));
 
 			thread.SetApartmentState(ApartmentState.STA);
 			thread.IsBackground = true;
@@ -241,13 +219,13 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
 		#region INotifyPropertyChanged
 
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 
 		protected void OnPropertyChanged(string property)
 		{
 			if (PropertyChanged != null)
 			{
-				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(property));
+				PropertyChanged(this, new PropertyChangedEventArgs(property));
 			}
 		}
 
