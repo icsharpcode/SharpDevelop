@@ -1,7 +1,7 @@
 ﻿<Template
 	originator="Matt Ward"
 	created="04/06/2011"
-	lastModified="17/06/2011">
+	lastModified="12/02/2012">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -18,7 +18,7 @@
 			<Reference Include="Microsoft.CSharp" />
 			<Reference Include="System" />
 			<Reference Include="System.Web" />
-			<Reference Include="System.Web.Mvc" />
+			<Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
 			<Reference Include="System.Xml" />
 		</ProjectItems>
 		
