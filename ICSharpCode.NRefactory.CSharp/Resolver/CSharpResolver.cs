@@ -1395,7 +1395,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					r = lookup.Lookup(new TypeResolveResult(t), identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
+					var targetResolveResult = (t == this.CurrentTypeDefinition ? ResolveThisReference() : new TypeResolveResult(t));
+					r = lookup.Lookup(targetResolveResult, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
 					r = lookup.LookupType(t, identifier, typeArguments, parameterizeResultType);
 				}

@@ -128,6 +128,42 @@ class Derived : Base {
 		}
 		
 		[Test]
+		public void InstanceFieldImplicitThis()
+		{
+			string program = @"class Test {
+	public int Field;
+	int M() { return $Field$; }
+}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Test.Field", rr.Member.FullName);
+			Assert.IsTrue(rr.TargetResult is ThisResolveResult);
+		}
+		
+		[Test]
+		public void InstanceFieldExplicitThis()
+		{
+			string program = @"class Test {
+	public int Field;
+	int M() { return $this.Field$; }
+}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Test.Field", rr.Member.FullName);
+			Assert.IsTrue(rr.TargetResult is ThisResolveResult);
+		}
+		
+		[Test]
+		public void StaticField()
+		{
+			string program = @"class Test {
+	public static int Field;
+	int M() { return $Field$; }
+}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Test.Field", rr.Member.FullName);
+			Assert.IsTrue(rr.TargetResult is TypeResolveResult);
+		}
+		
+		[Test]
 		public void TestOuterTemplateParameter()
 		{
 			string program = @"public class A<T>
