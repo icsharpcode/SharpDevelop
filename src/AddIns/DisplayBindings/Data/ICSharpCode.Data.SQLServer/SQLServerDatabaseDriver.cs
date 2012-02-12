@@ -183,7 +183,7 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 					return false;
 				case 9:
 					manifestToken = "2005";
-					return false;
+					return true;
 				case 10:
 					if (version.Minor == 5) 
 						manifestToken = "2008 R2";
