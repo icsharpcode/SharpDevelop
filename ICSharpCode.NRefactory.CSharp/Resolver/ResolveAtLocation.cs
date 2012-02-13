@@ -30,10 +30,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, 
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
-			AstNode node = cu.GetNodeAt(location);
+			AstNode node;
+			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
+		}
+		
+		public static ResolveResult Resolve(ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		                                    CancellationToken cancellationToken = default(CancellationToken))
+		{
+			node = cu.GetNodeAt(location);
 			if (node == null)
 				return null;
 			if (CSharpAstResolver.IsUnresolvableNode(node)) {
