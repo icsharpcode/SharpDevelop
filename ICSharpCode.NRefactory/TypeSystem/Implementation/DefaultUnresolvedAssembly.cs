@@ -257,7 +257,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return GetTypeDefinition(unresolved.GetTypeDefinition(ns, name, typeParameterCount));
 			}
 			
-			public ITypeDefinition GetTypeDefinition(IUnresolvedTypeDefinition unresolved)
+			ITypeDefinition GetTypeDefinition(IUnresolvedTypeDefinition unresolved)
 			{
 				if (unresolved == null)
 					return null;

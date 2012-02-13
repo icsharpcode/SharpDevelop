@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			this.parsedFile = new CSharpParsedFile(fileName, new UsingScope());
+			this.parsedFile = new CSharpParsedFile(fileName);
 			this.usingScope = parsedFile.RootUsingScope;
 		}
 		

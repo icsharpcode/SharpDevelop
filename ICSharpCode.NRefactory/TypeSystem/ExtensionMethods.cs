@@ -382,5 +382,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		#endregion
+		
+		#region IAssembly.GetTypeDefinition()
+		/// <summary>
+		/// Gets the type definition for the specified unresolved type.
+		/// Returns null if the unresolved type does not belong to this assembly.
+		/// </summary>
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, IUnresolvedTypeDefinition unresolved)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			if (unresolved == null)
+				return null;
+			if (unresolved.DeclaringTypeDefinition != null) {
+				ITypeDefinition parentType = GetTypeDefinition(assembly, unresolved.DeclaringTypeDefinition);
+				if (parentType == null)
+					return null;
+				foreach (var nestedType in parentType.NestedTypes) {
+					if (nestedType.Name == unresolved.Name && nestedType.TypeParameterCount == unresolved.TypeParameters.Count)
+						return nestedType;
+				}
+				return null;
+			} else {
+				return assembly.GetTypeDefinition(unresolved.Namespace, unresolved.Name, unresolved.TypeParameters.Count);
+			}
+		}
+		#endregion
 	}
 }

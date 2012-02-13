@@ -19,7 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -504,11 +504,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						b, new [] { new TypeParameterReference(EntityType.TypeDefinition, 0) }
 					) } ) }));
 			
-			ICompilation compilation = new SimpleCompilation(CecilLoaderTests.Mscorlib);
+			ICompilation compilation = TypeSystemHelper.CreateCompilation(a, b);
 			ITypeDefinition resolvedA = compilation.MainAssembly.GetTypeDefinition(a);
 			ITypeDefinition resolvedB = compilation.MainAssembly.GetTypeDefinition(b);
 			
-			IType type1 = new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.Double) });
+			IType type1 = new ParameterizedType(resolvedB, new [] { compilation.FindType(KnownTypeCode.Double) });
 			IType type2 = new ParameterizedType(resolvedA, new [] { new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.String) }) });
 			Assert.IsFalse(conversions.ImplicitConversion(type1, type2).IsValid);
 		}
