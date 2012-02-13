@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using NUnit.Framework;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -1697,6 +1698,24 @@ class A
 		}
 		
 		/// <summary>
+		/// Bug 3370 -MD ignores member hiding
+		/// </summary>
+		[Test()]
+		public void TestBug3370 ()
+		{
+			CombinedProviderTest (
+@"
+class A
+{
+	$public override $
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("ToString"), "'ToString' not found.");
+				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
+			});
+		}
+		
+		/// <summary>
 		/// Bug 2793 - op_Equality should not be offered in the completion list
 		/// </summary>
 		[Test()]
@@ -1704,16 +1723,34 @@ class A
 		{
 			CombinedProviderTest (
 @"
-class A
+using System;
+
+public class MyClass
 {
-	public static void Main (string[] args)
-	{
-		$System.Action.$
-	}
-}
-", provider => {
-				Assert.IsNull (provider.Find ("op_Equality"), "'op_Equality' found.");
-				Assert.IsNull (provider.Find ("op_Inequality"), "'op_Inequality' found.");
+    public class A
+    {
+        public event EventHandler MouseClick;
+    }
+
+    public class B : A
+    {
+        public new event EventHandler MouseClick;
+    }
+
+    public class C : B
+    {
+        public new void MouseClick ()
+        {
+        }
+    }
+
+    static public void Main ()
+    {
+        C myclass = new C ();
+        $myclass.$
+    }
+}", provider => {
+				Assert.AreEqual (1, provider.Data.Where(c => c.DisplayText == "MouseClick").Count ());
 			});
 		}
 		

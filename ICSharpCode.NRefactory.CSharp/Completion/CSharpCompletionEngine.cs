@@ -1816,8 +1816,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
+				var filteredList = new List<IMember> ();
 				foreach (var member in type.GetMembers ()) {
-//					Console.WriteLine ("member:" + member);
+//					Console.WriteLine ("member:" + member + member.IsShadowing);
 					if (!lookup.IsAccessible (member, isProtectedAllowed)) {
 //						Console.WriteLine ("skip access: " + member.FullName);
 						continue;
@@ -1841,7 +1842,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						continue;
 					if (member.EntityType == EntityType.Operator)
 						continue;
+					if (member.IsShadowing)
+						filteredList.RemoveAll (m => m.Name == member.Name);
 					
+					filteredList.Add (member);
+				}
+				
+				foreach (var member in filteredList) {
 //					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
 					result.AddMember (member);
 				}
