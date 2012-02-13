@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp;
@@ -43,10 +44,14 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		sealed class ValidatingResolveAllNavigator : IResolveVisitorNavigator
 		{
 			string fileName;
+			bool allowErrors;
 			
 			public ValidatingResolveAllNavigator(string fileName)
 			{
 				this.fileName = fileName;
+				// We allow errors in XAML codebehind because we're currently not adding the XAML-generated
+				// members to the type system.
+				this.allowErrors = (fileName.Contains(".xaml") || File.Exists(Path.ChangeExtension(fileName, ".xaml")));
 			}
 			
 			HashSet<AstNode> resolvedNodes = new HashSet<AstNode>();
@@ -64,7 +69,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				if (CSharpAstResolver.IsUnresolvableNode(node))
 					throw new InvalidOperationException("Resolved unresolvable node");
 				
-				if (result.IsError) {
+				if (result.IsError && !allowErrors) {
 					Console.WriteLine("Compiler error at " + fileName + ":" + node.StartLocation + ": " + result);
 				}
 			}
@@ -73,7 +78,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			{
 				if (!nodesWithConversions.Add(expression))
 					throw new InvalidOperationException("Duplicate ProcessConversion() call");
-				if (!conversion.IsValid) {
+				if (!conversion.IsValid && !allowErrors) {
 					Console.WriteLine("Compiler error at " + fileName + ":" + expression.StartLocation + ": Cannot convert from " + result + " to " + targetType);
 				}
 			}

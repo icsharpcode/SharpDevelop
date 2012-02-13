@@ -282,6 +282,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 			}
 			
+			public override string ToString()
+			{
+				return "[DefaultResolvedAssembly " + AssemblyName + "]";
+			}
+			
 			sealed class NS : INamespace
 			{
 				readonly DefaultResolvedAssembly assembly;

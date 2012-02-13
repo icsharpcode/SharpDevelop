@@ -31,12 +31,17 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
 	public class RandomizedOrderResolverTest
 	{
-		static Random rnd = new Random(42);
+		static Random sharedRnd = new Random();
 		CSharpAstResolver resolver;
 		CSharpAstResolver resolveAllResolver;
 		
 		public static void RunTest(CSharpFile file)
 		{
+			int seed;
+			lock (sharedRnd) {
+				seed = sharedRnd.Next();
+			}
+			Random rnd = new Random(seed);
 			var test = new RandomizedOrderResolverTest();
 			// Resolve all nodes, but in a random order without using a navigator.
 			test.resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
@@ -74,8 +79,10 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			
 			foreach (var action in actions) {
-				if (!action())
+				if (!action()) {
+					Console.WriteLine("Seed for this file was: " + seed);
 					break;
+				}
 			}
 		}
 		

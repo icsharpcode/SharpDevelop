@@ -69,6 +69,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			} else {
 				Console.WriteLine("Could not find mscorlib");
 			}
+			bool hasSystemCore = false;
 			foreach (var item in p.GetItems("Reference")) {
 				string assemblyFileName = null;
 				if (item.HasMetadata("HintPath")) {
@@ -80,11 +81,15 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					assemblyFileName = FindAssembly(Program.AssemblySearchPaths, item.EvaluatedInclude);
 				}
 				if (assemblyFileName != null) {
+					if (Path.GetFileName(assemblyFileName).Equals("System.Core.dll", StringComparison.OrdinalIgnoreCase))
+						hasSystemCore = true;
 					references.Add(Program.LoadAssembly(assemblyFileName));
 				} else {
 					Console.WriteLine("Could not find referenced assembly " + item.EvaluatedInclude);
 				}
 			}
+			if (!hasSystemCore && FindAssembly(Program.AssemblySearchPaths, "System.Core") != null)
+				references.Add(Program.LoadAssembly(FindAssembly(Program.AssemblySearchPaths, "System.Core")));
 			foreach (var item in p.GetItems("ProjectReference")) {
 				references.Add(new ProjectReference(solution, item.GetMetadataValue("Name")));
 			}
@@ -123,6 +128,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			foreach (string define in PreprocessorDefines)
 				settings.AddConditionalSymbol(define);
 			return new CSharpParser(settings);
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[CSharpProject AssemblyName={0}]", AssemblyName);
 		}
 	}
 	

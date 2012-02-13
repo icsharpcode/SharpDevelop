@@ -28,12 +28,22 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
 	class Program
 	{
+		/*
 		public static readonly string[] AssemblySearchPaths = {
 			@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0",
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\gtk-sharp-2.0",
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\Mono.Posix",
 			@"C:\work\SD\src\Tools\NUnit"
 		};
+		public const string SolutionFile = @"C:\work\NRefactory\NRefactory.sln";
+		/*/
+		public static readonly string[] AssemblySearchPaths = {
+			@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0",
+			@"C:\Windows\Microsoft.NET\Framework\v2.0.50727",
+			
+		};
+		public const string SolutionFile = @"C:\work\SD\SharpDevelop.sln";
+		//*/
 		
 		public const string TempPath = @"C:\temp";
 		
@@ -42,7 +52,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		public static void Main(string[] args)
 		{
 			using (new Timer("Loading solution... ")) {
-				solution = new Solution(Path.GetFullPath("../../../NRefactory.sln"));
+				solution = new Solution(SolutionFile);
 			}
 			
 			Console.WriteLine("Loaded {0} lines of code ({1:f1} MB) in {2} files in {3} projects.",
@@ -52,8 +62,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.Projects.Count);
 			
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
-			//RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
-			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
+			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
+			//RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);

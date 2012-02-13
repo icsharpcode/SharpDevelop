@@ -203,6 +203,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			}
 		}
 		
+		public override string ToString()
+		{
+			return "[CSharpAssembly " + this.AssemblyName + "]";
+		}
+		
 		sealed class NS : INamespace
 		{
 			readonly CSharpAssembly assembly;
