@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
@@ -418,6 +419,24 @@ class TestClass {
 }";
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
+		public void RaisePropertyChanged_WithExpressionLambda()
+		{
+			string program = @"using System;
+using System.Linq.Expressions;
+class Test {
+	void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpression) {}
+	void RaisePropertyChanged(string propertyName) {}
+	string MyProperty { get {} }
+	void Test() {
+		$RaisePropertyChanged(() => MyProperty)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("propertyExpression", rr.Member.Parameters.Single().Name);
 		}
 		
 		/* TODO write test for this
