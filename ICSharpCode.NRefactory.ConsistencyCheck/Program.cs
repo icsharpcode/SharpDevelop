@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.Projects.Count);
 			
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
-			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
+			//RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
 			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");

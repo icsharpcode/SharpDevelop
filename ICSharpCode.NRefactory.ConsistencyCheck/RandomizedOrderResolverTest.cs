@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
 	public class RandomizedOrderResolverTest
 	{
-		static Random rnd = new Random();
+		static Random rnd = new Random(42);
 		CSharpAstResolver resolver;
 		CSharpAstResolver resolveAllResolver;
 		
@@ -45,12 +45,19 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			test.resolveAllResolver.ApplyNavigator(new ResolveAllNavigator(), CancellationToken.None);
 			// Prepare list of actions that we need to verify:
 			var actions = new List<Func<bool>>();
+			bool checkResults = rnd.Next(0, 2) == 0;
+			bool checkStateBefore = rnd.Next(0, 2) == 0;
+			bool checkStateAfter = rnd.Next(0, 2) == 0;
 			foreach (var _node in file.CompilationUnit.DescendantsAndSelf) {
 				var node = _node;
 				if (CSharpAstResolver.IsUnresolvableNode(node))
 					continue;
-				//actions.Add(() => test.CheckResult(node));
-				actions.Add(() => test.CheckState(node));
+				if (checkResults)
+					actions.Add(() => test.CheckResult(node));
+				if (checkStateBefore)
+					actions.Add(() => test.CheckStateBefore(node));
+				if (checkStateAfter)
+					actions.Add(() => test.CheckStateAfter(node));
 				var expr = node as Expression;
 				if (expr != null) {
 					//actions.Add(() => test.CheckExpectedType(node));
@@ -58,7 +65,6 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				}
 			}
 			
-			/*
 			// Fisher-Yates shuffle
 			for (int i = actions.Count - 1; i > 0; i--) {
 				int j = rnd.Next(0, i);
@@ -66,7 +72,6 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				actions[i] = actions[j];
 				actions[j] = tmp;
 			}
-			*/
 			
 			foreach (var action in actions) {
 				if (!action())
@@ -86,13 +91,23 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			return false;
 		}
 		
-		bool CheckState(AstNode node)
+		bool CheckStateBefore(AstNode node)
 		{
 			var expectedState = resolveAllResolver.GetResolverStateBefore(node);
 			var actualState = resolver.GetResolverStateBefore(node);
 			if (IsEqualResolverState(expectedState, actualState))
 				return true;
-			Console.WriteLine("Different resolver states for '{0}' at {1} in {2}.", node, node.StartLocation, node.GetRegion().FileName);
+			Console.WriteLine("Different resolver states before '{0}' at {1} in {2}.", node, node.StartLocation, node.GetRegion().FileName);
+			return false;
+		}
+		
+		bool CheckStateAfter(AstNode node)
+		{
+			var expectedState = resolveAllResolver.GetResolverStateAfter(node);
+			var actualState = resolver.GetResolverStateAfter(node);
+			if (IsEqualResolverState(expectedState, actualState))
+				return true;
+			Console.WriteLine("Different resolver states after '{0}' at {1} in {2}.", node, node.StartLocation, node.GetRegion().FileName);
 			return false;
 		}
 		
