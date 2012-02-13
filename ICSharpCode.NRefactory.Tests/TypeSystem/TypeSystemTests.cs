@@ -215,16 +215,48 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void PropertyWithoutSetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithoutSetter");
+			Assert.IsTrue(p.CanGet);
+			Assert.IsFalse(p.CanSet);
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
+			Assert.IsNull(p.Setter);
+		}
+		
+		[Test]
 		public void Indexer()
 		{
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.AreEqual("Item", p.Name);
+			Assert.AreEqual(new[] { "index" }, p.Parameters.Select(x => x.Name).ToArray());
+		}
+		
+		[Test]
+		public void IndexerGetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanGet);
-			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual("get_Item", p.Getter.Name);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
-			Assert.IsFalse(p.CanSet);
-			Assert.IsNull(p.Setter);
+			Assert.AreEqual(new[] { "index" }, p.Getter.Parameters.Select(x => x.Name).ToArray());
+			Assert.AreEqual("System.String", p.Getter.ReturnType.ReflectionName);
+		}
+		
+		[Test]
+		public void IndexerSetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
+			Assert.IsTrue(p.CanSet);
+			Assert.AreEqual("set_Item", p.Setter.Name);
+			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
+			Assert.AreEqual(new[] { "index", "value" }, p.Setter.Parameters.Select(x => x.Name).ToArray());
+			Assert.AreEqual(TypeKind.Void, p.Setter.ReturnType.Kind);
 		}
 		
 		[Test]

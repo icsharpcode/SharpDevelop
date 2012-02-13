@@ -77,7 +77,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		public object PropertyWithPrivateSetter { get; private set; }
 		
-		public string this[int index] { get { return "Test"; } }
+		public object PropertyWithoutSetter { get { return null; } }
+		
+		public string this[int index] { get { return "Test"; } set {} }
 	}
 	
 	public enum MyEnum : short

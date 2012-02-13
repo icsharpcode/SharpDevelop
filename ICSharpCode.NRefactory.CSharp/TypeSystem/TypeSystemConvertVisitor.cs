@@ -621,9 +621,9 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			p.ReturnType = indexerDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, indexerDeclaration.Attributes);
 			
+			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
 			p.Setter = ConvertAccessor(indexerDeclaration.Setter, p, "set_");
-			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			
 			if (!indexerDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
@@ -646,6 +646,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, prefix + p.Name);
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? p.Accessibility;
 			a.Region = MakeRegion(accessor);
+			if (p.EntityType == EntityType.Indexer) {
+				foreach (var indexerParam in ((IUnresolvedProperty)p).Parameters)
+					a.Parameters.Add(indexerParam);
+			}
 			DefaultUnresolvedParameter param = null;
 			if (accessor.Role == PropertyDeclaration.GetterRole) {
 				a.ReturnType = p.ReturnType;
