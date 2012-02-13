@@ -109,6 +109,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Create an ITypeReference for this AstType.
 		/// </summary>
+		/// <remarks>
+		/// The resulting type reference requires a <see cref="CSharpTypeResolveContext"/> to be resolved.
+		/// </remarks>
 		public abstract ITypeReference ToTypeReference(SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type);
 		
 		/// <summary>

@@ -72,7 +72,7 @@ namespace OtherNS {
 			baseClass = compilation.RootNamespace.GetTypeDefinition("Base", 1);
 			nestedClass = baseClass.NestedTypes.Single();
 			derivedClass = compilation.RootNamespace.GetTypeDefinition("Derived", 2);
-			systemClass = compilation.FindType("NS.System, MyAssembly").GetDefinition();
+			systemClass = compilation.RootNamespace.GetChildNamespace("NS").GetTypeDefinition("System", 0);
 		}
 		
 		TypeSystemAstBuilder CreateBuilder(ITypeDefinition currentTypeDef = null)
@@ -208,7 +208,7 @@ namespace OtherNS {
 		public void AmbiguousType()
 		{
 			Assert.AreEqual("System.Array", TypeToString(compilation.FindType(typeof(Array))));
-			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.FindType("OtherNS.Array, MyAssembly")));
+			Assert.AreEqual("OtherNS.Array", TypeToString(compilation.MainAssembly.GetTypeDefinition("OtherNS", "Array", 0)));
 		}
 	}
 }
