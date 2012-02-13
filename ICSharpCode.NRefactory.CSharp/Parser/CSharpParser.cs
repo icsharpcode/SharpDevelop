@@ -1053,6 +1053,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				keywordTable [(int)BuiltinTypeSpec.Type.SByte] = "sbyte";
 				keywordTable [(int)BuiltinTypeSpec.Type.Decimal] = "decimal";
 				keywordTable [(int)BuiltinTypeSpec.Type.Char] = "char";
+				keywordTable [(int)BuiltinTypeSpec.Type.Bool] = "bool";
 			}
 			
 			void AddModifiers (AttributedNode parent, LocationsBag.MemberLocations location)
