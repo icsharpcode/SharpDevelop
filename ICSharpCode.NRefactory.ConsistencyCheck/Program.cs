@@ -32,6 +32,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0",
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\gtk-sharp-2.0",
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\Mono.Posix",
+			@"C:\work\SD\src\Tools\NUnit"
 		};
 		
 		public const string TempPath = @"C:\temp";
@@ -50,8 +51,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.AllFiles.Count(),
 			                  solution.Projects.Count);
 			
-			RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
-			//RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
+			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
+			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
+			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);

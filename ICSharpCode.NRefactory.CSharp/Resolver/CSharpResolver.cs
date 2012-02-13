@@ -253,6 +253,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
+		/// Removes the variable that was just added.
+		/// </summary>
+		public CSharpResolver PopLastVariable()
+		{
+			if (localVariableStack.Peek() == null)
+				throw new InvalidOperationException("There is no variable within the current block.");
+			return WithLocalVariableStack(localVariableStack.Pop());
+		}
+		
+		/// <summary>
 		/// Gets all currently visible local variables and lambda parameters.
 		/// </summary>
 		public IEnumerable<IVariable> LocalVariables {
