@@ -546,5 +546,19 @@ class Test {
 			var invoke = rr.Member.Parameters.Single().Type.GetDelegateInvokeMethod();
 			Assert.AreEqual("System.Int32", invoke.Parameters.Single().Type.ReflectionName);
 		}
+		
+		[Test]
+		public void StartNewTask()
+		{
+			string program = @"using System;
+class Test {
+	int Calculate() {}
+    static void Main() {
+    	$System.Threading.Tasks.Task.Factory.StartNew(() => Calculate())$;
+	}}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Threading.Tasks.Task`1[[System.Int32]]", rr.Type.ReflectionName);
+		}
 	}
 }

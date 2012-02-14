@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -155,7 +156,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				var l2 = (MethodListWithDeclaringType)val2;
 				return object.Equals(l1.DeclaringType, l2.DeclaringType)
 					&& Compare(l1, l2, type.BaseType);
-			} else if (type.IsArray || type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>) || type.GetGenericTypeDefinition() == typeof(IList<>) || type.GetGenericTypeDefinition() == typeof(ICollection<>) || type.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
+			} else if (type.IsArray || type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(List<>) || type.GetGenericTypeDefinition() == typeof(ReadOnlyCollection<>) || type.GetGenericTypeDefinition() == typeof(IList<>) || type.GetGenericTypeDefinition() == typeof(ICollection<>) || type.GetGenericTypeDefinition() == typeof(IEnumerable<>))) {
 				Type elementType = type.IsArray ? type.GetElementType() : type.GetGenericArguments()[0];
 				object[] arr1 = ((IEnumerable)val1).Cast<object>().ToArray();
 				object[] arr2 = ((IEnumerable)val2).Cast<object>().ToArray();

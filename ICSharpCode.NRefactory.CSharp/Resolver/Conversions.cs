@@ -849,9 +849,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				IType ret1 = m1.ReturnType;
 				IType ret2 = m2.ReturnType;
 				if (ret1.Kind == TypeKind.Void && ret2.Kind != TypeKind.Void)
-					return 1;
-				if (ret1.Kind != TypeKind.Void && ret2.Kind == TypeKind.Void)
 					return 2;
+				if (ret1.Kind != TypeKind.Void && ret2.Kind == TypeKind.Void)
+					return 1;
 				
 				IType inferredRet = lambda.GetInferredReturnType(parameterTypes);
 				r = BetterConversion(inferredRet, ret1, ret2);
