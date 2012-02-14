@@ -38,6 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Creates a new C# AST resolver.
+		/// Use this overload if you are resolving within a complete C# file.
 		/// </summary>
 		/// <param name="compilation">The current compilation.</param>
 		/// <param name="parsedFile">
@@ -60,6 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		/// <summary>
 		/// Creates a new C# AST resolver.
+		/// Use this overload if you are resolving code snippets (not necessarily complete files).
 		/// </summary>
 		/// <param name="resolver">The resolver state at the root node (to be more precise: outside the root node).</param>
 		/// <param name="rootNode">The root node of the resolved tree.</param>

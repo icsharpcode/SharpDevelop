@@ -703,21 +703,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return BinaryOperatorResolveResult(compilation.FindType(KnownTypeCode.Boolean), lhs, op, rhs);
 						}
 						if (op == BinaryOperatorType.Equality || op == BinaryOperatorType.InEquality) {
-							if (lhsType.Kind == TypeKind.Null && NullableType.IsNullable(rhs.Type)
-							    || rhsType.Kind == TypeKind.Null && NullableType.IsNullable(lhs.Type))
-							{
-								// §7.10.9 Equality operators and null
-								// "x == null", "null == x", "x != null" and "null != x" are valid
-								// even if the struct does not define operator ==.
+							if (lhsType.IsReferenceType == true && rhsType.IsReferenceType == true) {
+								// If it's a reference comparison
+								if (op == BinaryOperatorType.Equality)
+									methodGroup = operators.ReferenceEqualityOperators;
+								else
+									methodGroup = operators.ReferenceInequalityOperators;
+								break;
+							} else if (lhsType.Kind == TypeKind.Null && IsNullableTypeOrNonValueType(rhs.Type)
+							           || IsNullableTypeOrNonValueType(lhs.Type) && rhsType.Kind == TypeKind.Null) {
+								// compare type parameter or nullable type with the null literal
 								return BinaryOperatorResolveResult(compilation.FindType(KnownTypeCode.Boolean), lhs, op, rhs);
 							}
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
-								methodGroup = operators.EqualityOperators;
+								methodGroup = operators.ValueEqualityOperators;
 								break;
 							case BinaryOperatorType.InEquality:
-								methodGroup = operators.InequalityOperators;
+								methodGroup = operators.ValueInequalityOperators;
 								break;
 							case BinaryOperatorType.LessThan:
 								methodGroup = operators.LessThanOperators;
@@ -798,6 +802,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rhs = Convert(rhs, m.Parameters[1].Type, builtinOperatorOR.ArgumentConversions[1]);
 				return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 			}
+		}
+		
+		bool IsNullableTypeOrNonValueType(IType type)
+		{
+			return NullableType.IsNullable(type) || type.IsReferenceType != false;
 		}
 		
 		ResolveResult BinaryOperatorResolveResult(IType resultType, ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs)

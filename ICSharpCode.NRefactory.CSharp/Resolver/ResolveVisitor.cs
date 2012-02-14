@@ -286,21 +286,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public readonly IType ReturnType;
 			public readonly ExplicitlyTypedLambda ExplicitlyTypedLambda;
 			public readonly LambdaTypeHypothesis Hypothesis;
+			readonly bool isValid;
 			
-			public AnonymousFunctionConversion(IType returnType, LambdaTypeHypothesis hypothesis)
+			public AnonymousFunctionConversion(IType returnType, LambdaTypeHypothesis hypothesis, bool isValid)
 			{
 				if (returnType == null)
 					throw new ArgumentNullException("returnType");
 				this.ReturnType = returnType;
 				this.Hypothesis = hypothesis;
+				this.isValid = isValid;
 			}
 			
-			public AnonymousFunctionConversion(IType returnType, ExplicitlyTypedLambda explicitlyTypedLambda)
+			public AnonymousFunctionConversion(IType returnType, ExplicitlyTypedLambda explicitlyTypedLambda, bool isValid)
 			{
 				if (returnType == null)
 					throw new ArgumentNullException("returnType");
 				this.ReturnType = returnType;
 				this.ExplicitlyTypedLambda = explicitlyTypedLambda;
+				this.isValid = isValid;
+			}
+			
+			public override bool IsValid {
+				get { return isValid; }
 			}
 			
 			public override bool IsImplicit {
@@ -1761,7 +1768,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IList<ResolveResult> returnValues;
 			bool isValidAsVoidMethod;
 			bool isEndpointUnreachable;
-			bool success;
 			
 			// The actual return type is set when the lambda is applied by the conversion.
 			IType actualReturnType;
@@ -1822,7 +1828,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						delegate {
 							var oldNavigator = visitor.navigator;
 							visitor.navigator = new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, oldNavigator);
-							visitor.AnalyzeLambda(body, isAsync, out success, out isValidAsVoidMethod, out isEndpointUnreachable, out inferredReturnType, out returnExpressions, out returnValues);
+							visitor.AnalyzeLambda(body, isAsync, out isValidAsVoidMethod, out isEndpointUnreachable, out inferredReturnType, out returnExpressions, out returnValues);
 							visitor.navigator = oldNavigator;
 						});
 					Log.Unindent();
@@ -1831,7 +1837,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (inferredReturnType == null)
 						throw new InvalidOperationException("AnalyzeLambda() didn't set inferredReturnType");
 				}
-				return success;
+				return true;
 			}
 			
 			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
@@ -1841,11 +1847,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				bool valid = Analyze() && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, isAsync, returnValues, returnType, conversions);
 				Log.Unindent();
 				Log.WriteLine("{0} is {1} for return-type {2}", this, valid ? "valid" : "invalid", returnType);
-				if (valid) {
-					return new AnonymousFunctionConversion(returnType, this);
-				} else {
-					return Conversion.None;
-				}
+				return new AnonymousFunctionConversion(returnType, this, valid);
 			}
 			
 			public override IType GetInferredReturnType(IType[] parameterTypes)
@@ -2021,7 +2023,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return h;
 				}
 				ResolveVisitor visitor = new ResolveVisitor(storedContext, parsedFile);
-				visitor.SetNavigator(new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, null));
 				var newHypothesis = new LambdaTypeHypothesis(this, parameterTypes, visitor, lambda != null ? lambda.Parameters : null);
 				hypotheses.Add(newHypothesis);
 				return newHypothesis;
@@ -2094,7 +2095,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// with the parent ResolveVisitor.
 		/// This is done when the AnonymousFunctionConversion is applied on the parent visitor.
 		/// </summary>
-		sealed class LambdaTypeHypothesis
+		sealed class LambdaTypeHypothesis : IResolveVisitorNavigator
 		{
 			readonly ImplicitlyTypedLambda lambda;
 			internal readonly IParameter[] lambdaParameters;
@@ -2116,6 +2117,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.lambda = lambda;
 				this.parameterTypes = parameterTypes;
 				this.visitor = visitor;
+				visitor.SetNavigator(this);
 				
 				Log.WriteLine("Analyzing " + ToString() + "...");
 				Log.Indent();
@@ -2138,10 +2140,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				visitor.AnalyzeLambda(lambda.BodyExpression, lambda.IsAsync, out success, out isValidAsVoidMethod, out isEndpointUnreachable, out inferredReturnType, out returnExpressions, out returnValues);
+				success = true;
+				visitor.AnalyzeLambda(lambda.BodyExpression, lambda.IsAsync, out isValidAsVoidMethod, out isEndpointUnreachable, out inferredReturnType, out returnExpressions, out returnValues);
 				visitor.resolver = oldResolver;
 				Log.Unindent();
 				Log.WriteLine("Finished analyzing " + ToString());
+			}
+			
+			ResolveVisitorNavigationMode IResolveVisitorNavigator.Scan(AstNode node)
+			{
+				return ResolveVisitorNavigationMode.Resolve;
+			}
+			
+			void IResolveVisitorNavigator.Resolved(AstNode node, ResolveResult result)
+			{
+				if (result.IsError)
+					success = false;
+			}
+			
+			void IResolveVisitorNavigator.ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			{
+				success &= conversion.IsValid;
 			}
 			
 			internal int CountUnknownParameters()
@@ -2156,11 +2175,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public Conversion IsValid(IType returnType, Conversions conversions)
 			{
-				if (success && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, lambda.IsAsync, returnValues, returnType, conversions)) {
-					return new AnonymousFunctionConversion(returnType, this);
-				} else {
-					return Conversion.None;
-				}
+				bool valid = success && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, lambda.IsAsync, returnValues, returnType, conversions);
+				return new AnonymousFunctionConversion(returnType, this, valid);
 			}
 			
 			public void MergeInto(ResolveVisitor parentVisitor, IType returnType)
@@ -2288,7 +2304,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return SpecialType.UnknownType;
 		}
 		
-		void AnalyzeLambda(AstNode body, bool isAsync, out bool success, out bool isValidAsVoidMethod, out bool isEndpointUnreachable, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
+		void AnalyzeLambda(AstNode body, bool isAsync, out bool isValidAsVoidMethod, out bool isEndpointUnreachable, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
 		{
 			isEndpointUnreachable = false;
 			Expression expr = body as Expression;
@@ -2329,9 +2345,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (isAsync)
 				inferredReturnType = GetTaskType(inferredReturnType);
 			Log.WriteLine("Lambda return type was inferred to: " + inferredReturnType);
-			// TODO: check for compiler errors within the lambda body
-			
-			success = true;
 		}
 		
 		static bool ExpressionPermittedAsStatement(Expression expr)

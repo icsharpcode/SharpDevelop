@@ -368,7 +368,7 @@ class TestClass {
 			string program = @"using System;
 class TestClass {
 	static void Method<T>(System.Collections.Generic.List<T> list) {
-		$list.ConvertAll(x => (int)x)$;
+		$list.ConvertAll(x => (int)(object)x)$;
 	}
 }";
 			var rr = Resolve<CSharpInvocationResolveResult>(program);
@@ -500,18 +500,51 @@ class Test {
 			Assert.AreEqual("propertyExpression", rr.Member.Parameters.Single().Name);
 		}
 		
-		/* TODO write test for this
-class A
-{
+		[Test]
+		public void ParenthesizedExpressionIsNotValidExpressionStatement()
+		{
+			string program = @"using System;
+class A {
     static void Foo(string x, Action<Action> y) { Console.WriteLine(1); }
     static void Foo(object x, Func<Func<int>, int> y) { Console.WriteLine(2); }
 
     static void Main()
-    {
-        Foo(null, x => x()); // Prints 1
-        Foo(null, x => (x())); // Prints 2
-    }
-}
-		 */
+    { ";
+			var rr = ResolveAtLocation<CSharpInvocationResolveResult>(program + "$Foo(null, x => x()); // Prints 1\n}}");
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.String", rr.Member.Parameters[0].Type.ReflectionName);
+			
+			rr = ResolveAtLocation<CSharpInvocationResolveResult>(program + "$Foo(null, x => (x())); // Prints 2\n}}");
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.Object", rr.Member.Parameters[0].Type.ReflectionName);
+		}
+		
+		[Test]
+		public void LambdaWithComparisonToString()
+		{
+			string program = @"using System;
+class Test {
+    static void Foo(Func<int, bool> f) {}
+    static void Foo(Func<string, bool> f) {}
+    static void Main() { $Foo(x => x == ""text"")$; } }";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			var invoke = rr.Member.Parameters.Single().Type.GetDelegateInvokeMethod();
+			Assert.AreEqual("System.String", invoke.Parameters.Single().Type.ReflectionName);
+		}
+		
+		[Test]
+		public void LambdaWithComparisonToInt()
+		{
+			string program = @"using System;
+class Test {
+    static void Foo(Func<int, bool> f) {}
+    static void Foo(Func<string, bool> f) {}
+    static void Main() { $Foo(x => x == 42)$; } }";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			var invoke = rr.Member.Parameters.Single().Type.GetDelegateInvokeMethod();
+			Assert.AreEqual("System.Int32", invoke.Parameters.Single().Type.ReflectionName);
+		}
 	}
 }
