@@ -2604,7 +2604,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				for (AstNode child = conditionStatement.FirstChild; child != null; child = child.NextSibling) {
 					if (child.Role == AstNode.Roles.Condition) {
-						ResolveAndProcessConversion((Expression)child, resolver.Compilation.FindType(KnownTypeCode.Boolean));
+						Expression condition = (Expression)child;
+						ResolveResult conditionRR = Resolve(condition);
+						ResolveResult convertedRR = resolver.ResolveCondition(conditionRR);
+						if (convertedRR != conditionRR)
+							ProcessConversionResult(condition, convertedRR as ConversionResolveResult);
 					} else {
 						Scan(child);
 					}

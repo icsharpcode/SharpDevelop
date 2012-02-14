@@ -2095,6 +2095,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveConditional
+		/// <summary>
+		/// Converts the input to <c>bool</c> using the rules for boolean expressions.
+		/// That is, <c>operator true</c> is used if a regular conversion to <c>bool</c> is not possible.
+		/// </summary>
+		public ResolveResult ResolveCondition(ResolveResult input)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			IType boolean = compilation.FindType(KnownTypeCode.Boolean);
+			Conversion c = conversions.ImplicitConversion(input, boolean);
+			if (!c.IsValid) {
+				var opTrue = input.Type.GetMethods(m => m.IsOperator && m.Name == "op_True").FirstOrDefault();
+				if (opTrue != null) {
+					c = Conversion.UserDefinedImplicitConversion(opTrue, false);
+				}
+			}
+			return Convert(input, boolean, c);
+		}
+		
 		public ResolveResult ResolveConditional(ResolveResult condition, ResolveResult trueExpression, ResolveResult falseExpression)
 		{
 			// C# 4.0 spec §7.14: Conditional operator
@@ -2131,7 +2150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return ErrorResult;
 			}
-			isValid &= TryConvert(ref condition, compilation.FindType(KnownTypeCode.Boolean));
+			condition = ResolveCondition(condition);
 			if (isValid) {
 				if (condition.IsCompileTimeConstant && trueExpression.IsCompileTimeConstant && falseExpression.IsCompileTimeConstant) {
 					bool? val = condition.ConstantValue as bool?;
