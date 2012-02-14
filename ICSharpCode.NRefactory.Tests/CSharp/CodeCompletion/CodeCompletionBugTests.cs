@@ -997,7 +997,6 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 1932 - [new resolver] fields don't show up unless prefixed with 'this.'
 		/// </summary>
-		[Ignore("Something wrong in typesystem ?")]
 		[Test()]
 		public void TestBug1932 ()
 		{
@@ -3484,7 +3483,6 @@ namespace Test
 		/// <summary>
 		/// Bug 669285 - Extension method on T[] shows up on T
 		/// </summary>
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestBug669285 ()
 		{
@@ -3629,7 +3627,6 @@ class Foo
 		/// <summary>
 		/// Bug 675956 - Completion in for loops is broken
 		/// </summary>
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestBug675956 ()
 		{
@@ -3648,7 +3645,6 @@ class Foo
 		/// <summary>
 		/// Bug 675956 - Completion in for loops is broken
 		/// </summary>
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestBug675956Case2 ()
 		{
@@ -3906,7 +3902,6 @@ class TestClass
 		/// Bug 679995 - Variable missing from completiom
 		/// </summary>
 		/// 
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestBug679995 ()
 		{
