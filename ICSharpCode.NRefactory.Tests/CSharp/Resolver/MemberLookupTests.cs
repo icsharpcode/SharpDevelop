@@ -313,5 +313,35 @@ class Derived : Base {
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("Base.X", rr.Member.FullName);
 		}
+		
+		[Test]
+		public void ProtectedMemberViaTypeParameter()
+		{
+			string program = @"using System;
+class Base
+{
+	protected void Test() {}
+	public void Test(int a = 0) {}
+}
+class Derived<T> : Base where T : Derived<T>
+{
+	void M(Derived<T> a, Base b, T c) {
+		a.Test(); // calls Test()
+		b.Test(); // calls Test(int)
+		c.Test(); // calls Test()
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program.Replace("a.Test()", "$a.Test()$"));
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(0, rr.Member.Parameters.Count);
+			
+			rr = Resolve<CSharpInvocationResolveResult>(program.Replace("b.Test()", "$b.Test()$"));
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(1, rr.Member.Parameters.Count);
+			
+			rr = Resolve<CSharpInvocationResolveResult>(program.Replace("c.Test()", "$c.Test()$"));
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(0, rr.Member.Parameters.Count);
+		}
 	}
 }
