@@ -461,7 +461,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (asm != null)
 					asmRef = new DefaultAssemblyReference(asm.AssemblyName);
 				else
-					asmRef = DefaultAssemblyReference.CurrentAssembly;
+					asmRef = null;
 				return new GetClassTypeReference(asmRef, this.Namespace, this.Name, this.TypeParameterCount);
 			}
 		}
