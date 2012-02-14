@@ -80,6 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.AreEqual(genericInterfaceOfString, interfaceMethod2.DeclaringType);
 			Assert.IsTrue(interfaceMethod2.Parameters[1].IsRef);
 		}
+		
+		[Test]
+		public void ConvertStandaloneTypeReference()
+		{
+			var typeRef = new MemberType(new SimpleType("System"), "Array").ToTypeReference();
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Array), typeRef.Resolve(compilation.TypeResolveContext));
+		}
 	}
 	
 	[TestFixture]

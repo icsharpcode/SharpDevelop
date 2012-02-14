@@ -388,7 +388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.6.9 Postfix increment and decrement operators
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
-					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
+					if ((code >= TypeCode.Char && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
 						return UnaryOperatorResolveResult(expression.Type, op, expression);
 					else
 						return new ErrorResolveResult(expression.Type);
@@ -1352,7 +1352,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return r;
 			}
 			
-			if (context.CurrentUsingScope != null) {
+			if (context.CurrentUsingScope == null) {
+				// If no using scope was specified, we still need to look in the global namespace:
+				r = LookInUsingScopeNamespace(null, compilation.RootNamespace, identifier, typeArguments, parameterizeResultType);
+			} else {
 				if (k == 0 && lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration) {
 					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
@@ -1361,9 +1364,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				} else {
 					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == SimpleNameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
 				}
-				if (r != null)
-					return r;
 			}
+			if (r != null)
+				return r;
 			
 			if (typeArguments.Count == 0 && identifier == "dynamic") {
 				return new TypeResolveResult(SpecialType.Dynamic);
@@ -1418,36 +1421,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult LookInCurrentUsingScope(string identifier, IList<IType> typeArguments, bool isInUsingDeclaration, bool parameterizeResultType)
 		{
-			int k = typeArguments.Count;
 			// look in current namespace definitions
 			ResolvedUsingScope currentUsingScope = this.CurrentUsingScope;
 			for (ResolvedUsingScope u = currentUsingScope; u != null; u = u.Parent) {
-				INamespace n = u.Namespace;
-				// first look for a namespace
-				if (k == 0 && n != null) {
-					INamespace childNamespace = n.GetChildNamespace(identifier);
-					if (childNamespace != null) {
-						if (u.HasAlias(identifier))
-							return new AmbiguousTypeResolveResult(new UnknownType(null, identifier));
-						return new NamespaceResolveResult(childNamespace);
-					}
-				}
-				// then look for a type
-				if (n != null) {
-					ITypeDefinition def = n.GetTypeDefinition(identifier, k);
-					if (def != null) {
-						IType result = def;
-						if (parameterizeResultType && k > 0) {
-							result = new ParameterizedType(def, typeArguments);
-						}
-						if (u.HasAlias(identifier))
-							return new AmbiguousTypeResolveResult(result);
-						else
-							return new TypeResolveResult(result);
-					}
-				}
+				var resultInNamespace = LookInUsingScopeNamespace(u, u.Namespace, identifier, typeArguments, parameterizeResultType);
+				if (resultInNamespace != null)
+					return resultInNamespace;
 				// then look for aliases:
-				if (k == 0) {
+				if (typeArguments.Count == 0) {
 					if (u.ExternAliases.Contains(identifier)) {
 						return ResolveExternAlias(identifier);
 					}
@@ -1463,10 +1444,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (!(isInUsingDeclaration && u == currentUsingScope)) {
 					IType firstResult = null;
 					foreach (var importedNamespace in u.Usings) {
-						ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, k);
+						ITypeDefinition def = importedNamespace.GetTypeDefinition(identifier, typeArguments.Count);
 						if (def != null) {
 							IType resultType;
-							if (parameterizeResultType && k > 0)
+							if (parameterizeResultType && typeArguments.Count > 0)
 								resultType = new ParameterizedType(def, typeArguments);
 							else
 								resultType = def;
@@ -1482,6 +1463,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return new TypeResolveResult(firstResult);
 				}
 				// if we didn't find anything: repeat lookup with parent namespace
+			}
+			return null;
+		}
+
+		ResolveResult LookInUsingScopeNamespace(ResolvedUsingScope usingScope, INamespace n, string identifier, IList<IType> typeArguments, bool parameterizeResultType)
+		{
+			if (n == null)
+				return null;
+			// first look for a namespace
+			int k = typeArguments.Count;
+			if (k == 0) {
+				INamespace childNamespace = n.GetChildNamespace(identifier);
+				if (childNamespace != null) {
+					if (usingScope != null && usingScope.HasAlias(identifier))
+						return new AmbiguousTypeResolveResult(new UnknownType(null, identifier));
+					return new NamespaceResolveResult(childNamespace);
+				}
+			}
+			// then look for a type
+			ITypeDefinition def = n.GetTypeDefinition(identifier, k);
+			if (def != null) {
+				IType result = def;
+				if (parameterizeResultType && k > 0) {
+					result = new ParameterizedType(def, typeArguments);
+				}
+				if (usingScope != null && usingScope.HasAlias(identifier))
+					return new AmbiguousTypeResolveResult(result);
+				else
+					return new TypeResolveResult(result);
 			}
 			return null;
 		}
