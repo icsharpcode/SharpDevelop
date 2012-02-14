@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -1759,6 +1760,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IList<Expression> returnExpressions;
 			IList<ResolveResult> returnValues;
 			bool isValidAsVoidMethod;
+			bool isEndpointUnreachable;
 			bool success;
 			
 			// The actual return type is set when the lambda is applied by the conversion.
@@ -1820,7 +1822,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						delegate {
 							var oldNavigator = visitor.navigator;
 							visitor.navigator = new ConstantModeResolveVisitorNavigator(ResolveVisitorNavigationMode.Resolve, oldNavigator);
-							visitor.AnalyzeLambda(body, isAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+							visitor.AnalyzeLambda(body, isAsync, out success, out isValidAsVoidMethod, out isEndpointUnreachable, out inferredReturnType, out returnExpressions, out returnValues);
 							visitor.navigator = oldNavigator;
 						});
 					Log.Unindent();
@@ -1836,7 +1838,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				Log.WriteLine("Testing validity of {0} for return-type {1}...", this, returnType);
 				Log.Indent();
-				bool valid = Analyze() && IsValidLambda(isValidAsVoidMethod, isAsync, returnValues, returnType, conversions);
+				bool valid = Analyze() && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, isAsync, returnValues, returnType, conversions);
 				Log.Unindent();
 				Log.WriteLine("{0} is {1} for return-type {2}", this, valid ? "valid" : "invalid", returnType);
 				if (valid) {
@@ -2103,6 +2105,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IList<Expression> returnExpressions;
 			IList<ResolveResult> returnValues;
 			bool isValidAsVoidMethod;
+			bool isEndpointUnreachable;
 			internal bool success;
 			
 			public LambdaTypeHypothesis(ImplicitlyTypedLambda lambda, IType[] parameterTypes, ResolveVisitor visitor,
@@ -2135,7 +2138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				visitor.AnalyzeLambda(lambda.BodyExpression, lambda.IsAsync, out success, out isValidAsVoidMethod, out inferredReturnType, out returnExpressions, out returnValues);
+				visitor.AnalyzeLambda(lambda.BodyExpression, lambda.IsAsync, out success, out isValidAsVoidMethod, out isEndpointUnreachable, out inferredReturnType, out returnExpressions, out returnValues);
 				visitor.resolver = oldResolver;
 				Log.Unindent();
 				Log.WriteLine("Finished analyzing " + ToString());
@@ -2153,7 +2156,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public Conversion IsValid(IType returnType, Conversions conversions)
 			{
-				if (success && IsValidLambda(isValidAsVoidMethod, lambda.IsAsync, returnValues, returnType, conversions)) {
+				if (success && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, lambda.IsAsync, returnValues, returnType, conversions)) {
 					return new AnonymousFunctionConversion(returnType, this);
 				} else {
 					return Conversion.None;
@@ -2285,8 +2288,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return SpecialType.UnknownType;
 		}
 		
-		void AnalyzeLambda(AstNode body, bool isAsync, out bool success, out bool isValidAsVoidMethod, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
+		void AnalyzeLambda(AstNode body, bool isAsync, out bool success, out bool isValidAsVoidMethod, out bool isEndpointUnreachable, out IType inferredReturnType, out IList<Expression> returnExpressions, out IList<ResolveResult> returnValues)
 		{
+			isEndpointUnreachable = false;
 			Expression expr = body as Expression;
 			if (expr != null) {
 				isValidAsVoidMethod = ExpressionPermittedAsStatement(expr);
@@ -2314,6 +2318,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					inferredReturnType = ti.GetBestCommonType(returnValues, out tiSuccess);
 					// Failure to infer a return type does not make the lambda invalid,
 					// so we can ignore the 'tiSuccess' value
+					if (isValidAsVoidMethod && returnExpressions.Count == 0 && body is Statement) {
+						var reachabilityAnalysis = ReachabilityAnalysis.Create((Statement)body, new CSharpAstResolver(this), cancellationToken);
+						isEndpointUnreachable = !reachabilityAnalysis.IsEndpointReachable((Statement)body);
+					}
 				}
 			}
 			if (isAsync)
@@ -2344,7 +2352,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				|| expr is AssignmentExpression;
 		}
 		
-		static bool IsValidLambda(bool isValidAsVoidMethod, bool isAsync, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
+		static bool IsValidLambda(bool isValidAsVoidMethod, bool isEndpointUnreachable, bool isAsync, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
 		{
 			if (returnType.Kind == TypeKind.Void) {
 				// Lambdas that are valid statement lambdas or expression lambdas with a statement-expression
@@ -2356,7 +2364,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return isValidAsVoidMethod;
 			} else {
 				if (returnValues.Count == 0)
-					return false;
+					return isEndpointUnreachable;
 				if (isAsync) {
 					// async lambdas must return Task<T>
 					if (!(IsTask(returnType) && returnType.TypeParameterCount == 1))

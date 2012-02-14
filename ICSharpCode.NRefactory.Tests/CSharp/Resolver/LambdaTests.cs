@@ -447,6 +447,28 @@ class Test {
 		}
 		
 		[Test]
+		public void ThrowingAnonymousMethodIsConvertibleToFunc()
+		{
+			string program = @"using System;
+class Test {
+	Func<string, int> x = $delegate { throw new NotImplementedException(); }$;
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
+		public void EmptyAnonymousMethodIsNotConvertibleToFunc()
+		{
+			string program = @"using System;
+class Test {
+	Func<string, int> x = $delegate { }$;
+}";
+			var c = GetConversion(program);
+			Assert.IsFalse(c.IsValid);
+		}
+		
+		[Test]
 		public void RaisePropertyChanged_WithExpressionLambda()
 		{
 			string program = @"using System;

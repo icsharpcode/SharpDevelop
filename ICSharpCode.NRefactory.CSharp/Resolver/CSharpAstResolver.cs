@@ -78,6 +78,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.resolveVisitor = new ResolveVisitor(initialResolverState, parsedFile);
 		}
 		
+		internal CSharpAstResolver(ResolveVisitor resolveVisitor)
+		{
+			this.resolveVisitor = resolveVisitor;
+			this.resolverInitialized = true;
+		}
+		
 		/// <summary>
 		/// Gets the type resolve context for the root resolver.
 		/// </summary>
