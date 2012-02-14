@@ -180,10 +180,4 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		void IGenericInterface<string>.Test<T>(string a, T b) {}
 		void IGenericInterface<string>.Test<T>(string a, ref T b) {}
 	}
-	
-	public class IndexerTest
-	{
-		public string this[int index] { get { return "Test"; } set {} }
-	}
 }
-

@@ -651,14 +651,6 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					a.Parameters.Add(indexerParam);
 			}
 			DefaultUnresolvedParameter param = null;
-			
-			// copy indexer parameters to the accessor
-			if (p is IUnresolvedParameterizedMember) {
-				foreach (var parameter in ((IUnresolvedParameterizedMember)p).Parameters) {
-					a.Parameters.Add (parameter);
-				}
-			}
-			
 			if (accessor.Role == PropertyDeclaration.GetterRole) {
 				a.ReturnType = p.ReturnType;
 			} else {
