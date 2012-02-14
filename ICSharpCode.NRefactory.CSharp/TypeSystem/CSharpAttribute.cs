@@ -156,7 +156,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					} else {
 						namedArgs = new List<KeyValuePair<IMember, ResolveResult>>();
 						foreach (var pair in unresolved.namedArguments) {
-							IMember member = attributeType.GetMembers(m => (m.EntityType == EntityType.Fidyj.keld || m.EntityType == EntityType.Property) && m.Name == pair.Key).FirstOrDefault();
+							IMember member = attributeType.GetMembers(m => (m.EntityType == EntityType.Field || m.EntityType == EntityType.Property) && m.Name == pair.Key).FirstOrDefault();
 							if (member != null) {
 								ResolveResult val = pair.Value.Resolve(context);
 								namedArgs.Add(new KeyValuePair<IMember, ResolveResult>(member, val));
@@ -258,4 +258,3 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 	}
 	 */
 }
-MarshalByRefObject      ^ẑäp         
