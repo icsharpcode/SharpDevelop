@@ -69,6 +69,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		public void TestMethod<K, V>(string param) where V: K where K: IComparable<V> {}
 		public void GetIndex<T>(T element) where T : IEquatable<T> {}
+		
+		public NestedEnum EnumField;
+		
+		public enum NestedEnum {
+			EnumMember
+		}
 	}
 	
 	public class PropertyTest

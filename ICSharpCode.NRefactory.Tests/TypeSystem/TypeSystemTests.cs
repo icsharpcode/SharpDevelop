@@ -191,6 +191,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void GenericEnum()
+		{
+			var testClass = GetTypeDefinition(typeof(GenericClass<,>.NestedEnum));
+			Assert.AreEqual(2, testClass.TypeParameterCount);
+		}
+		
+		[Test]
+		public void FieldInGenericClassWithNestedEnumType()
+		{
+			var testClass = GetTypeDefinition(typeof(GenericClass<,>));
+			var enumClass = GetTypeDefinition(typeof(GenericClass<,>.NestedEnum));
+			var field = testClass.Fields.Single(f => f.Name == "EnumField");
+			Assert.AreEqual(new ParameterizedType(enumClass, testClass.TypeParameters), field.ReturnType);
+		}
+		
+		[Test]
+		public void GenericEnumMemberReturnType()
+		{
+			var enumClass = GetTypeDefinition(typeof(GenericClass<,>.NestedEnum));
+			var field = enumClass.Fields.Single(f => f.Name == "EnumMember");
+			Assert.AreEqual(new ParameterizedType(enumClass, enumClass.TypeParameters), field.ReturnType);
+		}
+		
+		[Test]
 		public void PropertyWithProtectedSetter()
 		{
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
