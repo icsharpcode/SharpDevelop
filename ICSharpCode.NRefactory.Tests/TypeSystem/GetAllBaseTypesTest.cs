@@ -79,6 +79,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public unsafe void ArrayOfPointers()
+		{
+			Assert.AreEqual(GetTypes(typeof(int*[]), typeof(Array), typeof(object),
+			                         typeof(IList), typeof(ICollection), typeof(IEnumerable),
+			                         typeof(IStructuralEquatable), typeof(IStructuralComparable), typeof(ICloneable)),
+			                GetAllBaseTypes(typeof(int*[])));
+		}
+		
+		[Test]
 		public void MultidimensionalArrayOfString()
 		{
 			Assert.AreEqual(GetTypes(typeof(string[,]), typeof(Array), typeof(object),

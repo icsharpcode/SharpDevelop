@@ -692,6 +692,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var arrayCreation = resolver.ResolveArrayCreation(arrayType.ElementType, arrayType.Dimensions, null, initializerElementResults);
 					StoreResult(aie, arrayCreation);
 					ProcessConversionResults(initializerElements, arrayCreation.InitializerElements);
+				} else if (variableInitializer.Parent is FixedStatement) {
+					var initRR = Resolve(variableInitializer.Initializer);
+					PointerType pointerType;
+					if (initRR.Type.Kind == TypeKind.Array) {
+						pointerType = new PointerType(((ArrayType)initRR.Type).ElementType);
+					} else if (ReflectionHelper.GetTypeCode(initRR.Type) == TypeCode.String) {
+						pointerType = new PointerType(resolver.Compilation.FindType(KnownTypeCode.Char));
+					} else {
+						pointerType = null;
+						ProcessConversion(variableInitializer.Initializer, initRR, result.Type);
+					}
+					if (pointerType != null) {
+						var conversion = resolver.conversions.ImplicitConversion(pointerType, result.Type);
+						if (conversion.IsIdentityConversion)
+							conversion = Conversion.ImplicitPointerConversion;
+						ProcessConversion(variableInitializer.Initializer, initRR, conversion, result.Type);
+					}
 				} else {
 					ResolveAndProcessConversion(variableInitializer.Initializer, result.Type);
 				}
