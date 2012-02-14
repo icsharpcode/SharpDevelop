@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveUnaryOperator method
 		public ResolveResult ResolveUnaryOperator(UnaryOperatorType op, ResolveResult expression)
 		{
-			if (SpecialType.Dynamic.Equals(expression.Type))
+			if (expression.Type.Kind == TypeKind.Dynamic)
 				return UnaryOperatorResolveResult(SpecialType.Dynamic, op, expression);
 			
 			// C# 4.0 spec: §7.3.3 Unary operator overload resolution
@@ -461,7 +461,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.3.6.1
 			TypeCode code = ReflectionHelper.GetTypeCode(type);
-			if (isNullable && SpecialType.NullType.Equals(type))
+			if (isNullable && type.Kind == TypeKind.Null)
 				code = TypeCode.SByte; // cause promotion of null to int32
 			switch (op) {
 				case UnaryOperatorType.Minus:
@@ -513,7 +513,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveBinaryOperator method
 		public ResolveResult ResolveBinaryOperator(BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
 		{
-			if (SpecialType.Dynamic.Equals(lhs.Type) || SpecialType.Dynamic.Equals(rhs.Type)) {
+			if (lhs.Type.Kind == TypeKind.Dynamic || rhs.Type.Kind == TypeKind.Dynamic) {
 				lhs = Convert(lhs, SpecialType.Dynamic);
 				rhs = Convert(rhs, SpecialType.Dynamic);
 				return BinaryOperatorResolveResult(SpecialType.Dynamic, lhs, op, rhs);
@@ -556,14 +556,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return CreateResolveResultForUserDefinedOperator(userDefinedOperatorOR, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow));
 			}
 			
-			if (SpecialType.NullType.Equals(lhsType) && rhsType.IsReferenceType == false
-			    || lhsType.IsReferenceType == false && SpecialType.NullType.Equals(rhsType))
+			if (lhsType.Kind == TypeKind.Null && rhsType.IsReferenceType == false
+			    || lhsType.IsReferenceType == false && rhsType.Kind == TypeKind.Null)
 			{
 				isNullable = true;
 			}
 			if (op == BinaryOperatorType.ShiftLeft || op == BinaryOperatorType.ShiftRight) {
 				// special case: the shift operators allow "var x = null << null", producing int?.
-				if (SpecialType.NullType.Equals(lhsType) && SpecialType.NullType.Equals(rhsType))
+				if (lhsType.Kind == TypeKind.Null && rhsType.Kind == TypeKind.Null)
 					isNullable = true;
 				// for shift operators, do unary promotion independently on both arguments
 				lhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref lhsType, isNullable, lhs);
@@ -628,7 +628,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								PointerArithmeticOperator(rhsType, KnownTypeCode.UInt64, rhsType)
 							};
 						}
-						if (SpecialType.NullType.Equals(lhsType) && SpecialType.NullType.Equals(rhsType))
+						if (lhsType.Kind == TypeKind.Null && rhsType.Kind == TypeKind.Null)
 							return new ErrorResolveResult(SpecialType.NullType);
 					}
 					break;
@@ -676,7 +676,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							};
 						}
 						
-						if (SpecialType.NullType.Equals(lhsType) && SpecialType.NullType.Equals(rhsType))
+						if (lhsType.Kind == TypeKind.Null && rhsType.Kind == TypeKind.Null)
 							return new ErrorResolveResult(SpecialType.NullType);
 					}
 					break;
@@ -920,10 +920,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TypeCode lhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(lhs.Type));
 			TypeCode rhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(rhs.Type));
 			// if one of the inputs is the null literal, promote that to the type of the other operand
-			if (isNullable && SpecialType.NullType.Equals(lhs.Type) && rhsCode >= TypeCode.Boolean && rhsCode <= TypeCode.Decimal) {
+			if (isNullable && lhs.Type.Kind == TypeKind.Null && rhsCode >= TypeCode.Boolean && rhsCode <= TypeCode.Decimal) {
 				lhs = CastTo(rhsCode, isNullable, lhs, allowNullableConstants);
 				lhsCode = rhsCode;
-			} else if (isNullable && SpecialType.NullType.Equals(rhs.Type) && lhsCode >= TypeCode.Boolean && lhsCode <= TypeCode.Decimal) {
+			} else if (isNullable && rhs.Type.Kind == TypeKind.Null && lhsCode >= TypeCode.Boolean && lhsCode <= TypeCode.Decimal) {
 				rhs = CastTo(lhsCode, isNullable, rhs, allowNullableConstants);
 				rhsCode = lhsCode;
 			}
@@ -1535,7 +1535,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return ResolveMemberAccessOnNamespace(nrr, identifier, typeArguments, typeArguments.Count > 0);
 			}
 			
-			if (SpecialType.Dynamic.Equals(target.Type))
+			if (target.Type.Kind == TypeKind.Dynamic)
 				return DynamicResult;
 			
 			MemberLookup lookup = CreateMemberLookup();
@@ -1791,7 +1791,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.6.5
 			
-			if (SpecialType.Dynamic.Equals(target.Type))
+			if (target.Type.Kind == TypeKind.Dynamic)
 				return DynamicResult;
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
@@ -2082,7 +2082,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			bool isValid;
 			IType resultType;
-			if (SpecialType.Dynamic.Equals(trueExpression.Type) || SpecialType.Dynamic.Equals(falseExpression.Type)) {
+			if (trueExpression.Type.Kind == TypeKind.Dynamic || falseExpression.Type.Kind == TypeKind.Dynamic) {
 				resultType = SpecialType.Dynamic;
 				isValid = TryConvert(ref trueExpression, resultType) & TryConvert(ref falseExpression, resultType);
 			} else if (HasType(trueExpression) && HasType(falseExpression)) {

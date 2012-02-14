@@ -388,7 +388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool NullLiteralConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.5
-			if (SpecialType.NullType.Equals(fromType)) {
+			if (fromType.Kind == TypeKind.Null) {
 				return NullableType.IsNullable(toType) || toType.IsReferenceType == true;
 			} else {
 				return false;
@@ -438,7 +438,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool IsSubtypeOf(IType s, IType t)
 		{
 			// conversion to dynamic + object are always possible
-			if (t.Equals(SpecialType.Dynamic) || t.Equals(objectType))
+			if (t.Kind == TypeKind.Dynamic || t.Equals(objectType))
 				return true;
 			try {
 				if (++subtypeCheckNestingDepth > 10) {
@@ -594,7 +594,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §18.4 Pointer conversions
 			if (fromType is PointerType && toType is PointerType && toType.ReflectionName == "System.Void*")
 				return true;
-			if (SpecialType.NullType.Equals(fromType) && toType is PointerType)
+			if (fromType.Kind == TypeKind.Null && toType is PointerType)
 				return true;
 			return false;
 		}
