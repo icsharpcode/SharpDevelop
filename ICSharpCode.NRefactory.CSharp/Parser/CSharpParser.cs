@@ -2874,7 +2874,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			#region Undocumented expressions
 			public override object Visit (Arglist argListExpression)
 			{
-				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.ArgListAccess };
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.ArgList };
 				result.AddChild (new CSharpTokenNode (Convert (argListExpression.Location), "__arglist".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (argListExpression);
 				if (location != null)
@@ -2889,7 +2889,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (MakeRefExpr makeRefExpr)
 			{
-				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.MakeRef };
 				result.AddChild (new CSharpTokenNode (Convert (makeRefExpr.Location), "__makeref".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (makeRefExpr);
 				if (location != null)
@@ -2903,7 +2903,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (RefTypeExpr refTypeExpr)
 			{
-				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefValue };
+				var result = new UndocumentedExpression () { UndocumentedExpressionType = UndocumentedExpressionType.RefType };
 				result.AddChild (new CSharpTokenNode (Convert (refTypeExpr.Location), "__reftype".Length), UndocumentedExpression.Roles.Keyword);
 				var location = LocationsBag.GetLocations (refTypeExpr);
 				if (location != null)
