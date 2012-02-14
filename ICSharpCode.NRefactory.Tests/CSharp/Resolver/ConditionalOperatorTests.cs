@@ -146,6 +146,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void ByteAndZeroLiteral()
+		{
+			AssertType(typeof(int), resolver.ResolveConditional(
+				MakeResult(typeof(bool)), MakeResult(typeof(byte)), MakeConstant(0)));
+		}
+		
+		[Test]
+		public void ByteAndUShort()
+		{
+			AssertType(typeof(ushort), resolver.ResolveConditional(
+				MakeResult(typeof(bool)), MakeResult(typeof(byte)), MakeResult(typeof(ushort))));
+		}
+		
+		[Test]
 		public void EnumAndZeroLiteral()
 		{
 			AssertType(typeof(StringComparison), resolver.ResolveConditional(

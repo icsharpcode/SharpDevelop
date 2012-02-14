@@ -2091,11 +2091,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// The operator is valid:
 				// a) if there's a conversion in one direction but not the other
 				// b) if there are conversions in both directions, and the types are equivalent
-				if (t2f.IsValid && !f2t.IsValid) {
+				if (IsBetterConditionalConversion(t2f, f2t)) {
 					resultType = falseExpression.Type;
 					isValid = true;
 					trueExpression = Convert(trueExpression, resultType, t2f);
-				} else if (f2t.IsValid && !t2f.IsValid) {
+				} else if (IsBetterConditionalConversion(f2t, t2f)) {
 					resultType = trueExpression.Type;
 					isValid = true;
 					falseExpression = Convert(falseExpression, resultType, f2t);
@@ -2126,6 +2126,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return new ErrorResolveResult(resultType);
 			}
+		}
+		
+		bool IsBetterConditionalConversion(Conversion c1, Conversion c2)
+		{
+			// Valid is better than ImplicitConstantExpressionConversion is better than invalid
+			if (!c1.IsValid)
+				return false;
+			if (c1 != Conversion.ImplicitConstantExpressionConversion && c2 == Conversion.ImplicitConstantExpressionConversion)
+				return true;
+			return !c2.IsValid;
 		}
 		
 		bool HasType(ResolveResult r)
