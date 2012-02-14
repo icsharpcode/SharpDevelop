@@ -1696,10 +1696,27 @@ namespace ICSharpCode.NRefactory.CSharp
 						if (u.Variables.Initializer != null)
 							initializer.Initializer = u.Variables.Initializer.Accept (this) as Expression;
 						
+						
 						var varDec  = new VariableDeclarationStatement () {
 							Type = ConvertToType (u.Variables.TypeExpression),
 							Variables = { initializer }
 						};
+						
+						if (u.Variables.Declarators != null) {
+							foreach (var decl in u.Variables.Declarators) {
+								var declLoc = LocationsBag.GetLocations (decl);
+								var init = new VariableInitializer ();
+								if (declLoc != null && declLoc.Count > 0)
+									varDec.AddChild (new CSharpTokenNode (Convert (declLoc [0]), 1), VariableInitializer.Roles.Comma);
+								init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
+								if (decl.Initializer != null) {
+									if (declLoc != null && declLoc.Count > 1)
+										init.AddChild (new CSharpTokenNode (Convert (declLoc [1]), 1), VariableInitializer.Roles.Assign);
+									init.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
+								}
+								varDec.AddChild (init, UsingStatement.Roles.Variable);
+							}
+						}
 						usingResult.AddChild (varDec, UsingStatement.ResourceAcquisitionRole);
 					}
 					cur = u.Statement;
@@ -1883,7 +1900,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							init.AddChild (Identifier.Create (decl.Variable.Name, Convert (decl.Variable.Location)), VariableInitializer.Roles.Identifier);
 							if (decl.Initializer != null) {
 								if (loc != null && loc.Count > 1)
-									result.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
+									init.AddChild (new CSharpTokenNode (Convert (loc [1]), 1), VariableInitializer.Roles.Assign);
 								init.AddChild ((Expression)decl.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 							} else {
 							}
