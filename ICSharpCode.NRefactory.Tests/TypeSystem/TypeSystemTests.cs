@@ -565,7 +565,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void InnerClassInGenericClass_TypeParameterOwner()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>.Inner));
-			Assert.AreSame(type, type.TypeParameters[0].Owner);
+			Assert.AreSame(type.DeclaringTypeDefinition.TypeParameters[0], type.TypeParameters[0]);
+			Assert.AreSame(type.DeclaringTypeDefinition, type.TypeParameters[0].Owner);
 		}
 		
 		[Test]
@@ -574,7 +575,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>.Inner));
 			IField f = type.Fields.Single();
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1[[`0]]", f.Type.ReflectionName);
-			Assert.AreSame(type, ((f.Type as ParameterizedType).TypeArguments[0] as ITypeParameter).Owner);
 		}
 		
 		[Test]
@@ -583,7 +583,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>.Inner));
 			IParameter p = type.Methods.Single(m => m.IsConstructor).Parameters.Single();
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1[[`0]]", p.Type.ReflectionName);
-			Assert.AreSame(type, ((p.Type as ParameterizedType).TypeArguments[0] as ITypeParameter).Owner);
 		}
 		
 		ResolveResult GetParamsAttributeArgument(int index)

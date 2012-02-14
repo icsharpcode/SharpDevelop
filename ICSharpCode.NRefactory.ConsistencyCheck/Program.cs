@@ -28,22 +28,16 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
 	class Program
 	{
-		/*
 		public static readonly string[] AssemblySearchPaths = {
 			@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0",
+			@"C:\Windows\Microsoft.NET\Framework\v2.0.50727",
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\gtk-sharp-2.0",
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\Mono.Posix",
 			@"C:\work\SD\src\Tools\NUnit"
 		};
-		public const string SolutionFile = @"C:\work\NRefactory\NRefactory.sln";
-		/*/
-		public static readonly string[] AssemblySearchPaths = {
-			@"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0",
-			@"C:\Windows\Microsoft.NET\Framework\v2.0.50727",
-			
-		};
-		public const string SolutionFile = @"C:\work\SD\SharpDevelop.sln";
-		//*/
+		//public const string SolutionFile = @"C:\work\NRefactory\NRefactory.sln";
+		//public const string SolutionFile = @"C:\work\SD\SharpDevelop.sln";
+		public const string SolutionFile = @"C:\work\ILSpy\ILSpy.sln";
 		
 		public const string TempPath = @"C:\temp";
 		
@@ -63,7 +57,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
 			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
-			//RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
+			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
