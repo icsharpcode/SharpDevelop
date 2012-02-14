@@ -517,7 +517,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ConversionWithTargetType GetConversionWithTargetType(Expression expr)
 		{
-			MergeUndecidedLambdas();
+			GetResolverStateBefore(expr);
 			ResolveParentForConversion(expr);
 			ConversionWithTargetType result;
 			if (conversionDict.TryGetValue(expr, out result)) {
@@ -1305,6 +1305,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult[] arguments = GetArguments(objectCreateExpression.Arguments, out argumentNames);
 				
 				ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames);
+				if (arguments.Length == 1) {
+					// process conversion in case it's a delegate creation
+					ProcessConversionResult(objectCreateExpression.Arguments.Single(), rr as ConversionResolveResult);
+				}
+				// process conversions in all other cases
 				ProcessConversionsInInvocation(null, objectCreateExpression.Arguments, rr as CSharpInvocationResolveResult);
 				return rr;
 			} else {
@@ -2233,7 +2238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AstNode parent = expression.Parent;
 			// Continue going upwards until we find a node that can be resolved and provides
 			// an expected type.
-			while (ActsAsParenthesizedExpression(parent) || parent is NamedArgumentExpression || parent is ArrayInitializerExpression) {
+			while (ParenthesizedExpression.ActsAsParenthesizedExpression(parent) || CSharpAstResolver.IsUnresolvableNode(parent)) {
 				parent = parent.Parent;
 			}
 			CSharpResolver storedResolver;
@@ -2243,20 +2248,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResetContext(storedResolver, delegate { Resolve(parent); });
 				Log.Unindent();
 			} else {
-				Log.WriteLine("Could not find a suitable parent for '" + expression);
+				Log.WriteLine("Could not find a suitable parent for '" + expression + "'");
 			}
-		}
-		
-		internal static bool ActsAsParenthesizedExpression(AstNode expression)
-		{
-			return expression is ParenthesizedExpression || expression is CheckedExpression || expression is UncheckedExpression;
-		}
-		
-		internal static Expression UnpackParenthesizedExpression(Expression expr)
-		{
-			while (ActsAsParenthesizedExpression(expr))
-				expr = expr.GetChildByRole(ParenthesizedExpression.Roles.Expression);
-			return expr;
 		}
 		#endregion
 		
@@ -3340,7 +3333,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			QueryExpression query = querySelectClause.Parent as QueryExpression;
 			string rangeVariable = GetSingleRangeVariable(query);
 			if (rangeVariable != null) {
-				IdentifierExpression ident = UnpackParenthesizedExpression(querySelectClause.Expression) as IdentifierExpression;
+				IdentifierExpression ident = ParenthesizedExpression.UnpackParenthesizedExpression(querySelectClause.Expression) as IdentifierExpression;
 				if (ident != null && ident.Identifier == rangeVariable && !ident.TypeArguments.Any()) {
 					// selecting the single identifier that is the range variable
 					if (query.Clauses.Count > 2) {

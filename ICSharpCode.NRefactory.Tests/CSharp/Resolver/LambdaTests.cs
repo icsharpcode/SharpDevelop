@@ -19,6 +19,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
@@ -416,6 +417,30 @@ class TestClass {
 	int M() {
 		Run(x => $M()$);
 	}
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
+		public void ImplicitLambdaInNewFunc()
+		{
+			string program = @"using System;
+class Test {
+	static bool b;
+	object x = new Func<int, string>(a => $a$.ToString());
+}";
+			var r = Resolve(program);
+			Assert.AreEqual("System.Int32", r.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void LambdaInNewAction()
+		{
+			string program = @"using System;
+class Test {
+	static bool b;
+	object x = new Action(() => $b = true$);
 }";
 			var c = GetConversion(program);
 			Assert.IsTrue(c.IsValid);

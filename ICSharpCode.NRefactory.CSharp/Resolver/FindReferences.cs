@@ -617,7 +617,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				InvocationExpression ie = node as InvocationExpression;
 				if (ie != null) {
-					Expression target = ResolveVisitor.UnpackParenthesizedExpression(ie.Target);
+					Expression target = ParenthesizedExpression.UnpackParenthesizedExpression(ie.Target);
 					
 					IdentifierExpression ident = target as IdentifierExpression;
 					if (ident != null)
