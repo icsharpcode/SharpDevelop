@@ -2319,7 +2319,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// Failure to infer a return type does not make the lambda invalid,
 					// so we can ignore the 'tiSuccess' value
 					if (isValidAsVoidMethod && returnExpressions.Count == 0 && body is Statement) {
-						var reachabilityAnalysis = ReachabilityAnalysis.Create((Statement)body, new CSharpAstResolver(this), cancellationToken);
+						var reachabilityAnalysis = ReachabilityAnalysis.Create(
+							(Statement)body, (node, _) => resolveResultCache[node],
+							resolver.CurrentTypeResolveContext, cancellationToken);
 						isEndpointUnreachable = !reachabilityAnalysis.IsEndpointReachable((Statement)body);
 					}
 				}

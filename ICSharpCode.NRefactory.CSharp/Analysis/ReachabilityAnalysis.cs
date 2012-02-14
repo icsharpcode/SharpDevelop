@@ -20,6 +20,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Analysis
 {
@@ -39,6 +41,13 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 		{
 			var cfgBuilder = new ControlFlowGraphBuilder();
 			var cfg = cfgBuilder.BuildControlFlowGraph(statement, resolver, cancellationToken);
+			return Create(cfg, cancellationToken);
+		}
+		
+		internal static ReachabilityAnalysis Create(Statement statement, Func<AstNode, CancellationToken, ResolveResult> resolver, CSharpTypeResolveContext typeResolveContext, CancellationToken cancellationToken)
+		{
+			var cfgBuilder = new ControlFlowGraphBuilder();
+			var cfg = cfgBuilder.BuildControlFlowGraph(statement, resolver, typeResolveContext, cancellationToken);
 			return Create(cfg, cancellationToken);
 		}
 		

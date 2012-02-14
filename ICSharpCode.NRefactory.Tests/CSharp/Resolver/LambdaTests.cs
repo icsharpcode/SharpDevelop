@@ -447,6 +447,20 @@ class Test {
 		}
 		
 		[Test]
+		public void AnonymousMethodInNewEventHandler()
+		{
+			// The switch statement causes the control flow analysis to ask the resolver if it's a constant,
+			// which caused a bug.
+			string program = @"using System;
+class Test {
+	static bool b;
+	object x = new EventHandler<AssemblyLoadEventArgs>($delegate (object sender, AssemblyLoadEventArgs e) { switch (e.Action) {} }$);
+}";
+			var c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+		}
+		
+		[Test]
 		public void ThrowingAnonymousMethodIsConvertibleToFunc()
 		{
 			string program = @"using System;
