@@ -292,7 +292,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			        where typeDef.IsDerivedFrom(referencedTypeDefinition)
 			        from part in typeDef.Parts
 			        select part.ParsedFile
-			       ).OfType<CSharpParsedFile>();
+			       ).OfType<CSharpParsedFile>().Distinct();
 		}
 		#endregion
 		

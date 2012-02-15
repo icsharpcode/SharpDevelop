@@ -134,6 +134,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		{
 			return string.Format("[CSharpProject AssemblyName={0}]", AssemblyName);
 		}
+		
+		public CSharpFile GetFile(string fileName)
+		{
+			return Files.Single(f => f.FileName == fileName);
+		}
 	}
 	
 	public class ProjectReference : IAssemblyReference

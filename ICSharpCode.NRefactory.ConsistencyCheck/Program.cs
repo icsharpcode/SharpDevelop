@@ -57,8 +57,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.Projects.Count);
 			
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
-			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
-			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
+			//RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
+			//RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);
+			new FindReferencesConsistencyCheck(solution).Run();
 			
 			Console.Write("Press any key to continue . . . ");
 			Console.ReadKey(true);
@@ -79,20 +80,20 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		{
 			return assemblyDict.GetOrAdd(assemblyFileName, file => new CecilLoader().LoadAssemblyFile(file));
 		}
+	}
+	
+	sealed class Timer : IDisposable
+	{
+		Stopwatch w = Stopwatch.StartNew();
 		
-		sealed class Timer : IDisposable
+		public Timer(string title)
 		{
-			Stopwatch w = Stopwatch.StartNew();
-			
-			public Timer(string title)
-			{
-				Console.Write(title);
-			}
-			
-			public void Dispose()
-			{
-				Console.WriteLine(w.Elapsed);
-			}
+			Console.Write(title);
+		}
+		
+		public void Dispose()
+		{
+			Console.WriteLine(w.Elapsed);
 		}
 	}
 }
