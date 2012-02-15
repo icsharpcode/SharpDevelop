@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
@@ -55,13 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public static Conversions Get(ICompilation compilation)
 		{
-			CacheManager cache = compilation.CacheManager;
-			Conversions conversions = (Conversions)cache.GetThreadLocal(typeof(Conversions));
-			if (conversions == null) {
-				conversions = new Conversions(compilation);
-				cache.SetThreadLocal(typeof(Conversions), conversions);
-			}
-			return conversions;
+			return new Conversions(compilation);
 		}
 		
 		#region TypePair (for caching)
