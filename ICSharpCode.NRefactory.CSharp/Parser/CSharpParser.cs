@@ -106,18 +106,20 @@ namespace ICSharpCode.NRefactory.CSharp
 							subContainer.Accept (this);
 						}
 					}
-					if (nspace.UnattachedAttributes != null && nspace.UnattachedAttributes.Length > 0)
-						AddToNamespace (ConvertAttributeSection (nspace.UnattachedAttributes));
 						
 					if (nDecl != null) {
+						AddAttributeSection (nDecl, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 						if (loc != null && loc.Count > 2)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
 						if (loc != null && loc.Count > 3)
 							nDecl.AddChild (new CSharpTokenNode (Convert (loc[3]), 1), NamespaceDeclaration.Roles.Semicolon);
 						
 						namespaceStack.Pop ();
+					} else {
+						AddAttributeSection (unit, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 					}
 				}
+				AddAttributeSection (unit, mc.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 			}
 			
 			#region Global
@@ -371,10 +373,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				}
 				
-				if (nspace.UnattachedAttributes != null && nspace.UnattachedAttributes.Length > 0)
-					AddToNamespace (ConvertAttributeSection (nspace.UnattachedAttributes));
 				
 				if (nDecl != null) {
+					AddAttributeSection (nDecl, nspace.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 					if (loc != null && loc.Count > 2)
 						nDecl.AddChild (new CSharpTokenNode (Convert (loc[2]), 1), NamespaceDeclaration.Roles.RBrace);
 					if (loc != null && loc.Count > 3)
@@ -516,9 +517,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.LBrace);
 				typeStack.Push (newType);
 				base.Visit (c);
-				
-				if (c.UnattachedAttributes != null && c.UnattachedAttributes.Length > 0)
-					newType.AddChild (ConvertAttributeSection (c.UnattachedAttributes), TypeDeclaration.UnattachedAttributeRole);
+				AddAttributeSection (newType, c.UnattachedAttributes, AttributedNode.UnattachedAttributeRole);
 				
 				if (location != null && curLoc < location.Count) {
 					newType.AddChild (new CSharpTokenNode (Convert (location[curLoc++]), 1), AstNode.Roles.RBrace);
@@ -913,13 +912,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddAttributeSection (parent, a.OptAttributes);
 			}
 			
-			public void AddAttributeSection (AstNode parent, Attributes attrs)
+			public void AddAttributeSection (AstNode parent, Attributes attrs, Role role)
 			{
 				if (attrs == null)
 					return;
 				foreach (var attr in attrs.Sections) {
 					parent.AddChild (ConvertAttributeSection (attr), AttributedNode.AttributeRole);
 				}
+			}
+			public void AddAttributeSection (AstNode parent, Attributes attrs)
+			{
+				AddAttributeSection (parent, attrs, AttributedNode.AttributeRole);
 			}
 			
 			public override void Visit (Indexer indexer)
