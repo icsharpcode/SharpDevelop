@@ -87,5 +87,25 @@ class Test {
 			Assert.AreEqual(new [] { new TextLocation(4, 13), new TextLocation(7, 2) },
 			                FindReferences(m_string).Select(n => n.StartLocation).ToArray());
 		}
+		
+		[Test]
+		public void FindMethodGroupReferenceInExplicitDelegateCreation()
+		{
+			Init(@"using System;
+class Test {
+ static void T(Action<int> a, Action<string> b) {
+  this.T(new Action<int>(M), new Action<string>(M));
+ }
+ static void M(int a) {}
+ static void M(string a) {}
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single();
+			var m_int = test.Methods.Single(m => m.Name == "M" && m.Parameters.Single().Type.Name == "Int32");
+			var m_string = test.Methods.Single(m => m.Name == "M" && m.Parameters.Single().Type.Name == "String");
+			Assert.AreEqual(new [] { new TextLocation(4, 26), new TextLocation(6, 2) },
+			                FindReferences(m_int).Select(n => n.StartLocation).ToArray());
+			Assert.AreEqual(new [] { new TextLocation(4, 49), new TextLocation(7, 2) },
+			                FindReferences(m_string).Select(n => n.StartLocation).ToArray());
+		}
 	}
 }

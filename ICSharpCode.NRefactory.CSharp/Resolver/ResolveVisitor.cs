@@ -1321,13 +1321,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult[] arguments = GetArguments(objectCreateExpression.Arguments, out argumentNames);
 				
 				ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames);
-				if (arguments.Length == 1) {
+				if (arguments.Length == 1 && rr.Type.Kind == TypeKind.Delegate) {
 					// process conversion in case it's a delegate creation
 					ProcessConversionResult(objectCreateExpression.Arguments.Single(), rr as ConversionResolveResult);
+					// wrap the result so that the delegate creation is not handled as a reference
+					// to the target method - otherwise FindReferencedEntities would produce two results for
+					// the same delegate creation.
+					return WrapResult(rr);
+				} else {
+					// process conversions in all other cases
+					ProcessConversionsInInvocation(null, objectCreateExpression.Arguments, rr as CSharpInvocationResolveResult);
+					return rr;
 				}
-				// process conversions in all other cases
-				ProcessConversionsInInvocation(null, objectCreateExpression.Arguments, rr as CSharpInvocationResolveResult);
-				return rr;
 			} else {
 				ScanChildren(objectCreateExpression);
 				return null;
