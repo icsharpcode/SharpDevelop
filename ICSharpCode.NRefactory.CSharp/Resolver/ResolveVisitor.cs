@@ -3160,7 +3160,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				};
 				result = resolver.ResolveInvocation(methodGroup, arguments);
 			}
-			return result;
+			if (result == expr)
+				return WrapResult(result);
+			else
+				return result;
+		}
+		
+		/// <summary>
+		/// Wraps the result in an identity conversion.
+		/// This is necessary so that '$from x in variable$ select x*2' does not resolve
+		/// to the LocalResolveResult for the variable, which would confuse find references.
+		/// </summary>
+		ResolveResult WrapResult(ResolveResult result)
+		{
+			return new ConversionResolveResult(result.Type, result, Conversion.IdentityConversion);
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause, object data)
@@ -3171,7 +3184,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IVariable v = MakeVariable(variableType, queryContinuationClause.IdentifierToken);
 			resolver = resolver.AddVariable(v);
 			StoreResult(queryContinuationClause.IdentifierToken, new LocalResolveResult(v));
-			return rr;
+			return WrapResult(rr);
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryLetClause(QueryLetClause queryLetClause, object data)
@@ -3375,7 +3388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// so we must not scan it again.
 				if (!(previousQueryClause is QueryJoinClause && ((QueryJoinClause)previousQueryClause).IsGroupJoin))
 					Scan(querySelectClause.Expression);
-				return currentQueryResult;
+				return WrapResult(currentQueryResult);
 			}
 			
 			QueryExpression query = querySelectClause.Parent as QueryExpression;
@@ -3388,7 +3401,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						// only if the query is not degenerate:
 						// the Select call will be optimized away, so directly return the previous result
 						Scan(querySelectClause.Expression);
-						return currentQueryResult;
+						return WrapResult(currentQueryResult);
 					}
 				}
 			}
@@ -3446,7 +3459,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			foreach (QueryOrdering ordering in queryOrderClause.Orderings) {
 				currentQueryResult = Resolve(ordering);
 			}
-			return currentQueryResult;
+			return WrapResult(currentQueryResult);
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryOrdering(QueryOrdering queryOrdering, object data)

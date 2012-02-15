@@ -25,12 +25,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	public static class TypeSystemHelper
 	{
+		public static ICompilation CreateCompilation()
+		{
+			return CreateCompilation(new IParsedFile[0]);
+		}
+		
 		public static ICompilation CreateCompilation(params IUnresolvedTypeDefinition[] unresolvedTypeDefinitions)
 		{
 			var parsedFile = new CSharpParsedFile("dummy.cs");
 			foreach (var typeDef in unresolvedTypeDefinitions)
 				parsedFile.TopLevelTypeDefinitions.Add(typeDef);
-			var pc = new CSharpProjectContent().UpdateProjectContent(null, parsedFile);
+			return CreateCompilation(parsedFile);
+		}
+		
+		public static ICompilation CreateCompilation(params IParsedFile[] parsedFiles)
+		{
+			var pc = new CSharpProjectContent().UpdateProjectContent(null, parsedFiles);
 			pc = pc.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			return pc.CreateCompilation();
 		}

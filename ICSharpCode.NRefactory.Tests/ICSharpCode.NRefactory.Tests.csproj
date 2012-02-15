@@ -154,6 +154,7 @@
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\ConditionalOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\ExtensionMethodTests.cs" />
+    <Compile Include="CSharp\Resolver\FindReferencesTest.cs" />
     <Compile Include="CSharp\Resolver\InvocationTests.cs" />
     <Compile Include="CSharp\Resolver\LambdaTests.cs" />
     <Compile Include="CSharp\Resolver\LinqTests.cs" />

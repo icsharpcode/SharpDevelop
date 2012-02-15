@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public void Run()
 		{
-			using (new Timer("Finding referenced entities...")) {
+			using (new Timer("Finding referenced entities... ")) {
 				foreach (var file in solution.AllFiles) {
 					var navigator = new FindReferencedEntities(
 						delegate (AstNode node, IEntity entity) {
@@ -49,12 +49,14 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 							if (entity == null)
 								throw new ArgumentNullException("entity");
 							
-							HashSet<AstNode> list;
-							if (!referenceDict.TryGetValue(entity, out list)) {
-								list = new HashSet<AstNode>();
-								referenceDict.Add(entity, list);
+							if (!IgnoreEntity(entity)) {
+								HashSet<AstNode> list;
+								if (!referenceDict.TryGetValue(entity, out list)) {
+									list = new HashSet<AstNode>();
+									referenceDict.Add(entity, list);
+								}
+								list.Add(node);
 							}
-							list.Add(node);
 						}
 					);
 					var resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
@@ -77,20 +79,27 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			PrintTimingsPerEntityType();
 		}
 		
+		bool IgnoreEntity(IEntity entity)
+		{
+			return false;
+			//return entity.FullName != "ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultResolvedTypeDefinition.parts";
+		}
+		
 		Dictionary<EntityType, TimeSpan> timings = new Dictionary<EntityType, TimeSpan>();
 		Dictionary<EntityType, int> entityCount = new Dictionary<EntityType, int>();
 		
 		void TestFindReferences(IEntity entity)
 		{
+			if (IgnoreEntity(entity))
+				return;
 			FindReferences fr = new FindReferences();
 			fr.FindTypeReferencesEvenIfAliased = true;
-			
-			HashSet<AstNode> foundReferences = new HashSet<AstNode>();
 			
 			Stopwatch w = new Stopwatch();
 			var searchScopes = fr.GetSearchScopes(entity);
 			foreach (var project in solution.Projects) {
 				w.Restart();
+				HashSet<AstNode> foundReferences = new HashSet<AstNode>();
 				var interestingFiles = new HashSet<CSharpFile>();
 				foreach (var searchScope in searchScopes) {
 					foreach (var parsedFile in fr.GetInterestingFiles(searchScope, project.Compilation)) {
@@ -133,13 +142,13 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					Console.WriteLine();
 					Console.WriteLine("Reference mismatch for " + entity + ":");
 					var n = foundReferences.Except(expectedReferences).First();
-					Console.WriteLine("Found unexpected reference " + n + " (" + n.StartLocation + ")");
+					Console.WriteLine("Found unexpected reference " + n + " (" + n.GetRegion() + ")");
 				}
 				if (expectedReferences.Except(foundReferences).Any()) {
 					Console.WriteLine();
 					Console.WriteLine("Reference mismatch for " + entity + ":");
 					var n = expectedReferences.Except(foundReferences).First();
-					Console.WriteLine("Did not find expected reference " + n + " (" + n.StartLocation + ")");
+					Console.WriteLine("Did not find expected reference " + n + " (" + n.GetRegion() + ")");
 				}
 			}
 			

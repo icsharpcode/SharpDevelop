@@ -173,6 +173,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (callback != null)
 					callback(node, result);
 			}
+			
+			internal virtual void NavigatorDone(CSharpAstResolver resolver, CancellationToken cancellationToken)
+			{
+			}
 		}
 		#endregion
 		
@@ -260,7 +264,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				switch (searchScope.Accessibility) {
 					case Accessibility.None:
 					case Accessibility.Private:
-						return topLevelTypeDef.Parts.OfType<CSharpParsedFile>().Distinct();
+						if (topLevelTypeDef.ParentAssembly == compilation.MainAssembly)
+							return topLevelTypeDef.Parts.Select(p => p.ParsedFile).OfType<CSharpParsedFile>().Distinct();
+						else
+							return EmptyList<CSharpParsedFile>.Instance;
 					case Accessibility.Protected:
 						return GetInterestingFilesProtected(topLevelTypeDef);
 					case Accessibility.Internal:
@@ -339,22 +346,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			if (searchScopes.Count == 0)
 				return;
-			IResolveVisitorNavigator navigator;
+			var navigators = new IResolveVisitorNavigator[searchScopes.Count];
+			for (int i = 0; i < navigators.Length; i++) {
+				navigators[i] = searchScopes[i].GetNavigator(compilation, callback);
+			}
+			IResolveVisitorNavigator combinedNavigator;
 			if (searchScopes.Count == 1) {
-				navigator = searchScopes[0].GetNavigator(compilation, callback);
+				combinedNavigator = navigators[0];
 			} else {
-				IResolveVisitorNavigator[] navigators = new IResolveVisitorNavigator[searchScopes.Count];
-				for (int i = 0; i < navigators.Length; i++) {
-					navigators[i] = searchScopes[i].GetNavigator(compilation, callback);
-				}
-				navigator = new CompositeResolveVisitorNavigator(navigators);
+				combinedNavigator = new CompositeResolveVisitorNavigator(navigators);
 			}
 			
 			cancellationToken.ThrowIfCancellationRequested();
-			navigator = new DetectSkippableNodesNavigator(navigator, compilationUnit);
+			combinedNavigator = new DetectSkippableNodesNavigator(combinedNavigator, compilationUnit);
 			cancellationToken.ThrowIfCancellationRequested();
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
-			resolver.ApplyNavigator(navigator, cancellationToken);
+			resolver.ApplyNavigator(combinedNavigator, cancellationToken);
+			foreach (var n in navigators) {
+				var frn = n as FindReferenceNavigator;
+				if (frn != null)
+					frn.NavigatorDone(resolver, cancellationToken);
+			}
 		}
 		#endregion
 		
@@ -609,6 +621,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			readonly IMethod method;
 			readonly Type specialNodeType;
+			HashSet<Expression> potentialMethodGroupConversions = new HashSet<Expression>();
 			
 			public FindMethodReferences(IMethod method, Type specialNodeType)
 			{
@@ -620,6 +633,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				if (specialNodeType != null && node.GetType() == specialNodeType)
 					return true;
+				
+				Expression expr = node as Expression;
+				if (expr == null)
+					return node is MethodDeclaration;
 				
 				InvocationExpression ie = node as InvocationExpression;
 				if (ie != null) {
@@ -636,17 +653,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					PointerReferenceExpression pre = target as PointerReferenceExpression;
 					if (pre != null)
 						return pre.MemberName == method.Name;
-				} else if (!(node.Parent is InvocationExpression)) {
+				} else if (expr.Role != InvocationExpression.Roles.TargetExpression) {
 					// MemberReferences & Identifiers that aren't used in an invocation can still match the method
 					// as delegate name.
-					var mre = node as MemberReferenceExpression;
-					if (mre != null) {
-						return mre.MemberName == method.Name;
-					} else {
-						var ident = node as IdentifierExpression;
-						if (ident != null)
-							return ident.Identifier == method.Name;
-					}
+					if (expr.GetChildByRole(AstNode.Roles.Identifier).Name == method.Name)
+						potentialMethodGroupConversions.Add(expr);
 				}
 				return node is MethodDeclaration;
 			}
@@ -654,12 +665,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				var mrr = rr as MemberResolveResult;
-				if (mrr != null)
-					return method == mrr.Member.MemberDefinition;
-				
-				// Delegate case is not 100% correct - TODO: overload resolution.
-				var mgr = rr as MethodGroupResolveResult;
-				return mgr != null && mgr.Methods.Any (m => m == method);
+				return mrr != null && method == mrr.Member.MemberDefinition;
+			}
+			
+			internal override void NavigatorDone(CSharpAstResolver resolver, CancellationToken cancellationToken)
+			{
+				foreach (var expr in potentialMethodGroupConversions) {
+					var conversion = resolver.GetConversion(expr, cancellationToken);
+					if (conversion.IsMethodGroupConversion && conversion.Method.MemberDefinition == method) {
+						IType targetType = resolver.GetExpectedType(expr, cancellationToken);
+						ResolveResult result = resolver.Resolve(expr, cancellationToken);
+						ReportMatch(expr, new ConversionResolveResult(targetType, result, conversion));
+					}
+				}
+				base.NavigatorDone(resolver, cancellationToken);
 			}
 		}
 		#endregion
@@ -913,7 +932,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				delegate (ICompilation compilation) {
 					IMethod imported = compilation.Import(ctor);
 					if (imported != null)
-						return new FindObjectCreateReferencesNavigator(ctor);
+						return new FindObjectCreateReferencesNavigator(imported);
 					else
 						return null;
 				});
