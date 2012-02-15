@@ -949,8 +949,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter (p);
 				}
 			}
+			var scope = CSharpParsedFile.GetUsingScope (location).Resolve (Compilation);
 			
-			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
+			for (var n = scope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
 					wrapper.AddNamespace (pair.Key);
 				}

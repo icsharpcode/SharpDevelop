@@ -1990,6 +1990,36 @@ class C
 			});
 		}
 		
+		/// <summary>
+		/// Bug 3436 - [New Resolver] Type missing in return type completion
+		/// </summary>
+		[Test()]
+		public void Test3436 ()
+		{
+			CombinedProviderTest (
+@"
+namespace A 
+{
+	public class SomeClass {}
+}
+
+namespace Foo 
+{
+	public partial class Bar {}
+}
+
+namespace Foo 
+{
+	using A;
+	public partial class Bar {
+		$S$
+	}
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("SomeClass"), "'SomeClass' not found.");
+			});
+		}
+		
 		
 		/// <summary>
 		/// Bug 474199 - Code completion not working for a nested class
