@@ -102,9 +102,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new InvalidOperationException("Applying a navigator is only valid as the first operation on the CSharpAstResolver.");
 			
 			resolverInitialized = true;
+			resolveVisitor.cancellationToken = cancellationToken;
 			resolveVisitor.SetNavigator(navigator);
-			resolveVisitor.Scan(rootNode);
-			resolveVisitor.SetNavigator(null);
+			try {
+				resolveVisitor.Scan(rootNode);
+			} finally {
+				resolveVisitor.SetNavigator(null);
+				resolveVisitor.cancellationToken = CancellationToken.None;
+			}
 		}
 		
 		/// <summary>
@@ -115,9 +120,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (node == null || node.IsNull || IsUnresolvableNode(node))
 				return ErrorResolveResult.UnknownError;
 			InitResolver();
-			ResolveResult rr = resolveVisitor.GetResolveResult(node);
-			Debug.Assert(rr != null);
-			return rr;
+			resolveVisitor.cancellationToken = cancellationToken;
+			try {
+				ResolveResult rr = resolveVisitor.GetResolveResult(node);
+				Debug.Assert(rr != null);
+				return rr;
+			} finally {
+				resolveVisitor.cancellationToken = CancellationToken.None;
+			}
 		}
 		
 		void InitResolver()
@@ -137,9 +147,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (node == null || node.IsNull)
 				throw new ArgumentNullException("node");
 			InitResolver();
-			CSharpResolver resolver = resolveVisitor.GetResolverStateBefore(node);
-			Debug.Assert(resolver != null);
-			return resolver;
+			resolveVisitor.cancellationToken = cancellationToken;
+			try {
+				CSharpResolver resolver = resolveVisitor.GetResolverStateBefore(node);
+				Debug.Assert(resolver != null);
+				return resolver;
+			} finally {
+				resolveVisitor.cancellationToken = CancellationToken.None;
+			}
 		}
 		
 		/// <summary>
@@ -155,9 +170,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (node == null)
 				return initialResolverState;
 			InitResolver();
-			CSharpResolver resolver = resolveVisitor.GetResolverStateAfter(node);
-			Debug.Assert(resolver != null);
-			return resolver;
+			resolveVisitor.cancellationToken = cancellationToken;
+			try {
+				CSharpResolver resolver = resolveVisitor.GetResolverStateAfter(node);
+				Debug.Assert(resolver != null);
+				return resolver;
+			} finally {
+				resolveVisitor.cancellationToken = CancellationToken.None;
+			}
+		}
+		
+		ResolveVisitor.ConversionWithTargetType GetConversionWithTargetType(Expression expr, CancellationToken cancellationToken)
+		{
+			if (expr == null || expr.IsNull)
+				throw new ArgumentNullException("expr");
+			InitResolver();
+			resolveVisitor.cancellationToken = cancellationToken;
+			try {
+				return resolveVisitor.GetConversionWithTargetType(expr);
+			} finally {
+				resolveVisitor.cancellationToken = CancellationToken.None;
+			}
 		}
 		
 		/// <summary>
@@ -165,10 +198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public IType GetExpectedType(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (expr == null || expr.IsNull)
-				throw new ArgumentNullException("expr");
-			InitResolver();
-			return resolveVisitor.GetConversionWithTargetType(expr).TargetType;
+			return GetConversionWithTargetType(expr, cancellationToken).TargetType;
 		}
 		
 		/// <summary>
@@ -176,10 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public Conversion GetConversion(Expression expr, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (expr == null || expr.IsNull)
-				throw new ArgumentNullException("expr");
-			InitResolver();
-			return resolveVisitor.GetConversionWithTargetType(expr).Conversion;
+			return GetConversionWithTargetType(expr, cancellationToken).Conversion;
 		}
 		
 		/// <summary>

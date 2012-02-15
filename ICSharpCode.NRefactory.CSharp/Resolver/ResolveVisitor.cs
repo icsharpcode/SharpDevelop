@@ -62,8 +62,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
-		SimpleNameLookupMode currentTypeLookupMode = SimpleNameLookupMode.Type;
-		/// <summary>Resolve result of the current LINQ query</summary>
+		/// <summary>Resolve result of the current LINQ query.</summary>
+		/// <remarks>We do not have to put this into the stored state (resolver) because
+		/// query expressions are always resolved in a single operation.</remarks>
 		ResolveResult currentQueryResult;
 		readonly CSharpParsedFile parsedFile;
 		readonly Dictionary<AstNode, ResolveResult> resolveResultCache = new Dictionary<AstNode, ResolveResult>();
@@ -128,20 +129,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			var oldResolverEnabled = this.resolverEnabled;
 			var oldResolver = this.resolver;
-			var oldTypeLookupMode = this.currentTypeLookupMode;
-			var oldQueryType = this.currentQueryResult;
+			var oldQueryResult = this.currentQueryResult;
 			try {
 				this.resolverEnabled = false;
 				this.resolver = storedContext;
-				this.currentTypeLookupMode = SimpleNameLookupMode.Type;
 				this.currentQueryResult = null;
 				
 				action();
 			} finally {
 				this.resolverEnabled = oldResolverEnabled;
 				this.resolver = oldResolver;
-				this.currentTypeLookupMode = oldTypeLookupMode;
-				this.currentQueryResult = oldQueryType;
+				this.currentQueryResult = oldQueryResult;
 			}
 		}
 		#endregion
@@ -193,6 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// The node changed the resolver state:
 							resolverAfterDict.Add(node, resolver);
 						}
+						cancellationToken.ThrowIfCancellationRequested();
 					}
 					resolverEnabled = oldResolverEnabled;
 					break;
@@ -592,15 +591,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (newTypeDefinition != null)
 					resolver = resolver.WithCurrentTypeDefinition(newTypeDefinition);
 				
-				for (AstNode child = typeDeclaration.FirstChild; child != null; child = child.NextSibling) {
-					if (child.Role == TypeDeclaration.BaseTypeRole) {
-						currentTypeLookupMode = SimpleNameLookupMode.BaseTypeReference;
-						Scan(child);
-						currentTypeLookupMode = SimpleNameLookupMode.Type;
-					} else {
-						Scan(child);
-					}
-				}
+				ScanChildren(typeDeclaration);
 				
 				// merge undecided lambdas before leaving the type definition so that
 				// the resolver can make better use of its cache
@@ -2887,17 +2878,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Using Declaration
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
-			currentTypeLookupMode = SimpleNameLookupMode.Type;
 			return voidResult;
 		}
 		
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			currentTypeLookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
 			ScanChildren(usingDeclaration);
-			currentTypeLookupMode = SimpleNameLookupMode.Type;
 			return voidResult;
 		}
 		
@@ -2932,13 +2919,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			}
 			
+			// Figure out the correct lookup mode:
+			AstType outermostType = simpleType;
+			while (outermostType.Parent is AstType)
+				outermostType = (AstType)outermostType.Parent;
+			SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type;
+			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
+				lookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
+			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == TypeDeclaration.BaseTypeRole) {
+				lookupMode = SimpleNameLookupMode.BaseTypeReference;
+			}
+			
 			var typeArguments = ResolveTypeArguments(simpleType.TypeArguments);
 			Identifier identifier = simpleType.IdentifierToken;
 			if (string.IsNullOrEmpty(identifier.Name))
 				return new TypeResolveResult(SpecialType.UnboundTypeArgument);
-			ResolveResult rr = resolver.LookupSimpleNameOrTypeName(identifier.Name, typeArguments, currentTypeLookupMode);
+			ResolveResult rr = resolver.LookupSimpleNameOrTypeName(identifier.Name, typeArguments, lookupMode);
 			if (simpleType.Parent is Attribute && !identifier.IsVerbatim) {
-				var withSuffix = resolver.LookupSimpleNameOrTypeName(identifier.Name + "Attribute", typeArguments, currentTypeLookupMode);
+				var withSuffix = resolver.LookupSimpleNameOrTypeName(identifier.Name + "Attribute", typeArguments, lookupMode);
 				if (AttributeTypeReference.PreferAttributeTypeWithSuffix(rr.Type, withSuffix.Type, resolver.Compilation))
 					return withSuffix;
 			}
@@ -2996,8 +2994,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<object, ResolveResult>.VisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			resolver = resolver.PushBlock();
-			ResolveResult oldQueryResult = currentQueryResult;
+			var oldQueryResult = currentQueryResult;
+			var oldCancellationToken = cancellationToken;
 			try {
+				// Because currentQueryResult isn't part of the stored state,
+				// query expressions must be resolved in a single operation.
+				// This means we can't allow cancellation within the query expression.
+				cancellationToken = CancellationToken.None;
 				currentQueryResult = null;
 				foreach (var clause in queryExpression.Clauses) {
 					currentQueryResult = Resolve(clause);
@@ -3005,6 +3008,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return currentQueryResult;
 			} finally {
 				currentQueryResult = oldQueryResult;
+				cancellationToken = oldCancellationToken;
 				resolver = resolver.PopBlock();
 			}
 		}

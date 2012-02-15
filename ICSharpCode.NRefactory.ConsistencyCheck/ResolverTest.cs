@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				this.fileName = fileName;
 				// We allow errors in XAML codebehind because we're currently not adding the XAML-generated
 				// members to the type system.
-				this.allowErrors = (fileName.Contains(".xaml") || File.Exists(Path.ChangeExtension(fileName, ".xaml")) || fileName.EndsWith("AvalonDockLayout.cs") || fileName.EndsWith("ResourcesFileTreeNode.cs"));
+				this.allowErrors = (fileName.Contains(".xaml") || File.Exists(Path.ChangeExtension(fileName, ".xaml")) || fileName.EndsWith("AvalonDockLayout.cs") || fileName.EndsWith("ResourcesFileTreeNode.cs") || fileName.EndsWith("ChangeMarkerMargin.cs"));
 			}
 			
 			HashSet<AstNode> resolvedNodes = new HashSet<AstNode>();
