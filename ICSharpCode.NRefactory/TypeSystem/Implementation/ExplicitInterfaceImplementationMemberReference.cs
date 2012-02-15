@@ -24,7 +24,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// References a member that is an explicit interface implementation.
 	/// </summary>
-	public class ExplicitInterfaceImplementationMemberReference : IMemberReference
+	[Serializable]
+	public sealed class ExplicitInterfaceImplementationMemberReference : IMemberReference
 	{
 		ITypeReference typeReference;
 		IMemberReference interfaceMemberReference;

@@ -676,5 +676,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.Double", arg.Type.ReflectionName);
 			Assert.AreEqual(1.0, arg.ConstantValue);
 		}
+		
+		[Test, Ignore("Getting implicit interface implementations is not yet implemented.")]
+		public void ImplicitImplementationOfUnifiedMethods()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ImplementationOfUnifiedMethods));
+			IMethod test = type.Methods.Single(m => m.Name == "Test");
+			Assert.AreEqual(2, test.InterfaceImplementations.Count);
+			Assert.AreEqual("Int32", ((IMethod)test.InterfaceImplementations[0]).Parameters.Single().Type.Name);
+			Assert.AreEqual("Int32", ((IMethod)test.InterfaceImplementations[1]).Parameters.Single().Type.Name);
+			Assert.AreEqual("T", ((IMethod)test.InterfaceImplementations[0].MemberDefinition).Parameters.Single().Type.Name);
+			Assert.AreEqual("S", ((IMethod)test.InterfaceImplementations[1].MemberDefinition).Parameters.Single().Type.Name);
+		}
 	}
 }
