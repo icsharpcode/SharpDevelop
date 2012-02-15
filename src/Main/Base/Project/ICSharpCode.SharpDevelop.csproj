@@ -340,6 +340,9 @@
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
     <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
+    <Compile Include="Src\Project\Behaviors\ProjectBehavior.cs" />
+    <Compile Include="Src\Project\Behaviors\ProjectBehaviorService.cs" />
+    <Compile Include="Src\Project\Behaviors\ProjectBehaviorSupportedConditionEvaluator.cs" />
     <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\Converter\IUpgradableProject.cs" />
@@ -913,6 +916,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
+    <Folder Include="Src\Project\Behaviors" />
     <Folder Include="themes" />
     <Folder Include="Src\Bookmarks\Pad\Controls" />
     <Folder Include="Src\Editor\AvalonEdit" />

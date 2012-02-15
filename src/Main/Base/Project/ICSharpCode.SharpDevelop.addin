@@ -32,6 +32,7 @@
 			<ConditionEvaluator name="ProjectItem" class="ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator"/>
 			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.AvalonEdit.TextSelectedCondition"/>
 			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
+			<ConditionEvaluator name="ProjectBehaviourSupported" class="ICSharpCode.SharpDevelop.Project.ProjectBehaviourSupportedConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
@@ -473,14 +474,14 @@
 					<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False"/>
 					<Condition name = "ViewInBrowser" extensions="aspx,asmx,html,htm,svc"/>
 				</And>
-			
+				
 				<MenuItem id          = "ViewInBrowser"
 				          label       = "${res:ProjectComponent.ContextMenu.ViewInBrowser}"
 				          icon        = "Icons.22x22.Browser"
 				          class       = "ICSharpCode.SharpDevelop.Project.Commands.ViewInBrowser"/>
 				<MenuItem id = "ExcludeSeparator_ViewInBrowser" type = "Separator" />
 			</ComplexCondition>
-
+			
 			<Include id="CutCopyPasteDeleteRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename"/>
 			<MenuItem id = "RenameSeparator" type = "Separator" />
 			<MenuItem id    = "Properties"
@@ -2329,5 +2330,9 @@
 		<Class
 			id = "TargetingPackWarningWorkaround"
 			class = "ICSharpCode.SharpDevelop.Project.TargetingPackWarningWorkaround"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/ProjectBehaviors">
+
 	</Path>
 </AddIn>

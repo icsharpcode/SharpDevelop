@@ -305,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual ICollection<ItemType> AvailableFileItemTypes {
 			get {
-				return ItemType.DefaultFileItems;
+				return GetOrCreateBehavior().AvailableFileItemTypes;
 			}
 		}
 		
@@ -386,7 +386,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual bool IsStartable {
 			get {
-				return false;
+				return GetOrCreateBehavior().IsStartable;
 			}
 		}
 		
@@ -399,18 +399,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void Start(bool withDebugging)
 		{
-			ProcessStartInfo psi;
-			try {
-				psi = CreateStartInfo();
-			} catch (ProjectStartException ex) {
-				MessageService.ShowError(ex.Message);
-				return;
-			}
-			if (withDebugging) {
-				DebuggerService.CurrentDebugger.Start(psi);
-			} else {
-				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
-			}
+			GetOrCreateBehavior().Start(withDebugging);
 		}
 		
 		/// <summary>
@@ -421,7 +410,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Note: this can be a ProcessStartInfo with a URL as filename!</returns>
 		public virtual ProcessStartInfo CreateStartInfo()
 		{
-			throw new NotSupportedException();
+			return GetOrCreateBehavior().CreateStartInfo();
 		}
 		
 		/// <summary>
@@ -481,7 +470,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public virtual ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
-			return new UnknownProjectItem(this, item);
+			return GetOrCreateBehavior().CreateProjectItem(item);
 		}
 		
 		#region Dirty
@@ -513,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public virtual ItemType GetDefaultItemType(string fileName)
 		{
-			return ItemType.None;
+			return GetOrCreateBehavior().GetDefaultItemType(fileName);
 		}
 		
 		[Browsable(false)]
@@ -611,6 +600,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void ProjectCreationComplete()
 		{
+			GetOrCreateBehavior().ProjectCreationComplete();
 		}
 		
 		public virtual XElement LoadProjectExtensions(string name)
@@ -625,6 +615,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public Properties ProjectSpecificProperties {
 			get; protected set;
+		}
+		
+		protected virtual ProjectBehavior CreateDefaultBehavior()
+		{
+			return new DefaultProjectBehavior(this);
+		}
+		
+		protected ProjectBehavior projectBehavior;
+		
+		protected virtual ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior == null)
+				projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, CreateDefaultBehavior());
+			return projectBehavior;
 		}
 	}
 }
