@@ -1962,6 +1962,36 @@ class Test
 		}
 		
 		/// <summary>
+		/// Bug 3438 - [New Resolver] Local var missing in code completion
+		/// </summary>
+		[Test()]
+		public void Test3438 ()
+		{
+			CombinedProviderTest (
+@"
+using System;
+using System.Text;
+
+class C
+{
+	void GetElementXml (int indent)
+	{
+		StringBuilder sb = new StringBuilder ();
+		if (indent == 0)
+			sb.Append ("" xmlns:android=\""http://schemas.android.com/apk/res/android\"""");
+		
+		if (indent != 0) {
+			string data;
+			$d$
+		}
+	}	
+}", provider => {
+				Assert.IsNotNull (provider.Find ("data"), "'data' not found.");
+			});
+		}
+		
+		
+		/// <summary>
 		/// Bug 474199 - Code completion not working for a nested class
 		/// </summary>
 		[Test()]
