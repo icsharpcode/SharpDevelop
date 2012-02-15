@@ -14,6 +14,8 @@ using System.Windows.Media;
 
 using ICSharpCode.CodeQuality.Engine;
 using ICSharpCode.CodeQuality.Engine.Dom;
+using ICSharpCode.CodeQuality.Reporting;
+using ICSharpCode.Reports.Core.WpfReportViewer;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -25,13 +27,14 @@ namespace ICSharpCode.CodeQuality.Gui
 	public partial class MainView : UserControl
 	{
 		AssemblyAnalyzer context;
-		
+		List<string> fileNames;
 		public MainView()
 		{
 			InitializeComponent();
 			
 			context = new AssemblyAnalyzer();
 			this.DataContext = context;
+			fileNames = new List<string>();
 		}
 		
 		void AddAssemblyClick(object sender, RoutedEventArgs e)
@@ -44,6 +47,10 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (fileDialog.ShowDialog() != true || fileDialog.FileNames.Length == 0)
 				return;
 			introBlock.Visibility = Visibility.Collapsed;
+			print.IsEnabled = true;
+			reportTab.IsEnabled = true;
+			
+			this.fileNames.AddRange(fileDialog.FileNames);
 			context.AddAssemblyFiles(fileDialog.FileNames);
 			RefreshClick(null, null);
 		}
@@ -55,12 +62,16 @@ namespace ICSharpCode.CodeQuality.Gui
 			introBlock.Visibility = Visibility.Collapsed;
 			using (context.progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("Analysis"))
 				list = context.Analyze();
-			Report(list);
+
 				matrix.Update(list);
 			matrix.Visibility = Visibility.Visible;
 		}
 		
 	/*
+	 * 
+	 * TreeTraversal.PreOrder(node, n => n.Children).OfType<MethodNode>().Count()
+	 * 
+	 * 
 		void RefreshClick(object sender, RoutedEventArgs e)
 		{
 			introBlock.Visibility = Visibility.Collapsed;
@@ -85,6 +96,14 @@ namespace ICSharpCode.CodeQuality.Gui
 					}
 				}
 			}
+		}
+		
+		void Button_Click(object sender, RoutedEventArgs e)
+		{
+			OverviewReport o = new OverviewReport(fileNames);
+			var reportCreator = o.Run(list);
+			var previewViewModel = new PreviewViewModel(o.ReportSettings,reportCreator.Pages);
+			viewer.SetBinding(previewViewModel);                           
 		}
 	}
 }
