@@ -357,7 +357,7 @@ namespace Mono.CSharp {
 			return this;
 		}
 
-#if NET_4_0
+#if NET_4_0 || MONODROID
 		public override System.Linq.Expressions.Expression MakeExpression (BuilderContext ctx)
 		{
 			var tassign = target as IDynamicAssign;
@@ -565,7 +565,18 @@ namespace Mono.CSharp {
 		{
 			if (resolved == null)
 				return;
-			
+
+			//
+			// Emit sequence symbol info even if we are in compiler generated
+			// block to allow debugging filed initializers when constructor is
+			// compiler generated
+			//
+			if (ec.HasSet (BuilderContext.Options.OmitDebugInfo)) {
+				using (ec.With (BuilderContext.Options.OmitDebugInfo, false)) {
+					ec.Mark (loc);
+				}
+			}
+
 			if (resolved != this)
 				resolved.EmitStatement (ec);
 			else

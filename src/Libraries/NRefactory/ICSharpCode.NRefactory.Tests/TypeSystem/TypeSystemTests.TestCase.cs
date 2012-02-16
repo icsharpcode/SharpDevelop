@@ -69,6 +69,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		public void TestMethod<K, V>(string param) where V: K where K: IComparable<V> {}
 		public void GetIndex<T>(T element) where T : IEquatable<T> {}
+		
+		public NestedEnum EnumField;
+		
+		public enum NestedEnum {
+			EnumMember
+		}
 	}
 	
 	public class PropertyTest
@@ -77,7 +83,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		public object PropertyWithPrivateSetter { get; private set; }
 		
-		public string this[int index] { get { return "Test"; } }
+		public object PropertyWithoutSetter { get { return null; } }
+		
+		public string this[int index] { get { return "Test"; } set {} }
 	}
 	
 	public enum MyEnum : short
@@ -177,5 +185,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	{
 		void IGenericInterface<string>.Test<T>(string a, T b) {}
 		void IGenericInterface<string>.Test<T>(string a, ref T b) {}
+	}
+	
+	public interface IGenericInterfaceWithUnifiableMethods<T, S>
+	{
+		void Test(T a);
+		void Test(S a);
+	}
+	
+	public class ImplementationOfUnifiedMethods : IGenericInterfaceWithUnifiableMethods<int, int>
+	{
+		public void Test(int a) {}
+	}
+	
+	public class ExplicitGenericInterfaceImplementationWithUnifiableMethods<T, S> : IGenericInterfaceWithUnifiableMethods<T, S>
+	{
+		void IGenericInterfaceWithUnifiableMethods<T, S>.Test(T a) {}
+		void IGenericInterfaceWithUnifiableMethods<T, S>.Test(S a) {}
 	}
 }

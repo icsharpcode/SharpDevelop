@@ -46,6 +46,34 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		}
 		
 		[Test()]
+		public void TestStructName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$struct n$");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+		
+		[Test()]
+		public void TestInterfaceName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$interface n$");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+		
+		[Test()]
+		public void TestEnumName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$enum n$");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+		
+		[Test()]
+		public void TestDelegateName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$delegate void n$");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+		
+		[Test()]
 		public void TestClassTypeParameter ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"$class MyClass<T$");
@@ -89,6 +117,20 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	void Test() 
 	{
 		$foreach (int f$
+	}
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+		
+		[Ignore("MCS TODO!")]
+		[Test()]
+		public void TestCatchExceptionName ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
+	void Test() 
+	{
+		$try {
+		} catch (Exception e$
 	}
 }");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");

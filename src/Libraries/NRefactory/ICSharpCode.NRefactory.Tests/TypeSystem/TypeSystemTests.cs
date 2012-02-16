@@ -191,6 +191,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void GenericEnum()
+		{
+			var testClass = GetTypeDefinition(typeof(GenericClass<,>.NestedEnum));
+			Assert.AreEqual(2, testClass.TypeParameterCount);
+		}
+		
+		[Test]
+		public void FieldInGenericClassWithNestedEnumType()
+		{
+			var testClass = GetTypeDefinition(typeof(GenericClass<,>));
+			var enumClass = GetTypeDefinition(typeof(GenericClass<,>.NestedEnum));
+			var field = testClass.Fields.Single(f => f.Name == "EnumField");
+			Assert.AreEqual(new ParameterizedType(enumClass, testClass.TypeParameters), field.ReturnType);
+		}
+		
+		[Test]
+		public void GenericEnumMemberReturnType()
+		{
+			var enumClass = GetTypeDefinition(typeof(GenericClass<,>.NestedEnum));
+			var field = enumClass.Fields.Single(f => f.Name == "EnumMember");
+			Assert.AreEqual(new ParameterizedType(enumClass, enumClass.TypeParameters), field.ReturnType);
+		}
+		
+		[Test]
 		public void PropertyWithProtectedSetter()
 		{
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
@@ -215,16 +239,48 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void PropertyWithoutSetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithoutSetter");
+			Assert.IsTrue(p.CanGet);
+			Assert.IsFalse(p.CanSet);
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
+			Assert.IsNull(p.Setter);
+		}
+		
+		[Test]
 		public void Indexer()
 		{
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.AreEqual("Item", p.Name);
+			Assert.AreEqual(new[] { "index" }, p.Parameters.Select(x => x.Name).ToArray());
+		}
+		
+		[Test]
+		public void IndexerGetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanGet);
-			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual("get_Item", p.Getter.Name);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
-			Assert.IsFalse(p.CanSet);
-			Assert.IsNull(p.Setter);
+			Assert.AreEqual(new[] { "index" }, p.Getter.Parameters.Select(x => x.Name).ToArray());
+			Assert.AreEqual("System.String", p.Getter.ReturnType.ReflectionName);
+		}
+		
+		[Test]
+		public void IndexerSetter()
+		{
+			var testClass = GetTypeDefinition(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
+			Assert.IsTrue(p.CanSet);
+			Assert.AreEqual("set_Item", p.Setter.Name);
+			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
+			Assert.AreEqual(new[] { "index", "value" }, p.Setter.Parameters.Select(x => x.Name).ToArray());
+			Assert.AreEqual(TypeKind.Void, p.Setter.ReturnType.Kind);
 		}
 		
 		[Test]
@@ -533,7 +589,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void InnerClassInGenericClass_TypeParameterOwner()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>.Inner));
-			Assert.AreSame(type, type.TypeParameters[0].Owner);
+			Assert.AreSame(type.DeclaringTypeDefinition.TypeParameters[0], type.TypeParameters[0]);
+			Assert.AreSame(type.DeclaringTypeDefinition, type.TypeParameters[0].Owner);
 		}
 		
 		[Test]
@@ -542,7 +599,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>.Inner));
 			IField f = type.Fields.Single();
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1[[`0]]", f.Type.ReflectionName);
-			Assert.AreSame(type, ((f.Type as ParameterizedType).TypeArguments[0] as ITypeParameter).Owner);
 		}
 		
 		[Test]
@@ -551,7 +607,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(OuterGeneric<>.Inner));
 			IParameter p = type.Methods.Single(m => m.IsConstructor).Parameters.Single();
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1[[`0]]", p.Type.ReflectionName);
-			Assert.AreSame(type, ((p.Type as ParameterizedType).TypeArguments[0] as ITypeParameter).Owner);
 		}
 		
 		ResolveResult GetParamsAttributeArgument(int index)
@@ -620,6 +675,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var arg = type.Attributes.Single().PositionalArguments.ElementAt(0);
 			Assert.AreEqual("System.Double", arg.Type.ReflectionName);
 			Assert.AreEqual(1.0, arg.ConstantValue);
+		}
+		
+		[Test, Ignore("Getting implicit interface implementations is not yet implemented.")]
+		public void ImplicitImplementationOfUnifiedMethods()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ImplementationOfUnifiedMethods));
+			IMethod test = type.Methods.Single(m => m.Name == "Test");
+			Assert.AreEqual(2, test.InterfaceImplementations.Count);
+			Assert.AreEqual("Int32", ((IMethod)test.InterfaceImplementations[0]).Parameters.Single().Type.Name);
+			Assert.AreEqual("Int32", ((IMethod)test.InterfaceImplementations[1]).Parameters.Single().Type.Name);
+			Assert.AreEqual("T", ((IMethod)test.InterfaceImplementations[0].MemberDefinition).Parameters.Single().Type.Name);
+			Assert.AreEqual("S", ((IMethod)test.InterfaceImplementations[1].MemberDefinition).Parameters.Single().Type.Name);
 		}
 	}
 }

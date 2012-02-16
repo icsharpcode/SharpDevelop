@@ -437,8 +437,8 @@ namespace Mono.CSharp
 		{
 			if (Compiler.Settings.Target == Target.Module) {
 				module_target_attrs = new AssemblyAttributesPlaceholder (module, name);
-				module_target_attrs.CreateType ();
-				module_target_attrs.DefineType ();
+				module_target_attrs.CreateContainer ();
+				module_target_attrs.DefineContainer ();
 				module_target_attrs.Define ();
 				module.AddCompilerGeneratedClass (module_target_attrs);
 			} else if (added_modules != null) {
@@ -448,16 +448,11 @@ namespace Mono.CSharp
 			if (Compiler.Settings.GenerateDebugInfo) {
 				symbol_writer = new MonoSymbolWriter (file_name);
 
-				// Register all source files with symbol writer
-				foreach (var source in Compiler.SourceFiles) {
-					source.DefineSymbolInfo (symbol_writer);
-				}
-
 				// TODO: global variables
 				SymbolWriter.symwriter = symbol_writer;
 			}
 
-			module.Emit ();
+			module.EmitContainer ();
 
 			if (module.HasExtensionMethod) {
 				var pa = module.PredefinedAttributes.Extension;
@@ -484,12 +479,7 @@ namespace Mono.CSharp
 					Builder.__AddDeclarativeSecurity (entry);
 				}
 #else
-				var args = new PermissionSet[3];
-#pragma warning disable 618
-				declarative_security.TryGetValue (SecurityAction.RequestMinimum, out args[0]);
-				declarative_security.TryGetValue (SecurityAction.RequestOptional, out args[1]);
-				declarative_security.TryGetValue (SecurityAction.RequestRefuse, out args[2]);
-				builder_extra.AddPermissionRequests (args);
+				throw new NotSupportedException ("Assembly-level security");
 #endif
 			}
 

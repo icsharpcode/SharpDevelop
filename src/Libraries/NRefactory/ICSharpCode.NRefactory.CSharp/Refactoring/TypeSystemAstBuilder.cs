@@ -187,7 +187,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				AddTypeArguments(shortResult, typeArguments, outerTypeParameterCount, typeDef.TypeParameterCount);
 				return shortResult;
 			}
-			
 			MemberType result = new MemberType();
 			if (typeDef.DeclaringTypeDefinition != null) {
 				// Handle nested types

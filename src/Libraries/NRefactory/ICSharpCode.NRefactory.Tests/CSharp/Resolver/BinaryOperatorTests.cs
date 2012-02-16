@@ -299,6 +299,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			TestOperator(MakeResult(typeof(int)), BinaryOperatorType.Equality, MakeResult(typeof(float)),
 			             Conversion.ImplicitNumericConversion, Conversion.IdentityConversion, typeof(bool));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeResult(typeof(int)), MakeConstant(null)));
+			
+			AssertError(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeResult(typeof(int)), MakeResult(typeof(string))));
+			
+			AssertError(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeResult(typeof(int)), MakeResult(typeof(object))));
 		}
 		
 		[Test]
@@ -587,12 +596,57 @@ class Test {
 		}
 		
 		[Test]
+		public void CompareDateTimeWithNullLiteral()
+		{
+			string program = @"using System;
+class Test {
+	static void Inc(DateTime x) {
+		var c = $x == null$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.IsTrue(irr.IsLiftedOperator);
+			Assert.IsNotNull(irr.UserDefinedOperatorMethod);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
+		}
+		
+		[Test]
+		public void CompareStructWithNullLiteral()
+		{
+			string program = @"
+struct X { }
+class Test {
+	static void Inc(X x) {
+		var c = $x == null$;
+	}
+}";
+			var irr = Resolve(program);
+			Assert.IsTrue(irr.IsError);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
+		}
+		
+		[Test]
 		public void CompareNullableStructWithNullLiteral()
 		{
 			string program = @"
 struct X { }
 class Test {
 	static void Inc(X? x) {
+		var c = $x == null$;
+	}
+}";
+			var irr = Resolve<OperatorResolveResult>(program);
+			Assert.IsFalse(irr.IsError);
+			Assert.AreEqual(compilation.FindType(KnownTypeCode.Boolean), irr.Type);
+		}
+		
+		[Test]
+		public void CompareUnrestrictedTypeParameterWithNullLiteral()
+		{
+			string program = @"
+class Test {
+	static void Inc<X>(X x) {
 		var c = $x == null$;
 	}
 }";

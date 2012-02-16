@@ -298,7 +298,7 @@ class TestClass
 {
 	static void M(string[] args)
 	{
-		var q = $(from a in new XYZ() join b in args on a equals b into g select g.ToUpper())$;
+		var q = (from a in new XYZ() $join b in args on a equals b into g$ select g.ToUpper());
 	}
 }
 class XYZ
@@ -378,6 +378,19 @@ class TestClass
 			Assert.AreEqual("System.String", typeArguments[0].ReflectionName, "TSource");
 			Assert.AreEqual("System.Char", typeArguments[1].ReflectionName, "TCollection");
 			Assert.AreEqual(TypeKind.Anonymous, typeArguments[2].Kind, "TResult");
+		}
+		
+		[Test]
+		public void FromClauseDoesNotResolveToSourceVariable()
+		{
+			string program = @"using System; using System.Linq;
+class TestClass {
+	static void M(string[] args) {
+		var query = $from w in args$ select int.Parse(w);
+	}}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.AreEqual("System.String[]", rr.Type.ReflectionName);
+			Assert.AreEqual(Conversion.IdentityConversion, rr.Conversion);
 		}
 	}
 }

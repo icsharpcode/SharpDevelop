@@ -34,7 +34,7 @@ namespace Mono.CSharp
 	// This includes properties, indexers, and events
 	public abstract class PropertyBasedMember : InterfaceMemberBase
 	{
-		public PropertyBasedMember (TypeContainer parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name, Attributes attrs)
+		public PropertyBasedMember (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod, allowed_mod, name, attrs)
 		{
 		}
@@ -335,7 +335,7 @@ namespace Mono.CSharp
 
 			public virtual MethodBuilder Define (TypeContainer parent)
 			{
-				TypeContainer container = parent.PartialContainer;
+				var container = parent.PartialContainer;
 
 				//
 				// Check for custom access modifier
@@ -402,7 +402,7 @@ namespace Mono.CSharp
 		PropertyMethod get, set, first;
 		PropertyBuilder PropertyBuilder;
 
-		public PropertyBase (TypeContainer parent, FullNamedExpression type, Modifiers mod_flags, Modifiers allowed_mod, MemberName name, Attributes attrs)
+		public PropertyBase (TypeDefinition parent, FullNamedExpression type, Modifiers mod_flags, Modifiers allowed_mod, MemberName name, Attributes attrs)
 			: base (parent, type, mod_flags, allowed_mod, name, attrs)
 		{
 		}
@@ -445,7 +445,7 @@ namespace Mono.CSharp
 				if (first == null)
 					first = value;
 
-				Parent.AddMember (get);
+				Parent.AddNameToContainer (get, get.MemberName.Basename);
 			}
 		}
 
@@ -458,7 +458,7 @@ namespace Mono.CSharp
 				if (first == null)
 					first = value;
 
-				Parent.AddMember (set);
+				Parent.AddNameToContainer (set, set.MemberName.Basename);
 			}
 		}
 
@@ -720,7 +720,7 @@ namespace Mono.CSharp
 			}
 		}
 
-		public Property (TypeContainer parent, FullNamedExpression type, Modifiers mod,
+		public Property (TypeDefinition parent, FullNamedExpression type, Modifiers mod,
 				 MemberName name, Attributes attrs)
 			: base (parent, type, mod,
 				parent.PartialContainer.Kind == MemberKind.Interface ? AllowedModifiersInterface :
@@ -743,21 +743,25 @@ namespace Mono.CSharp
 			if (!field.Define ())
 				return;
 
-			Parent.PartialContainer.AddField (field);
+			Parent.PartialContainer.Members.Add (field);
 
 			FieldExpr fe = new FieldExpr (field, Location);
 			if ((field.ModFlags & Modifiers.STATIC) == 0)
 				fe.InstanceExpression = new CompilerGeneratedThis (Parent.CurrentType, Location);
 
-			// Create get block
-			Get.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location);
-			Return r = new Return (fe, Location);
+			//
+			// Create get block but we careful with location to
+			// emit only single sequence point per accessor. This allow
+			// to set a breakpoint on it even with no user code
+			//
+			Get.Block = new ToplevelBlock (Compiler, ParametersCompiled.EmptyReadOnlyParameters, Location.Null);
+			Return r = new Return (fe, Get.Location);
 			Get.Block.AddStatement (r);
 
 			// Create set block
-			Set.Block = new ToplevelBlock (Compiler, Set.ParameterInfo, Location);
-			Assign a = new SimpleAssign (fe, new SimpleName ("value", Location));
-			Set.Block.AddStatement (new StatementExpression (a));
+			Set.Block = new ToplevelBlock (Compiler, Set.ParameterInfo, Location.Null);
+			Assign a = new SimpleAssign (fe, new SimpleName ("value", Location.Null), Location.Null);
+			Set.Block.AddStatement (new StatementExpression (a, Set.Location));
 		}
 		
 		public override bool Define ()
@@ -787,7 +791,7 @@ namespace Mono.CSharp
 				else
 					pm = new GetMethod (this, 0, null, Location);
 
-				Parent.AddMember (pm);
+				Parent.AddNameToContainer (pm, pm.MemberName.Basename);
 			}
 
 			if (!CheckBase ())
@@ -850,7 +854,7 @@ namespace Mono.CSharp
 
 		static readonly string[] attribute_targets = new string [] { "event" };
 
-		public EventProperty (TypeContainer parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, Attributes attrs)
+		public EventProperty (TypeDefinition parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, Attributes attrs)
 			: base (parent, type, mod_flags, name, attrs)
 		{
 		}
@@ -890,10 +894,12 @@ namespace Mono.CSharp
 
 			protected abstract MethodSpec GetOperation (Location loc);
 
-			public override void Emit (TypeContainer parent)
+			public override void Emit (TypeDefinition parent)
 			{
 				if ((method.ModFlags & (Modifiers.ABSTRACT | Modifiers.EXTERN)) == 0) {
-					block = new ToplevelBlock (Compiler, ParameterInfo, Location);
+					block = new ToplevelBlock (Compiler, ParameterInfo, Location) {
+						IsCompilerGenerated = true
+					};
 					FabricateBodyStatement ();
 				}
 
@@ -989,7 +995,7 @@ namespace Mono.CSharp
 		Field backing_field;
 		List<FieldDeclarator> declarators;
 
-		public EventField (TypeContainer parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, Attributes attrs)
+		public EventField (TypeDefinition parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, Attributes attrs)
 			: base (parent, type, mod_flags, name, attrs)
 		{
 			Add = new AddDelegateMethod (this);
@@ -1040,8 +1046,7 @@ namespace Mono.CSharp
 
 			declarators.Add (declarator);
 
-			// TODO: This will probably break
-			Parent.AddMember (this, declarator.Name.Value);
+			Parent.AddNameToContainer (this, declarator.Name.Value);
 		}
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
@@ -1074,14 +1079,14 @@ namespace Mono.CSharp
 					mod_flags_src &= ~(Modifiers.AccessibilityMask | Modifiers.DEFAULT_ACCESS_MODIFER);
 
 				var t = new TypeExpression (MemberType, TypeExpression.Location);
-				int index = Parent.PartialContainer.Events.IndexOf (this);
 				foreach (var d in declarators) {
 					var ef = new EventField (Parent, t, mod_flags_src, new MemberName (d.Name.Value, d.Name.Location), OptAttributes);
 
 					if (d.Initializer != null)
 						ef.initializer = d.Initializer;
 
-					Parent.PartialContainer.Events.Insert (++index, ef);
+					ef.Define ();
+					Parent.PartialContainer.Members.Add (ef);
 				}
 			}
 
@@ -1098,7 +1103,7 @@ namespace Mono.CSharp
 				Modifiers.BACKING_FIELD | Modifiers.COMPILER_GENERATED | Modifiers.PRIVATE | (ModFlags & (Modifiers.STATIC | Modifiers.UNSAFE)),
 				MemberName, null);
 
-			Parent.PartialContainer.AddField (backing_field);
+			Parent.PartialContainer.Members.Add (backing_field);
 			backing_field.Initializer = Initializer;
 			backing_field.ModFlags &= ~Modifiers.COMPILER_GENERATED;
 
@@ -1215,7 +1220,7 @@ namespace Mono.CSharp
 		EventBuilder EventBuilder;
 		protected EventSpec spec;
 
-		protected Event (TypeContainer parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, Attributes attrs)
+		protected Event (TypeDefinition parent, FullNamedExpression type, Modifiers mod_flags, MemberName name, Attributes attrs)
 			: base (parent, type, mod_flags,
 				parent.PartialContainer.Kind == MemberKind.Interface ? AllowedModifiersInterface :
 				parent.PartialContainer.Kind == MemberKind.Struct ? AllowedModifiersStruct :
@@ -1238,7 +1243,7 @@ namespace Mono.CSharp
 			}
 			set {
 				add = value;
-				Parent.AddMember (value);
+				Parent.AddNameToContainer (value, value.MemberName.Basename);
 			}
 		}
 
@@ -1254,7 +1259,7 @@ namespace Mono.CSharp
 			}
 			set {
 				remove = value;
-				Parent.AddMember (value);
+				Parent.AddNameToContainer (value, value.MemberName.Basename);
 			}
 		}
 		#endregion
@@ -1488,7 +1493,7 @@ namespace Mono.CSharp
 
 		readonly ParametersCompiled parameters;
 
-		public Indexer (TypeContainer parent, FullNamedExpression type, MemberName name, Modifiers mod, ParametersCompiled parameters, Attributes attrs)
+		public Indexer (TypeDefinition parent, FullNamedExpression type, MemberName name, Modifiers mod, ParametersCompiled parameters, Attributes attrs)
 			: base (parent, type, mod,
 				parent.PartialContainer.Kind == MemberKind.Interface ? AllowedInterfaceModifiers : AllowedModifiers,
 				name, attrs)
@@ -1572,8 +1577,7 @@ namespace Mono.CSharp
 				}
 			}
 
-			if (!Parent.PartialContainer.AddMember (this))
-				return false;
+			Parent.AddNameToContainer (this, MemberName.Basename);
 
 			flags |= MethodAttributes.HideBySig | MethodAttributes.SpecialName;
 			

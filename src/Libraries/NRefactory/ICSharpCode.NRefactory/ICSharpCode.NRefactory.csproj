@@ -144,6 +144,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultUnresolvedTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\DummyTypeParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\ExplicitInterfaceImplementationMemberReference.cs" />
     <Compile Include="TypeSystem\Implementation\FullNameAndTypeParameterCount.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\GetMembersHelper.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="TypeSystem\Implementation\SpecializedMember.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedMethod.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializingMemberReference.cs" />
     <Compile Include="TypeSystem\Implementation\TypeParameterReference.cs" />
     <Compile Include="TypeSystem\Implementation\TypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
