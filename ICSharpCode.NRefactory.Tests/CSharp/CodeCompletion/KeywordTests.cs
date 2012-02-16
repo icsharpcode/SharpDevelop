@@ -35,6 +35,15 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	public class KeywordTests : TestBase
 	{
 		[Test()]
+		public void TestTooManyOptions ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (@"$public S$");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("class"), "keyword 'class' not found.");
+			Assert.IsNull (provider.Find ("System"), "'System' found.");
+		}
+		
+		[Test()]
 		public void CaseKeywordTest ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (
