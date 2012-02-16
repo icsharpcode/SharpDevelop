@@ -1822,6 +1822,54 @@ namespace Foobar
 			});
 		}
 		
+		/// <summary>
+		/// Bug 3371 - MD intellisense ignores namespace aliases
+		/// </summary>
+		[Test()]
+		public void TestBug3371 ()
+		{
+			CombinedProviderTest (
+@"namespace A
+{
+    using Base = B.Color;
+
+    class Color
+    {
+        protected Base Base
+        {
+            get { return Base.Blue; }
+        }
+
+        protected Base NewBase {
+            get {
+                $return Base.$
+            }
+        }
+
+        public static void Main ()
+        {
+        }
+    }
+}
+
+namespace B
+{
+    public struct Color
+    {
+        public static Color Blue = new Color ();
+
+        public static Color From (int i)
+        {
+            return new Color ();
+        }
+    }
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Blue"), "'Blue' not found.");
+				Assert.IsNotNull (provider.Find ("From"), "'From' not found.");
+			});
+		}
+		
 		[Test()]
 		public void TestNewInConstructor ()
 		{

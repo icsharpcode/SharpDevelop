@@ -1476,8 +1476,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			if (curType == null)
 				return;
-			
-			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ())) {
+			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ()).Reverse ()) {
 				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !m.IsOverridable)
 					continue;
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
@@ -1491,7 +1490,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				bool foundMember = curType.GetMembers ().Any (cm => GetNameWithParamCount (cm) == text && cm.DeclaringTypeDefinition == curType.GetDefinition ());
 				if (foundMember)
 					continue;
-					
+				if (alreadyInserted.ContainsKey (text))
+					continue;
 				alreadyInserted [text] = true;
 				data.CompletionCategory = col.GetCompletionCategory (curType);
 				col.Add (data);
@@ -1800,9 +1800,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (resolveResult is MemberResolveResult && resolvedNode is IdentifierExpression) {
 				var mrr = (MemberResolveResult)resolveResult;
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
+				
+				// ADD Aliases
+				var scope = CSharpParsedFile.GetUsingScope (location).Resolve (Compilation);
+			
+				for (var n = scope; n != null; n = n.Parent) {
+					foreach (var pair in n.UsingAliases) {
+						if (pair.Key == mrr.Member.Name) {
+							foreach (var r in CreateCompletionData (location, pair.Value, resolvedNode, state)) {
+								if (r is IEntityCompletionData && ((IEntityCompletionData)r).Entity is IMember) {
+									result.AddMember ((IMember)((IEntityCompletionData)r).Entity);
+								} else {
+									result.Add (r);
+								}
+							}
+						}
+					}
+				}				
+				
+				
 			}
-			if (resolveResult is TypeResolveResult && (resolvedNode is IdentifierExpression || resolvedNode is MemberReferenceExpression))
+			if (resolveResult is TypeResolveResult && (resolvedNode is IdentifierExpression || resolvedNode is MemberReferenceExpression)) {
 				includeStaticMembers = true;
+			}
 			
 //			Console.WriteLine ("type:" + type +"/"+type.GetType ());
 //			Console.WriteLine ("current:" + ctx.CurrentTypeDefinition);
