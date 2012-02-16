@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		void WriteIndentation()
+		protected void WriteIndentation()
 		{
 			if (needsIndent) {
 				needsIndent = false;
@@ -210,6 +210,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual void StartNode(AstNode node)
 		{
+			// Write out the indentation, so that overrides of this method
+			// can rely use the current output length to identify the position of the node
+			// in the output.
+			WriteIndentation();
 		}
 		
 		public virtual void EndNode(AstNode node)
