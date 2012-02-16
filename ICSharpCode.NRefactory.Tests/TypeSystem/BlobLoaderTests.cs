@@ -23,6 +23,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	/* Commented out because the Mono.Cecil 0.9.5 release does not have the SecurityDeclaration ctor
 	[TestFixture]
 	public class BlobLoaderTests
 	{
@@ -50,4 +51,5 @@ MHgwMDAwMDAwMDAwMDAwMDAwMDQwMDAwMDAwMDAwMDAwMA==");
 			Assert.AreEqual("System.Security.Permissions.StrongNameIdentityPermissionAttribute", strongNameAttr.AttributeType.FullName);
 		}
 	}
+	*/
 }

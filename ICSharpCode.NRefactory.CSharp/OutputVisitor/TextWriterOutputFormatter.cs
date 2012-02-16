@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		readonly TextWriter textWriter;
 		int indentation;
 		bool needsIndent = true;
+		bool isAtStartOfLine = true;
 
 		public int Indentation {
 			get {
@@ -53,18 +54,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			WriteIndentation();
 			textWriter.Write(ident);
+			isAtStartOfLine = false;
 		}
 		
 		public void WriteKeyword(string keyword)
 		{
 			WriteIndentation();
 			textWriter.Write(keyword);
+			isAtStartOfLine = false;
 		}
 		
 		public void WriteToken(string token)
 		{
 			WriteIndentation();
 			textWriter.Write(token);
+			isAtStartOfLine = false;
 		}
 		
 		public void Space()
@@ -75,7 +79,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public void OpenBrace(BraceStyle style)
 		{
-			bool isAtStartOfLine = needsIndent;
 			switch (style) {
 				case BraceStyle.DoNotChange:
 				case BraceStyle.EndOfLine:
@@ -125,16 +128,19 @@ namespace ICSharpCode.NRefactory.CSharp
 					Unindent();
 					WriteIndentation();
 					textWriter.Write('}');
+					isAtStartOfLine = false;
 					break;
 				case BraceStyle.NextLineShifted:
 					WriteIndentation();
 					textWriter.Write('}');
+					isAtStartOfLine = false;
 					Unindent();
 					break;
 				case BraceStyle.NextLineShifted2:
 					Unindent();
 					WriteIndentation();
 					textWriter.Write('}');
+					isAtStartOfLine = false;
 					Unindent();
 					break;
 				default:
@@ -156,6 +162,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			textWriter.WriteLine();
 			needsIndent = true;
+			isAtStartOfLine = true;
 		}
 		
 		public void Indent()
@@ -176,16 +183,19 @@ namespace ICSharpCode.NRefactory.CSharp
 					textWriter.Write("//");
 					textWriter.WriteLine(content);
 					needsIndent = true;
+					isAtStartOfLine = true;
 					break;
 				case CommentType.MultiLine:
 					textWriter.Write("/*");
 					textWriter.Write(content);
 					textWriter.Write("*/");
+					isAtStartOfLine = false;
 					break;
 				case CommentType.Documentation:
 					textWriter.Write("///");
 					textWriter.WriteLine(content);
 					needsIndent = true;
+					isAtStartOfLine = true;
 					break;
 				default:
 					textWriter.Write(content);
@@ -196,7 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void WritePreProcessorDirective(PreProcessorDirectiveType type, string argument)
 		{
 			// pre-processor directive must start on its own line
-			if (!needsIndent)
+			if (!isAtStartOfLine)
 				NewLine();
 			WriteIndentation();
 			textWriter.Write('#');
