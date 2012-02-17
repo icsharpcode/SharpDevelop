@@ -10,7 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using Microsoft.Win32;
 
-namespace ICSharpCode.SharpDevelop.Project
+namespace ICSharpCode.AspNet.Mvc
 {
 	public enum IISVersion
 	{
