@@ -24,6 +24,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <RootNamespace>CSharpBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,6 +69,10 @@
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
+    <Compile Include="Src\Completion\CompletionData.cs" />
+    <Compile Include="Src\Completion\CSharpCompletionBinding.cs" />
+    <Compile Include="Src\Completion\CSharpCompletionDataFactory.cs" />
+    <Compile Include="Src\Completion\EntityCompletionData.cs" />
     <Compile Include="Src\CSharpBracketSearcher.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
@@ -77,6 +82,7 @@
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\Parser\CSharpFullParseInformation.cs" />
     <Compile Include="Src\Parser\CSharpSymbolSearch.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />
@@ -85,7 +91,6 @@
     <None Include="CSharpBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\CSharpCompletionBinding.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
@@ -123,6 +128,9 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Completion" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// The extra information is only provided to listeners of the ParseInformationUpdated event.
 	/// Those listeners may then decide to store the extra information (e.g. the TaskService stores TagComments).
 	/// </summary>
-	public class ParseInformation : AbstractAnnotatable, IFreezable
+	public class ParseInformation
 	{
 		readonly IParsedFile parsedFile;
 		IList<TagComment> tagComments = new List<TagComment>();
@@ -28,18 +28,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("parsedFile");
 			this.parsedFile = parsedFile;
 			this.isFullParseInformation = isFullParseInformation;
-		}
-		
-		public bool IsFrozen {
-			get { return isFrozen; }
-		}
-		
-		public void Freeze()
-		{
-			if (!isFrozen) {
-				
-				isFrozen = true;
-			}
 		}
 		
 		/// <summary>

@@ -461,7 +461,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextAreaTextEntered(object sender, TextCompositionEventArgs e)
 		{
 			if (e.Text.Length > 0 && !e.Handled) {
-				ILanguageBinding languageBinding = GetAdapterFromSender(sender).Language;
+				var adapter = GetAdapterFromSender(sender);
+				ILanguageBinding languageBinding = adapter.Language;
 				if (languageBinding != null && languageBinding.FormattingStrategy != null) {
 					char c = e.Text[0];
 					// When entering a newline, AvalonEdit might use either "\r\n" or "\n", depending on
@@ -469,13 +470,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// so that formatting strategies don't have to handle both cases.
 					if (c == '\r')
 						c = '\n';
-					languageBinding.FormattingStrategy.FormatLine(GetAdapterFromSender(sender), c);
+					languageBinding.FormattingStrategy.FormatLine(adapter, c);
 					
 					if (c == '\n') {
 						// Immediately parse on enter.
 						// This ensures we have up-to-date CC info about the method boundary when a user
 						// types near the end of a method.
 						ParserService.ParseAsync(this.FileName, this.Document.CreateSnapshot()).FireAndForget();
+					} else {
+						if (e.Text.Length == 1) {
+							foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
+								if (cc.HandleKeyPressed(adapter, c))
+									break;
+							}
+						}
 					}
 				}
 			}

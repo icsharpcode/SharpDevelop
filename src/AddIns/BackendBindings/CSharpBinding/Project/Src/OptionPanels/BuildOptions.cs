@@ -12,7 +12,7 @@ namespace CSharpBinding.OptionPanels
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlResource("BuildOptions.xfrm");
+			SetupFromXmlResource("CSharpBinding.BuildOptions.xfrm");
 			InitializeHelper();
 			
 			InitBaseIntermediateOutputPath();

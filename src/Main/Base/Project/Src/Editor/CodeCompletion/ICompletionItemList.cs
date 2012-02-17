@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		/// <summary>
 		/// True if this list contains all items that were available.
-		/// False if this list could contain even more items 
+		/// False if this list could contain even more items
 		/// (e.g. by including items from all referenced projects, regardless of imports).
 		/// </summary>
 		bool ContainsAllAvailableItems { get; }
@@ -71,9 +71,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			get { return items; }
 		}
 		
+		bool containsAllAvailableItems = true;
+		
 		/// <inheritdoc />
-		public virtual bool ContainsAllAvailableItems {
-			get { return true; }
+		public bool ContainsAllAvailableItems {
+			get { return containsAllAvailableItems; }
+			set { containsAllAvailableItems = value; }
 		}
 		
 		/// <summary>

@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		public bool HandleKeyPressed(ITextEditor editor, char ch)
 		{
 			if (MatchesExtension(editor))
-				return binding.CtrlSpace(editor);
+				return binding.HandleKeyPressed(editor, ch);
 			else
 				return false;
 		}

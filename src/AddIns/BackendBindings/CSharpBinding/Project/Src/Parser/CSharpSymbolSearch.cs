@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -85,15 +86,11 @@ namespace CSharpBinding
 					return;
 			}
 			
-			ParseInformation parseInfo = ParserService.Parse(fileName, textSource);
+			var parseInfo = ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
 				return;
-			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
-			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
-			if (parsedFile == null || cu == null)
-				return;
 			fr.FindReferencesInFile(
-				searchScope, parsedFile, cu, compilation,
+				searchScope, parseInfo.ParsedFile, parseInfo.CompilationUnit, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
 					callback(new Reference(region, result));

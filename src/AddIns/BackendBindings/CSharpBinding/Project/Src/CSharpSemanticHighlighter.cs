@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
@@ -192,7 +193,7 @@ namespace CSharpBinding
 				return cachedLine.HighlightedLine;
 			}
 			
-			ParseInformation parseInfo = ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version);
+			var parseInfo = ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version) as CSharpFullParseInformation;
 			if (parseInfo == null) {
 				if (!invalidLines.Contains(documentLine))
 					invalidLines.Add(documentLine);
@@ -208,20 +209,13 @@ namespace CSharpBinding
 				}
 			}
 			
-			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
-			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
-			if (cu == null || parsedFile == null) {
-				Debug.WriteLine("Semantic highlighting for line {0} - not a C# file?", lineNumber);
-				return null;
-			}
-			
 			var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
-			resolver = new CSharpAstResolver(compilation, cu, parsedFile);
+			this.resolver = parseInfo.GetResolver(compilation);
 			
 			HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
 			this.line = line;
 			this.lineNumber = lineNumber;
-			cu.AcceptVisitor(this);
+			parseInfo.CompilationUnit.AcceptVisitor(this);
 			this.line = null;
 			this.resolver = null;
 			Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);

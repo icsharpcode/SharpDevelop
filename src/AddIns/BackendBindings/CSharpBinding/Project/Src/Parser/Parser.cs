@@ -84,10 +84,10 @@ namespace CSharpBinding.Parser
 			
 			CSharpParsedFile file = cu.ToTypeSystem();
 			
-			ParseInformation info = new ParseInformation(file, fullParseInformationRequested);
 			if (fullParseInformationRequested)
-				info.AddAnnotation(cu);
-			return info;
+				return new CSharpFullParseInformation(file, cu);
+			else
+				return new ParseInformation(file, fullParseInformationRequested);
 		}
 		
 		/*void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
@@ -102,28 +102,21 @@ namespace CSharpBinding.Parser
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
-			if (cu == null)
+			var csParseInfo = parseInfo as CSharpFullParseInformation;
+			if (csParseInfo == null)
 				throw new ArgumentException("Parse info does not have CompilationUnit");
-			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
-			if (parsedFile == null)
-				throw new ArgumentException("Parse info does not have a C# ParsedFile");
 			
-			return ResolveAtLocation.Resolve(compilation, parsedFile, cu, location, cancellationToken);
+			return ResolveAtLocation.Resolve(compilation, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, location, cancellationToken);
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
 		{
-			CompilationUnit cu = parseInfo.Annotation<CompilationUnit>();
-			if (cu == null)
+			var csParseInfo = parseInfo as CSharpFullParseInformation;
+			if (csParseInfo == null)
 				throw new ArgumentException("Parse info does not have CompilationUnit");
 			
-			CSharpParsedFile parsedFile = parseInfo.ParsedFile as CSharpParsedFile;
-			if (parsedFile == null)
-				throw new ArgumentException("Parse info does not have a C# ParsedFile");
-			
 			new FindReferences().FindLocalReferences(
-				variable, parsedFile, cu, compilation,
+				variable, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, compilation,
 				delegate (AstNode node, ResolveResult result) {
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
 					callback(new Reference(region, result));
