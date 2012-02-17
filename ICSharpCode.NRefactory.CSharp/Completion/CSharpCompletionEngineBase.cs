@@ -493,7 +493,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
 		}
 		
-		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (CSharpParsedFile file, AstNode expr, CompilationUnit unit)
+		
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (Tuple<CSharpParsedFile, AstNode, CompilationUnit> tuple)
+		{
+			return ResolveExpression (tuple.Item2, tuple.Item3);
+		}
+
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (AstNode expr, CompilationUnit unit)
 		{
 			if (expr == null)
 				return null;
@@ -505,8 +511,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				resolveNode = expr;
 			}
-			
-//			var newContent = ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
 			
 			var csResolver = new CSharpAstResolver(GetState (), unit, CSharpParsedFile);
 			

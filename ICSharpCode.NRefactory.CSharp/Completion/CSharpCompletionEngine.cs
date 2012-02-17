@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 				}
 				
-				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
+				var resolveResult = ResolveExpression (expr);
 				if (resolveResult == null)
 					return null;
 				if (expr.Item2 is AstType)
@@ -227,7 +227,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				if (invoke.Item2 is TypeOfExpression)
 					return CreateTypeList ();
-				var invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				var invocationResult = ResolveExpression (invoke);
 				if (invocationResult == null)
 					return null;
 				var methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
@@ -301,7 +301,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					invoke = GetInvocationBeforeCursor (token == "(");
 					if (invoke == null)
 						return null;
-					invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					invocationResult = ResolveExpression (invoke);
 					if (invocationResult == null)
 						return null;
 					methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
@@ -315,7 +315,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (expressionOrVariableDeclaration == null)
 						return null;
 					
-					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					resolveResult = ResolveExpression (expressionOrVariableDeclaration);
 					
 					if (resolveResult == null)
 						return null;
@@ -359,7 +359,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (expressionOrVariableDeclaration == null)
 						return null;
 				
-					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					resolveResult = ResolveExpression (expressionOrVariableDeclaration);
 					if (resolveResult == null)
 						return null;
 					
@@ -495,7 +495,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (n != null && n.Parent is InvocationExpression) {
 					var invokeParent = (InvocationExpression)n.Parent;
-					var invokeResult = ResolveExpression (identifierStart.Item1, invokeParent.Target, identifierStart.Item3);
+					var invokeResult = ResolveExpression (invokeParent.Target, identifierStart.Item3);
 					var mgr = invokeResult != null ? invokeResult.Item1 as MethodGroupResolveResult : null;
 					if (mgr != null) {
 						int idx = 0;
@@ -528,7 +528,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				if (n != null && n.Parent is ObjectCreateExpression) {
-					var invokeResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
+					var invokeResult = ResolveExpression (n.Parent, identifierStart.Item3);
 					var mgr = invokeResult != null ? invokeResult.Item1 as ResolveResult : null;
 					
 					if (mgr != null) {
@@ -549,7 +549,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					// check for compare to enum case 
 					if (evaluationExpr != null) {
-						resolveResult = ResolveExpression (identifierStart.Item1, evaluationExpr, identifierStart.Item3);
+						resolveResult = ResolveExpression (evaluationExpr, identifierStart.Item3);
 						if (resolveResult != null && resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 							var wrapper = new CompletionDataWrapper (this);
 							AddContextCompletion (wrapper, resolveResult.Item2, evaluationExpr);
@@ -572,7 +572,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (parent != null && parent.Type.IsNull)
 						return DefaultControlSpaceItems ();
 					
-					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
+					var initalizerResult = ResolveExpression (n.Parent, identifierStart.Item3);
 					
 					var concreteNode = identifierStart.Item3.GetNodeAt<IdentifierExpression> (location);
 					// check if we're on the right side of an initializer expression
@@ -757,11 +757,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			Tuple<ResolveResult, CSharpResolver> rr;
 			if (xp != null) {
 				node = xp.Item2;
-				rr = ResolveExpression (xp.Item1, node, xp.Item3);
+				rr = ResolveExpression (node, xp.Item3);
 			} else {
 				var unit = ParseStub ("a");
 				node = unit.GetNodeAt (location);
-				rr = ResolveExpression (CSharpParsedFile, node, unit);
+				rr = ResolveExpression (node, unit);
 			}
 			
 			if (node is Identifier && node.Parent is ForeachStatement) {
@@ -885,7 +885,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 			
 			if (node != null && node.Role == AstNode.Roles.Argument) {
-				var resolved = ResolveExpression (CSharpParsedFile, node.Parent, Unit);
+				var resolved = ResolveExpression (node.Parent, Unit);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
 				if (invokeResult != null) {
 					int argNum = 0;
@@ -1066,7 +1066,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (parent is VariableInitializer)
 						parent = parent.Parent;
 					if (parent is VariableDeclarationStatement) {
-						var resolved = ResolveExpression (isAsExpression.Item1, parent, isAsExpression.Item3);
+						var resolved = ResolveExpression (parent, isAsExpression.Item3);
 						if (resolved != null)
 							isAsType = resolved.Item1.Type;
 					}
@@ -1200,7 +1200,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (newParentNode is InvocationExpression) {
 					var invoke = (InvocationExpression)newParentNode;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, invoke, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (invoke, expressionOrVariableDeclaration.Item3);
 					if (resolved != null) {
 						var mgr = resolved.Item1 as CSharpInvocationResolveResult;
 						if (mgr != null) {
@@ -1219,7 +1219,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				if (newParentNode is ObjectCreateExpression) {
 					var invoke = (ObjectCreateExpression)newParentNode;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, invoke, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (invoke, expressionOrVariableDeclaration.Item3);
 					if (resolved != null) {
 						var mgr = resolved.Item1 as CSharpInvocationResolveResult;
 						if (mgr != null) {
@@ -1238,7 +1238,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				if (newParentNode is AssignmentExpression) {
 					var assign = (AssignmentExpression)newParentNode;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, assign.Left, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (assign.Left, expressionOrVariableDeclaration.Item3);
 					if (resolved != null) {
 						hintType = resolved.Item1.Type;
 					}
@@ -1247,7 +1247,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (newParentNode is VariableDeclarationStatement) {
 					var varDecl = (VariableDeclarationStatement)newParentNode;
 					hintTypeAst = varDecl.Type;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, varDecl.Type, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (varDecl.Type, expressionOrVariableDeclaration.Item3);
 					if (resolved != null) {
 						hintType = resolved.Item1.Type;
 					}
@@ -1256,7 +1256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (newParentNode is FieldDeclaration) {
 					var varDecl = (FieldDeclaration)newParentNode;
 					hintTypeAst = varDecl.ReturnType;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, varDecl.ReturnType, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (varDecl.ReturnType, expressionOrVariableDeclaration.Item3);
 					if (resolved != null)
 						hintType = resolved.Item1.Type;
 				}
@@ -1294,7 +1294,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			case "in":
 				var inList = new CompletionDataWrapper (this);
 				var node = Unit.GetNodeAt (location);
-				var rr = ResolveExpression (CSharpParsedFile, node, Unit);
+				var rr = ResolveExpression (node, Unit);
 				AddContextCompletion (inList, rr != null ? rr.Item2 : GetState (), node);
 				return inList.Result;
 //				case "where":
@@ -1931,7 +1931,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null)
 				return null;
 			
-			var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
+			var resolveResult = ResolveExpression (expr);
 			if (resolveResult == null || resolveResult.Item1.Type.Kind != TypeKind.Enum) 
 				return null;
 			var wrapper = new CompletionDataWrapper (this);

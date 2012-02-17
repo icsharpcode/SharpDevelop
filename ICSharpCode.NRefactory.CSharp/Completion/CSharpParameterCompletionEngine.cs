@@ -118,17 +118,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (invoke == null)
 					return null;
 				if (invoke.Item2 is ObjectCreateExpression) {
-					var createType = ResolveExpression (invoke.Item1, ((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
+					var createType = ResolveExpression (((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
 					return factory.CreateConstructorProvider (createType.Item1.Type);
 				}
 				
 				if (invoke.Item2 is ICSharpCode.NRefactory.CSharp.Attribute) {
-					var attribute = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					var attribute = ResolveExpression (invoke);
 					if (attribute == null || attribute.Item1 == null)
 						return null;
 					return factory.CreateConstructorProvider (attribute.Item1.Type);
 				}
-				var invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				var invocationExpression = ResolveExpression (invoke);
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
 					return null;
 				resolveResult = invocationExpression.Item1;
@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (invoke == null) {
 					invoke = GetTypeBeforeCursor ();
 					if (invoke !=null) {
-						var typeExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+						var typeExpression = ResolveExpression (invoke);
 						if (typeExpression == null || typeExpression.Item1 == null || typeExpression.Item1.IsError)
 							return null;
 						
@@ -169,18 +169,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return null;
 				}
 				if (invoke.Item2 is ObjectCreateExpression) {
-					var createType = ResolveExpression (invoke.Item1, ((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
+					var createType = ResolveExpression (((ObjectCreateExpression)invoke.Item2).Type, invoke.Item3);
 					return factory.CreateConstructorProvider (createType.Item1.Type);
 				}
 				
 				if (invoke.Item2 is ICSharpCode.NRefactory.CSharp.Attribute) {
-					var attribute = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					var attribute = ResolveExpression (invoke);
 					if (attribute == null || attribute.Item1 == null)
 						return null;
 					return factory.CreateConstructorProvider (attribute.Item1.Type);
 				}
 				
-				invocationExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				invocationExpression = ResolveExpression (invoke);
 				
 				if (invocationExpression == null || invocationExpression.Item1 == null || invocationExpression.Item1.IsError)
 					return null;
@@ -202,7 +202,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				invoke = GetTypeBeforeCursor ();
 				if (invoke == null)
 					return null;
-				var tExpr = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				var tExpr = ResolveExpression (invoke);
 				if (tExpr == null || tExpr.Item1 == null || tExpr.Item1.IsError)
 					return null;
 				
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				invoke = GetIndexerBeforeCursor ();
 				if (invoke == null)
 					return null;
-				var indexerExpression = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				var indexerExpression = ResolveExpression (invoke);
 				if (indexerExpression == null || indexerExpression.Item1 == null || indexerExpression.Item1.IsError)
 					return null;
 				return factory.CreateIndexerParameterDataProvider (indexerExpression.Item1.Type, invoke.Item2);
