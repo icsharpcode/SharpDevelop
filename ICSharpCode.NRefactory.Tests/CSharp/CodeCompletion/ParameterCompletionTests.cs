@@ -773,5 +773,62 @@ namespace Test
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (16, provider.OverloadCount);
 		}
+		
+		
+		[Test()]
+		public void TestBaseConstructorCall ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class Base
+{
+	public Base (int i)
+	{
+			
+	}
+	public Base (int i, string s)
+	{
+			
+	}
+}
+
+namespace Test 
+{
+	class A : Base
+	{
+		$public A () : base($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (2, provider.OverloadCount);
+		}
+		
+		[Test()]
+		public void TestThisConstructorCall ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class Base
+{
+	public Base (int i)
+	{
+			
+	}
+	public Base (int i, string s)
+	{
+			
+	}
+}
+
+namespace Test 
+{
+	class A : Base
+	{
+		public A (int a, int b) : base(a) {}
+
+		$public A () : this($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.OverloadCount);
+		}
 	}
 }
