@@ -407,7 +407,8 @@ class TestClass
 		public void TestBug434701 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
-@"class TestAttribute : System.Attribute
+@"namespace Test {
+class TestAttribute : System.Attribute
 {
 	public Test (int a)
 	{
@@ -417,6 +418,7 @@ class TestClass
 $[Test ($
 class AClass
 {
+}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.OverloadCount);

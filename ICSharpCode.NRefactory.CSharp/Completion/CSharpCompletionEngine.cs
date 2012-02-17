@@ -165,6 +165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (IsInsideCommentOrString ())
 					return Enumerable.Empty<ICompletionData> ();
 				var expr = GetExpressionBeforeCursor ();
+				Console.WriteLine ("bef:" + expr);
 				if (expr == null)
 					return null;
 				// do not complete <number>. (but <number>.<number>.)
@@ -432,7 +433,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
-				
+				Console.WriteLine ("is:" + identifierStart);
 				if (identifierStart != null && identifierStart.Item2 is TypeParameterDeclaration)
 					return null;
 				
@@ -505,7 +506,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						
 						foreach (var method in mgr.Methods) {
-							if (idx < method.Parameters.Count && method.Parameters[idx].Type.Kind == TypeKind.Delegate) {
+							if (idx < method.Parameters.Count && method.Parameters [idx].Type.Kind == TypeKind.Delegate) {
 								AutoSelect = false;
 								AutoCompleteEmptyMatch = false;
 							}
@@ -516,7 +517,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						idx++;
 						foreach (var list in mgr.GetExtensionMethods ()) {
 							foreach (var method in list) {
-								if (idx < method.Parameters.Count && method.Parameters[idx].Type.Kind == TypeKind.Delegate) {
+								if (idx < method.Parameters.Count && method.Parameters [idx].Type.Kind == TypeKind.Delegate) {
 									AutoSelect = false;
 									AutoCompleteEmptyMatch = false;
 								}
@@ -1955,7 +1956,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					baseUnit = ParseStub ("A a;", false);
 					type = baseUnit.GetNodeAt<MemberType> (location);
 				}
-				
 				if (type != null) {
 					if (currentType == null) {
 						var tsvisitor2 = new TypeSystemConvertVisitor (this.CSharpParsedFile.FileName);
@@ -1970,8 +1970,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return Tuple.Create (CSharpParsedFile, (AstNode)target, Unit);
 				}
 			}
-			if (currentMember == null && currentType == null)
-				return null;
 			
 			baseUnit = ParseStub ("a()", false);
 			var curNode = baseUnit.GetNodeAt (location);
@@ -1986,8 +1984,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
+			if (currentMember == null && currentType == null) {
+				if (mref != null)
+					return Tuple.Create (CSharpParsedFile, (AstNode)mref.Target, baseUnit);
+				return null;
+			}
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)
@@ -2120,8 +2123,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				expr = baseUnit.GetNodeAt<AnonymousTypeCreateExpression> (location.Line, location.Column); 
 				if (expr != null)
 					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
+				if (expr == null)
+					expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column); 
 			}
-			
 			if (expr == null)
 				return null;
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);

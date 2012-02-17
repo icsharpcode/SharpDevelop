@@ -317,17 +317,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				switch (t.Item1) {
 				case '(':
 					wrapper.Append (')');
-					didAppendSemicolon = false;
+					if (appendSemicolon)
+						didAppendSemicolon = false;
 					lastBracket = ')';
 					break;
 				case '[':
 					wrapper.Append (']');
-					didAppendSemicolon = false;
+					if (appendSemicolon)
+						didAppendSemicolon = false;
 					lastBracket = ']';
 					break;
 				case '<':
 					wrapper.Append ('>');
-					didAppendSemicolon = false;
+					if (appendSemicolon)
+						didAppendSemicolon = false;
 					lastBracket = '>';
 					break;
 				case '{':
@@ -505,7 +508,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 //			var newContent = ProjectContent.UpdateProjectContent (CSharpParsedFile, file);
 			
-			var csResolver = new CSharpAstResolver(new CSharpResolver (ctx), unit, CSharpParsedFile);
+			var csResolver = new CSharpAstResolver(GetState (), unit, CSharpParsedFile);
 			
 			var result = csResolver.Resolve (resolveNode);
 			var state = csResolver.GetResolverStateBefore (resolveNode);
