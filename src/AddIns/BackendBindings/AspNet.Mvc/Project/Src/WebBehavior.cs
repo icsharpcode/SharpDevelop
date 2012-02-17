@@ -58,7 +58,6 @@ namespace ICSharpCode.AspNet.Mvc
 			return new ProcessStartInfo(LocalHost);
 		}
 		
-		// TODO horrible CODE DUPLICATION
 		public override void Start(bool withDebugging)
 		{
 			var processStartInfo = Project.CreateStartInfo();
@@ -77,18 +76,19 @@ namespace ICSharpCode.AspNet.Mvc
 					var processes = System.Diagnostics.Process.GetProcesses();
 					int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 					if (index > -1){
-						DebuggerService.CurrentDebugger.Attach(processes[index]);
+						if (withDebugging)
+							DebuggerService.CurrentDebugger.Attach(processes[index]);
 					} else {
 						this.monitor = new ProcessMonitor(processName);
 						this.monitor.ProcessCreated += delegate {
-							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
+							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options, withDebugging)));
 						};
 						this.monitor.Start();
 						
 						if (options.Data.WebServer == WebServer.IISExpress) {
 							// start IIS express and attach to it
 							if (WebProjectService.IsIISExpressInstalled) {
-								System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
+								defaultAppProcess = System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
 							} else {
 								DisposeProcessMonitor();
 								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
@@ -105,7 +105,6 @@ namespace ICSharpCode.AspNet.Mvc
 							} else {
 								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 								DisposeProcessMonitor();
-								return;
 							}
 							break;
 						case StartAction.Program:
@@ -133,68 +132,6 @@ namespace ICSharpCode.AspNet.Mvc
 					MessageService.ShowError(err);
 					LoggingService.Error(err);
 					DisposeProcessMonitor();
-					return;
-				}
-			}
-		}
-		
-		void WithoutDebugger()
-		{
-			var processStartInfo = Project.CreateStartInfo();
-			if (FileUtility.IsUrl(processStartInfo.FileName)) {
-				if (!CheckWebProjectStartInfo())
-					return;
-				// we deal with a WebProject
-				try {
-					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-					WebProjectOptions options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-					
-					string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
-					
-					if (options.Data.WebServer == WebServer.IISExpress) {
-						// start IIS express
-						if (WebProjectService.IsIISExpressInstalled)
-							System.Diagnostics.Process.Start(WebProjectService.IISExpressProcessLocation);
-						else {
-							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-							return;
-						}
-					}
-					
-					// start default application(e.g. browser) or the one specified
-					switch (project.StartAction) {
-						case StartAction.Project:
-							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
-								System.Diagnostics.Process.Start(options.Data.ProjectUrl);
-							} else {
-								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-								return;
-							}
-							break;
-						case StartAction.Program:
-							System.Diagnostics.Process.Start(StartProgram);
-							break;
-						case StartAction.StartURL:
-							if (FileUtility.IsUrl(StartUrl))
-								System.Diagnostics.Process.Start(StartUrl);
-							else {
-								string url = string.Concat(options.Data.ProjectUrl, StartUrl);
-								if (FileUtility.IsUrl(url)) {
-									System.Diagnostics.Process.Start(url);
-								} else {
-									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-									return;
-								}
-							}
-							break;
-						default:
-							throw new System.Exception("Invalid value for StartAction");
-					}
-				} catch (System.Exception ex) {
-					string err = "Error: " + ex.Message;
-					MessageService.ShowError(err);
-					LoggingService.Error(err);
-					return;
 				}
 			}
 		}
@@ -225,23 +162,27 @@ namespace ICSharpCode.AspNet.Mvc
 			return true;
 		}
 		
-		void OnProcessCreated(System.Diagnostics.Process defaultAppProcess, WebProjectOptions options)
+		void OnProcessCreated(Process defaultAppProcess, WebProjectOptions options, bool withDebugging)
 		{
+			if (defaultAppProcess == null)
+				return;
 			string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
-			var processes = System.Diagnostics.Process.GetProcesses();
+			var processes = Process.GetProcesses();
 			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 			if (index == -1)
 				return;
-			DebuggerService.CurrentDebugger.Attach(processes[index]);
-			
-			if (!DebuggerService.CurrentDebugger.IsAttached) {
-				if(options.Data.WebServer == WebServer.IIS) {
-					string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
-					MessageService.ShowMessage(string.Format(format, processName));
-				} else {
-					DebuggerService.CurrentDebugger.Attach(defaultAppProcess);
-					if (!DebuggerService.CurrentDebugger.IsAttached) {
-						MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+			if (withDebugging) {
+				DebuggerService.CurrentDebugger.Attach(processes[index]);
+				
+				if (!DebuggerService.CurrentDebugger.IsAttached) {
+					if(options.Data.WebServer == WebServer.IIS) {
+						string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
+						MessageService.ShowMessage(string.Format(format, processName));
+					} else {
+						DebuggerService.CurrentDebugger.Attach(defaultAppProcess);
+						if (!DebuggerService.CurrentDebugger.IsAttached) {
+							MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+						}
 					}
 				}
 			}
