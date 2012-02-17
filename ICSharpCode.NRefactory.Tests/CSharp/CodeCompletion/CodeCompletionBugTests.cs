@@ -4508,5 +4508,42 @@ class Test
 			Assert.IsNull (provider.Find ("TestMethod"), "'TestMethod' found.");
 			
 		}
+		
+		/// <summary>
+		/// Bug 2109 - [Regression] Incorrect autocompletion when declaring an enum 
+		/// </summary>
+		[Test()]
+		public void TestBug2109B ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"namespace Foobar
+{
+    class MainClass
+    {
+        public enum Foo
+        {
+            Value1,
+            Value2
+        }
+
+        public class Test
+        {
+            Foo Foo {
+                get; set;
+            }
+
+            public static void Method (Foo foo)
+            {
+                $Foo.$
+            }
+        }
+    }
+}
+");
+			Assert.AreEqual (3, provider.Count);
+			Assert.IsNotNull (provider.Find ("Value1"), "field 'Value1' not found.");
+			Assert.IsNotNull (provider.Find ("Value2"), "field 'Value2' not found.");
+		}
+		
 	}
 }
