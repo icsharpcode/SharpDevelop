@@ -113,35 +113,4 @@ namespace ICSharpCode.SharpDevelop.Project
 				next.SetMemento(memento);
 		}
 	}
-	
-
-	
-	public class XamlBehavior : ProjectBehavior
-	{
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (".xaml".Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
-				return ItemType.Page;
-
-			return base.GetDefaultItemType(fileName);
-		}
-	}
-	
-	public class SilverlightBehavior : ProjectBehavior
-	{
-		public override bool IsStartable {
-			get { return TestPageFileName.Length > 0; }
-		}
-		
-		public override ProcessStartInfo CreateStartInfo()
-		{
-			string pagePath = "file:///" + Path.Combine(((CompilableProject)Project).OutputFullPath, TestPageFileName);
-			return new  ProcessStartInfo(pagePath);
-		}
-		
-		public string TestPageFileName {
-			get { return ((MSBuildBasedProject)Project).GetEvaluatedProperty("TestPageFileName") ?? ""; }
-			set { ((MSBuildBasedProject)Project).SetProperty("TestPageFileName", string.IsNullOrEmpty(value) ? null : value); }
-		}
-	}
 }

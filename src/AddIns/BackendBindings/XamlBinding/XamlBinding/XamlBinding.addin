@@ -49,6 +49,11 @@
 		    class="ICSharpCode.XamlBinding.XamlLanguageBinding"
 		    extensions=".xaml" />
 	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/ProjectBehaviors">
+		<Class id="SilverlightBehavior" class="ICSharpCode.XamlBinding.SilverlightBehavior" />
+		<Class id="XamlBehavior" class="ICSharpCode.XamlBinding.XamlBehavior" />
+	</Path>
 
 	<!-- Options panel -->
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
