@@ -446,7 +446,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Tuple.Create (cachedText, startOffset != 0);
 		}
 		
-		protected Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetInvocationBeforeCursor (bool afterBracket)
+		protected ExpressionResult GetInvocationBeforeCursor (bool afterBracket)
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
@@ -458,7 +458,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					attr.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
 					node.AddChild (attr, AttributeSection.AttributeRole);
-					return Tuple.Create (CSharpParsedFile, (AstNode)attr, Unit);
+					return new ExpressionResult ((AstNode)attr, Unit);
 				}
 			}
 			if (currentMember == null && currentType == null) {
@@ -488,15 +488,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
-			Unit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 		
-		
-		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (Tuple<CSharpParsedFile, AstNode, CompilationUnit> tuple)
+		public class ExpressionResult
 		{
-			return ResolveExpression (tuple.Item2, tuple.Item3);
+			public AstNode Node;
+			public CompilationUnit Unit;
+			
+			public ExpressionResult (AstNode item2, CompilationUnit item3)
+			{
+				this.Node = item2;
+				this.Unit = item3;
+			}
+		}
+		
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (ExpressionResult tuple)
+		{
+			return ResolveExpression (tuple.Node, tuple.Unit);
 		}
 
 		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (AstNode expr, CompilationUnit unit)
