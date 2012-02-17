@@ -38,7 +38,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProcessStartInfo psi;
 			try {
-				psi = CreateStartInfo();
+				// we have to call CreateStartInfo through IProject, because otherwise the
+				// project behavior chain would not be processed!
+				psi = Project.CreateStartInfo();
 			} catch (ProjectStartException ex) {
 				MessageService.ShowError(ex.Message);
 				return;

@@ -457,7 +457,9 @@
     <Compile Include="Src\Gui\IWorkbench.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
     <Compile Include="Src\Gui\IWorkbenchWindow.cs" />
-    <Compile Include="Src\Gui\IPadContent.cs" />
+    <Compile Include="Src\Gui\IPadContent.cs">
+      <DependentUpon>IProgressMonitor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\AbstractViewContent.cs" />
     <Compile Include="Src\Gui\AbstractPadContent.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IClipboardHandler.cs" />

@@ -61,7 +61,7 @@ namespace ICSharpCode.AspNet.Mvc
 		// TODO horrible CODE DUPLICATION
 		public override void Start(bool withDebugging)
 		{
-			var processStartInfo = CreateStartInfo();
+			var processStartInfo = Project.CreateStartInfo();
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				if (!CheckWebProjectStartInfo())
 					return;
@@ -140,7 +140,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void WithoutDebugger()
 		{
-			var processStartInfo = CreateStartInfo();
+			var processStartInfo = Project.CreateStartInfo();
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				if (!CheckWebProjectStartInfo())
 					return;
