@@ -7,8 +7,10 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
-namespace ICSharpCode.SharpDevelop.Project.Commands
+namespace ICSharpCode.AspNet.Mvc
 {
 	public class ViewInBrowser : AbstractMenuCommand
 	{
@@ -36,27 +38,27 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			string fileName = node.FileName;
 			
-			// set project options
-			project.StartAction = StartAction.StartURL;
-			string directoryName = Path.GetDirectoryName(project.FileName) + "\\";
-			project.StartUrl = fileName.Replace(directoryName, "/").Replace("\\", "/");
+//			// set project options
+//			project.StartAction = StartAction.StartURL;
+//			string directoryName = Path.GetDirectoryName(project.FileName) + "\\";
+//			project.StartUrl = fileName.Replace(directoryName, "/").Replace("\\", "/");
 			
 			// set web server options
 			string projectName = project.Name;
 			WebProjectOptions existingOptions = WebProjectsOptions.Instance.GetWebProjectOptions(projectName);
-				
+			
 			var options = new WebProjectOptions {
 				Data = new WebProjectDebugData {
 					WebServer = WebProjectService.IsIISExpressInstalled ? WebServer.IISExpress : WebServer.IIS,
 					Port = (existingOptions != null && existingOptions.Data != null) ? existingOptions.Data.Port : "8080", //TODO: port collision detection
-					ProjectUrl = string.Format("{0}/{1}", CompilableProject.LocalHost, project.Name)				
+					ProjectUrl = string.Format("{0}/{1}", WebBehavior.LocalHost, project.Name)
 				},
 				ProjectName = projectName
 			};
 			
 			if (options.Data.WebServer == WebServer.IISExpress) {
 				options.Data.ProjectUrl = string.Format(
-					@"{0}:{1}/{2}", CompilableProject.LocalHost, options.Data.Port, projectName);
+					@"{0}:{1}/{2}", WebBehavior.LocalHost, options.Data.Port, projectName);
 			}
 			
 			WebProjectsOptions.Instance.SetWebProjectOptions(projectName, options);

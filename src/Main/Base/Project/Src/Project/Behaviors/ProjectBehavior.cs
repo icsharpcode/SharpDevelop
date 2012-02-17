@@ -4,10 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -16,10 +21,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		ProjectBehavior next;
 		protected IProject Project { get; private set; }
 		
-		public ProjectBehavior(IProject project, ProjectBehavior next = null)
+		public ProjectBehavior()
 		{
-			if (project == null)
-				throw new ArgumentNullException("project");
+			
+		}
+		
+		protected ProjectBehavior(IProject project, ProjectBehavior next = null)
+		{
 			this.Project = project;
 			this.next = next;
 		}
@@ -73,72 +81,67 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
-		public virtual ICollection<ItemType> AvailableFileItemTypes {
-			get {
-				if (this.next != null)
-					return next.AvailableFileItemTypes;
-				return null;
-			}
-		}
-		
 		public virtual void ProjectCreationComplete()
 		{
 			if (this.next != null)
 				next.ProjectCreationComplete();
 		}
+		
+		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
+		{
+			if (this.next != null)
+				return next.GetAvailableCompilerVersions();
+			return Enumerable.Empty<CompilerVersion>();
+		}
+		
+		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
+		{
+			if (this.next != null)
+				next.UpgradeProject(newVersion, newFramework);
+		}
+		
+		public virtual Properties CreateMemento()
+		{
+			if (this.next != null)
+				return next.CreateMemento();
+			throw new InvalidOperationException();
+		}
+		
+		public virtual void SetMemento(Properties memento)
+		{
+			if (this.next != null)
+				next.SetMemento(memento);
+		}
 	}
 	
-	sealed class DefaultProjectBehavior : ProjectBehavior
+
+	
+	public class XamlBehavior : ProjectBehavior
 	{
-		public DefaultProjectBehavior(IProject project)
-			: base(project)
+		public override ItemType GetDefaultItemType(string fileName)
 		{
+			if (".xaml".Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
+				return ItemType.Page;
+
+			return base.GetDefaultItemType(fileName);
 		}
-		
+	}
+	
+	public class SilverlightBehavior : ProjectBehavior
+	{
 		public override bool IsStartable {
-			get { return false; }
-		}
-		
-		public override void Start(bool withDebugging)
-		{
-			ProcessStartInfo psi;
-			try {
-				if (!(Project is AbstractProject))
-					return;
-				psi = ((AbstractProject)Project).CreateStartInfo();
-			} catch (ProjectStartException ex) {
-				MessageService.ShowError(ex.Message);
-				return;
-			}
-			if (withDebugging) {
-				DebuggerService.CurrentDebugger.Start(psi);
-			} else {
-				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
-			}
+			get { return TestPageFileName.Length > 0; }
 		}
 		
 		public override ProcessStartInfo CreateStartInfo()
 		{
-			throw new NotSupportedException();
+			string pagePath = "file:///" + Path.Combine(((CompilableProject)Project).OutputFullPath, TestPageFileName);
+			return new  ProcessStartInfo(pagePath);
 		}
 		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			return ItemType.None;
-		}
-		
-		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
-		{
-			return new UnknownProjectItem(Project, item);
-		}
-		
-		public override ICollection<ItemType> AvailableFileItemTypes {
-			get { return ItemType.DefaultFileItems; }
-		}
-		
-		public override void ProjectCreationComplete()
-		{
-			
+		public string TestPageFileName {
+			get { return ((MSBuildBasedProject)Project).GetEvaluatedProperty("TestPageFileName") ?? ""; }
+			set { ((MSBuildBasedProject)Project).SetProperty("TestPageFileName", string.IsNullOrEmpty(value) ? null : value); }
 		}
 	}
 }

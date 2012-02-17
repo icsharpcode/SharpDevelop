@@ -256,10 +256,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
-      <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml.cs">
       <DependentUpon>AddServiceReferenceDialog.xaml</DependentUpon>
@@ -316,7 +312,6 @@
     <Compile Include="Src\Gui\Pads\AbstractConsolePad.cs" />
     <Compile Include="Src\Gui\Pads\BaseWatchBox.cs" />
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
-    <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\SpecialFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferenceNode.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferencesFolderNode.cs" />
@@ -340,6 +335,8 @@
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
     <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
+    <Compile Include="Src\Project\Behaviors\DefaultProjectBehavior.cs" />
+    <Compile Include="Src\Project\Behaviors\DotNetStartBehavior.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehavior.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorService.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorSupportedConditionEvaluator.cs" />
@@ -733,9 +730,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\aaDebugOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>BuildEvents.xaml</DependentUpon>
@@ -884,7 +878,6 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
@@ -923,7 +916,7 @@
     <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
-    <Folder Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions" />
+    <Folder Include="..\..\..\AddIns\BackendBindings\AspNet.Mvc\Project\Src\WebProjectOptions" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />

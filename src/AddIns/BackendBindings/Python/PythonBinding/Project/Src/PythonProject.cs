@@ -41,6 +41,36 @@ namespace ICSharpCode.PythonBinding
 			get { return PythonLanguageProperties.Default; }
 		}
 		
+		public void AddMainFile(string fileName)
+		{
+			SetProperty(null, null, "MainFile", fileName, PropertyStorageLocations.Base, true);
+		}
+		
+		/// <summary>
+		/// Returns true if a main file is already defined for this project.
+		/// </summary>
+		public bool HasMainFile {
+			get { return GetProperty(null, null, "MainFile") != null; }
+		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			PythonProjectBehavior behavior = new PythonProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class PythonProjectBehavior : ProjectBehavior
+	{
+		public PythonProjectBehavior(PythonProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
 		/// <summary>
 		/// Returns ItemType.Compile if the filename has a
 		/// python extension (.py).
@@ -54,18 +84,6 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return base.GetDefaultItemType(fileName);
-		}
-		
-		public void AddMainFile(string fileName)
-		{
-			SetProperty(null, null, "MainFile", fileName, PropertyStorageLocations.Base, true);
-		}
-		
-		/// <summary>
-		/// Returns true if a main file is already defined for this project.
-		/// </summary>
-		public bool HasMainFile {
-			get { return GetProperty(null, null, "MainFile") != null; }
 		}
 	}
 }

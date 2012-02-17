@@ -6,32 +6,17 @@ using System.IO;
 using System.Web.Services.Description;
 using System.Windows;
 using System.Windows.Controls;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
+namespace ICSharpCode.AspNet.Mvc
 {
 	public partial class WebProjectOptionsPanel : UserControl
 	{
-		private readonly aaDebugOptions parentPanel;
-		
 		public WebProjectOptionsPanel()
 		{
 			InitializeComponent();
-			
-//			this.parentPanel = parentPanel;
-			
-			if (CurrentProjectDebugData == null)
-				CurrentProjectDebugData = new WebProjectDebugData();
-			
-			Loaded += OnLoaded;
-		}
-		
-		public WebProjectOptionsPanel(aaDebugOptions parentPanel):this()
-		{
-//			InitializeComponent();
-			
-			this.parentPanel = parentPanel;
 			
 			if (CurrentProjectDebugData == null)
 				CurrentProjectDebugData = new WebProjectDebugData();
@@ -154,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				UseLocalIIS.IsChecked = false;
 			} else {
 				StatusLabel.Text = string.Empty;
-				ProjectUrl.Text = string.Format("{0}/{1}", CompilableProject.LocalHost, ProjectService.CurrentProject.Name);
+				ProjectUrl.Text = string.Format("{0}/{1}", WebBehavior.LocalHost, ProjectService.CurrentProject.Name);
 			}
 			
 			data.ProjectUrl = ProjectUrl.Text;
@@ -208,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IISExpress;
 			data.Port = PortTextBox.Text;
-			data.ProjectUrl = string.Format(@"{0}:{1}/{2}", CompilableProject.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
+			data.ProjectUrl = string.Format(@"{0}:{1}/{2}", WebBehavior.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
 			CurrentProjectDebugData = data;
 		}
 	}

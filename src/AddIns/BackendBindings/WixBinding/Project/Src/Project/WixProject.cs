@@ -56,21 +56,6 @@ namespace ICSharpCode.WixBinding
 			get { return LanguageProperties.None; }
 		}
 		
-		public override void Start(bool withDebugging)
-		{
-			base.Start(false); // debugging not supported
-		}
-		
-		public override ProcessStartInfo CreateStartInfo()
-		{
-			switch (StartAction) {
-				case StartAction.Project:
-					return CreateStartInfo(GetInstallerFullPath());
-				default:
-					return base.CreateStartInfo();
-			}
-		}
-		
 		/// <summary>
 		/// Returns the filename extension based on the project's output type.
 		/// </summary>
@@ -86,21 +71,6 @@ namespace ICSharpCode.WixBinding
 					return ".wixlib";
 				default:
 					return ".msi";
-			}
-		}
-		
-		/// <summary>
-		/// Adds the ability to creates Wix Library and Wix Object project items.
-		/// </summary>
-		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
-		{
-			switch (item.ItemType.ItemName) {
-				case WixItemType.LibraryName:
-					return new WixLibraryProjectItem(this, item);
-				case WixItemType.ExtensionName:
-					return new WixExtensionProjectItem(this, item);
-				default:
-					return base.CreateProjectItem(item);
 			}
 		}
 		
@@ -125,7 +95,7 @@ namespace ICSharpCode.WixBinding
 		public override string OutputAssemblyFullPath {
 			get { return GetInstallerFullPath(); }
 		}
-	
+		
 		/// <summary>
 		/// Adds a set of Wix libraries (.wixlib) to the project.
 		/// </summary>
@@ -205,22 +175,6 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		/// <summary>
-		/// Checks whether the specified file can be compiled by the
-		/// Wix project.
-		/// </summary>
-		/// <returns>
-		/// <c>Compile</c> if the file is a WiX source file (.wxs)
-		/// or a WiX include file (.wxi), otherwise the default implementation
-		/// in MSBuildBasedProject is called.</returns>
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (WixFileName.IsWixFileName(fileName)) {
-				return ItemType.Compile;
-			}
-			return base.GetDefaultItemType(fileName);
-		}
-		
-		/// <summary>
 		/// AssemblyName must be implemented correctly - used when renaming projects.
 		/// </summary>
 		public override string AssemblyName {
@@ -260,6 +214,107 @@ namespace ICSharpCode.WixBinding
 				}
 			}
 			return new ReadOnlyCollection<WixExtensionProjectItem>(items);
+		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			WixStartBehavior behavior = new WixStartBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class WixStartBehavior : ProjectBehavior
+	{
+		public WixStartBehavior(WixProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
+		new WixProject Project {
+			get {
+				return (WixProject)base.Project;
+			}
+		}
+		
+		public string StartArguments {
+			get {
+				return Project.GetEvaluatedProperty("StartArguments") ?? "";
+			}
+			set {
+				Project.SetProperty("StartArguments", string.IsNullOrEmpty(value) ? null : value);
+			}
+		}
+		
+		public string StartWorkingDirectory {
+			get {
+				return Project.GetEvaluatedProperty("StartWorkingDirectory") ?? "";
+			}
+			set {
+				Project.SetProperty("StartWorkingDirectory", string.IsNullOrEmpty(value) ? null : value);
+			}
+		}
+		
+		public StartAction StartAction {
+			get {
+				try {
+					return (StartAction)Enum.Parse(typeof(StartAction), Project.GetEvaluatedProperty("StartAction") ?? "Project");
+				} catch (ArgumentException) {
+					return StartAction.Project;
+				}
+			}
+			set {
+				Project.SetProperty("StartAction", value.ToString());
+			}
+		}
+		
+		public override void Start(bool withDebugging)
+		{
+			base.Start(false); // debugging not supported
+		}
+		
+		public override ProcessStartInfo CreateStartInfo()
+		{
+			switch (StartAction) {
+				case StartAction.Project:
+					return DotNetStartBehavior.CreateStartInfo(Project.GetInstallerFullPath(), Project.Directory, StartWorkingDirectory, StartArguments);
+				default:
+					return base.CreateStartInfo();
+			}
+		}
+		
+		/// <summary>
+		/// Adds the ability to creates Wix Library and Wix Object project items.
+		/// </summary>
+		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
+		{
+			switch (item.ItemType.ItemName) {
+				case WixItemType.LibraryName:
+					return new WixLibraryProjectItem(Project, item);
+				case WixItemType.ExtensionName:
+					return new WixExtensionProjectItem(Project, item);
+				default:
+					return base.CreateProjectItem(item);
+			}
+		}
+		
+		/// <summary>
+		/// Checks whether the specified file can be compiled by the
+		/// Wix project.
+		/// </summary>
+		/// <returns>
+		/// <c>Compile</c> if the file is a WiX source file (.wxs)
+		/// or a WiX include file (.wxi), otherwise the default implementation
+		/// in MSBuildBasedProject is called.</returns>
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			if (WixFileName.IsWixFileName(fileName)) {
+				return ItemType.Compile;
+			}
+			return base.GetDefaultItemType(fileName);
 		}
 	}
 }

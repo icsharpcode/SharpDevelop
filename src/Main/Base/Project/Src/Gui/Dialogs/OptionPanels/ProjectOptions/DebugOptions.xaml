@@ -133,9 +133,5 @@
 				</Button>
 			</Grid>
 		</GroupBox>
-		
-		<local:WebProjectOptionsPanel Grid.Row="2" Margin="5"
-			Visibility="{Binding IsWebProject}" >
-		</local:WebProjectOptionsPanel>
 	</Grid>
 </optionpanels:ProjectOptionPanel>

@@ -68,48 +68,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Saves project preferences (currently opened files, bookmarks etc.) to the
 		/// a property container.
 		/// </summary>
-		public virtual Properties CreateMemento()
+		public Properties CreateMemento()
 		{
-			WorkbenchSingleton.AssertMainThread();
-			
-			// breakpoints and files
-			Properties properties = new Properties();
-			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
-			List<string> files = new List<string>();
-			foreach (string fileName in FileService.GetOpenFiles()) {
-				if (fileName != null && IsFileInProject(fileName)) {
-					files.Add(fileName);
-				}
-			}
-			properties.Set("files", files.ToArray());
-			
-			// web project properties
-			var webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Name);
-			if (webOptions != null)
-				properties.Set("WebProjectOptions", webOptions);
-			
-			// other project data
-			properties.Set("projectSavedData", ProjectSpecificProperties ?? new Properties());
-			
-			return properties;
+			return GetOrCreateBehavior().CreateMemento();
 		}
 		
-		public virtual void SetMemento(Properties memento)
+		public void SetMemento(Properties memento)
 		{
-			WorkbenchSingleton.AssertMainThread();
-			
-			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in memento.Get("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
-				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
-			}
-			foreach (string fileName in memento.Get("files", new string[0])) {
-				filesToOpenAfterSolutionLoad.Add(fileName);
-			}
-			
-			// web project properties
-			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
-			
-			// other project data
-			ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
+			GetOrCreateBehavior().SetMemento(memento);
 		}
 		#endregion
 		
@@ -305,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual ICollection<ItemType> AvailableFileItemTypes {
 			get {
-				return GetOrCreateBehavior().AvailableFileItemTypes;
+				return ItemType.DefaultFileItems;
 			}
 		}
 		
@@ -384,7 +350,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public virtual bool IsStartable {
+		public bool IsStartable {
 			get {
 				return GetOrCreateBehavior().IsStartable;
 			}
@@ -397,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public virtual void Start(bool withDebugging)
+		public void Start(bool withDebugging)
 		{
 			GetOrCreateBehavior().Start(withDebugging);
 		}
@@ -408,7 +374,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <exception cref="ProjectStartException">Occurs when the project cannot be started.</exception>
 		/// <returns>ProcessStartInfo used to start the project.
 		/// Note: this can be a ProcessStartInfo with a URL as filename!</returns>
-		public virtual ProcessStartInfo CreateStartInfo()
+		public ProcessStartInfo CreateStartInfo()
 		{
 			return GetOrCreateBehavior().CreateStartInfo();
 		}
@@ -468,7 +434,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
-		public virtual ProjectItem CreateProjectItem(IProjectItemBackendStore item)
+		public ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			return GetOrCreateBehavior().CreateProjectItem(item);
 		}
@@ -500,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Returns ItemType.None for unknown items.
 		/// Every override should call base.GetDefaultItemType for unknown file extensions.
 		/// </summary>
-		public virtual ItemType GetDefaultItemType(string fileName)
+		public ItemType GetDefaultItemType(string fileName)
 		{
 			return GetOrCreateBehavior().GetDefaultItemType(fileName);
 		}
@@ -598,7 +564,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return projectOptions;
 		}
 		
-		public virtual void ProjectCreationComplete()
+		public void ProjectCreationComplete()
 		{
 			GetOrCreateBehavior().ProjectCreationComplete();
 		}
@@ -614,7 +580,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[Browsable(false)]
 		public Properties ProjectSpecificProperties {
-			get; protected set;
+			get; internal set;
 		}
 		
 		protected virtual ProjectBehavior CreateDefaultBehavior()
