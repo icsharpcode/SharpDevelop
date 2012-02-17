@@ -1813,8 +1813,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				TypeResolveResult trr;
 				if (state.IsVariableReferenceWithSameType (resolveResult, ((IdentifierExpression)resolvedNode).Identifier, out trr)) {
-					if (mrr.Member.IsStatic ^ currentMember.IsStatic)
+					if (mrr.Member.IsStatic ^ currentMember.IsStatic) {
 						skipNonStaticMembers = true;
+						
+						if (trr.Type.Kind == TypeKind.Enum) {
+							foreach (var field in trr.Type.GetFields ()) {
+								result.AddMember (field);
+							}
+							foreach (var m in trr.Type.GetMethods ()) {
+								if (m.Name == "TryParse" && m.IsStatic) {
+									result.AddMember (m);
+								}
+							}
+							return result.Result;
+						}
+					}
 				}
 				// ADD Aliases
 				var scope = CSharpParsedFile.GetUsingScope (location).Resolve (Compilation);
@@ -1881,6 +1894,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var member in filteredList) {
+//					Console.WriteLine ("add:" + member + "/" + member.IsStatic);
 					result.AddMember (member);
 				}
 			}

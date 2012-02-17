@@ -4540,9 +4540,9 @@ class Test
     }
 }
 ");
+			Assert.AreEqual (4, provider.Count); // 2xTryParse + 2 fields
 			Assert.IsNotNull (provider.Find ("Value1"), "field 'Value1' not found.");
 			Assert.IsNotNull (provider.Find ("Value2"), "field 'Value2' not found.");
-			Assert.IsNull (provider.Find ("ToString"), "'ToString' found.");
 		}
 		
 	}
