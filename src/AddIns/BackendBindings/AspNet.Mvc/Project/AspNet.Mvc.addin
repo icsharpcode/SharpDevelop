@@ -100,4 +100,15 @@
 			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorLanguageBinding"
 			extensions=".vbhtml" />
 	</Path>
+
+	<Path name="/SharpDevelop/Workbench/ProjectBehaviors">
+		<!--
+		TODO : add WebBehavior to ProjectBehaviors list
+		Example:
+		<Condition name="ProjectBehaviorSupported" guid="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+			<Class id="SilverlightBehavior" class="ICSharpCode.XamlBinding.SilverlightBehavior" />
+		</Condition>
+		<Class id="XamlBehavior" class="ICSharpCode.XamlBinding.XamlBehavior" />
+		-->
+	</Path>
 </AddIn>
