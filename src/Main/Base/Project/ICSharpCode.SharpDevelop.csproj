@@ -917,7 +917,6 @@
     <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
-    <Folder Include="..\..\..\AddIns\BackendBindings\AspNet.Mvc\Project\Src\WebProjectOptions" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />

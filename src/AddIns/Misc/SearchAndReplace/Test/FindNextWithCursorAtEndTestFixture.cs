@@ -24,7 +24,7 @@ namespace SearchAndReplace.Tests
 	[TestFixture]
 	public class FindNextWithCursorAtEndTestFixture
 	{
-		SearchResultMatch result;
+		SearchResultMatch result = null;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()

@@ -46,6 +46,11 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 			public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
 				get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.CSharp; }
 			}
+			
+			protected override ProjectBehavior GetOrCreateBehavior()
+			{
+				return new DotNetStartBehavior(this, null);
+			}
 		}
 		
 		public static void InitializeProjectBindings()
