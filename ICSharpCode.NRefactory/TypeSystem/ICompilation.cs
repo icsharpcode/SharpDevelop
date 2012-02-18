@@ -42,6 +42,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// Gets the root namespace of this compilation.
+		/// This is a merged .
 		/// </summary>
 		INamespace RootNamespace { get; }
 		

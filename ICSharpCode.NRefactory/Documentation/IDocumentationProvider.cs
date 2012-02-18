@@ -18,8 +18,9 @@
 
 using System;
 using System.IO;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Documentation
 {
 	/// <summary>
 	/// Provides XML documentation for members.
@@ -29,6 +30,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the XML documentation for the specified entity.
 		/// </summary>
-		string GetDocumentation(IEntity entity);
+		DocumentationComment GetDocumentation(IEntity entity);
 	}
 }

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -385,7 +386,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return parentContext.CurrentAssembly; }
 		}
 		
-		public virtual string Documentation {
+		public virtual DocumentationComment Documentation {
 			get {
 				IDocumentationProvider provider = AbstractResolvedEntity.FindDocumentation(parentContext);
 				if (provider != null)

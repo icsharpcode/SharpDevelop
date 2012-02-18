@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -30,6 +31,7 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// </summary>
 	public static class IDStringProvider
 	{
+		#region GetIDString
 		/// <summary>
 		/// Gets the ID string (C# 4.0 spec, §A.3.1) for the specified entity.
 		/// </summary>
@@ -80,7 +82,9 @@ namespace ICSharpCode.NRefactory.Documentation
 			}
 			return b.ToString();
 		}
+		#endregion
 		
+		#region GetTypeName
 		public static string GetTypeName(IType type)
 		{
 			if (type == null)
@@ -157,5 +161,208 @@ namespace ICSharpCode.NRefactory.Documentation
 				}
 			}
 		}
+		#endregion
+		
+		#region ParseMemberName
+		/// <summary>
+		/// Parse the ID string into a member reference.
+		/// </summary>
+		/// <param name="memberIDString">The ID string representing the member (with "M:", "F:", "P:" or "E:" prefix).</param>
+		/// <returns>A member reference that represents the ID string.</returns>
+		/// <exception cref="ReflectionNameParseException">The syntax of the ID string is invalid</exception>
+		public static IMemberReference ParseMemberIDString(string memberIDString)
+		{
+			if (memberIDString == null)
+				throw new ArgumentNullException("memberIDString");
+			if (memberIDString.Length < 2 || memberIDString[1] != ':')
+				throw new ReflectionNameParseException(0, "Missing type tag");
+			char typeChar = memberIDString[0];
+			int parenPos = memberIDString.IndexOf('(');
+			if (parenPos < 0)
+				parenPos = memberIDString.LastIndexOf('~');
+			if (parenPos < 0)
+				parenPos = memberIDString.Length;
+			int dotPos = memberIDString.LastIndexOf('.', 0, parenPos);
+			if (dotPos < 0)
+				throw new ReflectionNameParseException(0, "Could not find '.' separating type name from member name");
+			string typeName = memberIDString.Substring(0, dotPos);
+			int pos = 2;
+			ITypeReference typeReference = ParseTypeName(typeName, ref pos);
+			if (pos != typeName.Length)
+				throw new ReflectionNameParseException(pos, "Expected end of type name");
+			string memberName = memberIDString.Substring(dotPos + 1, parenPos - (dotPos + 1));
+			int memberTypeParameterCount;
+			memberName = ReflectionHelper.SplitTypeParameterCountFromReflectionName(memberName, out memberTypeParameterCount);
+			memberName = memberName.Replace('#', '.');
+			return new IDStringMemberReference(typeReference, typeChar, memberName, memberIDString);
+		}
+		#endregion
+		
+		#region ParseTypeName
+		/// <summary>
+		/// Parse the ID string type name into a type reference.
+		/// </summary>
+		/// <param name="typeName">The ID string representing the type (the "T:" prefix is optional).</param>
+		/// <returns>A type reference that represents the ID string.</returns>
+		/// <exception cref="ReflectionNameParseException">The syntax of the ID string is invalid</exception>
+		/// <remarks>
+		/// <para>
+		/// The type reference will look in <see cref="ITypeResolveContext.CurrentAssembly"/> first,
+		/// and if the type is not found there,
+		/// it will look in all other assemblies of the compilation.
+		/// </para>
+		/// <para>
+		/// If the type is open (contains type parameters '`0' or '``0'),
+		/// an <see cref="ITypeResolveContext"/> with the appropriate CurrentTypeDefinition/CurrentMember is required
+		/// to resolve the reference to the ITypeParameter.
+		/// </para>
+		/// </remarks>
+		public static ITypeReference ParseTypeName(string typeName)
+		{
+			if (typeName == null)
+				throw new ArgumentNullException("typeName");
+			int pos = 0;
+			if (typeName.StartsWith("T:", StringComparison.Ordinal))
+				pos = 2;
+			ITypeReference r = ParseTypeName(typeName, ref pos);
+			if (pos < typeName.Length)
+				throw new ReflectionNameParseException(pos, "Expected end of type name");
+			return r;
+		}
+		
+		static bool IsIDStringSpecialCharacter(char c)
+		{
+			switch (c) {
+				case ':':
+				case '{':
+				case '}':
+				case '[':
+				case ']':
+				case '(':
+				case ')':
+				case '`':
+				case '*':
+				case '@':
+				case ',':
+					return true;
+				default:
+					return false;
+			}
+		}
+		
+		static ITypeReference ParseTypeName(string typeName, ref int pos)
+		{
+			string reflectionTypeName = typeName;
+			if (pos == typeName.Length)
+				throw new ReflectionNameParseException(pos, "Unexpected end");
+			if (reflectionTypeName[pos] == '`') {
+				// type parameter reference
+				pos++;
+				if (pos == reflectionTypeName.Length)
+					throw new ReflectionNameParseException(pos, "Unexpected end");
+				if (reflectionTypeName[pos] == '`') {
+					// method type parameter reference
+					pos++;
+					int index = ReflectionHelper.ReadTypeParameterCount(reflectionTypeName, ref pos);
+					return new TypeParameterReference(EntityType.Method, index);
+				} else {
+					// class type parameter reference
+					int index = ReflectionHelper.ReadTypeParameterCount(reflectionTypeName, ref pos);
+					return new TypeParameterReference(EntityType.TypeDefinition, index);
+				}
+			}
+			// not a type parameter reference: read the actual type name
+			List<ITypeReference> typeArguments = new List<ITypeReference>();
+			int typeParameterCount;
+			string typeNameWithoutSuffix = ReadTypeName(typeName, ref pos, true, out typeParameterCount, typeArguments);
+			ITypeReference result = new GetPotentiallyNestedClassTypeReference(typeNameWithoutSuffix, typeParameterCount);
+			while (pos < typeName.Length && typeName[pos] == '.') {
+				pos++;
+				string nestedTypeName = ReadTypeName(typeName, ref pos, false, out typeParameterCount, typeArguments);
+				result = new NestedTypeReference(result, nestedTypeName, typeParameterCount);
+			}
+			if (typeArguments.Count > 0) {
+				result = new ParameterizedTypeReference(result, typeArguments);
+			}
+			while (pos < typeName.Length) {
+				switch (typeName[pos]) {
+					case '[':
+						int dimensions = 1;
+						do {
+							pos++;
+							if (pos == typeName.Length)
+								throw new ReflectionNameParseException(pos, "Unexpected end");
+							if (typeName[pos] == ',')
+								dimensions++;
+						} while (typeName[pos] != ']');
+						result = new ArrayTypeReference(result, dimensions);
+						break;
+					case '*':
+						result = new PointerTypeReference(result);
+						break;
+					case '@':
+						result = new ByReferenceTypeReference(result);
+						break;
+					default:
+						return result;
+				}
+				pos++;
+			}
+			return result;
+		}
+		
+		static string ReadTypeName(string typeName, ref int pos, bool allowDottedName, out int typeParameterCount, List<ITypeReference> typeArguments)
+		{
+			int startPos = pos;
+			// skip the simple name portion:
+			while (pos < typeName.Length && !IsIDStringSpecialCharacter(typeName[pos]) && (allowDottedName || typeName[pos] != '.'))
+				pos++;
+			if (pos == startPos)
+				throw new ReflectionNameParseException(pos, "Expected type name");
+			string shortTypeName = typeName.Substring(startPos, pos - startPos);
+			// read type arguments:
+			typeParameterCount = 0;
+			if (pos < typeName.Length && typeName[pos] == '`') {
+				// unbound generic type
+				pos++;
+				typeParameterCount = ReflectionHelper.ReadTypeParameterCount(typeName, ref pos);
+			} else if (pos < typeName.Length && typeName[pos] == '{') {
+				// bound generic type
+				typeArguments = new List<ITypeReference>();
+				do {
+					pos++;
+					typeArguments.Add(ParseTypeName(typeName, ref pos));
+					typeParameterCount++;
+					if (pos == typeName.Length)
+						throw new ReflectionNameParseException(pos, "Unexpected end");
+				} while (typeName[pos] == ',');
+				if (typeName[pos] != '}')
+					throw new ReflectionNameParseException(pos, "Expected '}'");
+			}
+			return shortTypeName;
+		}
+		#endregion
+		
+		#region FindEntity
+		/// <summary>
+		/// Finds the entity in the given type resolve context.
+		/// </summary>
+		/// <param name="idString">ID string of the entity.</param>
+		/// <param name="context">Type resolve context</param>
+		/// <returns>Returns the entity, or null if it is not found.</returns>
+		/// <exception cref="ReflectionNameParseException">The syntax of the ID string is invalid</exception>
+		public static IEntity FindEntity(string idString, ITypeResolveContext context)
+		{
+			if (idString == null)
+				throw new ArgumentNullException("idString");
+			if (context == null)
+				throw new ArgumentNullException("context");
+			if (idString.StartsWith("T:", StringComparison.Ordinal)) {
+				return ParseTypeName(idString.Substring(2)).Resolve(context).GetDefinition();
+			} else {
+				return ParseMemberIDString(idString).Resolve(context);
+			}
+		}
+		#endregion
 	}
 }

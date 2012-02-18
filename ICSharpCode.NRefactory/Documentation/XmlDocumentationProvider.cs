@@ -23,6 +23,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.Documentation
 {
@@ -262,12 +263,6 @@ namespace ICSharpCode.NRefactory.Documentation
 		#endregion
 		
 		#region GetDocumentation
-		/// <inheritdoc/>
-		public string GetDocumentation(IEntity entity)
-		{
-			return GetDocumentation(IDStringProvider.GetIDString(entity));
-		}
-		
 		/// <summary>
 		/// Get the documentation for the member with the specified documentation key.
 		/// </summary>
@@ -300,6 +295,43 @@ namespace ICSharpCode.NRefactory.Documentation
 					cache.Add(key, val);
 				}
 				return val;
+			}
+		}
+		#endregion
+		
+		#region GetDocumentation for entity
+		/// <inheritdoc/>
+		public DocumentationComment GetDocumentation(IEntity entity)
+		{
+			string xmlDoc = GetDocumentation(IDStringProvider.GetIDString(entity));
+			if (xmlDoc != null) {
+				if (entity is IMember)
+					return new XmlDocumentationComment(xmlDoc, new SimpleTypeResolveContext((IMember)entity));
+				else if (entity is ITypeDefinition)
+					return new XmlDocumentationComment(xmlDoc, new SimpleTypeResolveContext((ITypeDefinition)entity));
+				else
+					return new XmlDocumentationComment(xmlDoc, new SimpleTypeResolveContext(entity.ParentAssembly));
+			} else {
+				return null;
+			}
+		}
+		
+		sealed class XmlDocumentationComment : DocumentationComment
+		{
+			ITypeResolveContext context;
+			
+			public XmlDocumentationComment(string xmlText, ITypeResolveContext context) : base(xmlText)
+			{
+				this.context = context;
+			}
+			
+			public override IEntity ResolveCRef(string cref)
+			{
+				try {
+					return IDStringProvider.FindEntity(cref, context);
+				} catch (ReflectionNameParseException) {
+					return null;
+				}
 			}
 		}
 		#endregion

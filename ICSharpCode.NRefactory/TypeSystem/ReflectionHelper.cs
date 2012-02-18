@@ -206,8 +206,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Parses a reflection name into a type reference.
 		/// </summary>
 		/// <param name="reflectionTypeName">The reflection name of the type.</param>
-		/// <exception cref="ReflectionNameParseException">The syntax of the reflection type name is invalid</exception>
 		/// <returns>A type reference that represents the reflection name.</returns>
+		/// <exception cref="ReflectionNameParseException">The syntax of the reflection type name is invalid</exception>
 		/// <remarks>
 		/// If the type is open (contains type parameters '`0' or '``0'),
 		/// an <see cref="ITypeResolveContext"/> with the appropriate CurrentTypeDefinition/CurrentMember is required
@@ -215,7 +215,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// For looking up closed, assembly qualified type names, the root type resolve context for the compilation
 		/// is sufficient.
 		/// When looking up a type name that isn't assembly qualified, the type reference will look in
-		/// <see cref="ITypeResolveContext.CurrentAssembly"/> first, and .
+		/// <see cref="ITypeResolveContext.CurrentAssembly"/> first, and if the type is not found there,
+		/// it will look in all other assemblies of the compilation.
 		/// </remarks>
 		public static ITypeReference ParseReflectionName(string reflectionTypeName)
 		{
@@ -411,7 +412,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return typeName;
 		}
 		
-		static int ReadTypeParameterCount(string reflectionTypeName, ref int pos)
+		internal static int ReadTypeParameterCount(string reflectionTypeName, ref int pos)
 		{
 			int startPos = pos;
 			while (pos < reflectionTypeName.Length) {

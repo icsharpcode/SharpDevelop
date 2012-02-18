@@ -53,6 +53,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Documentation\DocumentationComment.cs" />
+    <Compile Include="Documentation\GetPotentiallyNestedClassTypeReference.cs" />
+    <Compile Include="Documentation\IDocumentationProvider.cs" />
+    <Compile Include="Documentation\IDStringMemberReference.cs" />
     <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="Editor\IDocument.cs" />
     <Compile Include="Editor\IDocumentLine.cs" />
@@ -108,7 +112,6 @@
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\ICompilation.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
-    <Compile Include="TypeSystem\IDocumentationProvider.cs" />
     <Compile Include="TypeSystem\IEntity.cs" />
     <Compile Include="TypeSystem\IEvent.cs" />
     <Compile Include="TypeSystem\IField.cs" />
