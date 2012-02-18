@@ -339,14 +339,12 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			TypedValue val = Evaluate(castExpression.Expression);
 			DebugType castTo = null;
-			try
-			{
+			try {
 				castTo = castExpression.CastTo.ResolveType(context.AppDomain);
-			}
-			catch(System.Exception e)
-			{
-				castExpression.CastTo.Type = castExpression.CastTo.Type.Insert(0,context.MethodInfo.DeclaringType.Namespace + ".");
-				castTo = castExpression.CastTo.ResolveType(context.AppDomain);
+			} catch (GetValueException) {
+				var typeRef = castExpression.CastTo.Clone();
+				typeRef.Type = typeRef.Type.Insert(0, context.MethodInfo.DeclaringType.Namespace + ".");
+				castTo = typeRef.ResolveType(context.AppDomain);
 			}
 			if (castTo.IsPrimitive && val.Type.IsPrimitive && castTo != val.Type) {
 				object oldVal = val.PrimitiveValue;
