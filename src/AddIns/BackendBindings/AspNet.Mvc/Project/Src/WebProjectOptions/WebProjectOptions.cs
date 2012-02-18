@@ -8,7 +8,7 @@ using System.ComponentModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
+namespace ICSharpCode.AspNet.Mvc
 {
 	public sealed class WebProjectsOptions
 	{

@@ -31,17 +31,6 @@ namespace FSharpBinding
 			}
 		}
 		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (string.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase)) {
-				return ItemType.Compile;
-			} else if (string.Equals(".fsi", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase)) {
-				return ItemType.Compile;
-			} else {
-				return base.GetDefaultItemType(fileName);
-			}
-		}
-		
 		public override string Language {
 			get {
 				return "F#";
@@ -51,6 +40,35 @@ namespace FSharpBinding
 		public override LanguageProperties LanguageProperties {
 			get {
 				return LanguageProperties.None;
+			}
+		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			FSharpProjectBehavior behavior = new FSharpProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class FSharpProjectBehavior : ProjectBehavior
+	{
+		public FSharpProjectBehavior(FSharpProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			if (string.Equals(".fs", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase)) {
+				return ItemType.Compile;
+			} else if (string.Equals(".fsi", Path.GetExtension(fileName), StringComparison.InvariantCultureIgnoreCase)) {
+				return ItemType.Compile;
+			} else {
+				return base.GetDefaultItemType(fileName);
 			}
 		}
 	}

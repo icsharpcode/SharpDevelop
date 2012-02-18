@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Management;
 
-namespace ICSharpCode.SharpDevelop.Services
+namespace ICSharpCode.AspNet.Mvc
 {
 	public class ProcessMonitor : ManagementEventWatcher, IDisposable
 	{

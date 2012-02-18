@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public event EventHandler MinimumSolutionVersionChanged;
 		
-		protected void SetToolsVersion(string newToolsVersion)
+		protected internal void SetToolsVersion(string newToolsVersion)
 		{
 			PerformUpdateOnProjectFile(
 				delegate {
@@ -150,63 +150,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			};
 			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
 		}
-		
-		#region CreateProjectItem
-		/// <summary>
-		/// Creates a new projectItem for the passed itemType
-		/// </summary>
-		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
-		{
-			switch (item.ItemType.ItemName) {
-				case "Reference":
-					return new ReferenceProjectItem(this, item);
-				case "ProjectReference":
-					return new ProjectReferenceProjectItem(this, item);
-				case "COMReference":
-					return new ComReferenceProjectItem(this, item);
-				case "Import":
-					return new ImportProjectItem(this, item);
-					
-				case "None":
-				case "Compile":
-				case "EmbeddedResource":
-				case "Resource":
-				case "Content":
-				case "Folder":
-					return new FileProjectItem(this, item);
-					
-				case "WebReferenceUrl":
-					return new WebReferenceUrl(this, item);
-					
-				case "WebReferences":
-					return new WebReferencesProjectItem(this, item);
-					
-				case "WCFMetadata":
-					return new ServiceReferencesProjectItem(this, item);
-					
-				case "WCFMetadataStorage":
-					return new ServiceReferenceProjectItem(this, item);
-					
-				default:
-					if (this.AvailableFileItemTypes.Contains(item.ItemType)
-					    || SafeFileExists(this.Directory, item.EvaluatedInclude))
-					{
-						return new FileProjectItem(this, item);
-					} else {
-						return base.CreateProjectItem(item);
-					}
-			}
-		}
-		
-		static bool SafeFileExists(string directory, string fileName)
-		{
-			try {
-				return File.Exists(Path.Combine(directory, fileName));
-			} catch (Exception) {
-				return false;
-			}
-		}
-		#endregion
 		
 		#region Create new project
 		public MSBuildBasedProject(ProjectCreateInformation information)

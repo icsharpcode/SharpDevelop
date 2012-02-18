@@ -7,31 +7,16 @@ using System.Web.Services.Description;
 using System.Windows;
 using System.Windows.Controls;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
+namespace ICSharpCode.AspNet.Mvc
 {
-	public partial class WebProjectOptionsPanel : UserControl
+	public partial class WebProjectOptionsPanel : ProjectOptionPanel
 	{
-		private readonly aaDebugOptions parentPanel;
-		
 		public WebProjectOptionsPanel()
 		{
 			InitializeComponent();
-			
-//			this.parentPanel = parentPanel;
-			
-			if (CurrentProjectDebugData == null)
-				CurrentProjectDebugData = new WebProjectDebugData();
-			
-			Loaded += OnLoaded;
-		}
-		
-		public WebProjectOptionsPanel(aaDebugOptions parentPanel):this()
-		{
-//			InitializeComponent();
-			
-			this.parentPanel = parentPanel;
 			
 			if (CurrentProjectDebugData == null)
 				CurrentProjectDebugData = new WebProjectDebugData();
@@ -42,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			if (!WebProjectService.IsIISOrIISExpressInstalled) {
-				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				return;
 			}
 			
@@ -104,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (!string.IsNullOrEmpty(error))
 				MessageService.ShowError(error);
 			else {
-				MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated"));
+				MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated"));
 			}
 		}
 		
@@ -124,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (!isIISExpressInstalled) {
 				UseIISExpress.IsChecked = false;
 				data.WebServer = WebServer.None;
-				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				data.ProjectUrl = string.Empty;
 			}
 			else
@@ -148,13 +133,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			bool isIISInstalled = WebProjectService.IISVersion != IISVersion.None;
 			
 			if (!isIISInstalled) {
-				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				ProjectUrl.Text = string.Empty;
 				data.WebServer = WebServer.None;
 				UseLocalIIS.IsChecked = false;
 			} else {
 				StatusLabel.Text = string.Empty;
-				ProjectUrl.Text = string.Format("{0}/{1}", CompilableProject.LocalHost, ProjectService.CurrentProject.Name);
+				ProjectUrl.Text = string.Format("{0}/{1}", WebBehavior.LocalHost, ProjectService.CurrentProject.Name);
 			}
 			
 			data.ProjectUrl = ProjectUrl.Text;
@@ -208,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IISExpress;
 			data.Port = PortTextBox.Text;
-			data.ProjectUrl = string.Format(@"{0}:{1}/{2}", CompilableProject.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
+			data.ProjectUrl = string.Format(@"{0}:{1}/{2}", WebBehavior.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
 			CurrentProjectDebugData = data;
 		}
 	}

@@ -100,4 +100,28 @@
 			class="ICSharpCode.AspNet.Mvc.Folding.VisualBasicRazorLanguageBinding"
 			extensions=".vbhtml" />
 	</Path>
+
+	<Path name="/SharpDevelop/Workbench/ProjectBehaviors">
+		<!--
+		TODO : add WebBehavior to ProjectBehaviors list
+		Example:
+		<Condition name="ProjectBehaviorSupported" guid="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
+			<Class id="SilverlightBehavior" class="ICSharpCode.XamlBinding.SilverlightBehavior" />
+		</Condition>
+		<Class id="XamlBehavior" class="ICSharpCode.XamlBinding.XamlBehavior" />
+		-->
+	</Path>
+
+	<Path name="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<ComplexCondition>
+			<Or>
+				<Condition name="ProjectBehaviorSupported" guid="{349C5851-65DF-11DA-9384-00065B846F21}" />
+				<Condition name="ProjectBehaviorSupported" guid="{E24C65DC-7377-472B-9ABA-BC803B73C61A}" />
+			</Or>
+		<OptionPanel id           = "WebProjectOptions"
+		             label        = "${res:ICSharpCode.WebProjectOptionsPanel}"
+		             insertbefore = "CodeAnalysis"
+		             class        = "ICSharpCode.AspNet.Mvc.WebProjectOptionsPanel"/>
+		</ComplexCondition>
+	</Path>
 </AddIn>

@@ -190,5 +190,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			Stop();
 		}
+		
+		public bool IsAttached {
+			get {
+				return false;
+			}
+		}
 	}
 }

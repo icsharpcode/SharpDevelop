@@ -32,6 +32,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			get; set; 
 		}
 		
+		bool IsAttached {
+			get;
+		}
+		
 		bool CanDebug(IProject project);
 		
 		/// <summary>
