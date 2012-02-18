@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		{
 			string[] parts = typeName.Split('.');
 			var assemblies = new [] { context.CurrentAssembly, context.Compilation.MainAssembly }.Concat(context.Compilation.ReferencedAssemblies);
-			for (int i = parts.Length - 1; i >= 0; i++) {
+			for (int i = parts.Length - 1; i >= 0; i--) {
 				string ns = string.Join(".", parts, 0, i);
 				string name = parts[i];
 				int topLevelTPC = (i == parts.Length - 1 ? typeParameterCount : 0);

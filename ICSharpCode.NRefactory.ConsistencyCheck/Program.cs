@@ -56,6 +56,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			                  solution.AllFiles.Count(),
 			                  solution.Projects.Count);
 			
+			using (new Timer("ID String test... "))
+				IDStringConsistencyCheck.Run(solution);
 			//RunTestOnAllFiles("Roundtripping test", RoundtripTest.RunTest);
 			RunTestOnAllFiles("Resolver test", ResolverTest.RunTest);
 			RunTestOnAllFiles("Resolver test (randomized order)", RandomizedOrderResolverTest.RunTest);

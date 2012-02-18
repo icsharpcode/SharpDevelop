@@ -336,5 +336,24 @@ namespace Acme
 			Assert.AreEqual("M:System.Collections.Generic.List`1.ConvertAll``1(System.Converter{`0,``0})",
 			                IDStringProvider.GetIDString(list.Methods.Single(m => m.Name == "ConvertAll")));
 		}
+		
+		[Test]
+		public void ExplicitGenericInterfaceImplementation_IDString()
+		{
+			string program = @"
+namespace xxx {
+interface IGeneric<A, B> { void Test<T>(ref T a); }
+class Impl<T> : IGeneric<string[,], T> {
+	void IGeneric<string[,], T>.Test<X>(ref X a);
+} }
+";
+			Init(program);
+			ITypeDefinition impl = GetTypeDefinition("xxx", "Impl", 1);
+			IMethod method = impl.Methods.Single(m => m.Name == "Test");
+			
+			Assert.AreEqual(
+				"M:xxx.Impl`1.xxx#IGeneric{System#String[@]@T}#Test``1(``0@)",
+				IDStringProvider.GetIDString(method));
+		}
 	}
 }

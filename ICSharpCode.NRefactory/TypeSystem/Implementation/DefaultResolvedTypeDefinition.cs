@@ -494,6 +494,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		#region GetMembers()
+		IEnumerable<IMember> GetFilteredMembers(Predicate<IUnresolvedMember> filter)
+		{
+			for (int i = 0; i < unresolvedMembers.Count; i++) {
+				if (filter == null || filter(unresolvedMembers[i])) {
+					yield return resolvedMembers[i];
+				}
+			}
+		}
+		
 		IEnumerable<TResolved> GetFilteredMembers<TUnresolved, TResolved>(Predicate<TUnresolved> filter) where TUnresolved : class, IUnresolvedMember where TResolved : class, IMember
 		{
 			for (int i = 0; i < unresolvedMembers.Count; i++) {
@@ -557,7 +566,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IMember> GetMembers(Predicate<IUnresolvedMember> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedMember, IMember>(filter);
+				return GetFilteredMembers(filter);
 			} else {
 				return GetMembersHelper.GetMembers(this, filter, options);
 			}

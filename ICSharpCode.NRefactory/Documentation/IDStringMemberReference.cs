@@ -26,21 +26,17 @@ namespace ICSharpCode.NRefactory.Documentation
 	{
 		readonly ITypeReference declaringTypeReference;
 		readonly char memberType;
-		readonly string memberName;
 		readonly string memberIDString;
 		
-		public IDStringMemberReference(ITypeReference declaringTypeReference, char memberType, string memberName, string memberIDString)
+		public IDStringMemberReference(ITypeReference declaringTypeReference, char memberType, string memberIDString)
 		{
 			this.declaringTypeReference = declaringTypeReference;
 			this.memberType = memberType;
-			this.memberName = memberName;
 			this.memberIDString = memberIDString;
 		}
 		
 		bool CanMatch(IUnresolvedMember member)
 		{
-			if (member.Name != memberName)
-				return false;
 			switch (member.EntityType) {
 				case EntityType.Field:
 					return memberType == 'F';

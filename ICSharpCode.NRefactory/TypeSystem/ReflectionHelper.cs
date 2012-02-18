@@ -249,6 +249,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (pos == reflectionTypeName.Length)
 				throw new ReflectionNameParseException(pos, "Unexpected end");
+			ITypeReference reference;
 			if (reflectionTypeName[pos] == '`') {
 				// type parameter reference
 				pos++;
@@ -258,23 +259,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					// method type parameter reference
 					pos++;
 					int index = ReadTypeParameterCount(reflectionTypeName, ref pos);
-					return new TypeParameterReference(EntityType.Method, index);
+					reference = new TypeParameterReference(EntityType.Method, index);
 				} else {
 					// class type parameter reference
 					int index = ReadTypeParameterCount(reflectionTypeName, ref pos);
-					return new TypeParameterReference(EntityType.TypeDefinition, index);
+					reference = new TypeParameterReference(EntityType.TypeDefinition, index);
 				}
+			} else {
+				// not a type parameter reference: read the actual type name
+				int tpc;
+				string typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
+				string assemblyName = SkipAheadAndReadAssemblyName(reflectionTypeName, pos);
+				reference = CreateGetClassTypeReference(assemblyName, typeName, tpc);
 			}
-			// not a type parameter reference: read the actual type name
-			int tpc;
-			string typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
-			string assemblyName = SkipAheadAndReadAssemblyName(reflectionTypeName, pos);
-			ITypeReference reference = CreateGetClassTypeReference(assemblyName, typeName, tpc);
 			// read type suffixes
 			while (pos < reflectionTypeName.Length) {
 				switch (reflectionTypeName[pos++]) {
 					case '+':
-						typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
+						int tpc;
+						string typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
 						reference = new NestedTypeReference(reference, typeName, tpc);
 						break;
 					case '*':
@@ -289,7 +292,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							throw new ReflectionNameParseException(pos, "Unexpected end");
 						if (reflectionTypeName[pos] == '[') {
 							// it's a generic type
-							List<ITypeReference> typeArguments = new List<ITypeReference>(tpc);
+							List<ITypeReference> typeArguments = new List<ITypeReference>();
 							pos++;
 							typeArguments.Add(ParseReflectionName(reflectionTypeName, ref pos));
 							if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ']')

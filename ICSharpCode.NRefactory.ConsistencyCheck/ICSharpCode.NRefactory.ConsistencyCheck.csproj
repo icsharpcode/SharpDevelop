@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="CSharpProject.cs" />
     <Compile Include="FindReferencesConsistencyCheck.cs" />
+    <Compile Include="IDStringConsistencyCheck.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RandomizedOrderResolverTest.cs" />

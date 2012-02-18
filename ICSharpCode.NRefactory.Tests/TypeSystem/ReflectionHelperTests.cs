@@ -188,6 +188,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.Converter`2[[`0],[``0]]", typeRef.Resolve(new SimpleTypeResolveContext(convertAll)).ReflectionName);
 		}
 		
+		[Test]
+		public void ArrayOfTypeParameter()
+		{
+			var context = new SimpleTypeResolveContext(compilation.MainAssembly);
+			Assert.AreEqual("`0[,]", ReflectionHelper.ParseReflectionName("`0[,]").Resolve(context).ReflectionName);
+		}
+		
 		[Test, ExpectedException(typeof(ArgumentNullException))]
 		public void ParseNullReflectionName()
 		{

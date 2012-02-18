@@ -19,6 +19,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem.TestCase;
