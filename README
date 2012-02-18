@@ -42,9 +42,11 @@ ICSharpCode.NRefactory assembly
 	
 	ICSharpCode.NRefactory.Documentation:
 		Classes for working with .xml documentation files.
+		See "doc/XML Documentation.html" for details.
 	
 	ICSharpCode.NRefactory.PatternMatching:
 		Provides classes for pattern matching over the C# and VB ASTs.
+		See "doc/Pattern Matching.html" for details.
 	
 	ICSharpCode.NRefactory.Util:
 		Various helper classes.

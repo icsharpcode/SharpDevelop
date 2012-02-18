@@ -229,5 +229,13 @@
       <Name>Mono.Cecil</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\doc\Pattern Matching.html">
+      <Link>PatternMatching\Pattern Matching.html</Link>
+    </None>
+    <None Include="..\doc\XML Documentation.html">
+      <Link>Documentation\XML Documentation.html</Link>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

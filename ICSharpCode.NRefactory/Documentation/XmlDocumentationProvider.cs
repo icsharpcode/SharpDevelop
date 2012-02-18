@@ -33,6 +33,8 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// <remarks>
 	/// This class first creates an in-memory index of the .xml file, and then uses that to read only the requested members.
 	/// This way, we avoid keeping all the documentation in memory.
+	/// The .xml file is only opened when necessary, the file handle is not kept open all the time.
+	/// If the .xml file is changed, the index will automatically be recreated.
 	/// </remarks>
 	[Serializable]
 	public class XmlDocumentationProvider : IDocumentationProvider, IDeserializationCallback
