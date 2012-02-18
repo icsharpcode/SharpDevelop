@@ -25,17 +25,6 @@ namespace Debugger.AddIn.Pads.Controls
 		
 		public TreeNode Node { get; private set; }
 		
-		public override bool Equals(object obj)
-		{
-			var w = obj as TreeNodeWrapper;
-			return w != null && Node.Equals(w.Node);
-		}
-		
-		public override int GetHashCode()
-		{
-			return Node.GetHashCode();
-		}
-		
 		public override object Text {
 			get { return Node.Name; }
 		}
@@ -82,7 +71,7 @@ namespace Debugger.AddIn.Pads.Controls
 			                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
 
 			var node = text.ToSharpTreeNode();
-			if (!WatchPad.Instance.WatchList.WatchItems.Contains(node))
+			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.FullName == ((TreeNodeWrapper)n).Node.FullName))
 				WatchPad.Instance.WatchList.WatchItems.Add(node);
 			
 			WatchPad.Instance.RefreshPad();

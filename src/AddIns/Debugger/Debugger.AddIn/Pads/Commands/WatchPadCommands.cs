@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using Debugger.AddIn.Pads;
+using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -43,7 +45,7 @@ namespace Debugger.AddIn
 					                        language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp).ToSharpTreeNode();
 					var list = pad.WatchList;
 					
-					if(!list.WatchItems.Contains(text))
+					if(!list.WatchItems.Any(n => text.Node.FullName == ((TreeNodeWrapper)n).Node.FullName))
 						list.WatchItems.Add(text);
 				}
 				
