@@ -32,7 +32,7 @@ namespace ICSharpCode.AspNet.Mvc
 			}
 			
 			if (!WebProjectService.IsIISOrIISExpressInstalled) {
-				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.IISNotFound}");
+				MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.IISNotFound}");
 				return;
 			}
 			

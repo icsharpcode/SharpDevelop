@@ -86,7 +86,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public static string GetIISExpressWorkerProcessName()
 		{
 			if (!IsIISExpressInstalled)
-				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				return ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 			
 			return IIS_EXPRESS_PROCESS_NAME;
 		}
@@ -94,7 +94,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public static string GetIISWorkerProcessName()
 		{
 			if (!IsIISInstalled)
-				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				return ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 			
 			try {
 				switch (IISVersion)
@@ -121,7 +121,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public static string GetIISExpressWorkerProcessLocation()
 		{
 			if (!IsIISExpressInstalled)
-				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				return ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 					
 			return GetDefaultIISWorkerProcessLocation();
 		}
@@ -129,7 +129,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public static string GetIISWorkerProcessLocation()
 		{
 			if (!IsIISInstalled)
-				return ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				return ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 			
 			try {
 				if (IISVersion == IISVersion.IIS5) {
@@ -218,7 +218,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public static string CreateVirtualDirectory(WebServer webServer, string virtualDirectoryName, string physicalDirectoryPath)
 		{
 			try {
-				string iisNotFoundError = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				string iisNotFoundError = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				if (!IsIISOrIISExpressInstalled)
 					return iisNotFoundError;
 				
@@ -267,7 +267,7 @@ namespace ICSharpCode.AspNet.Mvc
 								manager.CommitChanges();
 								error = string.Empty;
 							} else {
-								error = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.ApplicationExists");
+								error = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.ApplicationExists");
 							}
 						} else {
 							if (manager.Sites[0].Applications[name] == null) {
@@ -275,7 +275,7 @@ namespace ICSharpCode.AspNet.Mvc
 								manager.CommitChanges();
 								error = string.Empty;
 							} else {
-								error = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.ApplicationExists");
+								error = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.ApplicationExists");
 							}
 						}
 						manager.Dispose();

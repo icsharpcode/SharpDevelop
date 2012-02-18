@@ -6,13 +6,13 @@ using System.IO;
 using System.Web.Services.Description;
 using System.Windows;
 using System.Windows.Controls;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AspNet.Mvc
 {
-	public partial class WebProjectOptionsPanel : UserControl
+	public partial class WebProjectOptionsPanel : ProjectOptionPanel
 	{
 		public WebProjectOptionsPanel()
 		{
@@ -27,7 +27,7 @@ namespace ICSharpCode.AspNet.Mvc
 		void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			if (!WebProjectService.IsIISOrIISExpressInstalled) {
-				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				return;
 			}
 			
@@ -89,7 +89,7 @@ namespace ICSharpCode.AspNet.Mvc
 			if (!string.IsNullOrEmpty(error))
 				MessageService.ShowError(error);
 			else {
-				MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated"));
+				MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated"));
 			}
 		}
 		
@@ -109,7 +109,7 @@ namespace ICSharpCode.AspNet.Mvc
 			if (!isIISExpressInstalled) {
 				UseIISExpress.IsChecked = false;
 				data.WebServer = WebServer.None;
-				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				data.ProjectUrl = string.Empty;
 			}
 			else
@@ -133,7 +133,7 @@ namespace ICSharpCode.AspNet.Mvc
 			bool isIISInstalled = WebProjectService.IISVersion != IISVersion.None;
 			
 			if (!isIISInstalled) {
-				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 				ProjectUrl.Text = string.Empty;
 				data.WebServer = WebServer.None;
 				UseLocalIIS.IsChecked = false;

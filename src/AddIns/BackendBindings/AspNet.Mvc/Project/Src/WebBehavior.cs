@@ -103,7 +103,7 @@ namespace ICSharpCode.AspNet.Mvc
 							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
 								defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
 							} else {
-								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+								MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 								DisposeProcessMonitor();
 							}
 							break;
@@ -118,7 +118,7 @@ namespace ICSharpCode.AspNet.Mvc
 								if (FileUtility.IsUrl(url)) {
 									defaultAppProcess = System.Diagnostics.Process.Start(url);
 								} else {
-									MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+									MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 									DisposeProcessMonitor();
 									return;
 								}
@@ -147,7 +147,7 @@ namespace ICSharpCode.AspNet.Mvc
 			
 			// check if we have options
 			if (WebProjectsOptions.Instance == null) {
-				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+				MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 				return false;
 			}
 			
@@ -155,7 +155,7 @@ namespace ICSharpCode.AspNet.Mvc
 			var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 			if (options == null || options.Data == null || string.IsNullOrEmpty(options.ProjectName) ||
 			    options.Data.WebServer == WebServer.None) {
-				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+				MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 				return false;
 			}
 			
@@ -176,12 +176,12 @@ namespace ICSharpCode.AspNet.Mvc
 				
 				if (!DebuggerService.CurrentDebugger.IsAttached) {
 					if(options.Data.WebServer == WebServer.IIS) {
-						string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
+						string format = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.NoIISWP");
 						MessageService.ShowMessage(string.Format(format, processName));
 					} else {
 						DebuggerService.CurrentDebugger.Attach(defaultAppProcess);
 						if (!DebuggerService.CurrentDebugger.IsAttached) {
-							MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+							MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.UnableToAttach"));
 						}
 					}
 				}
