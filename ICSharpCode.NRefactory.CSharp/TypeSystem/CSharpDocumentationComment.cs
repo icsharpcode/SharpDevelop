@@ -17,51 +17,27 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Documentation
+namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
 	/// <summary>
-	/// Represents a documentation comment.
+	/// DocumentationComment with C# cref lookup.
 	/// </summary>
-	public class DocumentationComment
+	sealed class CSharpDocumentationComment : DocumentationComment
 	{
-		string xml;
-		protected readonly ITypeResolveContext context;
-		
-		/// <summary>
-		/// Gets the XML code for this documentation comment.
-		/// </summary>
-		public string Xml {
-			get { return xml; }
+		public CSharpDocumentationComment(string xmlDoc, ITypeResolveContext context) : base(xmlDoc, context)
+		{
 		}
 		
-		/// <summary>
-		/// Creates a new DocumentationComment.
-		/// </summary>
-		/// <param name="xml">The XML text.</param>
-		/// <param name="context">Context for resolving cref attributes.</param>
-		public DocumentationComment(string xml, ITypeResolveContext context)
+		public override IEntity ResolveCref(string cref)
 		{
-			if (xml == null)
-				throw new ArgumentNullException("xml");
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.xml = xml;
-			this.context = context;
-		}
-		
-		/// <summary>
-		/// Resolves the given cref value to an entity.
-		/// Returns null if the entity is not found, or if the cref attribute is syntactically invalid.
-		/// </summary>
-		public virtual IEntity ResolveCref(string cref)
-		{
-			try {
-				return IDStringProvider.FindEntity(cref, context);
-			} catch (ReflectionNameParseException) {
-				return null;
+			if (cref.Length > 2 && cref[1] == ':') {
+				// resolve ID string
+				return base.ResolveCref(cref);
 			}
+			return null;
 		}
 	}
 }

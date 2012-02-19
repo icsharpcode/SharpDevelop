@@ -17,51 +17,46 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
+using System.Linq;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.Documentation
 {
-	/// <summary>
-	/// Represents a documentation comment.
-	/// </summary>
-	public class DocumentationComment
+	[TestFixture]
+	public class CSharpDocumentationTests
 	{
-		string xml;
-		protected readonly ITypeResolveContext context;
+		ICompilation compilation;
+		ITypeDefinition typeDefinition;
 		
-		/// <summary>
-		/// Gets the XML code for this documentation comment.
-		/// </summary>
-		public string Xml {
-			get { return xml; }
+		void Init(string program)
+		{
+			var pc = new CSharpProjectContent().AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib });
+			var cu = new CSharpParser().Parse(new StringReader(program), "program.cs");
+			compilation = pc.UpdateProjectContent(null, cu.ToTypeSystem()).CreateCompilation();
+			typeDefinition = compilation.MainAssembly.TopLevelTypeDefinitions.FirstOrDefault();
 		}
 		
-		/// <summary>
-		/// Creates a new DocumentationComment.
-		/// </summary>
-		/// <param name="xml">The XML text.</param>
-		/// <param name="context">Context for resolving cref attributes.</param>
-		public DocumentationComment(string xml, ITypeResolveContext context)
+		[Test]
+		public void TypeDocumentationLookup()
 		{
-			if (xml == null)
-				throw new ArgumentNullException("xml");
-			if (context == null)
-				throw new ArgumentNullException("context");
-			this.xml = xml;
-			this.context = context;
+			Init(@"using System;
+/// <summary/>
+class Test { }");
+			Assert.AreEqual(" <summary/>", typeDefinition.Documentation.Xml);
 		}
 		
-		/// <summary>
-		/// Resolves the given cref value to an entity.
-		/// Returns null if the entity is not found, or if the cref attribute is syntactically invalid.
-		/// </summary>
-		public virtual IEntity ResolveCref(string cref)
+		[Test]
+		public void MultilineTypeDocumentationLookup()
 		{
-			try {
-				return IDStringProvider.FindEntity(cref, context);
-			} catch (ReflectionNameParseException) {
-				return null;
-			}
+			Init(@"using System;
+/// <summary>
+/// Documentation
+/// </summary>
+class Test { }");
+			Assert.AreEqual(" <summary>" + Environment.NewLine + " Documentation" + Environment.NewLine + " </summary>", typeDefinition.Documentation.Xml);
 		}
 	}
 }

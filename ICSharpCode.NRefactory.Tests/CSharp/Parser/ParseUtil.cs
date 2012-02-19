@@ -121,6 +121,27 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 		}
 		
+		public static DocumentationReference ParseDocumentationReference(string cref, bool expectErrors = false)
+		{
+			CSharpParser parser = new CSharpParser();
+			var parsedExpression = parser.ParseDocumentationReference(cref);
+			
+			if (parser.HasErrors)
+				parser.ErrorPrinter.Errors.ForEach (err => Console.WriteLine (err.Message));
+			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+			if (expectErrors && parsedExpression == null)
+				return null;
+			return parsedExpression;
+		}
+		
+		public static void AssertDocumentationReference(string cref, CSharp.DocumentationReference expectedExpr)
+		{
+			var expr = ParseDocumentationReference(cref);
+			if (!expectedExpr.IsMatch(expr)) {
+				Assert.Fail("Expected '{0}' but was '{1}'", ToCSharp(expectedExpr), ToCSharp(expr));
+			}
+		}
+		
 		static string ToCSharp(AstNode node)
 		{
 			StringWriter w = new StringWriter();

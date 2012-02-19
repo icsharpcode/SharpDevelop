@@ -307,33 +307,9 @@ namespace ICSharpCode.NRefactory.Documentation
 		{
 			string xmlDoc = GetDocumentation(IDStringProvider.GetIDString(entity));
 			if (xmlDoc != null) {
-				if (entity is IMember)
-					return new XmlDocumentationComment(xmlDoc, new SimpleTypeResolveContext((IMember)entity));
-				else if (entity is ITypeDefinition)
-					return new XmlDocumentationComment(xmlDoc, new SimpleTypeResolveContext((ITypeDefinition)entity));
-				else
-					return new XmlDocumentationComment(xmlDoc, new SimpleTypeResolveContext(entity.ParentAssembly));
+				return new DocumentationComment(xmlDoc, new SimpleTypeResolveContext(entity));
 			} else {
 				return null;
-			}
-		}
-		
-		sealed class XmlDocumentationComment : DocumentationComment
-		{
-			ITypeResolveContext context;
-			
-			public XmlDocumentationComment(string xmlText, ITypeResolveContext context) : base(xmlText)
-			{
-				this.context = context;
-			}
-			
-			public override IEntity ResolveCRef(string cref)
-			{
-				try {
-					return IDStringProvider.FindEntity(cref, context);
-				} catch (ReflectionNameParseException) {
-					return null;
-				}
 			}
 		}
 		#endregion

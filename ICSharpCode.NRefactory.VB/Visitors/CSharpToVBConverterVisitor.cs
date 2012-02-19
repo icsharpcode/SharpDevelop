@@ -2215,5 +2215,10 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			foundAttribute = null;
 			return false;
 		}
+		
+		public AstNode VisitDocumentationReference(CSharp.DocumentationReference documentationReference, object data)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
