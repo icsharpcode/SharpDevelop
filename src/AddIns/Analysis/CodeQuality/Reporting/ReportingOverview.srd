@@ -187,6 +187,23 @@
                     <FrameColor>Black</FrameColor>
                     <Items>
                         <BaseTextItem>
+                            <Location>571, 7</Location>
+                            <Size>41, 20</Size>
+                            <BackColor>White</BackColor>
+                            <VisibleInReport>True</VisibleInReport>
+                            <Font>Segoe UI, 9pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>MiddleRight</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>Types</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>ControlText</ForeColor>
+                            <Name>BaseTextItem2147483646</Name>
+                        </BaseTextItem>
+                        <BaseTextItem>
                             <Location>501, 7</Location>
                             <Size>53, 20</Size>
                             <BackColor>White</BackColor>
@@ -300,7 +317,25 @@
                     <FrameColor>Black</FrameColor>
                     <Items>
                         <BaseDataItem>
-                            <Location>501, 0</Location>
+                            <Location>571, 3</Location>
+                            <Size>41, 20</Size>
+                            <BackColor>White</BackColor>
+                            <VisibleInReport>True</VisibleInReport>
+                            <Font>Segoe UI, 9pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>MiddleRight</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>BaseDataItem2147483643</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <ColumnName>TypesCount</ColumnName>
+                            <Name>BaseDataItem2147483643</Name>
+                        </BaseDataItem>
+                        <BaseDataItem>
+                            <Location>501, 3</Location>
                             <Size>53, 20</Size>
                             <BackColor>White</BackColor>
                             <VisibleInReport>True</VisibleInReport>
@@ -318,7 +353,7 @@
                             <Name>BaseDataItem2147483644</Name>
                         </BaseDataItem>
                         <BaseDataItem>
-                            <Location>425, 0</Location>
+                            <Location>425, 3</Location>
                             <Size>55, 20</Size>
                             <BackColor>White</BackColor>
                             <VisibleInReport>True</VisibleInReport>

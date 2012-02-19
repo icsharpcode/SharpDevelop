@@ -28,6 +28,9 @@ namespace ICSharpCode.CodeQuality.Gui
 	{
 		AssemblyAnalyzer context;
 		List<string> fileNames;
+		ReadOnlyCollection <AssemblyNode> list;
+		
+		
 		public MainView()
 		{
 			InitializeComponent();
@@ -47,63 +50,46 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (fileDialog.ShowDialog() != true || fileDialog.FileNames.Length == 0)
 				return;
 			introBlock.Visibility = Visibility.Collapsed;
-			print.IsEnabled = true;
-			reportTab.IsEnabled = true;
-			
 			this.fileNames.AddRange(fileDialog.FileNames);
-			context.AddAssemblyFiles(fileDialog.FileNames);
-			RefreshClick(null, null);
+			Analyse(fileDialog.FileNames);
+			UpdateUI();
 		}
 		
-		ReadOnlyCollection <AssemblyNode> list;
 		
-		void RefreshClick(object sender, RoutedEventArgs e)
+		void Analyse (string[] fileNames)
 		{
-			introBlock.Visibility = Visibility.Collapsed;
+			context.AddAssemblyFiles(fileNames);
 			using (context.progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("Analysis"))
-				list = context.Analyze();
-
-				matrix.Update(list);
-			matrix.Visibility = Visibility.Visible;
-		}
-		
-	/*
-	 * 
-	 * TreeTraversal.PreOrder(node, n => n.Children).OfType<MethodNode>().Count()
-	 * 
-	 * 
-		void RefreshClick(object sender, RoutedEventArgs e)
-		{
-			introBlock.Visibility = Visibility.Collapsed;
-			using (context.progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("Analysis"))
-				matrix.Update(context.Analyze());
-			matrix.Visibility = Visibility.Visible;
-		}
-		*/
-		
-		
-		void Report (ReadOnlyCollection<AssemblyNode> list)
-		{
-			foreach (var ass in list)
 			{
-				
-				Console.WriteLine("{0} - {1}",ass.Name,ass.namespaces);
-				foreach (var child in ass.Children)
-				{
-					Console.WriteLine("\t {0}",child.Name);
-					foreach (var subchild in child.Children) {
-						Console.WriteLine("\t\t {0}",subchild.Name);
-					}
-				}
+				list = context.Analyze();
 			}
 		}
 		
-		void Button_Click(object sender, RoutedEventArgs e)
+		
+		void UpdateUI ()
+		{
+			matrix.Update(list);
+			introBlock.Visibility = Visibility.Collapsed;
+			matrix.Visibility = Visibility.Visible;
+			printMenu.Visibility = Visibility.Visible;
+		}
+		
+		
+		/*
+		 * 
+		 * TreeTraversal.PreOrder(node, n => n.Children).OfType<MethodNode>().Count()
+		 * 
+		 * 
+		 */
+		
+		
+		void OverviewReport_Click(object sender, RoutedEventArgs e)
 		{
 			OverviewReport o = new OverviewReport(fileNames);
 			var reportCreator = o.Run(list);
 			var previewViewModel = new PreviewViewModel(o.ReportSettings,reportCreator.Pages);
-			viewer.SetBinding(previewViewModel);                           
+			viewer.SetBinding(previewViewModel);
+			reportTab.Visibility = Visibility.Visible;
 		}
 	}
 }

@@ -101,7 +101,7 @@
     <None Include="CodeQuality.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Reporting\Report1.srd">
+    <None Include="Reporting\ReportingOverview.srd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
