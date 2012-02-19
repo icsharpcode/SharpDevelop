@@ -10,11 +10,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
@@ -213,7 +213,7 @@ namespace ICSharpCode.FormsDesigner
 			if (this.formClass == null) {
 				LoggingService.Warn("Cannot rename, formClass not found");
 			} else {
-				if (viewContent.Host == null || viewContent.Host.Container == null || 
+				if (viewContent.Host == null || viewContent.Host.Container == null ||
 				    viewContent.Host.Container.Components == null || viewContent.Host.Container.Components.Count == 0)
 					return;
 				
@@ -257,6 +257,8 @@ namespace ICSharpCode.FormsDesigner
 				MessageService.ShowMessage("Cannot save form: InitializeComponent method does not exist anymore. You should not modify the Designer.cs file while editing a form.");
 				return;
 			}
+			
+			RemoveUnsupportedCode(formClass, initializeComponent);
 			
 			FixGeneratedCode(this.formClass, initializeComponent);
 			
@@ -308,6 +310,52 @@ namespace ICSharpCode.FormsDesigner
 			removedFields.ForEach(RemoveField);
 			
 			ParserService.BeginParse(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileDocument);
+		}
+		
+		/// <summary>
+		/// This method solves all problems that are caused if the designer generates
+		/// code that is not supported in a previous version of .NET. (3.5 and below)
+		/// Currently it fixes:
+		///  - remove calls to ISupportInitialize.BeginInit/EndInit, if the interface is not implemented by the type in the target framework.
+		/// </summary> 
+		/// <remarks>When adding new workarounds make sure that the code does not remove too much code!</remarks>
+		void RemoveUnsupportedCode(CodeTypeDeclaration formClass, CodeMemberMethod initializeComponent)
+		{
+			if (this.formClass.ProjectContent.Project is MSBuildBasedProject) {
+				MSBuildBasedProject p = (MSBuildBasedProject)this.formClass.ProjectContent.Project;
+				string v = (p.GetEvaluatedProperty("TargetFrameworkVersion") ?? "").Trim('v');
+				Version version;
+				if (!Version.TryParse(v, out version) || version.Major >= 4)
+					return;
+			}
+			
+			List<CodeStatement> stmtsToRemove = new List<CodeStatement>();
+			IClass iSupportInitializeInterface = this.formClass.ProjectContent.GetClass("System.ComponentModel.ISupportInitialize", 0);
+			
+			if (iSupportInitializeInterface == null)
+				return;
+			
+			foreach (var stmt in initializeComponent.Statements.OfType<CodeExpressionStatement>().Where(ces => ces.Expression is CodeMethodInvokeExpression)) {
+				CodeMethodInvokeExpression invocation = (CodeMethodInvokeExpression)stmt.Expression;
+				if (invocation.Method.TargetObject is CodeCastExpression) {
+					CodeCastExpression expr = (CodeCastExpression)invocation.Method.TargetObject;
+					CodeFieldReferenceExpression fieldRef = (CodeFieldReferenceExpression)expr.Expression;
+					if (!(fieldRef.TargetObject is CodeThisReferenceExpression))
+						continue;
+					if (expr.TargetType.BaseType != "System.ComponentModel.ISupportInitialize")
+						continue;
+					CodeMemberField field = formClass.Members.OfType<CodeMemberField>().First(f => this.formClass.ProjectContent.Language.NameComparer.Equals(fieldRef.FieldName, f.Name));
+					IClass fieldType = this.formClass.ProjectContent.GetClass(field.Type.BaseType, 0);
+					if (fieldType == null)
+						continue;
+					if (!fieldType.IsTypeInInheritanceTree(iSupportInitializeInterface))
+						stmtsToRemove.Add(stmt);
+				}
+			}
+			
+			foreach (var stmt in stmtsToRemove) {
+				initializeComponent.Statements.Remove(stmt);
+			}
 		}
 		
 		/// <summary>
