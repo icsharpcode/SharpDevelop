@@ -5466,6 +5466,18 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>Wilt u werkelijk uw wijzigingen laten vervallen?</value>
   </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>Plaatselijke variabele</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>naamruimte</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>parameter</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>overladen van</value>
+  </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>Wilt u de wijzigingen opslaan?</value>
   </data>

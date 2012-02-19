@@ -5743,6 +5743,21 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>Do you really want to discard your changes ?</value>
   </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>local variable</value>
+    <comment>prefix for the tooltip</comment>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>namespace</value>
+    <comment>prefix for the tooltip</comment>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>parameter</value>
+    <comment>prefix for the tooltip on parameter definitions</comment>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>overload of</value>
+  </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>Do you want to save the current changes?</value>
   </data>

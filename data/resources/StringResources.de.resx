@@ -262,6 +262,9 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Hilfetyp</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Help Library Manager wurde nicht gefunden. Bitte stellen Sie sicher, dass es korrekt installiert wurde.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Installierte Hilfekataloge</value>
   </data>
@@ -5364,6 +5367,18 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>Wollen Sie ihre Änderungen verwerfen?</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>lokale Variable</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>Namespace</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>Parameter</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>Überladung von</value>
   </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>Wollen Sie die aktuellen Änderungen speichern?</value>
