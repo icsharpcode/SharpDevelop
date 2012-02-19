@@ -35,9 +35,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ITypeResolveContext TypeResolveContext { get; }
 		
 		/// <summary>
-		/// Gets the referenced assemblies.
-		/// This list does not include the current assembly.
+		/// Gets the list of all assemblies in the compilation.
 		/// </summary>
+		IList<IAssembly> Assemblies { get; }
+		
+		/// <summary>
+		/// Gets the referenced assemblies.
+		/// This list does not include the main assembly.
+		/// </summary>
+		[ObsoleteAttribute("Use compilation.Assemblies.Where(asm != compilation.MainAssembly) instead.")]
 		IList<IAssembly> ReferencedAssemblies { get; }
 		
 		/// <summary>

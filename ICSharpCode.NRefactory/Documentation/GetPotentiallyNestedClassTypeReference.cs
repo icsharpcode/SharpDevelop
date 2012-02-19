@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		public IType Resolve(ITypeResolveContext context)
 		{
 			string[] parts = typeName.Split('.');
-			var assemblies = new [] { context.CurrentAssembly, context.Compilation.MainAssembly }.Concat(context.Compilation.ReferencedAssemblies);
+			var assemblies = new [] { context.CurrentAssembly }.Concat(context.Compilation.Assemblies);
 			for (int i = parts.Length - 1; i >= 0; i--) {
 				string ns = string.Join(".", parts, 0, i);
 				string name = parts[i];
