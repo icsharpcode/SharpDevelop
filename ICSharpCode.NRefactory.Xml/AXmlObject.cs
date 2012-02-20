@@ -1,0 +1,163 @@
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this
+// software and associated documentation files (the "Software"), to deal in the Software
+// without restriction, including without limitation the rights to use, copy, modify, merge,
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all copies or
+// substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Utils;
+
+namespace ICSharpCode.NRefactory.Xml
+{
+	/// <summary>
+	/// XML object.
+	/// </summary>
+	public abstract class AXmlObject : ISegment
+	{
+		readonly AXmlObject parent;
+		internal readonly int startOffset;
+		internal readonly InternalObject internalObject;
+		IList<AXmlObject> children;
+		
+		internal AXmlObject(AXmlObject parent, int startOffset, InternalObject internalObject)
+		{
+			this.parent = parent;
+			this.startOffset = startOffset;
+			this.internalObject = internalObject;
+		}
+		
+		/// <summary>
+		/// Gets the parent node.
+		/// </summary>
+		public AXmlObject Parent {
+			get { return parent; }
+		}
+		
+		/// <summary>
+		/// Gets the list of child objects.
+		/// </summary>
+		public IList<AXmlObject> Children {
+			get {
+				var result = this.children;
+				if (result != null) {
+					LazyInit.ReadBarrier();
+					return result;
+				} else {
+					if (internalObject.NestedObjects != null) {
+						var array = new AXmlObject[internalObject.NestedObjects.Length];
+						for (int i = 0; i < array.Length; i++) {
+							array[i] = internalObject.NestedObjects[i].CreatePublicObject(this, startOffset);
+						}
+						result = Array.AsReadOnly(array);
+					} else {
+						result = EmptyList<AXmlObject>.Instance;
+					}
+					return LazyInit.GetOrSet(ref this.children, result);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// The error that occured in the context of this node (excluding nested nodes)
+		/// </summary>
+		public IEnumerable<SyntaxError> MySyntaxErrors {
+			get {
+				if (internalObject.SyntaxErrors != null) {
+					return internalObject.SyntaxErrors.Select(e => new SyntaxError(startOffset + e.RelativeStart, startOffset + e.RelativeEnd, e.Description));
+				} else {
+					return EmptyList<SyntaxError>.Instance;
+				}
+			}
+		}
+		
+		/// <summary>
+		/// The error that occured in the context of this node and all nested nodes.
+		/// It has O(n) cost.
+		/// </summary>
+		public IEnumerable<SyntaxError> SyntaxErrors {
+			get {
+				return TreeTraversal.PreOrder(this, n => n.Children).SelectMany(obj => obj.MySyntaxErrors);
+			}
+		}
+		
+		/// <summary> Get all ancestors of this node </summary>
+		public IEnumerable<AXmlObject> Ancestors {
+			get {
+				AXmlObject curr = this.Parent;
+				while(curr != null) {
+					yield return curr;
+					curr = curr.Parent;
+				}
+			}
+		}
+		
+		#region Helper methods
+		
+		/// <summary> The part of name before ":" </summary>
+		/// <returns> Empty string if not found </returns>
+		protected static string GetNamespacePrefix(string name)
+		{
+			if (string.IsNullOrEmpty(name)) return string.Empty;
+			int colonIndex = name.IndexOf(':');
+			if (colonIndex != -1) {
+				return name.Substring(0, colonIndex);
+			} else {
+				return string.Empty;
+			}
+		}
+		
+		/// <summary> The part of name after ":" </summary>
+		/// <returns> Whole name if ":" not found </returns>
+		protected static string GetLocalName(string name)
+		{
+			if (string.IsNullOrEmpty(name)) return string.Empty;
+			int colonIndex = name.IndexOf(':');
+			if (colonIndex != -1) {
+				return name.Remove(0, colonIndex + 1);
+			} else {
+				return name ?? string.Empty;
+			}
+		}
+		
+		#endregion
+		
+		/// <summary> Call appropriate visit method on the given visitor </summary>
+		public abstract void AcceptVisitor(IAXmlVisitor visitor);
+		
+		/// <summary>
+		/// Gets the start offset of the segment.
+		/// </summary>
+		public int StartOffset {
+			get { return startOffset; }
+		}
+		
+		int ISegment.Offset {
+			get { return startOffset; }
+		}
+		
+		/// <inheritdoc/>
+		public int Length {
+			get { return internalObject.Length; }
+		}
+		
+		/// <inheritdoc/>
+		public int EndOffset {
+			get { return startOffset + internalObject.Length; }
+		}
+	}
+}

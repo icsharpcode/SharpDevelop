@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ICSharpCode.NRefactory")]
-[assembly: AssemblyDescription("Type system and other language-independent parts of NRefactory")]
+[assembly: AssemblyTitle("ICSharpCode.NRefactory.Xml")]
+[assembly: AssemblyDescription("Error-tolerant XML parser")]
 
 [assembly: CLSCompliant(true)]
