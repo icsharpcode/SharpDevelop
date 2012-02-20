@@ -46,6 +46,8 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public static void Main(string[] args)
 		{
+			TagSoupIncrementalTests.Run("c:\\temp\\ClosedXML.xml");
+			
 			using (new Timer("Loading solution... ")) {
 				solution = new Solution(SolutionFile);
 			}

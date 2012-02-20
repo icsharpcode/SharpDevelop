@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
@@ -86,6 +87,12 @@ namespace ICSharpCode.NRefactory.Xml
 		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitTag(this);
+		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format(CultureInfo.InvariantCulture, "[{0} '{1}{2}{3}' Attr:{4}]", base.ToString(), this.OpeningBracket, this.Name, this.ClosingBracket, this.Children.Count);
 		}
 	}
 }

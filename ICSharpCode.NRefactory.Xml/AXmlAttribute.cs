@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
@@ -56,6 +57,12 @@ namespace ICSharpCode.NRefactory.Xml
 		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitAttribute(this);
+		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format(CultureInfo.InvariantCulture, "[{0} '{1}={2}']", base.ToString(), this.Name, this.Value);
 		}
 	}
 }

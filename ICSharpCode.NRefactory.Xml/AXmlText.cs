@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -29,6 +30,11 @@ namespace ICSharpCode.NRefactory.Xml
 			: base(parent, startOffset, internalObject)
 		{
 		}
+		
+//		/// <summary> The type of the text node </summary>
+//		public TextType Type {
+//			get { return ((InternalText)internalObject).Type; }
+//		}
 		
 		/// <summary> The text with all entity references resloved </summary>
 		public string Value {
@@ -46,6 +52,12 @@ namespace ICSharpCode.NRefactory.Xml
 		public override void AcceptVisitor(IAXmlVisitor visitor)
 		{
 			visitor.VisitText(this);
+		}
+		
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format(CultureInfo.InvariantCulture, "[{0} Text.Length={1}]", base.ToString(), this.Value.Length);
 		}
 	}
 }

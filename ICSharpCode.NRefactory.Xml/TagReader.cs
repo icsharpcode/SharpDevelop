@@ -220,7 +220,7 @@ namespace ICSharpCode.NRefactory.Xml
 				HashSet<string> attributeNames = new HashSet<string>();
 				foreach (var obj in tag.NestedObjects) {
 					InternalAttribute attr = obj as InternalAttribute;
-					if (attr != null && attributeNames.Add(attr.Name)) {
+					if (attr != null && !attributeNames.Add(attr.Name)) {
 						int attrStart = tagStart + attr.StartRelativeToParent;
 						OnSyntaxError(attrStart, attrStart + attr.Name.Length, "Attribute with name '{0}' already exists", attr.Name);
 					}
