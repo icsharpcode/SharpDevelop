@@ -5,5 +5,7 @@ These checks assume that the code is valid C# without any compilation errors,
 so make sure to only pass in compilable source code.
 
 Checks currently being performed:
+ - Checks that ID strings are unique and refer back to the correct entity
  - Roundtripping test: parses C# code and outputs it again using CSharpOutputVisitor, checking that only whitespace is changing
  - ResolverTest: fully resolves all ASTs and validates that no errors are detected (no false positives in semantic error checking)
+ - RandomizedOrderResolverTest: checks that the order of Resolve()/GetResolverState() calls has no effect on the result

@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -30,19 +31,22 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		{
 			foreach (var project in solution.Projects) {
 				var compilation = project.Compilation;
+				HashSet<string> idStrings = new HashSet<string>();
 				var context = compilation.TypeResolveContext;
 				foreach (var typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					Check(typeDef, context);
+					Check(typeDef, context, idStrings);
 					foreach (var member in typeDef.Members) {
-						Check(member, context);
+						Check(member, context, idStrings);
 					}
 				}
 			}
 		}
 		
-		static void Check(IEntity entity, ITypeResolveContext context)
+		static void Check(IEntity entity, ITypeResolveContext context, HashSet<string> idStrings)
 		{
 			string id = IDStringProvider.GetIDString(entity);
+			if (!idStrings.Add(id))
+				throw new InvalidOperationException("Duplicate ID string " + id);
 			IEntity resolvedEntity = IDStringProvider.FindEntity(id, context);
 			if (resolvedEntity != entity)
 				throw new InvalidOperationException(id);

@@ -127,6 +127,17 @@ namespace ICSharpCode.NRefactory.Documentation
 		}
 		
 		[Test]
+		public void MixedGeneric()
+		{
+			ParseUtilCSharp.AssertDocumentationReference(
+				"IGeneric<X, Y}",
+				new DocumentationReference {
+					MemberName = "IGeneric",
+					TypeArguments = { new SimpleType("X"), new SimpleType("Y") }
+				});
+		}
+		
+		[Test]
 		public void MethodInGeneric()
 		{
 			ParseUtilCSharp.AssertDocumentationReference(
