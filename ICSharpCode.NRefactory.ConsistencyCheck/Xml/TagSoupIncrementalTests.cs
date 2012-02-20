@@ -52,17 +52,36 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			StringBuilder b = new StringBuilder(originalXmlFile.Text);
 			IncrementalParserState parserState = null;
 			TestTextSourceVersion version = new TestTextSourceVersion();
-			for (int iteration = 0; iteration < 100; iteration++) {
+			int totalCharactersParsed = 0;
+			int totalCharactersChanged = originalXmlFile.TextLength;
+			TimeSpan incrementalParseTime = TimeSpan.Zero;
+			TimeSpan nonIncrementalParseTime = TimeSpan.Zero;
+			Stopwatch w = new Stopwatch();
+			for (int iteration = 0; iteration < 500; iteration++) {
+				totalCharactersParsed += b.Length;
 				var textSource = new TextSourceWithVersion(new StringTextSource(b.ToString()), version);
+				w.Restart();
 				var incrementalResult = parser.ParseIncremental(parserState, textSource, out parserState);
+				w.Stop();
+				incrementalParseTime += w.Elapsed;
+				w.Restart();
 				var nonIncrementalResult = parser.Parse(textSource);
+				w.Stop();
+				nonIncrementalParseTime += w.Elapsed;
 				CompareResults(incrementalResult, nonIncrementalResult);
+				
+				new ValidationVisitor(textSource).Visit(incrementalResult);
+				
 				// Randomly mutate the file:
 				
 				List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>();
-				int modifications = rnd.Next(0, 10);
+				int modifications = rnd.Next(0, 25);
+				int offset = 0;
 				for (int i = 0; i < modifications; i++) {
-					int offset = rnd.Next(0, b.Length);
+					if (i == 0 || rnd.Next(0, 10) == 0)
+						offset = rnd.Next(0, b.Length);
+					else
+						offset += rnd.Next(0, Math.Min(10, b.Length - offset));
 					int originalOffset = rnd.Next(0, originalXmlFile.TextLength);
 					int insertionLength;
 					int removalLength;
@@ -72,7 +91,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 							insertionLength = rnd.Next(0, Math.Min(50, originalXmlFile.TextLength - originalOffset));
 							break;
 						case 1:
-							removalLength = rnd.Next(0, Math.Min(10, b.Length - offset));
+							removalLength = rnd.Next(0, Math.Min(20, b.Length - offset));
 							insertionLength = rnd.Next(0, Math.Min(20, originalXmlFile.TextLength - originalOffset));
 							break;
 						default:
@@ -85,9 +104,12 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					string insertedText = originalXmlFile.GetText(originalOffset, insertionLength);
 					b.Insert(offset, insertedText);
 					changes.Add(new TextChangeEventArgs(offset, removedText, insertedText));
+					totalCharactersChanged += insertionLength;
 				}
 				version = new TestTextSourceVersion(version, changes);
 			}
+			Console.WriteLine("Incremental parse time:     " + incrementalParseTime + " for " + totalCharactersChanged + " characters changed");
+			Console.WriteLine("Non-Incremental parse time: " + nonIncrementalParseTime + " for " + totalCharactersParsed + " characters");
 		}
 		
 		static void CompareResults(IList<AXmlObject> result1, IList<AXmlObject> result2)
@@ -147,6 +169,46 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			
 			CompareResults(obj1.Children, obj2.Children);
+		}
+		
+		sealed class ValidationVisitor : IAXmlVisitor
+		{
+			readonly ITextSource textSource;
+			
+			public ValidationVisitor(ITextSource textSource)
+			{
+				this.textSource = textSource;
+			}
+			
+			public void Visit(IList<AXmlObject> objects)
+			{
+				for (int i = 0; i < objects.Count; i++) {
+					objects[i].AcceptVisitor(this);
+				}
+			}
+			
+			public void VisitTag(AXmlTag tag)
+			{
+				if (textSource.GetText(tag.StartOffset, tag.OpeningBracket.Length) != tag.OpeningBracket)
+					throw new InvalidOperationException();
+				if (textSource.GetText(tag.NameSegment) != tag.Name)
+					throw new InvalidOperationException();
+				if (textSource.GetText(tag.EndOffset - tag.ClosingBracket.Length, tag.ClosingBracket.Length) != tag.ClosingBracket)
+					throw new InvalidOperationException();
+				Visit(tag.Children);
+			}
+			
+			public void VisitAttribute(AXmlAttribute attribute)
+			{
+				if (textSource.GetText(attribute.NameSegment) != attribute.Name)
+					throw new InvalidOperationException();
+				Visit(attribute.Children);
+			}
+			
+			public void VisitText(AXmlText text)
+			{
+				Visit(text.Children);
+			}
 		}
 	}
 }

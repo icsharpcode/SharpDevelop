@@ -18,22 +18,43 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace ICSharpCode.NRefactory.Utils
 {
-	public sealed class ReferenceComparer : IEqualityComparer<object>
+	public static class KeyComparer
 	{
-		public readonly static ReferenceComparer Instance = new ReferenceComparer();
-		
-		public new bool Equals(object a, object b)
+		public static KeyComparer<TElement, TKey> Create<TElement, TKey>(Func<TElement, TKey> keySelector)
 		{
-			return a == b;
+			return new KeyComparer<TElement, TKey>(keySelector, Comparer<TKey>.Default, EqualityComparer<TKey>.Default);
+		}
+	}
+	
+	public class KeyComparer<TElement, TKey> : IComparer<TElement>, IEqualityComparer<TElement>
+	{
+		readonly Func<TElement, TKey> keySelector;
+		readonly IComparer<TKey> keyComparer;
+		readonly IEqualityComparer<TKey> keyEqualityComparer;
+		
+		public KeyComparer(Func<TElement, TKey> keySelector, IComparer<TKey> keyComparer, IEqualityComparer<TKey> keyEqualityComparer)
+		{
+			this.keySelector = keySelector;
+			this.keyComparer = keyComparer;
+			this.keyEqualityComparer = keyEqualityComparer;
 		}
 		
-		public int GetHashCode(object obj)
+		public int Compare(TElement x, TElement y)
 		{
-			return RuntimeHelpers.GetHashCode(obj);
+			return keyComparer.Compare(keySelector(x), keySelector(y));
+		}
+		
+		public bool Equals(TElement x, TElement y)
+		{
+			return keyEqualityComparer.Equals(keySelector(x), keySelector(y));
+		}
+		
+		public int GetHashCode(TElement obj)
+		{
+			return keyEqualityComparer.GetHashCode(keySelector(obj));
 		}
 	}
 }

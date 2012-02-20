@@ -20,14 +20,16 @@ using System;
 
 namespace ICSharpCode.NRefactory.Xml
 {
-	abstract class InternalObject
+	internal abstract class InternalObject
 	{
-		internal int StartRelativeToParent;
-		internal int Length;
-		internal InternalSyntaxError[] SyntaxErrors;
-		internal InternalObject[] NestedObjects;
+		public int StartRelativeToParent;
+		public int Length;
+		/// <summary>Length that was touched to parsed this object.</summary>
+		public int LengthTouched;
+		public InternalSyntaxError[] SyntaxErrors;
+		public InternalObject[] NestedObjects;
 		
-		internal InternalObject SetStartRelativeToParent(int newStartRelativeToParent)
+		public InternalObject SetStartRelativeToParent(int newStartRelativeToParent)
 		{
 			if (newStartRelativeToParent == StartRelativeToParent)
 				return this;
@@ -41,9 +43,9 @@ namespace ICSharpCode.NRefactory.Xml
 	
 	sealed class InternalText : InternalObject
 	{
-		internal TextType Type;
-		internal bool ContainsOnlyWhitespace;
-		internal string Value;
+		public TextType Type;
+		public bool ContainsOnlyWhitespace;
+		public string Value;
 		
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{
@@ -53,10 +55,10 @@ namespace ICSharpCode.NRefactory.Xml
 	
 	sealed class InternalTag : InternalObject
 	{
-		internal string OpeningBracket;
-		internal int RelativeNameStart;
-		internal string Name;
-		internal string ClosingBracket;
+		public string OpeningBracket;
+		public int RelativeNameStart;
+		public string Name;
+		public string ClosingBracket;
 		
 		/// <summary> True if tag starts with "&lt;" </summary>
 		public bool IsStartOrEmptyTag       { get { return OpeningBracket == "<"; } }
@@ -81,9 +83,9 @@ namespace ICSharpCode.NRefactory.Xml
 	
 	struct InternalSyntaxError
 	{
-		internal readonly int RelativeStart;
-		internal readonly int RelativeEnd;
-		internal readonly string Description;
+		public readonly int RelativeStart;
+		public readonly int RelativeEnd;
+		public readonly string Description;
 		
 		public InternalSyntaxError(int relativeStart, int relativeEnd, string description)
 		{
@@ -95,9 +97,9 @@ namespace ICSharpCode.NRefactory.Xml
 	
 	class InternalAttribute : InternalObject
 	{
-		internal string Name;
-		internal int EqualsSignLength; // length of equals sign including the surrounding whitespace
-		internal string Value;
+		public string Name;
+		public int EqualsSignLength; // length of equals sign including the surrounding whitespace
+		public string Value;
 		
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{

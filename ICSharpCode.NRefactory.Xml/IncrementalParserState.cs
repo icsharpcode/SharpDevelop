@@ -17,6 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -25,8 +28,88 @@ namespace ICSharpCode.NRefactory.Xml
 	/// </summary>
 	public class IncrementalParserState
 	{
-		internal IncrementalParserState()
+		internal readonly int TextLength;
+		internal readonly ITextSourceVersion Version;
+		internal readonly InternalObject[] Objects;
+		
+		internal IncrementalParserState(int textLength, ITextSourceVersion version, InternalObject[] objects)
 		{
+			this.TextLength = textLength;
+			this.Version = version;
+			this.Objects = objects;
+		}
+		
+		internal List<UnchangedSegment> GetReuseMapTo(ITextSourceVersion newVersion)
+		{
+			ITextSourceVersion oldVersion = this.Version;
+			if (oldVersion == null || newVersion == null)
+				return null;
+			if (!oldVersion.BelongsToSameDocumentAs(newVersion))
+				return null;
+			List<UnchangedSegment> reuseMap = new List<UnchangedSegment>();
+			reuseMap.Add(new UnchangedSegment(0, 0, this.TextLength));
+			foreach (var change in oldVersion.GetChangesTo(newVersion)) {
+				bool needsSegmentRemoval = false;
+				for (int i = 0; i < reuseMap.Count; i++) {
+					UnchangedSegment segment = reuseMap[i];
+					if (segment.NewOffset + segment.Length <= change.Offset) {
+						// change is completely after this segment
+						continue;
+					}
+					if (change.Offset + change.RemovalLength <= segment.NewOffset) {
+						// change is completely before this segment
+						segment.NewOffset += change.InsertionLength - change.RemovalLength;
+						reuseMap[i] = segment;
+						continue;
+					}
+					// Change is overlapping segment.
+					// Split segment into two parts: the part before change, and the part after change.
+					var segmentBefore = new UnchangedSegment(segment.OldOffset, segment.NewOffset, change.Offset - segment.NewOffset);
+					Debug.Assert(segmentBefore.Length < segment.Length);
+					
+					int lengthAtEnd = segment.NewOffset + segment.Length - (change.Offset + change.RemovalLength);
+					var segmentAfter = new UnchangedSegment(
+						segment.OldOffset + segment.Length - lengthAtEnd,
+						change.Offset + change.InsertionLength,
+						lengthAtEnd);
+					Debug.Assert(segmentAfter.Length < segment.Length);
+					Debug.Assert(segmentBefore.Length + segmentAfter.Length <= segment.Length);
+					Debug.Assert(segmentBefore.NewOffset + segmentBefore.Length <= segmentAfter.NewOffset);
+					Debug.Assert(segmentBefore.OldOffset + segmentBefore.Length <= segmentAfter.OldOffset);
+					if (segmentBefore.Length > 0 && segmentAfter.Length > 0) {
+						reuseMap[i] = segmentBefore;
+						reuseMap.Insert(++i, segmentAfter);
+					} else if (segmentBefore.Length > 0) {
+						reuseMap[i] = segmentBefore;
+					} else {
+						reuseMap[i] = segmentAfter;
+						if (segmentAfter.Length <= 0)
+							needsSegmentRemoval = true;
+					}
+				}
+				if (needsSegmentRemoval)
+					reuseMap.RemoveAll(s => s.Length <= 0);
+			}
+			return reuseMap;
+		}
+	}
+	
+	struct UnchangedSegment
+	{
+		public int OldOffset;
+		public int NewOffset;
+		public int Length;
+		
+		public UnchangedSegment(int oldOffset, int newOffset, int length)
+		{
+			this.OldOffset = oldOffset;
+			this.NewOffset = newOffset;
+			this.Length = length;
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[UnchangedSegment OldOffset={0}, NewOffset={1}, Length={2}]", OldOffset, NewOffset, Length);
 		}
 	}
 }

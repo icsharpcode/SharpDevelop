@@ -45,7 +45,8 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 		
 		public int MaxTouchedLocation {
-			get { return Math.Max(currentLocation, maxTouchedLocation); }
+			// add 1 to currentLocation because single-char-peek does not increment maxTouchedLocation
+			get { return Math.Max(currentLocation + 1, maxTouchedLocation); }
 		}
 		
 		public TokenReader(ITextSource input)
@@ -86,7 +87,8 @@ namespace ICSharpCode.NRefactory.Xml
 		protected void GoBack(int oldLocation)
 		{
 			Log.Assert(oldLocation <= currentLocation, "Trying to move forward");
-			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation);
+			// add 1 because single-char-peek does not increment maxTouchedLocation
+			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation + 1);
 			currentLocation = oldLocation;
 		}
 		
@@ -150,7 +152,7 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			if (!TryPeek(text[0])) return false; // Early exit
 			
-			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation + (text.Length - 1));
+			maxTouchedLocation = Math.Max(maxTouchedLocation, currentLocation + text.Length);
 			// The following comparison 'touches' the end of file - it does depend on the end being there
 			if (currentLocation + text.Length > inputLength) return false;
 			
@@ -214,7 +216,7 @@ namespace ICSharpCode.NRefactory.Xml
 			if (currentLocation == inputLength) return false;
 			int index = input.IndexOf(text, currentLocation, inputLength - currentLocation, StringComparison.Ordinal);
 			if (index != -1) {
-				maxTouchedLocation = index + text.Length - 1;
+				maxTouchedLocation = index + text.Length;
 				currentLocation = index;
 				return true;
 			} else {

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,54 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			while (HasMoreData()) {
 				ReadObject();
+			}
+			for (int i = 0; i < objects.Count; i++) {
+				objects[i].StartRelativeToParent = 0;
+			}
+			var arr = objects.ToArray();
+			objects.Clear();
+			return arr;
+		}
+		
+		public InternalObject[] ReadAllObjectsIncremental(InternalObject[] oldObjects, List<UnchangedSegment> reuseMap)
+		{
+			int oldObjectIndex = 0;
+			int oldObjectPosition = 0;
+			int reuseMapIndex = 0;
+			while (reuseMapIndex < reuseMap.Count) {
+				var reuseEntry = reuseMap[reuseMapIndex];
+				while (this.CurrentLocation < reuseEntry.NewOffset) {
+					ReadObject();
+				}
+				if (this.CurrentLocation >= reuseEntry.NewOffset + reuseEntry.Length) {
+					reuseMapIndex++;
+					continue;
+				}
+				Debug.Assert(reuseEntry.NewOffset <= this.CurrentLocation && this.CurrentLocation < reuseEntry.NewOffset + reuseEntry.Length);
+				// reuse the nodes within this reuseEntry starting at oldOffset:
+				int oldOffset = this.CurrentLocation - reuseEntry.NewOffset + reuseEntry.OldOffset;
+				// seek to oldOffset in the oldObjects array:
+				while (oldObjectPosition < oldOffset && oldObjectIndex < oldObjects.Length) {
+					oldObjectPosition += oldObjects[oldObjectIndex++].Length;
+				}
+				if (oldObjectPosition == oldOffset) {
+					// reuse old objects within this reuse entry:
+					int reuseEnd = reuseEntry.OldOffset + reuseEntry.Length;
+					while ((oldObjectIndex < oldObjects.Length) && (oldObjectPosition + oldObjects[oldObjectIndex].LengthTouched < reuseEnd)) {
+						var oldObject = oldObjects[oldObjectIndex++];
+						Debug.Assert(oldObject.StartRelativeToParent == 0);
+						oldObjectPosition += oldObject.Length;
+						objects.Add(oldObject);
+						Skip(oldObject.Length);
+					}
+				}
+				reuseMapIndex++;
+			}
+			while (HasMoreData()) {
+				ReadObject();
+			}
+			for (int i = 0; i < objects.Count; i++) {
+				objects[i].StartRelativeToParent = 0;
 			}
 			var arr = objects.ToArray();
 			objects.Clear();
@@ -93,7 +142,8 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		void EndInternalObject(InternalObjectFrame frame, bool storeNewObject = true)
 		{
-			frame.InternalObject.Length = this.CurrentRelativeLocation;
+			frame.InternalObject.Length = this.CurrentLocation - internalObjectStartPosition;
+			frame.InternalObject.LengthTouched = this.MaxTouchedLocation - internalObjectStartPosition;
 			frame.InternalObject.SyntaxErrors = GetSyntaxErrors();
 			if (storeNewObject)
 				objects.Add(frame.InternalObject);

@@ -18,7 +18,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Xml.Linq;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -42,6 +45,11 @@ namespace ICSharpCode.NRefactory.Xml
 				throw new ArgumentNullException("textSource");
 			var reader = new TagReader(this, textSource);
 			var internalObjects = reader.ReadAllObjects();
+			return CreatePublic(internalObjects);
+		}
+		
+		IList<AXmlObject> CreatePublic(InternalObject[] internalObjects)
+		{
 			var publicObjects = new AXmlObject[internalObjects.Length];
 			int pos = 0;
 			for (int i = 0; i < internalObjects.Length; i++) {
@@ -62,9 +70,16 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			if (newTextSource == null)
 				throw new ArgumentNullException("newTextSource");
-			// TODO: incremental parser
-			newParserState = null;
-			return Parse(newTextSource);
+			var reader = new TagReader(this, newTextSource);
+			var reuseMap = oldParserState != null ? oldParserState.GetReuseMapTo(newTextSource.Version) : null;
+			
+			InternalObject[] internalObjects;
+			if (reuseMap != null)
+				internalObjects = reader.ReadAllObjectsIncremental(oldParserState.Objects, reuseMap);
+			else
+				internalObjects = reader.ReadAllObjects();
+			newParserState = new IncrementalParserState(newTextSource.TextLength, newTextSource.Version, internalObjects);
+			return CreatePublic(internalObjects);
 		}
 	}
 }

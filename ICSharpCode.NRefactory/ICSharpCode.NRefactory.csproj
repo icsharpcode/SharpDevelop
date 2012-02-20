@@ -207,6 +207,7 @@
     <Compile Include="Utils\FastSerializer.cs" />
     <Compile Include="Utils\GraphVizGraph.cs" />
     <Compile Include="Utils\ImmutableStack.cs" />
+    <Compile Include="Utils\KeyComparer.cs" />
     <Compile Include="Utils\LazyInit.cs" />
     <Compile Include="Utils\Platform.cs" />
     <Compile Include="Utils\ProjectedList.cs" />

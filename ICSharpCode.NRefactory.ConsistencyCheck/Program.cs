@@ -36,9 +36,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			@"C:\Program Files (x86)\GtkSharp\2.12\lib\Mono.Posix",
 			@"C:\work\SD\src\Tools\NUnit"
 		};
-		//public const string SolutionFile = @"C:\work\NRefactory\NRefactory.sln";
+		public const string SolutionFile = @"C:\work\NRefactory\NRefactory.sln";
 		//public const string SolutionFile = @"C:\work\SD\SharpDevelop.sln";
-		public const string SolutionFile = @"C:\work\ILSpy\ILSpy.sln";
+		//public const string SolutionFile = @"C:\work\ILSpy\ILSpy.sln";
 		
 		public const string TempPath = @"C:\temp";
 		
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public static void Main(string[] args)
 		{
-			TagSoupIncrementalTests.Run("c:\\temp\\ClosedXML.xml");
+			TagSoupIncrementalTests.Run("ICSharpCode.NRefactory.xml");
 			
 			using (new Timer("Loading solution... ")) {
 				solution = new Solution(SolutionFile);
