@@ -28,30 +28,27 @@ namespace ICSharpCode.NRefactory.Xml
 {
 	class TagReader : TokenReader
 	{
-		readonly TagSoupParser tagSoupParser;
+		readonly AXmlParser tagSoupParser;
+		readonly Stack<string> elementNameStack;
 		
-		public TagReader(TagSoupParser tagSoupParser, ITextSource input) : base(input)
+		public TagReader(AXmlParser tagSoupParser, ITextSource input, bool collapseProperlyNestedElements) : base(input)
 		{
 			this.tagSoupParser = tagSoupParser;
+			if (collapseProperlyNestedElements)
+				elementNameStack = new Stack<string>();
 		}
 		
-		public InternalObject[] ReadAllObjects()
+		public List<InternalObject> ReadAllObjects()
 		{
 			while (HasMoreData()) {
 				ReadObject();
 			}
-			for (int i = 0; i < objects.Count; i++) {
-				objects[i].StartRelativeToParent = 0;
-			}
-			var arr = objects.ToArray();
-			objects.Clear();
-			return arr;
+			return objects;
 		}
 		
-		public InternalObject[] ReadAllObjectsIncremental(InternalObject[] oldObjects, List<UnchangedSegment> reuseMap)
+		public List<InternalObject> ReadAllObjectsIncremental(InternalObject[] oldObjects, List<UnchangedSegment> reuseMap)
 		{
-			int oldObjectIndex = 0;
-			int oldObjectPosition = 0;
+			ObjectIterator oldObjectIterator = new ObjectIterator(oldObjects);
 			int reuseMapIndex = 0;
 			while (reuseMapIndex < reuseMap.Count) {
 				var reuseEntry = reuseMap[reuseMapIndex];
@@ -66,31 +63,95 @@ namespace ICSharpCode.NRefactory.Xml
 				// reuse the nodes within this reuseEntry starting at oldOffset:
 				int oldOffset = this.CurrentLocation - reuseEntry.NewOffset + reuseEntry.OldOffset;
 				// seek to oldOffset in the oldObjects array:
-				while (oldObjectPosition < oldOffset && oldObjectIndex < oldObjects.Length) {
-					oldObjectPosition += oldObjects[oldObjectIndex++].Length;
-				}
-				if (oldObjectPosition == oldOffset) {
+				oldObjectIterator.SkipTo(oldOffset);
+				if (oldObjectIterator.CurrentPosition == oldOffset) {
 					// reuse old objects within this reuse entry:
 					int reuseEnd = reuseEntry.OldOffset + reuseEntry.Length;
-					while ((oldObjectIndex < oldObjects.Length) && (oldObjectPosition + oldObjects[oldObjectIndex].LengthTouched < reuseEnd)) {
-						var oldObject = oldObjects[oldObjectIndex++];
-						Debug.Assert(oldObject.StartRelativeToParent == 0);
-						oldObjectPosition += oldObject.Length;
-						objects.Add(oldObject);
-						Skip(oldObject.Length);
+					while (oldObjectIterator.CurrentObject != null && oldObjectIterator.CurrentPosition + oldObjectIterator.CurrentObject.LengthTouched < reuseEnd) {
+						StoreObject(oldObjectIterator.CurrentObject);
+						Skip(oldObjectIterator.CurrentObject.Length);
+						oldObjectIterator.MoveNext();
 					}
+					reuseMapIndex++; // go to next re-use map
+				} else {
+					// We are in a region where old objects are available, but aren't aligned correctly.
+					// Don't skip this reuse entry, and read a single object so that we can re-align
+					ReadObject();
 				}
-				reuseMapIndex++;
 			}
 			while (HasMoreData()) {
 				ReadObject();
 			}
-			for (int i = 0; i < objects.Count; i++) {
-				objects[i].StartRelativeToParent = 0;
+			return objects;
+		}
+		
+		void StoreObject(InternalObject obj)
+		{
+			objects.Add(obj);
+			
+			// Now combine properly-nested elements:
+			if (elementNameStack == null)
+				return; // parsing tag soup
+			InternalTag tag = obj as InternalTag;
+			if (tag == null)
+				return;
+			if (tag.IsEmptyTag) {
+				// the tag is its own element
+				objects[objects.Count - 1] = new InternalElement() {
+					Length = tag.Length,
+					LengthTouched = tag.LengthTouched,
+					IsPropertyNested = true,
+					StartRelativeToParent = tag.StartRelativeToParent,
+					NestedObjects = new [] { tag.SetStartRelativeToParent(0) }
+				};
+			} else if (tag.IsStartTag) {
+				elementNameStack.Push(tag.Name);
+			} else if (tag.IsEndTag && elementNameStack.Count > 0) {
+				// Now look for the start element:
+				int startIndex = objects.Count - 2;
+				bool ok = false;
+				string expectedName = elementNameStack.Pop();
+				if (tag.Name == expectedName) {
+					while (startIndex > 0) {
+						var startTag = objects[startIndex] as InternalTag;
+						if (startTag != null) {
+							if (startTag.IsStartTag) {
+								ok = (startTag.Name == expectedName);
+								break;
+							} else if (startTag.IsEndTag) {
+								break;
+							}
+						}
+						startIndex--;
+					}
+				}
+				if (ok) {
+					// We found a correct nesting, let's create an element:
+					InternalObject[] nestedObjects = new InternalObject[objects.Count - startIndex];
+					int oldStartRelativeToParent = objects[startIndex].StartRelativeToParent;
+					int pos = 0;
+					int maxLengthTouched = 0;
+					for (int i = 0; i < nestedObjects.Length; i++) {
+						nestedObjects[i] = objects[startIndex + i].SetStartRelativeToParent(pos);
+						maxLengthTouched = Math.Max(maxLengthTouched, pos + nestedObjects[i].LengthTouched);
+						pos += nestedObjects[i].Length;
+					}
+					objects.RemoveRange(startIndex, nestedObjects.Length);
+					objects.Add(
+						new InternalElement {
+							HasEndTag = true,
+							IsPropertyNested = true,
+							Length = pos,
+							LengthTouched = maxLengthTouched,
+							StartRelativeToParent = oldStartRelativeToParent,
+							NestedObjects = nestedObjects
+						});
+				} else {
+					// Mismatched name - the nesting isn't properly;
+					// clear the whole stack so that none of the currently open elements are closed as property-nested.
+					elementNameStack.Clear();
+				}
 			}
-			var arr = objects.ToArray();
-			objects.Clear();
-			return arr;
 		}
 		
 		/// <summary>
@@ -146,7 +207,7 @@ namespace ICSharpCode.NRefactory.Xml
 			frame.InternalObject.LengthTouched = this.MaxTouchedLocation - internalObjectStartPosition;
 			frame.InternalObject.SyntaxErrors = GetSyntaxErrors();
 			if (storeNewObject)
-				objects.Add(frame.InternalObject);
+				StoreObject(frame.InternalObject);
 			internalObjectStartPosition = frame.ParentStartPosition;
 		}
 		#endregion

@@ -29,6 +29,15 @@ namespace ICSharpCode.NRefactory.Xml
 	/// </summary>
 	public abstract class AXmlObject : ISegment
 	{
+		/// <summary> Empty string.  The namespace used if there is no "xmlns" specified </summary>
+		public static readonly string NoNamespace = string.Empty;
+		
+		/// <summary> Namespace for "xml:" prefix: "http://www.w3.org/XML/1998/namespace" </summary>
+		public static readonly string XmlNamespace = "http://www.w3.org/XML/1998/namespace";
+		
+		/// <summary> Namesapce for "xmlns:" prefix: "http://www.w3.org/2000/xmlns/" </summary>
+		public static readonly string XmlnsNamespace = "http://www.w3.org/2000/xmlns/";
+		
 		readonly AXmlObject parent;
 		internal readonly int startOffset;
 		internal readonly InternalObject internalObject;

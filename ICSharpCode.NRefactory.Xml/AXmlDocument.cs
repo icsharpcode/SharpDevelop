@@ -17,27 +17,30 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Xml
 {
 	/// <summary>
-	/// Visitor for the XML tree
+	/// The root object of the XML document
 	/// </summary>
-	public interface IAXmlVisitor
+	public class AXmlDocument : AXmlObject
 	{
-		/// <summary> Visit document </summary>
-		void VisitDocument(AXmlDocument document);
+		internal AXmlDocument(AXmlObject parent, int startOffset, InternalDocument internalObject)
+			: base(parent, startOffset, internalObject)
+		{
+		}
 		
-		/// <summary> Visit tag </summary>
-		void VisitTag(AXmlTag tag);
+		/// <inheritdoc/>
+		public override void AcceptVisitor(IAXmlVisitor visitor)
+		{
+			visitor.VisitDocument(this);
+		}
 		
-		/// <summary> Visit attribute </summary>
-		void VisitAttribute(AXmlAttribute attribute);
-		
-		/// <summary> Visit text </summary>
-		void VisitText(AXmlText text);
-		
-		/// <summary> Visit element </summary>
-		void VisitElement(AXmlElement element);
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			return string.Format(CultureInfo.InvariantCulture, "[{0} Chld:{1}]", base.ToString(), this.Children.Count);
+		}
 	}
 }

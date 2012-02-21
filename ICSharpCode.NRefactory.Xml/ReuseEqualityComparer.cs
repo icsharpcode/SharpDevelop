@@ -17,27 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Xml
 {
 	/// <summary>
-	/// Visitor for the XML tree
+	/// Determines whether two objects are identical (one is a reused version of the other).
 	/// </summary>
-	public interface IAXmlVisitor
+	public class ReuseEqualityComparer : IEqualityComparer<AXmlObject>
 	{
-		/// <summary> Visit document </summary>
-		void VisitDocument(AXmlDocument document);
+		/// <summary>
+		/// Determines whether two objects are identical (one is a reused version of the other).
+		/// </summary>
+		public bool Equals(AXmlObject x, AXmlObject y)
+		{
+			if (x == y)
+				return true;
+			if (x == null || y == null)
+				return false;
+			return x.internalObject == y.internalObject;
+		}
 		
-		/// <summary> Visit tag </summary>
-		void VisitTag(AXmlTag tag);
-		
-		/// <summary> Visit attribute </summary>
-		void VisitAttribute(AXmlAttribute attribute);
-		
-		/// <summary> Visit text </summary>
-		void VisitText(AXmlText text);
-		
-		/// <summary> Visit element </summary>
-		void VisitElement(AXmlElement element);
+		/// <summary>
+		/// Gets the object's hash code so that reused versions of an object have the same hash code.
+		/// </summary>
+		public int GetHashCode(AXmlObject obj)
+		{
+			if (obj == null)
+				return 0;
+			else
+				return obj.internalObject.GetHashCode();
+		}
 	}
 }

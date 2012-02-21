@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 	/// <summary>
 	/// Tests incremental tag soup parser.
 	/// </summary>
-	public class TagSoupIncrementalTests
+	public class IncrementalXmlParserTests
 	{
 		static Random sharedRnd = new Random();
 		
@@ -46,9 +46,10 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			lock (sharedRnd) {
 				seed = sharedRnd.Next();
 			}
+			Console.WriteLine(seed);
 			Random rnd = new Random(seed);
 			
-			TagSoupParser parser = new TagSoupParser();
+			AXmlParser parser = new AXmlParser();
 			StringBuilder b = new StringBuilder(originalXmlFile.Text);
 			IncrementalParserState parserState = null;
 			TestTextSourceVersion version = new TestTextSourceVersion();
@@ -57,7 +58,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			TimeSpan incrementalParseTime = TimeSpan.Zero;
 			TimeSpan nonIncrementalParseTime = TimeSpan.Zero;
 			Stopwatch w = new Stopwatch();
-			for (int iteration = 0; iteration < 500; iteration++) {
+			for (int iteration = 0; iteration < 100; iteration++) {
 				totalCharactersParsed += b.Length;
 				var textSource = new TextSourceWithVersion(new StringTextSource(b.ToString()), version);
 				w.Restart();
@@ -70,7 +71,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				nonIncrementalParseTime += w.Elapsed;
 				CompareResults(incrementalResult, nonIncrementalResult);
 				
-				new ValidationVisitor(textSource).Visit(incrementalResult);
+				incrementalResult.AcceptVisitor(new ValidationVisitor(textSource));
 				
 				// Randomly mutate the file:
 				
@@ -85,7 +86,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					int originalOffset = rnd.Next(0, originalXmlFile.TextLength);
 					int insertionLength;
 					int removalLength;
-					switch (rnd.Next(0, 21) / 20) {
+					switch (rnd.Next(0, 21) / 10) {
 						case 0:
 							removalLength = 0;
 							insertionLength = rnd.Next(0, Math.Min(50, originalXmlFile.TextLength - originalOffset));
@@ -114,11 +115,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		static void CompareResults(IList<AXmlObject> result1, IList<AXmlObject> result2)
 		{
-			if (result1.Count != result2.Count)
-				throw new InvalidOperationException();
-			for (int i = 0; i < result1.Count; i++) {
+			for (int i = 0; i < Math.Min(result1.Count, result2.Count); i++) {
 				CompareResults(result1[i], result2[i]);
 			}
+			if (result1.Count != result2.Count)
+				throw new InvalidOperationException();
 		}
 		
 		static void CompareResults(AXmlObject obj1, AXmlObject obj2)
@@ -164,6 +165,17 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					throw new InvalidOperationException();
 				if (a.Value != b.Value)
 					throw new InvalidOperationException();
+			} else if (obj1 is AXmlElement) {
+				var a = (AXmlElement)obj1;
+				var b = (AXmlElement)obj2;
+				if (a.Name != b.Name)
+					throw new InvalidOperationException();
+				if (a.IsProperlyNested != b.IsProperlyNested)
+					throw new InvalidOperationException();
+				if (a.HasEndTag != b.HasEndTag)
+					throw new InvalidOperationException();
+			} else if (obj1 is AXmlDocument) {
+				// only compare the children
 			} else {
 				throw new NotSupportedException();
 			}
@@ -187,6 +199,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				}
 			}
 			
+			public void VisitDocument(AXmlDocument document)
+			{
+				Visit(document.Children);
+			}
+			
 			public void VisitTag(AXmlTag tag)
 			{
 				if (textSource.GetText(tag.StartOffset, tag.OpeningBracket.Length) != tag.OpeningBracket)
@@ -208,6 +225,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			public void VisitText(AXmlText text)
 			{
 				Visit(text.Children);
+			}
+			
+			public void VisitElement(AXmlElement element)
+			{
+				Visit(element.Children);
 			}
 		}
 	}

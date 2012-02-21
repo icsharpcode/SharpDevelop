@@ -67,9 +67,9 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <summary> True if tag starts with "&lt;" </summary>
 		public bool IsStartOrEmptyTag       { get { return internalObject.IsStartOrEmptyTag; } }
 		/// <summary> True if tag starts with "&lt;" and ends with "&gt;" </summary>
-		public bool IsStartTag              { get { return internalObject.IsStartOrEmptyTag && ClosingBracket == ">"; } }
+		public bool IsStartTag              { get { return internalObject.IsStartTag; } }
 		/// <summary> True if tag starts with "&lt;" and does not end with "&gt;" </summary>
-		public bool IsEmptyTag              { get { return internalObject.IsStartOrEmptyTag && ClosingBracket != ">" ; } }
+		public bool IsEmptyTag              { get { return internalObject.IsEmptyTag; } }
 		/// <summary> True if tag starts with "&lt;/" </summary>
 		public bool IsEndTag                { get { return internalObject.IsEndTag; } }
 		/// <summary> True if tag starts with "&lt;?" </summary>

@@ -52,6 +52,56 @@ namespace ICSharpCode.NRefactory.Xml
 		public ISegment ValueSegment {
 			get { return new XmlSegment(startOffset + Name.Length + InternalAttribute.EqualsSignLength, this.EndOffset); }
 		}
+		/// <summary> The element containing this attribute </summary>
+		/// <returns> Null if orphaned </returns>
+		public AXmlElement ParentElement {
+			get {
+				AXmlTag tag = this.Parent as AXmlTag;
+				if (tag != null) {
+					return tag.Parent as AXmlElement;
+				}
+				return null;
+			}
+		}
+		
+		/// <summary> The part of name before ":"</summary>
+		/// <returns> Empty string if not found </returns>
+		public string Prefix {
+			get {
+				return GetNamespacePrefix(this.Name);
+			}
+		}
+		
+		/// <summary> The part of name after ":" </summary>
+		/// <returns> Whole name if ":" not found </returns>
+		public string LocalName {
+			get {
+				return GetLocalName(this.Name);
+			}
+		}
+		
+		/// <summary>
+		/// Resolved namespace of the name.  Empty string if not found
+		/// From the specification: "The namespace name for an unprefixed attribute name always has no value."
+		/// </summary>
+		public string Namespace {
+			get {
+				if (string.IsNullOrEmpty(this.Prefix)) return NoNamespace;
+				
+				AXmlElement elem = this.ParentElement;
+				if (elem != null) {
+					return elem.ResolvePrefix(this.Prefix);
+				}
+				return NoNamespace; // Orphaned attribute
+			}
+		}
+		
+		/// <summary> Attribute is declaring namespace ("xmlns" or "xmlns:*") </summary>
+		public bool IsNamespaceDeclaration {
+			get {
+				return this.Name == "xmlns" || this.Prefix == "xmlns";
+			}
+		}
 		
 		/// <inheritdoc/>
 		public override void AcceptVisitor(IAXmlVisitor visitor)

@@ -41,6 +41,14 @@ namespace ICSharpCode.NRefactory.Xml
 		public abstract AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset);
 	}
 	
+	sealed class InternalDocument : InternalObject
+	{
+		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
+		{
+			return new AXmlDocument(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
+		}
+	}
+	
 	sealed class InternalText : InternalObject
 	{
 		public TextType Type;
@@ -49,7 +57,7 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{
-			return new AXmlText(parent, parentStartOffset + StartRelativeToParent, this);
+			return new AXmlText(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
 		}
 	}
 	
@@ -62,6 +70,10 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		/// <summary> True if tag starts with "&lt;" </summary>
 		public bool IsStartOrEmptyTag       { get { return OpeningBracket == "<"; } }
+		/// <summary> True if tag starts with "&lt;" and ends with "&gt;" </summary>
+		public bool IsStartTag              { get { return OpeningBracket == "<" && ClosingBracket == ">"; } }
+		/// <summary> True if tag starts with "&lt;" and does not end with "&gt;" </summary>
+		public bool IsEmptyTag              { get { return OpeningBracket == "<" && ClosingBracket != ">" ; } }
 		/// <summary> True if tag starts with "&lt;/" </summary>
 		public bool IsEndTag                { get { return OpeningBracket == "</"; } }
 		/// <summary> True if tag starts with "&lt;?" </summary>
@@ -77,7 +89,7 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{
-			return new AXmlTag(parent, parentStartOffset + StartRelativeToParent, this);
+			return new AXmlTag(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
 		}
 	}
 	
@@ -103,7 +115,18 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{
-			return new AXmlAttribute(parent, parentStartOffset + StartRelativeToParent, this);
+			return new AXmlAttribute(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
+		}
+	}
+	
+	class InternalElement : InternalObject
+	{
+		public bool HasEndTag;
+		public bool IsPropertyNested;
+		
+		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
+		{
+			return new AXmlElement(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
 		}
 	}
 }
