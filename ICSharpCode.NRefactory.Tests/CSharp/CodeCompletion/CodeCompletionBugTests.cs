@@ -2100,7 +2100,7 @@ class Test
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.OverloadCount, "There should be one overload");
+			Assert.AreEqual (1, provider.Count, "There should be one overload");
 			Assert.AreEqual (1, provider.GetParameterCount (0), "Parameter 'test' should exist");
 		}
 		
