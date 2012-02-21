@@ -65,6 +65,7 @@
     <Compile Include="ObjectIterator.cs" />
     <Compile Include="ReuseEqualityComparer.cs" />
     <Compile Include="SyntaxError.cs" />
+    <Compile Include="TagMatchingHeuristics.cs" />
     <Compile Include="TextType.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

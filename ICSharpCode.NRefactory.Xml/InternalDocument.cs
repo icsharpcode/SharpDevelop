@@ -59,6 +59,11 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			return new AXmlText(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
 		}
+		
+		public override string ToString()
+		{
+			return "Text: " + this.Value.Replace("\n", "\\n").Replace("\r", "\\r");
+		}
 	}
 	
 	sealed class InternalTag : InternalObject
@@ -91,6 +96,20 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			return new AXmlTag(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
 		}
+		
+		public override string ToString()
+		{
+			return "Tag: " + OpeningBracket + Name + ClosingBracket;
+		}
+		
+		public InternalTag AddSyntaxError(string description)
+		{
+			if (this.SyntaxErrors != null && this.SyntaxErrors.Length > 0)
+				return this; // don't add error if there already is one
+			InternalTag tag = (InternalTag)MemberwiseClone();
+			tag.SyntaxErrors = new InternalSyntaxError[] { new InternalSyntaxError(0, Length, description) };
+			return tag;
+		}
 	}
 	
 	struct InternalSyntaxError
@@ -117,6 +136,11 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			return new AXmlAttribute(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
 		}
+		
+		public override string ToString()
+		{
+			return "Attribute: " + Name + "='" + Value + "'";
+		}
 	}
 	
 	class InternalElement : InternalObject
@@ -127,6 +151,11 @@ namespace ICSharpCode.NRefactory.Xml
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{
 			return new AXmlElement(parent, (parent != null ? parentStartOffset + StartRelativeToParent : parentStartOffset), this);
+		}
+		
+		public override string ToString()
+		{
+			return "Element: " + NestedObjects[0].ToString();
 		}
 	}
 }

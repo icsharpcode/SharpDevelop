@@ -104,7 +104,8 @@ namespace ICSharpCode.NRefactory.Xml
 				throw new ArgumentNullException("textSource");
 			var reader = new TagReader(this, textSource, true);
 			var internalObjects = reader.ReadAllObjects();
-			return CreateDocument(internalObjects);
+			var heuristic = new TagMatchingHeuristics(textSource);
+			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects));
 		}
 		
 		/// <summary>
@@ -119,19 +120,8 @@ namespace ICSharpCode.NRefactory.Xml
 			if (newTextSource == null)
 				throw new ArgumentNullException("newTextSource");
 			var internalObjects = InternalParseIncremental(oldParserState, newTextSource, out newParserState, true);
-			return CreateDocument(internalObjects);
-		}
-		
-		AXmlDocument CreateDocument(List<InternalObject> internalObjects)
-		{
-			InternalObject[] documentChildren = new InternalObject[internalObjects.Count];
-			int pos = 0;
-			for (int i = 0; i < documentChildren.Length; i++) {
-				documentChildren[i] = internalObjects[i].SetStartRelativeToParent(pos);
-				pos += documentChildren[i].Length;
-			}
-			var document = new InternalDocument { NestedObjects = documentChildren, Length = pos };
-			return new AXmlDocument(null, 0, document);
+			var heuristic = new TagMatchingHeuristics(newTextSource);
+			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects));
 		}
 	}
 }
