@@ -4545,5 +4545,40 @@ class Test
 			Assert.IsNotNull (provider.Find ("Value2"), "field 'Value2' not found.");
 		}
 		
+		/// <summary>
+		/// Bug 3581 - [New Resolver] No code completion on Attributes
+		/// </summary>
+		[Test()]
+		public void TestBug3581 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+
+namespace Foobar
+{
+	class Intent 
+	{
+		public static int Foo = 0;
+		public static int Bar = 1;
+	}
+	
+	class MyAttribute : Attribute
+	{
+		public int[] Categories;
+	}
+	
+	[MyAttribute(Categories = new [] { $I$ })]
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			Console.WriteLine (ddsd);
+		}
+	}
+}
+
+");
+			Assert.IsNotNull (provider.Find ("Intent"), "'Intent' not found.");
+		}
 	}
 }

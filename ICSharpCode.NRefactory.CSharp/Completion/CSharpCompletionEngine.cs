@@ -2062,13 +2062,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = location;
 			}
-			var baseUnit = ParseStub ("");
+			var baseUnit = ParseStub ("a");
 			var tmpUnit = baseUnit;
-			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
-			if (expr == null)
-				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
-			if (expr == null)
+			AstNode expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression);
+			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column - 1);
+				if (expr is AstType && expr.Parent is Attribute)
+					expr = expr.Parent;
+			}
 			
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement> (location.Line, location.Column) != null) {
@@ -2139,7 +2140,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (expr != null)
 					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
 				if (expr == null)
-					expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column); 
+					expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column); 
+				if (expr is AstType && expr.Parent is Attribute)
+					expr = expr.Parent;
 			}
 			if (expr == null)
 				return null;
