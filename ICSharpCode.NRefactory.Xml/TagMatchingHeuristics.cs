@@ -324,7 +324,7 @@ namespace ICSharpCode.NRefactory.Xml
 								childElements.Add(tag);
 							}
 						}
-						InternalElement e = new InternalElement();
+						InternalElement e = new InternalElement(startTag);
 						e.HasEndTag = (tag != EndTagPlaceholder);
 						e.NestedObjects = new InternalObject[childElements.Count];
 						int pos = 0;

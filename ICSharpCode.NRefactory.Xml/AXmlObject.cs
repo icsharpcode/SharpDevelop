@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Utils;
 
@@ -51,6 +52,22 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 		
 		/// <summary>
+		/// Creates an XML reader that reads from this document.
+		/// </summary>
+		public virtual XmlReader CreateReader()
+		{
+			return new AXmlReader(new[] { internalObject });
+		}
+		
+		/// <summary>
+		/// Creates an XML reader that reads from this document.
+		/// </summary>
+		public virtual XmlReader CreateReader(Func<int, TextLocation> offsetToTextLocation)
+		{
+			return new AXmlReader(new[] { internalObject }, startOffset, offsetToTextLocation);
+		}
+		
+		/// <summary>
 		/// Gets the parent node.
 		/// </summary>
 		public AXmlObject Parent {
@@ -79,6 +96,23 @@ namespace ICSharpCode.NRefactory.Xml
 					return LazyInit.GetOrSet(ref this.children, result);
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Gets a child fully containg the given offset.
+		/// Goes recursively down the tree.
+		/// Specail case if at the end of attribute or text
+		/// </summary>
+		public AXmlObject GetChildAtOffset(int offset)
+		{
+			foreach(AXmlObject child in this.Children) {
+				if (offset == child.EndOffset && (child is AXmlAttribute || child is AXmlText))
+					return child;
+				if (child.StartOffset < offset && offset < child.EndOffset) {
+					return child.GetChildAtOffset(offset);
+				}
+			}
+			return this; // No childs at offset
 		}
 		
 		/// <summary>
@@ -119,7 +153,7 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		/// <summary> The part of name before ":" </summary>
 		/// <returns> Empty string if not found </returns>
-		protected static string GetNamespacePrefix(string name)
+		internal static string GetNamespacePrefix(string name)
 		{
 			if (string.IsNullOrEmpty(name)) return string.Empty;
 			int colonIndex = name.IndexOf(':');
@@ -132,7 +166,7 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		/// <summary> The part of name after ":" </summary>
 		/// <returns> Whole name if ":" not found </returns>
-		protected static string GetLocalName(string name)
+		internal static string GetLocalName(string name)
 		{
 			if (string.IsNullOrEmpty(name)) return string.Empty;
 			int colonIndex = name.IndexOf(':');

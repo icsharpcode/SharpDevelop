@@ -90,17 +90,13 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <summary> The part of name before ":" </summary>
 		/// <returns> Empty string if not found </returns>
 		public string Prefix {
-			get {
-				return GetNamespacePrefix(this.Name);
-			}
+	 		get { return ((InternalElement)internalObject).Prefix; }
 		}
 		
 		/// <summary> The part of name after ":" </summary>
 		/// <returns> Empty string if not found </returns>
 		public string LocalName {
-			get {
-				return GetLocalName(this.Name);
-			}
+			get { return ((InternalElement)internalObject).LocalName; }
 		}
 		
 		/// <summary> Resolved namespace of the name </summary>

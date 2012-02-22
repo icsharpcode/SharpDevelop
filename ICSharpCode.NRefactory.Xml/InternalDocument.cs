@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 	}
 	
-	class InternalAttribute : InternalObject
+	sealed class InternalAttribute : InternalObject
 	{
 		public string Name;
 		public int EqualsSignLength; // length of equals sign including the surrounding whitespace
@@ -143,10 +143,24 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 	}
 	
-	class InternalElement : InternalObject
+	sealed class InternalElement : InternalObject
 	{
 		public bool HasEndTag;
 		public bool IsPropertyNested;
+		public readonly string Name;
+		
+		public InternalElement(InternalTag tag)
+		{
+			this.Name = tag.Name;
+		}
+		
+		public string Prefix {
+			get { return AXmlObject.GetNamespacePrefix(Name); }
+		}
+		
+		public string LocalName {
+			get { return AXmlObject.GetLocalName(Name); }
+		}
 		
 		public override AXmlObject CreatePublicObject(AXmlObject parent, int parentStartOffset)
 		{

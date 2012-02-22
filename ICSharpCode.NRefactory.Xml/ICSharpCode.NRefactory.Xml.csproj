@@ -57,6 +57,7 @@
     <Compile Include="AXmlDocument.cs" />
     <Compile Include="AXmlElement.cs" />
     <Compile Include="AXmlObject.cs" />
+    <Compile Include="AXmlReader.cs" />
     <Compile Include="AXmlTag.cs" />
     <Compile Include="AXmlText.cs" />
     <Compile Include="IAXmlVisitor.cs" />

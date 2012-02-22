@@ -18,6 +18,7 @@
 
 using System;
 using System.Globalization;
+using System.Xml;
 
 namespace ICSharpCode.NRefactory.Xml
 {
@@ -29,6 +30,18 @@ namespace ICSharpCode.NRefactory.Xml
 		internal AXmlDocument(AXmlObject parent, int startOffset, InternalDocument internalObject)
 			: base(parent, startOffset, internalObject)
 		{
+		}
+		
+		/// <inheritdoc/>
+		public override XmlReader CreateReader()
+		{
+			return new AXmlReader(internalObject.NestedObjects);
+		}
+		
+		/// <inheritdoc/>
+		public override XmlReader CreateReader(Func<int, TextLocation> offsetToTextLocation)
+		{
+			return new AXmlReader(internalObject.NestedObjects, startOffset, offsetToTextLocation);
 		}
 		
 		/// <inheritdoc/>

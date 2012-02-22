@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.Xml
 				return;
 			if (tag.IsEmptyTag) {
 				// the tag is its own element
-				objects[objects.Count - 1] = new InternalElement() {
+				objects[objects.Count - 1] = new InternalElement(tag) {
 					Length = tag.Length,
 					LengthTouched = tag.LengthTouched,
 					IsPropertyNested = true,
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.Xml
 					}
 					objects.RemoveRange(startIndex, nestedObjects.Length);
 					objects.Add(
-						new InternalElement {
+						new InternalElement((InternalTag)nestedObjects[0]) {
 							HasEndTag = true,
 							IsPropertyNested = true,
 							Length = pos,
@@ -601,108 +601,79 @@ namespace ICSharpCode.NRefactory.Xml
 		
 		#region Text
 		/// <summary>
-		/// Reads text and optionaly separates it into fragments.
-		/// It can also return empty set for no appropriate text input.
-		/// Make sure you enumerate it only once
+		/// Reads text.
 		/// </summary>
 		void ReadText(TextType type)
 		{
-			const int maxTextFragmentSize = 128;
-			bool finished;
-			do {
-				var text = new InternalText();
-				var frame = BeginInternalObject(text);
-				text.Type = type;
-				
-				// Limit the reading to just a few characters
-				// (the first character not to be read)
-				int fragmentEnd = Math.Min(this.CurrentLocation + maxTextFragmentSize, this.InputLength);
-				
-				int start = this.CurrentLocation;
-				
-				// Whitespace would be skipped anyway by any operation
+			var text = new InternalText();
+			var frame = BeginInternalObject(text);
+			text.Type = type;
+			
+			int start = this.CurrentLocation;
+			int fragmentEnd = inputLength;
+			
+			// Whitespace would be skipped anyway by any operation
+			TryMoveToNonWhiteSpace(fragmentEnd);
+			int wsEnd = this.CurrentLocation;
+			
+			// Try move to the terminator given by the context
+			if (type == TextType.WhiteSpace) {
 				TryMoveToNonWhiteSpace(fragmentEnd);
-				int wsEnd = this.CurrentLocation;
-				
-				// Try move to the terminator given by the context
-				if (type == TextType.WhiteSpace) {
-					TryMoveToNonWhiteSpace(fragmentEnd);
-				} else if (type == TextType.CharacterData) {
-					while(true) {
-						if (!TryMoveToAnyOf(new char[] {'<', ']'}, fragmentEnd)) break; // End of fragment
-						if (TryPeek('<')) break;
-						if (TryPeek(']')) {
-							if (TryPeek("]]>")) {
-								OnSyntaxError(this.CurrentLocation, this.CurrentLocation + 3, "']]>' is not allowed in text");
-							}
-							TryMoveNext();
-							continue;
-						}
-						throw new InternalException("Infinite loop");
-					}
-				} else if (type == TextType.Comment) {
-					// Do not report too many errors
-					bool errorReported = false;
-					while(true) {
-						if (!TryMoveTo('-', fragmentEnd)) break; // End of fragment
-						if (TryPeek("-->")) break;
-						if (TryPeek("--") && !errorReported) {
-							OnSyntaxError(this.CurrentLocation, this.CurrentLocation + 2, "'--' is not allowed in comment");
-							errorReported = true;
+			} else if (type == TextType.CharacterData) {
+				while(true) {
+					if (!TryMoveToAnyOf(new char[] {'<', ']'}, fragmentEnd)) break; // End of fragment
+					if (TryPeek('<')) break;
+					if (TryPeek(']')) {
+						if (TryPeek("]]>")) {
+							OnSyntaxError(this.CurrentLocation, this.CurrentLocation + 3, "']]>' is not allowed in text");
 						}
 						TryMoveNext();
+						continue;
 					}
-				} else if (type == TextType.CData) {
-					while(true) {
-						// We can not use use TryMoveTo("]]>", fragmentEnd) because it may incorectly accept "]" at the end of fragment
-						if (!TryMoveTo(']', fragmentEnd)) break; // End of fragment
-						if (TryPeek("]]>")) break;
-						TryMoveNext();
-					}
-				} else if (type == TextType.ProcessingInstruction) {
-					while(true) {
-						if (!TryMoveTo('?', fragmentEnd)) break; // End of fragment
-						if (TryPeek("?>")) break;
-						TryMoveNext();
-					}
-				} else if (type == TextType.UnknownBang) {
-					TryMoveToAnyOf(new char[] {'<', '>'}, fragmentEnd);
-				} else {
-					throw new InternalException("Uknown type " + type);
+					throw new InternalException("Infinite loop");
 				}
-				
-				text.ContainsOnlyWhitespace = (wsEnd == this.CurrentLocation);
-				
-				// Terminal found or real end was reached;
-				finished = this.CurrentLocation < fragmentEnd || IsEndOfFile();
-				
-				if (!finished) {
-					// We have to continue reading more text fragments
-					
-					// If there is entity reference, make sure the next segment starts with it to prevent framentation
-					int entitySearchStart = Math.Max(start + 1 /* data for us */, this.CurrentLocation - maxEntityLength);
-					int entitySearchLength = this.CurrentLocation - entitySearchStart;
-					if (entitySearchLength > 0) {
-						// Note that LastIndexOf works backward
-						int entityIndex = input.LastIndexOf('&', this.CurrentLocation - entitySearchLength, entitySearchLength);
-						if (entityIndex != -1) {
-							GoBack(entityIndex);
-						}
+			} else if (type == TextType.Comment) {
+				// Do not report too many errors
+				bool errorReported = false;
+				while(true) {
+					if (!TryMoveTo('-', fragmentEnd)) break; // End of fragment
+					if (TryPeek("-->")) break;
+					if (TryPeek("--") && !errorReported) {
+						OnSyntaxError(this.CurrentLocation, this.CurrentLocation + 2, "'--' is not allowed in comment");
+						errorReported = true;
 					}
+					TryMoveNext();
 				}
-				
-				string escapedValue = GetText(start, this.CurrentLocation);
-				if (type == TextType.CharacterData) {
-					// Normalize end of line first
-					text.Value = Dereference(NormalizeEndOfLine(escapedValue), start);
-				} else {
-					text.Value = escapedValue;
+			} else if (type == TextType.CData) {
+				while(true) {
+					// We can not use use TryMoveTo("]]>", fragmentEnd) because it may incorectly accept "]" at the end of fragment
+					if (!TryMoveTo(']', fragmentEnd)) break; // End of fragment
+					if (TryPeek("]]>")) break;
+					TryMoveNext();
 				}
-				text.Value = GetCachedString(text.Value);
-				
-				EndInternalObject(frame, storeNewObject: this.CurrentLocation > start);
-				
-			} while (!finished);
+			} else if (type == TextType.ProcessingInstruction) {
+				while(true) {
+					if (!TryMoveTo('?', fragmentEnd)) break; // End of fragment
+					if (TryPeek("?>")) break;
+					TryMoveNext();
+				}
+			} else if (type == TextType.UnknownBang) {
+				TryMoveToAnyOf(new char[] {'<', '>'}, fragmentEnd);
+			} else {
+				throw new InternalException("Unknown type " + type);
+			}
+			
+			text.ContainsOnlyWhitespace = (wsEnd == this.CurrentLocation);
+			
+			string escapedValue = GetText(start, this.CurrentLocation);
+			if (type == TextType.CharacterData) {
+				text.Value = Dereference(escapedValue, start);
+			} else {
+				text.Value = escapedValue;
+			}
+			text.Value = GetCachedString(text.Value);
+			
+			EndInternalObject(frame, storeNewObject: this.CurrentLocation > start);
 		}
 		#endregion
 		
@@ -855,11 +826,6 @@ namespace ICSharpCode.NRefactory.Xml
 			} catch (System.Xml.XmlException) {
 				return false;
 			}
-		}
-		
-		static string NormalizeEndOfLine(string text)
-		{
-			return text.Replace("\r\n", "\n").Replace('\r', '\n');
 		}
 		#endregion
 	}

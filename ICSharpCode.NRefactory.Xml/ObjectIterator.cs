@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Xml
 	/// <summary>
 	/// Iterates through an internal object tree.
 	/// </summary>
-	class ObjectIterator
+	sealed class ObjectIterator
 	{
 		Stack<InternalObject[]> listStack = new Stack<InternalObject[]>();
 		Stack<int> indexStack = new Stack<int>();
@@ -33,9 +33,12 @@ namespace ICSharpCode.NRefactory.Xml
 		int currentIndex;
 		InternalObject currentObject;
 		int currentPosition;
+		internal bool StopAtElementEnd;
+		bool isAtElementEnd;
 		
-		public ObjectIterator(InternalObject[] objects)
+		public ObjectIterator(InternalObject[] objects, int startPosition = 0)
 		{
+			this.currentPosition = startPosition;
 			this.objects = objects;
 			if (objects.Length > 0)
 				this.currentObject = objects[0];
@@ -49,22 +52,37 @@ namespace ICSharpCode.NRefactory.Xml
 			get { return currentPosition; }
 		}
 		
+		public bool IsAtElementEnd {
+			get { return isAtElementEnd; }
+		}
+		
+		public int Depth {
+			get { return listStack.Count; }
+		}
+		
 		public void MoveNext()
 		{
 			if (currentObject == null)
 				return;
 			currentIndex++;
 			currentPosition += currentObject.Length;
+			isAtElementEnd = false;
 			while (currentIndex >= objects.Length && listStack.Count > 0) {
 				objects = listStack.Pop();
-				currentIndex = indexStack.Pop() + 1;
+				currentIndex = indexStack.Pop();
+				if (this.StopAtElementEnd) {
+					isAtElementEnd = true;
+					break;
+				} else {
+					currentIndex++;
+				}
 			}
 			currentObject = (currentIndex < objects.Length ? objects[currentIndex] : null);
 		}
 		
 		public void MoveInto()
 		{
-			if (!(currentObject is InternalElement)) {
+			if (isAtElementEnd || !(currentObject is InternalElement)) {
 				MoveNext();
 			} else {
 				listStack.Push(objects);

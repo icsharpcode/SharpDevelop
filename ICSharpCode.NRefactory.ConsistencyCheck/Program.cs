@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using ICSharpCode.NRefactory.ConsistencyCheck.Xml;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
 
@@ -46,9 +47,6 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public static void Main(string[] args)
 		{
-			//IncrementalXmlParserTests.Run("c:\\temp\\closedxml.xml");
-			IncrementalXmlParserTests.Run("ICSharpCode.NRefactory.xml");
-			
 			using (new Timer("Loading solution... ")) {
 				solution = new Solution(SolutionFile);
 			}
