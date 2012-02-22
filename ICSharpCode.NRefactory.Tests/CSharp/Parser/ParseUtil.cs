@@ -106,7 +106,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (err => Console.WriteLine (err.Message));
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
-			
 			AttributedNode m = members.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(m.GetType()), String.Format("Parsed member was {0} instead of {1} ({2})", m.GetType(), type, m));
