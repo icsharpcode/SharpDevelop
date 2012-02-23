@@ -55,12 +55,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				public IEnumerable<IMethod> Data { get; set; }
 				#region IParameterDataProvider implementation
-				public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
 				}
 
-				public string GetParameterMarkup (int overload, int paramIndex)
+				public string GetDescription (int overload, int currentParameter)
+				{
+					return "";
+				}
+
+				public string GetParameterDescription (int overload, int paramIndex)
 				{
 					return "";
 				}
@@ -71,7 +76,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					return method.Parameters.Count;
 				}
 
-				public int OverloadCount {
+				public bool AllowParameterList (int overload)
+				{
+					return false;
+				}
+
+				public int Count {
 					get {
 						return Data.Count ();
 					}
@@ -82,13 +92,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			class IndexerProvider : IParameterDataProvider
 			{
 				public IEnumerable<IProperty> Data { get; set; }
+				
 				#region IParameterDataProvider implementation
-				public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
 				}
 
-				public string GetParameterMarkup (int overload, int paramIndex)
+				public string GetDescription (int overload, int currentParameter)
+				{
+					return "";
+				}
+
+				public string GetParameterDescription (int overload, int paramIndex)
 				{
 					return "";
 				}
@@ -99,7 +115,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					return method.Parameters.Count;
 				}
 
-				public int OverloadCount {
+				public bool AllowParameterList (int overload)
+				{
+					return false;
+				}
+
+				public int Count {
 					get {
 						return Data.Count ();
 					}
@@ -108,16 +129,20 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			
 			
-			
 			class ArrayProvider : IParameterDataProvider
 			{
 				#region IParameterDataProvider implementation
-				public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
 				}
 
-				public string GetParameterMarkup (int overload, int paramIndex)
+				public string GetDescription (int overload, int currentParameter)
+				{
+					return "";
+				}
+
+				public string GetParameterDescription (int overload, int paramIndex)
 				{
 					return "";
 				}
@@ -127,7 +152,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					return 1;
 				}
 
-				public int OverloadCount {
+				public bool AllowParameterList (int overload)
+				{
+					return false;
+				}
+
+				public int Count {
 					get {
 						return 1;
 					}
@@ -139,23 +169,33 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				public IEnumerable<IType> Data { get; set; }
 				#region IParameterDataProvider implementation
-				public string GetMethodMarkup (int overload, string[] parameterMarkup, int currentParameter)
+				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
 				}
 
-				public string GetParameterMarkup (int overload, int paramIndex)
+				public string GetDescription (int overload, int currentParameter)
+				{
+					return "";
+				}
+
+				public string GetParameterDescription (int overload, int paramIndex)
 				{
 					return "";
 				}
 
 				public int GetParameterCount (int overload)
 				{
-					var method = Data.ElementAt (overload);
-					return method.TypeParameterCount;
+					var data = Data.ElementAt (overload);
+					return data.TypeParameterCount;
 				}
 
-				public int OverloadCount {
+				public bool AllowParameterList (int overload)
+				{
+					return false;
+				}
+
+				public int Count {
 					get {
 						return Data.Count ();
 					}
@@ -284,7 +324,7 @@ class AClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (2, provider.OverloadCount);
+			Assert.AreEqual (2, provider.Count);
 		}
 
 		/// <summary>
@@ -306,7 +346,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 
 		/// <summary>
@@ -327,7 +367,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount, "There should be one overload");
+			Assert.AreEqual (1, provider.Count, "There should be one overload");
 			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'start' should exist");
 		}
 
@@ -346,7 +386,7 @@ class Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 
 		/// <summary>
@@ -371,7 +411,7 @@ class AClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		/// <summary>
@@ -396,7 +436,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 	
 		
@@ -407,7 +447,8 @@ class TestClass
 		public void TestBug434701 ()
 		{
 			IParameterDataProvider provider = CreateProvider (
-@"class TestAttribute : System.Attribute
+@"namespace Test {
+class TestAttribute : System.Attribute
 {
 	public Test (int a)
 	{
@@ -417,9 +458,10 @@ class TestClass
 $[Test ($
 class AClass
 {
+}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		/// <summary>
@@ -452,7 +494,7 @@ class AClass
 
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 			Assert.AreEqual (1, provider.GetParameterCount(0), "Parameter 'test' should exist");
 		}
 		
@@ -473,7 +515,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		[Test()]
@@ -490,7 +532,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		[Test()]
@@ -507,7 +549,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		
@@ -527,7 +569,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		/// Bug 3307 - Chained linq methods do not work correctly
@@ -546,7 +588,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (6, provider.OverloadCount);
+			Assert.AreEqual (6, provider.Count);
 		}
 		
 		[Test()]
@@ -603,7 +645,7 @@ class A
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		
@@ -630,7 +672,7 @@ namespace Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (2, provider.OverloadCount);
+			Assert.AreEqual (2, provider.Count);
 		}
 		
 		[Test()]
@@ -650,7 +692,7 @@ namespace Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (16, provider.OverloadCount);
+			Assert.AreEqual (16, provider.Count);
 		}
 		
 		[Test()]
@@ -670,7 +712,7 @@ namespace Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (16, provider.OverloadCount);
+			Assert.AreEqual (16, provider.Count);
 		}
 		
 		[Ignore("TODO")]
@@ -695,7 +737,7 @@ namespace Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		[Ignore("TODO")]
@@ -720,7 +762,7 @@ namespace Test
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}		
 	
 		[Test()]
@@ -737,7 +779,7 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
 		[Test()]
@@ -754,10 +796,10 @@ class TestClass
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (1, provider.OverloadCount);
+			Assert.AreEqual (1, provider.Count);
 		}
 		
-		[Ignore("MCS TODO!")]
+		[Ignore("TODO!")]
 		[Test()]
 		public void TestTypeParameterInBaseType ()
 		{
@@ -769,7 +811,64 @@ namespace Test
 	$class A : Tuple<$
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.AreEqual (16, provider.OverloadCount);
+			Assert.AreEqual (16, provider.Count);
+		}
+		
+		
+		[Test()]
+		public void TestBaseConstructorCall ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class Base
+{
+	public Base (int i)
+	{
+			
+	}
+	public Base (int i, string s)
+	{
+			
+	}
+}
+
+namespace Test 
+{
+	class A : Base
+	{
+		$public A () : base($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (2, provider.Count);
+		}
+		
+		[Test()]
+		public void TestThisConstructorCall ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class Base
+{
+	public Base (int i)
+	{
+			
+	}
+	public Base (int i, string s)
+	{
+			
+	}
+}
+
+namespace Test 
+{
+	class A : Base
+	{
+		public A (int a, int b) : base(a) {}
+
+		$public A () : this($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
 		}
 	}
 }

@@ -135,6 +135,25 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		#region Delegate tests
+		[Test]
+		public void DelegateName()
+		{
+			var func = compilation.FindType(typeof(Func<,>)).GetDefinition();
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			
+			Assert.AreEqual("Func<in T, out TResult>", ambience.ConvertEntity(func));
+		}
+		
+		[Test]
+		public void FullDelegate()
+		{
+			var func = compilation.FindType(typeof(Func<,>)).GetDefinition();
+			ambience.ConversionFlags = ConversionFlags.All;
+			Assert.AreEqual("public delegate TResult System.Func<in T, out TResult>(T arg);", ambience.ConvertEntity(func));
+		}
+		#endregion
+		
 		#region IField tests
 		[Test]
 		public void SimpleField()

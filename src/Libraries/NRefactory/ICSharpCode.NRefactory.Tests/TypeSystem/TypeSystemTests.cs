@@ -682,11 +682,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ImplementationOfUnifiedMethods));
 			IMethod test = type.Methods.Single(m => m.Name == "Test");
-			Assert.AreEqual(2, test.InterfaceImplementations.Count);
-			Assert.AreEqual("Int32", ((IMethod)test.InterfaceImplementations[0]).Parameters.Single().Type.Name);
-			Assert.AreEqual("Int32", ((IMethod)test.InterfaceImplementations[1]).Parameters.Single().Type.Name);
-			Assert.AreEqual("T", ((IMethod)test.InterfaceImplementations[0].MemberDefinition).Parameters.Single().Type.Name);
-			Assert.AreEqual("S", ((IMethod)test.InterfaceImplementations[1].MemberDefinition).Parameters.Single().Type.Name);
+			Assert.AreEqual(2, test.ImplementedInterfaceMembers.Count);
+			Assert.AreEqual("Int32", ((IMethod)test.ImplementedInterfaceMembers[0]).Parameters.Single().Type.Name);
+			Assert.AreEqual("Int32", ((IMethod)test.ImplementedInterfaceMembers[1]).Parameters.Single().Type.Name);
+			Assert.AreEqual("T", ((IMethod)test.ImplementedInterfaceMembers[0].MemberDefinition).Parameters.Single().Type.Name);
+			Assert.AreEqual("S", ((IMethod)test.ImplementedInterfaceMembers[1].MemberDefinition).Parameters.Single().Type.Name);
 		}
 	}
 }

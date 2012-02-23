@@ -292,8 +292,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this ICompilation compilation)
 		{
-			return compilation.MainAssembly.GetAllTypeDefinitions()
-				.Concat(compilation.ReferencedAssemblies.SelectMany(a => a.GetAllTypeDefinitions()));
+			return compilation.Assemblies.SelectMany(a => a.GetAllTypeDefinitions());
 		}
 		
 		/// <summary>

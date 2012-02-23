@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return null; }
 			}
 			
-			IList<IMember> IMember.InterfaceImplementations {
+			IList<IMember> IMember.ImplementedInterfaceMembers {
 				get { return EmptyList<IMember>.Instance; }
 			}
 			
@@ -163,7 +163,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return EmptyList<IAttribute>.Instance; }
 			}
 			
-			string IEntity.Documentation {
+			Documentation.DocumentationComment IEntity.Documentation {
 				get { return null; }
 			}
 			

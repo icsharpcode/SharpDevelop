@@ -76,6 +76,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\ICSharpCode.NRefactory\Properties\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
@@ -85,6 +88,7 @@
     <Compile Include="CSharp\Parser\Expression\AnonymousTypeCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ObjectCreateExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\UndocumentedExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\GeneralScope\CommentTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\NamespaceDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\PreprocessorDirectiveTests.cs" />
@@ -169,6 +173,9 @@
     <Compile Include="CSharp\Resolver\ResolverTestBase.cs" />
     <Compile Include="CSharp\Resolver\UnaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\UnsafeCodeTests.cs" />
+    <Compile Include="Documentation\CSharpCrefLookupTests.cs" />
+    <Compile Include="Documentation\CSharpCrefParserTests.cs" />
+    <Compile Include="Documentation\CSharpDocumentationTests.cs" />
     <Compile Include="Documentation\IDStringTests.cs" />
     <Compile Include="FormattingTests\TestBraceStlye.cs" />
     <Compile Include="FormattingTests\TestFormattingBugs.cs" />
@@ -238,6 +245,10 @@
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>

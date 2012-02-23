@@ -17,18 +17,36 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.IO;
+using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.Xml
 {
 	/// <summary>
-	/// Provides XML documentation for members.
+	/// Determines whether two objects are identical (one is a reused version of the other).
 	/// </summary>
-	public interface IDocumentationProvider
+	public class ReuseEqualityComparer : IEqualityComparer<AXmlObject>
 	{
 		/// <summary>
-		/// Gets the XML documentation for the specified entity.
+		/// Determines whether two objects are identical (one is a reused version of the other).
 		/// </summary>
-		string GetDocumentation(IEntity entity);
+		public bool Equals(AXmlObject x, AXmlObject y)
+		{
+			if (x == y)
+				return true;
+			if (x == null || y == null)
+				return false;
+			return x.internalObject == y.internalObject;
+		}
+		
+		/// <summary>
+		/// Gets the object's hash code so that reused versions of an object have the same hash code.
+		/// </summary>
+		public int GetHashCode(AXmlObject obj)
+		{
+			if (obj == null)
+				return 0;
+			else
+				return obj.internalObject.GetHashCode();
+		}
 	}
 }

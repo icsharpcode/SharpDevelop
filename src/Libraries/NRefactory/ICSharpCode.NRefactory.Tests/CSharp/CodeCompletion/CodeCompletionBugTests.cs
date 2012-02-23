@@ -1121,7 +1121,6 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 432434B - Code completion doesn't work with subclasses
 		/// </summary>
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestBug432434B ()
 		{
@@ -2100,7 +2099,7 @@ class Test
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.AreEqual (1, provider.OverloadCount, "There should be one overload");
+			Assert.AreEqual (1, provider.Count, "There should be one overload");
 			Assert.AreEqual (1, provider.GetParameterCount (0), "Parameter 'test' should exist");
 		}
 		
@@ -4507,6 +4506,96 @@ class Test
 			Assert.IsNotNull (provider.Find ("Test"), "'Test' not found.");
 			Assert.IsNull (provider.Find ("TestMethod"), "'TestMethod' found.");
 			
+		}
+		
+		/// <summary>
+		/// Bug 2109 - [Regression] Incorrect autocompletion when declaring an enum 
+		/// </summary>
+		[Test()]
+		public void TestBug2109B ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"namespace Foobar
+{
+    class MainClass
+    {
+        public enum Foo
+        {
+            Value1,
+            Value2
+        }
+
+        public class Test
+        {
+            Foo Foo {
+                get; set;
+            }
+
+            public static void Method (Foo foo)
+            {
+                $Foo.$
+            }
+        }
+    }
+}
+");
+			Assert.AreEqual (4, provider.Count); // 2xTryParse + 2 fields
+			Assert.IsNotNull (provider.Find ("Value1"), "field 'Value1' not found.");
+			Assert.IsNotNull (provider.Find ("Value2"), "field 'Value2' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 3581 - [New Resolver] No code completion on Attributes
+		/// </summary>
+		[Test()]
+		public void TestBug3581 ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+
+namespace Foobar
+{
+	class Intent 
+	{
+		public static int Foo = 0;
+		public static int Bar = 1;
+	}
+	
+	class MyAttribute : Attribute
+	{
+		public int[] Categories;
+	}
+	
+	[MyAttribute(Categories = new [] { $I$ })]
+	class MainClass
+	{
+		public static void Main (string[] args)
+		{
+			Console.WriteLine (ddsd);
+		}
+	}
+}
+
+");
+			Assert.IsNotNull (provider.Find ("Intent"), "'Intent' not found.");
+		}
+		
+		[Ignore("Mcs bug")]
+		[Test()]
+		public void TestForConditionContext ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		$for (int i = 0; i < System.$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
 	}
 }

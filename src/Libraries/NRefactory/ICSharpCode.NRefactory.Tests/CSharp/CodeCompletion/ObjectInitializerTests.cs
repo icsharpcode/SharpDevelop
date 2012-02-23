@@ -84,7 +84,7 @@ class MyTest
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.Greater (provider.OverloadCount, 1);
+			Assert.Greater (provider.Count, 1);
 		}
 		
 		/// <summary>

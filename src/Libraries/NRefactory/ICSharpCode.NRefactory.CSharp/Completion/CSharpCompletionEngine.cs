@@ -168,18 +168,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (expr == null)
 					return null;
 				// do not complete <number>. (but <number>.<number>.)
-				if (expr.Item2 is PrimitiveExpression) {
-					var pexpr = (PrimitiveExpression)expr.Item2;
+				if (expr.Node is PrimitiveExpression) {
+					var pexpr = (PrimitiveExpression)expr.Node;
 					if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains ('.'))
 						return null;
 				}
 				
-				var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
+				var resolveResult = ResolveExpression (expr);
 				if (resolveResult == null)
 					return null;
-				if (expr.Item2 is AstType)
-					return CreateTypeAndNamespaceCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
-				return CreateCompletionData (location, resolveResult.Item1, expr.Item2, resolveResult.Item2);
+				if (expr.Node is AstType)
+					return CreateTypeAndNamespaceCompletionData (location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+				return CreateCompletionData (location, resolveResult.Item1, expr.Node, resolveResult.Item2);
 			case '#':
 				if (IsInsideCommentOrString ())
 					return null;
@@ -224,14 +224,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var invoke = GetInvocationBeforeCursor (true);
 				if (invoke == null)
 					return null;
-				if (invoke.Item2 is TypeOfExpression)
+				if (invoke.Node is TypeOfExpression)
 					return CreateTypeList ();
-				var invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+				var invocationResult = ResolveExpression (invoke);
 				if (invocationResult == null)
 					return null;
 				var methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
 				if (methodGroup != null)
-					return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, 0, controlSpace);
+					return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Node, 0, controlSpace);
 				
 				if (controlSpace)
 					return DefaultControlSpaceItems (invoke);
@@ -258,8 +258,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				// check propose name, for context <variable name> <ctrl+space> (but only in control space context)
 				//IType isAsType = null;
 				var isAsExpression = GetExpressionAt (offset);
-				if (controlSpace && isAsExpression != null && isAsExpression.Item2 is VariableDeclarationStatement && token != "new") {
-					var parent = isAsExpression.Item2 as VariableDeclarationStatement;
+				if (controlSpace && isAsExpression != null && isAsExpression.Node is VariableDeclarationStatement && token != "new") {
+					var parent = isAsExpression.Node as VariableDeclarationStatement;
 					var proposeNameList = new CompletionDataWrapper (this);
 					
 					foreach (var possibleName in GenerateNameProposals (parent.Type)) {
@@ -300,12 +300,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					invoke = GetInvocationBeforeCursor (token == "(");
 					if (invoke == null)
 						return null;
-					invocationResult = ResolveExpression (invoke.Item1, invoke.Item2, invoke.Item3);
+					invocationResult = ResolveExpression (invoke);
 					if (invocationResult == null)
 						return null;
 					methodGroup = invocationResult.Item1 as MethodGroupResolveResult;
 					if (methodGroup != null)
-						return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Item2, currentParameter, controlSpace);
+						return CreateParameterCompletion (methodGroup, invocationResult.Item2, invoke.Node, currentParameter, controlSpace);
 					return null;
 				case "=":
 				case "==":
@@ -314,13 +314,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (expressionOrVariableDeclaration == null)
 						return null;
 					
-					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					resolveResult = ResolveExpression (expressionOrVariableDeclaration);
 					
 					if (resolveResult == null)
 						return null;
 					if (resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 						var wrapper = new CompletionDataWrapper (this);
-						AddContextCompletion (wrapper, resolveResult.Item2, expressionOrVariableDeclaration.Item2);
+						AddContextCompletion (wrapper, resolveResult.Item2, expressionOrVariableDeclaration.Node);
 						AddEnumMembers (wrapper, resolveResult.Item1.Type, resolveResult.Item2);
 						AutoCompleteEmptyMatch = false;
 						return wrapper.Result;
@@ -358,7 +358,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (expressionOrVariableDeclaration == null)
 						return null;
 				
-					resolveResult = ResolveExpression (expressionOrVariableDeclaration.Item1, expressionOrVariableDeclaration.Item2, expressionOrVariableDeclaration.Item3);
+					resolveResult = ResolveExpression (expressionOrVariableDeclaration);
 					if (resolveResult == null)
 						return null;
 					
@@ -392,13 +392,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					return null;
 				case ":":
-					
-/* Breaks constructor initializer case:
-					 * if (currentMember == null) {
+					if (currentMember == null) {
 						var wrapper = new CompletionDataWrapper (this);
-						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.Equals (t) : true);
+						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.ReflectionName.Equals (t.ReflectionName) : true);
 						return wrapper.Result;
-					}*/
+					}
 					return null;
 				}
 				
@@ -433,13 +431,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var contextList = new CompletionDataWrapper (this);
 				var identifierStart = GetExpressionAtCursor ();
 				
-				if (identifierStart != null && identifierStart.Item2 is TypeParameterDeclaration)
+				if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration)
 					return null;
 				
-				if (identifierStart != null && identifierStart.Item2 is VariableInitializer && location <= ((VariableInitializer)identifierStart.Item2).NameToken.EndLocation) {
+				if (identifierStart != null && identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
-				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Item2 is ArrayInitializerExpression))) {
+				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Node is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
@@ -454,6 +452,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				token = GetPreviousToken (ref tokenIndex, false);
 				if (token == "class" || token == "interface" || token == "struct" || token == "enum" || token == "namespace") // after these always follows a name
 					return null;
+				var keywordresult = HandleKeywordCompletion (tokenIndex, token);
+				if (keywordresult != null)
+					return keywordresult;
 				int prevTokenIndex = tokenIndex;
 				var prevToken2 = GetPreviousToken (ref prevTokenIndex, false);
 				if (prevToken2 == "delegate") // after these always follows a name
@@ -464,6 +465,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return HandleKeywordCompletion (tokenIndex, token);
 					}
 				}
+				
 				if (identifierStart == null) {
 					var accCtx = HandleAccessorContext ();
 					if (accCtx != null)
@@ -471,7 +473,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return DefaultControlSpaceItems (null, controlSpace);
 				}
 				CSharpResolver csResolver;
-				AstNode n = identifierStart.Item2;
+				AstNode n = identifierStart.Node;
 				
 				if (n != null && n.Parent is AnonymousTypeCreateExpression) {
 					AutoSelect = false;
@@ -490,7 +492,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				if (n != null && n.Parent is InvocationExpression) {
 					var invokeParent = (InvocationExpression)n.Parent;
-					var invokeResult = ResolveExpression (identifierStart.Item1, invokeParent.Target, identifierStart.Item3);
+					var invokeResult = ResolveExpression (invokeParent.Target, identifierStart.Unit);
 					var mgr = invokeResult != null ? invokeResult.Item1 as MethodGroupResolveResult : null;
 					if (mgr != null) {
 						int idx = 0;
@@ -501,7 +503,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						
 						foreach (var method in mgr.Methods) {
-							if (idx < method.Parameters.Count && method.Parameters[idx].Type.Kind == TypeKind.Delegate) {
+							if (idx < method.Parameters.Count && method.Parameters [idx].Type.Kind == TypeKind.Delegate) {
 								AutoSelect = false;
 								AutoCompleteEmptyMatch = false;
 							}
@@ -512,7 +514,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						idx++;
 						foreach (var list in mgr.GetExtensionMethods ()) {
 							foreach (var method in list) {
-								if (idx < method.Parameters.Count && method.Parameters[idx].Type.Kind == TypeKind.Delegate) {
+								if (idx < method.Parameters.Count && method.Parameters [idx].Type.Kind == TypeKind.Delegate) {
 									AutoSelect = false;
 									AutoCompleteEmptyMatch = false;
 								}
@@ -523,7 +525,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				if (n != null && n.Parent is ObjectCreateExpression) {
-					var invokeResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
+					var invokeResult = ResolveExpression (n.Parent, identifierStart.Unit);
 					var mgr = invokeResult != null ? invokeResult.Item1 as ResolveResult : null;
 					
 					if (mgr != null) {
@@ -544,7 +546,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					// check for compare to enum case 
 					if (evaluationExpr != null) {
-						resolveResult = ResolveExpression (identifierStart.Item1, evaluationExpr, identifierStart.Item3);
+						resolveResult = ResolveExpression (evaluationExpr, identifierStart.Unit);
 						if (resolveResult != null && resolveResult.Item1.Type.Kind == TypeKind.Enum) {
 							var wrapper = new CompletionDataWrapper (this);
 							AddContextCompletion (wrapper, resolveResult.Item2, evaluationExpr);
@@ -567,9 +569,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (parent != null && parent.Type.IsNull)
 						return DefaultControlSpaceItems ();
 					
-					var initalizerResult = ResolveExpression (identifierStart.Item1, n.Parent, identifierStart.Item3);
+					var initalizerResult = ResolveExpression (n.Parent, identifierStart.Unit);
 					
-					var concreteNode = identifierStart.Item3.GetNodeAt<IdentifierExpression> (location);
+					var concreteNode = identifierStart.Unit.GetNodeAt<IdentifierExpression> (location);
 					// check if we're on the right side of an initializer expression
 					if (concreteNode != null && concreteNode.Parent != null && concreteNode.Parent.Parent != null && concreteNode.Identifier != "a" && concreteNode.Parent.Parent is NamedExpression) {
 						return DefaultControlSpaceItems ();
@@ -597,7 +599,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					nodes.Add (n);
 					if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute)
 						nodes.Add (n.Parent);
-					var astResolver = new CSharpAstResolver (csResolver, identifierStart.Item3, identifierStart.Item1);
+					var astResolver = new CSharpAstResolver (csResolver, identifierStart.Unit, CSharpParsedFile);
 					astResolver.ApplyNavigator (new NodeListResolveVisitorNavigator (nodes));
 					try {
 						csResolver = astResolver.GetResolverStateBefore (n);
@@ -621,7 +623,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				// identifier has already started with the first letter
 				offset--;
-				AddContextCompletion (contextList, csResolver, identifierStart.Item2);
+				AddContextCompletion (contextList, csResolver, identifierStart.Node);
 				return contextList.Result;
 //				if (stub.Parent is BlockStatement)
 				
@@ -736,7 +738,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return contextList.Result;
 		}
 		
-		IEnumerable<ICompletionData> DefaultControlSpaceItems (Tuple<CSharpParsedFile, AstNode, CompilationUnit> xp = null, bool controlSpace = true)
+		IEnumerable<ICompletionData> DefaultControlSpaceItems (ExpressionResult xp = null, bool controlSpace = true)
 		{
 			var wrapper = new CompletionDataWrapper (this);
 			if (offset >= document.TextLength)
@@ -751,12 +753,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AstNode node;
 			Tuple<ResolveResult, CSharpResolver> rr;
 			if (xp != null) {
-				node = xp.Item2;
-				rr = ResolveExpression (xp.Item1, node, xp.Item3);
+				node = xp.Node;
+				rr = ResolveExpression (node, xp.Unit);
 			} else {
 				var unit = ParseStub ("a");
 				node = unit.GetNodeAt (location);
-				rr = ResolveExpression (CSharpParsedFile, node, unit);
+				rr = ResolveExpression (node, unit);
 			}
 			
 			if (node is Identifier && node.Parent is ForeachStatement) {
@@ -880,7 +882,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.AddRange (factory.CreateCodeTemplateCompletionData ());
 			
 			if (node != null && node.Role == AstNode.Roles.Argument) {
-				var resolved = ResolveExpression (CSharpParsedFile, node.Parent, Unit);
+				var resolved = ResolveExpression (node.Parent, Unit);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
 				if (invokeResult != null) {
 					int argNum = 0;
@@ -1057,17 +1059,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				IType isAsType = null;
 				var isAsExpression = GetExpressionAt (wordStart);
 				if (isAsExpression != null) {
-					var parent = isAsExpression.Item2.Parent;
+					var parent = isAsExpression.Node.Parent;
 					if (parent is VariableInitializer)
 						parent = parent.Parent;
 					if (parent is VariableDeclarationStatement) {
-						var resolved = ResolveExpression (isAsExpression.Item1, parent, isAsExpression.Item3);
+						var resolved = ResolveExpression (parent, isAsExpression.Unit);
 						if (resolved != null)
 							isAsType = resolved.Item1.Type;
 					}
 				}
 				var isAsWrapper = new CompletionDataWrapper (this);
-				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.GetDefinition ().IsDerivedFrom (isAsType.GetDefinition ()));
+				AddTypesAndNamespaces (isAsWrapper, GetState (), null, t => isAsType == null || t.GetDefinition ().IsDerivedFrom (isAsType.GetDefinition ()), m => false);
 				return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();
@@ -1174,9 +1176,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					return accessorContext;
 				wrapper = new CompletionDataWrapper (this);
 				state = GetState ();
-				AddTypesAndNamespaces (wrapper, state, null, null, m => false);
+				if (currentType != null) {
+					AddTypesAndNamespaces (wrapper, state, null, null, m => false);
+					AddKeywords (wrapper, primitiveTypesKeywords);
+				}
 				AddKeywords (wrapper, typeLevelKeywords);
-				AddKeywords (wrapper, primitiveTypesKeywords);
 				return wrapper.Result;
 			case "new":
 				int j = offset - 4;
@@ -1187,19 +1191,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				AstNode newParentNode = null;
 				AstType hintTypeAst = null;
 				if (expressionOrVariableDeclaration != null) {
-					newParentNode = expressionOrVariableDeclaration.Item2.Parent;
+					newParentNode = expressionOrVariableDeclaration.Node.Parent;
 					if (newParentNode is VariableInitializer)
 						newParentNode = newParentNode.Parent;
 				}
 				if (newParentNode is InvocationExpression) {
 					var invoke = (InvocationExpression)newParentNode;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, invoke, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (invoke, expressionOrVariableDeclaration.Unit);
 					if (resolved != null) {
 						var mgr = resolved.Item1 as CSharpInvocationResolveResult;
 						if (mgr != null) {
 							int i1 = 0;
 							foreach (var a in invoke.Arguments) {
-								if (a == expressionOrVariableDeclaration.Item2) {
+								if (a == expressionOrVariableDeclaration.Node) {
 									if (mgr.Member.Parameters.Count > i1)
 										hintType = mgr.Member.Parameters [i1].Type;
 									break;
@@ -1212,13 +1216,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				if (newParentNode is ObjectCreateExpression) {
 					var invoke = (ObjectCreateExpression)newParentNode;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, invoke, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (invoke, expressionOrVariableDeclaration.Unit);
 					if (resolved != null) {
 						var mgr = resolved.Item1 as CSharpInvocationResolveResult;
 						if (mgr != null) {
 							int i1 = 0;
 							foreach (var a in invoke.Arguments) {
-								if (a == expressionOrVariableDeclaration.Item2) {
+								if (a == expressionOrVariableDeclaration.Node) {
 									if (mgr.Member.Parameters.Count > i1)
 										hintType = mgr.Member.Parameters [i1].Type;
 									break;
@@ -1231,7 +1235,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				if (newParentNode is AssignmentExpression) {
 					var assign = (AssignmentExpression)newParentNode;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, assign.Left, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (assign.Left, expressionOrVariableDeclaration.Unit);
 					if (resolved != null) {
 						hintType = resolved.Item1.Type;
 					}
@@ -1240,7 +1244,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (newParentNode is VariableDeclarationStatement) {
 					var varDecl = (VariableDeclarationStatement)newParentNode;
 					hintTypeAst = varDecl.Type;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, varDecl.Type, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (varDecl.Type, expressionOrVariableDeclaration.Unit);
 					if (resolved != null) {
 						hintType = resolved.Item1.Type;
 					}
@@ -1249,7 +1253,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (newParentNode is FieldDeclaration) {
 					var varDecl = (FieldDeclaration)newParentNode;
 					hintTypeAst = varDecl.ReturnType;
-					var resolved = ResolveExpression (expressionOrVariableDeclaration.Item1, varDecl.ReturnType, expressionOrVariableDeclaration.Item3);
+					var resolved = ResolveExpression (varDecl.ReturnType, expressionOrVariableDeclaration.Unit);
 					if (resolved != null)
 						hintType = resolved.Item1.Type;
 				}
@@ -1287,7 +1291,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			case "in":
 				var inList = new CompletionDataWrapper (this);
 				var node = Unit.GetNodeAt (location);
-				var rr = ResolveExpression (CSharpParsedFile, node, Unit);
+				var rr = ResolveExpression (node, Unit);
 				AddContextCompletion (inList, rr != null ? rr.Item2 : GetState (), node);
 				return inList.Result;
 //				case "where":
@@ -1797,10 +1801,32 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return result.Result;
 			}
 			
+			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed (type);
+			bool skipNonStaticMembers = (resolveResult is TypeResolveResult);
+			
 			if (resolveResult is MemberResolveResult && resolvedNode is IdentifierExpression) {
 				var mrr = (MemberResolveResult)resolveResult;
 				includeStaticMembers = mrr.Member.Name == mrr.Type.Name;
 				
+				TypeResolveResult trr;
+				if (state.IsVariableReferenceWithSameType (resolveResult, ((IdentifierExpression)resolvedNode).Identifier, out trr)) {
+					if (currentMember != null && mrr.Member.IsStatic ^ currentMember.IsStatic) {
+						skipNonStaticMembers = true;
+						
+						if (trr.Type.Kind == TypeKind.Enum) {
+							foreach (var field in trr.Type.GetFields ()) {
+								result.AddMember (field);
+							}
+							foreach (var m in trr.Type.GetMethods ()) {
+								if (m.Name == "TryParse" && m.IsStatic) {
+									result.AddMember (m);
+								}
+							}
+							return result.Result;
+						}
+					}
+				}
 				// ADD Aliases
 				var scope = CSharpParsedFile.GetUsingScope (location).Resolve (Compilation);
 			
@@ -1832,9 +1858,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 //			Console.WriteLine (currentMember !=  null ? currentMember.IsStatic : "currentMember == null");
 			
 			if (resolvedNode.Annotation<ObjectCreateExpression> () == null) { //tags the created expression as part of an object create expression.
-				var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
-				bool isProtectedAllowed = resolveResult is ThisResolveResult ? true : lookup.IsProtectedAccessAllowed (type);
-			
+				
 				var filteredList = new List<IMember> ();
 				foreach (var member in type.GetMembers ()) {
 //					Console.WriteLine ("member:" + member + member.IsShadowing);
@@ -1853,7 +1877,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (field != null)
 						memberIsStatic |= field.IsConst;
 					
-					if (!memberIsStatic && (resolveResult is TypeResolveResult)) {
+					if (!memberIsStatic && skipNonStaticMembers) {
 						continue;
 					}
 					
@@ -1868,7 +1892,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				foreach (var member in filteredList) {
-//					Console.WriteLine ("add : "+ member.FullName + " --- " + member.IsStatic);
+//					Console.WriteLine ("add:" + member + "/" + member.IsStatic);
 					result.AddMember (member);
 				}
 			}
@@ -1924,7 +1948,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null)
 				return null;
 			
-			var resolveResult = ResolveExpression (expr.Item1, expr.Item2, expr.Item3);
+			var resolveResult = ResolveExpression (expr);
 			if (resolveResult == null || resolveResult.Item1.Type.Kind != TypeKind.Enum) 
 				return null;
 			var wrapper = new CompletionDataWrapper (this);
@@ -1934,7 +1958,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		
 		#region Parsing methods
-		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionBeforeCursor ()
+		ExpressionResult GetExpressionBeforeCursor ()
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
@@ -1949,23 +1973,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					baseUnit = ParseStub ("A a;", false);
 					type = baseUnit.GetNodeAt<MemberType> (location);
 				}
-				
 				if (type != null) {
 					if (currentType == null) {
-						var tsvisitor2 = new TypeSystemConvertVisitor (this.CSharpParsedFile.FileName);
-						baseUnit.AcceptVisitor (tsvisitor2, null);
-						return Tuple.Create (tsvisitor2.ParsedFile, (AstNode)type.Target, baseUnit);
+						return new ExpressionResult ((AstNode)type.Target, baseUnit);
 					}
 					
 					var target = type.Target;
 					target.Remove ();
 					var node = Unit.GetNodeAt (location) ?? Unit;
 					node.AddChild (target, AstNode.Roles.Type);
-					return Tuple.Create (CSharpParsedFile, (AstNode)target, Unit);
+					return new ExpressionResult ((AstNode)target, Unit);
 				}
 			}
-			if (currentMember == null && currentType == null)
-				return null;
 			
 			baseUnit = ParseStub ("a()", false);
 			var curNode = baseUnit.GetNodeAt (location);
@@ -1980,8 +1999,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
+			if (currentMember == null && currentType == null) {
+				if (mref != null)
+					return new ExpressionResult ((AstNode)mref.Target, baseUnit);
+				return null;
+			}
+			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression> (location); 
 				if (invoke != null)
@@ -2020,12 +2044,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
-			var tsvisitor = new TypeSystemConvertVisitor (this.CSharpParsedFile.FileName);
-			Unit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, (AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, Unit);
 		}
 		
-		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionAtCursor ()
+		ExpressionResult GetExpressionAtCursor ()
 		{
 //			if (currentMember == null && currentType == null)
 //				return null;
@@ -2038,13 +2060,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = location;
 			}
-			var baseUnit = ParseStub ("");
+			var baseUnit = ParseStub ("a");
 			var tmpUnit = baseUnit;
-			AstNode expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1);
-			if (expr == null)
-				expr = baseUnit.GetNodeAt<Attribute> (location.Line, location.Column - 1);
-			if (expr == null)
+			AstNode expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression);
+			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column - 1);
+				if (expr is AstType && expr.Parent is Attribute)
+					expr = expr.Parent;
+			}
 			
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement> (location.Line, location.Column) != null) {
@@ -2114,8 +2137,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				expr = baseUnit.GetNodeAt<AnonymousTypeCreateExpression> (location.Line, location.Column); 
 				if (expr != null)
 					expr = baseUnit.GetNodeAt<Expression> (location.Line, location.Column) ?? expr; 
+				if (expr == null)
+					expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column); 
+				if (expr is AstType && expr.Parent is Attribute)
+					expr = expr.Parent;
 			}
-			
 			if (expr == null)
 				return null;
 			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
@@ -2129,16 +2155,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					member.ReplaceWith (member2);
 				}
 			} else {
-				var tsvisitor2 = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
-				Unit.AcceptVisitor (tsvisitor2, null);
-				return Tuple.Create (tsvisitor2.ParsedFile, expr, baseUnit);
+				return new ExpressionResult (expr, baseUnit);
 			}
-			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
-			Unit.AcceptVisitor (tsvisitor, null);
-			return Tuple.Create (tsvisitor.ParsedFile, expr, Unit);
+			return new ExpressionResult (expr, Unit);
 		}
 		
-		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetExpressionAt (int offset)
+		ExpressionResult GetExpressionAt (int offset)
 		{
 			var parser = new CSharpParser ();
 			string text = this.document.GetText (0, this.offset); 
@@ -2153,13 +2175,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var expr = completionUnit.GetNodeAt (loc, n => n is Expression || n is VariableDeclarationStatement);
 			if (expr == null)
 				return null;
-			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
-			completionUnit.AcceptVisitor (tsvisitor, null);
-			
-			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
+			return new ExpressionResult (expr, completionUnit);
 		}
 		
-		Tuple<CSharpParsedFile, AstNode, CompilationUnit> GetNewExpressionAt (int offset)
+		ExpressionResult GetNewExpressionAt (int offset)
 		{
 			var parser = new CSharpParser ();
 			string text = this.document.GetText (0, this.offset); 
@@ -2187,10 +2206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (expr == null)
 					return null;
 			}
-			var tsvisitor = new TypeSystemConvertVisitor (CSharpParsedFile.FileName);
-			completionUnit.AcceptVisitor (tsvisitor, null);
-			
-			return Tuple.Create (tsvisitor.ParsedFile, expr, completionUnit);
+			return new ExpressionResult (expr, completionUnit);
 		}
 		
 		

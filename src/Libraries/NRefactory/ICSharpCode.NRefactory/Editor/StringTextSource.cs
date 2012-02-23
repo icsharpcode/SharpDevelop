@@ -98,6 +98,12 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public int IndexOf(char c, int startIndex, int count)
+		{
+			return text.IndexOf(c, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			return text.IndexOfAny(anyOf, startIndex, count);
@@ -110,9 +116,15 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public int LastIndexOf(char c, int startIndex, int count)
+		{
+			return text.LastIndexOf(c, startIndex + count - 1, count);
+		}
+		
+		/// <inheritdoc/>
 		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
 		{
-			return text.LastIndexOf(searchText, startIndex, count, comparisonType);
+			return text.LastIndexOf(searchText, startIndex + count - 1, count, comparisonType);
 		}
 	}
 }

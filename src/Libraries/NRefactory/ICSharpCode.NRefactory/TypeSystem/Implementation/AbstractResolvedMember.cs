@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -30,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		protected new readonly IUnresolvedMember unresolved;
 		protected readonly ITypeResolveContext context;
 		volatile IType returnType;
-		IList<IMember> interfaceImplementations;
+		IList<IMember> implementedInterfaceMembers;
 		
 		protected AbstractResolvedMember(IUnresolvedMember unresolved, ITypeResolveContext parentContext)
 			: base(unresolved, parentContext)
@@ -53,19 +54,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return unresolved; }
 		}
 		
-		public IList<IMember> InterfaceImplementations {
+		public IList<IMember> ImplementedInterfaceMembers {
 			get {
-				IList<IMember> result = this.interfaceImplementations;
+				IList<IMember> result = this.implementedInterfaceMembers;
 				if (result != null) {
 					LazyInit.ReadBarrier();
 					return result;
 				} else {
-					return LazyInit.GetOrSet(ref interfaceImplementations, FindInterfaceImplementations());
+					return LazyInit.GetOrSet(ref implementedInterfaceMembers, FindImplementedInterfaceMembers());
 				}
 			}
 		}
 		
-		IList<IMember> FindInterfaceImplementations()
+		public override DocumentationComment Documentation {
+			get {
+				IUnresolvedDocumentationProvider docProvider = unresolved.ParsedFile as IUnresolvedDocumentationProvider;
+				if (docProvider != null) {
+					var doc = docProvider.GetDocumentation(unresolved, this);
+					if (doc != null)
+						return doc;
+				}
+				return base.Documentation;
+			}
+		}
+		
+		IList<IMember> FindImplementedInterfaceMembers()
 		{
 			if (unresolved.IsExplicitInterfaceImplementation) {
 				List<IMember> result = new List<IMember>();
@@ -99,8 +112,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IMemberReference ToMemberReference()
 		{
 			var declTypeRef = this.DeclaringType.ToTypeReference();
-			if (IsExplicitInterfaceImplementation && InterfaceImplementations.Count == 1) {
-				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, InterfaceImplementations[0].ToMemberReference());
+			if (IsExplicitInterfaceImplementation && ImplementedInterfaceMembers.Count == 1) {
+				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
 			} else {
 				return new DefaultMemberReference(this.EntityType, declTypeRef, this.Name);
 			}

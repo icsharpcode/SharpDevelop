@@ -19,7 +19,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
@@ -50,6 +52,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			get { return interningProvider; }
 			set { interningProvider = value; }
 		}
+		
+		/// <summary>
+		/// Gets/Sets whether to ignore XML documentation.
+		/// The default value is false.
+		/// </summary>
+		public bool SkipXmlDocumentation { get; set; }
 		
 		/// <summary>
 		/// Creates a new TypeSystemConvertVisitor.
@@ -181,6 +189,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var td = currentTypeDefinition = CreateTypeDefinition(typeDeclaration.Name);
 			td.Region = MakeRegion(typeDeclaration);
 			td.BodyRegion = MakeBraceRegion(typeDeclaration);
+			AddXmlDocumentation(td, typeDeclaration);
 			
 			ApplyModifiers(td, typeDeclaration.Modifiers);
 			switch (typeDeclaration.ClassType) {
@@ -222,6 +231,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			td.Kind = TypeKind.Delegate;
 			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(KnownTypeReference.MulticastDelegate);
+			AddXmlDocumentation(td, delegateDeclaration);
 			
 			ApplyModifiers(td, delegateDeclaration.Modifiers);
 			td.IsSealed = true; // delegates are implicitly sealed
@@ -334,6 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				field.Region = isSingleField ? MakeRegion(fieldDeclaration) : MakeRegion(vi);
 				field.BodyRegion = MakeRegion(vi);
 				ConvertAttributes(field.Attributes, fieldDeclaration.Attributes);
+				AddXmlDocumentation(field, fieldDeclaration);
 				
 				ApplyModifiers(field, modifiers);
 				field.IsVolatile = (modifiers & Modifiers.Volatile) != 0;
@@ -364,6 +375,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			DefaultUnresolvedField field = new DefaultUnresolvedField(currentTypeDefinition, enumMemberDeclaration.Name);
 			field.Region = field.BodyRegion = MakeRegion(enumMemberDeclaration);
 			ConvertAttributes(field.Attributes, enumMemberDeclaration.Attributes);
+			AddXmlDocumentation(field, enumMemberDeclaration);
 			
 			if (currentTypeDefinition.TypeParameters.Count == 0) {
 				field.ReturnType = currentTypeDefinition;
@@ -402,6 +414,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			currentMethod = m; // required for resolving type parameters
 			m.Region = MakeRegion(methodDeclaration);
 			m.BodyRegion = MakeRegion(methodDeclaration.Body);
+			AddXmlDocumentation(m, methodDeclaration);
 			
 			if (InheritsConstraints(methodDeclaration) && methodDeclaration.Constraints.Count == 0) {
 				int index = 0;
@@ -526,6 +539,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			m.EntityType = EntityType.Operator;
 			m.Region = MakeRegion(operatorDeclaration);
 			m.BodyRegion = MakeRegion(operatorDeclaration.Body);
+			AddXmlDocumentation(m, operatorDeclaration);
 			
 			m.ReturnType = operatorDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(m.Attributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget != "return"));
@@ -560,6 +574,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			
 			ConvertAttributes(ctor.Attributes, constructorDeclaration.Attributes);
 			ConvertParameters(ctor.Parameters, constructorDeclaration.Parameters);
+			AddXmlDocumentation(ctor, constructorDeclaration);
 			
 			if (isStatic)
 				ctor.IsStatic = true;
@@ -586,6 +601,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			dtor.ReturnType = KnownTypeReference.Void;
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
+			AddXmlDocumentation(dtor, destructorDeclaration);
 			
 			currentTypeDefinition.Members.Add(dtor);
 			if (interningProvider != null) {
@@ -604,6 +620,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ApplyModifiers(p, propertyDeclaration.Modifiers);
 			p.ReturnType = propertyDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
+			AddXmlDocumentation(p, propertyDeclaration);
 			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
 				p.IsExplicitInterfaceImplementation = true;
@@ -628,6 +645,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ApplyModifiers(p, indexerDeclaration.Modifiers);
 			p.ReturnType = indexerDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(p.Attributes, indexerDeclaration.Attributes);
+			AddXmlDocumentation(p, indexerDeclaration);
 			
 			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
 			p.Getter = ConvertAccessor(indexerDeclaration.Getter, p, "get_");
@@ -692,6 +710,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				ev.BodyRegion = MakeRegion(vi);
 				
 				ApplyModifiers(ev, modifiers);
+				AddXmlDocumentation(ev, eventDeclaration);
 				
 				ev.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 				
@@ -738,6 +757,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ApplyModifiers(e, eventDeclaration.Modifiers);
 			e.ReturnType = eventDeclaration.ReturnType.ToTypeReference();
 			ConvertAttributes(e.Attributes, eventDeclaration.Attributes);
+			AddXmlDocumentation(e, eventDeclaration);
 			
 			if (!eventDeclaration.PrivateImplementationType.IsNull) {
 				e.Accessibility = Accessibility.None;
@@ -1098,6 +1118,90 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					p.DefaultValue = ConvertConstantValue(p.Type, pd.DefaultExpression);
 				outputList.Add(p);
 			}
+		}
+		#endregion
+		
+		#region XML Documentation
+		void AddXmlDocumentation(IUnresolvedEntity entity, AstNode entityDeclaration)
+		{
+			if (this.SkipXmlDocumentation)
+				return;
+			List<string> documentation = null;
+			// traverse AST backwards until the next non-whitespace node
+			for (AstNode node = entityDeclaration.PrevSibling; node != null && node.NodeType == NodeType.Whitespace; node = node.PrevSibling) {
+				Comment c = node as Comment;
+				if (c != null && (c.CommentType == CommentType.Documentation || c.CommentType == CommentType.MultiLineDocumentation)) {
+					if (documentation == null)
+						documentation = new List<string>();
+					if (c.CommentType == CommentType.MultiLineDocumentation) {
+						documentation.Add(PrepareMultilineDocumentation(c.Content));
+					} else {
+						if (c.Content.Length > 0 && c.Content[0] == ' ')
+							documentation.Add(c.Content.Substring(1));
+						else
+							documentation.Add(c.Content);
+					}
+				}
+			}
+			if (documentation != null) {
+				documentation.Reverse(); // bring documentation in correct order
+				parsedFile.AddDocumentation(entity, string.Join(Environment.NewLine, documentation));
+			}
+		}
+		
+		string PrepareMultilineDocumentation(string content)
+		{
+			StringBuilder b = new StringBuilder();
+			using (var reader = new StringReader(content)) {
+				string firstLine = reader.ReadLine();
+				// Add first line only if it's not empty:
+				if (!string.IsNullOrWhiteSpace(firstLine)) {
+					if (firstLine[0] == ' ')
+						b.Append(firstLine, 1, firstLine.Length - 1);
+					else
+						b.Append(firstLine);
+				}
+				// Read lines into list:
+				List<string> lines = new List<string>();
+				string line;
+				while ((line = reader.ReadLine()) != null)
+					lines.Add(line);
+				// If the last line (the line with '*/' delimiter) is white space only, ignore it.
+				if (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[lines.Count - 1]))
+					lines.RemoveAt(lines.Count - 1);
+				if (lines.Count > 0) {
+					// Extract pattern from lines[0]: whitespace, asterisk, whitespace
+					int patternLength = 0;
+					string secondLine = lines[0];
+					while (patternLength < secondLine.Length && char.IsWhiteSpace(secondLine[patternLength]))
+						patternLength++;
+					if (patternLength < secondLine.Length && secondLine[patternLength] == '*') {
+						patternLength++;
+						while (patternLength < secondLine.Length && char.IsWhiteSpace(secondLine[patternLength]))
+							patternLength++;
+					} else {
+						// no asterisk
+						patternLength = 0;
+					}
+					// Now reduce pattern length to the common pattern:
+					for (int i = 1; i < lines.Count; i++) {
+						line = lines[i];
+						if (line.Length < patternLength)
+							patternLength = line.Length;
+						for (int j = 0; j < patternLength; j++) {
+							if (secondLine[j] != line[j])
+								patternLength = j;
+						}
+					}
+					// Append the lines to the string builder:
+					for (int i = 0; i < lines.Count; i++) {
+						if (b.Length > 0 || i > 0)
+							b.Append(Environment.NewLine);
+						b.Append(lines[i], patternLength, lines[i].Length - patternLength);
+					}
+				}
+			}
+			return b.ToString();
 		}
 		#endregion
 	}
