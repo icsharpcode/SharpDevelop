@@ -1121,7 +1121,6 @@ namespace MyNamespace
 		/// <summary>
 		/// Bug 432434B - Code completion doesn't work with subclasses
 		/// </summary>
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestBug432434B ()
 		{
@@ -4579,6 +4578,24 @@ namespace Foobar
 
 ");
 			Assert.IsNotNull (provider.Find ("Intent"), "'Intent' not found.");
+		}
+		
+		[Ignore("Mcs bug")]
+		[Test()]
+		public void TestForConditionContext ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		$for (int i = 0; i < System.$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
 	}
 }

@@ -392,13 +392,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 					return null;
 				case ":":
-					
-/* Breaks constructor initializer case:
-					 * if (currentMember == null) {
+					if (currentMember == null) {
 						var wrapper = new CompletionDataWrapper (this);
-						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.Equals (t) : true);
+						AddTypesAndNamespaces (wrapper, GetState (), null, t => currentType != null ? !currentType.ReflectionName.Equals (t.ReflectionName) : true);
 						return wrapper.Result;
-					}*/
+					}
 					return null;
 				}
 				

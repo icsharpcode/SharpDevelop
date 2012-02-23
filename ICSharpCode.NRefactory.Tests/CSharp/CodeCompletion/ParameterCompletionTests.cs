@@ -799,7 +799,7 @@ class TestClass
 			Assert.AreEqual (1, provider.Count);
 		}
 		
-		[Ignore("MCS TODO!")]
+		[Ignore("TODO!")]
 		[Test()]
 		public void TestTypeParameterInBaseType ()
 		{

@@ -348,7 +348,7 @@ namespace Foo
 			Assert.IsNotNull (provider.Find ("Value"), "field 'Value' not found.");
 		}
 		
-		[Ignore("Fixme!")]
+		[Ignore("Fixme/mcs local var declarations are broken a bit atm !")]
 		[Test()]
 		public void TestLinqWhere() {
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider(
