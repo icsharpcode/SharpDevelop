@@ -60,8 +60,8 @@ namespace ICSharpCode.NRefactory.Documentation
 			IMember member = (IMember)entity;
 			AppendTypeName(b, member.DeclaringType, false);
 			b.Append('.');
-			if (member.IsExplicitInterfaceImplementation && member.Name.IndexOf('.') < 0 && member.InterfaceImplementations.Count == 1) {
-				AppendTypeName(b, member.InterfaceImplementations[0].DeclaringType, true);
+			if (member.IsExplicitInterfaceImplementation && member.Name.IndexOf('.') < 0 && member.ImplementedInterfaceMembers.Count == 1) {
+				AppendTypeName(b, member.ImplementedInterfaceMembers[0].DeclaringType, true);
 				b.Append('#');
 			}
 			b.Append(member.Name.Replace('.', '#'));
