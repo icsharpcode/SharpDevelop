@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.Documentation
 				// Note: there's no mscorlib in the context.
 				// These tests only use primitive types from mscorlib, so the full name is known
 				// without resolving them.
-				return new DocumentationComment(IDStringProvider.GetIDString(entity), new SimpleTypeResolveContext(entity));
+				return new DocumentationComment(IdStringProvider.GetIdString(entity), new SimpleTypeResolveContext(entity));
 			}
 		}
 		
@@ -328,13 +328,13 @@ namespace Acme
 		{
 			var list = new SimpleCompilation(CecilLoaderTests.Mscorlib).FindType(typeof(List<>)).GetDefinition();
 			Assert.AreEqual("T:System.Collections.Generic.List`1",
-			                IDStringProvider.GetIDString(list));
+			                IdStringProvider.GetIdString(list));
 			Assert.AreEqual("M:System.Collections.Generic.List`1.Add(`0)",
-			                IDStringProvider.GetIDString(list.Methods.Single(m => m.Name == "Add")));
+			                IdStringProvider.GetIdString(list.Methods.Single(m => m.Name == "Add")));
 			Assert.AreEqual("M:System.Collections.Generic.List`1.AddRange(System.Collections.Generic.IEnumerable{`0})",
-			                IDStringProvider.GetIDString(list.Methods.Single(m => m.Name == "AddRange")));
+			                IdStringProvider.GetIdString(list.Methods.Single(m => m.Name == "AddRange")));
 			Assert.AreEqual("M:System.Collections.Generic.List`1.ConvertAll``1(System.Converter{`0,``0})",
-			                IDStringProvider.GetIDString(list.Methods.Single(m => m.Name == "ConvertAll")));
+			                IdStringProvider.GetIdString(list.Methods.Single(m => m.Name == "ConvertAll")));
 		}
 		
 		[Test]
@@ -353,7 +353,7 @@ class Impl<T> : IGeneric<string[,], T> {
 			
 			Assert.AreEqual(
 				"M:xxx.Impl`1.xxx#IGeneric{System#String[@]@T}#Test``1(``0@)",
-				IDStringProvider.GetIDString(method));
+				IdStringProvider.GetIdString(method));
 		}
 	}
 }

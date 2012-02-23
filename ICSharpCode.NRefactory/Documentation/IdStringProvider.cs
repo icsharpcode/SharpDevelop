@@ -29,13 +29,13 @@ namespace ICSharpCode.NRefactory.Documentation
 	/// Provides ID strings for entities. (C# 4.0 spec, §A.3.1)
 	/// ID strings are used to identify members in XML documentation files.
 	/// </summary>
-	public static class IDStringProvider
+	public static class IdStringProvider
 	{
 		#region GetIDString
 		/// <summary>
 		/// Gets the ID string (C# 4.0 spec, §A.3.1) for the specified entity.
 		/// </summary>
-		public static string GetIDString(IEntity entity)
+		public static string GetIdString(this IEntity entity)
 		{
 			StringBuilder b = new StringBuilder();
 			switch (entity.EntityType) {
@@ -184,22 +184,22 @@ namespace ICSharpCode.NRefactory.Documentation
 		/// <param name="memberIDString">The ID string representing the member (with "M:", "F:", "P:" or "E:" prefix).</param>
 		/// <returns>A member reference that represents the ID string.</returns>
 		/// <exception cref="ReflectionNameParseException">The syntax of the ID string is invalid</exception>
-		public static IMemberReference ParseMemberIDString(string memberIDString)
+		public static IMemberReference ParseMemberIdString(string memberIdString)
 		{
-			if (memberIDString == null)
+			if (memberIdString == null)
 				throw new ArgumentNullException("memberIDString");
-			if (memberIDString.Length < 2 || memberIDString[1] != ':')
+			if (memberIdString.Length < 2 || memberIdString[1] != ':')
 				throw new ReflectionNameParseException(0, "Missing type tag");
-			char typeChar = memberIDString[0];
-			int parenPos = memberIDString.IndexOf('(');
+			char typeChar = memberIdString[0];
+			int parenPos = memberIdString.IndexOf('(');
 			if (parenPos < 0)
-				parenPos = memberIDString.LastIndexOf('~');
+				parenPos = memberIdString.LastIndexOf('~');
 			if (parenPos < 0)
-				parenPos = memberIDString.Length;
-			int dotPos = memberIDString.LastIndexOf('.', parenPos - 1);
+				parenPos = memberIdString.Length;
+			int dotPos = memberIdString.LastIndexOf('.', parenPos - 1);
 			if (dotPos < 0)
 				throw new ReflectionNameParseException(0, "Could not find '.' separating type name from member name");
-			string typeName = memberIDString.Substring(0, dotPos);
+			string typeName = memberIdString.Substring(0, dotPos);
 			int pos = 2;
 			ITypeReference typeReference = ParseTypeName(typeName, ref pos);
 			if (pos != typeName.Length)
@@ -209,7 +209,7 @@ namespace ICSharpCode.NRefactory.Documentation
 //			if (pos > 0)
 //				memberName = memberName.Substring(0, pos);
 //			memberName = memberName.Replace('#', '.');
-			return new IDStringMemberReference(typeReference, typeChar, memberIDString);
+			return new IdStringMemberReference(typeReference, typeChar, memberIdString);
 		}
 		#endregion
 		
@@ -377,7 +377,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			if (idString.StartsWith("T:", StringComparison.Ordinal)) {
 				return ParseTypeName(idString.Substring(2)).Resolve(context).GetDefinition();
 			} else {
-				return ParseMemberIDString(idString).Resolve(context);
+				return ParseMemberIdString(idString).Resolve(context);
 			}
 		}
 		#endregion

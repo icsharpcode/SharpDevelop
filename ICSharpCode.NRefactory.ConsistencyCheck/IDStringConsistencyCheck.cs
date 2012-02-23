@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -44,10 +44,10 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		static void Check(IEntity entity, ITypeResolveContext context, HashSet<string> idStrings)
 		{
-			string id = IDStringProvider.GetIDString(entity);
+			string id = IdStringProvider.GetIdString(entity);
 			if (!idStrings.Add(id))
 				throw new InvalidOperationException("Duplicate ID string " + id);
-			IEntity resolvedEntity = IDStringProvider.FindEntity(id, context);
+			IEntity resolvedEntity = IdStringProvider.FindEntity(id, context);
 			if (resolvedEntity != entity)
 				throw new InvalidOperationException(id);
 		}

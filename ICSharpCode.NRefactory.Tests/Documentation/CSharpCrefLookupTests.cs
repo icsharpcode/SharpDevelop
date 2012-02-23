@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -75,7 +75,7 @@ class Impl<T> : IGeneric<List<string>[,], T> {
 		public void IntParse()
 		{
 			Assert.AreEqual("M:System.Int32.Parse(System.String)",
-			                IDStringProvider.GetIDString(Lookup("int.Parse(string)")));
+			                IdStringProvider.GetIdString(Lookup("int.Parse(string)")));
 		}
 		
 		[Test]
@@ -110,76 +110,76 @@ class Impl<T> : IGeneric<List<string>[,], T> {
 		public void M()
 		{
 			Assert.AreEqual("M:Test.M(System.String[0:,0:])",
-			                IDStringProvider.GetIDString(Lookup("M")));
+			                IdStringProvider.GetIdString(Lookup("M")));
 		}
 		
 		[Test]
 		public void CurrentType()
 		{
 			Assert.AreEqual("T:Test",
-			                IDStringProvider.GetIDString(Lookup("Test")));
+			                IdStringProvider.GetIdString(Lookup("Test")));
 		}
 		
 		[Test]
 		public void Constructor()
 		{
 			Assert.AreEqual("M:Test.#ctor",
-			                IDStringProvider.GetIDString(Lookup("Test()")));
+			                IdStringProvider.GetIdString(Lookup("Test()")));
 		}
 		
 		[Test]
 		public void Overloaded()
 		{
 			Assert.AreEqual("M:Test.Overloaded(System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("Overloaded(int)")));
+			                IdStringProvider.GetIdString(Lookup("Overloaded(int)")));
 			Assert.AreEqual("M:Test.Overloaded(System.String)",
-			                IDStringProvider.GetIDString(Lookup("Overloaded(string)")));
+			                IdStringProvider.GetIdString(Lookup("Overloaded(string)")));
 			Assert.AreEqual("M:Test.Overloaded(System.Int32@)",
-			                IDStringProvider.GetIDString(Lookup("Overloaded(ref int)")));
+			                IdStringProvider.GetIdString(Lookup("Overloaded(ref int)")));
 		}
 		
 		[Test]
 		public void MethodInGenericInterface()
 		{
 			Assert.AreEqual("M:XmlDocTest.IGeneric`2.Test``1(``0[0:,0:]@)",
-			                IDStringProvider.GetIDString(Lookup("IGeneric{X, Y}.Test")));
+			                IdStringProvider.GetIdString(Lookup("IGeneric{X, Y}.Test")));
 			Assert.AreEqual("M:XmlDocTest.IGeneric`2.Test``1(``0[0:,0:]@)",
-			                IDStringProvider.GetIDString(Lookup("IGeneric{X, Y}.Test{Z}")));
+			                IdStringProvider.GetIdString(Lookup("IGeneric{X, Y}.Test{Z}")));
 			Assert.AreEqual("M:XmlDocTest.IGeneric`2.Test``1(``0[0:,0:]@)",
-			                IDStringProvider.GetIDString(Lookup("IGeneric{X, Y}.Test{Z}(ref Z[,])")));
+			                IdStringProvider.GetIdString(Lookup("IGeneric{X, Y}.Test{Z}(ref Z[,])")));
 		}
 		
 		[Test]
 		public void Indexer()
 		{
 			Assert.AreEqual("P:Test.Item(System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("this")));
+			                IdStringProvider.GetIdString(Lookup("this")));
 			Assert.AreEqual("P:Test.Item(System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("Test.this")));
+			                IdStringProvider.GetIdString(Lookup("Test.this")));
 			Assert.AreEqual("P:Test.Item(System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("Test.this[int]")));
+			                IdStringProvider.GetIdString(Lookup("Test.this[int]")));
 		}
 		
 		[Test]
 		public void OperatorPlus()
 		{
 			Assert.AreEqual("M:Test.op_Addition(Test,System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("operator +")));
+			                IdStringProvider.GetIdString(Lookup("operator +")));
 			Assert.AreEqual("M:Test.op_Addition(Test,System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("operator +(Test, int)")));
+			                IdStringProvider.GetIdString(Lookup("operator +(Test, int)")));
 			Assert.AreEqual("M:Test.op_Addition(Test,System.Int32)",
-			                IDStringProvider.GetIDString(Lookup("Test.operator +(Test, int)")));
+			                IdStringProvider.GetIdString(Lookup("Test.operator +(Test, int)")));
 		}
 		
 		[Test]
 		public void ImplicitOperator()
 		{
 			Assert.AreEqual("M:Test.op_Implicit(Test)~System.Int32",
-			                IDStringProvider.GetIDString(Lookup("implicit operator int(Test)")));
+			                IdStringProvider.GetIdString(Lookup("implicit operator int(Test)")));
 			Assert.AreEqual("M:Test.op_Implicit(System.Int32)~Test",
-			                IDStringProvider.GetIDString(Lookup("implicit operator Test(int)")));
+			                IdStringProvider.GetIdString(Lookup("implicit operator Test(int)")));
 			Assert.AreEqual("M:Test.op_Implicit(System.Int32)~Test",
-			                IDStringProvider.GetIDString(Lookup("Test.implicit operator Test(int)")));
+			                IdStringProvider.GetIdString(Lookup("Test.implicit operator Test(int)")));
 		}
 	}
 }

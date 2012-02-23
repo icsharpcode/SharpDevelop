@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -22,17 +22,17 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.Documentation
 {
 	[Serializable]
-	class IDStringMemberReference : IMemberReference
+	class IdStringMemberReference : IMemberReference
 	{
 		readonly ITypeReference declaringTypeReference;
 		readonly char memberType;
-		readonly string memberIDString;
+		readonly string memberIdString;
 		
-		public IDStringMemberReference(ITypeReference declaringTypeReference, char memberType, string memberIDString)
+		public IdStringMemberReference(ITypeReference declaringTypeReference, char memberType, string memberIdString)
 		{
 			this.declaringTypeReference = declaringTypeReference;
 			this.memberType = memberType;
-			this.memberIDString = memberIDString;
+			this.memberIdString = memberIdString;
 		}
 		
 		bool CanMatch(IUnresolvedMember member)
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		{
 			IType declaringType = declaringTypeReference.Resolve(context);
 			foreach (var member in declaringType.GetMembers(CanMatch, GetMemberOptions.IgnoreInheritedMembers)) {
-				if (IDStringProvider.GetIDString(member) == memberIDString)
+				if (IdStringProvider.GetIdString(member) == memberIdString)
 					return member;
 			}
 			return null;

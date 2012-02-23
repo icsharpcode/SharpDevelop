@@ -16,7 +16,7 @@
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1026;-Microsoft.Security#CA2104</CodeAnalysisRules>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <DocumentationFile>bin\$(Configuration)\ICSharpCode.NRefactory.xml</DocumentationFile>
@@ -46,6 +46,9 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>PdbOnly</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,8 +59,6 @@
     <Compile Include="Documentation\DocumentationComment.cs" />
     <Compile Include="Documentation\GetPotentiallyNestedClassTypeReference.cs" />
     <Compile Include="Documentation\IDocumentationProvider.cs" />
-    <Compile Include="Documentation\IDStringMemberReference.cs" />
-    <Compile Include="Documentation\IDStringProvider.cs" />
     <Compile Include="Editor\IDocument.cs" />
     <Compile Include="Editor\IDocumentLine.cs" />
     <Compile Include="Editor\ISegment.cs" />
@@ -220,10 +221,12 @@
     <Compile Include="Completion\CompletionCategory.cs" />
     <Compile Include="Completion\IParameterDataProvider.cs" />
     <Compile Include="Completion\IVariableCompletionData.cs" />
+    <Compile Include="Documentation\IdStringProvider.cs" />
+    <Compile Include="Documentation\IdStringMemberReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Completion\" />
-    <Folder Include="TypeSystem\Implementation" />
+    <Folder Include="TypeSystem\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
