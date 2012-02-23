@@ -367,7 +367,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Entity
-		public AstNode ConvertEntity(IEntity entity)
+		public AttributedNode ConvertEntity(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -467,7 +467,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			ITypeDefinition d = invokeMethod.DeclaringTypeDefinition;
 			
 			DelegateDeclaration decl = new DelegateDeclaration();
-			decl.Modifiers = modifiers;
+			decl.Modifiers = modifiers & ~Modifiers.Sealed;
 			decl.ReturnType = ConvertType(invokeMethod.ReturnType);
 			decl.Name = d.Name;
 			
@@ -491,7 +491,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		
-		AstNode ConvertField(IField field)
+		FieldDeclaration ConvertField(IField field)
 		{
 			FieldDeclaration decl = new FieldDeclaration();
 			if (ShowModifiers) {
@@ -583,7 +583,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		
-		AstNode ConvertOperator(IMethod op)
+		AttributedNode ConvertOperator(IMethod op)
 		{
 			OperatorType? opType = OperatorDeclaration.GetOperatorType(op.Name);
 			if (opType == null)
