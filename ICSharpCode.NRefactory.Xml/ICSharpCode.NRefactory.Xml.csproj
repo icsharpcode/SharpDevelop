@@ -68,6 +68,7 @@
     <Compile Include="AXmlReader.cs" />
     <Compile Include="AXmlTag.cs" />
     <Compile Include="AXmlText.cs" />
+    <Compile Include="DocumentationElement.cs" />
     <Compile Include="IAXmlVisitor.cs" />
     <Compile Include="IncrementalParserState.cs" />
     <Compile Include="InternalDocument.cs" />

@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Xml;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.Documentation
@@ -114,6 +115,27 @@ class Test { }");
  */
 class Test { }");
 			Assert.AreEqual("   <summary>" + Environment.NewLine + " *   Documentation", typeDefinition.Documentation.ToString());
+		}
+		
+		[Test]
+		public void InheritedDocumentation()
+		{
+			Init(@"using System;
+class Derived : Base {
+	/// <summary>Overridden summary</summary><inheritdoc/>
+	public override void Method();
+}
+class Base {
+	/// <summary>Base summary</summary><remarks>Base remarks</remarks>
+	public virtual void Method();
+}
+");
+			var element = XmlDocumentationElement.Get(typeDefinition.Methods.Single(m => m.Name == "Method"));
+			Assert.AreEqual(2, element.Children.Count());
+			Assert.AreEqual("summary", element.Children[0].Name);
+			Assert.AreEqual("remarks", element.Children[1].Name);
+			Assert.AreEqual("Overridden summary", element.Children[0].TextContent);
+			Assert.AreEqual("Base remarks", element.Children[1].TextContent);
 		}
 	}
 }
