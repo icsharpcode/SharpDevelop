@@ -3474,14 +3474,20 @@ namespace ICSharpCode.NRefactory.CSharp
 				AstNode newLeaf = null;
 				var comment = special as SpecialsBag.Comment;
 				if (comment != null) {
-					if (conversionVisitor.convertTypeSystemMode && (comment.CommentType != SpecialsBag.CommentType.Documentation))
+					// HACK: multiline documentation comment detection; better move this logic into the mcs tokenizer
+					bool isMultilineDocumentationComment = (
+						comment.CommentType == SpecialsBag.CommentType.Multi
+						&& comment.Content.StartsWith("*", StringComparison.Ordinal)
+						&& !comment.Content.StartsWith("**", StringComparison.Ordinal)
+					);
+					if (conversionVisitor.convertTypeSystemMode && !(comment.CommentType == SpecialsBag.CommentType.Documentation || isMultilineDocumentationComment))
 						continue;
-					var type = (CommentType)comment.CommentType;
+					var type = isMultilineDocumentationComment ? CommentType.MultiLineDocumentation : (CommentType)comment.CommentType;
 					var start = new TextLocation (comment.Line, comment.Col);
 					var end = new TextLocation (comment.EndLine, comment.EndCol);
 					newLeaf = new Comment (type, start, end) {
 							StartsLine = comment.StartsLine,
-							Content = comment.Content
+							Content = isMultilineDocumentationComment ? comment.Content.Substring(1) : comment.Content
 					};
 				} else {
 					var directive = special as SpecialsBag.PreProcessorDirective;

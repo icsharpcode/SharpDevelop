@@ -43,7 +43,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Inactive code (code in non-taken "#if")
 		/// </summary>
-		InactiveCode
+		InactiveCode,
+		/// <summary>
+		/// "/** */" comment
+		/// </summary>
+		MultiLineDocumentation
 	}
 	
 	public class Comment : AstNode, IRelocatable

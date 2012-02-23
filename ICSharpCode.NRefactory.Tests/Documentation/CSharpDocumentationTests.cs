@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Documentation
 			Init(@"using System;
 /// <summary/>
 class Test { }");
-			Assert.AreEqual("<summary/>", typeDefinition.Documentation.Xml);
+			Assert.AreEqual("<summary/>", typeDefinition.Documentation.ToString());
 		}
 		
 		[Test]
@@ -56,7 +56,7 @@ class Test { }");
 /// Documentation
 /// </summary>
 class Test { }");
-			Assert.AreEqual("<summary>" + Environment.NewLine + "Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.Xml);
+			Assert.AreEqual("<summary>" + Environment.NewLine + "Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.ToString());
 		}
 		
 		[Test]
@@ -67,7 +67,7 @@ class Test { }");
 ///   Documentation
 /// </summary>
 class Test { }");
-			Assert.AreEqual("<summary>" + Environment.NewLine + "  Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.Xml);
+			Assert.AreEqual("<summary>" + Environment.NewLine + "  Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.ToString());
 		}
 		
 		[Test]
@@ -76,7 +76,7 @@ class Test { }");
 			Init(@"using System;
 /** <summary>Documentation</summary> */
 class Test { }");
-			Assert.AreEqual("<summary>Documentation</summary>", typeDefinition.Documentation.Xml);
+			Assert.AreEqual("<summary>Documentation</summary> ", typeDefinition.Documentation.ToString());
 		}
 		
 		[Test]
@@ -89,7 +89,7 @@ class Test { }");
 </summary>
 */
 class Test { }");
-			Assert.AreEqual("<summary>" + Environment.NewLine + "  Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.Xml);
+			Assert.AreEqual("<summary>" + Environment.NewLine + "  Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.ToString());
 		}
 		
 		[Test]
@@ -101,7 +101,19 @@ class Test { }");
  *   Documentation
  * </summary>*/
 class Test { }");
-			Assert.AreEqual("<summary>" + Environment.NewLine + "  Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.Xml);
+			Assert.AreEqual("<summary>" + Environment.NewLine + "  Documentation" + Environment.NewLine + "</summary>", typeDefinition.Documentation.ToString());
+		}
+		
+		[Test]
+		public void MultilineDocumentationNoCommonPattern()
+		{
+			Init(@"using System;
+/**
+   <summary>
+ *   Documentation
+ */
+class Test { }");
+			Assert.AreEqual("   <summary>" + Environment.NewLine + " *   Documentation", typeDefinition.Documentation.ToString());
 		}
 	}
 }

@@ -87,18 +87,18 @@ namespace Acme
 	}
 }";
 			Init(program);
-			Assert.AreEqual("T:Color", GetTypeDefinition(string.Empty, "Color").Documentation.Xml);
-			Assert.AreEqual("T:Acme.IProcess", GetTypeDefinition("Acme", "IProcess").Documentation.Xml);
-			Assert.AreEqual("T:Acme.ValueType", GetTypeDefinition("Acme", "ValueType").Documentation.Xml);
+			Assert.AreEqual("T:Color", GetTypeDefinition(string.Empty, "Color").Documentation.ToString());
+			Assert.AreEqual("T:Acme.IProcess", GetTypeDefinition("Acme", "IProcess").Documentation.ToString());
+			Assert.AreEqual("T:Acme.ValueType", GetTypeDefinition("Acme", "ValueType").Documentation.ToString());
 			
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("T:Acme.Widget", widget.Documentation.Xml);
-			Assert.AreEqual("T:Acme.Widget.NestedClass", widget.NestedTypes.Single(t => t.Name == "NestedClass").Documentation.Xml);
-			Assert.AreEqual("T:Acme.Widget.IMenuItem", widget.NestedTypes.Single(t => t.Name == "IMenuItem").Documentation.Xml);
-			Assert.AreEqual("T:Acme.Widget.Del", widget.NestedTypes.Single(t => t.Name == "Del").Documentation.Xml);
-			Assert.AreEqual("T:Acme.Widget.Direction", widget.NestedTypes.Single(t => t.Name == "Direction").Documentation.Xml);
-			Assert.AreEqual("T:Acme.MyList`1", GetTypeDefinition("Acme", "MyList", 1).Documentation.Xml);
-			Assert.AreEqual("T:Acme.MyList`1.Helper`2", GetTypeDefinition("Acme", "MyList", 1).NestedTypes.Single().Documentation.Xml);
+			Assert.AreEqual("T:Acme.Widget", widget.Documentation.ToString());
+			Assert.AreEqual("T:Acme.Widget.NestedClass", widget.NestedTypes.Single(t => t.Name == "NestedClass").Documentation.ToString());
+			Assert.AreEqual("T:Acme.Widget.IMenuItem", widget.NestedTypes.Single(t => t.Name == "IMenuItem").Documentation.ToString());
+			Assert.AreEqual("T:Acme.Widget.Del", widget.NestedTypes.Single(t => t.Name == "Del").Documentation.ToString());
+			Assert.AreEqual("T:Acme.Widget.Direction", widget.NestedTypes.Single(t => t.Name == "Direction").Documentation.ToString());
+			Assert.AreEqual("T:Acme.MyList`1", GetTypeDefinition("Acme", "MyList", 1).Documentation.ToString());
+			Assert.AreEqual("T:Acme.MyList`1.Helper`2", GetTypeDefinition("Acme", "MyList", 1).NestedTypes.Single().Documentation.ToString());
 		}
 		
 		[Test]
@@ -121,10 +121,10 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("F:Acme.Widget.NestedClass.value", widget.NestedTypes.Single().Fields.Single().Documentation.Xml);
-			Assert.AreEqual("F:Acme.Widget.message", widget.Fields.Single(f => f.Name == "message").Documentation.Xml);
-			Assert.AreEqual("F:Acme.Widget.PI", widget.Fields.Single(f => f.Name == "PI").Documentation.Xml);
-			Assert.AreEqual("F:Acme.Widget.ppValues", widget.Fields.Single(f => f.Name == "ppValues").Documentation.Xml);
+			Assert.AreEqual("F:Acme.Widget.NestedClass.value", widget.NestedTypes.Single().Fields.Single().Documentation.ToString());
+			Assert.AreEqual("F:Acme.Widget.message", widget.Fields.Single(f => f.Name == "message").Documentation.ToString());
+			Assert.AreEqual("F:Acme.Widget.PI", widget.Fields.Single(f => f.Name == "PI").Documentation.ToString());
+			Assert.AreEqual("F:Acme.Widget.ppValues", widget.Fields.Single(f => f.Name == "ppValues").Documentation.ToString());
 		}
 		
 		[Test]
@@ -142,9 +142,9 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("M:Acme.Widget.#cctor", widget.Methods.Single(m => m.IsStatic).Documentation.Xml);
-			Assert.AreEqual("M:Acme.Widget.#ctor", widget.Methods.Single(m => !m.IsStatic && m.Parameters.Count == 0).Documentation.Xml);
-			Assert.AreEqual("M:Acme.Widget.#ctor(System.String)", widget.Methods.Single(m => m.Parameters.Count == 1).Documentation.Xml);
+			Assert.AreEqual("M:Acme.Widget.#cctor", widget.Methods.Single(m => m.IsStatic).Documentation.ToString());
+			Assert.AreEqual("M:Acme.Widget.#ctor", widget.Methods.Single(m => !m.IsStatic && m.Parameters.Count == 0).Documentation.ToString());
+			Assert.AreEqual("M:Acme.Widget.#ctor(System.String)", widget.Methods.Single(m => m.Parameters.Count == 1).Documentation.ToString());
 		}
 		
 		[Test]
@@ -160,7 +160,7 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("M:Acme.Widget.Finalize", widget.Methods.Single(m => m.EntityType == EntityType.Destructor).Documentation.Xml);
+			Assert.AreEqual("M:Acme.Widget.Finalize", widget.Methods.Single(m => m.EntityType == EntityType.Destructor).Documentation.ToString());
 		}
 		
 		[Test]
@@ -200,28 +200,28 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("M:Acme.Widget.NestedClass.M(System.Int32)", widget.NestedTypes.Single().Methods.Single(m => m.EntityType == EntityType.Method).Documentation.Xml);
-			Assert.AreEqual("M:Acme.Widget.M0", widget.Methods.Single(m => m.Name == "M0").Documentation.Xml);
+			Assert.AreEqual("M:Acme.Widget.NestedClass.M(System.Int32)", widget.NestedTypes.Single().Methods.Single(m => m.EntityType == EntityType.Method).Documentation.ToString());
+			Assert.AreEqual("M:Acme.Widget.M0", widget.Methods.Single(m => m.Name == "M0").Documentation.ToString());
 			Assert.AreEqual("M:Acme.Widget.M1(System.Char,System.Single@,Acme.ValueType@)",
-			                widget.Methods.Single(m => m.Name == "M1").Documentation.Xml);
+			                widget.Methods.Single(m => m.Name == "M1").Documentation.ToString());
 			Assert.AreEqual("M:Acme.Widget.M2(System.Int16[],System.Int32[0:,0:],System.Int64[][])",
-			                widget.Methods.Single(m => m.Name == "M2").Documentation.Xml);
+			                widget.Methods.Single(m => m.Name == "M2").Documentation.ToString());
 			Assert.AreEqual("M:Acme.Widget.M3(System.Int64[][],Acme.Widget[0:,0:,0:][])",
-			                widget.Methods.Single(m => m.Name == "M3").Documentation.Xml);
+			                widget.Methods.Single(m => m.Name == "M3").Documentation.ToString());
 			Assert.AreEqual("M:Acme.Widget.M4(System.Char*,Color**)",
-			                widget.Methods.Single(m => m.Name == "M4").Documentation.Xml);
+			                widget.Methods.Single(m => m.Name == "M4").Documentation.ToString());
 			Assert.AreEqual("M:Acme.Widget.M5(System.Void*,System.Double*[0:,0:][])",
-			                widget.Methods.Single(m => m.Name == "M5").Documentation.Xml);
+			                widget.Methods.Single(m => m.Name == "M5").Documentation.ToString());
 			Assert.AreEqual("M:Acme.Widget.M6(System.Nullable{System.Int32},System.Object[])",
-			                widget.Methods.Single(m => m.Name == "M6").Documentation.Xml);
+			                widget.Methods.Single(m => m.Name == "M6").Documentation.ToString());
 			
 			Assert.AreEqual("M:Acme.MyList`1.Test(`0)",
-			                GetTypeDefinition("Acme", "MyList", 1).Methods.Single(m => m.Name == "Test").Documentation.Xml);
+			                GetTypeDefinition("Acme", "MyList", 1).Methods.Single(m => m.Name == "Test").Documentation.ToString());
 			
 			Assert.AreEqual("M:Acme.UseList.Process(Acme.MyList{Color})",
-			                GetTypeDefinition("Acme", "UseList").Methods.Single(m => m.Name == "Process").Documentation.Xml);
+			                GetTypeDefinition("Acme", "UseList").Methods.Single(m => m.Name == "Process").Documentation.ToString());
 			Assert.AreEqual("M:Acme.UseList.GetValues``1(``0)",
-			                GetTypeDefinition("Acme", "UseList").Methods.Single(m => m.Name == "GetValues").Documentation.Xml);
+			                GetTypeDefinition("Acme", "UseList").Methods.Single(m => m.Name == "GetValues").Documentation.ToString());
 		}
 		
 		[Test]
@@ -229,8 +229,8 @@ namespace Acme
 		{
 			Init("class A<X> { class B<Y> { void M(A<Y>.B<X> a) { } } }");
 			ITypeDefinition b = GetTypeDefinition("", "A", 1).NestedTypes.Single();
-			Assert.AreEqual("T:A`1.B`1", b.Documentation.Xml);
-			Assert.AreEqual("M:A`1.B`1.M(A{`1}.B{`0})", b.Methods.Single(m => m.EntityType == EntityType.Method).Documentation.Xml);
+			Assert.AreEqual("T:A`1.B`1", b.Documentation.ToString());
+			Assert.AreEqual("M:A`1.B`1.M(A{`1}.B{`0})", b.Methods.Single(m => m.EntityType == EntityType.Method).Documentation.ToString());
 		}
 		
 		[Test]
@@ -248,11 +248,11 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("P:Acme.Widget.Width", widget.Properties.Single(p => p.Parameters.Count == 0).Documentation.Xml);
+			Assert.AreEqual("P:Acme.Widget.Width", widget.Properties.Single(p => p.Parameters.Count == 0).Documentation.ToString());
 			Assert.AreEqual("P:Acme.Widget.Item(System.Int32)",
-			                widget.Properties.Single(p => p.Parameters.Count == 1).Documentation.Xml);
+			                widget.Properties.Single(p => p.Parameters.Count == 1).Documentation.ToString());
 			Assert.AreEqual("P:Acme.Widget.Item(System.String,System.Int32)",
-			                widget.Properties.Single(p => p.Parameters.Count == 2).Documentation.Xml);
+			                widget.Properties.Single(p => p.Parameters.Count == 2).Documentation.ToString());
 			
 		}
 		
@@ -269,7 +269,7 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("E:Acme.Widget.AnEvent", widget.Events.Single().Documentation.Xml);
+			Assert.AreEqual("E:Acme.Widget.AnEvent", widget.Events.Single().Documentation.ToString());
 			
 		}
 		
@@ -286,7 +286,7 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("M:Acme.Widget.op_UnaryPlus(Acme.Widget)", widget.Methods.Single(m => m.EntityType == EntityType.Operator).Documentation.Xml);
+			Assert.AreEqual("M:Acme.Widget.op_UnaryPlus(Acme.Widget)", widget.Methods.Single(m => m.EntityType == EntityType.Operator).Documentation.ToString());
 		}
 		
 		[Test]
@@ -302,7 +302,7 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("M:Acme.Widget.op_Addition(Acme.Widget,Acme.Widget)", widget.Methods.Single(m => m.EntityType == EntityType.Operator).Documentation.Xml);
+			Assert.AreEqual("M:Acme.Widget.op_Addition(Acme.Widget,Acme.Widget)", widget.Methods.Single(m => m.EntityType == EntityType.Operator).Documentation.ToString());
 		}
 		
 		[Test]
@@ -319,8 +319,8 @@ namespace Acme
 }";
 			Init(program);
 			ITypeDefinition widget = GetTypeDefinition("Acme", "Widget");
-			Assert.AreEqual("M:Acme.Widget.op_Explicit(Acme.Widget)~System.Int32", widget.Methods.First(m => m.EntityType == EntityType.Operator).Documentation.Xml);
-			Assert.AreEqual("M:Acme.Widget.op_Implicit(Acme.Widget)~System.Int64", widget.Methods.Last(m => m.EntityType == EntityType.Operator).Documentation.Xml);
+			Assert.AreEqual("M:Acme.Widget.op_Explicit(Acme.Widget)~System.Int32", widget.Methods.First(m => m.EntityType == EntityType.Operator).Documentation.ToString());
+			Assert.AreEqual("M:Acme.Widget.op_Implicit(Acme.Widget)~System.Int64", widget.Methods.Last(m => m.EntityType == EntityType.Operator).Documentation.ToString());
 		}
 		
 		[Test]

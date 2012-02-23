@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.CSharp.Analysis;
@@ -1126,18 +1127,81 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (this.SkipXmlDocumentation)
 				return;
 			List<string> documentation = null;
+			// traverse AST backwards until the next non-whitespace node
 			for (AstNode node = entityDeclaration.PrevSibling; node != null && node.NodeType == NodeType.Whitespace; node = node.PrevSibling) {
 				Comment c = node as Comment;
-				if (c != null && c.CommentType == CommentType.Documentation) {
+				if (c != null && (c.CommentType == CommentType.Documentation || c.CommentType == CommentType.MultiLineDocumentation)) {
 					if (documentation == null)
 						documentation = new List<string>();
-					documentation.Add(c.Content);
+					if (c.CommentType == CommentType.MultiLineDocumentation) {
+						documentation.Add(PrepareMultilineDocumentation(c.Content));
+					} else {
+						if (c.Content.Length > 0 && c.Content[0] == ' ')
+							documentation.Add(c.Content.Substring(1));
+						else
+							documentation.Add(c.Content);
+					}
 				}
 			}
 			if (documentation != null) {
-				documentation.Reverse(); // bring docu in correct order
+				documentation.Reverse(); // bring documentation in correct order
 				parsedFile.AddDocumentation(entity, string.Join(Environment.NewLine, documentation));
 			}
+		}
+		
+		string PrepareMultilineDocumentation(string content)
+		{
+			StringBuilder b = new StringBuilder();
+			using (var reader = new StringReader(content)) {
+				string firstLine = reader.ReadLine();
+				// Add first line only if it's not empty:
+				if (!string.IsNullOrWhiteSpace(firstLine)) {
+					if (firstLine[0] == ' ')
+						b.Append(firstLine, 1, firstLine.Length - 1);
+					else
+						b.Append(firstLine);
+				}
+				// Read lines into list:
+				List<string> lines = new List<string>();
+				string line;
+				while ((line = reader.ReadLine()) != null)
+					lines.Add(line);
+				// If the last line (the line with '*/' delimiter) is white space only, ignore it.
+				if (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[lines.Count - 1]))
+					lines.RemoveAt(lines.Count - 1);
+				if (lines.Count > 0) {
+					// Extract pattern from lines[0]: whitespace, asterisk, whitespace
+					int patternLength = 0;
+					string secondLine = lines[0];
+					while (patternLength < secondLine.Length && char.IsWhiteSpace(secondLine[patternLength]))
+						patternLength++;
+					if (patternLength < secondLine.Length && secondLine[patternLength] == '*') {
+						patternLength++;
+						while (patternLength < secondLine.Length && char.IsWhiteSpace(secondLine[patternLength]))
+							patternLength++;
+					} else {
+						// no asterisk
+						patternLength = 0;
+					}
+					// Now reduce pattern length to the common pattern:
+					for (int i = 1; i < lines.Count; i++) {
+						line = lines[i];
+						if (line.Length < patternLength)
+							patternLength = line.Length;
+						for (int j = 0; j < patternLength; j++) {
+							if (secondLine[j] != line[j])
+								patternLength = j;
+						}
+					}
+					// Append the lines to the string builder:
+					for (int i = 0; i < lines.Count; i++) {
+						if (b.Length > 0 || i > 0)
+							b.Append(Environment.NewLine);
+						b.Append(lines[i], patternLength, lines[i].Length - patternLength);
+					}
+				}
+			}
+			return b.ToString();
 		}
 		#endregion
 	}
