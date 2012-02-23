@@ -748,6 +748,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				this.StatusBar.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
 			}
+			if (!e.Handled && e.Key == Key.G && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
+				GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+				this.StatusBar.SetMessage("Total memory = " + (GC.GetTotalMemory(true) / 1024 / 1024f).ToString("f1") + " MB");
+			}
 		}
 		#endif
 		
