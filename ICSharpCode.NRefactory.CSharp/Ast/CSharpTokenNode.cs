@@ -42,6 +42,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 			}
 			
+			public override void AcceptVisitor (IAstVisitor visitor)
+			{
+			}
+				
+			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+			{
+				return default (T);
+			}
+			
 			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
@@ -86,6 +95,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.startLocation = startLocation;
 		}
 		#endregion
+		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitCSharpTokenNode (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitCSharpTokenNode (this);
+		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{

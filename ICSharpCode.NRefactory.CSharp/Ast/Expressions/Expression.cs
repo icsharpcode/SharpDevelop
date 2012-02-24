@@ -41,6 +41,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
+			public override void AcceptVisitor (IAstVisitor visitor)
+			{
+			}
+			
+			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+			{
+				return default (T);
+			}
+			
 			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return default (S);
@@ -70,6 +79,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override NodeType NodeType {
 				get { return NodeType.Pattern; }
+			}
+			
+			public override void AcceptVisitor (IAstVisitor visitor)
+			{
+				visitor.VisitPatternPlaceholder(this, child);
+			}
+				
+			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+			{
+				return visitor.VisitPatternPlaceholder(this, child);
 			}
 			
 			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))

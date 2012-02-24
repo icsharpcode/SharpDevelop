@@ -52,6 +52,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.location = location;
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			// nothing
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			// nothing
+			return default (T);
+		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{

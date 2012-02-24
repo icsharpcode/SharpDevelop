@@ -69,6 +69,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (FalseRole, value); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitIfElseStatement (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitIfElseStatement (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitIfElseStatement (this, data);

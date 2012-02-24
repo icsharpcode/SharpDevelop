@@ -55,6 +55,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitEmptyStatement (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitEmptyStatement (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitEmptyStatement (this, data);

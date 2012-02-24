@@ -90,6 +90,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return o != null && GetChildrenByRole(MemberRole).DoMatch(o.GetChildrenByRole(MemberRole), match);
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitCompilationUnit (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitCompilationUnit (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitCompilationUnit (this, data);

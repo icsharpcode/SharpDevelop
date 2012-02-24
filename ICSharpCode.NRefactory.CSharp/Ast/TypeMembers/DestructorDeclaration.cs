@@ -62,6 +62,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Member; }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitDestructorDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitDestructorDeclaration (this);
+		}
+
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitDestructorDeclaration (this, data);

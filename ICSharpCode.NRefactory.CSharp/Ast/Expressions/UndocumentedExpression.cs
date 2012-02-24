@@ -62,6 +62,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RPar); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitUndocumentedExpression (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitUndocumentedExpression (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitUndocumentedExpression (this, data);

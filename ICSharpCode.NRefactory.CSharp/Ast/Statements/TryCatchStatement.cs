@@ -62,6 +62,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (FinallyBlockRole, value); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitTryCatchStatement (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitTryCatchStatement (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitTryCatchStatement (this, data);
@@ -98,6 +108,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return NodeType.Pattern; }
 			}
 			
+			public override void AcceptVisitor (IAstVisitor visitor)
+			{
+				visitor.VisitPatternPlaceholder(this, child);
+			}
+				
+			public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+			{
+				return visitor.VisitPatternPlaceholder(this, child);
+			}
+
 			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
 			{
 				return visitor.VisitPatternPlaceholder(this, child, data);
@@ -160,6 +180,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }
+		}
+		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitCatchClause (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitCatchClause (this);
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))

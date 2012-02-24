@@ -43,6 +43,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (Roles.Variable); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitEventDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitEventDeclaration (this);
+		}
+
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitEventDeclaration (this, data);
@@ -79,6 +89,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.RBrace); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitCustomEventDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitCustomEventDeclaration (this);
+		}
+
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitCustomEventDeclaration (this, data);

@@ -35,6 +35,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitBreakStatement (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitBreakStatement (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitBreakStatement (this, data);

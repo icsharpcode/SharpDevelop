@@ -59,6 +59,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (BaseTypeRole); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitConstraint (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitConstraint (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitConstraint (this, data);

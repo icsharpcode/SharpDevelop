@@ -53,6 +53,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			Expression = expr;
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitParenthesizedExpression (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitParenthesizedExpression (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitParenthesizedExpression (this, data);

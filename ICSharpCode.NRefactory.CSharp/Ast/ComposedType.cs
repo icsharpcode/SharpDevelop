@@ -74,6 +74,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (ArraySpecifierRole); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitComposedType (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitComposedType (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitComposedType (this, data);
@@ -174,6 +184,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode RBracketToken {
 			get { return GetChildByRole (Roles.RBracket); }
+		}
+		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitArraySpecifier (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitArraySpecifier (this);
 		}
 		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))

@@ -75,6 +75,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitPrimitiveType (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitPrimitiveType (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitPrimitiveType (this, data);

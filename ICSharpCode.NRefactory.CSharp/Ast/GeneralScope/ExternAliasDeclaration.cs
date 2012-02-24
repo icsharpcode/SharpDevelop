@@ -69,6 +69,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.Semicolon); }
 		}
 
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitExternAliasDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitExternAliasDeclaration (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitExternAliasDeclaration (this, data);

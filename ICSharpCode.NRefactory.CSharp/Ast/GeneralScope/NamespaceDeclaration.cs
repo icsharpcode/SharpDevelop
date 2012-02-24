@@ -109,6 +109,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			AddChild (child, MemberRole);
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitNamespaceDeclaration (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitNamespaceDeclaration (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitNamespaceDeclaration (this, data);

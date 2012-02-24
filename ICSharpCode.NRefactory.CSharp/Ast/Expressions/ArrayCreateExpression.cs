@@ -51,6 +51,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (InitializerRole, value); }
 		}
 		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitArrayCreateExpression (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitArrayCreateExpression (this);
+		}
+		
 		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
 		{
 			return visitor.VisitArrayCreateExpression (this, data);
