@@ -101,12 +101,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 					propertyGridView.PropertyGrid.SelectedItems = null;
 					designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 					designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
-				} catch {
-					this.UserContent = new WpfDocumentError();
+				} catch (Exception e) {
+					this.UserContent = new WpfDocumentError(e);
 				}
 			}
 		}
-		
 		
 		private MemoryStream _stream;
 		
