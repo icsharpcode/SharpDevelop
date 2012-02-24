@@ -996,7 +996,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				}
 			}
-			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."));
+			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}, removedText={3}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."), removedChars > 0 ? document.GetText (offset, removedChars).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", ".") : "null");
 			//Console.WriteLine (Environment.StackTrace);
 			
 			changes.Add (factory.CreateTextReplaceAction (offset, removedChars, insertedText));
@@ -1211,7 +1211,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				FixEmbeddedStatment (policy.StatementBraceStyle, BraceForcement.DoNotChange, tryCatchStatement.FinallyBlock);
 			}
 			
-			return VisitChildren (tryCatchStatement, data);
+			return null;
 		}
 
 		public override object VisitCatchClause (CatchClause catchClause, object data)

@@ -192,6 +192,40 @@ using (IDisposable b = null) {
 }");
 		}
 		
+		/// <summary>
+		/// Bug 3586 -Format code is removing try { code blocks
+		/// </summary>
+		[Test()]
+		public void TestBug3586 ()
+		{
+			var policy = new CSharpFormattingOptions ();
+			policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
+			
+			Test (policy, @"public class A
+{
+	public object GetValue ()
+        {
+            try
+            {
+foo ();
+            }
+            catch
+            {
+            }
+        }
+}",
+@"public class A
+{
+	public object GetValue ()
+	{
+		try {
+			foo ();
+		} catch {
+		}
+	}
+}");
+		}
+		
 	}
 }
 
