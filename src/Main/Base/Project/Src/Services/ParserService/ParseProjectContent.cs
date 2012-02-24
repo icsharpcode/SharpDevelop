@@ -58,6 +58,7 @@ namespace ICSharpCode.SharpDevelop
 			// TODO: Translate me
 //			progressMonitor.TaskName = "Resolving references for " + project.Name + "...";
 			AbstractProject abstractProject = project as AbstractProject;
+			ReferencedContents.Clear();
 			if (abstractProject != null) {
 				foreach (var reference in abstractProject.ResolveAssemblyReferences(progressMonitor.CancellationToken)) {
 					if (!initializing) return; // abort initialization
