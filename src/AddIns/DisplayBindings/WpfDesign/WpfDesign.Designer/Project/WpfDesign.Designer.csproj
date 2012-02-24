@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="Controls\InPlaceEditor.cs" />
     <Compile Include="Controls\MarginHandle.cs" />
+    <Compile Include="Controls\PageClone.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
     <Compile Include="Controls\QuickOperationMenu.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
