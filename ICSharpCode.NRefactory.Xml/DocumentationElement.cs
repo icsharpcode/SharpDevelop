@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// Gets whether this is a pure text node.
 		/// </summary>
 		public bool IsTextNode {
-			get { return element == null; }
+			get { return xmlObject == null; }
 		}
 		
 		/// <summary>
