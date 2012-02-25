@@ -173,7 +173,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			compilation = project.CreateCompilation();
 			
 			FindNodeVisitor fnv = new FindNodeVisitor(dollars[0], dollars[1]);
-			cu.AcceptVisitor(fnv, null);
+			cu.AcceptVisitor(fnv);
 			Assert.IsNotNull(fnv.ResultNode, "Did not find DOM node at the specified location");
 			
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return (T)rr;
 		}
 		
-		sealed class FindNodeVisitor : DepthFirstAstVisitor<object, object>
+		sealed class FindNodeVisitor : DepthFirstAstVisitor
 		{
 			readonly TextLocation start;
 			readonly TextLocation end;
@@ -228,15 +228,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.end = end;
 			}
 			
-			protected override object VisitChildren(AstNode node, object data)
+			protected override void VisitChildren(AstNode node)
 			{
 				if (node.StartLocation == start && node.EndLocation == end) {
 					if (ResultNode != null)
 						throw new InvalidOperationException("found multiple nodes with same start+end");
-					return ResultNode = node;
-				} else {
-					return base.VisitChildren(node, data);
+					ResultNode = node;
+					return;
 				}
+				base.VisitChildren(node);
 			}
 		}
 		

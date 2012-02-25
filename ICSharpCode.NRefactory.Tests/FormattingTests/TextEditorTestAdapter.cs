@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			var visitor = new AstFormattingVisitor (policy, adapter, factory);
 			visitor.EolMarker = "\n";
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (input), "test.cs");
-			compilationUnit.AcceptVisitor (visitor, null);
+			compilationUnit.AcceptVisitor (visitor);
 			
 			return new ReadOnlyDocument (ApplyChanges (input, visitor.Changes));
 		}
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 			var visitior = new AstFormattingVisitor (policy, document, factory);
 			visitior.EolMarker = "\n";
 			var compilationUnit = new CSharpParser ().Parse (new StringReader (document.Text), "test.cs");
-			compilationUnit.AcceptVisitor (visitior, null);
+			compilationUnit.AcceptVisitor (visitior);
 			string newText = ApplyChanges (document.Text, visitior.Changes);
 			if (expectedOutput != newText) {
 				Console.WriteLine (newText);
