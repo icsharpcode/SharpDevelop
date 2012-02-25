@@ -12,65 +12,42 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
-
 using ICSharpCode.CodeQuality.Engine.Dom;
+using ICSharpCode.CodeQuality.Reporting;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
-using ICSharpCode.Reports.Core.WpfReportViewer;
-using Microsoft.Win32;
 
 namespace ICSharpCode.CodeQuality.Reporting
 {
 	/// <summary>
 	/// Description of Overview.
 	/// </summary>
-	public class OverviewReport
+	public class OverviewReport:BaseReport
 	{
-		private const string reportDir = "Reporting";
 		private const string overviewReport = "ReportingOverview.srd";
-		List<string> fileNames;
 		
-		
-		public  OverviewReport(List<string> fileNames)
+		public  OverviewReport(List<string> fileNames):base(fileNames)
 		{
-			if (fileNames.Count > 0)
-			{
-				this.fileNames = new List<string>();
-				this.fileNames.AddRange(fileNames);
-			}
 		}
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
 		{
 			
+			var reportFileName = MakeReportFileName(overviewReport);
+			var model = ReportEngine.LoadReportModel(reportFileName);
+			ReportSettings = model.ReportSettings;
+			
 			var	 r =  from c in list
 				select new OverviewViewModel { Node = c};
 			
-			var reportFileName = MakeReportFileName(overviewReport);
-			var model = ReportEngine.LoadReportModel(reportFileName);
-			
 			var p = new ReportParameters();
-			p.Parameters.Add(new BasicParameter ("param1",fileNames[0]));
+			p.Parameters.Add(new BasicParameter ("param1",base.FileNames[0]));
 			p.Parameters.Add(new BasicParameter ("param2",list.Count.ToString()));
-			ReportSettings = model.ReportSettings;
-
 			
 			IReportCreator creator = ReportEngine.CreatePageBuilder(model,r.ToList(),p);
 			creator.BuildExportList();
 			return creator;
-		}
-		
-		string MakeReportFileName (string repName)
-		{
-			Uri uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
-			var fullname = uri.LocalPath;
-			return  Path.GetDirectoryName(fullname) + Path.DirectorySeparatorChar + reportDir + Path.DirectorySeparatorChar + repName;
-		}
-		
-		public ReportSettings ReportSettings {get;private set;}
-			
+		}	
 	}
 	
 	

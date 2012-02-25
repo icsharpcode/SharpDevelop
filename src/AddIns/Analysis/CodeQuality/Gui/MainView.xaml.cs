@@ -91,5 +91,14 @@ namespace ICSharpCode.CodeQuality.Gui
 			viewer.SetBinding(previewViewModel);
 			reportTab.Visibility = Visibility.Visible;
 		}
+		
+		void DependecyReport_Click(object sender, RoutedEventArgs e)
+		{
+			var dependency = new DependencyReport(fileNames);
+			var reportCreator = dependency.Run(list);
+			var previewViewModel = new PreviewViewModel(dependency.ReportSettings,reportCreator.Pages);
+			viewer.SetBinding(previewViewModel);
+			reportTab.Visibility = Visibility.Visible;
+		}
 	}
 }

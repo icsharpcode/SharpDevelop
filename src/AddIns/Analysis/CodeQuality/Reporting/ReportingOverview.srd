@@ -37,7 +37,7 @@
     <SectionCollection>
         <BaseSection>
             <Location>50, 50</Location>
-            <Size>727, 107</Size>
+            <Size>727, 168</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
@@ -46,11 +46,28 @@
             <PageBreakAfter>False</PageBreakAfter>
             <Items>
                 <BaseTextItem>
-                    <Location>600, 37</Location>
-                    <Size>100, 20</Size>
+                    <Location>122, 13</Location>
+                    <Size>414, 40</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
-                    <Font>Segoe UI, 9pt</Font>
+                    <Font>Segoe UI, 18pt, style=Bold</Font>
+                    <StringTrimming>None</StringTrimming>
+                    <ContentAlignment>TopLeft</ContentAlignment>
+                    <CanGrow>False</CanGrow>
+                    <CanShrink>False</CanShrink>
+                    <RTL>No</RTL>
+                    <Text>SharpDevelop CodeQuality Analysis</Text>
+                    <DrawBorder>False</DrawBorder>
+                    <FrameColor>Black</FrameColor>
+                    <ForeColor>ControlText</ForeColor>
+                    <Name>BaseTextItem2147483637</Name>
+                </BaseTextItem>
+                <BaseTextItem>
+                    <Location>601, 59</Location>
+                    <Size>100, 26</Size>
+                    <BackColor>White</BackColor>
+                    <VisibleInReport>True</VisibleInReport>
+                    <Font>Segoe UI, 15.75pt</Font>
                     <StringTrimming>None</StringTrimming>
                     <ContentAlignment>TopLeft</ContentAlignment>
                     <CanGrow>False</CanGrow>
@@ -63,7 +80,7 @@
                     <Name>BaseTextItem2147483638</Name>
                 </BaseTextItem>
                 <BaseLineItem>
-                    <Location>3, 91</Location>
+                    <Location>12, 145</Location>
                     <Size>680, 10</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -78,7 +95,7 @@
                     <Name>BaseLineItem1</Name>
                 </BaseLineItem>
                 <BaseTextItem>
-                    <Location>130, 64</Location>
+                    <Location>139, 118</Location>
                     <Size>108, 20</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -95,7 +112,7 @@
                     <Name>BaseTextItem2147483639</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>18, 64</Location>
+                    <Location>27, 118</Location>
                     <Size>106, 20</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -112,7 +129,7 @@
                     <Name>BaseTextItem2147483640</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>130, 37</Location>
+                    <Location>139, 91</Location>
                     <Size>438, 20</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -129,7 +146,7 @@
                     <Name>Param1</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>18, 37</Location>
+                    <Location>27, 91</Location>
                     <Size>106, 20</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -146,7 +163,7 @@
                     <Name>BaseTextItem2147483646</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>186, 5</Location>
+                    <Location>195, 59</Location>
                     <Size>257, 26</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -168,7 +185,7 @@
             <Name>ReportHeader</Name>
         </BaseSection>
         <BaseSection>
-            <Location>50, 172</Location>
+            <Location>50, 233</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>
@@ -298,7 +315,7 @@
             <Name>ReportPageHeader</Name>
         </BaseSection>
         <BaseSection>
-            <Location>50, 247</Location>
+            <Location>50, 308</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>
@@ -436,7 +453,7 @@
             <Name>ReportDetail</Name>
         </BaseSection>
         <BaseSection>
-            <Location>50, 322</Location>
+            <Location>50, 383</Location>
             <Size>727, 37</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>
@@ -456,7 +473,7 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>= Globals!ReportFolder + Globals!ReportName</Text>
+                    <Text>= Globals!ReportFolder +  '\' +  Globals!ReportName</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
@@ -485,7 +502,7 @@
             <Name>ReportPageFooter</Name>
         </BaseSection>
         <BaseSection>
-            <Location>50, 374</Location>
+            <Location>50, 435</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>

@@ -91,7 +91,9 @@
     <Compile Include="Gui\NodeDescriptionViewModel.cs" />
     <Compile Include="Gui\NodeIconService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reporting\Overview.cs" />
+    <Compile Include="Reporting\BaseReport.cs" />
+    <Compile Include="Reporting\DependencyReport.cs" />
+    <Compile Include="Reporting\OverviewReport.cs" />
     <Compile Include="Utils\DependencyColorizer.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IColorizer.cs" />
@@ -99,6 +101,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeQuality.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Reporting\DependencyReport.srd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Reporting\ReportingOverview.srd">
