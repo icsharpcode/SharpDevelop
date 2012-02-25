@@ -27,6 +27,12 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// Represents a token in C#. Note that the type of the token is defined through the TokenRole.
+	/// </summary>
+	/// <remarks>
+	/// In all non null c# token nodes the Role of a CSharpToken must be a TokenRole.
+	/// </remarks>
 	public class CSharpTokenNode : AstNode, IRelocatable
 	{
 		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
