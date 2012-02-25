@@ -23,6 +23,7 @@ using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -104,17 +105,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void HighlightBrackets(object sender, EventArgs e)
 		{
-				/*
-				 * Special case: ITextEditor.Language guarantees that it never returns null.
-				 * In this case however it can be null, since this code may be called while the document is loaded.
-				 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
-				 * loading of the document has finished.
-				 * */
-				if (this.Adapter.Language != null) {
+			/*
+			 * Special case: ITextEditor.Language guarantees that it never returns null.
+			 * In this case however it can be null, since this code may be called while the document is loaded.
+			 * ITextEditor.Language gets set in CodeEditorAdapter.FileNameChanged, which is called after
+			 * loading of the document has finished.
+			 * */
+			if (this.Adapter.Language != null) {
 				if (CodeEditorOptions.Instance.HighlightBrackets || CodeEditorOptions.Instance.ShowHiddenDefinitions) {
 					var bracketSearchResult = this.Adapter.Language.BracketSearcher.SearchBracket(this.Adapter.Document, this.TextArea.Caret.Offset);
 					if (CodeEditorOptions.Instance.HighlightBrackets) {
-					this.bracketRenderer.SetHighlight(bracketSearchResult);
+						this.bracketRenderer.SetHighlight(bracketSearchResult);
 					} else {
 						this.bracketRenderer.SetHighlight(null);
 					}
@@ -124,11 +125,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					} else {
 						this.hiddenDefinitionRenderer.ClosePopup();
 					}
-			} else {
-				this.bracketRenderer.SetHighlight(null);
+				} else {
+					this.bracketRenderer.SetHighlight(null);
 					this.hiddenDefinitionRenderer.ClosePopup();
+				}
 			}
-		}
 		}
 		#endregion
 		

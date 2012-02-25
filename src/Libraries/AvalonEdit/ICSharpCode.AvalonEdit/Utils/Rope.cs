@@ -622,12 +622,62 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </remarks>
 		public int IndexOf(T item)
 		{
+			return IndexOf(item, 0, this.Length);
+		}
+		
+		/// <summary>
+		/// Gets the index of the first occurrence the specified item.
+		/// </summary>
+		/// <param name="item">Item to search for.</param>
+		/// <param name="startIndex">Start index of the search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The first index where the item was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>
+		/// This method counts as a read access and may be called concurrently to other read accesses.
+		/// </remarks>
+		public int IndexOf(T item, int startIndex, int count)
+		{
+			VerifyRange(startIndex, count);
+			
+			while (count > 0) {
+				var entry = FindNodeUsingCache(startIndex).UnsafePeek();
+				T[] contents = entry.node.contents;
+				int startWithinNode = startIndex - entry.nodeStartIndex;
+				int nodeLength = Math.Min(entry.node.length, startWithinNode + count);
+				int r = Array.IndexOf(contents, item, startWithinNode, nodeLength - startWithinNode);
+				if (r >= 0)
+					return entry.nodeStartIndex + r;
+				count -= nodeLength - startWithinNode;
+				startIndex = entry.nodeStartIndex + nodeLength;
+			}
+			return -1;
+		}
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified item in this rope.
+		/// </summary>
+		public int LastIndexOf(T item)
+		{
+			return LastIndexOf(item, 0, this.Length);
+		}
+		
+		/// <summary>
+		/// Gets the index of the last occurrence of the specified item in this rope.
+		/// </summary>
+		/// <param name="item">The search item</param>
+		/// <param name="startIndex">Start index of the area to search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The last index where the item was found; or -1 if no occurrence was found.</returns>
+		/// <remarks>The search proceeds backwards from (startIndex+count) to startIndex.
+		/// This is different than the meaning of the parameters on Array.LastIndexOf!</remarks>
+		public int LastIndexOf(T item, int startIndex, int count)
+		{
+			VerifyRange(startIndex, count);
+			
 			var comparer = EqualityComparer<T>.Default;
-			int index = 0;
-			foreach (T element in this) {
-				if (comparer.Equals(item, element))
-					return index;
-				index++;
+			for (int i = startIndex + count - 1; i >= startIndex; i--) {
+				if (comparer.Equals(this[i], item))
+					return i;
 			}
 			return -1;
 		}

@@ -3,6 +3,8 @@
 
 using System;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -32,6 +34,23 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets/Sets the content to show as a tooltip.
 		/// </summary>
 		public object ContentToShow { get; set; }
+		
+		bool resolveResultInitialized;
+		ResolveResult resolveResult;
+		
+		/// <summary>
+		/// The resolve result at the mouse position.
+		/// </summary>
+		public ResolveResult ResolveResult {
+			get {
+				if (!resolveResultInitialized) {
+					if (InDocument)
+						resolveResult = ParserService.Resolve(this.Editor.FileName, this.LogicalPosition, this.Editor.Document);
+					resolveResultInitialized = true;
+				}
+				return resolveResult;
+			}
+		}
 		
 		/// <summary>
 		/// Sets the tooltip to be shown.

@@ -347,12 +347,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 						int i = Math.Min(editor.Document.LineCount, Math.Max(1, (int)tag));
 						editor.JumpTo(i, int.MaxValue);
 					}
-				} else if (tag is ITypeDefinition) {
-					ITypeDefinition c = tag as ITypeDefinition;
+				} else if (tag is IUnresolvedEntity) {
+					IUnresolvedEntity c = tag as IUnresolvedEntity;
 					CodeCompletionDataUsageCache.IncrementUsage(c.ReflectionName);
 					GotoRegion(c.Region);
-				} else if (tag is IMember) {
-					IMember m = tag as IMember;
+				} else if (tag is IEntity) {
+					IEntity m = tag as IEntity;
 					CodeCompletionDataUsageCache.IncrementUsage(m.ReflectionName);
 					GotoRegion(m.Region);
 				} else if (tag is FileLineReference) {

@@ -81,11 +81,13 @@
     <ProjectReference Include="..\..\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Package>{00000000-0000-0000-0000-000000000000}</Package>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <Content Include="..\..\GlobalAssemblyInfo.template">
       <Link>Configuration\GlobalAssemblyInfo.template</Link>
@@ -99,6 +101,7 @@
     <ProjectReference Include="..\..\ICSharpCode.SharpDevelop.Sda\ICSharpCode.SharpDevelop.Sda.csproj">
       <Project>{80318B5F-A25D-45AB-8A95-EF31D2370A4C}</Project>
       <Name>ICSharpCode.SharpDevelop.Sda</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

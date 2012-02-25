@@ -102,9 +102,21 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <inheritdoc/>
+		public int IndexOf(char c, int startIndex, int count)
+		{
+			return rope.IndexOf(c, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			return rope.IndexOfAny(anyOf, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
+		public int LastIndexOf(char c, int startIndex, int count)
+		{
+			return rope.LastIndexOf(c, startIndex, count);
 		}
 		
 		/// <inheritdoc/>

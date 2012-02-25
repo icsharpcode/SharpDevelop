@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
-	public interface IDebugger : IDisposable
+	public interface IDebugger : IDisposable, ITextAreaToolTipProvider
 	{
 		/// <summary>
 		/// Returns true if debuger is attached to a process
@@ -73,17 +73,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		void Attach(Process process);
 		
 		void Detach();
-			
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		string GetValueAsString(ToolTipRequestEventArgs e, ResolveResult expression);
-		
-		/// <summary>
-		/// Gets the tooltip control that shows the value of given variable.
-		/// Return null if no tooltip is available.
-		/// </summary>
-		object GetTooltipControl(ToolTipRequestEventArgs e, ResolveResult expression);
 		
 		/// <summary>
 		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.

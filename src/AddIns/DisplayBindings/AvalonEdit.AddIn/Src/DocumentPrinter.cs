@@ -13,6 +13,7 @@ using System.Windows.Xps.Packaging;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -21,7 +22,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public static class DocumentPrinter
 	{
-		public static Block ConvertTextDocumentToBlock(TextDocument document, IHighlighter highlighter)
+		public static Block ConvertTextDocumentToBlock(ReadOnlyDocument document, IHighlightingDefinition highlightingDefinition)
+		{
+			IHighlighter highlighter;
+			if (highlightingDefinition != null)
+				highlighter = new DocumentHighlighter(document, highlightingDefinition.MainRuleSet);
+			else
+				highlighter = null;
+			return ConvertTextDocumentToBlock(document, highlighter);
+		}
+		
+		public static Block ConvertTextDocumentToBlock(IDocument document, IHighlighter highlighter)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");
@@ -31,8 +42,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 //			TableRowGroup trg = new TableRowGroup();
 //			table.RowGroups.Add(trg);
 			Paragraph p = new Paragraph();
-			foreach (DocumentLine line in document.Lines) {
-				int lineNumber = line.LineNumber;
+			p.TextAlignment = TextAlignment.Left;
+			for (int lineNumber = 1; lineNumber <= document.LineCount; lineNumber++) {
+				if (lineNumber > 1)
+					p.Inlines.Add(new LineBreak());
+				var line = document.GetLineByNumber(lineNumber);
 //				TableRow row = new TableRow();
 //				trg.Rows.Add(row);
 //				row.Cells.Add(new TableCell(new Paragraph(new Run(lineNumber.ToString()))) { TextAlignment = TextAlignment.Right });
@@ -46,7 +60,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 //				Paragraph p = new Paragraph();
 //				row.Cells.Add(new TableCell(p));
 				p.Inlines.AddRange(inlineBuilder.CreateRuns());
-				p.Inlines.Add(new LineBreak());
 			}
 			return p;
 		}

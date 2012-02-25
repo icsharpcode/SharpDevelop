@@ -26,12 +26,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 			if (e == null)
 				throw new ArgumentNullException("e");
 			
-			if (!CodeCompletionOptions.EnableCodeCompletion) return;
-			if (!CodeCompletionOptions.TooltipsEnabled) return;
+			if (!CodeCompletionOptions.EnableCodeCompletion || !CodeCompletionOptions.TooltipsEnabled) {
+				e.Handled = true;
+				return;
+			}
 			
 			if (CodeCompletionOptions.TooltipsOnlyWhenDebugging) {
-				if (!DebuggerService.IsDebuggerLoaded) return;
-				if (!DebuggerService.CurrentDebugger.IsDebugging) return;
+				if (!DebuggerService.IsDebuggerLoaded || !DebuggerService.CurrentDebugger.IsDebugging) {
+					e.Handled = true;
+					return;
+				}
 			}
 			
 			// Query all registered tooltip providers using the AddInTree.

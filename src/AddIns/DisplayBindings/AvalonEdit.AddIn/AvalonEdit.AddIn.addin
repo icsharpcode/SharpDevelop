@@ -32,7 +32,7 @@
 		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
 	</Path>
 	
-	<!-- 
+	<!--
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.AvalonEdit.AddIn.ICodeEditorProvider">
 			<MenuItem id = "SaveWithEncoding"
@@ -162,5 +162,11 @@
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="default" class="ICSharpCode.AvalonEdit.AddIn.Snippets.DefaultSnippetElementProvider" />
 		<Class id="anchor" class="ICSharpCode.AvalonEdit.AddIn.Snippets.AnchorSnippetElementProvider" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
+		<Class id = "DefaultXmlDocToolTips" 
+		       insertafter="DefaultDebuggerToolTips"
+		       class = "ICSharpCode.AvalonEdit.AddIn.XmlDoc.XmlDocTooltipProvider"/>
 	</Path>
 </AddIn>

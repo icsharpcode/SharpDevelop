@@ -158,6 +158,20 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <inheritdoc/>
+		public int IndexOf(char c, int startIndex, int count)
+		{
+			DebugVerifyAccess();
+			return rope.IndexOf(c, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
+		public int LastIndexOf(char c, int startIndex, int count)
+		{
+			DebugVerifyAccess();
+			return rope.LastIndexOf(c, startIndex, count);
+		}
+		
+		/// <inheritdoc/>
 		public int IndexOfAny(char[] anyOf, int startIndex, int count)
 		{
 			DebugVerifyAccess(); // frequently called (NewLineFinder), so must be fast in release builds

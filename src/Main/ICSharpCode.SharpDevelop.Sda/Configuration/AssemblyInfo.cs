@@ -9,9 +9,6 @@ using System.Security.Permissions;
 [assembly: CLSCompliant(true)]
 [assembly: StringFreezing()]
 
-// Use hard-binding:
-[assembly: Dependency("log4net", LoadHint.Always)]
-
 [assembly: AssemblyTitle("ICSharpCode.SharpDevelop.Sda")]
 [assembly: AssemblyDescription("SharpDevelop for Applications")]
 [assembly: AssemblyConfiguration("")]

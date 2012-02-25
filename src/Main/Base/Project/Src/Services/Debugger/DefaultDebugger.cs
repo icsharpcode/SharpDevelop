@@ -121,21 +121,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			throw new NotSupportedException();
 		}
 		
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		public string GetValueAsString(ToolTipRequestEventArgs e, ResolveResult expression)
+		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
-			return null;
-		}
-		
-		/// <summary>
-		/// Gets the tooltip control that shows the value of given variable.
-		/// Return null if no tooltip is available.
-		/// </summary>
-		public object GetTooltipControl(ToolTipRequestEventArgs e, ResolveResult expression)
-		{
-			return null;
 		}
 		
 		public bool CanSetInstructionPointer(string filename, int line, int column)
