@@ -559,5 +559,13 @@ namespace AvalonDock
                         cnt.ContainerPane.RemoveContent(cnt);
                 });
         }
+        
+		internal void CopyInputBindingsFromOwner()
+		{
+			if (this.Owner != null) {
+				this.InputBindings.AddRange(this.Owner.InputBindings);
+				//this.CommandBindings.AddRange(this.Owner.CommandBindings);
+			}
+		}
     }
 }
