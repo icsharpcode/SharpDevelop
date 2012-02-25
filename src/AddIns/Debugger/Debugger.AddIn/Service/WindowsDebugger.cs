@@ -878,7 +878,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			string message = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), e.Exception.Type);
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			
-			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon);
+			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, !e.IsUnhandled);
 		}
 		
 		public void JumpToCurrentLine()

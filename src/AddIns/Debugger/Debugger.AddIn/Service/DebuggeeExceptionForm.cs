@@ -38,9 +38,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.btnBreak.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Break}");
 			this.btnStop.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Terminate}");
+			this.btnContinue.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Continue}");
 			
 			this.btnBreak.Image = WinFormsResourceService.GetBitmap("Icons.16x16.Debug.Break");
 			this.btnStop.Image = WinFormsResourceService.GetBitmap("Icons.16x16.StopProcess");
+			this.btnContinue.Image = WinFormsResourceService.GetBitmap("Icons.16x16.Debug.Continue");
 		}
 
 		void ProcessHandler(object sender, EventArgs e)
@@ -54,13 +56,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.process.Resumed -= ProcessHandler;
 		}
 		
-		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon)
+		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon, bool canContinue)
 		{
 			DebuggeeExceptionForm form = new DebuggeeExceptionForm(process);
 			form.Text = title;
 			form.pictureBox.Image = icon;
 			form.lblExceptionText.Text = message;
 			form.exceptionView.Text = stacktrace;
+			form.btnContinue.Enabled = canContinue;
 			
 			form.Show(WorkbenchSingleton.MainWin32Window);
 		}
@@ -103,6 +106,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		void BtnStopClick(object sender, EventArgs e)
 		{
 			this.process.Terminate();
+			Close();
+		}
+		
+		void BtnContinueClick(object sender, EventArgs e)
+		{
+			this.process.Continue();
 			Close();
 		}
 	}
