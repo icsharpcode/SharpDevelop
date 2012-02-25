@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
@@ -19,6 +20,7 @@ namespace Debugger.AddIn.TreeModel
 		/// <param name="process">Process on which to track debuggee state</param>
 		public static void DoEvents(Process process)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			if (process == null) return;
 			DebuggeeState oldState = process.DebuggeeState;
 			WpfDoEvents();
@@ -31,6 +33,7 @@ namespace Debugger.AddIn.TreeModel
 		
 		public static void WpfDoEvents()
 		{
+			WorkbenchSingleton.AssertMainThread();
 			DispatcherFrame frame = new DispatcherFrame();
 			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => frame.Continue = false));
 			Dispatcher.PushFrame(frame);

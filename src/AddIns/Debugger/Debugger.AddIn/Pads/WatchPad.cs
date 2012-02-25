@@ -181,15 +181,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.Paused += debuggedProcess_Paused;
 				debuggedProcess.Exited += ResetPad;
 			}
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			InvalidatePad();
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning)
 				return;

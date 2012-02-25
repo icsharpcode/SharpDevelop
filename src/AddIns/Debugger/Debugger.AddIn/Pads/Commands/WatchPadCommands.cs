@@ -49,7 +49,7 @@ namespace Debugger.AddIn
 						list.WatchItems.Add(text);
 				}
 				
-				pad.RefreshPad();
+				pad.InvalidatePad();
 			}
 		}
 	}
@@ -67,7 +67,7 @@ namespace Debugger.AddIn
 					return;
 				
 				list.WatchItems.Remove(node);
-				((WatchPad)this.Owner).RefreshPad();
+				((WatchPad)this.Owner).InvalidatePad();
 			}
 		}
 	}
@@ -77,7 +77,7 @@ namespace Debugger.AddIn
 		public override void Run()
 		{
 			if (this.Owner is WatchPad) {
-				((WatchPad)this.Owner).RefreshPad();
+				((WatchPad)this.Owner).InvalidatePad();
 			}
 		}
 	}

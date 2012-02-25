@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.Modules.Added += debuggedProcess_ModuleLoaded;
 				debuggedProcess.Modules.Removed += debuggedProcess_ModuleUnloaded;
 			}
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_ModuleLoaded(object sender, CollectionItemEventArgs<Module> e)
@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RemoveModule(e.Item);
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			loadedModulesList.ItemCollection.Clear();
 			if (debuggedProcess != null) {

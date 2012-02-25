@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods;
 			extMethodsItem.Click += delegate {
 				extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
-				RefreshPad();
+				CallStackPad.InvalidateCallstackPad();
 			};
 			
 			MenuItem moduleItem = new MenuItem();
@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			moduleItem.Click += delegate {
 				moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames = !DebuggingOptions.Instance.ShowModuleNames;
 				((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
-				RefreshPad();
+				CallStackPad.InvalidateCallstackPad();
 			};
 			
 			MenuItem argNamesItem = new MenuItem();
@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			argNamesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentNames;
 			argNamesItem.Click += delegate {
 				argNamesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentNames = !DebuggingOptions.Instance.ShowArgumentNames;
-				RefreshPad();
+				CallStackPad.InvalidateCallstackPad();
 			};
 			
 			MenuItem argValuesItem = new MenuItem();
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			argValuesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentValues;
 			argValuesItem.Click += delegate {
 				argValuesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentValues = !DebuggingOptions.Instance.ShowArgumentValues;
-				RefreshPad();
+				CallStackPad.InvalidateCallstackPad();
 			};
 			
 			MenuItem lineItem = new MenuItem();
@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			lineItem.Click += delegate {
 				lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers = !DebuggingOptions.Instance.ShowLineNumbers;
 				((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
-				RefreshPad();
+				CallStackPad.InvalidateCallstackPad();
 			};
 			
 			return new ContextMenu() {
@@ -98,12 +98,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused += debuggedProcess_Paused;
 			}
-			RefreshPad();
+			CallStackPad.InvalidateCallstackPad();
 		}
 
 		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			CallStackPad.InvalidateCallstackPad();
 		}
 		
 		void View_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public void RefreshPad()
+		internal void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedThread == null) {
 				view.ItemsSource = null;
@@ -278,6 +278,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	{
 		CallStackPadContent callStackList;
 		
+		static CallStackPad instance;
+		
+		public static CallStackPad Instance {
+			get { return instance; }
+		}
+		
+		public CallStackPad()
+		{
+			instance = this;
+		}
+		
 		public override object Control {
 			get {
 				return callStackList;
@@ -294,9 +305,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			callStackList.SelectProcess(process);
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			callStackList.RefreshPad();
+		}
+		
+		public static void InvalidateCallstackPad()
+		{
+			if (instance != null)
+				instance.InvalidatePad();
 		}
 	}
 }

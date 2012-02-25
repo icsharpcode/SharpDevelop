@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				foreach(dynamic current in items) {
 					(current.Tag as Thread).Suspended = !suspended;
 				}
-				RefreshPad();
+				InvalidatePad();
 			};
 			
 			menu.Items.Add(freezeItem);

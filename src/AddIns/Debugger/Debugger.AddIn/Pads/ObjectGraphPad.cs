@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 		
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			// BUG: if pad window is undocked and floats standalone, IsVisible == false (so pad won't refresh)
 			// REQUEST: need to refresh when pad becomes visible -> VisibleChanged event?
@@ -61,12 +61,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused += debuggedProcess_Paused;
 			}
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			InvalidatePad();
 		}
 	}
 }

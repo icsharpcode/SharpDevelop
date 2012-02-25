@@ -62,10 +62,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			DebuggerService.DebugStarted += OnReset;
 			DebuggerService.DebugStopped += OnReset;
 			
-			RefreshPad();
+			InvalidatePad();
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				return;
@@ -79,9 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				try {
 					// create all simple ThreadStacks
 					foreach (Thread thread in debuggedProcess.Threads) {
-						if (debuggedProcess.IsPaused) {
-							Utils.DoEvents(debuggedProcess);
-						}
+						Utils.DoEvents(debuggedProcess);
 						CreateThreadStack(thread);
 					}
 				}
@@ -136,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return parallelStacksView; }
 			set {
 				parallelStacksView = value;
-				RefreshPad();
+				InvalidatePad();
 			}
 		}
 		
@@ -144,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return isMethodView; }
 			set {
 				isMethodView = value;
-				RefreshPad();
+				InvalidatePad();
 			}
 		}
 		
@@ -168,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		private void OnProcessPaused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		private void AddChildren(ThreadStack parent)
@@ -588,7 +586,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ToggleSelectedFrameBookmark(e.Location);
 			
 			if (isMethodView)
-				RefreshPad();
+				InvalidatePad();
 		}
 		
 		#endregion
