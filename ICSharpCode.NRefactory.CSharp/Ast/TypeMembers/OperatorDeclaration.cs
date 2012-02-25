@@ -165,8 +165,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				return FalseRole;
 			
 			case OperatorType.Addition:
+			case OperatorType.UnaryPlus:
 				return AdditionRole;
 			case OperatorType.Subtraction:
+			case OperatorType.UnaryNegation:
 				return SubtractionRole;
 			
 			case OperatorType.Multiply:
