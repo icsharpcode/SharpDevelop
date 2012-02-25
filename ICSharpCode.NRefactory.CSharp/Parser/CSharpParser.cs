@@ -3634,7 +3634,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CompilerSettings CompilerSettings {
 			get;
-			private set;
+			internal set;
 		}
 		
 		public Action<CompilerCompilationUnit> CompilationUnitCallback {

@@ -28,6 +28,10 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
+using Mono.CSharp;
+using System.IO;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -108,14 +112,45 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Converts this compilation unit into a parsed file that can be stored in the type system.
 		/// </summary>
-		public CSharpParsedFile ToTypeSystem()
+		public CSharpParsedFile ToTypeSystem ()
 		{
-			if (string.IsNullOrEmpty(this.FileName))
-				throw new InvalidOperationException("Cannot use ToTypeSystem() on a compilation unit without file name.");
-			var v = new TypeSystemConvertVisitor(this.FileName);
-			v.VisitCompilationUnit(this, null);
+			if (string.IsNullOrEmpty (this.FileName))
+				throw new InvalidOperationException ("Cannot use ToTypeSystem() on a compilation unit without file name.");
+			var v = new TypeSystemConvertVisitor (this.FileName);
+			v.VisitCompilationUnit (this, null);
 			return v.ParsedFile;
+		}
+		
+		public static CompilationUnit Parse (string text, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var parser = new CSharpParser ();
+			if (settings != null)
+				parser.CompilerSettings = settings;
+			return parser.Parse (text, fileName);
+		}
+		
+		public static CompilationUnit Parse (TextReader reader, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var parser = new CSharpParser ();
+			if (settings != null)
+				parser.CompilerSettings = settings;
+			return parser.Parse (reader, fileName, 0);
+		}
+		
+		public static CompilationUnit Parse (Stream stream, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var parser = new CSharpParser ();
+			if (settings != null)
+				parser.CompilerSettings = settings;
+			return parser.Parse (stream, fileName, 0);
+		}
+		
+		public static CompilationUnit Parse (ITextSource textSource, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var parser = new CSharpParser ();
+			if (settings != null)
+				parser.CompilerSettings = settings;
+			return parser.Parse (textSource, fileName, 0);
 		}
 	}
 }
-
