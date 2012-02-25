@@ -264,6 +264,10 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Help Mode</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Cannot launch Help Library Manager, because there is no help catalog installed/selected. Please check your help settings (see Tools &gt; Options &gt; Tools &gt; Microsoft Help Viewer).</value>
+    <comment>Error message when there is no help catalog active</comment>
+  </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Help Library Manager was not found. Please check if it was installed correctly.</value>
   </data>

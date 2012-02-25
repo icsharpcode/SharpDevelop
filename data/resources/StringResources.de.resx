@@ -262,11 +262,17 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Hilfetyp</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Help Library Manager kann nicht gestartet werden, weil kein Hilfekatalog installiert oder ausgewählt wurde. Bitte überprüfen Sie die Hilfeeinstellungen (siehe Extras &gt; Optionen... &gt; Tools &gt; Microsoft Help Viewer).</value>
+  </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Help Library Manager wurde nicht gefunden. Bitte stellen Sie sicher, dass es korrekt installiert wurde.</value>
   </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Installierte Hilfekataloge</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Help Library Manager ausführen</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Help Viewer</value>
@@ -671,6 +677,18 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>Suchen ...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Setter hinzufügen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Wählen Sie die Felder aus, für welche Sie Eigenschaften erstellen wollen:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description.ImplementINotifyPropertyChanged" xml:space="preserve">
+    <value>INotifyPropertyChanged implementieren</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Eigenschaften erstellen</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Methode extrahieren</value>
@@ -1487,6 +1505,9 @@ Um ActiveX/COM-Objekte zu generieren, ziehen sie eine Klasse aus einer Typbiblio
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Warte auf Start der Anwendung</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Code-Qualitätsanalyse</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Füge Reference zu Methode ein; drücke Tab oder Enter zweimal, um eine neue Methode anzulegen.</value>
@@ -2427,6 +2448,12 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Debugger</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Ausnahmen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Ausführung bei behandelten Ausnahmen unterbrechen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Einzelschrittausführung</value>
   </data>
@@ -2654,6 +2681,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Ganze Zeile ausschneiden oder kopieren, wenn nichts markiert ist</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Virtuelle Leerzeichen aktivieren</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Mauscursor &amp;verstecken während Eingabe</value>
@@ -2978,7 +3008,7 @@ Eine Änderung wirkt sich erst beim nächsten Start von #Develop aus.</value>
     <value>Intel 64-bit Itanium Prozessor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>AMD 64-bit Prozessor</value>
+    <value>x86-64 Prozessor</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>32-bit Intel-kompatibler Prozessor</value>
@@ -4293,7 +4323,7 @@ Alle Änderungen werden verworfen!</value>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
     <value>Die Datei
 ${File}
-wurde von ausserhalb der Applikation geändert wollen Sie die Datei neu laden?</value>
+wurde außerhalb der Applikation geändert. Wollen Sie die Datei neu laden?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Inkrementelle Suche:</value>
@@ -5311,6 +5341,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.XmlEditor.XslOutputView.Title" xml:space="preserve">
     <value>XSLT-Ausgabe</value>
   </data>
+  <data name="ILSpyAddIn.ILSpyDoesNotExist" xml:space="preserve">
+    <value>ILSpy konnte nicht am angegebenen Ort gefunden werden, oder SharpDevelop hat nicht die ausreichenden Berechtigungen, um darauf zuzugreifen.</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>In ILSpy öffnen</value>
+  </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>Konnte Toolkonfigurationsdatei nicht laden.</value>
   </data>
@@ -5573,7 +5609,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>bei {0} in {1}:Zeile {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>Eine Ausnahme vom Typ {0} wurde ausgelöst:\n{1}</value>
+    <value>Eine Ausnahme vom Typ {0} wurde ausgelöst:</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Zeige Ausnahmen-Details</value>
@@ -5969,7 +6005,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Dateip&amp;fad/-namen kopieren</value>
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
-    <value>Öffne übergeordneten Ordner im Explorer</value>
+    <value>Öffne beinhaltenden Ordner im Explorer</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Alle Knoten einklappen</value>
@@ -6105,6 +6141,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Als St&amp;artprojekt festlegen</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ViewInBrowser" xml:space="preserve">
+    <value>Im Browser anzeigen</value>
   </data>
   <data name="ProjectComponent.NewFolderString" xml:space="preserve">
     <value>Neuer Ordner</value>
@@ -7486,6 +7525,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
     <value>Alle Haltepunkte entfernen</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunLastBuild" xml:space="preserve">
+    <value>Letzten Build ausführen</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>&amp;Ohne Debugger ausführen</value>
