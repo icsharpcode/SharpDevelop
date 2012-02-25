@@ -91,8 +91,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode (TextLocation location)
 		{
-			Console.WriteLine ("--------------------------" + location);
-			Console.WriteLine (Environment.StackTrace);
 			this.startLocation = location;
 		}
 		
