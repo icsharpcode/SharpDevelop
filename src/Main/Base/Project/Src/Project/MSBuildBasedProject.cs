@@ -8,9 +8,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -1530,28 +1532,59 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region ProjectExtensions
+		public override bool ContainsProjectExtension(string name)
+		{
+			ProjectExtensionsElement projectExtensions = GetExistingProjectExtensionsElement();
+			if (projectExtensions != null) {
+				return projectExtensions[name] != null;
+			}
+			return false;
+		}
+
 		public override void SaveProjectExtensions(string name, XElement element)
 		{
 			lock (SyncRoot) {
-				var existing = projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+				ProjectExtensionsElement existing = GetExistingProjectExtensionsElement();
 				if (existing == null) {
 					existing = projectFile.CreateProjectExtensionsElement();
 					projectFile.AppendChild(existing);
 				}
-				existing[name] = element.ToString();
+				existing[name] = FormatProjectExtension(element);
 			}
 		}
 		
 		public override XElement LoadProjectExtensions(string name)
 		{
 			lock (SyncRoot) {
-				var existing = projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+				ProjectExtensionsElement existing = GetExistingProjectExtensionsElement();
 				if (existing == null) {
 					existing = projectFile.CreateProjectExtensionsElement();
+					return new XElement(name);
 				}
-				return XElement.Parse(existing[name]) ?? new XElement(name);
+				return XElement.Parse(existing[name]);
 			}
 		}
-		#endregion
+		
+		ProjectExtensionsElement GetExistingProjectExtensionsElement()
+		{
+			return projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+		}
+		
+		string FormatProjectExtension(XElement element)
+		{
+			var settings = new XmlWriterSettings {
+				Indent = true,
+				IndentChars = "  ",
+				NewLineChars = "\r\n      ",
+				NewLineHandling = NewLineHandling.Replace,
+				OmitXmlDeclaration = true
+			};
+			var formattedText = new StringBuilder();
+			using (XmlWriter writer = XmlWriter.Create(new StringWriter(formattedText), settings)) {
+				element.WriteTo(writer);
+			}
+			return formattedText.ToString();
+		}
+		#endregion		
 	}
 }

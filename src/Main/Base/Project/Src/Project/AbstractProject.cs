@@ -356,13 +356,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
-		public virtual bool IsWebProject {
-			get {
-				return false;
-			}
-		}
-		
 		public void Start(bool withDebugging)
 		{
 			GetOrCreateBehavior().Start(withDebugging);
@@ -576,6 +569,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void SaveProjectExtensions(string name, XElement element)
 		{
+		}
+		
+		public virtual bool ContainsProjectExtension(string name)
+		{
+			return false;
 		}
 		
 		[Browsable(false)]

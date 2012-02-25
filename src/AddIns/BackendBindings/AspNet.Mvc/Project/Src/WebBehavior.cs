@@ -18,6 +18,7 @@ namespace ICSharpCode.AspNet.Mvc
 		public const string LocalHost = "http://localhost";
 		
 		ProcessMonitor monitor;
+		WebProject webProject;
 		
 		public string StartProgram {
 			get { return GetProjectProperty("StartProgram"); }
@@ -43,6 +44,19 @@ namespace ICSharpCode.AspNet.Mvc
 			get { return (MSBuildBasedProject)Project; }
 		}
 		
+		CompilableProject CompilableProject {
+			get { return (CompilableProject)Project; }
+		}
+		
+		WebProject WebProject {
+			get {
+				if (webProject == null) {
+					webProject = new WebProject(MSBuildProject);
+				}
+				return webProject;
+			}
+		}
+		
 		public override bool IsStartable {
 			get { return true; }
 		}
@@ -54,111 +68,88 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		public override void Start(bool withDebugging)
 		{
-			ProcessStartInfo processStartInfo = MSBuildProject.CreateStartInfo();
-			if (FileUtility.IsUrl(processStartInfo.FileName)) {
-				if (!CheckWebProjectStartInfo())
-					return;
-				// we deal with a WebProject
-				try {
-					var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-					WebProjectOptions options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-					
-					string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
-					
-					// try find the worker process directly or using the process monitor callback
-					Process[] processes = System.Diagnostics.Process.GetProcesses();
-					int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
-					if (index > -1) {
-						if (withDebugging)
-							DebuggerService.CurrentDebugger.Attach(processes[index]);
-					} else {
-						if (options.Data.WebServer == WebServer.IISExpress) {
-							// start IIS express and attach to it
-							if (WebProjectService.IsIISExpressInstalled) {
-								DebuggerService.CurrentDebugger.Start(new ProcessStartInfo(WebProjectService.IISExpressProcessLocation));
-							} else {
-								DisposeProcessMonitor();
-								MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-								return;
-							}
+			if (!CheckWebProjectStartInfo())
+				return;
+			
+			try {
+				WebProjectProperties properties = WebProject.GetWebProjectProperties();
+				string processName = WebProjectService.GetWorkerProcessName(properties);
+				
+				// try find the worker process directly or using the process monitor callback
+				Process[] processes = System.Diagnostics.Process.GetProcesses();
+				int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+				if (index > -1) {
+					if (withDebugging)
+						DebuggerService.CurrentDebugger.Attach(processes[index]);
+				} else {
+					if (properties.UseIISExpress) {
+						// start IIS express and attach to it
+						if (WebProjectService.IsIISExpressInstalled) {
+							DebuggerService.CurrentDebugger.Start(new ProcessStartInfo(WebProjectService.IISExpressProcessLocation));
 						} else {
 							DisposeProcessMonitor();
-							this.monitor = new ProcessMonitor(processName);
-							this.monitor.ProcessCreated += delegate {
-								WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(options, withDebugging)));
-							};
-							this.monitor.Start();
+							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							return;
 						}
+					} else {
+						DisposeProcessMonitor();
+						this.monitor = new ProcessMonitor(processName);
+						this.monitor.ProcessCreated += delegate {
+							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(properties, withDebugging)));
+						};
+						this.monitor.Start();
 					}
-					
-					// start default application(e.g. browser) or the one specified
-					switch (project.StartAction) {
-						case StartAction.Project:
-							if (FileUtility.IsUrl(options.Data.ProjectUrl)) {
-								Process.Start(options.Data.ProjectUrl);
+				}
+				
+				// start default application(e.g. browser) or the one specified
+				switch (CompilableProject.StartAction) {
+					case StartAction.Project:
+						if (FileUtility.IsUrl(properties.IISUrl)) {
+							Process.Start(properties.IISUrl);
+						} else {
+							MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							DisposeProcessMonitor();
+						}
+						break;
+					case StartAction.Program:
+						Process.Start(StartProgram);
+						break;
+					case StartAction.StartURL:
+						if (FileUtility.IsUrl(StartUrl)) {
+							Process.Start(StartUrl);
+						} else {
+							string url = string.Concat(properties.IISUrl, StartUrl);
+							if (FileUtility.IsUrl(url)) {
+								Process.Start(url);
 							} else {
 								MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 								DisposeProcessMonitor();
+								return;
 							}
-							break;
-						case StartAction.Program:
-							Process.Start(StartProgram);
-							break;
-						case StartAction.StartURL:
-							if (FileUtility.IsUrl(StartUrl)) {
-								Process.Start(StartUrl);
-							} else {
-								string url = string.Concat(options.Data.ProjectUrl, StartUrl);
-								if (FileUtility.IsUrl(url)) {
-									Process.Start(url);
-								} else {
-									MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-									DisposeProcessMonitor();
-									return;
-								}
-							}
-							break;
-						default:
-							throw new System.Exception("Invalid value for StartAction");
-					}
-				} catch (System.Exception ex) {
-					string err = "Error: " + ex.Message;
-					MessageService.ShowError(err);
-					LoggingService.Error(err);
-					DisposeProcessMonitor();
+						}
+						break;
+					default:
+						throw new Exception("Invalid value for StartAction");
 				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex.Message);
+				LoggingService.Error(ex.ToString());
+				DisposeProcessMonitor();
 			}
 		}
 		
 		bool CheckWebProjectStartInfo()
 		{
-			// check if we have startup project
-			var project = ProjectService.OpenSolution.StartupProject as CompilableProject;
-			if (project == null) {
-				MessageService.ShowError("${res:ICSharpCode.NoStartupProject}");
-				return false;
+			if (WebProject.HasWebProjectProperties() && WebProject.GetWebProjectProperties().IsConfigured()) {
+				return true;
 			}
-			
-			// check if we have options
-			if (WebProjectsOptions.Instance == null) {
-				MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-				return false;
-			}
-			
-			// check the options
-			WebProjectOptions options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-			if (options == null || options.Data == null || string.IsNullOrEmpty(options.ProjectName) ||
-			    options.Data.WebServer == WebServer.None) {
-				MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-				return false;
-			}
-			
-			return true;
+			MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+			return false;
 		}
 		
-		void OnProcessCreated(WebProjectOptions options, bool withDebugging)
+		void OnProcessCreated(WebProjectProperties properties, bool withDebugging)
 		{
-			string processName = WebProjectService.GetWorkerProcessName(options.Data.WebServer);
+			string processName = WebProjectService.GetWorkerProcessName(properties);
 			Process[] processes = Process.GetProcesses();
 			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 			if (index == -1)
@@ -167,7 +158,7 @@ namespace ICSharpCode.AspNet.Mvc
 				DebuggerService.CurrentDebugger.Attach(processes[index]);
 				
 				if (!DebuggerService.CurrentDebugger.IsAttached) {
-					if(options.Data.WebServer == WebServer.IIS) {
+					if(properties.UseIIS) {
 						string format = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.NoIISWP");
 						MessageService.ShowMessage(string.Format(format, processName));
 					}
@@ -182,22 +173,6 @@ namespace ICSharpCode.AspNet.Mvc
 				monitor.Dispose();
 				monitor = null;
 			}
-		}
-		
-		public override Properties CreateMemento()
-		{
-			Properties properties = base.CreateMemento();
-			WebProjectOptions webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Project.Name);
-			if (webOptions != null)
-				properties.Set("WebProjectOptions", webOptions);
-			return properties;
-		}
-		
-		public override void SetMemento(Properties memento)
-		{
-			// web project properties
-			WebProjectsOptions.Instance.SetWebProjectOptions(Project.Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
-			base.SetMemento(memento);
 		}
 	}
 }

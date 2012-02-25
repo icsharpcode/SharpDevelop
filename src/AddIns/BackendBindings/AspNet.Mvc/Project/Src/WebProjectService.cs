@@ -83,6 +83,14 @@ namespace ICSharpCode.AspNet.Mvc
 			return GetIISWorkerProcessName();
 		}
 		
+		public static string GetWorkerProcessName(WebProjectProperties properties)
+		{
+			if (properties.UseIISExpress) {
+				return GetIISExpressWorkerProcessName();
+			}
+			return GetIISWorkerProcessName();
+		}
+		
 		public static string GetIISExpressWorkerProcessName()
 		{
 			if (!IsIISExpressInstalled)
@@ -97,8 +105,7 @@ namespace ICSharpCode.AspNet.Mvc
 				return ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
 			
 			try {
-				switch (IISVersion)
-				{
+				switch (IISVersion) {
 					case IISVersion.IIS5:
 						return IIS_5_PROCESS_NAME;
 					default:

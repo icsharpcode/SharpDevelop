@@ -67,20 +67,27 @@
 			FontWeight="Bold"
 			TextWrapping="Wrap"
 			Name="StatusLabel" />
-		<widgets:UniformGridWithSpacing Columns="2" SpaceBetweenColumns="10">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
 			<Button
 				IsEnabled="False"
 				Margin="0,2,0,2"
 				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				HorizontalAlignment="Left"
 				Name="CreateVirtualDirectoryButton"
 				Content="{core:Localize ICSharpCode.WebProjectOptionsPanel.CreateVirtualDir}"
 				Click="CreateVirtualDirectory_Click" />
 			<Button
+				Grid.Column="1"
 				Margin="0,2,2,2"
 				Style="{x:Static core:GlobalStyles.ButtonStyle}"
 				Name="ClearWebServerButton"
+				HorizontalAlignment="Left"
 				Content="{core:Localize ICSharpCode.WebProjectOptionsPanel.DisableWebServerButton}"
 				Click="ClearWebServerButton_Click" />
-		</widgets:UniformGridWithSpacing>
+		</Grid>
 	</widgets:StackPanelWithSpacing>
 </options:ProjectOptionPanel>

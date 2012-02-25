@@ -49,6 +49,9 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -224,11 +227,13 @@
     <Compile Include="Src\SlideBehaviour.cs" />
     <Compile Include="Src\ViewInBrowser.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
+    <Compile Include="Src\VisualStudioProjectExtension.cs" />
     <Compile Include="Src\WebBehavior.cs" />
-    <Compile Include="Src\WebProjectOptions\WebProjectOptions.cs" />
+    <Compile Include="Src\WebProject.cs" />
     <Compile Include="Src\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
       <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\WebProjectProperties.cs" />
     <Compile Include="Src\WebProjectService.cs" />
   </ItemGroup>
   <ItemGroup>
