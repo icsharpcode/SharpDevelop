@@ -415,12 +415,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			switch (typeDefinition.Kind) {
 				case TypeKind.Struct:
 					classType = ClassType.Struct;
+					modifiers &= ~Modifiers.Sealed;
 					break;
 				case TypeKind.Enum:
 					classType = ClassType.Enum;
+					modifiers &= ~Modifiers.Sealed;
 					break;
 				case TypeKind.Interface:
 					classType = ClassType.Interface;
+					modifiers &= ~Modifiers.Abstract;
 					break;
 				case TypeKind.Delegate:
 					IMethod invoke = typeDefinition.GetDelegateInvokeMethod();
@@ -572,6 +575,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (IParameter p in method.Parameters) {
 				decl.Parameters.Add(ConvertParameter(p));
 			}
+			if (method.IsExtensionMethod && decl.Parameters.Any() && decl.Parameters.First().ParameterModifier == ParameterModifier.None)
+				decl.Parameters.First().ParameterModifier = ParameterModifier.This;
 			
 			if (this.ShowTypeParameters && this.ShowTypeParameterConstraints && !method.IsOverride && !method.IsExplicitInterfaceImplementation) {
 				foreach (ITypeParameter tp in method.TypeParameters) {

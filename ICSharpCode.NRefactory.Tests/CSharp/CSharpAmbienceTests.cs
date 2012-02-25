@@ -105,6 +105,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		[Test]
+		public void GenericInterfaceFull()
+		{
+			var typeDef = compilation.FindType(typeof(IEnumerable<>)).GetDefinition();
+			ambience.ConversionFlags = ConversionFlags.All;
+			string result = ambience.ConvertEntity(typeDef);
+			
+			Assert.AreEqual("public interface System.Collections.Generic.IEnumerable<out T>", result);
+		}
+		
+		[Test]
 		public void SimpleTypeShortName()
 		{
 			var typeDef = compilation.FindType(typeof(Object)).GetDefinition();
