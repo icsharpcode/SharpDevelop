@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public NullCSharpTokenNode () : base (TextLocation.Empty, 0)
+			public NullCSharpTokenNode () : base (TextLocation.Empty)
 			{
 			}
 			
@@ -62,7 +62,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Token;
@@ -76,17 +75,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		protected int tokenLength;
-		public override TextLocation EndLocation {
+		protected virtual int TokenLength {
 			get {
-				return new TextLocation (StartLocation.Line, StartLocation.Column + tokenLength);
+				if (!(Role is TokenRole))
+					return 0;
+				return ((TokenRole)Role).Length;
 			}
 		}
 		
-		public CSharpTokenNode (TextLocation location, int tokenLength)
+		public override TextLocation EndLocation {
+			get {
+				return new TextLocation (StartLocation.Line, StartLocation.Column + TokenLength);
+			}
+		}
+		
+		public CSharpTokenNode (TextLocation location)
 		{
+			Console.WriteLine ("--------------------------" + location);
+			Console.WriteLine (Environment.StackTrace);
 			this.startLocation = location;
-			this.tokenLength = tokenLength;
 		}
 		
 		#region IRelocationable implementation
@@ -96,6 +103,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		public override string GetText (CSharpFormattingOptions formattingOptions = null)
+		{
+			if (!(Role is TokenRole))
+				return null;
+			return ((TokenRole)Role).Token;
+		}
+
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitCSharpTokenNode (this);

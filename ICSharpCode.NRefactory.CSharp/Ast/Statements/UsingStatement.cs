@@ -31,10 +31,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class UsingStatement : Statement
 	{
+		public static readonly TokenRole UsingKeywordRole = new TokenRole ("using");
 		public static readonly Role<AstNode> ResourceAcquisitionRole = new Role<AstNode>("ResourceAcquisition", AstNode.Null);
 		
 		public CSharpTokenNode UsingToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (UsingKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

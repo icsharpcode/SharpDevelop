@@ -31,13 +31,15 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class IsExpression : Expression
 	{
+		public readonly static TokenRole IsKeywordRole = new TokenRole ("is");
+		
 		public Expression Expression {
 			get { return GetChildByRole(Roles.Expression); }
 			set { SetChildByRole(Roles.Expression, value); }
 		}
 		
 		public CSharpTokenNode IsToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (IsKeywordRole); }
 		}
 		
 		public AstType Type {

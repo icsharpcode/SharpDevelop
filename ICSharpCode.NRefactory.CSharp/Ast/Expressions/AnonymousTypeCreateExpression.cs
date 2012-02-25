@@ -33,8 +33,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class AnonymousTypeCreateExpression : Expression
 	{
+		public readonly static TokenRole NewKeywordRole = new TokenRole ("new");
+		
 		public CSharpTokenNode NewToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (NewKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

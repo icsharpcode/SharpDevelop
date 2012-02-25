@@ -33,8 +33,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class FixedStatement : Statement
 	{
+		public static readonly TokenRole FixedKeywordRole = new TokenRole ("fixed");
+		
 		public CSharpTokenNode FixedToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (FixedKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

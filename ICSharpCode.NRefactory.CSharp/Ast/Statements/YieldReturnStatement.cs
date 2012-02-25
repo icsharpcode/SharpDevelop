@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class YieldReturnStatement : Statement
 	{
-		public static readonly Role<CSharpTokenNode> YieldKeywordRole = new Role<CSharpTokenNode>("YieldKeyword", CSharpTokenNode.Null);
-		public static readonly Role<CSharpTokenNode> ReturnKeywordRole = new Role<CSharpTokenNode>("ReturnKeyword", CSharpTokenNode.Null);
+		public static readonly TokenRole YieldKeywordRole = new TokenRole ("yield");
+		public static readonly TokenRole ReturnKeywordRole = new TokenRole ("return");
 		
 		public CSharpTokenNode YieldToken {
 			get { return GetChildByRole (YieldKeywordRole); }

@@ -41,7 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class ParameterDeclaration : AstNode
 	{
 		public static readonly Role<AttributeSection> AttributeRole = AttributedNode.AttributeRole;
-		public static readonly Role<CSharpTokenNode> ModifierRole = new Role<CSharpTokenNode>("Modifier", CSharpTokenNode.Null);
+		public static readonly TokenRole RefModifierRole = new TokenRole("ref");
+		public static readonly TokenRole OutModifierRole = new TokenRole("out");
+		public static readonly TokenRole ParamsModifierRole = new TokenRole("params");
+		public static readonly TokenRole ThisModifierRole = new TokenRole("this");
 		
 		public override NodeType NodeType {
 			get {

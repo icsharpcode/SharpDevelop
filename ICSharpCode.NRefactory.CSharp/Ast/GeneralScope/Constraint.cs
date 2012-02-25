@@ -36,7 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </remarks>
 	public class Constraint : AstNode
 	{
-		public readonly static Role<CSharpTokenNode> ColonRole = TypeDeclaration.ColonRole;
+		public readonly static TokenRole WhereKeywordRole = new TokenRole ("where");
+		public readonly static TokenRole ColonRole = TypeDeclaration.ColonRole;
 		public readonly static Role<AstType> BaseTypeRole = TypeDeclaration.BaseTypeRole;
 		public readonly static Role<SimpleType> TypeParameterRole = new Role<SimpleType> ("TypeParameter", SimpleType.Null);
 		

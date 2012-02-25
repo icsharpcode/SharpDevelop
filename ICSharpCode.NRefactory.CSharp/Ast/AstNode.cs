@@ -206,6 +206,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return lastChild; }
 		}
 		
+		public bool HasChildren {
+			get {
+				return firstChild != null;
+			}
+		}
+		
 		public IEnumerable<AstNode> Children {
 			get {
 				AstNode next;
@@ -648,7 +654,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <param name='formattingOptions'>
 		/// Formatting options.
 		/// </param>
-		public string GetText (CSharpFormattingOptions formattingOptions = null)
+		public virtual string GetText (CSharpFormattingOptions formattingOptions = null)
 		{
 			if (IsNull)
 				return "";
@@ -711,23 +717,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			public readonly static Role<Constraint> Constraint = new Role<Constraint> ("Constraint");
 			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer> ("Variable", VariableInitializer.Null);
 			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement> ("EmbeddedStatement", CSharp.Statement.Null);
-			public static readonly Role<CSharpTokenNode> Keyword = new Role<CSharpTokenNode> ("Keyword", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> InKeyword = new Role<CSharpTokenNode> ("InKeyword", CSharpTokenNode.Null);
+//			public static readonly TokenRole Keyword = new TokenRole ("Keyword", CSharpTokenNode.Null);
+//			public static readonly TokenRole InKeyword = new TokenRole ("InKeyword", CSharpTokenNode.Null);
 			
 			// some pre defined constants for most used punctuation
-			public static readonly Role<CSharpTokenNode> LPar = new Role<CSharpTokenNode> ("LPar", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> RPar = new Role<CSharpTokenNode> ("RPar", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> LBracket = new Role<CSharpTokenNode> ("LBracket", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> RBracket = new Role<CSharpTokenNode> ("RBracket", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> LBrace = new Role<CSharpTokenNode> ("LBrace", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> RBrace = new Role<CSharpTokenNode> ("RBrace", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> LChevron = new Role<CSharpTokenNode> ("LChevron", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> RChevron = new Role<CSharpTokenNode> ("RChevron", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> Comma = new Role<CSharpTokenNode> ("Comma", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> Dot = new Role<CSharpTokenNode> ("Dot", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> Semicolon = new Role<CSharpTokenNode> ("Semicolon", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode> ("Assign", CSharpTokenNode.Null);
-			public static readonly Role<CSharpTokenNode> Colon = new Role<CSharpTokenNode> ("Colon", CSharpTokenNode.Null);
+			public static readonly TokenRole LPar = new TokenRole ("(");
+			public static readonly TokenRole RPar = new TokenRole (")");
+			public static readonly TokenRole LBracket = new TokenRole ("[");
+			public static readonly TokenRole RBracket = new TokenRole ("]");
+			public static readonly TokenRole LBrace = new TokenRole ("{");
+			public static readonly TokenRole RBrace = new TokenRole ("}");
+			public static readonly TokenRole LChevron = new TokenRole ("<");
+			public static readonly TokenRole RChevron = new TokenRole (">");
+			public static readonly TokenRole Comma = new TokenRole (",");
+			public static readonly TokenRole Dot = new TokenRole (".");
+			public static readonly TokenRole Semicolon = new TokenRole (";");
+			public static readonly TokenRole Assign = new TokenRole ("=");
+			public static readonly TokenRole Colon = new TokenRole (":");
+			public static readonly TokenRole DoubleColon = new TokenRole ("::");
 			public static readonly Role<Comment> Comment = new Role<Comment> ("Comment");
 			public static readonly Role<PreProcessorDirective> PreProcessorDirective = new Role<PreProcessorDirective> ("PreProcessorDirective");
 			public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");

@@ -31,7 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class TypeParameterDeclaration : AstNode
 	{
 		public static readonly Role<AttributeSection> AttributeRole = AttributedNode.AttributeRole;
-		public static readonly Role<CSharpTokenNode> VarianceRole = new Role<CSharpTokenNode>("Variance", CSharpTokenNode.Null);
+		public static readonly TokenRole OutVarianceKeywordRole = new TokenRole ("out");
+		public static readonly TokenRole InVarianceKeywordRole = new TokenRole ("in");
 		
 		public override NodeType NodeType {
 			get { return NodeType.Unknown; }

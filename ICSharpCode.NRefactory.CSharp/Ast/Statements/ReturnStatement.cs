@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ReturnStatement : Statement
 	{
+		public static readonly TokenRole ReturnKeywordRole = new TokenRole ("return");
+
 		public CSharpTokenNode ReturnToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (ReturnKeywordRole); }
 		}
 		
 		public Expression Expression {

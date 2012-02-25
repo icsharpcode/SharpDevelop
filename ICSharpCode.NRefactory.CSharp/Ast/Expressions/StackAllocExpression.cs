@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class StackAllocExpression : Expression
 	{
+		public readonly static TokenRole StackallocKeywordRole = new TokenRole ("stackalloc");
+		
 		public CSharpTokenNode StackAllocToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (StackallocKeywordRole); }
 		}
 		
 		public AstType Type {

@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ThrowStatement : Statement
 	{
+		public static readonly TokenRole ThrowKeywordRole = new TokenRole ("throw");
+		
 		public CSharpTokenNode ThrowToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (ThrowKeywordRole); }
 		}
 		
 		public Expression Expression {

@@ -31,6 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class BreakStatement : Statement
 	{
+		public static readonly TokenRole BreakKeywordRole = new TokenRole ("break");
+		
+		public CSharpTokenNode BreakToken {
+			get { return GetChildByRole (BreakKeywordRole); }
+		}
+		
 		public CSharpTokenNode SemicolonToken {
 			get { return GetChildByRole (Roles.Semicolon); }
 		}

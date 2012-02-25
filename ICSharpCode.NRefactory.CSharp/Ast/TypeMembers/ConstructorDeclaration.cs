@@ -105,6 +105,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class ConstructorInitializer : AstNode
 	{
+		public static readonly TokenRole BaseKeywordRole = new TokenRole ("base");
+		public static readonly TokenRole ThisKeywordRole = new TokenRole ("this");
+		
 		public static readonly new ConstructorInitializer Null = new NullConstructorInitializer ();
 		class NullConstructorInitializer : ConstructorInitializer
 		{

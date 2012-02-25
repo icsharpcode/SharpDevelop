@@ -32,8 +32,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeOfExpression : Expression
 	{
+		public readonly static TokenRole TypeofKeywordRole = new TokenRole ("typeof");
+		
 		public CSharpTokenNode TypeOfToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (TypeofKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

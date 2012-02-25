@@ -34,10 +34,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class SwitchStatement : Statement
 	{
+		public static readonly TokenRole SwitchKeywordRole = new TokenRole ("switch");
 		public static readonly Role<SwitchSection> SwitchSectionRole = new Role<SwitchSection>("SwitchSection");
 		
 		public CSharpTokenNode SwitchToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (SwitchKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {
@@ -175,6 +176,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class CaseLabel : AstNode
 	{
+		public static readonly TokenRole CaseKeywordRole = new TokenRole ("case");
+		public static readonly TokenRole DefaultKeywordRole = new TokenRole ("default");
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;

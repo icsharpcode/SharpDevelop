@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class UncheckedExpression : Expression
 	{
+		public readonly static TokenRole UncheckedKeywordRole = new TokenRole ("unchecked");
+
 		public CSharpTokenNode UncheckedToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (UncheckedKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

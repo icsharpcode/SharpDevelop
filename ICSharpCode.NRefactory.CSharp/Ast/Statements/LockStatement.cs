@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class LockStatement : Statement
 	{
+		public static readonly TokenRole LockKeywordRole = new TokenRole ("lock");
+		
 		public CSharpTokenNode LockToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (LockKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

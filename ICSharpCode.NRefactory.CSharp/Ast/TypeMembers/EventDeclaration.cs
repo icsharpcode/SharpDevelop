@@ -30,6 +30,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class EventDeclaration : AttributedNode
 	{
+		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
+		
 		public override NodeType NodeType {
 			get { return NodeType.Member; }
 		}
@@ -68,6 +70,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class CustomEventDeclaration : MemberDeclaration
 	{
+		public static readonly TokenRole EventKeywordRole = new TokenRole ("event");
+		public static readonly TokenRole AddKeywordRole = new TokenRole ("add");
+		public static readonly TokenRole RemoveKeywordRole = new TokenRole ("remove");
+		
 		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
 		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
 		

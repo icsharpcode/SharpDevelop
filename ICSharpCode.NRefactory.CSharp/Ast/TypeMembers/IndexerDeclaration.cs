@@ -31,6 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class IndexerDeclaration : MemberDeclaration
 	{
+		public static readonly TokenRole ThisKeywordRole = new TokenRole ("this");
 		public static readonly Role<Accessor> GetterRole = PropertyDeclaration.GetterRole;
 		public static readonly Role<Accessor> SetterRole = PropertyDeclaration.SetterRole;
 		

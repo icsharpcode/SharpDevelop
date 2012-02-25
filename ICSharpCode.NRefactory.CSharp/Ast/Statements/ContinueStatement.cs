@@ -31,6 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ContinueStatement : Statement
 	{
+		public static readonly TokenRole ContinueKeywordRole = new TokenRole ("continue");
+		
+		public CSharpTokenNode ContinueToken {
+			get { return GetChildByRole (ContinueKeywordRole); }
+		}
+		
 		public CSharpTokenNode SemicolonToken {
 			get { return GetChildByRole (Roles.Semicolon); }
 		}

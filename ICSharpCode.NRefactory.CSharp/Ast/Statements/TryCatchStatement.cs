@@ -34,10 +34,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TryCatchStatement : Statement
 	{
-		public static readonly Role<CSharpTokenNode> TryKeywordRole = new Role<CSharpTokenNode>("TryKeyword", CSharpTokenNode.Null);
+		public static readonly TokenRole TryKeywordRole = new TokenRole ("try");
 		public static readonly Role<BlockStatement> TryBlockRole = new Role<BlockStatement>("TryBlock", BlockStatement.Null);
 		public static readonly Role<CatchClause> CatchClauseRole = new Role<CatchClause>("CatchClause");
-		public static readonly Role<CSharpTokenNode> FinallyKeywordRole = new Role<CSharpTokenNode>("FinallyKeyword", CSharpTokenNode.Null);
+		public static readonly TokenRole FinallyKeywordRole = new TokenRole ("finally");
 		public static readonly Role<BlockStatement> FinallyBlockRole = new Role<BlockStatement>("FinallyBlock", BlockStatement.Null);
 		
 		public CSharpTokenNode TryToken {
@@ -89,6 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class CatchClause : AstNode
 	{
+		public static readonly TokenRole CatchKeywordRole = new TokenRole ("catch");
+		
 		#region PatternPlaceholder
 		public static implicit operator CatchClause(PatternMatching.Pattern pattern)
 		{
@@ -142,7 +144,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode CatchToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (CatchKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

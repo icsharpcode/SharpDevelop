@@ -41,12 +41,11 @@
     <DefineConstants>TRACE;FULL_AST</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>PdbOnly</DebugType>
+    <DebugType>none</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -327,6 +326,7 @@
     <Compile Include="Parser\mcs\module.cs" />
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
+    <Compile Include="Ast\TokenRole.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

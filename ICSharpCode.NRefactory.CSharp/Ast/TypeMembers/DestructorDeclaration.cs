@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class DestructorDeclaration : AttributedNode
 	{
-		public static readonly Role<CSharpTokenNode> TildeRole = new Role<CSharpTokenNode>("Tilde", CSharpTokenNode.Null);
+		public static readonly TokenRole TildeRole = new TokenRole ("~");
 		
 		public CSharpTokenNode TildeToken {
 			get { return GetChildByRole (TildeRole); }

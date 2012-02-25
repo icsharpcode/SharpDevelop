@@ -31,6 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class GotoStatement : Statement
 	{
+		public static readonly TokenRole GotoKeywordRole = new TokenRole ("goto");
+		
 		public GotoStatement ()
 		{
 		}
@@ -41,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode GotoToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (GotoKeywordRole); }
 		}
 		
 		public string Label {
@@ -87,10 +89,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class GotoCaseStatement : Statement
 	{
-		public static readonly Role<CSharpTokenNode> CaseKeywordRole = new Role<CSharpTokenNode>("CaseKeyword", CSharpTokenNode.Null);
+		public static readonly TokenRole GotoKeywordRole = new TokenRole ("goto");
+		public static readonly TokenRole CaseKeywordRole = new TokenRole ("case");
 		
 		public CSharpTokenNode GotoToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (GotoKeywordRole); }
 		}
 		
 		public CSharpTokenNode CaseToken {
@@ -136,10 +139,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class GotoDefaultStatement : Statement
 	{
-		public static readonly Role<CSharpTokenNode> DefaultKeywordRole = new Role<CSharpTokenNode>("DefaultKeyword", CSharpTokenNode.Null);
+		public static readonly TokenRole GotoKeywordRole = new TokenRole ("goto");
+		public static readonly TokenRole DefaultKeywordRole = new TokenRole ("default");
 		
 		public CSharpTokenNode GotoToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (GotoKeywordRole); }
 		}
 		
 		public CSharpTokenNode DefaultToken {

@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(0, ns.Members.Count);
 			
 			Assert.AreEqual(new Role[] {
-			                	AstNode.Roles.Keyword,
+			                	NamespaceDeclaration.NamespaceKeywordRole,
 			                	AstNode.Roles.Identifier,
 			                	AstNode.Roles.LBrace,
 			                	AstNode.Roles.PreProcessorDirective,
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(0, ns.Members.Count);
 			
 			Assert.AreEqual(new Role[] {
-			                	AstNode.Roles.Keyword,
+			                	NamespaceDeclaration.NamespaceKeywordRole,
 			                	AstNode.Roles.Identifier,
 			                	AstNode.Roles.LBrace,
 			                	AstNode.Roles.PreProcessorDirective,
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(0, ns.Members.Count);
 			
 			Assert.AreEqual(new Role[] {
-			                	AstNode.Roles.Keyword,
+			                	NamespaceDeclaration.NamespaceKeywordRole,
 			                	AstNode.Roles.Identifier,
 			                	AstNode.Roles.LBrace,
 			                	AstNode.Roles.PreProcessorDirective,

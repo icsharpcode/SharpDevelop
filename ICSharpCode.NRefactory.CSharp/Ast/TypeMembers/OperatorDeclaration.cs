@@ -71,17 +71,56 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class OperatorDeclaration : AttributedNode
 	{
-		public static readonly Role<CSharpTokenNode> OperatorTypeRole = new Role<CSharpTokenNode> ("OperatorType", CSharpTokenNode.Null);
-		public static readonly Role<CSharpTokenNode> OperatorKeywordRole = Roles.Keyword;
+		public static readonly TokenRole OperatorKeywordRole = new TokenRole ("operator");
+		
+		// Unary operators
+		public static readonly TokenRole LogicalNotRole = new TokenRole ("!");
+		public static readonly TokenRole OnesComplementRole = new TokenRole ("~");
+		public static readonly TokenRole IncrementRole = new TokenRole ("++");
+		public static readonly TokenRole DecrementRole = new TokenRole ("--");
+		public static readonly TokenRole TrueRole = new TokenRole ("true");
+		public static readonly TokenRole FalseRole = new TokenRole ("false");
+
+		// Unary and Binary operators
+		public static readonly TokenRole AdditionRole = new TokenRole ("+");
+		public static readonly TokenRole SubtractionRole = new TokenRole ("-");
+
+		// Binary operators
+		public static readonly TokenRole MultiplyRole = new TokenRole ("*");
+		public static readonly TokenRole DivisionRole = new TokenRole ("/");
+		public static readonly TokenRole ModulusRole = new TokenRole ("%");
+		public static readonly TokenRole BitwiseAndRole = new TokenRole ("&");
+		public static readonly TokenRole BitwiseOrRole = new TokenRole ("|");
+		public static readonly TokenRole ExclusiveOrRole = new TokenRole ("^");
+		public static readonly TokenRole LeftShiftRole = new TokenRole ("<<");
+		public static readonly TokenRole RightShiftRole = new TokenRole (">>");
+		public static readonly TokenRole EqualityRole = new TokenRole ("==");
+		public static readonly TokenRole InequalityRole = new TokenRole ("!=");
+		public static readonly TokenRole GreaterThanRole = new TokenRole (">");
+		public static readonly TokenRole LessThanRole = new TokenRole ("<");
+		public static readonly TokenRole GreaterThanOrEqualRole = new TokenRole (">=");
+		public static readonly TokenRole LessThanOrEqualRole = new TokenRole ("<=");
+		
+		public static readonly TokenRole ExplicitRole = new TokenRole ("explicit");
+		public static readonly TokenRole ImplicitRole = new TokenRole ("implicit");
 		
 		public OperatorType OperatorType {
 			get;
 			set;
 		}
 		
+		
 		public AstType ReturnType {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
+		}
+		
+		public CSharpTokenNode OperatorToken {
+			get { return GetChildByRole (OperatorKeywordRole); }
+		}
+		
+		public CSharpTokenNode OperatorTypeToken {
+			get { return GetChildByRole (GetRole (OperatorType)); }
 		}
 		
 		public CSharpTokenNode LParToken {
@@ -107,6 +146,66 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static OperatorType? GetOperatorType(string methodName)
 		{
 			return (OperatorType?)Mono.CSharp.Operator.GetType(methodName);
+		}
+		
+		public static TokenRole GetRole (OperatorType type)
+		{
+			switch (type) {
+			case OperatorType.LogicalNot:
+				return LogicalNotRole;
+			case OperatorType.OnesComplement:
+				return OnesComplementRole;
+			case OperatorType.Increment:
+				return IncrementRole;
+			case OperatorType.Decrement:
+				return DecrementRole;
+			case OperatorType.True:
+				return TrueRole;
+			case OperatorType.False:
+				return FalseRole;
+			
+			case OperatorType.Addition:
+				return AdditionRole;
+			case OperatorType.Subtraction:
+				return SubtractionRole;
+			
+			case OperatorType.Multiply:
+				return MultiplyRole;
+			case OperatorType.Division:
+				return DivisionRole;
+			case OperatorType.Modulus:
+				return ModulusRole;
+			case OperatorType.BitwiseAnd:
+				return BitwiseAndRole;
+			case OperatorType.BitwiseOr:
+				return BitwiseOrRole;
+			case OperatorType.ExclusiveOr:
+				return ExclusiveOrRole;
+			case OperatorType.LeftShift:
+				return LeftShiftRole;
+			case OperatorType.RightShift:
+				return RightShiftRole;
+			case OperatorType.Equality:
+				return EqualityRole;
+			case OperatorType.Inequality:
+				return InequalityRole;
+			case OperatorType.GreaterThan:
+				return GreaterThanRole;
+			case OperatorType.LessThan:
+				return LessThanRole;
+			case OperatorType.GreaterThanOrEqual:
+				return GreaterThanOrEqualRole;
+			case OperatorType.LessThanOrEqual:
+				return LessThanOrEqualRole;
+			
+			case OperatorType.Implicit:
+				return ImplicitRole;
+			case OperatorType.Explicit:
+				return ExplicitRole;
+			
+			default:
+				throw new System.ArgumentOutOfRangeException ();
+			}
 		}
 		
 		/// <summary>

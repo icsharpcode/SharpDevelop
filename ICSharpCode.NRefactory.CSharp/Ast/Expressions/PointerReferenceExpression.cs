@@ -33,13 +33,17 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class PointerReferenceExpression : Expression
 	{
-		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arrow", CSharpTokenNode.Null);
+		public readonly static TokenRole ArrowRole = new TokenRole ("->");
 		
 		public Expression Target {
 			get { return GetChildByRole (Roles.TargetExpression); }
 			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
+		public CSharpTokenNode ArrowToken {
+			get { return GetChildByRole (ArrowRole); }
+		}
+
 		public string MemberName {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;

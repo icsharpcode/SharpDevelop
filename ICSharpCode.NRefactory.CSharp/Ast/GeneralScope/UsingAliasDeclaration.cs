@@ -31,6 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class UsingAliasDeclaration : AstNode
 	{
+		public static readonly TokenRole UsingKeywordRole = new TokenRole ("using");
 		public static readonly Role<Identifier> AliasRole = new Role<Identifier>("Alias", Identifier.Null);
 		public static readonly Role<AstType> ImportRole = UsingDeclaration.ImportRole;
 		
@@ -41,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode UsingToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (UsingKeywordRole); }
 		}
 		
 		public string Alias {

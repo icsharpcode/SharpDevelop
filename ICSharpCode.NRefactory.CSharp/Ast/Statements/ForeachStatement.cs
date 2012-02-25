@@ -31,8 +31,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ForeachStatement : Statement
 	{
+		public static readonly TokenRole ForeachKeywordRole = new TokenRole ("foreach");
+		public static readonly TokenRole InKeywordRole = new TokenRole ("in");
+		
 		public CSharpTokenNode ForeachToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (ForeachKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {
@@ -63,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode InToken {
-			get { return GetChildByRole (Roles.InKeyword); }
+			get { return GetChildByRole (InKeywordRole); }
 		}
 		
 		public Expression InExpression {

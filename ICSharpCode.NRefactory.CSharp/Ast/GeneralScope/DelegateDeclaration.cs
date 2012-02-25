@@ -34,10 +34,16 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class DelegateDeclaration : AttributedNode
 	{
+		public readonly static TokenRole DelegateKeywordRole = new TokenRole ("delegate");
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.TypeDeclaration;
 			}
+		}
+		
+		public CSharpTokenNode DelegateToken {
+			get { return GetChildByRole (DelegateKeywordRole); }
 		}
 		
 		public AstType ReturnType {

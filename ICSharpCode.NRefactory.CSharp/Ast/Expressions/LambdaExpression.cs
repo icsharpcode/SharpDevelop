@@ -33,8 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class LambdaExpression : Expression
 	{
-		public readonly static Role<CSharpTokenNode> AsyncModifierRole = new Role<CSharpTokenNode>("AsyncModifier", CSharpTokenNode.Null);
-		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arrow", CSharpTokenNode.Null);
+		public readonly static TokenRole AsyncModifierRole = new TokenRole ("async");
+		public readonly static TokenRole ArrowRole = new TokenRole ("=>");
 		public static readonly Role<AstNode> BodyRole = new Role<AstNode>("Body", AstNode.Null);
 		
 		public bool IsAsync { get; set; }

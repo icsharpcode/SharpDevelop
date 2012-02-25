@@ -33,8 +33,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class ComposedType : AstType
 	{
-		public static readonly Role<CSharpTokenNode> NullableRole = new Role<CSharpTokenNode>("Nullable", CSharpTokenNode.Null);
-		public static readonly Role<CSharpTokenNode> PointerRole = new Role<CSharpTokenNode>("Pointer", CSharpTokenNode.Null);
+		public static readonly TokenRole NullableRole = new TokenRole("?");
+		public static readonly TokenRole PointerRole = new TokenRole("*");
 		public static readonly Role<ArraySpecifier> ArraySpecifierRole = new Role<ArraySpecifier>("ArraySpecifier");
 		
 		public AstType BaseType {
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return !GetChildByRole(NullableRole).IsNull;
 			}
 			set {
-				SetChildByRole(NullableRole, value ? new CSharpTokenNode(TextLocation.Empty, 1) : null);
+				SetChildByRole(NullableRole, value ? new CSharpTokenNode(TextLocation.Empty) : null);
 			}
 		}
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					d--;
 				}
 				while (d < value) {
-					InsertChildBefore(GetChildByRole(PointerRole), new CSharpTokenNode(TextLocation.Empty, 1), PointerRole);
+					InsertChildBefore(GetChildByRole(PointerRole), new CSharpTokenNode(TextLocation.Empty), PointerRole);
 					d++;
 				}
 			}
@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					d--;
 				}
 				while (d < value) {
-					InsertChildBefore(GetChildByRole(Roles.Comma), new CSharpTokenNode(TextLocation.Empty, 1), Roles.Comma);
+					InsertChildBefore(GetChildByRole(Roles.Comma), new CSharpTokenNode(TextLocation.Empty), Roles.Comma);
 					d++;
 				}
 			}

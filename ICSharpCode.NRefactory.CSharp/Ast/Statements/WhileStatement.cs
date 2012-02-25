@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class WhileStatement : Statement
 	{
-		public static readonly Role<CSharpTokenNode> WhileKeywordRole = new Role<CSharpTokenNode>("WhileKeyword", CSharpTokenNode.Null);
+		public static readonly TokenRole WhileKeywordRole = new TokenRole ("while");
 		
 		public CSharpTokenNode WhileToken {
 			get { return GetChildByRole (WhileKeywordRole); }

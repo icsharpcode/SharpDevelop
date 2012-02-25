@@ -29,6 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class FixedFieldDeclaration : AttributedNode
 	{
+		public static readonly TokenRole FixedKeywordRole = new TokenRole ("fixed");
 		public static readonly Role<FixedVariableInitializer> VariableRole = new Role<FixedVariableInitializer> ("FixedVariable");
 		
 		public override NodeType NodeType {
@@ -36,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode FixedToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (FixedKeywordRole); }
 		}
 
 		public AstType ReturnType {

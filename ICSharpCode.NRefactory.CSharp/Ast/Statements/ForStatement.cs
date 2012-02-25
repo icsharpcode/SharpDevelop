@@ -33,11 +33,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ForStatement : Statement
 	{
+		public static readonly TokenRole ForKeywordRole = new TokenRole ("for");
 		public readonly static Role<Statement> InitializerRole = new Role<Statement>("Initializer", Statement.Null);
 		public readonly static Role<Statement> IteratorRole = new Role<Statement>("Iterator", Statement.Null);
 		
 		public CSharpTokenNode ForToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (ForKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class DefaultValueExpression : Expression
 	{
+		public readonly static TokenRole DefaultKeywordRole = new TokenRole ("default");
+
 		public CSharpTokenNode DefaultToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (DefaultKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class CheckedExpression : Expression
 	{
+		public readonly static TokenRole CheckedKeywordRole = new TokenRole ("checked");
+		
 		public CSharpTokenNode CheckedToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (CheckedKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

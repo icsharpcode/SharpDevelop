@@ -34,7 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class AnonymousMethodExpression : Expression
 	{
-		public readonly static Role<CSharpTokenNode> AsyncModifierRole = LambdaExpression.AsyncModifierRole;
+		public readonly static TokenRole DelegateKeywordRole = new TokenRole ("delegate");
+		public readonly static TokenRole AsyncModifierRole = LambdaExpression.AsyncModifierRole;
 		
 		public bool IsAsync { get; set; }
 		
@@ -44,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode DelegateToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (DelegateKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

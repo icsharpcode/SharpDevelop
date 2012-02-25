@@ -28,6 +28,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class PropertyDeclaration : MemberDeclaration
 	{
+		public static readonly TokenRole GetKeywordRole = new TokenRole ("get");
+		public static readonly TokenRole SetKeywordRole = new TokenRole ("set");
 		public static readonly Role<Accessor> GetterRole = new Role<Accessor>("Getter", Accessor.Null);
 		public static readonly Role<Accessor> SetterRole = new Role<Accessor>("Setter", Accessor.Null);
 		

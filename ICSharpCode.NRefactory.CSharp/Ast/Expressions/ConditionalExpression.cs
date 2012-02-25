@@ -32,9 +32,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class ConditionalExpression : Expression
 	{
 		public readonly static Role<Expression> ConditionRole = Roles.Condition;
-		public readonly static Role<CSharpTokenNode> QuestionMarkRole = new Role<CSharpTokenNode>("QuestionMark", CSharpTokenNode.Null);
+		public readonly static TokenRole QuestionMarkRole = new TokenRole("?");
 		public readonly static Role<Expression> TrueRole = new Role<Expression>("True", Expression.Null);
-		public readonly static Role<CSharpTokenNode> ColonRole = Roles.Colon;
+		public readonly static TokenRole ColonRole = Roles.Colon;
 		public readonly static Role<Expression> FalseRole = new Role<Expression>("False", Expression.Null);
 		
 		public Expression Condition {

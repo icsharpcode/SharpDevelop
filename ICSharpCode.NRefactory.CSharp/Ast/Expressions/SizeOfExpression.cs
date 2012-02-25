@@ -31,8 +31,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class SizeOfExpression : Expression
 	{
+		public readonly static TokenRole SizeofKeywordRole = new TokenRole ("sizeof");
+		
 		public CSharpTokenNode SizeOfToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (SizeofKeywordRole); }
 		}
 		
 		public CSharpTokenNode LParToken {

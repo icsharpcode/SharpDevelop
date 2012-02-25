@@ -33,10 +33,11 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ObjectCreateExpression : Expression
 	{
+		public readonly static TokenRole NewKeywordRole = new TokenRole ("new");
 		public readonly static Role<ArrayInitializerExpression> InitializerRole = ArrayCreateExpression.InitializerRole;
 		
 		public CSharpTokenNode NewToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return GetChildByRole (NewKeywordRole); }
 		}
 		
 		public AstType Type {

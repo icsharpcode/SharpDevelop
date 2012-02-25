@@ -38,13 +38,16 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class DirectionExpression : Expression
 	{
+		public readonly static TokenRole RefKeywordRole = new TokenRole ("ref");
+		public readonly static TokenRole OutKeywordRole = new TokenRole ("out");
+		
 		public FieldDirection FieldDirection {
 			get;
 			set;
 		}
 		
 		public CSharpTokenNode FieldDirectionToken {
-			get { return GetChildByRole (Roles.Keyword); }
+			get { return FieldDirection == ICSharpCode.NRefactory.CSharp.FieldDirection.Ref ? GetChildByRole (RefKeywordRole) : GetChildByRole (OutKeywordRole); }
 		}
 		
 		public Expression Expression {
