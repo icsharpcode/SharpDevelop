@@ -304,20 +304,18 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		}
 		
 		class TestLocVisitor
-		: ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor<object, object>
+		: ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor
 		{
 			public List<Tuple<TextLocation, string>> output = new List<Tuple<TextLocation, string>> ();
 			
-			public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
+			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
 			{
 				output.Add (Tuple.Create (memberReferenceExpression.MemberNameToken.StartLocation, memberReferenceExpression.MemberName));
-				return base.VisitMemberReferenceExpression (memberReferenceExpression, data);
 			}
 			
-			public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
 			{
 				output.Add (Tuple.Create (identifierExpression.StartLocation, identifierExpression.Identifier));
-				return base.VisitIdentifierExpression (identifierExpression, data);
 			}
 		}
 		

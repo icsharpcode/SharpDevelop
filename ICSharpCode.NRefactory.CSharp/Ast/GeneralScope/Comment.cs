@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitComment (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComment (this, data);
 		}

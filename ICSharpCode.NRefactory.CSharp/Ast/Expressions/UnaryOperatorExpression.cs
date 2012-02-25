@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitUnaryOperatorExpression (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUnaryOperatorExpression (this, data);
 		}

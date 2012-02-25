@@ -1739,11 +1739,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			var shortType = builder.ConvertType (type);
-			using (var w = new System.IO.StringWriter ()) {
-				var visitor = new CSharpOutputVisitor (w, FormattingPolicy);
-				shortType.AcceptVisitor (visitor, null);
-				return w.ToString ();
-			}
+			return shortType.GetText (FormattingPolicy);
 		}
 		
 		void AddEnumMembers (CompletionDataWrapper completionList, IType resolvedType, CSharpResolver state)

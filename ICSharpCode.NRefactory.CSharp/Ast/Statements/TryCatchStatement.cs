@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitTryCatchStatement (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTryCatchStatement (this, data);
 		}
@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return visitor.VisitPatternPlaceholder(this, child);
 			}
 
-			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
+			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 			{
 				return visitor.VisitPatternPlaceholder(this, child, data);
 			}
@@ -194,7 +194,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitCatchClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCatchClause (this, data);
 		}

@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitGotoStatement (this);
 		}
 
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitGotoStatement (this, data);
 		}
@@ -122,7 +122,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitGotoCaseStatement (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitGotoCaseStatement (this, data);
 		}
@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitGotoDefaultStatement (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitGotoDefaultStatement (this, data);
 		}

@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitComposedType (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComposedType (this, data);
 		}
@@ -196,7 +196,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitArraySpecifier (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitArraySpecifier(this, data);
 		}

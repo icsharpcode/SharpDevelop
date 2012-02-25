@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitPointerReferenceExpression (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPointerReferenceExpression (this, data);
 		}

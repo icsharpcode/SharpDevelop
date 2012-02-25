@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitParenthesizedExpression (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitParenthesizedExpression (this, data);
 		}

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MainWindow.cs
 //  
 // Author:
@@ -110,10 +110,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
-			var w = new StringWriter();
-			var output = new CSharpOutputVisitor (w, new CSharpFormattingOptions());
-			unit.AcceptVisitor (output, null);
-			editor.Text = w.ToString();
+			editor.Text = unit.GetText();
 		}
 		
 		void SelectionChanged (object sender, EventArgs e)

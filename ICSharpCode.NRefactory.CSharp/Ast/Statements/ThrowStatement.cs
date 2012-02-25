@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitThrowStatement (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitThrowStatement (this, data);
 		}

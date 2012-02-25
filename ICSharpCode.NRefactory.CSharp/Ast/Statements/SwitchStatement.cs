@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitSwitchStatement (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchStatement (this, data);
 		}
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return visitor.VisitPatternPlaceholder(this, child);
 			}
 			
-			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
+			public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 			{
 				return visitor.VisitPatternPlaceholder(this, child, data);
 			}
@@ -162,7 +162,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitSwitchSection (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchSection (this, data);
 		}
@@ -212,7 +212,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitCaseLabel (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCaseLabel (this, data);
 		}

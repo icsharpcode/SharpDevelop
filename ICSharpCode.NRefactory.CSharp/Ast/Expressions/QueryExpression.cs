@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return default (T);
 			}
 		
-			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+			public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryExpression (this);
 		}
 		
-		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S>(IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpression (this, data);
 		}
@@ -141,7 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryContinuationClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryContinuationClause (this, data);
 		}
@@ -191,7 +191,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryFromClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryFromClause (this, data);
 		}
@@ -244,7 +244,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryLetClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryLetClause (this, data);
 		}
@@ -280,7 +280,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryWhereClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryWhereClause (this, data);
 		}
@@ -389,7 +389,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryJoinClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryJoinClause (this, data);
 		}
@@ -428,7 +428,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryOrderClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryOrderClause (this, data);
 		}
@@ -473,7 +473,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryOrdering (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryOrdering (this, data);
 		}
@@ -515,7 +515,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQuerySelectClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQuerySelectClause (this, data);
 		}
@@ -562,7 +562,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitQueryGroupClause (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryGroupClause (this, data);
 		}

@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if ((ConversionFlags & ConversionFlags.ShowReturnType) == ConversionFlags.ShowReturnType) {
 				var rt = node.GetChildByRole(AstNode.Roles.Type);
 				if (!rt.IsNull) {
-					writer.Write(rt.AcceptVisitor(CreatePrinter(writer), null));
+					rt.AcceptVisitor(CreatePrinter(writer));
 					writer.Write(' ');
 				}
 			}
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						first = false;
 					else
 						writer.Write(", ");
-					param.AcceptVisitor(CreatePrinter(writer), null);
+					param.AcceptVisitor(CreatePrinter(writer));
 				}
 				writer.Write(e.EntityType == EntityType.Indexer ? ']' : ')');
 			}
@@ -243,20 +243,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstNode astNode = astBuilder.ConvertVariable(v);
-			CSharpFormattingOptions formatting = new CSharpFormattingOptions();
-			StringWriter writer = new StringWriter();
-			astNode.AcceptVisitor(new CSharpOutputVisitor(writer, formatting), null);
-			return writer.ToString().TrimEnd(';', '\r', '\n');
+			return astNode.GetText().TrimEnd(';', '\r', '\n');
 		}
 		
 		public string ConvertType(IType type)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
 			AstType astType = astBuilder.ConvertType(type);
-			CSharpFormattingOptions formatting = new CSharpFormattingOptions();
-			StringWriter writer = new StringWriter();
-			astType.AcceptVisitor(new CSharpOutputVisitor(writer, formatting), null);
-			return writer.ToString();
+			return astType.GetText();
 		}
 		
 		public string WrapAttribute(string attribute)

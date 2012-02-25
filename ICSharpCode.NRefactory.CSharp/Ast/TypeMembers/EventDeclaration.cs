@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitEventDeclaration (this);
 		}
 
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEventDeclaration (this, data);
 		}
@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitCustomEventDeclaration (this);
 		}
 
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCustomEventDeclaration (this, data);
 		}

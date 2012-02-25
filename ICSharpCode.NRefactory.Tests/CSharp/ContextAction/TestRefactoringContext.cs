@@ -170,7 +170,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		internal static void Print (AstNode node)
 		{
 			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
-			node.AcceptVisitor (v, null);
+			node.AcceptVisitor (v);
 		}
 		
 		#region IActionFactory implementation

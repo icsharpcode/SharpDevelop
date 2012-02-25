@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitAttribute (this);
 		}
 		
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttribute (this, data);
 		}
@@ -79,9 +79,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (IsNull)
 				return "Null";
-			var w = new System.IO.StringWriter ();
-			AcceptVisitor (new CSharpOutputVisitor (w, new CSharpFormattingOptions ()), null);
-			return w.ToString ();
+			else
+				return GetText();
 		}
 	}
 }
