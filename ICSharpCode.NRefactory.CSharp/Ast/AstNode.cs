@@ -642,6 +642,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <summary>
+		/// Gets the node as formatted C# output.
+		/// </summary>
+		/// <param name='formattingOptions'>
+		/// Formatting options.
+		/// </param>
+		public string GetText (CSharpFormattingOptions formattingOptions = null)
+		{
+			if (IsNull)
+				return "";
+			var w = new StringWriter ();
+			AcceptVisitor (new CSharpOutputVisitor (w, formattingOptions ?? new CSharpFormattingOptions ()), null);
+			return w.ToString ();
+		}
+		
 		public bool Contains (int line, int column)
 		{
 			return Contains (new TextLocation (line, column));
