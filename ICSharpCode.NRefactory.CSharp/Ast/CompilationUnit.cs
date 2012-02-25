@@ -117,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (string.IsNullOrEmpty (this.FileName))
 				throw new InvalidOperationException ("Cannot use ToTypeSystem() on a compilation unit without file name.");
 			var v = new TypeSystemConvertVisitor (this.FileName);
-			v.VisitCompilationUnit (this, null);
+			v.VisitCompilationUnit (this);
 			return v.ParsedFile;
 		}
 		

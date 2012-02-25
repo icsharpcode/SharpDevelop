@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string InsertReadable(Expression expr)
 		{
 			expr = expr.Clone();
-			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true }, null);
+			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			StringWriter w = new StringWriter();
 			w.NewLine = " ";
 			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy));
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string InsertRequired(Expression expr)
 		{
 			expr = expr.Clone();
-			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = false }, null);
+			expr.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = false });
 			StringWriter w = new StringWriter();
 			w.NewLine = " ";
 			expr.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "" }, policy));
