@@ -5980,7 +5980,7 @@ Button is enabled only for handled exceptions.</comment>
     <comment>NB: Only used for exceptions that can not be intercepted (eg. StackOverflow)</comment>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>An exception of type {0} was thrown:\n{1}</value>
+    <value>An exception of type {0} was thrown:</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Show Exception Details</value>
