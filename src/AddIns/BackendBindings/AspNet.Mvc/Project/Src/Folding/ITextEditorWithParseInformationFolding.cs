@@ -13,6 +13,8 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		bool IsParseInformationFoldingEnabled { get; set; }
 		
 		void UpdateFolds(IEnumerable<NewFolding> folds);
+		void InstallFoldingManager();
 		string GetTextSnapshot();
+		void UpdateSyntaxHighlighting(string highlightingSyntaxName);
 	}
 }

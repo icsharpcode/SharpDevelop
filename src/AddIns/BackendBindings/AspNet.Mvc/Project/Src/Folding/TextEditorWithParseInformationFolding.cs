@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
@@ -20,10 +21,9 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		public TextEditorWithParseInformationFolding(ITextEditor textEditor)
 		{
 			this.textEditor = textEditor;
-			InstallFoldingManager();
 		}
 		
-		void InstallFoldingManager()
+		public void InstallFoldingManager()
 		{
 			var textEditorAdapter = textEditor as AvalonEditTextEditorAdapter;
 			if (textEditorAdapter != null) {
@@ -72,6 +72,27 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		public void Dispose()
 		{
 			FoldingManager.Uninstall(foldingManager);
+		}
+		
+		public void UpdateSyntaxHighlighting(string name)
+		{
+			if (!IsUsingSyntaxhighlighting(name)) {
+				ChangeSyntaxHighlighting(name);
+			}
+		}
+		
+	    bool IsUsingSyntaxhighlighting(string name)
+		{
+			IHighlightingDefinition highlighting = CodeEditorView.SyntaxHighlighting;
+			if (highlighting != null) {
+				return highlighting.Name == name;
+			}
+			return false;
+		}
+		
+		void ChangeSyntaxHighlighting(string name)
+		{
+			CodeEditorView.SyntaxHighlighting =	HighlightingManager.Instance.GetDefinition(name);
 		}
 	}
 }
