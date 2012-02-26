@@ -156,6 +156,7 @@
     <Compile Include="CSharp\Resolver\AttributeTests.cs" />
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
+    <Compile Include="CSharp\Resolver\ComTests.cs" />
     <Compile Include="CSharp\Resolver\ConditionalOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\ExtensionMethodTests.cs" />
     <Compile Include="CSharp\Resolver\FindReferencesTest.cs" />
