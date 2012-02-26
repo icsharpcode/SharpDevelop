@@ -321,6 +321,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 					return solutionLocation;
 				} else {
+					if (createNewSolution)
+						projectCreateInformation.Solution.Dispose();
 					return null;
 				}
 			} else {

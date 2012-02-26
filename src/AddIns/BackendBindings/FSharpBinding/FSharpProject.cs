@@ -27,6 +27,7 @@ namespace FSharpBinding
 				base.AddImport(@"$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets", null);
 				base.ReevaluateIfNecessary(); // provoke exception if import is invalid
 			} catch (InvalidProjectFileException ex) {
+				Dispose();
 				throw new ProjectLoadException("Please ensure that the F# compiler is installed on your computer.\n\n" + ex.Message, ex);
 			}
 		}

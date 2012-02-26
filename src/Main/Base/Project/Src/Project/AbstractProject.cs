@@ -53,7 +53,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void Dispose()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			watcher.Dispose();
+			if (watcher != null)
+				watcher.Dispose();
 			isDisposed = true;
 			if (Disposed != null) {
 				Disposed(this, EventArgs.Empty);

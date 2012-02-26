@@ -1161,6 +1161,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} catch (InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
+				Dispose();
 				throw new ProjectLoadException(ex.Message, ex);
 			} finally {
 				isLoading = false;

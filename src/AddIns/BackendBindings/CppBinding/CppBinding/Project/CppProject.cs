@@ -27,6 +27,7 @@ namespace ICSharpCode.CppBinding.Project
 				AddProjectConfigurationsItemGroup();
 				base.ReevaluateIfNecessary(); // provoke exception if import is invalid
 			} catch (InvalidProjectFileException ex) {
+				Dispose();
 				throw new ProjectLoadException("Please ensure that the Windows SDK is installed on your computer.\n\n" + ex.Message, ex);
 			}
 		}
