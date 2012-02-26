@@ -15,6 +15,5 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		void UpdateFolds(IEnumerable<NewFolding> folds);
 		void InstallFoldingManager();
 		string GetTextSnapshot();
-		void UpdateSyntaxHighlighting(string highlightingSyntaxName);
 	}
 }

@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AspNet.Mvc.Folding
 {
-	public abstract class HtmlLanguageBinding : DefaultLanguageBinding
+	public class HtmlLanguageBinding : DefaultLanguageBinding
 	{
 		ITextEditorWithParseInformationFoldingFactory textEditorFactory;
 		IFoldGeneratorFactory foldGeneratorFactory;
@@ -30,8 +30,6 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			get { return LanguageProperties.None; }
 		}
 		
-		public abstract string HighlightingSyntaxName { get; }
-		
 		public override void Attach(ITextEditor editor)
 		{
 			Attach(textEditorFactory.CreateTextEditor(editor));
@@ -40,7 +38,6 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		void Attach(ITextEditorWithParseInformationFolding editor)
 		{
 			foldGenerator = foldGeneratorFactory.CreateFoldGenerator(editor);
-			editor.UpdateSyntaxHighlighting(HighlightingSyntaxName);
 		}
 		
 		public override void Detach()

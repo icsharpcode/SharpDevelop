@@ -73,26 +73,5 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 		{
 			FoldingManager.Uninstall(foldingManager);
 		}
-		
-		public void UpdateSyntaxHighlighting(string name)
-		{
-			if (!IsUsingSyntaxhighlighting(name)) {
-				ChangeSyntaxHighlighting(name);
-			}
-		}
-		
-	    bool IsUsingSyntaxhighlighting(string name)
-		{
-			IHighlightingDefinition highlighting = CodeEditorView.SyntaxHighlighting;
-			if (highlighting != null) {
-				return highlighting.Name == name;
-			}
-			return false;
-		}
-		
-		void ChangeSyntaxHighlighting(string name)
-		{
-			CodeEditorView.SyntaxHighlighting =	HighlightingManager.Instance.GetDefinition(name);
-		}
 	}
 }

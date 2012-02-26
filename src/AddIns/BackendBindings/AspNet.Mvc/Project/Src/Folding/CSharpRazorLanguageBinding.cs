@@ -13,9 +13,5 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 				new RazorFoldGeneratorFactory(".cshtml"))
 		{
 		}
-		
-		public override string HighlightingSyntaxName {
-			get { return "C#/Razor"; }
-		}
 	}
 }

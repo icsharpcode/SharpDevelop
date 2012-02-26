@@ -21,9 +21,5 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			: base(textEditorFactory, foldGeneratorFactory)
 		{
 		}
-		
-		public override string HighlightingSyntaxName {
-			get { return "ASP/XHTML"; }
-		}
 	}
 }
