@@ -261,6 +261,9 @@
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Help modus</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Help Library Manager kan niet starten omdat geen help catalogus is geïnstalleerd/geselecteerd. Controleer aub de help instellingen (Zie Extra &gt; Opties &gt; Extra's &gt; Microsoft Help Viewer)</value>
+  </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>De Help-bibliotheek Manager werd niet gevonden. Ga alst7ublieft na of deze wel korrekt geïnstalleerd werd.</value>
   </data>
@@ -5670,6 +5673,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException" xml:space="preserve">
     <value>Uitzondering kan niet onderschept worden. Foutopsporing kan programma niet voortzetten en evaluatie van eigenschappen is niet mogelijk.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
+    <value>Kan afgehandelde uitzonderingen niet onderscheppen. Foutzoek symbolen kunnen mogelijk ontbreken voor de bron van de uitzondering.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Uitzondering details verbergen</value>
   </data>
@@ -5683,7 +5689,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>op {0} in {1}:regel {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>Een uitzondering van type {0} werd verworpen:\{1}</value>
+    <value>Een uitzondering van type {0} werd verworpen:</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Uitzondering details tonen</value>

@@ -174,12 +174,6 @@
     <Compile Include="Service\DebuggeeExceptionForm.Designer.cs">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Service\DebuggerEventForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Service\DebuggerEventForm.Designer.cs">
-      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Service\EditBreakpointScriptWindow.xaml.cs">
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -288,9 +282,6 @@
     <Compile Include="Service\WindowsDebugger.cs" />
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Service\DebuggerEventForm.resx">
-      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Service\SetCurrentStatementCommand.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">

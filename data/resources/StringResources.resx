@@ -5962,8 +5962,11 @@ Continues the execution of debuggee.
 Button is enabled only for handled exceptions.</comment>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException" xml:space="preserve">
-    <value>Can not intercept exception. Debugged program can not be continued and properties can not be evaluated.</value>
+    <value>Cannot intercept exception. Debugged program can not be continued and properties can not be evaluated.</value>
     <comment>eg. Happens on StackOverflow exception.</comment>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
+    <value>Cannot intercept handled exception. Debug symbols might not be available for the source of the exception.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Hide Exception Details</value>

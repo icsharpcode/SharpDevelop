@@ -857,19 +857,24 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			StringBuilder stacktraceBuilder = new StringBuilder();
 			
-			// Need to intercept now so that we can evaluate properties
-			if (e.Process.SelectedThread.InterceptCurrentException()) {
-				stacktraceBuilder.AppendLine(e.Exception.ToString());
-				string stackTrace;
-				try {
-					stackTrace = e.Exception.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}"));
-				} catch (GetValueException) {
-					stackTrace = e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}"));
+			if (e.IsUnhandled) {
+				// Need to intercept now so that we can evaluate properties
+				if (e.Process.SelectedThread.InterceptCurrentException()) {
+					stacktraceBuilder.AppendLine(e.Exception.ToString());
+					string stackTrace;
+					try {
+						stackTrace = e.Exception.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.EndOfInnerException}"));
+					} catch (GetValueException) {
+						stackTrace = e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}"));
+					}
+					stacktraceBuilder.Append(stackTrace);
+				} else {
+					// For example, happens on stack overflow
+					stacktraceBuilder.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));
+					stacktraceBuilder.AppendLine(e.Exception.ToString());
+					stacktraceBuilder.Append(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
 				}
-				stacktraceBuilder.Append(stackTrace);
 			} else {
-				// For example, happens on stack overflow
-				stacktraceBuilder.AppendLine(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException}"));
 				stacktraceBuilder.AppendLine(e.Exception.ToString());
 				stacktraceBuilder.Append(e.Process.SelectedThread.GetStackTrace(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols}")));
 			}
@@ -878,7 +883,17 @@ namespace ICSharpCode.SharpDevelop.Services
 			string message = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), e.Exception.Type);
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			
-			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, !e.IsUnhandled);
+			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, e.IsUnhandled);
+		}
+		
+		public bool BreakAndInterceptHandledException()
+		{
+			if (!debuggedProcess.SelectedThread.InterceptCurrentException()) {
+				MessageService.ShowError("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException}");
+				return false;
+			}
+			JumpToCurrentLine();
+			return true;
 		}
 		
 		public void JumpToCurrentLine()
@@ -887,7 +902,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			
 			WorkbenchSingleton.MainWindow.Activate();
-			
 			
 			if (debuggedProcess.IsSelectedFrameForced()) {
 				if (debuggedProcess.SelectedStackFrame != null && debuggedProcess.SelectedStackFrame.HasSymbols) {
