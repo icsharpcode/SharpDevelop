@@ -9,11 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
+
 using ICSharpCode.CodeQuality.Engine.Dom;
-using ICSharpCode.CodeQuality.Reporting;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.Reports.Core;
 
@@ -24,7 +22,7 @@ namespace ICSharpCode.CodeQuality.Reporting
 	/// </summary>
 	public class OverviewReport:BaseReport
 	{
-		private const string overviewReport = "ReportingOverview.srd";
+		private const string overviewReport = "OverviewReport.srd";
 		
 		public  OverviewReport(List<string> fileNames):base(fileNames)
 		{
@@ -51,30 +49,23 @@ namespace ICSharpCode.CodeQuality.Reporting
 	}
 	
 	
-	internal class OverviewViewModel 
+	internal class OverviewViewModel:ReportViewModel
 	{
 		public OverviewViewModel ()
 		{
 		}
 		
-		public AssemblyNode Node {get;set;}
-		
-		public string Name
-		{
-			get {return Node.Name;}
-		}
 		
 		public int 	ChildCount
 		{
-			get {
-				
-				return Node.Children.Count;}
+			get {return Node.Children.Count;}	
 		}
 		
 		
 		public int MethodCount
 		{
-			get {
+			get
+			{
 				return TreeTraversal.PreOrder((NodeBase)Node, n => n.Children).OfType<MethodNode>().Count();
 			}
 		}
@@ -82,7 +73,8 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public int PropertyCount
 		{
-			get {
+			get
+			{
 				return TreeTraversal.PreOrder((NodeBase)Node, n => n.Children).OfType<PropertyNode>().Count();
 			}
 		}
@@ -90,7 +82,8 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public int EventCount
 		{
-			get {
+			get
+			{
 				return TreeTraversal.PreOrder((NodeBase)Node, n => n.Children).OfType<EventNode>().Count();
 			}
 		}
@@ -98,7 +91,8 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public int TypesCount
 		{
-			get {
+			get
+			{
 				return TreeTraversal.PreOrder((NodeBase)Node, n => n.Children).OfType<TypeNode>().Count();
 			}
 		}

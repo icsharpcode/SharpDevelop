@@ -21,6 +21,7 @@ namespace ICSharpCode.CodeQuality.Reporting
 	public class DependencyReport:BaseReport
 	{
 		private const string overviewReport = "DependencyReport.srd";
+		
 		public DependencyReport(List<string> fileNames):base(fileNames)
 		{
 		}
@@ -37,19 +38,25 @@ namespace ICSharpCode.CodeQuality.Reporting
 			return creator;
 		}
 		
-		List <DependencyViewModel> MakeList (ReadOnlyCollection<AssemblyNode> list)
+		
+		private List <DependencyViewModel> MakeList (ReadOnlyCollection<AssemblyNode> list)
 		{
-			AssemblyNode baseNode = list[0];
 			var newList = new List<DependencyViewModel>();
-			foreach (var element in list) {
-				var i = baseNode.GetUses(element);
-				if (i > 0) {
-					Console.WriteLine("{0} ref {1} times {2}",baseNode.Name,element.Name,i);
-					newList.Add(new DependencyViewModel()
-					            {
-					            	Node = baseNode,
-					            	References = element.Name
-					            });
+			foreach (var baseNode in list) {
+				foreach (var element in list) {
+					if (baseNode.Name != element.Name) {
+						
+					
+					var referenceCount = baseNode.GetUses(element);
+					if (referenceCount > 0) {
+						newList.Add(new DependencyViewModel()
+						            {
+						            	Node = baseNode,
+						            	References = element.Name,
+						            	ReferenceCount = referenceCount
+						            });
+					}
+					}
 				}
 			}
 			return newList;
@@ -57,22 +64,15 @@ namespace ICSharpCode.CodeQuality.Reporting
 	}
 	
 	
-	internal class DependencyViewModel
+	internal class DependencyViewModel:ReportViewModel
 	{
 		public DependencyViewModel()
 		{
 			
 		}
 		
-		public AssemblyNode Node {get;set;}
-		
-			
-		public string Name
-		{
-			get {return Node.Name;}
-		}
-		
 		public string References {get;set;}
-	}
 		
+		public int ReferenceCount {get;set;}
+	}	
 }

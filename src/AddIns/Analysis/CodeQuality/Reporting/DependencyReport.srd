@@ -148,6 +148,24 @@
                     <FrameColor>Black</FrameColor>
                     <Items>
                         <BaseDataItem>
+                            <Location>443, 4</Location>
+                            <Size>71, 20</Size>
+                            <BackColor>White</BackColor>
+                            <VisibleInReport>True</VisibleInReport>
+                            <Font>Segoe UI, 9pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>MiddleRight</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text>BaseDataItem2147483646</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <ColumnName>ReferenceCount</ColumnName>
+                            <Name>BaseDataItem2147483646</Name>
+                        </BaseDataItem>
+                        <BaseDataItem>
                             <Location>254, 4</Location>
                             <Size>156, 20</Size>
                             <BackColor>White</BackColor>
@@ -179,6 +197,23 @@
                     <ForeColor>Black</ForeColor>
                     <FrameColor>Black</FrameColor>
                     <Items>
+                        <BaseTextItem>
+                            <Location>414, 7</Location>
+                            <Size>100, 20</Size>
+                            <BackColor>White</BackColor>
+                            <VisibleInReport>True</VisibleInReport>
+                            <Font>Segoe UI, 9.75pt</Font>
+                            <StringTrimming>None</StringTrimming>
+                            <ContentAlignment>MiddleRight</ContentAlignment>
+                            <CanGrow>False</CanGrow>
+                            <CanShrink>False</CanShrink>
+                            <RTL>No</RTL>
+                            <Text># of References</Text>
+                            <DrawBorder>False</DrawBorder>
+                            <FrameColor>Black</FrameColor>
+                            <ForeColor>Black</ForeColor>
+                            <Name>BaseTextItem2147483646</Name>
+                        </BaseTextItem>
                         <BaseTextItem>
                             <Location>254, 2</Location>
                             <Size>100, 20</Size>
@@ -226,7 +261,7 @@
         </BaseSection>
         <BaseSection>
             <Location>50, 339</Location>
-            <Size>727, 60</Size>
+            <Size>727, 36</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>
             <SectionOffset>0</SectionOffset>
@@ -236,7 +271,7 @@
             <Items>
                 <BaseTextItem>
                     <Location>31, 5</Location>
-                    <Size>573, 20</Size>
+                    <Size>555, 20</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
                     <Font>Segoe UI, 9.75pt</Font>
@@ -245,14 +280,14 @@
                     <CanGrow>False</CanGrow>
                     <CanShrink>False</CanShrink>
                     <RTL>No</RTL>
-                    <Text>= Globals!ReportFolder + '\' +  Globals!ReportName</Text>
+                    <Text>= Globals!ReportFolder + Globals!ReportName</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>ControlText</ForeColor>
                     <Name>BaseTextItem2147483641</Name>
                 </BaseTextItem>
                 <BaseTextItem>
-                    <Location>622, 5</Location>
+                    <Location>624, 5</Location>
                     <Size>100, 20</Size>
                     <BackColor>White</BackColor>
                     <VisibleInReport>True</VisibleInReport>
@@ -263,7 +298,7 @@
                     <CanShrink>False</CanShrink>
                     <DataType>System.String</DataType>
                     <RTL>No</RTL>
-                    <Text>=Globals!PageNumber</Text>
+                    <Text>= 'Page : ' + Globals!PageNumber</Text>
                     <DrawBorder>False</DrawBorder>
                     <FrameColor>Black</FrameColor>
                     <ForeColor>Black</ForeColor>
@@ -274,7 +309,7 @@
             <Name>ReportPageFooter</Name>
         </BaseSection>
         <BaseSection>
-            <Location>50, 414</Location>
+            <Location>50, 390</Location>
             <Size>727, 60</Size>
             <BackColor>White</BackColor>
             <VisibleInReport>False</VisibleInReport>
