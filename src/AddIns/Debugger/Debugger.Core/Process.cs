@@ -342,8 +342,11 @@ namespace Debugger
 			CheckSelectedStackFrames();
 			SelectMostRecentStackFrameWithLoadedSymbols();
 			
-			if (this.PauseSession.PausedReason == PausedReason.Exception) {
+			// if CurrentException is set an exception has occurred.
+			if (SelectedThread.CurrentException != null) {
 				ExceptionEventArgs args = new ExceptionEventArgs(this, this.SelectedThread.CurrentException, this.SelectedThread.CurrentExceptionType, this.SelectedThread.CurrentExceptionIsUnhandled);
+				// clear exception, it is being processed by the debugger.
+				this.SelectedThread.CurrentException = null;
 				OnExceptionThrown(args);
 				// The event could have resumed or killed the process
 				if (this.IsRunning || this.TerminateCommandIssued || this.HasExited) return;

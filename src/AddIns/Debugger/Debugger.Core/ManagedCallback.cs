@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
@@ -82,7 +83,9 @@ namespace Debugger
 			if (hasQueuedCallbacks)
 				process.TraceMessage("Process has queued callbacks");
 			
-			if (hasQueuedCallbacks) {
+			// only process callbacks if no exception occurred
+			// if no thread is selected CurrentException must be null
+			if (hasQueuedCallbacks && (process.SelectedThread == null || process.SelectedThread.CurrentException == null)) {
 				// Exception has Exception2 queued after it
 				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			} else if (process.Evaluating) {
@@ -513,6 +516,9 @@ namespace Debugger
 			bool pauseOnHandled = process.Options != null && process.Options.PauseOnHandledExceptions;
 			
 			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
+				// sanity check: we can only handle one exception after another
+				// TODO : create Exception queue if CLR throws multiple exceptions
+				Debug.Assert(process.SelectedThread.CurrentException == null);
 				process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference());
 				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
 				process.SelectedThread.CurrentExceptionType = exceptionType;
