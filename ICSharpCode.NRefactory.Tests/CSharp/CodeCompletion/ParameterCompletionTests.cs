@@ -212,20 +212,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				};
 			}
 
-			public IParameterDataProvider CreateMethodDataProvider (ICSharpCode.NRefactory.CSharp.Resolver.MethodGroupResolveResult par1)
+			public IParameterDataProvider CreateMethodDataProvider (IEnumerable<IMethod> methods)
 			{
-				var methods = new List<IMethod> (par1.Methods);
-				foreach (var list in par1.GetExtensionMethods ())
-					methods.AddRange (list);
 				return new Provider () {
 					Data = methods
-				};
-			}
-
-			public IParameterDataProvider CreateMethodDataProvider (ICSharpCode.NRefactory.TypeSystem.IMethod method)
-			{
-				return new Provider () {
-					Data = new [] { method }
 				};
 			}
 
@@ -865,6 +855,33 @@ namespace Test
 		public A (int a, int b) : base(a) {}
 
 		$public A () : this($
+	}
+}");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
+		}
+		
+		/// <summary>
+		/// Bug 3645 - [New Resolver]Parameter completion shows all static and non-static overloads
+		/// </summary>
+		[Test()]
+		public void TestBug3645 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"class Main
+{
+	public static void FooBar (string str)
+	{
+	}
+	
+	public void FooBar (int i)
+	{
+		
+	}
+	
+	public static void Main (string[] args)
+	{
+		$FooBar ($
 	}
 }");
 			Assert.IsNotNull (provider, "provider was not created.");
