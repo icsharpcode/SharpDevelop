@@ -158,13 +158,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IEnumerable<ICompletionData> MagicKeyCompletion (char completionChar, bool controlSpace)
 		{
+			ExpressionResult expr;
+			Tuple<ResolveResult, CSharpResolver> resolveResult;
+			
 			switch (completionChar) {
 			// Magic key completion
 			case ':':
 			case '.':
 				if (IsInsideCommentOrString ())
 					return Enumerable.Empty<ICompletionData> ();
-				var expr = GetExpressionBeforeCursor ();
+				expr = GetExpressionBeforeCursor ();
 				if (expr == null)
 					return null;
 				// do not complete <number>. (but <number>.<number>.)
@@ -174,7 +177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 				}
 				
-				var resolveResult = ResolveExpression (expr);
+				resolveResult = ResolveExpression (expr);
 				if (resolveResult == null)
 					return null;
 				if (expr.Node is AstType)
@@ -797,8 +800,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				node = unit.GetNodeAt (location);
 				rr = ResolveExpression (node, unit);
 			}
-			Console.WriteLine ("!!!!!!!!!");
-			Console.WriteLine (Environment.StackTrace);
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -1706,7 +1707,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					
 					if (IsAttributeContext (resolvedNode) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
 						name = name.Substring (0, name.Length - "Attribute".Length);
-					Console.WriteLine ("name:" + name);
 					result.AddType (cl, name);
 				}
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
@@ -2009,7 +2009,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			CompilationUnit baseUnit;
 			if (currentMember == null) {
-				baseUnit = ParseStub ("st {}", false);
+				baseUnit = ParseStub ("a", false);
 				var type = baseUnit.GetNodeAt<MemberType> (location);
 				if (type == null) {
 					baseUnit = ParseStub ("a;", false);

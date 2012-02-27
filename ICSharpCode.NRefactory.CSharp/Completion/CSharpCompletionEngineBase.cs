@@ -359,7 +359,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			if (currentMember == null && lastBracket == ']') {
 				// attribute context
-				wrapper.Append ("class GenAttr {}");
 			} else {
 				if (!didAppendSemicolon)
 					wrapper.Append (';');

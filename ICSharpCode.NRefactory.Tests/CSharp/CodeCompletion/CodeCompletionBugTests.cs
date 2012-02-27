@@ -4601,6 +4601,14 @@ class MainClass
 		}
 		
 		[Test()]
+		public void Test3655Case2Part2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.$", provider => {
+				Assert.IsNotNull (provider.Find ("Runtime"), "'Runtime' not found.");
+			});
+		}
+		
+		[Test()]
 		public void Test3655Case3 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.Runtime.C$", provider => {
@@ -4609,9 +4617,25 @@ class MainClass
 		}
 		
 		[Test()]
+		public void Test3655Case3Part2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.$", provider => {
+				Assert.IsNotNull (provider.Find ("CompilerServices"), "'CompilerServices' not found.");
+			});
+		}
+		
+		[Test()]
 		public void Test3655Case4 ()
 		{
 			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.I$", provider => {
+				Assert.IsNotNull (provider.Find ("InternalsVisibleTo"), "'InternalsVisibleTo' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case4Part2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.$", provider => {
 				Assert.IsNotNull (provider.Find ("InternalsVisibleTo"), "'InternalsVisibleTo' not found.");
 			});
 		}
