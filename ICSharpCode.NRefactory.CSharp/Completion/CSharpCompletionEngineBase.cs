@@ -404,7 +404,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				memberLocation = new TextLocation (1, 1);
 			}
-			                   
+			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
@@ -520,12 +520,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			} else {
 				resolveNode = expr;
 			}
-			
-			var csResolver = new CSharpAstResolver(GetState (), unit, CSharpParsedFile);
-			
-			var result = csResolver.Resolve (resolveNode);
-			var state = csResolver.GetResolverStateBefore (resolveNode);
-			return Tuple.Create (result, state);
+			try {
+				var csResolver = new CSharpAstResolver (GetState (), unit, CSharpParsedFile);
+				var result = csResolver.Resolve (resolveNode);
+				var state = csResolver.GetResolverStateBefore (resolveNode);
+				return Tuple.Create (result, state);
+			} catch (Exception e) {
+				return null;
+			}
 		}
 		
 		protected static void Print (AstNode node)

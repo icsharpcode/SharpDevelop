@@ -104,7 +104,7 @@ class MyTest
 {
 	public void Test ()
 	{
-		$var x = new A () { $
+		$new A () { $
 	}
 }
 ");
@@ -240,7 +240,7 @@ public class O
 class test {
 	public void testcc ()
 	{
-		foo f = new foo () {
+		new foo () {
 			$b$
 		};
 	}
@@ -381,10 +381,55 @@ class MyTest
 	}
 }
 ", provider => {
-			Assert.IsNull (provider.Find ("Id"), "Property 'Id' found.");
-			Assert.IsNull (provider.Find ("Name"), "Property 'Name' found.");
-			Assert.IsNotNull (provider.Find ("Str"), "Field 'Str' not found.");
-			Assert.IsNotNull (provider.Find ("myString"), "Local 'myString' not found.");
+				Assert.IsNull (provider.Find ("Id"), "Property 'Id' found.");
+				Assert.IsNull (provider.Find ("Name"), "Property 'Name' found.");
+				Assert.IsNotNull (provider.Find ("Str"), "Field 'Str' not found.");
+				Assert.IsNotNull (provider.Find ("myString"), "Local 'myString' not found.");
+			});
+		}
+		
+		[Test()]
+		public void TestNewKeywordInInitializer ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+
+class O
+{
+	public int Int { get; set; }
+	public object Obj { get; set; }
+}
+
+class Test
+{
+	public void Method ()
+	{
+		$var foo = new O() { Int = 5, Obj = n$
+	}
+}
+", (provider) => {
+				Assert.IsNotNull (provider.Find ("new"), "keyword 'new' not found.");
+			});
+		}
+		
+		[Test()]
+		public void TestCollectionInitializer ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+using System.Collections.Generic;
+
+class Test
+{
+	public void Method ()
+	{
+		new List<Test> () {
+			$n$
+		};
+	}
+}
+", (provider) => {
+				Assert.IsNotNull (provider.Find ("new"), "keyword 'new' not found.");
 			});
 		}
 	}

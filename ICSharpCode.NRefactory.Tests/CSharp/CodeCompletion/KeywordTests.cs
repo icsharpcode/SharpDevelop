@@ -430,9 +430,9 @@ class Test
 	}
 }
 ", (provider) => {
-			// Either empty list or in - both behaviours are ok.
-			if (provider.Count > 0)
-				Assert.IsNotNull (provider.Find ("in"), "keyword 'in' not found.");
+				// Either empty list or in - both behaviours are ok.
+				if (provider.Count > 0)
+					Assert.IsNotNull (provider.Find ("in"), "keyword 'in' not found.");
 			});
 		}
 	}
