@@ -4579,5 +4579,41 @@ class MainClass
 			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
 		
+		
+		/// <summary>
+		/// Bug 3655 - Autocompletion does not work for the assembly attribute [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MyExternalAssembly")] 
+		/// </summary>
+		[Test()]
+		public void Test3655 ()
+		{
+			CombinedProviderTest (@"$[a$", provider => {
+				Assert.IsNotNull (provider.Find ("assembly"), "'assembly' not found.");
+				Assert.IsNotNull (provider.Find ("System"), "'System' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.R$", provider => {
+				Assert.IsNotNull (provider.Find ("Runtime"), "'Runtime' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case3 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.C$", provider => {
+				Assert.IsNotNull (provider.Find ("CompilerServices"), "'CompilerServices' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case4 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.I$", provider => {
+				Assert.IsNotNull (provider.Find ("InternalsVisibleTo"), "'InternalsVisibleTo' not found.");
+			});
+		}
 	}
 }
