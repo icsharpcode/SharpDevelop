@@ -249,8 +249,8 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListXaml.xaml.cs">
-      <DependentUpon>TaskListXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml.cs">
+      <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
@@ -579,9 +579,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveContentExtensionEvaluator.cs" />
     <Compile Include="Src\Gui\Workbench\ViewContentEventHandler.cs" />
     <Compile Include="Src\Services\Debugger\IDebugger.cs" />
@@ -702,7 +699,6 @@
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
-    <EmbeddedResource Include="Resources\TaskListOptions.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
@@ -878,7 +874,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
