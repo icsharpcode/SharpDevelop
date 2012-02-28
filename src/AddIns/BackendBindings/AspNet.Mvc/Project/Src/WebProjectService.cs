@@ -37,8 +37,6 @@ namespace ICSharpCode.AspNet.Mvc
 		const string IIS_LOCATION = "Software\\Microsoft\\InetStp";
 		const string IIS_MAJOR_VERSION = "MajorVersion";
 		const string IIS_INSTALL_PATH = "InstallPath";
-		const string DEFAULT_WEB_SITE = "Default Web Site";
-		const string IIS_WEB_LOCATION = "IIS://localhost/W3SVC/1/Root";
 		
 		const string ASPNET_REG_PATH = @"SOFTWARE\MICROSOFT\ASP.NET";
 		const string ASPNET_ROOT_VER = @"RootVer";
@@ -214,94 +212,6 @@ namespace ICSharpCode.AspNet.Mvc
 				
 				return IISVersion.None;
 			}
-		}
-		
-		/// <summary>
-		/// Creates a virtual directory in local IIS or IIS Express.
-		/// </summary>
-		/// <param name="virtualDirectoryName">Virtual directory name.</param>
-		/// <param name="virtualDirectoryPath">Physical path.</param>
-		/// <returns>Error string or string null = no errors.</returns>
-		public static string CreateVirtualDirectory(WebServer webServer, string virtualDirectoryName, string physicalDirectoryPath)
-		{
-			try {
-				string iisNotFoundError = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");
-				if (!IsIISOrIISExpressInstalled)
-					return iisNotFoundError;
-				
-				string error;
-				
-				switch(IISVersion)
-				{
-					case IISVersion.IIS5:
-					case IISVersion.IIS6:
-						var vr = new IISVirtualRoot();
-						vr.Create(IIS_WEB_LOCATION,
-						          physicalDirectoryPath,
-						          virtualDirectoryName,
-						          out error);
-						break;
-					default:
-						if (!IsIISExpressInstalled && (IISVersion == IISVersion.None))
-							return iisNotFoundError;
-
-						// TODO: find a better way to create IIS applications without Microsoft.Web.Administration.ServerManager
-						string name = "/" + virtualDirectoryName;
-						// load from GAC
-						Assembly webAdministrationAssembly = null;
-						try {
-							// iis installed
-							foreach(DomAssemblyName assembly in GacInterop.GetAssemblyList()) {
-								if (assembly.FullName.Contains("Microsoft.Web.Administration")) {
-									if (IsAssemblyForWebServer(webServer, assembly)) {
-										webAdministrationAssembly = Assembly.Load(assembly.FullName);
-										break;
-									}
-								}
-							}
-						} catch {
-							return iisNotFoundError;
-						}
-						if (webAdministrationAssembly == null)
-							return iisNotFoundError;
-						
-						// use dynamic because classic reflection is way TOO ugly
-						dynamic manager = webAdministrationAssembly.CreateInstance("Microsoft.Web.Administration.ServerManager");
-						
-						if (manager.Sites[DEFAULT_WEB_SITE] != null) {
-							if (manager.Sites[DEFAULT_WEB_SITE].Applications[name] == null) {
-								manager.Sites[DEFAULT_WEB_SITE].Applications.Add(name, physicalDirectoryPath);
-								manager.CommitChanges();
-								error = string.Empty;
-							} else {
-								error = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.ApplicationExists");
-							}
-						} else {
-							if (manager.Sites[0].Applications[name] == null) {
-								manager.Sites[0].Applications.Add(name, physicalDirectoryPath);
-								manager.CommitChanges();
-								error = string.Empty;
-							} else {
-								error = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.ApplicationExists");
-							}
-						}
-						manager.Dispose();
-						break;
-				}
-				
-				return error;
-			}
-			catch (Exception ex) {
-				return ex.Message;
-			}
-		}
-		
-		static bool IsAssemblyForWebServer(WebServer webServer, DomAssemblyName assembly)
-		{
-			if (webServer == WebServer.IISExpress) {
-				return (assembly.Version.Major == 7) && (assembly.Version.Minor == 9);
-			}
-			return true;
 		}
 	}
 }

@@ -36,6 +36,7 @@ namespace ICSharpCode.AspNet.Mvc
 				if (WebProjectService.IsIISExpressInstalled) {
 					UseIISExpress.IsChecked = true;
 					PortTextBox.Text = properties.DevelopmentServerPort.ToString();
+					ProjectUrl.Text = String.Empty;
 					SelectIISExpress();
 				}
 			} else if (properties.UseIIS) {
@@ -57,7 +58,6 @@ namespace ICSharpCode.AspNet.Mvc
 		{
 			if (IsDirty) {
 				webProject.UpdateWebProjectProperties(properties);
-				//project.Save();
 			}
 			IsDirty = false;
 			return true;
@@ -65,28 +65,29 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		void CreateVirtualDirectory_Click(object sender, RoutedEventArgs e)
 		{
-			string error = WebProjectService.CreateVirtualDirectory(
-				GetWebServer(),
-				ProjectService.CurrentProject.Name,
-				Path.GetDirectoryName(ProjectService.CurrentProject.FileName));
-			
-			if (!string.IsNullOrEmpty(error)) {
-				MessageService.ShowError(error);
-			} else {
+			try {
+				IISAdministrator administrator = IISAdministrator.CreateAdministrator(properties);
+				if (!administrator.IsIISInstalled()) {
+					ShowIISNotFoundMessage();
+					return;
+				}
+				
+				administrator.CreateVirtualDirectory(webProject);
 				MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated"));
+			} catch (Exception ex) {
+				MessageService.ShowError(ex.Message);
 			}
 		}
 		
-		WebServer GetWebServer()
+		void ShowIISNotFoundMessage()
 		{
-			if (properties.UseIISExpress) {
-				return WebServer.IISExpress;
-			}
-			return WebServer.IIS;
+			MessageService.ShowWarning(ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound"));
 		}
 		
 		void UseIISExpress_Click(object sender, RoutedEventArgs e)
 		{
+			ProjectUrl.Text = String.Empty;
+			properties.IISUrl = String.Format(@"http://localhost:{0}/", PortTextBox.Text);
 			SelectIISExpress();
 			OnWebProjectPropertiesChanged();
 		}
@@ -96,10 +97,6 @@ namespace ICSharpCode.AspNet.Mvc
 			properties.UseIISExpress = true;
 			properties.UseIIS = false;
 			properties.DevelopmentServerPort = Int32.Parse(PortTextBox.Text);
-			if (String.IsNullOrEmpty(properties.IISUrl)) {
-				properties.IISUrl = String.Format(@"http://localhost:{0}/" + ProjectService.CurrentProject.Name, PortTextBox.Text);
-				OnWebProjectPropertiesChanged();
-			}
 			bool isIISExpressInstalled = WebProjectService.IsIISExpressInstalled;
 			
 			if (!isIISExpressInstalled) {
@@ -109,13 +106,13 @@ namespace ICSharpCode.AspNet.Mvc
 			} else {
 				StatusLabel.Text = String.Empty;
 			}
-			
 			IISExpressGroup.IsEnabled = CreateVirtualDirectoryButton.IsEnabled = isIISExpressInstalled;
 			LocalIISGroup.IsEnabled = false;
 		}
 		
 		void UseLocalIIS_Click(object sender, RoutedEventArgs e)
 		{
+			properties.IISUrl = String.Format("{0}/{1}", WebBehavior.LocalHost, webProject.Name);
 			SelectLocalIIS();
 			OnWebProjectPropertiesChanged();
 		}
@@ -132,10 +129,6 @@ namespace ICSharpCode.AspNet.Mvc
 				UseLocalIIS.IsChecked = false;
 			} else {
 				StatusLabel.Text = String.Empty;
-				if (String.IsNullOrEmpty(properties.IISUrl)) {
-					properties.IISUrl = String.Format("{0}/{1}", WebBehavior.LocalHost, ProjectService.CurrentProject.Name);
-					OnWebProjectPropertiesChanged();
-				}
 				ProjectUrl.Text = properties.IISUrl;
 			}
 			LocalIISGroup.IsEnabled = CreateVirtualDirectoryButton.IsEnabled = isIISInstalled;
@@ -188,7 +181,7 @@ namespace ICSharpCode.AspNet.Mvc
 		void PortTextBox_KeyUp(object sender, KeyEventArgs e)
 		{
 			properties.DevelopmentServerPort = Int32.Parse(PortTextBox.Text);
-			properties.IISUrl = String.Format(@"{0}:{1}/{2}", WebBehavior.LocalHost, PortTextBox.Text, ProjectService.CurrentProject.Name);
+			properties.IISUrl = String.Format(@"{0}:{1}/", WebBehavior.LocalHost, PortTextBox.Text);
 		}
 	}
 }

@@ -85,7 +85,8 @@ namespace ICSharpCode.AspNet.Mvc
 					if (properties.UseIISExpress) {
 						// start IIS express and attach to it
 						if (WebProjectService.IsIISExpressInstalled) {
-							DebuggerService.CurrentDebugger.Start(new ProcessStartInfo(WebProjectService.IISExpressProcessLocation));
+							ProcessStartInfo processInfo = IISExpressProcessStartInfo.Create(WebProject);
+							DebuggerService.CurrentDebugger.Start(processInfo);
 						} else {
 							DisposeProcessMonitor();
 							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");

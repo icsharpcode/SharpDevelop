@@ -21,6 +21,14 @@ namespace ICSharpCode.AspNet.Mvc
 			this.msbuildProject = msbuildProject;
 		}
 		
+		public string Name {
+			get { return msbuildProject.Name; }
+		}
+		
+		public string Directory {
+			get { return msbuildProject.Directory; }
+		}
+		
 		public bool HasWebProjectProperties()
 		{
 			if (VisualStudioProjectExtension.ProjectContainsExtension(msbuildProject)) {

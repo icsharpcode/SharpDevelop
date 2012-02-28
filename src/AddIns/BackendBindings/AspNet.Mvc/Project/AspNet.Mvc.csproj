@@ -160,6 +160,11 @@
     <Compile Include="Src\Folding\WebFormsMarkupCharacterReader.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
     <Compile Include="Src\IFileSystem.cs" />
+    <Compile Include="Src\IIS6Administrator.cs" />
+    <Compile Include="Src\IIS7Administrator.cs" />
+    <Compile Include="Src\IISAdministrator.cs" />
+    <Compile Include="Src\IISExpressAdministrator.cs" />
+    <Compile Include="Src\IISExpressProcessStartInfo.cs" />
     <Compile Include="Src\IMvcModelClassLocator.cs" />
     <Compile Include="Src\IMvcClass.cs" />
     <Compile Include="Src\IMvcControllerFileGenerator.cs" />
@@ -219,6 +224,7 @@
     <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
     <Compile Include="Src\MvcViewTypeViewModel.cs" />
     <Compile Include="Src\MvcVirtualPath.cs" />
+    <Compile Include="Src\NullIISAdministrator.cs" />
     <Compile Include="Src\ProcessMonitor.cs" />
     <Compile Include="Src\SelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Src\SelectedMvcControllerFolder.cs" />

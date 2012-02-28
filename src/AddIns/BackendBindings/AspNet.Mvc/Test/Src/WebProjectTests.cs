@@ -272,5 +272,29 @@ namespace AspNet.Mvc.Tests
 			
 			Assert.IsFalse(contains);
 		}
+		
+		[Test]
+		public void Name_MSBuildProjectNameIsTest_ReturnsTest()
+		{
+			CreateMSBuildProject();
+			msbuildProject.Name = "Test";
+			CreateWebProject(msbuildProject);
+			
+			string name = webProject.Name;
+			
+			Assert.AreEqual("Test", name);
+		}
+		
+		[Test]
+		public void Directory_MSBuildProjectDirectoryIsSet_ReturnsMSBuildProjectDirectory()
+		{
+			CreateMSBuildProject();
+			msbuildProject.FileName = @"c:\projects\Test\test.csproj";
+			CreateWebProject(msbuildProject);
+			
+			string directory = webProject.Directory;
+			
+			Assert.AreEqual(@"c:\projects\Test", directory);
+		}
 	}
 }
