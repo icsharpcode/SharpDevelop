@@ -180,6 +180,12 @@ namespace ICSharpCode.NRefactory.Xml
 			}
 		}
 		
+		public override bool HasValue {
+			get {
+				return !string.IsNullOrEmpty (Value);
+			}
+		}
+		
 		public override XmlNodeType NodeType {
 			get {
 				if (attributeIndex >= 0)
