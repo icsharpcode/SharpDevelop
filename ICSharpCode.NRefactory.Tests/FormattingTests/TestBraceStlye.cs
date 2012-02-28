@@ -409,5 +409,34 @@ namespace B {
 	}
 }");
 		}
+		
+		[Test()]
+		public void TestTryCatchWithBannerStyle ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			policy.StatementBraceStyle = BraceStyle.BannerStyle;
+			Test (policy, @"class Test
+{
+	void Foo ()
+	{
+					try  {
+			Foo (); } catch (Exception) { } catch (Exception) { } finally { Foo ();}
+	}
+}",
+@"class Test
+{
+	void Foo ()
+	{
+		try {
+			Foo ();
+			} catch (Exception) {
+			} catch (Exception) {
+			} finally {
+			Foo ();
+			}
+	}
+}");
+		}
+
 	}
 }
