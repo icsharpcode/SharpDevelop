@@ -249,6 +249,10 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListXaml.xaml.cs">
+      <DependentUpon>TaskListXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -874,6 +878,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListXaml.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
