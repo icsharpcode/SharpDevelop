@@ -6108,42 +6108,6 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>줄 ${Line} 열 ${Column} 글자 ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>이 클래스는 고정된 속성에 쉽게 접근할 수 있도록 합니다.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>추가 기능 옵션</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>#D에 사용되는 빈 메뉴 명령입니다.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>메뉴 명령</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>#D 옵션판입니다.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>옵션판</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>여러 상황에서 사용될 수 있는 명령입니다.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>간단한 명령</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>#D 판 내용입니다. (예를 들어 #D 정보판)</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>빈 판</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>#D 내용 뷰입니다. (예를 들어 텍스트 편집기나 리소스 편집기)</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>빈 뷰</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>기타</value>
   </data>
@@ -6269,6 +6233,42 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>빈 리소스 파일</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>이 클래스는 고정된 속성에 쉽게 접근할 수 있도록 합니다.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>추가 기능 옵션</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>#D에 사용되는 빈 메뉴 명령입니다.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>메뉴 명령</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>#D 옵션판입니다.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>옵션판</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>여러 상황에서 사용될 수 있는 명령입니다.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>간단한 명령</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>#D 판 내용입니다. (예를 들어 #D 정보판)</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>빈 판</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>#D 내용 뷰입니다. (예를 들어 텍스트 편집기나 리소스 편집기)</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>빈 뷰</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>singleton 패턴을 따르는 클래스입니다.</value>

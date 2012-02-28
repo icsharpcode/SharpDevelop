@@ -6992,42 +6992,6 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>Z ${Line} S ${Column} Zei ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Diese Klasse ermöglicht einen einfachen Zugriff auf persistente Eigenschaften.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>AddIn-Optionen</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Ein leeres Menukommando für #D.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Menukommando</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>Ein leeres #D Optionpanel.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Optionpanel</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Ein Standardkommando das an vielen Stellen verwendet werden kann.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Einfaches Kommando</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Ein #D Pad (zum Beispiel 'Ausgabe' oder 'Projekte').</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Leeres Pad</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Ein #D View (zum Beispiel Texteditor oder Resourceeditor).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Leeres View</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Sonstiges</value>
   </data>
@@ -7156,6 +7120,42 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Leere Ressourcen-Datei</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Diese Klasse ermöglicht einen einfachen Zugriff auf persistente Eigenschaften.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>AddIn-Optionen</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Ein leeres Menukommando für #D.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Menukommando</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>Ein leeres #D Optionpanel.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Optionpanel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Ein Standardkommando das an vielen Stellen verwendet werden kann.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Einfaches Kommando</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Ein #D Pad (zum Beispiel 'Ausgabe' oder 'Projekte').</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Leeres Pad</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Ein #D View (zum Beispiel Texteditor oder Resourceeditor).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Leeres View</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Eine Klasse die dem Singletonmuster folgt.</value>

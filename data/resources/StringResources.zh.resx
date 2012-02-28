@@ -6846,9 +6846,6 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>行 ${Line}列${Column}字符${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>空视图</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>其它</value>
   </data>
@@ -6977,6 +6974,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>空资源文件</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>空视图</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>具有标准样式的类。</value>

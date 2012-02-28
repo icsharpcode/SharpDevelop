@@ -5761,42 +5761,6 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>sat ${Line} süt ${Column} ha ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Bu sınıf sürekli nesnelere kolay erişimi tanımlar.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Eklenti Seçenekleri</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>#D için boş bir menü komutu</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Menü Komutu</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>Bir #D seçenek paneli.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Ayar Paneli</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Çeşitli olaylar için kullanılabilecek bir komut.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Basit Komut</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Bir #D tepsi içeriği (örneğin #D kaşifleri).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Boş Tepsi</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Bir #D görünüm içeriği ( örneğin metin düzenleyici yada kaynak düzenleyici).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Boş Görünüm</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Çeşitli</value>
   </data>
@@ -5916,6 +5880,42 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Kaynak dosyayı boşalt</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Bu sınıf sürekli nesnelere kolay erişimi tanımlar.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Eklenti Seçenekleri</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>#D için boş bir menü komutu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Menü Komutu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>Bir #D seçenek paneli.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Ayar Paneli</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Çeşitli olaylar için kullanılabilecek bir komut.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Basit Komut</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Bir #D tepsi içeriği (örneğin #D kaşifleri).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Boş Tepsi</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Bir #D görünüm içeriği ( örneğin metin düzenleyici yada kaynak düzenleyici).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Boş Görünüm</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>'Tek sınıf' türü bir sınıf</value>

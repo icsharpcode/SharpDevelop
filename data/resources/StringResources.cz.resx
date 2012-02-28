@@ -6001,42 +6001,6 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>řá ${Line} sl ${Column} znk ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Tato třída poskytuje jednoduchý přístup k perzistentním vlastnostem.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Možnosti AddInu</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Prázdný Příkaz menu pro SharpDevelop.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Příkaz menu</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>Panel možností pro SharpDevelop.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Panel možností</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Jednoduchý příkaz, který může být použit při různých příležitostech.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Jednoduchý příkaz</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Nástrojové okno pro SharpDevelop (např. seznam souborů projektu).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Prázdné nástrojové okno</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Prázdný pohled pro SharpDevelop (např. editor textu).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Prázdný pohled</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Různé</value>
   </data>
@@ -6165,6 +6129,42 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Prázdný resource soubor</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Tato třída poskytuje jednoduchý přístup k perzistentním vlastnostem.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Možnosti AddInu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Prázdný Příkaz menu pro SharpDevelop.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Příkaz menu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>Panel možností pro SharpDevelop.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Panel možností</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Jednoduchý příkaz, který může být použit při různých příležitostech.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Jednoduchý příkaz</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Nástrojové okno pro SharpDevelop (např. seznam souborů projektu).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Prázdné nástrojové okno</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Prázdný pohled pro SharpDevelop (např. editor textu).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Prázdný pohled</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Třída dodržující návrhový vzor Singleton.</value>

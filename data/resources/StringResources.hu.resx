@@ -5000,42 +5000,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>A ${Line} oszl ${Column} kar ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Az osztály könnyű elérést biztosít a tárolt tulajdonságokhoz.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Beépülő Beállítások</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Egy üres menü parancs #Develop-hoz.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Menü Parancs</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>A #D beállítás panel-e.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Beállítás Panel</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Egy parancs, amely használható különböző helyzetekben.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Egyszerű Parancs</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Egy #Develop panel-tartalom (mint például a #Develop kezelők)</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Üres Panel</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Egy #Develop nézet tartalom (mint például szövegszerkesztő vagy erőforrás szerkesztő)</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Üres Nézet</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Egyéb</value>
   </data>
@@ -5131,6 +5095,42 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Üres erőforrás fájl</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Az osztály könnyű elérést biztosít a tárolt tulajdonságokhoz.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Beépülő Beállítások</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Egy üres menü parancs #Develop-hoz.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Menü Parancs</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>A #D beállítás panel-e.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Beállítás Panel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Egy parancs, amely használható különböző helyzetekben.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Egyszerű Parancs</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Egy #Develop panel-tartalom (mint például a #Develop kezelők)</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Üres Panel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Egy #Develop nézet tartalom (mint például szövegszerkesztő vagy erőforrás szerkesztő)</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Üres Nézet</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Egy osztály amely a singleton mintát követi.</value>

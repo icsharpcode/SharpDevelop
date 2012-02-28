@@ -4569,36 +4569,6 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>Rader ${Line} kolumner ${Column} tecken ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Ett tomt meny kommando för #D.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Meny kommando</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>En #D kontrollpanel.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Kontrollpanel</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Ett kommando som kan användas vid diverse tillfällen.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Enkelt kommando</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>En #D pad innehåll (till exempel #D utforskarna och scouterna).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Tom pad</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Ett #D-vyinnehål (till exempel texteditor eller resurseditor).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Tom vy</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Diverse</value>
   </data>
@@ -4706,6 +4676,36 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Tom resursfil</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Ett tomt meny kommando för #D.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Meny kommando</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>En #D kontrollpanel.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Kontrollpanel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Ett kommando som kan användas vid diverse tillfällen.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Enkelt kommando</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>En #D pad innehåll (till exempel #D utforskarna och scouterna).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Tom pad</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Ett #D-vyinnehål (till exempel texteditor eller resurseditor).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Tom vy</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>En klass som följet singleton mönstret.</value>
