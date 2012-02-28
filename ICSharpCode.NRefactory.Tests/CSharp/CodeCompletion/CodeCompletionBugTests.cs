@@ -4639,5 +4639,24 @@ class MainClass
 				Assert.IsNotNull (provider.Find ("InternalsVisibleTo"), "'InternalsVisibleTo' not found.");
 			});
 		}
+		
+		[Test()]
+		public void TestUsingContext ()
+		{
+			CombinedProviderTest (@"$using System.$", provider => {
+				Assert.IsNotNull (provider.Find ("IO"), "'IO' not found.");
+				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+			});
+		}
+		
+		[Test()]
+		public void TestUsingContextCase2()
+		{
+			
+			CombinedProviderTest (@"$using System.U$", provider => {
+				Assert.IsNotNull (provider.Find ("IO"), "'IO' not found.");
+				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+			});			
+		}
 	}
 }

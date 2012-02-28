@@ -1702,12 +1702,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var result = new CompletionDataWrapper (this);
 			if (resolveResult is NamespaceResolveResult) {
 				var nr = (NamespaceResolveResult)resolveResult;
-				foreach (var cl in nr.Namespace.Types) {
-					string name = cl.Name;
-					
-					if (IsAttributeContext (resolvedNode) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
-						name = name.Substring (0, name.Length - "Attribute".Length);
-					result.AddType (cl, name);
+				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
+					Console.WriteLine ("fooo");
+					foreach (var cl in nr.Namespace.Types) {
+						string name = cl.Name;
+						
+						if (IsAttributeContext (resolvedNode) && name.EndsWith ("Attribute") && name.Length > "Attribute".Length)
+							name = name.Substring (0, name.Length - "Attribute".Length);
+						result.AddType (cl, name);
+					}
 				}
 				foreach (var ns in nr.Namespace.ChildNamespaces) {
 					result.AddNamespace (ns.Name);
