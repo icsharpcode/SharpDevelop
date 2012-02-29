@@ -73,7 +73,6 @@
     <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="CppLanguageProperties.cs" />
     <Compile Include="Project\DependencyRelation.cs" />
-    <Compile Include="Project\DirectoriesOptions.cs" />
     <Compile Include="Project\MultiDictionary.cs" />
     <Compile Include="Project\ApplicationOptions.cs">
       <SubType>UserControl</SubType>
@@ -105,7 +104,6 @@
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CppProjectBinding.cs" />
-    <EmbeddedResource Include="Resources\DirectoriesOptions.xfrm" />
     <EmbeddedResource Include="Resources\LinkerOptions.xfrm" />
     <EmbeddedResource Include="Resources\PreprocessorOptions.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">

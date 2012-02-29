@@ -256,9 +256,6 @@ namespace StringResourceTool
 			outputTextBox.Text = b.ToString();
 		}
 		
-		string[] specialStarts = {"Dialog.HighlightingEditor.",
-			"ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand."};
-		
 		/// <summary>Gets entries in t1 that are missing from t2.</summary>
 		List<string> FindMissing(HashSet<string> t1, HashSet<string> t2)
 		{

@@ -185,7 +185,7 @@
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
 			<ToolbarItem id      = "Refresh"
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
-			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+			             tooltip = "${res:Global.Refresh}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "Collapse"
@@ -766,7 +766,7 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
 		<MenuItem id    = "RefreshReference"
 		          icon  = "Icons.16x16.BrowserRefresh"
-		          label = "${res:AddIns.HtmlHelp2.Refresh}"
+		          label = "${res:Global.Refresh}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshReference"/>
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem id    = "Remove"
@@ -2045,7 +2045,7 @@
 		
 		<ToolbarItem id      = "Refresh"
 		             icon    = "Icons.16x16.BrowserRefresh"
-		             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+		             tooltip = "${res:Global.Refresh}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.Refresh"/>
 		
 		<ToolbarItem id = "Separator" type  = "Separator"/>

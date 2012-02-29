@@ -183,7 +183,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}");
 			}
 			if (source is RawViewNode)	{
-				return StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.RawView}");
+				return "Raw View";
 			}
 			var sourceBaseClassNode = source as BaseClassNode;
 			if (sourceBaseClassNode != null) {

@@ -89,7 +89,7 @@ namespace ICSharpCode.AspNet.Mvc
 							DebuggerService.CurrentDebugger.Start(processInfo);
 						} else {
 							DisposeProcessMonitor();
-							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							MessageService.ShowError("${res:ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 							return;
 						}
 					} else {
