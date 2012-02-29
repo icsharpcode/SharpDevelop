@@ -314,6 +314,9 @@
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.PanelName}"
 			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel"/>
 		
+			<OptionPanel id    = "LocalizationModelOptions1"
+			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.PanelName}"
+			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.LocalizationOption"/>
 		</OptionPanel>
 	</Path>
 </AddIn>

@@ -86,6 +86,10 @@
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.cs" />
+    <Compile Include="Src\Gui\OptionPanels\LocalizationOption.xaml.cs">
+      <DependentUpon>LocalizationOption.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\DesignerViewContent.cs" />
     <Compile Include="Src\FormKeyHandler.cs" />
@@ -169,6 +173,10 @@
       <Private>False</Private>
     </ProjectReference>
     <Content Include="PostBuildEvent.proj" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -184,6 +192,9 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Gui\OptionPanels\LocalizationOption.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />
