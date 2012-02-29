@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[ReadOnly(true)]
+		[DefaultValue(false)]
 		public bool Isolated {
 			get {
 				return GetEvaluatedMetadata("Isolated", false);
