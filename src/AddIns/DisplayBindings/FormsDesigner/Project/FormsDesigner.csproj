@@ -85,9 +85,8 @@
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.cs" />
-    <Compile Include="Src\Gui\OptionPanels\LocalizationOption.xaml.cs">
-      <DependentUpon>LocalizationOption.xaml</DependentUpon>
+    <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml.cs">
+      <DependentUpon>LocalizationModelOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\SecondaryDisplayBinding.cs" />
@@ -146,9 +145,6 @@
     <EmbeddedResource Include="Src\Gui\ImageResourceEditorDialog.resx">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.resx">
-      <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\Services\DesignerSerializationService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -194,7 +190,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\Gui\OptionPanels\LocalizationOption.xaml" />
+    <Page Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />

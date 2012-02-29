@@ -16,7 +16,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for LocalizationOptionPanelXAML.xaml
 	/// </summary>
-	public partial class LocalizationOption : OptionPanel
+	public partial class LocalizationModelOptionsPanel : OptionPanel
 	{
 		public const string DefaultLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.DefaultLocalizationModel";
 		public const string KeepLocalizationModelPropertyName = "FormsDesigner.DesignerOptions.KeepLocalizationModel";
@@ -24,7 +24,7 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 		const CodeDomLocalizationModel DefaultLocalizationModelDefaultValue = CodeDomLocalizationModel.PropertyReflection;
 		const bool KeepLocalizationModelDefaultValue = false;
 		
-		public LocalizationOption()
+		public LocalizationModelOptionsPanel()
 		{
 			InitializeComponent();
 			this.reflectionRadioButton.IsChecked = (DefaultLocalizationModel == CodeDomLocalizationModel.PropertyReflection);
