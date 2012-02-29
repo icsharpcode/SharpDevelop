@@ -6,11 +6,11 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.CodeQuality"/>
-		<Dependency addin = "ICSharpCode.Reports.Addin" requirePreload = "true"/>
 	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "ICSharpCode.CodeQuality.dll"/>
+		<Import assembly="ICSharpCode.Reports.Core.dll" />
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">
