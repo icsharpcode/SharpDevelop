@@ -116,8 +116,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			// Safety check: our setup already checks that .NET 4 is installed, but we manually check the .NET version in case SharpDevelop is
 			// used on another machine than it was installed on (e.g. "SharpDevelop on USB stick")
-			if (Environment.Version < new Version(4, 0, 30319)) {
-				MessageBox.Show("This version of SharpDevelop requires .NET 4.0. You are using: " + Environment.Version, "SharpDevelop");
+			if (Environment.Version < new Version(4, 0, 30319, 17379)) {
+				MessageBox.Show("This version of SharpDevelop requires .NET 4.5. You are using: " + Environment.Version, "SharpDevelop");
 				return false;
 			}
 			// Work around a WPF issue when %WINDIR% is set to an incorrect path
