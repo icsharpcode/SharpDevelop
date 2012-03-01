@@ -4385,7 +4385,6 @@ namespace Test
 			});
 		}
 		
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestAnonymousArguments ()
 		{
@@ -4561,7 +4560,6 @@ namespace Foobar
 			Assert.IsNotNull (provider.Find ("Intent"), "'Intent' not found.");
 		}
 		
-		[Ignore("Mcs bug")]
 		[Test()]
 		public void TestForConditionContext ()
 		{
