@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
 using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
@@ -130,16 +129,13 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				// -> available target frameworks is the intersection of all compiler's target framework,
 				// and "Do not change" is always available
 				
-				var supportedTargetFrameworks =
+				availableFrameworks = (
 					from Entry entry in listView.SelectedItems
 					where entry.CompilerVersion != null
-					select entry.CompilerVersion.GetSupportedTargetFrameworks();
+					from fx in entry.CompilerVersion.GetSupportedTargetFrameworks()
+					select fx
+				).Distinct().ToList();
 				
-				if (supportedTargetFrameworks.Any()) {
-					availableFrameworks = supportedTargetFrameworks.Aggregate((a, b) => a.Intersect(b)).ToList();
-				} else {
-					availableFrameworks = new List<TargetFramework>();
-				}
 				doNotChangeAllowed = true;
 			} else {
 				// Specific compiler version is selected
@@ -181,7 +177,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			TargetFramework oldSelectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
 			if (!newFrameworkSelectionSetByUser || oldSelectedFramework == null) {
 				newFrameworkSelectionSetByUser = false;
-				newFrameworkComboBox.SelectedValue = frameworkUsedByAllProjects;
+				if (availableFrameworks.Contains(frameworkUsedByAllProjects))
+					newFrameworkComboBox.SelectedValue = frameworkUsedByAllProjects;
 			}
 			newFrameworkSelectionChangingByCode = false;
 			UpdateConvertButtonEnabled();
@@ -233,8 +230,14 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 			
 			foreach (Entry entry in listView.SelectedItems) {
-				entry.UpgradeProject(selectedCompiler, selectedFramework);
+				try {
+					entry.UpgradeProject(selectedCompiler, selectedFramework);
+				} catch (ProjectUpgradeException ex) {
+					Core.MessageService.ShowError("Cannot upgrade '" + entry.Name + "': " + ex.Message);
+					break;
+				}
 			}
+			
 			solution.Save();
 			UpdateCompilerComboBox();
 		}

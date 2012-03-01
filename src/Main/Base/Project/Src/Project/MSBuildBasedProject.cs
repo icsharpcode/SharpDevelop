@@ -123,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					projectFile.ToolsVersion = newToolsVersion;
 					userProjectFile.ToolsVersion = newToolsVersion;
 				});
+			
 			if (MinimumSolutionVersionChanged != null)
 				MinimumSolutionVersionChanged(this, EventArgs.Empty);
 		}
@@ -1207,7 +1208,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.Name = loadInformation.ProjectName;
 			isLoading = true;
 			try {
-				LoadProjectInternal(loadInformation);
+				try {
+					LoadProjectInternal(loadInformation);
+				} catch (InvalidProjectFileException ex) {
+					if (!(ex.ErrorCode == "MSB4132" && UpgradeToolsVersion(loadInformation))) {
+						throw;
+					}
+				}
 			} catch (InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
@@ -1217,6 +1224,46 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		const string autoUpgradeNewToolsVersion = "4.0";
+		
+		bool UpgradeToolsVersion(ProjectLoadInformation loadInformation)
+		{
+			if (loadInformation.upgradeToolsVersion != null)
+				return false;
+			if (!CanUpgradeToolsVersion())
+				return false;
+			loadInformation.ProgressMonitor.ShowingDialog = true;
+			StringTagPair[] tags = {
+				new StringTagPair("ProjectName", loadInformation.ProjectName),
+				new StringTagPair("OldToolsVersion", projectFile.ToolsVersion),
+				new StringTagPair("NewToolsVersion", autoUpgradeNewToolsVersion)
+			};
+			string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild}", tags);
+			string upgradeButton = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton}", tags);
+			int result = MessageService.ShowCustomDialog(
+				"${res:ICSharpCode.SharpDevelop.Project.UpgradeView.Title}",
+				message,
+				0, 1, upgradeButton, "${res:Global.CancelButtonText}");
+			loadInformation.ProgressMonitor.ShowingDialog = false;
+			if (result == 0) {
+				loadInformation.upgradeToolsVersion = true;
+				LoadProjectInternal(loadInformation);
+				return true;
+			} else {
+				loadInformation.upgradeToolsVersion = false;
+				return false;
+			}
+		}
+		
+		bool CanUpgradeToolsVersion()
+		{
+			if (projectFile == null)
+				return false;
+			if (string.IsNullOrEmpty(projectFile.ToolsVersion))
+				return true;
+			return projectFile.ToolsVersion == "2.0" || projectFile.ToolsVersion == "3.5";
+		}
+		
 		void LoadProjectInternal(ProjectLoadInformation loadInformation)
 		{
 			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
@@ -1224,6 +1271,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ActivePlatform = loadInformation.Platform;
 			
 			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);
+			if (loadInformation.upgradeToolsVersion == true && CanUpgradeToolsVersion()) {
+				projectFile.ToolsVersion = autoUpgradeNewToolsVersion;
+			}
 			
 			string userFileName = loadInformation.FileName + ".user";
 			if (File.Exists(userFileName)) {

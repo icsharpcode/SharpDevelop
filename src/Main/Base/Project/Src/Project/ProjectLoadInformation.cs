@@ -19,6 +19,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public IList<ProjectSection> ProjectSections {get; set;}
 		internal string Guid { get; set; }
 		
+		internal bool? upgradeToolsVersion;
+		
 		Gui.IProgressMonitor progressMonitor = new Gui.DummyProgressMonitor();
 		
 		/// <summary>

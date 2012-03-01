@@ -9,7 +9,9 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public readonly static TargetFramework Net20 = new TargetFramework("v2.0", ".NET Framework 2.0") {
 			SupportedRuntimeVersion = "v2.0.50727",
-			MinimumMSBuildVersion = new Version(2, 0)
+			MinimumMSBuildVersion = new Version(2, 0),
+			// .NET 2.0/3.0/3.5 can only be used if .NET 3.5 SP1 is installed
+			IsAvailable = DotnetDetection.IsDotnet35SP1Installed
 		};
 		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") {
 			SupportedRuntimeVersion = "v2.0.50727",
@@ -28,7 +30,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			BasedOn = Net35,
 			MinimumMSBuildVersion = new Version(4, 0),
 			SupportedSku = ".NETFramework,Version=v4.0",
-			RequiresAppConfigEntry = true
+			RequiresAppConfigEntry = true,
+			IsAvailable = DotnetDetection.IsDotnet40Installed
 		};
 		public readonly static TargetFramework Net40Client = new ClientProfileTargetFramework(Net40) {
 			BasedOn = Net35Client
@@ -38,7 +41,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			MinimumMSBuildVersion = new Version(4, 0),
 			SupportedRuntimeVersion = "v4.0",
 			SupportedSku = ".NETFramework,Version=v4.5",
-			RequiresAppConfigEntry = true
+			RequiresAppConfigEntry = true,
+			IsAvailable = DotnetDetection.IsDotnet45Installed
 		};
 		public readonly static TargetFramework Net45Client = new ClientProfileTargetFramework(Net45) {
 			BasedOn = Net40Client
@@ -66,6 +70,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.name = name;
 			this.displayName = displayName;
 			this.SupportedRuntimeVersion = name;
+			this.IsAvailable = delegate {
+				if (this.BasedOn != null)
+					return this.BasedOn.IsAvailable();
+				else
+					return true;
+			};
 		}
 		
 		public string Name {
@@ -75,6 +85,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string DisplayName {
 			get { return displayName; }
 		}
+		
+		/// <summary>
+		/// Function that determines if this target framework is available.
+		/// </summary>
+		public Func<bool> IsAvailable { get; set; }
 		
 		/// <summary>
 		/// Supported runtime version string for app.config
@@ -128,6 +143,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.FullFramework = fullFramework;
 			this.SupportedRuntimeVersion = fullFramework.SupportedRuntimeVersion;
 			this.MinimumMSBuildVersion = fullFramework.MinimumMSBuildVersion;
+			this.IsAvailable = fullFramework.IsAvailable;
 			if (fullFramework.SupportedSku != null)
 				this.SupportedSku = fullFramework.SupportedSku + ",Profile=Client";
 			else

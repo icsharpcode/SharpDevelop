@@ -551,7 +551,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			return new[] { msbuild20, msbuild35, msbuild40 };
+			List<CompilerVersion> versions = new List<CompilerVersion>();
+			if (DotnetDetection.IsDotnet35SP1Installed()) {
+				versions.Add(msbuild20);
+				versions.Add(msbuild35);
+			}
+			versions.Add(msbuild40);
+			return versions;
 		}
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
@@ -560,6 +566,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				lock (SyncRoot) {
 					TargetFramework oldFramework = this.CurrentTargetFramework;
 					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
+						string newToolsVersion = newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor;
+						if (!MSBuildProjectCollection.ContainsToolset(newToolsVersion)) {
+							string errorMessage = "MSBuild Tools version '" + newToolsVersion + "' is not available.";
+							if (newToolsVersion == "2.0" || newToolsVersion == "3.5") {
+								errorMessage += Environment.NewLine + "Please install the .NET Framework 3.5 SP1.";
+							}
+							throw new ProjectUpgradeException(errorMessage);
+						}
 						SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
 					}
 					if (newFramework != null) {

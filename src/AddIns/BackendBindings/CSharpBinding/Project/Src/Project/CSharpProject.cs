@@ -109,7 +109,13 @@ namespace CSharpBinding
 		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			return new[] { msbuild20, msbuild35, msbuild40 };
+			List<CompilerVersion> versions = new List<CompilerVersion>();
+			if (DotnetDetection.IsDotnet35SP1Installed()) {
+				versions.Add(msbuild20);
+				versions.Add(msbuild35);
+			}
+			versions.Add(msbuild40);
+			return versions;
 		}
 		
 		/*
