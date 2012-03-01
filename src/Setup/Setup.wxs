@@ -68,12 +68,6 @@
 			Installed OR NETFRAMEWORK40FULL
 		</Condition>
 		
-		<!-- Unfortunately we also require .NET 3.5 SP1 at the moment -->
-		<PropertyRef Id="NETFRAMEWORK35_SP_LEVEL" />
-		<Condition Message="This setup requires the .NET Framework 3.5 SP1 to be installed (Yes, you need both .NET 4.0 and 3.5 SP1. Sorry.)">
-			Installed OR NETFRAMEWORK35_SP_LEVEL = "#1"
-		</Condition>
-		
 		<!--
 			Check for C++ 2008 Runtime (we accept any 2008 runtime version).
 			We only need the VC9 CRT, but unfortunately I couldn't find any way to detect if that is installed.

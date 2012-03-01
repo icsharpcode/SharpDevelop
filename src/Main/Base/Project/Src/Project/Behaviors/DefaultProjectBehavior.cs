@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			yield break;
+			return Enumerable.Empty<CompilerVersion>();
 		}
 		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)

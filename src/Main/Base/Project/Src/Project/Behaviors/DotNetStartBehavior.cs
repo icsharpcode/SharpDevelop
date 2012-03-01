@@ -126,7 +126,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			return new[] { CompilerVersion.MSBuild20, CompilerVersion.MSBuild35, CompilerVersion.MSBuild40 };
+			List<CompilerVersion> versions = new List<CompilerVersion>();
+			if (DotnetDetection.IsDotnet35SP1Installed()) {
+				versions.Add(CompilerVersion.MSBuild20);
+				versions.Add(CompilerVersion.MSBuild35);
+			}
+			versions.Add(CompilerVersion.MSBuild40);
+			return versions;
 		}
 		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)

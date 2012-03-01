@@ -153,9 +153,7 @@
 							<Component Id="ICSharpCodeBuildTasksDll" Guid="E94FCC8C-9741-45EF-AFDA-9F9CF02BF3F7" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Build.Tasks.dll" Id="ICSharpCode.Build.Tasks.dll" Name="ICSharpCode.Build.Tasks.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Build.Tasks.dll" AssemblyManifest="ICSharpCode.Build.Tasks.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="55F82461-DEED-43BB-8A79-7243B762EA60">
-								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Id="SharpDevelop.Build.Common.targets" Name="SharpDevelop.Build.Common.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Id="SharpDevelop.Build.MSIL.targets" Name="SharpDevelop.Build.MSIL.targets" />
+							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="8BA49EB8-394B-4357-8CB8-638A1AB83E54">
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Id="SharpDevelop.CodeAnalysis.targets" Name="SharpDevelop.CodeAnalysis.targets" />
 								<File Source="..\..\bin\SharpDevelop.CheckMSBuild35Features.targets" Id="SharpDevelop.CheckMSBuild35Features.targets" Name="SharpDevelop.CheckMSBuild35Features.targets" />
 								<File Source="..\..\bin\SharpDevelop.TargetingPack.targets" Id="SharpDevelop.TargetingPack.targets" Name="SharpDevelop.TargetingPack.targets" />

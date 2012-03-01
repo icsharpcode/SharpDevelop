@@ -371,6 +371,7 @@
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
+    <Compile Include="Src\Project\ProjectUpgradeException.cs" />
     <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />
@@ -792,6 +793,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />

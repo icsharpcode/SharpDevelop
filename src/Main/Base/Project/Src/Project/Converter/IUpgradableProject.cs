@@ -43,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		/// </summary>
 		/// <param name="newVersion">The new compiler version. If this property is null, the compiler version is not changed.</param>
 		/// <param name="newFramework">The new target framework. If this property is null, the target framework is not changed.</param>
+		/// <exception cref="ProjectUpgradeException">Upgrading the project failed.</exception>
 		void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework);
 	}
 	
@@ -60,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			return from fx in TargetFramework.TargetFrameworks
 				where fx.MinimumMSBuildVersion != null
 				where MSBuildVersion >= fx.MinimumMSBuildVersion
+				where fx.IsAvailable()
 				select fx;
 		}
 		
