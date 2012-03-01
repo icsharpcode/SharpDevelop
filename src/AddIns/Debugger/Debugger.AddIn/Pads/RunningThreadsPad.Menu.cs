@@ -3,10 +3,11 @@
 
 using System.Collections;
 using System.Dynamic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
 using Debugger;
+using Debugger.AddIn.Pads.ParallelPad;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -28,7 +29,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			dynamic item = items[0];
+			ThreadModel item = items[0] as ThreadModel;
+			if (item == null)
+				return;
 			
 			ContextMenu menu = sender as ContextMenu;
 			menu.Items.Clear();
@@ -36,22 +39,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			MenuItem freezeItem;
 			freezeItem = new MenuItem();
 			freezeItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Freeze");
-			freezeItem.IsChecked = (item.Tag as Thread).Suspended;
+			freezeItem.IsChecked = item.Thread.Suspended;
 			freezeItem.Click +=
 				delegate {
 				if (items == null || items.Count == 0) {
 					e.Handled = true;
 					return;
 				}
-				bool suspended = (item.Tag as Thread).Suspended;
+				bool suspended = item.Thread.Suspended;
 				
 				if (!debuggedProcess.IsPaused) {
 					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotFreezeWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.Freeze}");
 					return;
 				}
 				
-				foreach(dynamic current in items) {
-					(current.Tag as Thread).Suspended = !suspended;
+				foreach(ThreadModel current in items.OfType<ThreadModel>()) {
+					current.Thread.Suspended = !suspended;
 				}
 				InvalidatePad();
 			};
