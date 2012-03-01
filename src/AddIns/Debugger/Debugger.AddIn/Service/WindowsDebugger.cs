@@ -427,15 +427,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			var frame = debuggedProcess.GetCurrentExecutingFrame();
-			try {
-				object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
-				                                                              frame.MethodInfo.MetadataToken,
-				                                                              variableName);
-				// evaluate expression
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, frame, data);
-			} catch {
-				throw;
-			}
+			object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+			                                                              frame.MethodInfo.MetadataToken,
+			                                                              variableName);
+			// evaluate expression
+			return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, frame, data);
 		}
 
 		/// <summary>
