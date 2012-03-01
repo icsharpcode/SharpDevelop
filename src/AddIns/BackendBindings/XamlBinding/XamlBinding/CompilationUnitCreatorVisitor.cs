@@ -151,7 +151,9 @@ namespace ICSharpCode.XamlBinding
 				c.Modifiers |= ModifierEnum.Public;
 			
 			c.Region = CreateRegion(element.StartOffset, element.EndOffset);
-			c.BaseTypes.Add(TypeFromXmlNode(CompilationUnit, element));
+			var baseType = TypeFromXmlNode(CompilationUnit, element);
+			if (baseType != null)
+				c.BaseTypes.Add(baseType);
 			CompilationUnit.Classes.Add(c);
 
 			DefaultMethod initializeComponent = new DefaultMethod(
