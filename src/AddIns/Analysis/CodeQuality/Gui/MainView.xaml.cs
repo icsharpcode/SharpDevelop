@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.CodeQuality.Engine;
+using ICSharpCode.CodeQuality.Engine.Dom;
+using ICSharpCode.CodeQuality.Reporting;
+using ICSharpCode.Reports.Core.WpfReportViewer;
 using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
@@ -22,6 +27,9 @@ namespace ICSharpCode.CodeQuality.Gui
 	public partial class MainView : UserControl
 	{
 		AssemblyAnalyzer context;
+		List<string> fileNames;
+		ReadOnlyCollection <AssemblyNode> list;
+		
 		
 		public MainView()
 		{
@@ -29,6 +37,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			
 			context = new AssemblyAnalyzer();
 			this.DataContext = context;
+			fileNames = new List<string>();
 		}
 		
 		void AddAssemblyClick(object sender, RoutedEventArgs e)
@@ -41,17 +50,55 @@ namespace ICSharpCode.CodeQuality.Gui
 			if (fileDialog.ShowDialog() != true || fileDialog.FileNames.Length == 0)
 				return;
 			introBlock.Visibility = Visibility.Collapsed;
-			context.AddAssemblyFiles(fileDialog.FileNames);
-			RefreshClick(null, null);
+			this.fileNames.AddRange(fileDialog.FileNames);
+			Analyse(fileDialog.FileNames);
+			UpdateUI();
 		}
 		
-	
-		void RefreshClick(object sender, RoutedEventArgs e)
+		
+		void Analyse (string[] fileNames)
 		{
-			introBlock.Visibility = Visibility.Collapsed;
+			context.AddAssemblyFiles(fileNames);
 			using (context.progressMonitor = AsynchronousWaitDialog.ShowWaitDialog("Analysis"))
-				matrix.Update(context.Analyze());
+			{
+				list = context.Analyze();
+			}
+		}
+		
+		
+		void UpdateUI ()
+		{
+			matrix.Update(list);
+			introBlock.Visibility = Visibility.Collapsed;
 			matrix.Visibility = Visibility.Visible;
+			printMenu.Visibility = Visibility.Visible;
+		}
+		
+		
+		/*
+		 * 
+		 * TreeTraversal.PreOrder(node, n => n.Children).OfType<MethodNode>().Count()
+		 * 
+		 * 
+		 */
+		
+		
+		void OverviewReport_Click(object sender, RoutedEventArgs e)
+		{
+			OverviewReport o = new OverviewReport(fileNames);
+			var reportCreator = o.Run(list);
+			var previewViewModel = new PreviewViewModel(o.ReportSettings,reportCreator.Pages);
+			viewer.SetBinding(previewViewModel);
+			reportTab.Visibility = Visibility.Visible;
+		}
+		
+		void DependecyReport_Click(object sender, RoutedEventArgs e)
+		{
+			var dependency = new DependencyReport(fileNames);
+			var reportCreator = dependency.Run(list);
+			var previewViewModel = new PreviewViewModel(dependency.ReportSettings,reportCreator.Pages);
+			viewer.SetBinding(previewViewModel);
+			reportTab.Visibility = Visibility.Visible;
 		}
 	}
 }

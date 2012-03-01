@@ -74,14 +74,6 @@ namespace Grunwald.BooBinding
 			((IProjectItemListProvider)this).AddProjectItem(new ReferenceProjectItem(this, assembly));
 		}
 		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.OrdinalIgnoreCase))
-				return ItemType.Compile;
-			else
-				return base.GetDefaultItemType(fileName);
-		}
-		
 		internal static IProjectContent BooCompilerPC;
 		
 		protected override ParseProjectContent CreateProjectContent()
@@ -137,6 +129,32 @@ namespace Grunwald.BooBinding
 				else
 					return false;
 			}
+		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			BooProjectBehavior behavior = new BooProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class BooProjectBehavior : ProjectBehavior
+	{
+		public BooProjectBehavior(BooProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			if (string.Equals(Path.GetExtension(fileName), ".boo", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 	}
 }

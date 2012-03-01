@@ -38,14 +38,10 @@ namespace ICSharpCode.CodeQuality.Gui
 			}
 		}
 		
-//		public int Uses {get {return Node.Uses.Count();}}
-//		
-//		public int UsesBy {get {return Node.UsedBy.Count();}}
 		
 		public string ClassType {
 			get {
 				var n = node.GetType().Name;
-//				Console.WriteLine(n.Substring(0,n.Length -4));
 				return (n.Substring(0,n.Length -4));
 			}
 		}
@@ -59,5 +55,6 @@ namespace ICSharpCode.CodeQuality.Gui
 				base.RaisePropertyChanged(()=>InfoText);
 			}
 		}
+		
 	}
 }

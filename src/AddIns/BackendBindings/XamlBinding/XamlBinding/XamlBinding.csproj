@@ -130,6 +130,7 @@
     <Compile Include="Utils.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XamlBehavior.cs" />
     <Compile Include="XamlClassReturnType.cs" />
     <Compile Include="XamlCodeCompletionBinding.cs" />
     <Compile Include="XamlCompilationUnit.cs" />

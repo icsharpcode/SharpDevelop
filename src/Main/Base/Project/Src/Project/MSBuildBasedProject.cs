@@ -8,9 +8,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -116,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public event EventHandler MinimumSolutionVersionChanged;
 		
-		protected void SetToolsVersion(string newToolsVersion)
+		protected internal void SetToolsVersion(string newToolsVersion)
 		{
 			PerformUpdateOnProjectFile(
 				delegate {
@@ -151,63 +153,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			};
 			return MSBuildInternals.ResolveAssemblyReferences(this, additionalItems);
 		}
-		
-		#region CreateProjectItem
-		/// <summary>
-		/// Creates a new projectItem for the passed itemType
-		/// </summary>
-		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
-		{
-			switch (item.ItemType.ItemName) {
-				case "Reference":
-					return new ReferenceProjectItem(this, item);
-				case "ProjectReference":
-					return new ProjectReferenceProjectItem(this, item);
-				case "COMReference":
-					return new ComReferenceProjectItem(this, item);
-				case "Import":
-					return new ImportProjectItem(this, item);
-					
-				case "None":
-				case "Compile":
-				case "EmbeddedResource":
-				case "Resource":
-				case "Content":
-				case "Folder":
-					return new FileProjectItem(this, item);
-					
-				case "WebReferenceUrl":
-					return new WebReferenceUrl(this, item);
-					
-				case "WebReferences":
-					return new WebReferencesProjectItem(this, item);
-					
-				case "WCFMetadata":
-					return new ServiceReferencesProjectItem(this, item);
-					
-				case "WCFMetadataStorage":
-					return new ServiceReferenceProjectItem(this, item);
-					
-				default:
-					if (this.AvailableFileItemTypes.Contains(item.ItemType)
-					    || SafeFileExists(this.Directory, item.EvaluatedInclude))
-					{
-						return new FileProjectItem(this, item);
-					} else {
-						return base.CreateProjectItem(item);
-					}
-			}
-		}
-		
-		static bool SafeFileExists(string directory, string fileName)
-		{
-			try {
-				return File.Exists(Path.Combine(directory, fileName));
-			} catch (Exception) {
-				return false;
-			}
-		}
-		#endregion
 		
 		#region Create new project
 		public MSBuildBasedProject(ProjectCreateInformation information)
@@ -1037,6 +982,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				ClearFindFileCache();
 			}
+			
+			// refresh project browser to make sure references and other project items are still valid
+			// after TargetFramework or other properties changed. Fixes SD-1876
+			if (!isLoading)
+				ProjectBrowserPad.RefreshViewAsync();
 		}
 		
 		void IProjectItemListProvider.AddProjectItem(ProjectItem item)
@@ -1218,6 +1168,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} catch (InvalidProjectFileException ex) {
 				LoggingService.Warn(ex);
 				LoggingService.Warn("ErrorCode = " + ex.ErrorCode);
+				Dispose();
 				throw new ProjectLoadException(ex.Message, ex);
 			} finally {
 				isLoading = false;
@@ -1632,28 +1583,59 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region ProjectExtensions
+		public override bool ContainsProjectExtension(string name)
+		{
+			ProjectExtensionsElement projectExtensions = GetExistingProjectExtensionsElement();
+			if (projectExtensions != null) {
+				return projectExtensions[name] != null;
+			}
+			return false;
+		}
+
 		public override void SaveProjectExtensions(string name, XElement element)
 		{
 			lock (SyncRoot) {
-				var existing = projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+				ProjectExtensionsElement existing = GetExistingProjectExtensionsElement();
 				if (existing == null) {
 					existing = projectFile.CreateProjectExtensionsElement();
 					projectFile.AppendChild(existing);
 				}
-				existing[name] = element.ToString();
+				existing[name] = FormatProjectExtension(element);
 			}
 		}
 		
 		public override XElement LoadProjectExtensions(string name)
 		{
 			lock (SyncRoot) {
-				var existing = projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+				ProjectExtensionsElement existing = GetExistingProjectExtensionsElement();
 				if (existing == null) {
 					existing = projectFile.CreateProjectExtensionsElement();
+					return new XElement(name);
 				}
-				return XElement.Parse(existing[name]) ?? new XElement(name);
+				return XElement.Parse(existing[name]);
 			}
 		}
-		#endregion
+		
+		ProjectExtensionsElement GetExistingProjectExtensionsElement()
+		{
+			return projectFile.Children.OfType<ProjectExtensionsElement>().FirstOrDefault();
+		}
+		
+		string FormatProjectExtension(XElement element)
+		{
+			var settings = new XmlWriterSettings {
+				Indent = true,
+				IndentChars = "  ",
+				NewLineChars = "\r\n      ",
+				NewLineHandling = NewLineHandling.Replace,
+				OmitXmlDeclaration = true
+			};
+			var formattedText = new StringBuilder();
+			using (XmlWriter writer = XmlWriter.Create(new StringWriter(formattedText), settings)) {
+				element.WriteTo(writer);
+			}
+			return formattedText.ToString();
+		}
+		#endregion		
 	}
 }

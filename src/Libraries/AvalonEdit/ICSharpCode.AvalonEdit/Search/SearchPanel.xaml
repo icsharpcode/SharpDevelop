@@ -6,7 +6,7 @@
 				<ControlTemplate TargetType="{x:Type search:SearchPanel}">
 					<Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Arrow">
 						<StackPanel Orientation="Horizontal">
-							<TextBox Name="PART_searchTextBox" Focusable="True" Width="100" Height="24" Margin="3,3,3,0">
+							<TextBox Name="PART_searchTextBox" Focusable="True" Width="150" Height="24" Margin="3,3,3,0">
 								<TextBox.Text>
 									<Binding Path="SearchPattern" RelativeSource="{RelativeSource TemplatedParent}" UpdateSourceTrigger="PropertyChanged">
 										<Binding.ValidationRules>

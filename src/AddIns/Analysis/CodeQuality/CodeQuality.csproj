@@ -43,7 +43,11 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -87,6 +91,10 @@
     <Compile Include="Gui\NodeDescriptionViewModel.cs" />
     <Compile Include="Gui\NodeIconService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reporting\BaseReport.cs" />
+    <Compile Include="Reporting\DependencyReport.cs" />
+    <Compile Include="Reporting\OverviewReport.cs" />
+    <Compile Include="Reporting\ReportViewModel.cs" />
     <Compile Include="Utils\DependencyColorizer.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\IColorizer.cs" />
@@ -94,6 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeQuality.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Reporting\DependencyReport.srd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Reporting\Overviewreport.srd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -137,6 +151,11 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
+      <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
+      <Name>ICSharpCode.Reports.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Engine\Dom" />
@@ -144,6 +163,7 @@
     <Folder Include="Engine" />
     <Folder Include="Gui\Commands" />
     <Folder Include="Gui\Controls" />
+    <Folder Include="Reporting" />
     <Folder Include="Utils" />
   </ItemGroup>
   <ItemGroup>

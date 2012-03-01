@@ -371,9 +371,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					| ConversionFlags.ShowReturnType | ConversionFlags.ShowDefinitionKeyWord;
 				StringBuilder b = new StringBuilder();
 				if (rr.IsParameter)
-					b.Append("parameter ");
+					b.Append(StringParser.Parse("${res:MainWindow.Editor.Tooltip.Parameter} "));
 				else
-					b.Append("local variable ");
+					b.Append(StringParser.Parse("${res:MainWindow.Editor.Tooltip.LocalVar} "));
 				b.Append(ambience.Convert(rr.Field));
 				if (currentDebugger != null) {
 					string currentValue = currentDebugger.GetValueAsString(rr.VariableName);
@@ -387,7 +387,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				return b.ToString();
 			} else if (result is NamespaceResolveResult) {
-				return "namespace " + ((NamespaceResolveResult)result).Name;
+				return StringParser.Parse("${res:MainWindow.Editor.Tooltip.Namespace} ") + ((NamespaceResolveResult)result).Name;
 			} else if (result is TypeResolveResult) {
 				IClass c = ((TypeResolveResult)result).ResolvedClass;
 				if (c != null)
@@ -403,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				else if (ambience is VBNetAmbience && m2 != null)
 					return GetMemberText(ambience, m2, expression, out debuggerCanShowValue);
 				else
-					return "Overload of " + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
+					return StringParser.Parse("${res:MainWindow.Editor.Tooltip.UnresolvedOverload} ") + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
 			} else {
 				if (Control.ModifierKeys == Keys.Control) {
 					if (result.ResolvedType != null)

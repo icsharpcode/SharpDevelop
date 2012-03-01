@@ -67,14 +67,6 @@ namespace CSharpBinding
 			            PropertyStorageLocations.ConfigurationSpecific, false);
 		}
 		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase))
-				return ItemType.Compile;
-			else
-				return base.GetDefaultItemType(fileName);
-		}
-		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
@@ -155,5 +147,31 @@ namespace CSharpBinding
 			}
 		}
 		 */
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			CSharpProjectBehavior behavior = new CSharpProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class CSharpProjectBehavior : ProjectBehavior
+	{
+		public CSharpProjectBehavior(CSharpProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
+		}
 	}
 }

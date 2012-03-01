@@ -22,37 +22,12 @@ namespace ICSharpCode.XmlEditor
 			// HACK: disable SharpDevelop's built-in folding
 			codeEditorView = editor.GetService(typeof(AvalonEdit.TextEditor)) as AvalonEdit.AddIn.CodeEditorView;
 			DisableParseInformationFolding();
-
-			UpdateHighlightingIfNotXml();
 				
 			foldingManager = new XmlFoldingManager(editor);
 			foldingManager.UpdateFolds();
 			foldingManager.Start();
 			
 			base.Attach(editor);
-		}
-		
-		void UpdateHighlightingIfNotXml()
-		{
-			if (codeEditorView != null) {
-				if (!IsUsingXmlHighlighting()) {
-					ChangeHighlightingToXml();
-				}
-			}
-		}
-		
-		bool IsUsingXmlHighlighting()
-		{
-			IHighlightingDefinition highlighting = codeEditorView.SyntaxHighlighting;
-			if (highlighting != null) {
-				return highlighting.Name == "XML";
-			}
-			return false;
-		}
-		
-		void ChangeHighlightingToXml()
-		{
-			codeEditorView.SyntaxHighlighting =	HighlightingManager.Instance.GetDefinition("XML");
 		}
 		
 		public override void Detach()

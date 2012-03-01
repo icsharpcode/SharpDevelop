@@ -70,32 +70,61 @@ namespace ICSharpCode.Decompiler.Ast
 			if (method != null) {
 				if (method.IsGetter || method.IsSetter || method.IsAddOn || method.IsRemoveOn)
 					return true;
-				if (settings.AnonymousMethods && method.Name.StartsWith("<", StringComparison.Ordinal) && method.IsCompilerGenerated())
+				if (settings.AnonymousMethods && method.HasGeneratedName() && method.IsCompilerGenerated())
 					return true;
 			}
+
 			TypeDefinition type = member as TypeDefinition;
-			if (type != null && type.DeclaringType != null) {
-				if (settings.AnonymousMethods && type.Name.StartsWith("<>c__DisplayClass", StringComparison.Ordinal) && type.IsCompilerGenerated())
-					return true;
-				if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator(type))
-					return true;
-			} else if (type != null && type.IsCompilerGenerated()) {
-				if (type.Name.StartsWith("<PrivateImplementationDetails>", StringComparison.Ordinal))
-					return true;
-				if (type.IsAnonymousType())
-					return true;
+			if (type != null) {
+				if (type.DeclaringType != null) {
+					if (settings.AnonymousMethods && IsClosureType(type))
+						return true;
+					if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator(type))
+						return true;
+				} else if (type.IsCompilerGenerated()) {
+					if (type.Name.StartsWith("<PrivateImplementationDetails>", StringComparison.Ordinal))
+						return true;
+					if (type.IsAnonymousType())
+						return true;
+				}
 			}
+			
 			FieldDefinition field = member as FieldDefinition;
-			if (field != null && field.IsCompilerGenerated()) {
-				if (settings.AnonymousMethods && field.Name.StartsWith("CS$<>", StringComparison.Ordinal))
-					return true;
-				if (settings.AutomaticProperties && field.Name.StartsWith("<", StringComparison.Ordinal) && field.Name.EndsWith("BackingField", StringComparison.Ordinal))
+			if (field != null) {
+				if (field.IsCompilerGenerated()) {
+					if (settings.AnonymousMethods && IsAnonymousMethodCacheField(field))
+						return true;
+					if (settings.AutomaticProperties && IsAutomaticPropertyBackingField(field))
+						return true;
+					if (settings.SwitchStatementOnString && IsSwitchOnStringCache(field))
+						return true;
+				}
+				// event-fields are not [CompilerGenerated]
+				if (settings.AutomaticEvents && field.DeclaringType.Events.Any(ev => ev.Name == field.Name))
 					return true;
 			}
-			// event-fields are not [CompilerGenerated]
-			if (field != null && settings.AutomaticEvents && field.DeclaringType.Events.Any(ev => ev.Name == field.Name))
-				return true;
+			
 			return false;
+		}
+
+		static bool IsSwitchOnStringCache(FieldDefinition field)
+		{
+			return field.Name.StartsWith("<>f__switch", StringComparison.Ordinal);
+		}
+
+		static bool IsAutomaticPropertyBackingField(FieldDefinition field)
+		{
+			return field.HasGeneratedName() && field.Name.EndsWith("BackingField", StringComparison.Ordinal);
+		}
+
+		static bool IsAnonymousMethodCacheField(FieldDefinition field)
+		{
+			return field.Name.StartsWith("CS$<>", StringComparison.Ordinal) || field.Name.StartsWith("<>f__am", StringComparison.Ordinal);
+		}
+
+		static bool IsClosureType(TypeDefinition type)
+		{
+			return type.HasGeneratedName() && type.IsCompilerGenerated() && (type.Name.Contains("DisplayClass") || type.Name.Contains("AnonStorey"));
 		}
 		
 		/// <summary>
@@ -289,7 +318,7 @@ namespace ICSharpCode.Decompiler.Ast
 				long expectedEnumMemberValue = 0;
 				bool forcePrintingInitializers = IsFlagsEnum(typeDef);
 				foreach (FieldDefinition field in typeDef.Fields) {
-					if (field.IsRuntimeSpecialName) {
+					if (!field.IsStatic) {
 						// the value__ field
 						if (field.FieldType != typeDef.Module.TypeSystem.Int32) {
 							astType.AddChild(ConvertType(field.FieldType), TypeDeclaration.BaseTypeRole);
@@ -920,7 +949,6 @@ namespace ICSharpCode.Decompiler.Ast
 		IndexerDeclaration ConvertPropertyToIndexer(PropertyDeclaration astProp, PropertyDefinition propDef)
 		{
 			var astIndexer = new IndexerDeclaration();
-			astIndexer.Name = astProp.Name;
 			astIndexer.CopyAnnotationsFrom(astProp);
 			astProp.Attributes.MoveTo(astIndexer.Attributes);
 			astIndexer.Modifiers = astProp.Modifiers;
@@ -1489,7 +1517,7 @@ namespace ICSharpCode.Decompiler.Ast
 					foreach (FieldDefinition field in enumDefinition.Fields) {
 						if (field.IsStatic && object.Equals(CSharpPrimitiveCast.Cast(TypeCode.Int64, field.Constant, false), val))
 							return ConvertType(type).Member(field.Name).WithAnnotation(field);
-						else if (!field.IsStatic && field.IsRuntimeSpecialName)
+						else if (!field.IsStatic)
 							enumBaseTypeCode = TypeAnalysis.GetTypeCode(field.FieldType); // use primitive type of the enum
 					}
 					if (IsFlagsEnum(enumDefinition)) {

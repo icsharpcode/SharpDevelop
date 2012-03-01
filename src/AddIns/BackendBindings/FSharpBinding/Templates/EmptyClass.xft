@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<Template author="Robert Pickering" version="1.0">
+<Template author="Robert Pickering" version="1.1">
 	
 	<Config
 		  name        = "${res:Templates.File.EmptyClass.Name}"
-		  icon        = "Boo.File.EmptyFile"
+		  icon        = "F#.File.EmptyClass"
 		  category    = "F#"
 		  defaultname = "file${Number}.fs"
 		  language    = "F#"/>

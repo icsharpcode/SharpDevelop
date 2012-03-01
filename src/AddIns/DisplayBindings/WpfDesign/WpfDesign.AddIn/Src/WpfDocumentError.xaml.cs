@@ -14,9 +14,13 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// </summary>
 	public partial class WpfDocumentError : UserControl
 	{
-		public WpfDocumentError()
+		public WpfDocumentError(Exception e = null)
 		{
 			InitializeComponent();
+			if (e != null)
+				additionalInfo.Text = e.ToString();
+			else
+				additionalInfoBox.Visibility = Visibility.Collapsed;
 		}
 		
 		void ViewXaml(object sender,RoutedEventArgs e)

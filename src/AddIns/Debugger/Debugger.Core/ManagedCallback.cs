@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
@@ -82,7 +83,9 @@ namespace Debugger
 			if (hasQueuedCallbacks)
 				process.TraceMessage("Process has queued callbacks");
 			
-			if (hasQueuedCallbacks) {
+			// only process callbacks if no exception occurred
+			// if no thread is selected CurrentException must be null
+			if (hasQueuedCallbacks && (process.SelectedThread == null || process.SelectedThread.CurrentException == null)) {
 				// Exception has Exception2 queued after it
 				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			} else if (process.Evaluating) {
@@ -501,23 +504,29 @@ namespace Debugger
 			ExitCallback();
 		}
 
-		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType exceptionType, uint dwFlags)
+		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType _exceptionType, uint dwFlags)
 		{
-			EnterCallback(PausedReason.Exception, "Exception2 (type=" + exceptionType.ToString() + ")", pThread);
+			EnterCallback(PausedReason.Exception, "Exception2 (type=" + _exceptionType.ToString() + ")", pThread);
 			
 			// This callback is also called from Exception(...)!!!! (the .NET 1.1 version)
 			// Watch out for the zeros and null!
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
-			if ((ExceptionType)exceptionType == ExceptionType.Unhandled || 
-			    (process.Options != null && process.Options.PauseOnHandledExceptions)) {
+			ExceptionType exceptionType = (ExceptionType)_exceptionType;
+			bool pauseOnHandled = process.Options != null && process.Options.PauseOnHandledExceptions;
+			
+			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
+				// sanity check: we can only handle one exception after another
+				// TODO : create Exception queue if CLR throws multiple exceptions
+				Debug.Assert(process.SelectedThread.CurrentException == null);
 				process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference());
 				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
-				process.SelectedThread.CurrentExceptionType = (ExceptionType)exceptionType;
-				process.SelectedThread.CurrentExceptionIsUnhandled = (ExceptionType)exceptionType == ExceptionType.Unhandled;
-			
+				process.SelectedThread.CurrentExceptionType = exceptionType;
+				process.SelectedThread.CurrentExceptionIsUnhandled = exceptionType == ExceptionType.Unhandled;
+				
 				pauseOnNextExit = true;
 			}
+			
 			ExitCallback();
 		}
 

@@ -4,10 +4,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Debugger;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Services
@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Services
 	internal sealed partial class DebuggeeExceptionForm
 	{
 		Process process;
+		bool isUnhandled;
 		
 		DebuggeeExceptionForm(Process process)
 		{
@@ -38,9 +39,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.btnBreak.Text = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Break}");
 			this.btnStop.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Terminate}");
+			this.btnContinue.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Continue}");
 			
 			this.btnBreak.Image = WinFormsResourceService.GetBitmap("Icons.16x16.Debug.Break");
 			this.btnStop.Image = WinFormsResourceService.GetBitmap("Icons.16x16.StopProcess");
+			this.btnContinue.Image = WinFormsResourceService.GetBitmap("Icons.16x16.Debug.Continue");
 		}
 
 		void ProcessHandler(object sender, EventArgs e)
@@ -54,13 +57,15 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.process.Resumed -= ProcessHandler;
 		}
 		
-		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon)
+		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon, bool isUnhandled)
 		{
 			DebuggeeExceptionForm form = new DebuggeeExceptionForm(process);
 			form.Text = title;
 			form.pictureBox.Image = icon;
 			form.lblExceptionText.Text = message;
 			form.exceptionView.Text = stacktrace;
+			form.isUnhandled = isUnhandled;
+			form.btnContinue.Enabled = !isUnhandled;
 			
 			form.Show(WorkbenchSingleton.MainWin32Window);
 		}
@@ -97,12 +102,21 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void BtnBreakClick(object sender, EventArgs e)
 		{
-			Close();
+			if (this.process.SelectedThread.CurrentExceptionIsUnhandled)
+				Close();
+			else if (((WindowsDebugger)DebuggerService.CurrentDebugger).BreakAndInterceptHandledException())
+				Close();
 		}
 		
 		void BtnStopClick(object sender, EventArgs e)
 		{
 			this.process.Terminate();
+			Close();
+		}
+		
+		void BtnContinueClick(object sender, EventArgs e)
+		{
+			this.process.AsyncContinue();
 			Close();
 		}
 	}

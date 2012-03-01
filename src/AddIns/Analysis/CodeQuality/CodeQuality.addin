@@ -10,6 +10,7 @@
 	
 	<Runtime>
 		<Import assembly = "ICSharpCode.CodeQuality.dll"/>
+		<Import assembly="ICSharpCode.Reports.Core.dll" />
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Analysis">

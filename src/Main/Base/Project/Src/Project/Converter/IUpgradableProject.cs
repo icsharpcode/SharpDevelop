@@ -52,6 +52,10 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		public Version MSBuildVersion { get; private set; }
 		public string DisplayName { get; private set; }
 		
+		public static readonly CompilerVersion MSBuild20 = new CompilerVersion(new Version(2, 0), "MSBuild 2.0");
+		public static readonly CompilerVersion MSBuild35 = new CompilerVersion(new Version(3, 5), "MSBuild 3.5");
+		public static readonly CompilerVersion MSBuild40 = new CompilerVersion(new Version(4, 0), "MSBuild 4.0");
+		
 		public virtual IEnumerable<TargetFramework> GetSupportedTargetFrameworks()
 		{
 			return from fx in TargetFramework.TargetFrameworks

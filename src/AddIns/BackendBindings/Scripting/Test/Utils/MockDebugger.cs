@@ -173,5 +173,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}		
 		
 		public bool BreakAtBeginning { get; set; }
+		
+		public bool IsAttached { get; set; }
 	}
 }

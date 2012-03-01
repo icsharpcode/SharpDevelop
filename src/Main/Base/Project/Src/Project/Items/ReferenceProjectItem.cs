@@ -66,6 +66,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[DefaultValue(false)]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes}",
+		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes.Description}")]
+		public bool EmbedInteropTypes {
+			get {
+				return GetEvaluatedMetadata("EmbedInteropTypes", false);
+			}
+			set {
+				SetEvaluatedMetadata("EmbedInteropTypes", value);
+				ReFilterProperties();
+			}
+		}
+		
 		internal const string CopyLocalMetadataName = "Private";
 		
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy}",
@@ -198,7 +211,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			base.FilterProperties(globalizedProps);
 			PropertyDescriptor copyLocalPD = globalizedProps["CopyLocal"];
 			globalizedProps.Remove(copyLocalPD);
-			if (defaultCopyLocalValue != null) {
+			if (defaultCopyLocalValue != null && !EmbedInteropTypes) {
 				globalizedProps.Add(new ReplaceDefaultValueDescriptor(copyLocalPD, defaultCopyLocalValue.Value));
 			} else {
 				globalizedProps.Add(new DummyValueDescriptor(copyLocalPD));

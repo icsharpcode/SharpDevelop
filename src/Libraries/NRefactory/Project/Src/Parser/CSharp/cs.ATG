@@ -675,6 +675,7 @@ FixedParameter<out ParameterDeclarationExpression p>
 		"ref"    (. mod = ParameterModifiers.Ref; .)
 		| "out"  (. mod = ParameterModifiers.Out; .)
 		| "params" (. mod = ParameterModifiers.Params; .)
+		| "this"  (. mod = ParameterModifiers.This; .)
 	]
 	Type<out type>
 	Identifier (. p = new ParameterDeclarationExpression(type, t.val, mod); .)
@@ -759,7 +760,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	BlockStatement stmt = null;
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
 	TypeReference explicitInterface = null;
-	bool isExtensionMethod = false;
 .)
 =
 	/*--- constant declaration: */         (. m.Check(Modifiers.Constants); .)
@@ -795,7 +795,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	[ TypeParameterList<templates> ]
 	
 	"("
-	[ "this" (. isExtensionMethod = true; /* C# 3.0 */ .) ]
 	[ FormalParameterList<p> ] ")"
 	(.	MethodDeclaration methodDeclaration = new MethodDeclaration {
 			Name = qualident,
@@ -806,7 +805,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			StartLocation = m.GetDeclarationLocation(startPos),
 			EndLocation = t.EndLocation,
 			Templates = templates,
-			IsExtensionMethod = isExtensionMethod
+			IsExtensionMethod = p.Count > 0 && p[0].ParamModifier == ParameterModifiers.This
 		};
 		if (explicitInterface != null)
 			SafeAdd(methodDeclaration, methodDeclaration.InterfaceImplementations, new InterfaceImplementation(explicitInterface, qualident));
@@ -1017,7 +1016,6 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				/* .NET 2.0 */
 				[ TypeParameterList<templates> ]
 				"(" 
-				[ "this" (. isExtensionMethod = true; .) ]
 				[ FormalParameterList<p> ] ")"
 				(.
 					MethodDeclaration methodDeclaration = new MethodDeclaration {
@@ -1031,7 +1029,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 						methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
 					methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 					methodDeclaration.EndLocation   = t.EndLocation;
-					methodDeclaration.IsExtensionMethod = isExtensionMethod;
+					methodDeclaration.IsExtensionMethod = p.Count > 0 && p[0].ParamModifier == ParameterModifiers.This;
 					methodDeclaration.Templates = templates;
 					AddChild(methodDeclaration);
 				                                       .)

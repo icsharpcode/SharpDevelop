@@ -123,6 +123,7 @@ namespace ICSharpCode.CodeQuality.Gui
 			base.OnMouseMove(e);
 			
 			var point = e.GetPosition(this);
+			Console.WriteLine ("posiion{0}",point);
 			if (point.X < matrixWidth * CellWidth
 			    && point.Y < matrixHeight * CellHeight)
 				currentCell = new Coords(

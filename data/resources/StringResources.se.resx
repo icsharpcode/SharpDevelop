@@ -174,6 +174,9 @@
   <data name="AddInManager.CannotDisableAddInManager" xml:space="preserve">
     <value>Du kan inte inaktivera AddInManager eftersom du behöver den för att kunna återaktivera AddIns!</value>
   </data>
+  <data name="AddInManager.CannotInstallIntoApplicationDirectory" xml:space="preserve">
+    <value>Det går inte att installera tillägg i foldern ${ProductName}, dessa kommer automatiskt att hamna under de förinstallerade tilläggen.</value>
+  </data>
   <data name="AddInManager.DescriptionCancelDeinstallation" xml:space="preserve">
     <value>Avbryter avinstallationen av valda tillägg.</value>
   </data>
@@ -226,11 +229,83 @@ Ladda hem ett tillägg från Internet och klicka sedan på 'Installera Tillägg'
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Okänt filformat:</value>
   </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
+    <value>Den här filen innehåller inkonsekvent information (newlines).</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Header" xml:space="preserve">
+    <value>Inkonsekventa radbrytningar</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Normalize" xml:space="preserve">
+    <value>Normalisera</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Fel:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Sök nästa</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Sök föregående</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Använd regular expressions</value>
+  </data>
+  <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
+    <value>Visa klassdiagram</value>
+  </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit måste installeras för att denna åtgärd skall kunna utföras.</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Innehåll</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Visa innehåll</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Sök</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Hjälp bibliotek</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Hjälpläge</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Kunde inte starta Hjälp bibliotekshanteraren på grund av att katalog inte är installerad eller vald. Vänligen kontrollera dina inställningar (se Verktyg&gt;Inställningar&gt;Microsoft Help Viewer)</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Hanteraren för Hjälp biblioteket hittades inte. Vänligen kontrollera om den har installerats på rätt sätt.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Sök</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Sök efter:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Sök</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Visa hjälp</value>
+  </data>
+  <data name="AddIns.HexEditor.Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadecimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Oktal</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Ändra storlek till aktuell bredd</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
-    <value>Lägg till bland Hjälpfavoriter</value>
   </data>
   <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
     <value>Bakåt</value>
@@ -238,171 +313,167 @@ Ladda hem ett tillägg från Internet och klicka sedan på 'Installera Tillägg'
   <data name="AddIns.HtmlHelp2.Contents" xml:space="preserve">
     <value>Innehåll</value>
   </data>
-  <data name="AddIns.HtmlHelp2.DefaultEmptyFilter" xml:space="preserve">
-    <value>(inget filter)</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Delete" xml:space="preserve">
-    <value>Ta bort</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.DynamicHelp" xml:space="preserve">
-    <value>Dynamisk hjälp</value>
-  </data>
   <data name="AddIns.HtmlHelp2.EnterURL" xml:space="preserve">
     <value>Ange URL</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Environment" xml:space="preserve">
-    <value>Hjälp 2.0 Miljö</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Favorites" xml:space="preserve">
-    <value>Hjälp favoriter</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.FilteredBy" xml:space="preserve">
-    <value>Filtrerad av:</value>
   </data>
   <data name="AddIns.HtmlHelp2.Forward" xml:space="preserve">
     <value>Framåt</value>
   </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchCaption" xml:space="preserve">
-    <value>Söker</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchInProgress" xml:space="preserve">
-    <value>Söker efter "${0}" ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSystemNotAvailable" xml:space="preserve">
-    <value>Hjälpsystemet är inte tillgängligt.
-Du måste installera .NET Framework SDK för att komma åt hjälpsystemet.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateCaption" xml:space="preserve">
-    <value>Hjälpupdatering pågår</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateInProgress" xml:space="preserve">
-    <value>Hjälpen uppdaterar för att kunna reflektera dina senaste ändringar. Detta kan ta flera minuter.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HighlightMatches" xml:space="preserve">
-    <value>Markera träffar</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Homepage" xml:space="preserve">
     <value>Hemsida</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Index" xml:space="preserve">
-    <value>Index</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.IndexResults" xml:space="preserve">
-    <value>Index resultat</value>
   </data>
   <data name="AddIns.HtmlHelp2.Location" xml:space="preserve">
     <value>Plats</value>
   </data>
-  <data name="AddIns.HtmlHelp2.LookFor" xml:space="preserve">
-    <value>Sök efter:</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
-    <value>Sök efter liknande ord</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
-    <value>ämnen</value>
-  </data>
   <data name="AddIns.HtmlHelp2.NewWindow" xml:space="preserve">
     <value>Nytt fönster</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NextTopic" xml:space="preserve">
-    <value>Nästa ämne</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NoDataIsAvailableForDynamicHelp" xml:space="preserve">
-    <value>Ingen data finns tillgänglig för nuvarande markering.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.AdditionOptions" xml:space="preserve">
-    <value>Ytterligare inställningar</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Groupbox" xml:space="preserve">
-    <value>Hjälpkollection</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Label" xml:space="preserve">
-    <value>Var god välj den hjälpkollection som du önskar använda i SharpDevelop.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Reregister" xml:space="preserve">
-    <value>Omregistrera SharpDevelop hjälpen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PreviousTopic" xml:space="preserve">
-    <value>Föregående ämne</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintSubtopics" xml:space="preserve">
-    <value>Skriv ut underämne...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopic" xml:space="preserve">
-    <value>Skriv ut ämnet...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopicAndSubtopics" xml:space="preserve">
-    <value>Skriv ut ämne och underämne..</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rank" xml:space="preserve">
-    <value>Rank</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Refresh" xml:space="preserve">
-    <value>Uppdatera</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.RemoveFavorite" xml:space="preserve">
-    <value>Är du säker på att du vill ta bort "${0}" från favoriter?</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rename" xml:space="preserve">
-    <value>Byt namn</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfIndexResults" xml:space="preserve">
-    <value>Index resultat för ${0} - hittade ${1} ${2}</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfSearchResults" xml:space="preserve">
-    <value>Sökresultat för ${0} - hittade ${1} ${2}</value>
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Sök</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
-    <value>Sök endast i tidigare funna ämnen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchInTitlesOnly" xml:space="preserve">
-    <value>Sök endast bland titlar</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchOnline" xml:space="preserve">
-    <value>Sök online</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchResults" xml:space="preserve">
-    <value>Sök resultat</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SingleTopic" xml:space="preserve">
-    <value>ämne</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Stop" xml:space="preserve">
     <value>Stanna</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SyncTOC" xml:space="preserve">
-    <value>Synkronisera TOC</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.TextZoom" xml:space="preserve">
-    <value>Text zoom</value>
   </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Titel</value>
   </data>
-  <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
-    <value>Använd nuvarande projektspråk</value>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Resultat</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Profilering</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Kopiera markerat</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Gå till definition</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Visa funktioner</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>CPU cykler:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Utför fråga</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Sök:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Nedlagd tid</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Nedlagd tid/anrop</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Tid:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>Topp 20</value>
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
-    <value>Sök...</value>
+    <value>Söker...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
+    <value>Extrahera funktion</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor" xml:space="preserve">
+    <value>Lägg till konstruktor</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Variabel</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Lägg till interface {0}</value>
+  </data>
+  <data name="AddIns.Subversion.CannotCopyError" xml:space="preserve">
+    <value>Filen / katalogen kunde inte kopieras då den är i subversion status   {0}'.</value>
+  </data>
+  <data name="AddIns.Subversion.Checkout" xml:space="preserve">
+    <value>Checka ut</value>
   </data>
   <data name="AddIns.Subversion.CleanUp" xml:space="preserve">
     <value>Städa upp</value>
   </data>
+  <data name="AddIns.Subversion.Commit" xml:space="preserve">
+    <value>Commit</value>
+  </data>
+  <data name="AddIns.Subversion.CreatePatch" xml:space="preserve">
+    <value>Skapa patchfil</value>
+  </data>
+  <data name="AddIns.Subversion.DeleteDirectory" xml:space="preserve">
+    <value>Ta bort katalog</value>
+  </data>
+  <data name="AddIns.Subversion.Diff" xml:space="preserve">
+    <value>Diff</value>
+  </data>
+  <data name="AddIns.Subversion.EditConflicts" xml:space="preserve">
+    <value>Redigera konflikter</value>
+  </data>
+  <data name="AddIns.Subversion.ErrorDelete" xml:space="preserve">
+    <value>Ett fel uppstod när ${File} skulle tas bort</value>
+  </data>
   <data name="AddIns.Subversion.Export" xml:space="preserve">
     <value>Exportera</value>
   </data>
+  <data name="AddIns.Subversion.ForceDelete" xml:space="preserve">
+    <value>Tvinga borttagning</value>
+  </data>
   <data name="AddIns.Subversion.History" xml:space="preserve">
     <value>Historik</value>
+  </data>
+  <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
+    <value>'{0}' togs bort från ignorera listan.</value>
+  </data>
+  <data name="AddIns.Subversion.Lock" xml:space="preserve">
+    <value>Erhåll lås</value>
+  </data>
+  <data name="AddIns.Subversion.Merge" xml:space="preserve">
+    <value>Slå ihop</value>
+  </data>
+  <data name="AddIns.Subversion.Options.RenameInsideSubversion" xml:space="preserve">
+    <value>Ändra namn på filer i Subversion (behåller historik)</value>
+  </data>
+  <data name="AddIns.Subversion.Options.Title" xml:space="preserve">
+    <value>Subversion inställningar</value>
+  </data>
+  <data name="AddIns.Subversion.RemoveFromIgnoreList" xml:space="preserve">
+    <value>Ta bort från ignorera listan</value>
+  </data>
+  <data name="AddIns.Subversion.RemoveMovedFile" xml:space="preserve">
+    <value>Filen har precis flyttats hit, vill du verkligen ta bort den?</value>
+  </data>
+  <data name="AddIns.Subversion.RevertLocalModifications" xml:space="preserve">
+    <value>Filen har ändrats lokalt. Vill du verkligen ta bort den?</value>
+  </data>
+  <data name="AddIns.Subversion.RevisionGraph" xml:space="preserve">
+    <value>Revisionsgraf</value>
+  </data>
+  <data name="AddIns.Subversion.SaveFiles" xml:space="preserve">
+    <value>Spara filer</value>
   </data>
   <data name="AddIns.Subversion.ShowLog" xml:space="preserve">
     <value>Visa logg</value>
   </data>
   <data name="AddIns.Subversion.Update" xml:space="preserve">
     <value>Uppdatera</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.Title" xml:space="preserve">
+    <value>XAML</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Fortsätt</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Spara som UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Projektet är konfigurerat som dll och inga startcommandon är specificerat.
@@ -435,8 +506,14 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="ComponentInspector.ActionMenu.PasteObjectMenuItem" xml:space="preserve">
     <value>K&amp;listra in Objekt</value>
   </data>
+  <data name="ComponentInspector.ActionMenu.RemoveFromFavouritesMenuItem" xml:space="preserve">
+    <value>Ta bort från favoriter</value>
+  </data>
   <data name="ComponentInspector.AttachDialog.ProcessLabel" xml:space="preserve">
     <value>Process</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.CannotFindType" xml:space="preserve">
+    <value>Kan inte hitta typen</value>
   </data>
   <data name="ComponentInspector.ComClassRootTreeNode.Text" xml:space="preserve">
     <value>Klasser</value>
@@ -446,6 +523,9 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   </data>
   <data name="ComponentInspector.ComTypeLibraryRootTreeNode.Text" xml:space="preserve">
     <value>Typbibliotek</value>
+  </data>
+  <data name="ComponentInspector.ConstructorDialog.Title" xml:space="preserve">
+    <value>Välj konstruktor</value>
   </data>
   <data name="ComponentInspector.ControlsTab" xml:space="preserve">
     <value>Kontroller</value>
@@ -468,14 +548,35 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="ComponentInspector.ErrorDialog.MoreInformationButton" xml:space="preserve">
     <value>Mer information</value>
   </data>
+  <data name="ComponentInspector.ErrorDialog.ReportAsBugButton" xml:space="preserve">
+    <value>Rapportera som bugg</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.ClearAllMenuItem" xml:space="preserve">
+    <value>Rensa &amp;Alla</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.ClearMenuItem" xml:space="preserve">
+    <value>Rensa</value>
+  </data>
   <data name="ComponentInspector.EventLogList.EventColumnHeader" xml:space="preserve">
     <value>Händelse</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.EventsBeingLoggedTab" xml:space="preserve">
+    <value>Händelser som loggas</value>
   </data>
   <data name="ComponentInspector.EventLogList.EventsTab" xml:space="preserve">
     <value>Händelselogg</value>
   </data>
+  <data name="ComponentInspector.EventLogList.IncrementColumnHeader" xml:space="preserve">
+    <value>Öka</value>
+  </data>
   <data name="ComponentInspector.EventLogList.ParametersColumnHeader" xml:space="preserve">
     <value>Parametrar</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.StopAllLoggingMenuItem" xml:space="preserve">
+    <value>Avbryt &amp;all loggning</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.StopLoggingMenuItem" xml:space="preserve">
+    <value>Avbryt loggning</value>
   </data>
   <data name="ComponentInspector.EventLogList.TimeColumnHeader" xml:space="preserve">
     <value>Tid</value>
@@ -492,8 +593,17 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="ComponentInspector.FindDialog.FindIn" xml:space="preserve">
     <value>Sök i</value>
   </data>
+  <data name="ComponentInspector.FindDialog.FindWhatLabel" xml:space="preserve">
+    <value>Sök efter:</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.FullNameLabel" xml:space="preserve">
+    <value>Fullständigt namn</value>
+  </data>
   <data name="ComponentInspector.FindDialog.LevelsLabel" xml:space="preserve">
     <value>Nivåer</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.NoItemsFoundMessage" xml:space="preserve">
+    <value>Inga enheter hittades</value>
   </data>
   <data name="ComponentInspector.FindDialog.ObjectTreeNameCheckBox" xml:space="preserve">
     <value>Namn</value>
@@ -503,6 +613,9 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   </data>
   <data name="ComponentInspector.FindDialog.ObjectTreeValueCheckBox" xml:space="preserve">
     <value>Värde</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.ShowItemMenuItem" xml:space="preserve">
+    <value>Visa enhet</value>
   </data>
   <data name="ComponentInspector.FindDialog.StartingWithLabel" xml:space="preserve">
     <value>Startar med:</value>
@@ -522,6 +635,9 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="ComponentInspector.GeneralOptionsPanel.PanelsGroupBox" xml:space="preserve">
     <value>Paneler</value>
   </data>
+  <data name="ComponentInspector.GettingStartedDialog.ShowThisDialogCheckBox" xml:space="preserve">
+    <value>Visa denna dialog</value>
+  </data>
   <data name="ComponentInspector.ImagePanel.DesignModeLabel" xml:space="preserve">
     <value>Designläge</value>
   </data>
@@ -530,6 +646,12 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   </data>
   <data name="ComponentInspector.InspectorMenu.ObjectTreeOptionsPanel.Title" xml:space="preserve">
     <value>Objektträd</value>
+  </data>
+  <data name="ComponentInspector.InspectorMenu.TypeHandlerOptionsPanel.Title" xml:space="preserve">
+    <value>Typhanterare</value>
+  </data>
+  <data name="ComponentInspector.MainMenu.InspectorMenu" xml:space="preserve">
+    <value>&amp;Inspektor</value>
   </data>
   <data name="ComponentInspector.ObjectBrowser.ObjectsTreePanel" xml:space="preserve">
     <value>Objekt</value>
@@ -543,6 +665,15 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="ComponentInspector.ObjectBrowser.ValueColumnHeader" xml:space="preserve">
     <value>Värde</value>
   </data>
+  <data name="ComponentInspector.ObjectBrowserForm.ActiveXFilesFilterName" xml:space="preserve">
+    <value>ActiveX Filer</value>
+  </data>
+  <data name="ComponentInspector.ObjectBrowserForm.AssemblyFilesFilterName" xml:space="preserve">
+    <value>Assembly filer</value>
+  </data>
+  <data name="ComponentInspector.ObjectBrowserForm.OpenFileDialogTitle" xml:space="preserve">
+    <value>Välj fil att öppna</value>
+  </data>
   <data name="ComponentInspector.ObjectBrowserForm.OptionsMenuItem" xml:space="preserve">
     <value>&amp;Alternativ</value>
   </data>
@@ -554,6 +685,9 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   </data>
   <data name="ComponentInspector.ObjectTreeOptionsPanel.CategoriesGroupBox" xml:space="preserve">
     <value>Kategorier</value>
+  </data>
+  <data name="ComponentInspector.ObjectTreeOptionsPanel.DisplayIntegersInHexCheckBox" xml:space="preserve">
+    <value>Heltal i hexadecimal</value>
   </data>
   <data name="ComponentInspector.ObjectTreeOptionsPanel.ShowEventsCheckBox" xml:space="preserve">
     <value>Händelser</value>
@@ -603,9 +737,6 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Infoga anonyma metoder utan parametrar.</value>
   </data>
-  <data name="Dialog.About.ChangeLogTabName" xml:space="preserve">
-    <value>ÄndraLogg</value>
-  </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>Om SharpDevelop</value>
   </data>
@@ -618,9 +749,6 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="Dialog.About.License" xml:space="preserve">
     <value>Släppt under termerna av ${License}.</value>
   </data>
-  <data name="Dialog.About.ThrowExceptionButton" xml:space="preserve">
-    <value>Släng in Undan&amp;tag</value>
-  </data>
   <data name="Dialog.About.VersionInfoTabName" xml:space="preserve">
     <value>Versionsinformation</value>
   </data>
@@ -630,29 +758,14 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
     <value>Version</value>
   </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadFileDescription" xml:space="preserve">
-    <value>Ladda fil ${File}</value>
-  </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadProjectDescription" xml:space="preserve">
-    <value>Ladda projekt ${Project}</value>
-  </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>Senaste filer</value>
   </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentProjectsString" xml:space="preserve">
     <value>Senaste projekt</value>
   </data>
-  <data name="Dialog.DirtyFiles.DialogName" xml:space="preserve">
-    <value>Spara korrupta filer?</value>
-  </data>
-  <data name="Dialog.DirtyFiles.DirtyFiles" xml:space="preserve">
-    <value>Skräpfiler</value>
-  </data>
   <data name="Dialog.DirtyFiles.DiscardAllButton" xml:space="preserve">
     <value>&amp;Släng alla</value>
-  </data>
-  <data name="Dialog.DirtyFiles.Files" xml:space="preserve">
-    <value>Filer</value>
   </data>
   <data name="Dialog.DirtyFiles.SaveAllButton" xml:space="preserve">
     <value>Spara &amp;alla</value>
@@ -666,6 +779,9 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   <data name="Dialog.EditAvailableConfigurationsDialog.AddProjectPlatform" xml:space="preserve">
     <value>Lägg till projektplattform</value>
   </data>
+  <data name="Dialog.EditAvailableConfigurationsDialog.ConfirmRemoveConfigurationOrPlatform" xml:space="preserve">
+    <value>Vill du verkligen ta bort '{0}'?</value>
+  </data>
   <data name="Dialog.EditAvailableConfigurationsDialog.EmptyItem" xml:space="preserve">
     <value>&lt;Tom&gt;</value>
   </data>
@@ -674,15 +790,6 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
   </data>
   <data name="Dialog.EditAvailableConfigurationsDialog.InvalidName" xml:space="preserve">
     <value>Namnet var ogiltigt.</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.DialogName" xml:space="preserve">
-    <value>Exportera som HTML</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.FolderLabel" xml:space="preserve">
-    <value>Mapp:</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.SelectTargetDirInfo" xml:space="preserve">
-    <value>Välj målmapp.</value>
   </data>
   <data name="Dialog.Goto.DialogName" xml:space="preserve">
     <value>Gå till</value>
@@ -695,20 +802,11 @@ Du kan specificera ett startcommando i projektinställningarna.</value>
 Du kan ange radnummer, klassnamn och filnamn.
 Exempel: "120", "MainClass", "Main.cs, 120".</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Add" xml:space="preserve">
-    <value>Lägg till</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Change" xml:space="preserve">
-    <value>Ändra...</value>
-  </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
     <value>Bakgrundsfärg</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Bold" xml:space="preserve">
     <value>Fet</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Caption" xml:space="preserve">
-    <value>Här kan du ändra den valda färgen.</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Foreground" xml:space="preserve">
     <value>Förgrundsfärg</value>
@@ -716,315 +814,11 @@ Exempel: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Kursiv</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.NoColor" xml:space="preserve">
-    <value>Ingen färg vald (använder programstandarden)</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.SystemColor" xml:space="preserve">
-    <value>System färg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Title" xml:space="preserve">
-    <value>Ändra färgen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.UserDefined" xml:space="preserve">
-    <value>Användarinställd färg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Explanation" xml:space="preserve">
-    <value>Den här inställningen låter dig ändra färgsättningen utav siffrorna i din fil.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Sample" xml:space="preserve">
-    <value>Exempel på nummerfärg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Edit" xml:space="preserve">
-    <value>Ändra...</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EditDlg.Title" xml:space="preserve">
-    <value>Ändra schema</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnterText" xml:space="preserve">
-    <value>Mata in text</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.BookMarks" xml:space="preserve">
-    <value>Bokmärken</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretMarker" xml:space="preserve">
-    <value>Insättsmarkör</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Cursor" xml:space="preserve">
-    <value>Pekare</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.EOLMarkers" xml:space="preserve">
-    <value>EOL-markörer</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldLine" xml:space="preserve">
-    <value>Utvikningsrad</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldMarker" xml:space="preserve">
-    <value>Utvikningsmarkör</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.InvalidLines" xml:space="preserve">
-    <value>Ogiltiga linjer</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.LineNumbers" xml:space="preserve">
-    <value>Rad numreringen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Selection" xml:space="preserve">
-    <value>Urval</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SpaceMarkers" xml:space="preserve">
-    <value>Rymdmarkörer</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.TabMarkers" xml:space="preserve">
-    <value>Tabbmarkörer</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.VRuler" xml:space="preserve">
-    <value>Vertikal linjal</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Colors" xml:space="preserve">
-    <value>Omgivningsfärger:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Explanation" xml:space="preserve">
-    <value>Här kan du definiera dina markeringsfärger för olika allmänna omgivningsföremål i texteditorn.
-
-Välj något ur listan och klicka på "Ändra" för att ändra.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Explanation" xml:space="preserve">
-    <value>Förklaring:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ColorSample" xml:space="preserve">
-    <value>Exempel på nuvarande markeringsfärg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.EnterName" xml:space="preserve">
-    <value>Skriv in namnet på det nya nyckelordet:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Explanation" xml:space="preserve">
-    <value>Alla nyckelord i listan är färgade med den valda markeringsfärgen.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Keywords" xml:space="preserve">
-    <value>Nyckelorden i den här listan:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ListName" xml:space="preserve">
-    <value>Listnamn:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.NameEmpty" xml:space="preserve">
-    <value>Listan med nyckelord måste ha ett namn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.EnterName" xml:space="preserve">
-    <value>Skriv in namnet på den nya nyckelordslistan:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Explanation" xml:space="preserve">
-    <value>Varje nyckelordslista kan använda en individuell markeringsfärg.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Lists" xml:space="preserve">
-    <value>Nyckelordslistor:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationNext" xml:space="preserve">
-    <value>Skriv in tangentsträngen som får nästa ord att färgas med den valda färgen.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationPrev" xml:space="preserve">
-    <value>Skriv in tangentsträngen som får det förra ordet att färgas med den valda färgen.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.KeyString" xml:space="preserve">
-    <value>Tangentsträng att känna igen:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.MarkMarker" xml:space="preserve">
-    <value>Använd färg för tangentsträngen också</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.NameEmpty" xml:space="preserve">
-    <value>Tangentsträngen får inte vara tom.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.SampleColor" xml:space="preserve">
-    <value>Exempel på markeringsfärg för följande/efterföljande ord:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.EnterName" xml:space="preserve">
-    <value>Skriv in ny tangentsträng för markering:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Explanation" xml:space="preserve">
-    <value>Här kan du definiera strängar som inte själva är färgade, men däremot orden strax före och efter dem.
-
-Det här är exempelvis användbart vid färgläggning av metoder genom att använda ( som en tangentsträng.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.KeyString" xml:space="preserve">
-    <value>Tangentsträng</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Next" xml:space="preserve">
-    <value>Nästa kännetecknande markeringstangentsträng:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Previous" xml:space="preserve">
-    <value>Föregående kännetecknande markeringstangetsträngar:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterName" xml:space="preserve">
-    <value>Ange namn på ny egenskap:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterValue" xml:space="preserve">
-    <value>Ange värdet på egenskapen {0}:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Explanation" xml:space="preserve">
-    <value>Här kan du definiera egenskaper för schemat.
-
-Egenskaper är namnvärderspar som kontrollerar editorns uppförande. För närvarande är den enda stödda egenskapen "LineComment", som talar om för editorn vilken sträng som ska sättas in i början av raden när du talar om för den att kommentera en rad.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Name" xml:space="preserve">
-    <value>Namn</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Properties" xml:space="preserve">
-    <value>Egenskaper:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Värde</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Remove" xml:space="preserve">
-    <value>Ta bort</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Delimiters" xml:space="preserve">
-    <value>Avbegränsare:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Explanation" xml:space="preserve">
-    <value>Det här är de allmänna egenskaperna för regeluppsättningen.
-
-Avbegränsningssträngarna bestämmer vilka tecken som ska användas för orduppdelning.
-Om du skriver in någonting i "Refererad uppsättning" så betyder det att setet blir rotregelsetet som importerats från ett annat schema, vars namn är Referenssträngen. De andra valmöjligheterna för den här regeln används inte. Det här är exempelvis användbart för HTML och ASP, som båda använder JavaScript som en importör.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.IgnoreCase" xml:space="preserve">
-    <value>Ignorera stora/små bokstäver i regeluppsättningen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Name" xml:space="preserve">
-    <value>Namn på regeluppsättningen:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NameEmpty" xml:space="preserve">
-    <value>Namnet på regeluppsättningen får inte vara tomt. Det är bara rotregelsetet som inte har något namn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NoEscapeSeq" xml:space="preserve">
-    <value>Känn inte igen flyktsekvenser i regeluppsättningen</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Reference" xml:space="preserve">
-    <value>Refererad uppsättning:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.SpaceAndTab" xml:space="preserve">
-    <value>Mellanslag och Tab läggs till automatiskt.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.EnterName" xml:space="preserve">
-    <value>Skriv in namn på den nya regeluppsättningen:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.Explanation" xml:space="preserve">
-    <value>Här kan du definiera regeluppsättningarna för markeringsschemat.
-
-Regeluppsättningar är hjärtat i SharpDevelops markeringsmotor. Varje regeluppsättning är en kollection av färgade nyckelordslistor och omfång, som är teckensekvenser mellan givna begynnelse- och slutsymboler, t ex citat.
-Rotregeluppsättningen används för huvudfilens kropp, de andra (namngivna) kan användas inuti spannen.
-Det kan alltså finnas flertalet regeluppsättningar som används för olika textregioner, såsom XML-kommentarer eller -strängar.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.NamedRuleSets" xml:space="preserve">
-    <value>Namngivna regeluppsättningar:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Textexempel</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Explanation" xml:space="preserve">
-    <value>Varje markeringsschema måste ha ett unikt namn som identifierar det till programmet.
-Ett användardefinierat schema som har samma namn som ett inbyggt ersätter helt och hållet det inbyggda.
-
-"Utöknings"-fälten är en lista över filtillägg separerade med semikolon som det här schemat tillhör, exempelvis ".htm;.html;.asp". Den här strängar får inte innehålla mellanslag.
-När ett tillägg används av såväl ett inbyggt som en användardefinierat schema har det användardefinierade schemat företräde.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Extensions" xml:space="preserve">
-    <value>Tillägg:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Name" xml:space="preserve">
-    <value>Schemats namn:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.NameEmpty" xml:space="preserve">
-    <value>Schemat måste ha ett namn.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Begin" xml:space="preserve">
-    <value>Början av omfång:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginCol" xml:space="preserve">
-    <value>Början</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginEmpty" xml:space="preserve">
-    <value>Begynnelsesträngen får inte vara tom.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Colors" xml:space="preserve">
-    <value>Färger:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.ContCol" xml:space="preserve">
-    <value>Innehåll</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.End" xml:space="preserve">
-    <value>Slut på omfång:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndCol" xml:space="preserve">
-    <value>Slutet</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Explanation" xml:space="preserve">
-    <value>I "början" och "slutet" har @ en speciell betydelse: @!string@ matchar inte när det söker efter början/slutet, och @@ matchar ett ensamt @.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Name" xml:space="preserve">
-    <value>Namn på omfång:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NameEmpty" xml:space="preserve">
-    <value>Omfångets namn får inte vara tomt.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NoEscSeq" xml:space="preserve">
-    <value>Känneteckna inte flyktsekvenser</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Ruleset" xml:space="preserve">
-    <value>Regeluppsättning att användas:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.StopEol" xml:space="preserve">
-    <value>Omfånget slutar vid radens slut om ingen slutsträng kan hittas</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Use" xml:space="preserve">
-    <value>Använd</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.EnterName" xml:space="preserve">
-    <value>Skriv in nytt namn på omfånget:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
-    <value>Omfång är sekvenser av tecken som definieras av en inledande sträng, och om man vill även av en avslutande sträng (annars kan de sluta vid radslutet), som har en separat standardmarkeringsfärg.
-
-Dessutom kan ett namn på ett spann kopplas till en namngiven regeluppsättning som möjliggör komplex formatering inuti (till exempel HTML-taggar eller XML-kommentarer).</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
-    <value>Definierade omfång:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.DigitsColor" xml:space="preserve">
-    <value>Siffrornas färg</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.EnvironmentColors" xml:space="preserve">
-    <value>Omgivningsfärger</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordList" xml:space="preserve">
-    <value>Nyckelordslista</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordLists" xml:space="preserve">
-    <value>Nyckelordslistor</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkNextWord" xml:space="preserve">
-    <value>Markera nästa ord</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkPreviousWord" xml:space="preserve">
-    <value>Markera föregående ord</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Properties" xml:space="preserve">
-    <value>Egenskaper</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RootRuleSet" xml:space="preserve">
-    <value>Rotregeluppsättning</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSet" xml:space="preserve">
-    <value>Regeluppsättning</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSets" xml:space="preserve">
-    <value>Regeluppsättningar</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Span" xml:space="preserve">
-    <value>Omfång</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Spans" xml:space="preserve">
-    <value>Omfång</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ValidationError" xml:space="preserve">
-    <value>Var god rätta till inställningarna som du har gjort:</value>
   </data>
   <data name="Dialog.NewFile.AddToProjectQuestion" xml:space="preserve">
     <value>För att kunna använda den nya filen i det aktiva projektet så måste du lägga till den i projektet.
@@ -1060,26 +854,14 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
     <value>&amp;Mallar:</value>
   </data>
-  <data name="Dialog.NewProject.autoCreateSubDirCheckBox" xml:space="preserve">
-    <value>Skapa projektets undermappar &amp;automatiskt</value>
-  </data>
-  <data name="Dialog.NewProject.checkBox1Text" xml:space="preserve">
-    <value>Skapa &amp;mapp för Källor</value>
-  </data>
   <data name="Dialog.NewProject.DialogName" xml:space="preserve">
     <value>Nytt Projekt</value>
-  </data>
-  <data name="Dialog.NewProject.EmptyProjectFieldWarning" xml:space="preserve">
-    <value>Projektet eller källan TextBox är tom, kan inte skapa projekt.</value>
   </data>
   <data name="Dialog.NewProject.LocationLabelText" xml:space="preserve">
     <value>&amp;Sökväg:</value>
   </data>
   <data name="Dialog.NewProject.NameLabelText" xml:space="preserve">
     <value>&amp;Namn:</value>
-  </data>
-  <data name="Dialog.NewProject.NewSolutionLabelText" xml:space="preserve">
-    <value>Nytt &amp;Projektnamn:</value>
   </data>
   <data name="Dialog.NewProject.ProjectAtDescription" xml:space="preserve">
     <value>Projektet kommer att skapas i</value>
@@ -1189,6 +971,9 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Beskrivning</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>Redigera tillägg</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Beskrivning</value>
   </data>
@@ -1213,15 +998,6 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplatesText" xml:space="preserve">
     <value>Kodmallar</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
-    <value>Bygg</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
-    <value>Bygg</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
-    <value>Samlings konfiguration</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader" xml:space="preserve">
     <value>Konfiguration</value>
   </data>
@@ -1231,50 +1007,8 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationEditor.EditItem" xml:space="preserve">
     <value>&lt;Redigera&gt;</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationManagerButton" xml:space="preserve">
-    <value>Konfigurationshanteraren</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntriesGroupBox" xml:space="preserve">
-    <value>Val</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryColumnHeader" xml:space="preserve">
-    <value>Val</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryConfigurationLabel" xml:space="preserve">
-    <value>Valkonfiguration</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.PlatformColumnHeader" xml:space="preserve">
     <value>Plattform</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ProjectNameColumnHeader" xml:space="preserve">
-    <value>Projektnamn</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.DependsOnLabel" xml:space="preserve">
-    <value>Beror av:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.EntryLabel" xml:space="preserve">
-    <value>Val:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.Execute" xml:space="preserve">
-    <value>Starta</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.None" xml:space="preserve">
-    <value>Ingen</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionColumnHeader" xml:space="preserve">
-    <value>Åtgärd</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionLabel" xml:space="preserve">
-    <value>Åtgärd</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
-    <value>Val</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
-    <value>Flera startprojekt</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton" xml:space="preserve">
-    <value>Ensamt startprojekt</value>
   </data>
   <data name="Dialog.Options.ExternalTool.ArgumentLabel" xml:space="preserve">
     <value>&amp;Argument</value>
@@ -1348,48 +1082,6 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.ExternalToolsText" xml:space="preserve">
     <value>Externa verktyg</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.GreyOut" xml:space="preserve">
-    <value>Gråa ut</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Hide" xml:space="preserve">
-    <value>Göm</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalMembers" xml:space="preserve">
-    <value>Interna medlemmar:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalTypes" xml:space="preserve">
-    <value>Interna typer:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox" xml:space="preserve">
-    <value>Urval av medlemmar i trädet</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox" xml:space="preserve">
-    <value>Andra valmöjligheter</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Assembly Scout</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
-    <value>Privata medlemmar:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes" xml:space="preserve">
-    <value>Privata typer:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Show" xml:space="preserve">
-    <value>Visa</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox" xml:space="preserve">
-    <value>Visa förhandsgranskning utav resurser</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox" xml:space="preserve">
-    <value>Visa återvändstyper av medlemmar i trädet</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods" xml:space="preserve">
-    <value>Visa "speciella" metoder</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox" xml:space="preserve">
-    <value>Urval av typerna i trädet</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
     <value>Rensa cache</value>
   </data>
@@ -1453,6 +1145,12 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.CodingOptionsText" xml:space="preserve">
     <value>Kodning</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Undantag</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Symbols" xml:space="preserve">
     <value>Symboler</value>
   </data>
@@ -1465,53 +1163,17 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title" xml:space="preserve">
     <value>Redigera Standardrubriker</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.DescriptionLabel" xml:space="preserve">
-    <value>När SharpDevelop är i helskärmsläge:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideHorizontalScrollbar" xml:space="preserve">
-    <value>Dölj texteditorns horisontella rullningslist</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideMainMenu" xml:space="preserve">
-    <value>Dölj huvudmeny</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideStatusBar" xml:space="preserve">
-    <value>Dölj statusfält</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideTabs" xml:space="preserve">
-    <value>Dölj tabulatorsteg</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideToolbars" xml:space="preserve">
-    <value>Dölj verktygsfält</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideVerticalScrollbar" xml:space="preserve">
-    <value>Dölj texteditorns vertikala rullningslist</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideWindowsTaskbar" xml:space="preserve">
-    <value>Dölj Windows aktivitetsfält</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.ShowMainMenuOnMouseHover" xml:space="preserve">
-    <value>Visa när musmarkören förs över den</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.Title" xml:space="preserve">
-    <value>Helskärm</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.General" xml:space="preserve">
     <value>Generella</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Skapa &amp;alltid säkerhetskopia</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox" xml:space="preserve">
-    <value>&amp;Radbrytningsstil</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
     <value>Ladda</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
     <value>Ladda användarspecifika inställningar för dokumentet</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Ladda/Spara</value>
@@ -1521,6 +1183,9 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
     <value>Unix</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
+    <value>Använd &amp;papperskorgen när filer raderas</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
     <value>Windows</value>
@@ -1546,6 +1211,9 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.PanelName" xml:space="preserve">
     <value>Projekt och samlingar</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ParallelBuild" xml:space="preserve">
+    <value>Antal projekt att bygga parallellt:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ProjectLocationLabel" xml:space="preserve">
     <value>Sökväg till standardprojekt:</value>
   </data>
@@ -1558,17 +1226,17 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox" xml:space="preserve">
     <value>Visa fellista om fel uppstår vid byggning.</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
-    <value>Nuvarande UI-språk:</value>
+  <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.DoNotBuild" xml:space="preserve">
+    <value>Bygg inte</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
+    <value>Bygg alla projekt</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Klicka en ikon för att välja språk.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.PanelName" xml:space="preserve">
     <value>UI-språk</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
-    <value>UI-språk satt till:</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
     <value>Välj den miljö som du föredr&amp;ar:</value>
@@ -1620,6 +1288,9 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Klipp ut eller kopiera hela raden när inget är markerat.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Aktivera virtuellt område</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>&amp;Göm muspekaren under tangentbordsskrivning</value>
@@ -1708,8 +1379,14 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.BracketMatchingStyle.BeforeCaret" xml:space="preserve">
     <value>Före insättsmärket</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>Aktivera animationer</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Visa &amp;EOL-markeringar</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Markera symboler</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Markera &amp;matchande parantes</value>
@@ -1783,41 +1460,8 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Välj mappen som assemblyn ska att skapas i.</value>
   </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
-    <value>Inbyggt:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel" xml:space="preserve">
-    <value>Tillgängliga markeringsscheman:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton" xml:space="preserve">
-    <value>Kopiera till användardefinerat</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyError" xml:space="preserve">
-    <value>Kunde inte kopiera filen.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
-    <value>Ta bort</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
-    <value>Är du säker på att du vill ta bort detta användardefinerade schema?</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteError" xml:space="preserve">
-    <value>Det gick inte att ta bort filen.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel" xml:space="preserve">
-    <value>De användardefinierade schemana har företräde över de inbyggda. En ändring i markeringsschemana visas efter nästa omstart av #Develop.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.LoadError" xml:space="preserve">
-    <value>Kunde inte ladda metoddefinieringsfil.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton" xml:space="preserve">
-    <value>Ändra</value>
-  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Markering</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel" xml:space="preserve">
-    <value>Användardefinerat:</value>
   </data>
   <data name="Dialog.Options.TreeViewOptions.DialogName" xml:space="preserve">
     <value>Inställningar</value>
@@ -1836,6 +1480,9 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile" xml:space="preserve">
     <value>{0} är inte en giltig ikonfil.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles" xml:space="preserve">
+    <value>Manifest filer</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.OutputName" xml:space="preserve">
     <value>Utdatanamn:</value>
@@ -2089,11 +1736,29 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Dialog.ProjectOptions.StoreInUserFile" xml:space="preserve">
     <value>Spara i .user filen</value>
   </data>
+  <data name="Dialog.Refactoring.ExtractInterface.AddInterfaceToClass" xml:space="preserve">
+    <value>Lägg till Interface till klass</value>
+  </data>
   <data name="Dialog.Refactoring.ExtractInterface.GeneratedName" xml:space="preserve">
     <value>Genererat namn</value>
   </data>
   <data name="Dialog.Refactoring.ExtractInterface.IncludeComments" xml:space="preserve">
     <value>Inkludera kommentarer</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.InterfaceName" xml:space="preserve">
+    <value>Gränssnittsnamn</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.NewFileName" xml:space="preserve">
+    <value>Nytt filnamn</value>
+  </data>
+  <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
+    <value>Välj publika medlemmar</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
+    <value>Skapa ny klass:</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
+    <value>Använd befintlig klass:</value>
   </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>.NET Assembly Browser</value>
@@ -2134,9 +1799,6 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Typ</value>
   </data>
-  <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
-    <value>Gnu General Public License</value>
-  </data>
   <data name="Dialog.WizardDialog.FinishButton" xml:space="preserve">
     <value>Slutför</value>
   </data>
@@ -2161,9 +1823,6 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Dialog.WordCountDialog.MustBeInProtectedModeWarning" xml:space="preserve">
     <value>Du måste arbeta i projektläge</value>
   </data>
-  <data name="Dialog.WordCountDialog.SaveTheFileWarning" xml:space="preserve">
-    <value>Du måste spara filen</value>
-  </data>
   <data name="Dialog.WordCountDialog.StartButton" xml:space="preserve">
     <value>&amp;Start</value>
   </data>
@@ -2181,6 +1840,9 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   </data>
   <data name="FileUtilityService.ErrorWhileSaving" xml:space="preserve">
     <value>Error uppstod vid sparning</value>
+  </data>
+  <data name="FileUtilityService.FileSizeTooBig" xml:space="preserve">
+    <value>Filen är för stor för att kunna öppnas.</value>
   </data>
   <data name="FormsDesigner.DesignErrorPanel.ErrorText" xml:space="preserve">
     <value>Vänligen rätta till alla källkodsfel innan design påbörjas</value>
@@ -2227,11 +1889,17 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Global.DeleteButtonText" xml:space="preserve">
     <value>Ra&amp;dera</value>
   </data>
+  <data name="Global.DeselectAllButtonText" xml:space="preserve">
+    <value>Avmarkera alla</value>
+  </data>
   <data name="Global.EditButtonText" xml:space="preserve">
     <value>&amp;Ändra</value>
   </data>
   <data name="Global.ErrorText" xml:space="preserve">
     <value>Error</value>
+  </data>
+  <data name="Global.FileAlreadyExists" xml:space="preserve">
+    <value>Filen '{0}' existerar redan.</value>
   </data>
   <data name="Global.FileName" xml:space="preserve">
     <value>Filnamn</value>
@@ -2244,6 +1912,15 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   </data>
   <data name="Global.Folder" xml:space="preserve">
     <value>Mapp</value>
+  </data>
+  <data name="Global.FontStyle" xml:space="preserve">
+    <value>Fontstil</value>
+  </data>
+  <data name="Global.FontStyle.SelectFont" xml:space="preserve">
+    <value>Välj font</value>
+  </data>
+  <data name="Global.FontStyle.Underline" xml:space="preserve">
+    <value>Understreck</value>
   </data>
   <data name="Global.HelpButtonText" xml:space="preserve">
     <value>&amp;Hjälp</value>
@@ -2299,11 +1976,17 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Global.PleaseWait" xml:space="preserve">
     <value>Var god vänta...</value>
   </data>
+  <data name="Global.Preview" xml:space="preserve">
+    <value>Förhandsgranska</value>
+  </data>
   <data name="Global.QuestionText" xml:space="preserve">
     <value>Fråga</value>
   </data>
   <data name="Global.ReadOnly" xml:space="preserve">
     <value>skrivskyddad</value>
+  </data>
+  <data name="Global.Refresh" xml:space="preserve">
+    <value>Uppdatera</value>
   </data>
   <data name="Global.RemoveButtonText" xml:space="preserve">
     <value>&amp;Ta bort</value>
@@ -2318,7 +2001,7 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
     <value>Försök igen</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
-    <value>Välj alla</value>
+    <value>Välj &amp;alla</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Små ikoner</value>
@@ -2338,6 +2021,9 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Global.Yes" xml:space="preserve">
     <value>Ja</value>
   </data>
+  <data name="Global.YesToAll" xml:space="preserve">
+    <value>Ja till alla</value>
+  </data>
   <data name="Gui.ProjectBrowser.FileInUseError" xml:space="preserve">
     <value>Fil- eller mappnamnet är upptaget, välj ett annat namn.</value>
   </data>
@@ -2347,14 +2033,23 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Gui.ProjectBrowser.Open" xml:space="preserve">
     <value>Öppna</value>
   </data>
+  <data name="Gui.ProjectBrowser.OpenFolderInExplorer" xml:space="preserve">
+    <value>Öppna mapp i utforskaren</value>
+  </data>
   <data name="Gui.ProjectBrowser.OpenWith" xml:space="preserve">
     <value>Öppna med...</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.AddProgram.DialogTitle" xml:space="preserve">
     <value>Lägg till program</value>
   </data>
+  <data name="Gui.ProjectBrowser.OpenWith.AddProgram.DisplayName" xml:space="preserve">
+    <value>&amp;Displaynamn:</value>
+  </data>
   <data name="Gui.ProjectBrowser.OpenWith.AddProgram.Program" xml:space="preserve">
     <value>&amp;Program:</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.DefaultWindowsApplication" xml:space="preserve">
+    <value>Använd Windows standard program för denna fil.</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.IconEditor" xml:space="preserve">
     <value>Ikonredigerare</value>
@@ -2364,6 +2059,9 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Textredigerare</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Textredigerare (välj encoding)</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Inbyggd webläsare</value>
@@ -2410,11 +2108,20 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="Hornung.ResourceToolkit.ToolTips.KeyNotFound" xml:space="preserve">
     <value>&lt;NYCKEL EJ FUNNEN&gt;</value>
   </data>
+  <data name="Hornung.ResourceToolkit.ToolTips.PlaceMessage" xml:space="preserve">
+    <value>Resurs i {0}:</value>
+  </data>
+  <data name="Hornung.ResourceToolkit.ToolTips.TypeMessage" xml:space="preserve">
+    <value>Objekt av typen {0}:</value>
+  </data>
   <data name="Hornung.ResourceToolkit.ToolTips.UnknownKey" xml:space="preserve">
     <value>&lt;Okänd&gt;</value>
   </data>
   <data name="Hornung.ResourceToolkit.Value" xml:space="preserve">
     <value>Värde</value>
+  </data>
+  <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
+    <value>Resursvärde:</value>
   </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo tolkare</value>
@@ -2458,19 +2165,11 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   <data name="ICSharpCode.CodeCoverage.EndColumn" xml:space="preserve">
     <value>Slutkolumn</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
-    <value>Kunde inte hitta applikationen NCover.
-
-Om NCover är installerad, vänligen specificera sökvägen till denna applikation under inställningarna för kodtäckning.</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated" xml:space="preserve">
     <value>Ingen resultatfil för kodtäckning genererades:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
     <value>Kodtäckningsfärger</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
-    <value>&amp;Kommando:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel" xml:space="preserve">
     <value>&amp;Visa föremål:</value>
@@ -2480,9 +2179,6 @@ Om NCover är installerad, vänligen specificera sökvägen till denna applikati
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel" xml:space="preserve">
     <value>Föremålsfö&amp;rgrund:</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.NCoverConfigurationGroupBoxText" xml:space="preserve">
-    <value>NCover konfiguration</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.SampleText" xml:space="preserve">
     <value>AaBbCcXxYyZz</value>
@@ -2496,11 +2192,8 @@ Om NCover är installerad, vänligen specificera sökvägen till denna applikati
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Kör kodtäckningsanalys...</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.RunTestsWithCodeCoverage" xml:space="preserve">
-    <value>Kör kodtäckningsanalystester</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunWithCodeCoverage" xml:space="preserve">
-    <value>Kör med kodtäckningsanalys</value>
+  <data name="ICSharpCode.CodeCoverage.ShowSourceCode" xml:space="preserve">
+    <value>Visa källkod</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ShowVisitCount" xml:space="preserve">
     <value>Visa besöksräknare</value>
@@ -2511,15 +2204,6 @@ Om NCover är installerad, vänligen specificera sökvägen till denna applikati
   <data name="ICSharpCode.CodeCoverage.VisitCount" xml:space="preserve">
     <value>Besöksräknare</value>
   </data>
-  <data name="ICSharpCode.ConsolePad.GotoProjectItem" xml:space="preserve">
-    <value>Byt till projektmappen</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoSdkItem" xml:space="preserve">
-    <value>Ändra till SDK mappen</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.PadName" xml:space="preserve">
-    <value>Konsol</value>
-  </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.DescriptionLabel" xml:space="preserve">
     <value>Beskrivning</value>
   </data>
@@ -2528,6 +2212,15 @@ Om NCover är installerad, vänligen specificera sökvägen till denna applikati
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
     <value>Visa undantag</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
+    <value>Ytterligare inställningar</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor" xml:space="preserve">
+    <value>Preprocessor</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.SymbolLabel" xml:space="preserve">
+    <value>Symbol</value>
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>.NET Resursfil (binär)</value>
@@ -2552,9 +2245,6 @@ Om NCover är installerad, vänligen specificera sökvägen till denna applikati
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.XmlFileAssozisation" xml:space="preserve">
     <value>XML Dokument</value>
-  </data>
-  <data name="ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation" xml:space="preserve">
-    <value>#Develop XML Form</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntStoppedMessage" xml:space="preserve">
     <value>NAnt byggande stannat.</value>
@@ -2667,6 +2357,21 @@ Om NCover är installerad, vänligen specificera sökvägen till denna applikati
   <data name="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel" xml:space="preserve">
     <value>Infoga PInvokesignaturer...</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.ConvertCSharpProjectToPythonProject" xml:space="preserve">
+    <value>Från C# till Python</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.ConvertVBNetProjectToPythonProject" xml:space="preserve">
+    <value>Från VB.NET till Python</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.PythonConsole" xml:space="preserve">
+    <value>Python konsoll</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.PythonFiles" xml:space="preserve">
+    <value>Python filer</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
+    <value>Python projektfiler</value>
+  </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Kunde inte ladda ${FileNameWithoutPath} i ${Path}. Kontrollera behörigheterna för filen och att filen existerar.</value>
   </data>
@@ -2681,13 +2386,19 @@ Välj ett annat filnamn eller kontrollera att mappen finns och att du har de beh
     <value>Debug</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.DefaultItem" xml:space="preserve">
-    <value>Ursprungliga</value>
+    <value>Standard layout</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditItem" xml:space="preserve">
     <value>&lt;Redigera&gt;</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.AddLayout" xml:space="preserve">
+    <value>Lägg till layout</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.EditLayouts.Title" xml:space="preserve">
+    <value>Redigera layouter</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.PlainItem" xml:space="preserve">
-    <value>Enkelt</value>
+    <value>Enkel layout</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultItem" xml:space="preserve">
     <value>&lt;Återställ till ursprungliga&gt;</value>
@@ -2699,11 +2410,20 @@ Observera: Detta påverkar inte de anpassade layouterna.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert" xml:space="preserve">
     <value>Konvertera</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.Convert.ConverterErrorCount" xml:space="preserve">
+    <value>${ErrorCount} fel när ${FileName} konverterades:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.Convert.IsNotConverted" xml:space="preserve">
+    <value>${FileName} kunde inte konverteras:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.Convert.SourceDirectory" xml:space="preserve">
+    <value>Källkatalog</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.TargetAlreadyExists" xml:space="preserve">
     <value>{0} existerar redan, kan ej konvertera.</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.ConvertCommand.FinishedMessage" xml:space="preserve">
-    <value>Projekt konverteringen lyckades. Du hittar det konverterade i:</value>
+  <data name="ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory" xml:space="preserve">
+    <value>Målkatalog</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
     <value>Från C# till Boo</value>
@@ -2713,9 +2433,6 @@ Observera: Detta påverkar inte de anpassade layouterna.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine" xml:space="preserve">
     <value>Kan inte öppna filen '${FileName}'. Filen är inte en giltigt Samling eller Projektfil.</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError" xml:space="preserve">
-    <value>Kan inte skriva ut fönstrets innehåll.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError" xml:space="preserve">
     <value>Kunde inte skapa PrintDocument</value>
@@ -2758,7 +2475,7 @@ Alla ändringar kommer att förloras.</value>
     <value>${CurrentMethodNumber} av ${NumberOfTotalMethods}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
-    <value>Filen ${File} har blivit ändrad externt, vill du ladda filen på nytt?</value>
+    <value>Filen ${File}  har ändrats sedan sist, vill du ladda den på nytt?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.DefaultEditor.IncrementalSearch.ForwardsSearchStatusBarMessage" xml:space="preserve">
     <value>Inkrementell sökning:</value>
@@ -3011,7 +2728,7 @@ Inga komponenter för WindowsFormer kommer att vara tillgängliga, var god konfi
 Kontrollera ifall du har de nödvändiga rättigheterna.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError" xml:space="preserve">
-    <value>Ogiltiga tecken i projektets namn.
+    <value>Ogiltiga tecken i projektnamnet.
 Endast bokstäver, siffror, mellanslag, '.' eller '_' får användas.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot" xml:space="preserve">
@@ -3046,6 +2763,9 @@ Endast bokstäver, siffror, mellanslag, '.' eller '_' får användas.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
     <value>&amp;Fallande ordning</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
+    <value>Verktyg hittades inte</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DomainLabel" xml:space="preserve">
     <value>&amp;Domän:</value>
@@ -3092,6 +2812,15 @@ Endast bokstäver, siffror, mellanslag, '.' eller '_' får användas.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace" xml:space="preserve">
     <value>Namespace för anpassa verktyg</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>Fullständig sökväg till filen.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
+    <value>Logiskt namn</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Aliases" xml:space="preserve">
+    <value>Alias</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture" xml:space="preserve">
     <value>Kultur</value>
   </data>
@@ -3123,7 +2852,7 @@ Endast bokstäver, siffror, mellanslag, '.' eller '_' får användas.</value>
     <value>Webbreferens URL</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion" xml:space="preserve">
-    <value>Samlingsfilen ${combineLocation} finns redan, vill du ersätta den befintliga filen?</value>
+    <value>Samlingsfilen ${combineLocation} finns redan, vill du skriva över den befintliga filen?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.CantCreateProjectWithTypeError" xml:space="preserve">
     <value>Kan inte skapa projekt med typen '${type}'.</value>
@@ -3134,8 +2863,29 @@ Endast bokstäver, siffror, mellanslag, '.' eller '_' får användas.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Projektfilen ${projectLocation} finns redan, vill du ersätta den befintliga filen?</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
+    <value>Filen ${fileNames} finns redan, vill du skriva över den befintliga filen?</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
-    <value>Filen finns redan</value>
+    <value>Fil(erna) finns redan</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
+    <value>Laddar ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Konvertera valda &amp;projekt till:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Konvertera</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;ändra inte&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Målramverk</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Projektuppgradering</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Nuvarnade miljö inte funnen.
@@ -3153,11 +2903,17 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="ICSharpCode.UnitTesting.CodeCoverage" xml:space="preserve">
     <value>Kodtäckningsanalys</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.OptionsPanel.CreateXmlOutputFile" xml:space="preserve">
+    <value>Skapa XML utdata fil</value>
+  </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.LabelEachTest" xml:space="preserve">
     <value>Namnge varje test</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.ShowLogo" xml:space="preserve">
     <value>Visa logga</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.OptionsPanel.Thread" xml:space="preserve">
+    <value>Kör tester i separat tråd</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithCoverage" xml:space="preserve">
     <value>Kör med kodtäckningsanalys</value>
@@ -3165,8 +2921,41 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Kör med debugger</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>Testar ${Name}...</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
+    <value>&amp;Test</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
+    <value>Kunde inte köra enhetstesten. Filen '{0}' kunde inte hittas.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel" xml:space="preserve">
+    <value>Webb</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>Applikation existerar redan.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>Lokal webbserver (IIS eller IIS Express) saknas.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>ASP.NET/IIS(Express) process ({0}) hittades inte.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Server port:</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>Projekt Url:</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Webbserver</value>
+  </data>
   <data name="ICSharpCode.WixBinding.ApplicationSettings.OutputNameLabel" xml:space="preserve">
     <value>Utdatanamn:</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.CompilerParametersPanel.CompilerExtensionsGroupBox" xml:space="preserve">
+    <value>Tillägg</value>
   </data>
   <data name="ICSharpCode.WixBinding.LibraryParametersPanel" xml:space="preserve">
     <value>Bibliotek</value>
@@ -3177,14 +2966,29 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="ICSharpCode.WixBinding.NameValueListEditor.ValueColumn" xml:space="preserve">
     <value>Värde</value>
   </data>
+  <data name="ICSharpCode.WixBinding.PackageFilesView.AddDirectoryDialog.Title" xml:space="preserve">
+    <value>Lägg till folder</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.PackageFilesView.AddFilesDialog.Title" xml:space="preserve">
+    <value>Lägg till filer...</value>
+  </data>
   <data name="ICSharpCode.WixBinding.PackageFilesView.Title" xml:space="preserve">
     <value>Installationsfiler</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddDirectory" xml:space="preserve">
+    <value>Lägg till katalog...</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.PackagesFilesView.ContextMenu.AddFiles" xml:space="preserve">
+    <value>Lägg till filer...</value>
   </data>
   <data name="ICSharpCode.WixBinding.ViewDialogXml.DialogIdNotFoundMessage" xml:space="preserve">
     <value>Kunde inte hitta '{0}' i {1}</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixCompilerExtensionPicker.AddButton" xml:space="preserve">
     <value>Lägg till...</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixDirectoryElement.AdminToolsFolder" xml:space="preserve">
+    <value>Adminverktyg</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.DesktopFolder" xml:space="preserve">
     <value>Skrivbord</value>
@@ -3197,6 +3001,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.MyPicturesFolder" xml:space="preserve">
     <value>Mina bilder</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixDirectoryElement.PersonalFolder" xml:space="preserve">
+    <value>Personlig</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.ProgramFiles64Folder" xml:space="preserve">
     <value>Programfiler (x64)</value>
@@ -3231,11 +3038,56 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.TemplateFolder" xml:space="preserve">
     <value>Mallar</value>
   </data>
+  <data name="ICSharpCode.WixBinding.WixDirectoryElement.WindowsVolume" xml:space="preserve">
+    <value>Windowsvolym</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixExtensionsFolderNode.Text" xml:space="preserve">
+    <value>WiX tillägg</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixFileFilterName" xml:space="preserve">
+    <value>WiX filer</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixLibraryFolderNode.Text" xml:space="preserve">
+    <value>WiX bibliotek</value>
+  </data>
   <data name="ICSharpCode.WixBinding.WixProjectFileAssociation" xml:space="preserve">
     <value>WIX projekt</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixProjectFilesFilterName" xml:space="preserve">
     <value>WIX projektfiler</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixTargetsFileFilterName" xml:space="preserve">
+    <value>WiX målfil</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.WixTasksFileFilterName" xml:space="preserve">
+    <value>WiX åtgärdsfil</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
+    <value>Kopiera</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Cut" xml:space="preserve">
+    <value>Klipp ut</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Paste" xml:space="preserve">
+    <value>Klistra in</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Properties" xml:space="preserve">
+    <value>Egenskaper</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Redo" xml:space="preserve">
+    <value>Gör om</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Remove" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Tools" xml:space="preserve">
+    <value>Verktyg</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Undo" xml:space="preserve">
+    <value>Ångra</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.ViewXAML" xml:space="preserve">
+    <value>Visa XAML</value>
   </data>
   <data name="ICSharpCode.XmlEditor.AddAttributeDialog.Title" xml:space="preserve">
     <value>Lägg till attribut</value>
@@ -3245,6 +3097,12 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="ICSharpCode.XmlEditor.CreateSchemaMenuLabel" xml:space="preserve">
     <value>&amp;Skapa schema</value>
+  </data>
+  <data name="ICSharpCode.XmlEditor.OpenXSLT" xml:space="preserve">
+    <value>&amp;Öppna XSLT</value>
+  </data>
+  <data name="ICSharpCode.XmlEditor.RunXSLT" xml:space="preserve">
+    <value>Kör XSL&amp;T</value>
   </data>
   <data name="ICSharpCode.XmlEditor.SelectXmlSchema.DialogTitle" xml:space="preserve">
     <value>Välj XML schema</value>
@@ -3326,6 +3184,12 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="ICSharpCode.XmlEditor.XPathQueryPad.ResultsTab" xml:space="preserve">
     <value>Resultat</value>
+  </data>
+  <data name="ILSpyAddIn.OpenILSpyCommand" xml:space="preserve">
+    <value>Öppna ILSpy</value>
+  </data>
+  <data name="ILSpyAddIn.SetILSpyPathDialog.ILSpyInfo" xml:space="preserve">
+    <value>Denna funktion kräver ILSpy, om du saknar tillägget kan du ladda hem det gratis här:</value>
   </data>
   <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
     <value>Kunde inte ladda konfigurationsfil för externa verktyg</value>
@@ -3444,6 +3308,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Språk</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Modul</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Visa argumentnamn</value>
   </data>
@@ -3452,6 +3319,12 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Visa externa metoder</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Visa radnummer</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Visa modulnamn</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Fråga</value>
@@ -3491,6 +3364,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.LineFormat.NoSymbols" xml:space="preserve">
     <value>vid {0}</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.LineFormat.Symbols" xml:space="preserve">
+    <value>position {0} i {1}:rad {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Visa undantagsinformation</value>
@@ -3543,6 +3419,21 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers" xml:space="preserve">
     <value>Privata statiska medlemmar</value>
   </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
+    <value>Statiska medlemmar</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Minne</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>Adressen {0} hittades inte!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Visa storlek i bytes:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Hoppa till adress:</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Moduler</value>
   </data>
@@ -3563,6 +3454,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="MainWindow.Windows.Debug.Modules.VersionColumn" xml:space="preserve">
     <value>Version</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
+    <value>Objektgraf</value>
   </data>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Ange nuvarande påstående</value>
@@ -3629,6 +3523,12 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="MainWindow.Windows.FileScout.DriveType.CD" xml:space="preserve">
     <value>CD</value>
+  </data>
+  <data name="MainWindow.Windows.FileScout.DriveType.Fixed" xml:space="preserve">
+    <value>Statisk</value>
+  </data>
+  <data name="MainWindow.Windows.FileScout.DriveType.Removeable" xml:space="preserve">
+    <value>Borttagbar</value>
   </data>
   <data name="MainWindow.Windows.FileScout.LastModified" xml:space="preserve">
     <value>Senast ändrad</value>
@@ -3778,13 +3678,10 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
     <value>Laddnings Error</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.TestTreeView.TestFailedMessage" xml:space="preserve">
-    <value>Test fallet '${TestCase}' misslyckades, orsak: '${Message}'.</value>
+    <value>Test fallet '${TestCase}' misslyckades.</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.TestTreeView.TestNotExecutedMessage" xml:space="preserve">
     <value>Test fallet '${TestCase}' startades inte.</value>
-  </data>
-  <data name="ObjectBrowser.Menu.GoBack" xml:space="preserve">
-    <value>Gå tillbaka</value>
   </data>
   <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
     <value>Ladda Assembly...</value>
@@ -3855,6 +3752,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="ProjectComponent.ContextMenu.ExcludeFileFromProject" xml:space="preserve">
     <value>Ta bort från projekt</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.ExistingFolder.CopyQuestion" xml:space="preserve">
+    <value>Vill du kopiera mappen till målkatalogen?</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.ExistingItem" xml:space="preserve">
     <value>Befintliga föremål...</value>
   </data>
@@ -3862,7 +3762,7 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
     <value>&amp;Existerande projekt...</value>
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation" xml:space="preserve">
-    <value>Bygg dokumentation med NDoc</value>
+    <value>Bygg dokumentation från XML kommentarer</value>
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.NeedToEditBuildOptions" xml:space="preserve">
     <value>Du måste ändra projektets bygginställningar för att skapa en dokumentationsfil i xml.</value>
@@ -4068,6 +3968,12 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="SharpDevelop.FileFilter.BinaryFiles" xml:space="preserve">
     <value>Binärfiler</value>
   </data>
+  <data name="SharpDevelop.FileFilter.Boo" xml:space="preserve">
+    <value>Boo filer</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.BooPrjFiles" xml:space="preserve">
+    <value>Boo projektfiler</value>
+  </data>
   <data name="SharpDevelop.FileFilter.CombineFiles" xml:space="preserve">
     <value>Samlings-filer (*.cmbx)</value>
   </data>
@@ -4086,20 +3992,38 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="SharpDevelop.FileFilter.Icons" xml:space="preserve">
     <value>Ikon filer (*.ico)</value>
   </data>
+  <data name="SharpDevelop.FileFilter.ILAsm" xml:space="preserve">
+    <value>IL filer</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.ILAsmPrjFiles" xml:space="preserve">
+    <value>ILAsm projektfiler</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.ImageFiles" xml:space="preserve">
+    <value>Bildfiler</value>
+  </data>
   <data name="SharpDevelop.FileFilter.KeyFiles" xml:space="preserve">
     <value>Nyckelfiler</value>
   </data>
   <data name="SharpDevelop.FileFilter.PrjxFiles" xml:space="preserve">
     <value>SharpDevelop 1.1 Projektfiler (*.prjx)</value>
   </data>
+  <data name="SharpDevelop.FileFilter.ResourceFiles" xml:space="preserve">
+    <value>Resursfiler</value>
+  </data>
   <data name="SharpDevelop.FileFilter.VBNetFiles" xml:space="preserve">
     <value>VB filer (*.vb)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.VBNetPrjFiles" xml:space="preserve">
+    <value>Visual Basic projektfiler</value>
   </data>
   <data name="SharpDevelop.FileFilter.XmlFiles" xml:space="preserve">
     <value>XML filer (*.xml)</value>
   </data>
   <data name="SharpDevelop.FileFilter.XmlSchemaFiles" xml:space="preserve">
     <value>XML Schema Filer (*.xsd)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.XslFiles" xml:space="preserve">
+    <value>XSL filer</value>
   </data>
   <data name="SharpDevelop.FormsDesigner.ContextMenus.SelectionMenu.AlignToGrid" xml:space="preserve">
     <value>Anpassa till &amp;Rutorna</value>
@@ -4109,6 +4033,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="SharpDevelop.Gui.Dialogs.WizardDialog.StepsLabel" xml:space="preserve">
     <value>Steg</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
+    <value>Operationen kunde inte utföras på grund av att källkoden innehåller fel:</value>
   </data>
   <data name="SharpDevelop.Refactoring.CreateOnEventMethod" xml:space="preserve">
     <value>Skapa OnEvent-metod</value>
@@ -4122,6 +4049,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
     <value>Deklarera typ</value>
   </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Hitta basklasser</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Sök efter nedärvda klasser</value>
   </data>
@@ -4130,6 +4060,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="SharpDevelop.Refactoring.FindOverridesCommand" xml:space="preserve">
     <value>Sök överlagrade met&amp;oder</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindReferences" xml:space="preserve">
+    <value>Hitta referenser</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindReferencesCommand" xml:space="preserve">
     <value>&amp;Sök referenser</value>
@@ -4164,6 +4097,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   <data name="SharpDevelop.Refactoring.MoveClassToFile" xml:space="preserve">
     <value>Flytta klassen till filen '${FileName}'</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ReferencesTo" xml:space="preserve">
+    <value>Referenser till ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.Rename" xml:space="preserve">
     <value>Byt namn</value>
   </data>
@@ -4175,6 +4111,9 @@ Gå till 'Inställningar-&gt;Visuell stil' och ändra den nuvarande språkmiljö
   </data>
   <data name="SharpDevelop.Refactoring.RenameFieldAndProperty" xml:space="preserve">
     <value>Skall SharpDevelop döpa om egenskapen '{0}' till '{1}'?</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.RenameFileTo" xml:space="preserve">
+    <value>Ändra filnamn till '${FileName}'</value>
   </data>
   <data name="SharpDevelop.Refactoring.RenameMemberText" xml:space="preserve">
     <value>Ange det nya namnet på medlemmen</value>
@@ -4218,98 +4157,8 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="SharpDevelop.Solution.UnknownSolutionVersion" xml:space="preserve">
     <value>Kan inte läsa Microsoft Solution filformat {0}.</value>
   </data>
-  <data name="SharpQuery.Error.InvalidValue" xml:space="preserve">
-    <value>En (eller flera) utav de angivna värdena är inte giltiga.</value>
-  </data>
-  <data name="SharpQuery.Error.NotSuported" xml:space="preserve">
-    <value>stöds inte av</value>
-  </data>
-  <data name="SharpQuery.Error.OpenError" xml:space="preserve">
-    <value>Kan inte öppna anslutningen. Kontrollera dina kopplingssträngar.</value>
-  </data>
-  <data name="SharpQuery.Error.ProcedureExecution" xml:space="preserve">
-    <value>Kan inte utföra proceduren på grund av ett fel.</value>
-  </data>
-  <data name="SharpQuery.Error.SQLExecution" xml:space="preserve">
-    <value>Kan inte utföra SQL-förfrågan på grund av ett fel</value>
-  </data>
-  <data name="SharpQuery.Error.WrongConnectionString" xml:space="preserve">
-    <value>Ogiltig anslutningssträng!</value>
-  </data>
-  <data name="SharpQuery.Error.WrongKeyType" xml:space="preserve">
-    <value>nyckeln måste vara av typen String.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongValueType" xml:space="preserve">
-    <value>Värde måste vara av typen Sträng.</value>
-  </data>
-  <data name="SharpQuery.Label.AddConnection" xml:space="preserve">
-    <value>Lägg till anslutning...</value>
-  </data>
-  <data name="SharpQuery.Label.Connect" xml:space="preserve">
-    <value>Anslut till databas</value>
-  </data>
-  <data name="SharpQuery.Label.DataBasesRoot" xml:space="preserve">
-    <value>Databasanslutningar</value>
-  </data>
-  <data name="SharpQuery.Label.Disconnect" xml:space="preserve">
-    <value>Koppla från</value>
-  </data>
-  <data name="SharpQuery.Label.Execute" xml:space="preserve">
-    <value>Starta</value>
-  </data>
-  <data name="SharpQuery.Label.ExtractData" xml:space="preserve">
-    <value>Få fram data</value>
-  </data>
-  <data name="SharpQuery.Label.ModifyConnection" xml:space="preserve">
-    <value>Ändra anslutningen...</value>
-  </data>
-  <data name="SharpQuery.Label.ProceduresRoot" xml:space="preserve">
-    <value>Procedurer</value>
-  </data>
-  <data name="SharpQuery.Label.Refresh" xml:space="preserve">
-    <value>Förnya</value>
-  </data>
-  <data name="SharpQuery.Label.Remove" xml:space="preserve">
-    <value>Ta bort</value>
-  </data>
-  <data name="SharpQuery.Label.Schemas" xml:space="preserve">
-    <value>Schemata</value>
-  </data>
   <data name="SharpQuery.Label.SharpQuery" xml:space="preserve">
     <value>Databas</value>
-  </data>
-  <data name="SharpQuery.Label.TablesRoot" xml:space="preserve">
-    <value>Tabeller</value>
-  </data>
-  <data name="SharpQuery.Label.ViewsRoot" xml:space="preserve">
-    <value>Vyer</value>
-  </data>
-  <data name="SharpQuery.PadTitle" xml:space="preserve">
-    <value>Databasutforskaren</value>
-  </data>
-  <data name="SharpQuery.ToolTip.AddConnection" xml:space="preserve">
-    <value>Lägg till anslutning</value>
-  </data>
-  <data name="SharpQuery.ToolTip.Refresh" xml:space="preserve">
-    <value>Förnya</value>
-  </data>
-  <data name="SharpQuery.XMLForm.ResetButton" xml:space="preserve">
-    <value>Starta om</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterDataType" xml:space="preserve">
-    <value>Parameterns datatyp</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterInputTitle" xml:space="preserve">
-    <value>Parameterns indata</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterName" xml:space="preserve">
-    <value>Parameterns namn</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterType" xml:space="preserve">
-    <value>Parameterns typ</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterValue" xml:space="preserve">
-    <value>Parameterns värde</value>
   </data>
   <data name="SharpReport.AddinName" xml:space="preserve">
     <value>SharpReport</value>
@@ -4407,6 +4256,18 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Sista sidan</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Nästa</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
+    <value>Skapa Pdf fil</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Föregående</value>
+  </data>
+  <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
+    <value>Zooma</value>
+  </data>
   <data name="SharpReport.Toolbar.Circle" xml:space="preserve">
     <value>Cirkel</value>
   </data>
@@ -4436,6 +4297,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="SharpReport.Toolbar.Rectangle" xml:space="preserve">
     <value>Rektangel</value>
+  </data>
+  <data name="SharpReport.Toolbar.Table" xml:space="preserve">
+    <value>Tabell</value>
   </data>
   <data name="SharpReport.Toolbar.TextBox" xml:space="preserve">
     <value>Etikett</value>
@@ -4469,6 +4333,18 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>Rapporttyp</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Grouping" xml:space="preserve">
+    <value>Gruppering</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ListLayout" xml:space="preserve">
+    <value>List layout</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.ReportLayout" xml:space="preserve">
+    <value>Rapport layout</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.TableLayout" xml:space="preserve">
+    <value>Tabell layout</value>
   </data>
   <data name="SharpReport.Wizard.PullModel" xml:space="preserve">
     <value>Dra Datamodell</value>
@@ -4569,36 +4445,6 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>Rader ${Line} kolumner ${Column} tecken ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Ett tomt meny kommando för #D.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Meny kommando</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>En #D kontrollpanel.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Kontrollpanel</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Ett kommando som kan användas vid diverse tillfällen.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Enkelt kommando</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>En #D pad innehåll (till exempel #D utforskarna och scouterna).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Tom pad</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Ett #D-vyinnehål (till exempel texteditor eller resurseditor).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Tom vy</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Diverse</value>
   </data>
@@ -4628,6 +4474,12 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Tom fil</value>
+  </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Skapa en ny undantagsklass.</value>
+  </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Undantag</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Ett fönster för en Gtk# applikation.</value>
@@ -4707,11 +4559,50 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Tom resursfil</value>
   </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Inställningar för tillägg</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Ett tomt meny kommando för #D.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Meny kommando</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>En #D kontrollpanel.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Kontrollpanel</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Ett kommando som kan användas vid diverse tillfällen.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Enkelt kommando</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>En #D pad innehåll (till exempel #D utforskarna och scouterna).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Tom pad</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Ett #D-vyinnehål (till exempel texteditor eller resurseditor).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Tom vy</value>
+  </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>En klass som följet singleton mönstret.</value>
   </data>
   <data name="Templates.File.SingletonClass.Name" xml:space="preserve">
     <value>Singleton Klass</value>
+  </data>
+  <data name="Templates.File.Struct.Name" xml:space="preserve">
+    <value>Struct</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Struktur</value>
   </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Tom textfil</value>
@@ -4724,6 +4615,27 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="Templates.File.UnitTest.Name" xml:space="preserve">
     <value>Enhetstest</value>
+  </data>
+  <data name="Templates.File.WebControl.Name" xml:space="preserve">
+    <value>ASP.NET webbkontroll</value>
+  </data>
+  <data name="Templates.File.WebForm.Description" xml:space="preserve">
+    <value>Webbformulär: .aspx sida med tillhörande kod.</value>
+  </data>
+  <data name="Templates.File.WebForm.Name" xml:space="preserve">
+    <value>ASP.NET webbformulär</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Skapar en ASP.NET webbhanterare med bakomliggande kod.</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>ASP.NET webbhanterare</value>
+  </data>
+  <data name="Templates.File.WebService.Description" xml:space="preserve">
+    <value>Komponentramverk för ASMX webbservice.</value>
+  </data>
+  <data name="Templates.File.WebService.Name" xml:space="preserve">
+    <value>ASP.NET webbservice</value>
   </data>
   <data name="Templates.File.WindowsForm.Description" xml:space="preserve">
     <value>En form för en windows application.</value>
@@ -4738,19 +4650,25 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
     <value>Användarkontroll</value>
   </data>
   <data name="Templates.File.WinFXFlowDocument.Name" xml:space="preserve">
-    <value>WinFX flödesdokument</value>
+    <value>WPF flödesdokument</value>
   </data>
   <data name="Templates.File.WinFXPage.Name" xml:space="preserve">
-    <value>WinFX sida</value>
+    <value>WPF sida</value>
   </data>
   <data name="Templates.File.WinFXPageFunction.Name" xml:space="preserve">
-    <value>WinFX sidfunktion</value>
+    <value>WPF sidfunktion</value>
+  </data>
+  <data name="Templates.File.WinFXResourceDictionary.Name" xml:space="preserve">
+    <value>WPF ordlista</value>
   </data>
   <data name="Templates.File.WinFXUserControl.Name" xml:space="preserve">
-    <value>WinFX användarkontroll</value>
+    <value>WPF användarkontroll</value>
+  </data>
+  <data name="Templates.File.WinFXWindow.Description" xml:space="preserve">
+    <value>Ett WPF fönster</value>
   </data>
   <data name="Templates.File.WinFXWindow.Name" xml:space="preserve">
-    <value>WinFX fönster</value>
+    <value>WPF fönster</value>
   </data>
   <data name="Templates.File.WiX.EmptyWiX.Description" xml:space="preserve">
     <value>tom fragmentfil för WiX</value>
@@ -4758,11 +4676,35 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="Templates.File.WiX.EmptyWiX.Name" xml:space="preserve">
     <value>Tom WiX fragmentfil</value>
   </data>
+  <data name="Templates.File.Wix.WixDialog.Description" xml:space="preserve">
+    <value>Skapar en installationsdialog med några standardkontroller.</value>
+  </data>
+  <data name="Templates.File.Wix.WixDialog.Name" xml:space="preserve">
+    <value>Installationsdialog</value>
+  </data>
+  <data name="Templates.File.Wix.WixFile.Description" xml:space="preserve">
+    <value>Skapar ett tomt installationsdokument.</value>
+  </data>
+  <data name="Templates.File.Wix.WixFile.Name" xml:space="preserve">
+    <value>Tomt installationsdokument</value>
+  </data>
+  <data name="Templates.File.Wix.WixProject.Name" xml:space="preserve">
+    <value>Tomt installationsprojekt</value>
+  </data>
+  <data name="Templates.File.Xml.AppConfig.Name" xml:space="preserve">
+    <value>App.Config fil</value>
+  </data>
   <data name="Templates.File.Xml.EmptyXml.Name" xml:space="preserve">
     <value>Tom XML-fil.</value>
   </data>
   <data name="Templates.File.Xml.EmptyXmlFile.Description" xml:space="preserve">
     <value>Skapar en tom XML-fil.</value>
+  </data>
+  <data name="Templates.File.Xml.EmptyXmlForm.Name" xml:space="preserve">
+    <value>XML formulär</value>
+  </data>
+  <data name="Templates.File.Xml.EmptyXmlUserControl.Name" xml:space="preserve">
+    <value>XML användarkontroll</value>
   </data>
   <data name="Templates.Project.BlankCombine.Description" xml:space="preserve">
     <value>Skapar en tom Samling utan Projekt.</value>
@@ -4812,6 +4754,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="Templates.Project.SetupProject.Name" xml:space="preserve">
     <value>Organisera projekt</value>
   </data>
+  <data name="Templates.Project.SharedAddin.Name" xml:space="preserve">
+    <value>Delat tillägg</value>
+  </data>
   <data name="Templates.Project.SharpDevelopAddin.Description" xml:space="preserve">
     <value>En projektmall för att snabbt skapa ett SharpDevelop tillägg</value>
   </data>
@@ -4829,6 +4774,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="Templates.Project.UserControlLibrary.Name" xml:space="preserve">
     <value>Windows bibliotek för användarkontroll</value>
+  </data>
+  <data name="Templates.Project.WebService.Name" xml:space="preserve">
+    <value>ASP.NET webbservice</value>
   </data>
   <data name="Templates.Project.WindowsApplication.Description" xml:space="preserve">
     <value>Ett projekt som skapar en applikation med ett Windows-gränssnitt.</value>
@@ -4860,6 +4808,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
     <value>Konfigurera Verktygsfält...</value>
   </data>
+  <data name="XML.MainMenu.Analysis" xml:space="preserve">
+    <value>&amp;Analys</value>
+  </data>
   <data name="XML.MainMenu.BuildMenu" xml:space="preserve">
     <value>B&amp;ygg</value>
   </data>
@@ -4890,6 +4841,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="XML.MainMenu.BuildMenu.SetConfiguration" xml:space="preserve">
     <value>Ange konfiguration</value>
   </data>
+  <data name="XML.MainMenu.BuildMenu.SetPlatform" xml:space="preserve">
+    <value>Välj plattform</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu" xml:space="preserve">
     <value>&amp;Debug</value>
   </data>
@@ -4904,6 +4858,21 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Continue.Description" xml:space="preserve">
     <value>Fortsätter processutförandet.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Kan inte lägga till process.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Kan inte starta process.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.ProcessPaused" xml:space="preserve">
+    <value>Kan inte utföra åtgärd eftersom processen har pausats.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
+    <value>Kan inte utföra åtgärd eftersom process körs.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Ta bort alla brytpunkter</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Kör &amp;utan debugger</value>
@@ -4990,10 +4959,10 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
     <value>Till gemener</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.RlWs" xml:space="preserve">
-    <value>Ta bort ledande Ws</value>
+    <value>Ta bort inledande blanktecken</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.RtWs" xml:space="preserve">
-    <value>Ta bort avslutande Ws</value>
+    <value>Ta bort avslutande blanktecken</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.SortLines" xml:space="preserve">
     <value>Sortera Rader...</value>
@@ -5009,6 +4978,12 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Paste" xml:space="preserve">
     <value>K&amp;listra in</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsComment" xml:space="preserve">
+    <value>Klistra in som kommentar</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.AsString" xml:space="preserve">
+    <value>Klistra in som sträng</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Paste.Description" xml:space="preserve">
     <value>Klistra in från klippboken</value>
@@ -5064,6 +5039,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Öppna ny buffert</value>
   </data>
+  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Projekt...</value>
+  </data>
   <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Samling...</value>
   </data>
@@ -5079,6 +5057,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="XML.MainMenu.FileMenu.Open.Project" xml:space="preserve">
     <value>&amp;Projekt/Samling...</value>
   </data>
+  <data name="XML.MainMenu.FileMenu.Open.Project.Description" xml:space="preserve">
+    <value>Öppna projekt/samling</value>
+  </data>
   <data name="XML.MainMenu.FileMenu.Print" xml:space="preserve">
     <value>Skriv &amp;ut</value>
   </data>
@@ -5089,7 +5070,7 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
     <value>Senaste filer</value>
   </data>
   <data name="XML.MainMenu.FileMenu.RecentProjects" xml:space="preserve">
-    <value>Senaste P&amp;rojekt</value>
+    <value>Senaste P&amp;rojekten</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Reload" xml:space="preserve">
     <value>Ladda &amp;om fil</value>
@@ -5250,6 +5231,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   <data name="XML.MainMenu.Navigation.Back" xml:space="preserve">
     <value>Navigera bakåt</value>
   </data>
+  <data name="XML.MainMenu.Navigation.Forward" xml:space="preserve">
+    <value>Navigera framåt</value>
+  </data>
   <data name="XML.MainMenu.ProjectMenu" xml:space="preserve">
     <value>&amp;Projekt</value>
   </data>
@@ -5261,6 +5245,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Bygg aktivt projekt eller buffra (när inget projekt är öppet) (detta autosparar)</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingTitle" xml:space="preserve">
+    <value>Avsluta felsökning</value>
   </data>
   <data name="XML.MainMenu.RunMenu.Run" xml:space="preserve">
     <value>&amp;Kör</value>
@@ -5284,7 +5271,7 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
     <value>Sök &amp;nästa</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Goto" xml:space="preserve">
-    <value>&amp;Gå till radnummer...</value>
+    <value>&amp;Gå till ...</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
     <value>Gå till &amp;matchande krullparantes</value>
@@ -5312,6 +5299,15 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="XML.MainMenu.ToolMenu" xml:space="preserve">
     <value>&amp;Verktyg</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.ConvertCodeTo" xml:space="preserve">
+    <value>Konvertera kod till</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed" xml:space="preserve">
+    <value>Körning av det externa programmet misslyckades med felkod:</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode" xml:space="preserve">
+    <value>Avslutades med kod:</value>
   </data>
   <data name="XML.MainMenu.ToolMenu.GenerateCode" xml:space="preserve">
     <value>Automatisk kodgenerering</value>
@@ -5372,6 +5368,9 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="XML.StandardHeader.Date" xml:space="preserve">
     <value>Datum:</value>
+  </data>
+  <data name="XML.StandardHeader.HowToChangeTemplateInformation" xml:space="preserve">
+    <value>För att ändra denna mall använd Verktyg | Inställningar | Kodning | Ändra standardrubriker.</value>
   </data>
   <data name="XML.StandardHeader.Time" xml:space="preserve">
     <value>Tid:</value>

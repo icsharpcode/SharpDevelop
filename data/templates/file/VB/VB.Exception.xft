@@ -19,16 +19,6 @@
 		${Extension}                -> Extension in the form ".vb"
 		${Path}                     -> Full path of the file
 	 -->
-	<!--<Properties>
-		<Property
-			name          = "IsSealed"
-			localizedName = "${res:Templates.File.Properties.IsSealed}"
-			type          = "System.Boolean"
-			defaultValue  = "False"
-			category      = "${res:Templates.File.Properties.ContextCategory}"
-			description   = "${res:Templates.File.Properties.IsSealed.Description}"
-		/>
-	</Properties>-->
 	
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}

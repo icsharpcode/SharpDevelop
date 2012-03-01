@@ -115,7 +115,8 @@ namespace ICSharpCode.NRefactory.Ast
 		Out = 2,
 		Ref = 4,
 		Params = 8,
-		Optional = 16
+		Optional = 16,
+		This = 32
 	}
 	
 	public enum VarianceModifier

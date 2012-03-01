@@ -241,28 +241,39 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		ArrayList SearchClasses(string text)
 		{
+			int dotPos = text.IndexOf('.');
+			string needle = text;
+			string member = "";
+			if (dotPos > 0) {
+				needle = text.Substring(0, dotPos).Trim();
+				member = text.Substring(dotPos + 1).Trim();
+			}
 			ArrayList list = new ArrayList();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
-						AddClasses(text, list, projectContent.Classes);
+						AddClasses(needle, member, list, projectContent.Classes);
 					}
 				}
 			}
 			return list;
 		}
 		
-		void AddClasses(string text, ArrayList list, IEnumerable<IClass> classes)
+		void AddClasses(string classPart, string memberPart, ArrayList list, IEnumerable<IClass> classes)
 		{
 			foreach (IClass c in classes) {
 				string className = c.Name;
-				if (className.Length >= text.Length) {
-					if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {
-						list.Add(c);
+				if (className.Length >= classPart.Length) {
+					if (className.IndexOf(classPart, StringComparison.OrdinalIgnoreCase) >= 0) {
+						if (memberPart.Length > 0) {
+							AddAllMembersMatchingText(c, memberPart);
+						} else {
+							list.Add(c);
+						}
 					}
 				}
-				AddClasses(text, list, c.InnerClasses);
+				AddClasses(classPart, memberPart, list, c.InnerClasses);
 			}
 		}
 		

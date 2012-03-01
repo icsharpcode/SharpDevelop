@@ -29,14 +29,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public DebugOptions()
 		{
 			InitializeComponent();
-			
-			if (ProjectService.CurrentProject is CompilableProject) {
-				if (((CompilableProject)ProjectService.CurrentProject).IsWebProject) {
-					IsWebProject = Visibility.Visible;
-				} else {
-					IsWebProject = Visibility.Hidden;
-				}
-			}
 		}
 		
 		
@@ -74,18 +66,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 
-		
-		Visibility isWebControlVisible;
-		
-		public Visibility IsWebProject {
-			get { return isWebControlVisible; }
-			set {
-				isWebControlVisible = value;
-				OnPropertyChanged("IsWebProject");
-			}
-		}
-		
-		
 		void ExternalProgramButton_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			string fileFilter =  "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;*.com;*.pif;*.bat;*.cmd";

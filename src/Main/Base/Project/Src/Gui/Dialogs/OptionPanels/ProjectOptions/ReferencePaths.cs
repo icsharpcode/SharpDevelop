@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			StringListEditor editor = new StringListEditor();
 			editor.BrowseForDirectory = true;
 			editor.ListCaption = StringParser.Parse("&${res:Dialog.ProjectOptions.ReferencePaths}:");
-			editor.TitleText = StringParser.Parse("&${res:Dialog.ExportProjectToHtml.FolderLabel}");
+			editor.TitleText = StringParser.Parse("&${res:Global.Folder}:");
 			editor.AddButtonText = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths.AddPath}");
 			editor.ListChanged += delegate { IsDirty = true; };
 			SemicolonSeparatedStringListBinding b = new SemicolonSeparatedStringListBinding(editor);

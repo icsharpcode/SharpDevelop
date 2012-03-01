@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0"?>
 <Template originator   = "Robert Pickering"
           created      = "06/10/2001"
-          lastModified = "02/01/2003">
+          lastModified = "08/02/2012">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>F#</Category>
-		<Icon>C#.Project.DOSProject</Icon>
+		<Icon>F#.Project.DOSProject</Icon>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 	</TemplateConfiguration>
 	

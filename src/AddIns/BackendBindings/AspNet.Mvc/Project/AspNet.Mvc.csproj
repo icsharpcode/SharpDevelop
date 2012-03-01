@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.TextTemplating">
       <HintPath>..\..\..\Misc\TextTemplating\Project\lib\Mono.TextTemplating.dll</HintPath>
       <Private>True</Private>
@@ -36,15 +37,21 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Web.Razor">
       <HintPath>..\Libraries\System.Web.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +160,11 @@
     <Compile Include="Src\Folding\WebFormsMarkupCharacterReader.cs" />
     <Compile Include="Src\IAddMvcItemToProjectView.cs" />
     <Compile Include="Src\IFileSystem.cs" />
+    <Compile Include="Src\IIS6Administrator.cs" />
+    <Compile Include="Src\IIS7Administrator.cs" />
+    <Compile Include="Src\IISAdministrator.cs" />
+    <Compile Include="Src\IISExpressAdministrator.cs" />
+    <Compile Include="Src\IISExpressProcessStartInfo.cs" />
     <Compile Include="Src\IMvcModelClassLocator.cs" />
     <Compile Include="Src\IMvcClass.cs" />
     <Compile Include="Src\IMvcControllerFileGenerator.cs" />
@@ -212,12 +224,23 @@
     <Compile Include="Src\MvcViewTextTemplateFileName.cs" />
     <Compile Include="Src\MvcViewTypeViewModel.cs" />
     <Compile Include="Src\MvcVirtualPath.cs" />
+    <Compile Include="Src\NullIISAdministrator.cs" />
+    <Compile Include="Src\ProcessMonitor.cs" />
     <Compile Include="Src\SelectedFolderNodeInProjectsView.cs" />
     <Compile Include="Src\SelectedMvcControllerFolder.cs" />
     <Compile Include="Src\SelectedMvcFolder.cs" />
     <Compile Include="Src\SelectedMvcViewFolder.cs" />
     <Compile Include="Src\SlideBehaviour.cs" />
+    <Compile Include="Src\ViewInBrowser.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
+    <Compile Include="Src\VisualStudioProjectExtension.cs" />
+    <Compile Include="Src\WebBehavior.cs" />
+    <Compile Include="Src\WebProject.cs" />
+    <Compile Include="Src\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
+      <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\WebProjectProperties.cs" />
+    <Compile Include="Src\WebProjectService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ItemTemplates" />
@@ -235,6 +258,7 @@
     <Folder Include="ItemTemplates\VisualBasic\CodeTemplates\AddView\VBHTML" />
     <Folder Include="Resources" />
     <Folder Include="Src\Folding" />
+    <Folder Include="Src\WebProjectOptions" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
@@ -260,6 +284,11 @@
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
@@ -398,6 +427,7 @@
   <ItemGroup>
     <Page Include="Src\AddMvcControllerToProjectView.xaml" />
     <Page Include="Src\AddMvcViewToProjectView.xaml" />
+    <Page Include="Src\WebProjectOptions\WebProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <Import Project="PostBuildEvent.proj" />

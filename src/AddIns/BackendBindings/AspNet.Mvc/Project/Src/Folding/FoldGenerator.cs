@@ -20,6 +20,7 @@ namespace ICSharpCode.AspNet.Mvc.Folding
 			this.textEditor = textEditor;
 			this.foldParser = foldParser;
 			IsParseInformationFoldingEnabled = false;
+			this.textEditor.InstallFoldingManager();
 		}
 		
 		bool IsParseInformationFoldingEnabled {

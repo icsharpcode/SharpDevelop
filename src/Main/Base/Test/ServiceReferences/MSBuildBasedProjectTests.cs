@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Xml.Linq;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
 using NUnit.Framework;
@@ -47,6 +48,27 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			var projectItem = project.CreateProjectItem(backendStore) as ServiceReferenceProjectItem;
 			
 			Assert.IsNotNull(projectItem);
+		}
+		
+		[Test]
+		public void ContainsProjectExtension_ProjectDoesNotContainsExtension_ReturnsFalse()
+		{
+			CreateProject();
+			
+			bool contains = project.ContainsProjectExtension("UNKNOWN_EXTENSION");
+			
+			Assert.IsFalse(contains);
+		}
+		
+		[Test]
+		public void ContainsProjectExtension_ProjectContainsExtension_ReturnsTrue()
+		{
+			CreateProject();
+			project.SaveProjectExtensions("Test", new XElement("MyProjectExtension"));
+			
+			bool contains = project.ContainsProjectExtension("Test");
+			
+			Assert.IsTrue(contains);
 		}
 	}
 }

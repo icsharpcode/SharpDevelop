@@ -31,8 +31,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public abstract class CompilableProject : MSBuildBasedProject, IUpgradableProject
 	{
-		public const string LocalHost = "http://localhost";
-		
 		#region Static methods
 		/// <summary>
 		/// Gets the file extension of the assembly created when building a project
@@ -211,177 +209,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return newProjectContent;
 		}
 		
-		#region Starting (debugging)
-		public override bool IsStartable {
-			get {
-				if (IsSilverlightProject) {
-					return TestPageFileName.Length > 0;
-				}
-				if (IsWebProject)
-					return true;
-				
-				switch (this.StartAction) {
-					case StartAction.Project:
-						return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
-					case StartAction.Program:
-						return this.StartProgram.Length > 0;
-					case StartAction.StartURL:
-						return this.StartUrl.Length > 0;
-					default:
-						return false;
-				}
-			}
-		}
-		
-		static string RemoveQuotes(string text)
-		{
-			if (text.StartsWith("\"") && text.EndsWith("\""))
-				return text.Substring(1, text.Length - 2);
-			else
-				return text;
-		}
-		
-		/// <summary>
-		/// Creates a <see cref="ProcessStartInfo"/> for the specified program, using
-		/// arguments and working directory from the project options.
-		/// </summary>
-		protected ProcessStartInfo CreateStartInfo(string program)
-		{
-			program = RemoveQuotes(program);
-			if (!FileUtility.IsValidPath(program)) {
-				throw new ProjectStartException(program + " is not a valid path; the process cannot be started.");
-			}
-			ProcessStartInfo psi = new ProcessStartInfo();
-			psi.FileName = Path.Combine(Directory, program);
-			string workingDir = StringParser.Parse(this.StartWorkingDirectory);
-			
-			if (workingDir.Length == 0) {
-				psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
-			} else {
-				workingDir = RemoveQuotes(workingDir);
-				
-				if (!FileUtility.IsValidPath(workingDir)) {
-					throw new ProjectStartException("Working directory '" + workingDir + "' is invalid; the process cannot be started. You can specify the working directory in the project options.");
-				}
-				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
-			}
-			psi.Arguments = StringParser.Parse(this.StartArguments);
-			
-			if (!File.Exists(psi.FileName)) {
-				throw new ProjectStartException(psi.FileName + " does not exist and cannot be started.");
-			}
-			if (!System.IO.Directory.Exists(psi.WorkingDirectory)) {
-				throw new ProjectStartException("Working directory " + psi.WorkingDirectory + " does not exist; the process cannot be started. You can specify the working directory in the project options.");
-			}
-			return psi;
-		}
-		
-		public override ProcessStartInfo CreateStartInfo()
-		{
-			if (IsSilverlightProject) {
-				string pagePath = "file:///" + Path.Combine(OutputFullPath, TestPageFileName);
-				return new  ProcessStartInfo(pagePath);
-			}
-			
-			switch (this.StartAction) {
-				case StartAction.Project:
-					if (IsWebProject)
-						return new ProcessStartInfo(LocalHost);
-					
-					return CreateStartInfo(this.OutputAssemblyFullPath);
-				case StartAction.Program:
-					return CreateStartInfo(this.StartProgram);
-				case StartAction.StartURL:
-					string url = this.StartUrl;
-					if (!FileUtility.IsUrl(url))
-						url = "http://" + url;
-					return new ProcessStartInfo(url);
-				default:
-					throw new System.ComponentModel.InvalidEnumArgumentException("StartAction", (int)this.StartAction, typeof(StartAction));
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartProgram {
-			get {
-				return GetEvaluatedProperty("StartProgram") ?? "";
-			}
-			set {
-				SetProperty("StartProgram", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartUrl {
-			get {
-				return GetEvaluatedProperty("StartURL") ?? "";
-			}
-			set {
-				SetProperty("StartURL", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public StartAction StartAction {
-			get {
-				try {
-					return (StartAction)Enum.Parse(typeof(StartAction), GetEvaluatedProperty("StartAction") ?? "Project");
-				} catch (ArgumentException) {
-					return StartAction.Project;
-				}
-			}
-			set {
-				SetProperty("StartAction", value.ToString());
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartArguments {
-			get {
-				return GetEvaluatedProperty("StartArguments") ?? "";
-			}
-			set {
-				SetProperty("StartArguments", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public string StartWorkingDirectory {
-			get {
-				return GetEvaluatedProperty("StartWorkingDirectory") ?? "";
-			}
-			set {
-				SetProperty("StartWorkingDirectory", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		
-		[Browsable(false)]
-		public bool IsSilverlightProject {
-			get {
-				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.ToUpperInvariant().Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
-			}
-		}
-		
-		[Browsable(false)]
-		public override bool IsWebProject {
-			get {
-				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
-				return guids.ToUpperInvariant().Contains("349C5851-65DF-11DA-9384-00065B846F21");
-			}
-		}
-		
-		[Browsable(false)]
-		public string TestPageFileName {
-			get {
-				return GetEvaluatedProperty("TestPageFileName") ?? "";
-			}
-			set {
-				SetProperty("TestPageFileName", string.IsNullOrEmpty(value) ? null : value);
-			}
-		}
-		#endregion
-		
 		protected override void OnActiveConfigurationChanged(EventArgs e)
 		{
 			base.OnActiveConfigurationChanged(e);
@@ -423,87 +250,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			string extension = Path.GetExtension(fileName);
-			if (".resx".Equals(extension, StringComparison.OrdinalIgnoreCase)
-			    || ".resources".Equals(extension, StringComparison.OrdinalIgnoreCase))
-			{
-				return ItemType.EmbeddedResource;
-			} else if (".xaml".Equals(extension, StringComparison.OrdinalIgnoreCase)) {
-				return ItemType.Page;
-			} else {
-				return base.GetDefaultItemType(fileName);
+		public StartAction StartAction {
+			get {
+				try {
+					return (StartAction)Enum.Parse(typeof(StartAction), GetEvaluatedProperty("StartAction") ?? "Project");
+				} catch (ArgumentException) {
+					return StartAction.Project;
+				}
+			}
+			set {
+				SetProperty("StartAction", value.ToString());
 			}
 		}
-		
-		public override void ProjectCreationComplete()
-		{
-			TargetFramework fx = this.CurrentTargetFramework;
-			if (fx != null && (fx.IsBasedOn(TargetFramework.Net35) || fx.IsBasedOn(TargetFramework.Net35Client))) {
-				AddDotnet35References();
-			}
-			if (fx != null && (fx.IsBasedOn(TargetFramework.Net40) || fx.IsBasedOn(TargetFramework.Net40Client))) {
-				AddDotnet40References();
-			}
-			if (fx != null)
-				UpdateAppConfig(fx);
-			base.ProjectCreationComplete();
-		}
-		
-		protected virtual void AddDotnet35References()
-		{
-			AddReferenceIfNotExists("System.Core", "3.5");
-			
-			if (GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "System.Data", StringComparison.OrdinalIgnoreCase))) {
-				AddReferenceIfNotExists("System.Data.DataSetExtensions", "3.5");
-			}
-			if (GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "System.Xml", StringComparison.OrdinalIgnoreCase))) {
-				AddReferenceIfNotExists("System.Xml.Linq", "3.5");
-			}
-		}
-		
-		protected virtual void RemoveDotnet35References()
-		{
-			// undo "AddDotnet35References"
-			RemoveReference("System.Core");
-			RemoveReference("System.Data.DataSetExtensions");
-			RemoveReference("System.Xml.Linq");
-		}
-		
-		protected virtual void AddDotnet40References()
-		{
-			if (GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, "WindowsBase", StringComparison.OrdinalIgnoreCase))) {
-				AddReferenceIfNotExists("System.Xaml", "4.0");
-			}
-		}
-		
-		protected virtual void RemoveDotnet40References()
-		{
-			RemoveReference("System.Xaml");
-		}
-		
-		void AddReferenceIfNotExists(string name, string requiredTargetFramework)
-		{
-			if (!(GetItemsOfType(ItemType.Reference).Any(r => string.Equals(r.Include, name, StringComparison.OrdinalIgnoreCase)))) {
-				ReferenceProjectItem rpi = new ReferenceProjectItem(this, name);
-				if (requiredTargetFramework != null)
-					rpi.SetMetadata("RequiredTargetFramework", requiredTargetFramework);
-				ProjectService.AddProjectItem(this, rpi);
-			}
-		}
-		
-		void RemoveReference(string name)
-		{
-			ProjectItem reference = GetItemsOfType(ItemType.Reference).FirstOrDefault(r => string.Equals(r.Include, name, StringComparison.OrdinalIgnoreCase));
-			if (reference != null)
-				ProjectService.RemoveProjectItem(this, reference);
-		}
-		
-		protected virtual void AddOrRemoveExtensions()
-		{
-		}
-		
 		
 		#region IUpgradableProject
 		[Browsable(false)]
@@ -513,19 +271,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "MSBuild 2.0");
-		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "MSBuild 3.5");
-		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), "MSBuild 4.0");
-		
 		public virtual CompilerVersion CurrentCompilerVersion {
 			get {
 				switch (MinimumSolutionVersion) {
 					case Solution.SolutionVersionVS2005:
-						return msbuild20;
+						return CompilerVersion.MSBuild20;
 					case Solution.SolutionVersionVS2008:
-						return msbuild35;
+						return CompilerVersion.MSBuild35;
 					case Solution.SolutionVersionVS2010:
-						return msbuild40;
+						return CompilerVersion.MSBuild40;
 					default:
 						throw new NotSupportedException();
 				}
@@ -551,60 +305,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			List<CompilerVersion> versions = new List<CompilerVersion>();
-			if (DotnetDetection.IsDotnet35SP1Installed()) {
-				versions.Add(msbuild20);
-				versions.Add(msbuild35);
-			}
-			versions.Add(msbuild40);
-			return versions;
+			return GetOrCreateBehavior().GetAvailableCompilerVersions();
 		}
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			if (!this.ReadOnly) {
-				lock (SyncRoot) {
-					TargetFramework oldFramework = this.CurrentTargetFramework;
-					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
-						string newToolsVersion = newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor;
-						if (!MSBuildProjectCollection.ContainsToolset(newToolsVersion)) {
-							string errorMessage = "MSBuild Tools version '" + newToolsVersion + "' is not available.";
-							if (newToolsVersion == "2.0" || newToolsVersion == "3.5") {
-								errorMessage += Environment.NewLine + "Please install the .NET Framework 3.5 SP1.";
-							}
-							throw new ProjectUpgradeException(errorMessage);
-						}
-						SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
-					}
-					if (newFramework != null) {
-						UpdateAppConfig(newFramework);
-						
-						ClientProfileTargetFramework clientProfile = newFramework as ClientProfileTargetFramework;
-						if (clientProfile != null) {
-							newFramework = clientProfile.FullFramework;
-							SetProperty(null, null, "TargetFrameworkProfile", "Client", PropertyStorageLocations.Base, true);
-						} else {
-							SetProperty(null, null, "TargetFrameworkProfile", "", PropertyStorageLocations.Base, true);
-						}
-						SetProperty(null, null, "TargetFrameworkVersion", newFramework.Name, PropertyStorageLocations.Base, true);
-						
-						if (oldFramework is ClientProfileTargetFramework)
-							oldFramework = ((ClientProfileTargetFramework)oldFramework).FullFramework;
-						
-						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net35) && newFramework.IsBasedOn(TargetFramework.Net35))
-							AddDotnet35References();
-						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net35) && !newFramework.IsBasedOn(TargetFramework.Net35))
-							RemoveDotnet35References();
-						
-						if (oldFramework != null && !oldFramework.IsBasedOn(TargetFramework.Net40) && newFramework.IsBasedOn(TargetFramework.Net40))
-							AddDotnet40References();
-						else if (oldFramework != null && oldFramework.IsBasedOn(TargetFramework.Net40) && !newFramework.IsBasedOn(TargetFramework.Net40))
-							RemoveDotnet40References();
-					}
-					AddOrRemoveExtensions();
-					Save();
-				}
-			}
+			GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
 		}
 		
 		public static FileName GetAppConfigFile(IProject project, bool createIfNotExists)
@@ -629,39 +335,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectBrowserPad.RefreshViewAsync();
 			}
 			return appConfigFileName;
-		}
-		
-		void UpdateAppConfig(TargetFramework newFramework)
-		{
-			// When changing the target framework, update any existing app.config
-			// Also, for applications (not libraries), create an app.config is it is required for the target framework
-			bool createAppConfig = newFramework.RequiresAppConfigEntry && (this.OutputType != OutputType.Library && this.OutputType != OutputType.Module);
-			
-			string appConfigFileName = GetAppConfigFile(this, createAppConfig);
-			if (appConfigFileName == null)
-				return;
-			
-			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
-				if (xml.Document != null) {
-					XElement configuration = xml.Document.Root;
-					XElement startup = configuration.Element("startup");
-					if (startup == null) {
-						startup = new XElement("startup");
-						if (configuration.HasElements && configuration.Elements().First().Name == "configSections") {
-							// <configSections> must be first element
-							configuration.Elements().First().AddAfterSelf(startup);
-						} else {
-							startup = configuration.AddFirstWithIndentation(startup);
-						}
-					}
-					XElement supportedRuntime = startup.Element("supportedRuntime");
-					if (supportedRuntime == null) {
-						supportedRuntime = startup.AddFirstWithIndentation(new XElement("supportedRuntime"));
-					}
-					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
-					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);
-				}
-			}
 		}
 		#endregion
 	}

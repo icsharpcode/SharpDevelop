@@ -338,7 +338,14 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitCastExpression(CastExpression castExpression, object data)
 		{
 			TypedValue val = Evaluate(castExpression.Expression);
-			DebugType castTo = castExpression.CastTo.ResolveType(context.AppDomain);
+			DebugType castTo = null;
+			try {
+				castTo = castExpression.CastTo.ResolveType(context.AppDomain);
+			} catch (GetValueException) {
+				var typeRef = castExpression.CastTo.Clone();
+				typeRef.Type = typeRef.Type.Insert(0, context.MethodInfo.DeclaringType.Namespace + ".");
+				castTo = typeRef.ResolveType(context.AppDomain);
+			}
 			if (castTo.IsPrimitive && val.Type.IsPrimitive && castTo != val.Type) {
 				object oldVal = val.PrimitiveValue;
 				object newVal;

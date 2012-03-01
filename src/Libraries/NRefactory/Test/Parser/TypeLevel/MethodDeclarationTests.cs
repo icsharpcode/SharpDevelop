@@ -294,6 +294,19 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void CSharpExtensionMethodWithAttributeTest()
+		{
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(
+				"public static int ToInt32([Attr] this string s) { return int.Parse(s); }"
+			);
+			Assert.AreEqual("ToInt32", md.Name);
+			Assert.IsTrue(md.IsExtensionMethod);
+			Assert.AreEqual("s", md.Parameters[0].ParameterName);
+			Assert.AreEqual("System.String", md.Parameters[0].TypeReference.Type);
+			Assert.AreEqual(1, md.Parameters[0].Attributes.Count);
+		}
+		
+		[Test]
 		public void CSharpVoidExtensionMethodTest()
 		{
 			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(

@@ -32,6 +32,7 @@
 			<ConditionEvaluator name="ProjectItem" class="ICSharpCode.SharpDevelop.Project.ProjectItemConditionEvaluator"/>
 			<ConditionEvaluator name="IsTextSelected" class="ICSharpCode.SharpDevelop.Editor.AvalonEdit.TextSelectedCondition"/>
 			<ConditionEvaluator name="ViewInBrowser" class="ICSharpCode.SharpDevelop.ViewInBrowserConditionEvaluator"/>
+			<ConditionEvaluator name="ProjectBehaviorSupported" class="ICSharpCode.SharpDevelop.Project.ProjectBehaviorSupportedConditionEvaluator"/>
 			
 			<Doozer name="CustomTool" class="ICSharpCode.SharpDevelop.Project.CustomToolDoozer"/>
 			<Doozer name="CustomProperty" class="ICSharpCode.SharpDevelop.Project.CustomPropertyDoozer"/>
@@ -184,7 +185,7 @@
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
 			<ToolbarItem id      = "Refresh"
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
-			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+			             tooltip = "${res:Global.Refresh}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "Collapse"
@@ -473,14 +474,14 @@
 					<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False"/>
 					<Condition name = "ViewInBrowser" extensions="aspx,asmx,html,htm,svc"/>
 				</And>
-			
+				
 				<MenuItem id          = "ViewInBrowser"
 				          label       = "${res:ProjectComponent.ContextMenu.ViewInBrowser}"
 				          icon        = "Icons.22x22.Browser"
 				          class       = "ICSharpCode.SharpDevelop.Project.Commands.ViewInBrowser"/>
 				<MenuItem id = "ExcludeSeparator_ViewInBrowser" type = "Separator" />
 			</ComplexCondition>
-
+			
 			<Include id="CutCopyPasteDeleteRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyPasteDeleteRename"/>
 			<MenuItem id = "RenameSeparator" type = "Separator" />
 			<MenuItem id    = "Properties"
@@ -765,7 +766,7 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
 		<MenuItem id    = "RefreshReference"
 		          icon  = "Icons.16x16.BrowserRefresh"
-		          label = "${res:AddIns.HtmlHelp2.Refresh}"
+		          label = "${res:Global.Refresh}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshReference"/>
 		<Condition name="WriteableProject" action="Disable">
 			<MenuItem id    = "Remove"
@@ -1185,15 +1186,18 @@
 			<OptionPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.LoadSaveOptions"/>
+			
 			<OptionPanel id    = "TaskListOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TaskListOptions.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListOptions"/>
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListXaml"/>
+			
 			<OptionPanel id    = "OutputWindowOptions"
 			             label = "${res:Dialog.Options.IDEOptions.OutputPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"/>
 			<OptionPanel id    = "ProjectAndSolutionOptions"
 			             label = "${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ProjectAndSolutionOptions"/>
+		
 		</OptionPanel>
 		<OptionPanel id    = "CodingOptions"
 		             label = "${res:Dialog.Options.IDEOptions.CodingOptionsText}">
@@ -2041,7 +2045,7 @@
 		
 		<ToolbarItem id      = "Refresh"
 		             icon    = "Icons.16x16.BrowserRefresh"
-		             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
+		             tooltip = "${res:Global.Refresh}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.Refresh"/>
 		
 		<ToolbarItem id = "Separator" type  = "Separator"/>
@@ -2329,5 +2333,9 @@
 		<Class
 			id = "TargetingPackWarningWorkaround"
 			class = "ICSharpCode.SharpDevelop.Project.TargetingPackWarningWorkaround"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/ProjectBehaviors">
+
 	</Path>
 </AddIn>
