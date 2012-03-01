@@ -4579,6 +4579,24 @@ class MainClass
 			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
 		
+		[Ignore("Mcs bug")]
+		[Test()]
+		public void TestConditionalExpression ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		int a;
+		$a = true ? System.$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
+		}
 		
 		/// <summary>
 		/// Bug 3655 - Autocompletion does not work for the assembly attribute [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MyExternalAssembly")] 
