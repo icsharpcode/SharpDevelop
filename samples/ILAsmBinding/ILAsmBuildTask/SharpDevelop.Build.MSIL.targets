@@ -1,8 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <UsingTask TaskName="ICSharpCode.Build.Tasks.ILAsm" AssemblyFile="$(SharpDevelopBinPath)\ICSharpCode.Build.Tasks.dll"/>
+    <UsingTask TaskName="ICSharpCode.Build.Tasks.ILAsm" AssemblyFile="$(ILAsmAddInPath)\ILAsmBuildTask.dll"/>
     
     <PropertyGroup>
-        <MSBuildAllProjects>$(MSBuildAllProjects);$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.targets</MSBuildAllProjects>
+        <MSBuildAllProjects>$(MSBuildAllProjects);$(ILAsmAddInPath)\SharpDevelop.Build.MSIL.targets</MSBuildAllProjects>
         <DefaultLanguageSourceExtension>.il</DefaultLanguageSourceExtension>
         <Language>ILAsm</Language>
     </PropertyGroup>
@@ -37,5 +37,5 @@
               />
     </Target>
     
-    <Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Common.targets" />
+    <Import Project="$(ILAsmAddInPath)\SharpDevelop.Build.Common.targets" />
 </Project>

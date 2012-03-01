@@ -28,6 +28,10 @@
 		            extensions = "*.ilproj"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/MSBuildEngine/AdditionalProperties">
+		<String id="ILAsmAddInPath" text = "${AddInPath:ICSharpCode.ILAsmBinding}"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/MSBuildEngine/CompileTaskNames">
 		<!-- Makes SharpDevelop show the text 'Compiling ProjectName...' when the task is started -->
 		<String id="ilasm" text = "ilasm"/>
@@ -59,9 +63,9 @@
 	
 	<Path name = "/SharpDevelop/Workbench/ProjectBindings">
 		<ProjectBinding id                   = "ILAsm"
-		                 guid                 = "{12B76EC0-1D7B-4FA7-A7D0-C524288B48A1}"
-		                 supportedextensions  = ".il"
-		                 projectfileextension = ".ilproj"
-		                 class                = "ICSharpCode.ILAsmBinding.ILAsmProjectBinding" />
+		                guid                 = "{12B76EC0-1D7B-4FA7-A7D0-C524288B48A1}"
+		                supportedextensions  = ".il"
+		                projectfileextension = ".ilproj"
+		                class                = "ICSharpCode.ILAsmBinding.ILAsmProjectBinding" />
 	</Path>
 </AddIn>

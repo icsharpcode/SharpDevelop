@@ -2,13 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
 namespace ICSharpCode.Build.Tasks
 {
-	public sealed class ILAsm : MyToolTask
+	public sealed class ILAsm : ToolTask
 	{
 		ITaskItem outputAssembly;
 		ITaskItem[] sources;
@@ -114,6 +115,20 @@ namespace ICSharpCode.Build.Tasks
 			get {
 				return "IlAsm.exe";
 			}
+		}
+		
+		protected override string GenerateFullPathToTool()
+		{
+			string path = ToolLocationHelper.GetPathToDotNetFrameworkFile(ToolName, TargetDotNetFrameworkVersion.VersionLatest);
+			if (path == null) {
+				base.Log.LogErrorWithCodeFromResources("General.FrameworksFileNotFound", ToolName, ToolLocationHelper.GetDotNetFrameworkVersionFolderPrefix(TargetDotNetFrameworkVersion.VersionLatest));
+			}
+			return path;
+		}
+		
+		void AppendIntegerSwitch(CommandLineBuilder commandLine, string @switch, int value)
+		{
+			commandLine.AppendSwitchUnquotedIfNotNull(@switch, value.ToString(NumberFormatInfo.InvariantInfo));
 		}
 		
 		protected override string GenerateCommandLineCommands()

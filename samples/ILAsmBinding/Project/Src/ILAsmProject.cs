@@ -23,7 +23,7 @@ namespace ICSharpCode.ILAsmBinding
 		public ILAsmProject(ProjectCreateInformation info)
 			: base(info)
 		{
-			this.AddImport(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets", null);
+			this.AddImport(@"$(ILAsmAddInPath)\SharpDevelop.Build.MSIL.Targets", null);
 		}
 		
 		public override string Language {
