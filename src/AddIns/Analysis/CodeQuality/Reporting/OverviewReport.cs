@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.NRefactory.Utils;
@@ -30,9 +32,10 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
 		{
-			
-			var reportFileName = MakeReportFileName(overviewReport);
-			var model = ReportEngine.LoadReportModel(reportFileName);
+			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
+			var model = ReportEngine.LoadReportModel(stream);
+
 			ReportSettings = model.ReportSettings;
 			
 			var	 r =  from c in list
@@ -45,7 +48,8 @@ namespace ICSharpCode.CodeQuality.Reporting
 			IReportCreator creator = ReportEngine.CreatePageBuilder(model,r.ToList(),p);
 			creator.BuildExportList();
 			return creator;
-		}	
+		}
+		
 	}
 	
 	

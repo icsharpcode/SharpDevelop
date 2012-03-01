@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 using ICSharpCode.CodeQuality.Engine.Dom;
 using ICSharpCode.Reports.Core;
@@ -28,8 +29,11 @@ namespace ICSharpCode.CodeQuality.Reporting
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
 		{
-			var reportFileName = MakeReportFileName(overviewReport);
-			var model = ReportEngine.LoadReportModel(reportFileName);
+//			var reportFileName = MakeReportFileName(overviewReport);
+//			
+			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
+			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
+			var model = ReportEngine.LoadReportModel(stream);
 			ReportSettings = model.ReportSettings;
 			var newList = MakeList (list);
 			
