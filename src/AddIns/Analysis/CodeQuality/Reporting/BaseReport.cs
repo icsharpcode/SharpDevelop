@@ -32,12 +32,12 @@ namespace ICSharpCode.CodeQuality.Reporting
 			}
 		}
 		
-		protected string MakeReportFileName (string reportName)
-		{
-			Uri uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
-			var fullname = uri.LocalPath;
-			return  Path.GetDirectoryName(fullname) + Path.DirectorySeparatorChar + reportDir + Path.DirectorySeparatorChar + reportName;
-		} 
+//		protected string MakeReportFileName (string reportName)
+//		{
+//			Uri uri = new Uri(Assembly.GetExecutingAssembly().GetName().CodeBase);
+//			var fullname = uri.LocalPath;
+//			return  Path.GetDirectoryName(fullname) + Path.DirectorySeparatorChar + reportDir + Path.DirectorySeparatorChar + reportName;
+//		} 
 		
 		protected List<string> FileNames {get;private set;}
 		
