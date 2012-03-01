@@ -55,6 +55,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				public IEnumerable<IMethod> Data { get; set; }
 				#region IParameterDataProvider implementation
+				public int StartOffset { get { return 0; } }
+				
 				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
@@ -94,6 +96,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				public IEnumerable<IProperty> Data { get; set; }
 				
 				#region IParameterDataProvider implementation
+				public int StartOffset { get { return 0; } }
+
 				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
@@ -132,6 +136,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			class ArrayProvider : IParameterDataProvider
 			{
 				#region IParameterDataProvider implementation
+				public int StartOffset { get { return 0; } }
+
 				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
@@ -169,6 +175,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			{
 				public IEnumerable<IType> Data { get; set; }
 				#region IParameterDataProvider implementation
+				public int StartOffset { get { return 0; } }
+
 				public string GetHeading (int overload, string[] parameterDescription, int currentParameter)
 				{
 					return "";
@@ -204,7 +212,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			
 			#region IParameterCompletionDataFactory implementation
-			public IParameterDataProvider CreateConstructorProvider (ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateConstructorProvider (int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
 				
 				return new Provider () {
@@ -212,21 +220,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				};
 			}
 
-			public IParameterDataProvider CreateMethodDataProvider (IEnumerable<IMethod> methods)
+			public IParameterDataProvider CreateMethodDataProvider (int startOffset, IEnumerable<IMethod> methods)
 			{
 				return new Provider () {
 					Data = methods
 				};
 			}
 
-			public IParameterDataProvider CreateDelegateDataProvider (ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateDelegateDataProvider (int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
 				return new Provider () {
 					Data = new [] { type.GetDelegateInvokeMethod () }
 				};
 			}
 			
-			public IParameterDataProvider CreateIndexerParameterDataProvider (IType type, AstNode resolvedNode)
+			public IParameterDataProvider CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
 			{
 				if (type.Kind == TypeKind.Array)
 					return new ArrayProvider ();
@@ -234,7 +242,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					Data = type.GetProperties (p => p.IsIndexer)
 				};
 			}
-			public IParameterDataProvider CreateTypeParameterDataProvider (IEnumerable<IType> types)
+			
+			public IParameterDataProvider CreateTypeParameterDataProvider (int startOffset, IEnumerable<IType> types)
 			{
 				return new TypeParameterDataProvider () {
 					Data = types

@@ -41,6 +41,13 @@ namespace ICSharpCode.NRefactory.Completion
 		}
 		
 		/// <summary>
+		/// Gets the start offset of the parameter expression node.
+		/// </summary>
+		int StartOffset { 
+			get; 
+		}
+		
+		/// <summary>
 		/// Returns the markup to use to represent the specified method overload
 		/// in the parameter information window.
 		/// </summary>
