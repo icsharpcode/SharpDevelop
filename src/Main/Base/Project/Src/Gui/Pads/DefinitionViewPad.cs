@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Threading.Tasks;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -70,24 +71,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateTick(e);
 		}
 		
-		void UpdateTick(ParserUpdateStepEventArgs e)
+		async void UpdateTick(ParserUpdateStepEventArgs e)
 		{
 			if (!ctl.IsVisible) return;
 			LoggingService.Debug("DefinitionViewPad.Update");
 			
-			ResolveResult res = /* TODO await */ ResolveAtCaret(e);
+			ResolveResult res = await ResolveAtCaretAsync(e);
 			if (res == null) return;
 			var pos = res.GetDefinitionRegion();
 			if (pos.IsEmpty) return;
 			OpenFile(pos);
 		}
 		
-		bool disableDefinitionView;
-		
-		ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
+		Task<ResolveResult> ResolveAtCaretAsync(ParserUpdateStepEventArgs e)
 		{
-			if (disableDefinitionView)
-				return null;
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			if (window == null) return null;
 			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
@@ -98,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// don't resolve when an unrelated file was changed
 			if (e != null && editor.FileName != e.FileName) return null;
 			
-			return ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document);
+			return ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document);
 		}
 		
 		DomRegion oldPosition;
