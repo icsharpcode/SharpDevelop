@@ -52,12 +52,7 @@ namespace Debugger.AddIn.Pads
 			}
 			
 			// get process
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
-			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
-				this.Process = e.Process;
-			};
-			this.Process = debugger.DebuggedProcess;
+			this.Process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
 		}
 		
 		private Process Process { get; set; }
