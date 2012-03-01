@@ -274,7 +274,8 @@ namespace ICSharpCode.Reports.Core {
 			if (String.IsNullOrEmpty(fileName)) {
 				throw new ArgumentNullException("fileName");
 			}
-			XmlDocument doc = new XmlDocument();
+			var doc = new XmlDocument();
+			/*
 			try {
 				doc.Load(fileName);
 			} catch (XmlException) {
@@ -284,6 +285,10 @@ namespace ICSharpCode.Reports.Core {
 				// TODO: display user-friendly message
 				throw;
 			}
+			*/
+			
+			doc.Load(fileName);
+			
 			
 			BaseItemLoader loader = new BaseItemLoader();
 			object root = loader.Load(doc.DocumentElement);
@@ -296,9 +301,39 @@ namespace ICSharpCode.Reports.Core {
 					IllegalFileFormatException e = new IllegalFileFormatException();
 				throw e;
 			}
+			
+//			var model = CreateModel (doc);
 			return model;
 		}
 		
+		
+		public static ReportModel LoadReportModel (Stream stream) {
+			if (stream == null) {
+				throw new ArgumentNullException("stream");
+			}
+			
+			var doc = new XmlDocument();
+			doc.Load(stream);
+			
+			BaseItemLoader loader = new BaseItemLoader();
+			object root = loader.Load(doc.DocumentElement);
+			
+			ReportModel model = root as ReportModel;
+			if (model != null) {
+//				model.ReportSettings.FileName = fileName;
+//				FilePathConverter.AdjustReportName(model);
+			} else {
+					IllegalFileFormatException e = new IllegalFileFormatException();
+				throw e;
+			}
+			return model;
+		}
+		
+		/*
+		private static ReportModel CreateModel(XmlDocument document)
+		{
+			
+		}*/
 		#endregion
 		
 		#region Preview to Windows PreviewDialog
