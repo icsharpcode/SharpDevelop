@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				this.objectGraphControl.Clear();
 				return;
 			}
-			this.objectGraphControl.Refresh();
+			this.objectGraphControl.RefreshView();
 		}
 		
 		protected override void SelectProcess(Process process)

@@ -147,66 +147,59 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			List<CallStackItem> items = null;
+			List<CallStackItem> items = new List<CallStackItem>();
 			using(new PrintTimes("Callstack refresh")) {
-				try {
-					Utils.DoEvents(debuggedProcess);
-					items = CreateItems().ToList();
-				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(System.Exception) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						throw;
-					}
+				bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
+				bool lastItemIsExternalMethod = false;
+				
+				foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
+					StackFrame f = frame;
+					debuggedProcess.EnqueueWork(
+						Dispatcher,
+						delegate {
+							items.AddIfNotNull(CreateItem(f, showExternalMethods, ref lastItemIsExternalMethod));
+						});
 				}
 			}
 			view.ItemsSource = items;
 		}
 		
-		IEnumerable<CallStackItem> CreateItems()
+		CallStackItem CreateItem(StackFrame frame, bool showExternalMethods, ref bool lastItemIsExternalMethod)
 		{
-			bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
-			bool lastItemIsExternalMethod = false;
+			CallStackItem item;
 			
-			foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
-				CallStackItem item;
-				
-				// line number
-				string lineNumber = string.Empty;
-				if (DebuggingOptions.Instance.ShowLineNumbers) {
-					if (frame.NextStatement != null)
-						lineNumber = frame.NextStatement.StartLine.ToString();
-				}
-				
-				// show modules names
-				string moduleName = string.Empty;
-				if (DebuggingOptions.Instance.ShowModuleNames) {
-					moduleName = frame.MethodInfo.DebugModule.ToString();
-				}
-				
-				if (frame.HasSymbols || showExternalMethods) {
-					// Show the method in the list
-					
-					item = new CallStackItem() {
-						Name = GetFullName(frame), Language = "", Line = lineNumber, ModuleName = moduleName
-					};
-					lastItemIsExternalMethod = false;
-					item.Frame = frame;
-				} else {
-					// Show [External methods] in the list
-					if (lastItemIsExternalMethod) continue;
-					item = new CallStackItem() {
-						Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"),
-						Language = ""
-					};
-					lastItemIsExternalMethod = true;
-				}
-				
-				yield return item;
-				
-				Utils.DoEvents(debuggedProcess);
+			// line number
+			string lineNumber = string.Empty;
+			if (DebuggingOptions.Instance.ShowLineNumbers) {
+				if (frame.NextStatement != null)
+					lineNumber = frame.NextStatement.StartLine.ToString();
 			}
+			
+			// show modules names
+			string moduleName = string.Empty;
+			if (DebuggingOptions.Instance.ShowModuleNames) {
+				moduleName = frame.MethodInfo.DebugModule.ToString();
+			}
+			
+			if (frame.HasSymbols || showExternalMethods) {
+				// Show the method in the list
+				
+				item = new CallStackItem() {
+					Name = GetFullName(frame), Language = "", Line = lineNumber, ModuleName = moduleName
+				};
+				lastItemIsExternalMethod = false;
+				item.Frame = frame;
+			} else {
+				// Show [External methods] in the list
+				if (lastItemIsExternalMethod) return null;
+				item = new CallStackItem() {
+					Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"),
+					Language = ""
+				};
+				lastItemIsExternalMethod = true;
+			}
+			
+			return item;
 		}
 		
 		internal static string GetFullName(StackFrame frame)

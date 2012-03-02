@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -17,26 +16,29 @@ namespace Debugger.AddIn.TreeModel
 {
 	public static partial class Utils
 	{
-		/// <param name="process">Process on which to track debuggee state</param>
-		public static void DoEvents(Process process)
+		public static void EnqueueWork(this Process process, Dispatcher dispatcher, Action work)
 		{
-			WorkbenchSingleton.AssertMainThread();
-			if (process == null) return;
-			DebuggeeState oldState = process.DebuggeeState;
-			WpfDoEvents();
-			DebuggeeState newState = process.DebuggeeState;
-			if (oldState != newState) {
-				LoggingService.Info("Aborted because debuggee resumed");
-				throw new AbortedBecauseDebuggeeResumedException();
-			}
-		}
-		
-		public static void WpfDoEvents()
-		{
-			WorkbenchSingleton.AssertMainThread();
-			DispatcherFrame frame = new DispatcherFrame();
-			Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() => frame.Continue = false));
-			Dispatcher.PushFrame(frame);
+			var debuggeeStateWhenEnqueued = process.DebuggeeState;
+			// Always ask the scheduler to do only one piece of work at a time
+			// - this might actually be completely ok as we are not waiting anywhere between thread
+			dispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				(Action)delegate {
+					// Check that the user has not stepped in the meantime - if he has, do not do anything at all
+					if (process.IsPaused && debuggeeStateWhenEnqueued == process.DebuggeeState) {
+						try {
+							// Do the work, this may recursively enqueue more work
+							work();
+						} catch(System.Exception ex) {
+							if (process == null || process.HasExited) {
+								// Process unexpectedly exited - silently ignore
+							} else {
+								MessageService.ShowException(ex);
+							}
+						}
+					}
+				}
+			);
 		}
 	}
 	
@@ -59,7 +61,7 @@ namespace Debugger.AddIn.TreeModel
 	public class PrintTime: IDisposable
 	{
 		string text;
-		Stopwatch stopwatch = new Stopwatch();
+		System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 		
 		public PrintTime(string text)
 		{

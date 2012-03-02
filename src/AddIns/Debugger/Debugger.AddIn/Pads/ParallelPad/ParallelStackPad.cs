@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
+using System.Windows.Threading;
 using Debugger;
 using Debugger.AddIn.Pads.ParallelPad;
 using Debugger.AddIn.TreeModel;
@@ -78,8 +78,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				try {
 					// create all simple ThreadStacks
 					foreach (Thread thread in debuggedProcess.Threads) {
-						Utils.DoEvents(debuggedProcess);
-						CreateThreadStack(thread);
+						var t = thread;
+						debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => CreateThreadStack(t));
 					}
 				}
 				catch(AbortedBecauseDebuggeeResumedException) { }
@@ -509,12 +509,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						result.Add(obj);
 				}
 				
-				Utils.DoEvents(debuggedProcess);
 				// return null if we are dealing with a simple thread
 				return noTasks == 0 ? null : result;
 			}
-			
-			Utils.DoEvents(debuggedProcess);
+
 			return result;
 		}
 		

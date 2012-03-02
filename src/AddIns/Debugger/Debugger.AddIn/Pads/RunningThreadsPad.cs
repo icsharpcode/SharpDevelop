@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.Pads.ParallelPad;
@@ -92,9 +93,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			using(new PrintTimes("Threads refresh")) {
 				try {
-					foreach (Thread t in debuggedProcess.Threads) {
-						Utils.DoEvents(debuggedProcess);
-						AddThread(t);
+					foreach (var t in debuggedProcess.Threads) {
+						var thread = t;
+						debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => AddThread(thread));
 					}
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(Exception) {
