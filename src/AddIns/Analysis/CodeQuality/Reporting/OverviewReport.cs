@@ -35,7 +35,6 @@ namespace ICSharpCode.CodeQuality.Reporting
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
 			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.Overviewreport.srd");
 			var model = ReportEngine.LoadReportModel(stream);
-
 			ReportSettings = model.ReportSettings;
 			
 			var	 r =  from c in list

@@ -28,9 +28,7 @@ namespace ICSharpCode.CodeQuality.Reporting
 		}
 		
 		public IReportCreator Run(ReadOnlyCollection<AssemblyNode> list)
-		{
-//			var reportFileName = MakeReportFileName(overviewReport);
-//			
+		{			
 			System.Reflection.Assembly asm = Assembly.GetExecutingAssembly();
 			System.IO.Stream stream = asm.GetManifestResourceStream("ICSharpCode.CodeQuality.Reporting.DependencyReport.srd");
 			var model = ReportEngine.LoadReportModel(stream);
