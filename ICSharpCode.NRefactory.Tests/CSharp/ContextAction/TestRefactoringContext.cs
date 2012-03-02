@@ -123,6 +123,16 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		{
 			return doc.GetText (offset, length);
 		}
+		
+		public override string GetText (ISegment segment)
+		{
+			return doc.GetText (segment);
+		}
+		
+		public override IDocumentLine GetLineByOffset (int offset)
+		{
+			return doc.GetLineByOffset (offset);
+		}
 		#endregion
 		
 		#region Resolving

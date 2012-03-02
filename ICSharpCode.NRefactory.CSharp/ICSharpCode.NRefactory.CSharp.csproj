@@ -327,6 +327,7 @@
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
     <Compile Include="Ast\TokenRole.cs" />
+    <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

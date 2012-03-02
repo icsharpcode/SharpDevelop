@@ -234,6 +234,7 @@
     <Compile Include="CSharp\ContextAction\CheckIfParameterIsNullTests.cs" />
     <Compile Include="CSharp\ContextAction\ConvertForeachToForTests.cs" />
     <Compile Include="CSharp\ContextAction\AddAnotherAccessorTests.cs" />
+    <Compile Include="CSharp\ContextAction\RemoveRegionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
