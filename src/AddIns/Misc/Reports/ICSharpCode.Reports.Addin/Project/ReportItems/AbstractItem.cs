@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			InitializeComponent();
 			TypeDescriptor.AddProvider(new AbstractItemTypeProvider(), typeof(AbstractItem));
-			VisibleInReport = true;
+//			VisibleInReport = true;
 		}
 		
 		
@@ -66,7 +66,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		protected new Size DefaultSize {get;set;}
 			
-		public  bool VisibleInReport {get;set;}
+//		public  bool VisibleInReport {get;set;}
 		
 		#endregion
 		

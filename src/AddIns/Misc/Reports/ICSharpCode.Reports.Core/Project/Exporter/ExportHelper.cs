@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException("item");
 			}
 
-			if (item.VisibleInReport == true) {
+//			if (item.VisibleInReport == true) {
 				
 				var columnBuilder = item as IExportColumnBuilder;
 				IBaseExportColumn lineItem = null;
@@ -39,10 +39,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					                                                         lineItem.StyleDecorator.Size);
 				}
 				return lineItem;
-			} else
-			{
-				return null;
-			}
+//			} else
+//			{
+//				return null;
+//			}
 		}
 		
 		
