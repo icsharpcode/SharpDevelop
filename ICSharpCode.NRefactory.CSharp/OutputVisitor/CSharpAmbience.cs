@@ -60,6 +60,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					writer.Write(' ');
 				} else if (node is DelegateDeclaration) {
 					writer.Write("delegate ");
+				} else if (node is EventDeclaration) {
+					writer.Write("event ");
 				}
 			}
 			
@@ -166,7 +168,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (typeDef.DeclaringTypeDefinition != null) {
 				WriteTypeDeclarationName(typeDef.DeclaringTypeDefinition, writer);
 				writer.Write('.');
-			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
+			} else if ((ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) == ConversionFlags.UseFullyQualifiedTypeNames) {
 				writer.Write(typeDef.Namespace);
 				writer.Write('.');
 			}
@@ -179,7 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteMemberDeclarationName(IMember member, StringWriter writer)
 		{
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			if ((ConversionFlags & ConversionFlags.UseFullyQualifiedMemberNames) == ConversionFlags.UseFullyQualifiedMemberNames) {
+			if ((ConversionFlags & ConversionFlags.ShowDeclaringType) == ConversionFlags.ShowDeclaringType) {
 				writer.Write(ConvertType(member.DeclaringType));
 				writer.Write('.');
 			}
