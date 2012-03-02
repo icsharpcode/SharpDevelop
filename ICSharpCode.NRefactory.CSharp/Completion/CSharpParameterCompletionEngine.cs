@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<IType> CollectAllTypes (IType baseType)
 		{
 			var state = GetState ();
-			for (var n = state.CurrentUsingScope; n != null; n = n.Parent) {
+			for( var n = state.CurrentUsingScope; n != null; n = n.Parent) {
 				foreach (var u in n.Usings) {
 					foreach (var type in u.Types) {
 						if (type.TypeParameterCount > 0 && type.Name == baseType.Name)
@@ -304,20 +304,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		public int GetCurrentParameterIndex (int triggerOffset)
+		public int GetCurrentParameterIndex (int triggerOffset, int endOffset)
 		{
-			SetOffset (triggerOffset);
-			var text = GetMemberTextToCaret ();
-			if (text.Item1.EndsWith ("(") || text.Item1.EndsWith ("<")) 
+			char lastChar = document.GetCharAt (endOffset - 1);
+			if (lastChar == '(' || lastChar == '<') 
 				return 0;
 			var parameter = new Stack<int> ();
-			
 			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			
-			for (int i = 0; i < text.Item1.Length; i++) {
-				char ch = text.Item1 [i];
-				char nextCh = i + 1 < text.Item1.Length ? text.Item1 [i + 1] : '\0';
-				
+			for( int i = triggerOffset; i < endOffset; i++) {
+				char ch = document.GetCharAt (i);
+				char nextCh = i + 1 < document.TextLength ? document.GetCharAt (i + 1) : '\0';
 				switch (ch) {
 				case '(':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
@@ -327,8 +323,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				case ')':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
 						break;
-					if (parameter.Count > 0)
+					if (parameter.Count > 0) {
 						parameter.Pop ();
+					} else {
+						return -1;
+					}
 					break;
 				case '<':
 					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
@@ -407,6 +406,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return -1;
 			return parameter.Pop () + 1;
 		}
+
 		
 		/*
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
