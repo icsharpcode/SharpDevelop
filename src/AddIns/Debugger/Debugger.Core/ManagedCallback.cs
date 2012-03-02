@@ -513,7 +513,7 @@ namespace Debugger
 			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
 			
 			ExceptionType exceptionType = (ExceptionType)_exceptionType;
-			bool pauseOnHandled = process.Options != null && process.Options.PauseOnHandledExceptions;
+			bool pauseOnHandled = !process.Evaluating && process.Options != null && process.Options.PauseOnHandledExceptions;
 			
 			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
 				// sanity check: we can only handle one exception after another
