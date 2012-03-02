@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpParameterCompletionEngine.cs
 //  
 // Author:
@@ -67,8 +67,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			if (member == null || member2 == null)
 				return null;
 			member2.Remove ();
@@ -102,8 +102,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column + 1); // '>' position
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			if (member == null || member2 == null)
 				return null;
 			member2.Remove ();

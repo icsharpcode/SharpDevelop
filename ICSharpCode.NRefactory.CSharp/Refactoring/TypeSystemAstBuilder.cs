@@ -59,47 +59,56 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		/// <summary>
 		/// Specifies whether the ast builder should add annotations to type references.
+		/// The default value is <c>false</c>.
 		/// </summary>
 		public bool AddAnnotations { get; set; }
 		
 		/// <summary>
 		/// Controls the accessibility modifiers are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowAccessibility { get; set; }
 		
 		/// <summary>
 		/// Controls the non-accessibility modifiers are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowModifiers { get; set; }
 		
 		/// <summary>
 		/// Controls whether base type references are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowBaseTypes { get; set; }
 		
 		/// <summary>
 		/// Controls whether type parameter declarations are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowTypeParameters { get; set; }
 		
 		/// <summary>
 		/// Controls whether contraints on type parameter declarations are shown.
 		/// Has no effect if ShowTypeParameters is false.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowTypeParameterConstraints { get; set; }
 		
 		/// <summary>
 		/// Controls whether the names of parameters are shown.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowParameterNames { get; set; }
 		
 		/// <summary>
 		/// Controls whether to show default values of optional parameters, and the values of constant fields.
+		/// The default value is <c>true</c>.
 		/// </summary>
 		public bool ShowConstantValues { get; set; }
 		
 		/// <summary>
 		/// Controls whether to use fully-qualified type names or short type names.
+		/// The default value is <c>false</c>.
 		/// </summary>
 		public bool AlwaysUseShortTypeNames { get; set; }
 		#endregion
@@ -397,7 +406,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		#endregion
 		
 		#region Convert Entity
-		public AttributedNode ConvertEntity(IEntity entity)
+		public EntityDeclaration ConvertEntity(IEntity entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -425,7 +434,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		AttributedNode ConvertTypeDefinition(ITypeDefinition typeDefinition)
+		EntityDeclaration ConvertTypeDefinition(ITypeDefinition typeDefinition)
 		{
 			Modifiers modifiers = ModifierFromAccessibility(typeDefinition.Accessibility);
 			if (this.ShowModifiers) {
@@ -618,7 +627,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return decl;
 		}
 		
-		AttributedNode ConvertOperator(IMethod op)
+		EntityDeclaration ConvertOperator(IMethod op)
 		{
 			OperatorType? opType = OperatorDeclaration.GetOperatorType(op.Name);
 			if (opType == null)

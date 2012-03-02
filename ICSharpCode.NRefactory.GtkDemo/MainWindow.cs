@@ -146,7 +146,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 				return comment;
 			if (child is PreProcessorDirective)
 				return comment;
-			if (child is AttributedNode)
+			if (child is EntityDeclaration)
 				return classPixbuf;
 			if (child is CSharpTokenNode)
 				return tokenPixbuf;

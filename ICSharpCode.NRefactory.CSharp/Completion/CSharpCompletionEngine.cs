@@ -942,7 +942,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		static bool IsInSwitchContext (AstNode node)
 		{
 			var n = node;
-			while (n != null && !(n is MemberDeclaration)) {
+			while (n != null && !(n is EntityDeclaration)) {
 				if (n is SwitchStatement)
 					return true;
 				if (n is BlockStatement)
@@ -2042,13 +2042,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var curNode = baseUnit.GetNodeAt (location);
 			
 			// hack for local variable declaration missing ';' issue - remove that if it works.
-			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
+			if (curNode is EntityDeclaration || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()");
 				curNode = baseUnit.GetNodeAt (location);
 			}
 			
 			// Hack for handle object initializer continuation expressions
-			if (curNode is AttributedNode || baseUnit.GetNodeAt<Expression> (location) == null) {
+			if (curNode is EntityDeclaration || baseUnit.GetNodeAt<Expression> (location) == null) {
 				baseUnit = ParseStub ("a()};");
 			}
 			var mref = baseUnit.GetNodeAt<MemberReferenceExpression> (location); 
@@ -2092,8 +2092,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				tref.ReplaceWith (expr);
 			}
 			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			member2.Remove ();
 			member.ReplaceWith (member2);
 			return new ExpressionResult ((AstNode)expr, Unit);
@@ -2194,8 +2194,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null)
 				return null;
 			
-			var member = Unit.GetNodeAt<AttributedNode> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<AttributedNode> (memberLocation);
+			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
+			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			if (member != null && member2 != null) {
 				member2.Remove ();
 				

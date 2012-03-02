@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			return builder.ConvertType (fullType);
 		}
 		
-		public override void ReplaceReferences (IMember member, MemberDeclaration replaceWidth)
+		public override void ReplaceReferences (IMember member, EntityDeclaration replaceWith)
 		{
 //			throw new NotImplementedException ();
 		}

@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException("options");
 			
 			TypeSystemAstBuilder astBuilder = CreateAstBuilder();
-			AttributedNode node = astBuilder.ConvertEntity(entity);
+			EntityDeclaration node = astBuilder.ConvertEntity(entity);
 			PrintModifiers(node.Modifiers, formatter);
 			
 			if ((ConversionFlags & ConversionFlags.ShowDefinitionKeyWord) == ConversionFlags.ShowDefinitionKeyWord) {
@@ -153,6 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		TypeSystemAstBuilder CreateAstBuilder()
 		{
 			TypeSystemAstBuilder astBuilder = new TypeSystemAstBuilder();
+			astBuilder.AddAnnotations = true;
 			astBuilder.ShowModifiers = (ConversionFlags & ConversionFlags.ShowModifiers) == ConversionFlags.ShowModifiers;
 			astBuilder.ShowAccessibility = (ConversionFlags & ConversionFlags.ShowAccessibility) == ConversionFlags.ShowAccessibility;
 			astBuilder.AlwaysUseShortTypeNames = (ConversionFlags & ConversionFlags.UseFullyQualifiedTypeNames) != ConversionFlags.UseFullyQualifiedTypeNames;

@@ -24,25 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ConstructorDeclaration : AttributedNode
+	public class ConstructorDeclaration : EntityDeclaration
 	{
 		public static readonly Role<ConstructorInitializer> InitializerRole = new Role<ConstructorInitializer>("Initializer", ConstructorInitializer.Null);
 		
-		/// <summary>
-		/// Gets/Sets the name of the class containing the constructor.
-		/// This property can be used to inform the output visitor about the class name when writing a constructor declaration
-		/// without writing the complete type declaration. It is ignored when the constructor has a type declaration as parent.
-		/// </summary>
-		public string Name { get; set; }
-		
-		public Identifier IdentifierToken {
-			get { return GetChildByRole (Roles.Identifier); }
-			set { SetChildByRole (Roles.Identifier, value); }
+		public override EntityType EntityType {
+			get { return EntityType.Constructor; }
 		}
 		
 		public CSharpTokenNode LParToken {
@@ -69,10 +60,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public BlockStatement Body {
 			get { return GetChildByRole (Roles.Body); }
 			set { SetChildByRole (Roles.Body, value); }
-		}
-		
-		public override NodeType NodeType {
-			get { return NodeType.Member; }
 		}
 		
 		public override void AcceptVisitor (IAstVisitor visitor)
