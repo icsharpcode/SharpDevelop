@@ -90,7 +90,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		string ConvertType(IType type);
 		string ConvertVariable(IVariable variable);
 		
-		string WrapAttribute(string attribute);
 		string WrapComment(string comment);
 	}
 }

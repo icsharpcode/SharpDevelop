@@ -58,6 +58,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		/// <summary>
+		/// Specifies whether the ast builder should add annotations to type references.
+		/// </summary>
+		public bool AddAnnotations { get; set; }
+		
+		/// <summary>
 		/// Controls the accessibility modifiers are shown.
 		/// </summary>
 		public bool ShowAccessibility { get; set; }
@@ -104,6 +109,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
+			AstType astType = ConvertTypeHelper(type);
+			if (AddAnnotations)
+				astType.AddAnnotation(type);
+			return astType;
+		}
+		
+		AstType ConvertTypeHelper(IType type)
+		{
 			TypeWithElementType typeWithElementType = type as TypeWithElementType;
 			if (typeWithElementType != null) {
 				if (typeWithElementType is PointerType) {
@@ -316,8 +329,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return new TypeOfExpression(ConvertType(((TypeOfResolveResult)rr).Type));
 			} else if (rr is ArrayCreateResolveResult) {
 				ArrayCreateResolveResult acrr = (ArrayCreateResolveResult)rr;
-				AstType type = ConvertType(acrr.Type);
-				throw new NotImplementedException();
+				ArrayCreateExpression ace = new ArrayCreateExpression();
+				ace.Type = ConvertType(acrr.Type);
+				ComposedType composedType = ace.Type as ComposedType;
+				if (composedType != null) {
+					composedType.ArraySpecifiers.MoveTo(ace.AdditionalArraySpecifiers);
+					if (!composedType.HasNullableSpecifier && composedType.PointerRank == 0)
+						ace.Type = composedType.BaseType;
+				}
+				
+				if (acrr.SizeArguments != null && acrr.InitializerElements == null) {
+					ace.AdditionalArraySpecifiers.FirstOrNullObject().Remove();
+					ace.Arguments.AddRange(acrr.SizeArguments.Select(ConvertConstantValue));
+				}
+				if (acrr.InitializerElements != null) {
+					ArrayInitializerExpression initializer = new ArrayInitializerExpression();
+					initializer.Elements.AddRange(acrr.InitializerElements.Select(ConvertConstantValue));
+					ace.Initializer = initializer;
+				}
+				return ace;
 			} else if (rr.IsCompileTimeConstant) {
 				return ConvertConstantValue(rr.Type, rr.ConstantValue);
 			} else {
