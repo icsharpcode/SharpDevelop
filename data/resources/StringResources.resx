@@ -3876,7 +3876,7 @@ has been changed externally. Do you want to reload it?</value>
     <value>Grid Properties</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.HeightLabel" xml:space="preserve">
-    <value>Height</value>
+    <value>&amp;Height</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.InPlaceEditCheckBox" xml:space="preserve">
     <value>Enable in-place editing of ToolStrips</value>
@@ -3915,7 +3915,7 @@ has been changed externally. Do you want to reload it?</value>
     <value>Snap to Grid</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.WidthLabel" xml:space="preserve">
-    <value>Width</value>
+    <value>&amp;Width</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.InsertTodoCommentInEventHandlers" xml:space="preserve">
     <value>Insert "TODO" comment in new event handlers</value>

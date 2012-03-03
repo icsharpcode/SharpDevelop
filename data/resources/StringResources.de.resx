@@ -3680,7 +3680,7 @@ wurde außerhalb der Applikation geändert. Wollen Sie die Datei neu laden?</val
     <value>Rastereinstellungen</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.HeightLabel" xml:space="preserve">
-    <value>Höhe</value>
+    <value>&amp;Höhe</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.InPlaceEditCheckBox" xml:space="preserve">
     <value>Direkt-Editieren von ToolStrips aktivieren</value>
@@ -3719,7 +3719,7 @@ wurde außerhalb der Applikation geändert. Wollen Sie die Datei neu laden?</val
     <value>Am Gitter einrasten</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.WidthLabel" xml:space="preserve">
-    <value>Breite</value>
+    <value>&amp;Breite</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.InsertTodoCommentInEventHandlers" xml:space="preserve">
     <value>"TODO"-Kommentare für neue Ereignis-Handler einfügen</value>
