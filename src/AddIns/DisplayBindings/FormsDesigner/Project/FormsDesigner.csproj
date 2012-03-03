@@ -85,6 +85,10 @@
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\OptionPanels\GridOptionsPanelXAML.xaml.cs">
+      <DependentUpon>GridOptionsPanelXAML.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml.cs">
       <DependentUpon>LocalizationModelOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -190,6 +194,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Gui\OptionPanels\GridOptionsPanelXAML.xaml" />
     <Page Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
