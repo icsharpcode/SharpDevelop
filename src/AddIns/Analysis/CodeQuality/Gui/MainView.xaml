@@ -19,7 +19,7 @@
 			</Menu>
 		</ToolBar>
 		
-		<TabControl>
+		<TabControl x:Name="mainTab">
 			<TabItem
 				Header="Dependency Matrix">
 				<Grid>
