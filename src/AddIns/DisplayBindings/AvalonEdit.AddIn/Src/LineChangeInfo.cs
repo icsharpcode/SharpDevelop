@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -21,16 +22,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		IDocument CurrentDocument { get; }
 		IDocument BaseDocument { get; }
 	}
-	
-	public enum ChangeType
-	{
-		None,
-		Added,
-		Deleted,
-		Modified,
-		Unsaved
-	}
-	
+
 	public struct LineChangeInfo : IEquatable<LineChangeInfo>
 	{
 		public static readonly LineChangeInfo EMPTY = new LineChangeInfo(ChangeType.None, 1, 1);

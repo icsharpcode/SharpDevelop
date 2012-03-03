@@ -4,24 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using ICSharpCode.AvalonEdit.Document;
 
-namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
+
+namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public static class Utils
 	{
-		public static void Set<T>(this IList<T> instance, int index, T value)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-			
-			if (index == instance.Count)
-				instance.Add(value);
-			else
-				instance[index] = value;
-		}
-		
 		public static OffsetChangeMap ToOffsetChangeMap(this IEnumerable<Edit> edits)
 		{
 			var map = new OffsetChangeMap();

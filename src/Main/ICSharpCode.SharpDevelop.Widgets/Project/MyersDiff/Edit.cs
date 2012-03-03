@@ -37,9 +37,8 @@
  */
 
 using System;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
+namespace ICSharpCode.SharpDevelop.Widgets.MyersDiff
 {
 	/// <summary>
 	/// A modified region detected between two versions of roughly the same content.
@@ -200,5 +199,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		}
 	}
 	
-
+	/// <remarks>Moved from AvaloEdit</remarks>
+	public enum ChangeType
+	{
+		None,
+		Added,
+		Deleted,
+		Modified,
+		Unsaved
+	}
 }

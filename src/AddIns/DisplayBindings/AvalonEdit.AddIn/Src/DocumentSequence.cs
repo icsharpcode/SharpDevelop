@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
-namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
+namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public class DocumentSequence : ISequence
 	{

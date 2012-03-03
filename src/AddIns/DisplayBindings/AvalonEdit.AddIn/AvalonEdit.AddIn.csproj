@@ -72,6 +72,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\DocumentSequence.cs" />
+    <Compile Include="Src\Utils.cs" />
     <None Include="AvalonEdit.AddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -108,12 +110,6 @@
     </Compile>
     <Compile Include="Src\HiddenDefinition\HiddenDefinitionRenderer.cs" />
     <Compile Include="Src\LineChangeInfo.cs" />
-    <Compile Include="Src\MyersDiff\DocumentSequence.cs" />
-    <Compile Include="Src\MyersDiff\Edit.cs" />
-    <Compile Include="Src\MyersDiff\ISequence.cs" />
-    <Compile Include="Src\MyersDiff\MyersDiffAlgorithm.cs" />
-    <Compile Include="Src\MyersDiff\StringSequence.cs" />
-    <Compile Include="Src\MyersDiff\Utils.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SearchPanelLocalization.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
@@ -244,7 +240,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Src\MyersDiff" />
+    <Folder Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\MyersDiff" />
     <Folder Include="Src\HiddenDefinition" />
   </ItemGroup>
 </Project>
