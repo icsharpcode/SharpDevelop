@@ -1112,6 +1112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectOptions.Properties["SolutionDir"] = EnsureBackslash(solution.Directory);
 			projectOptions.Properties["SolutionExt"] = ".sln";
 			projectOptions.Properties["SolutionFileName"] = Path.GetFileName(solution.FileName);
+			projectOptions.Properties["SolutionName"] = solution.Name;
 			projectOptions.Properties["SolutionPath"] = solution.FileName;
 			
 			return projectOptions;
