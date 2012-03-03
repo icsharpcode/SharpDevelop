@@ -71,7 +71,6 @@
     <EmbeddedResource Include="Resources\AddSidebarComponentsDialog.xfrm" />
     <EmbeddedResource Include="Resources\ConfigureSidebarDialog.xfrm" />
     <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
-    <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Commands\FormsCommands.cs" />
     <Compile Include="Src\Commands\SideBarCommands.cs" />
@@ -85,8 +84,8 @@
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\OptionPanels\GridOptionsPanelXAML.xaml.cs">
-      <DependentUpon>GridOptionsPanelXAML.xaml</DependentUpon>
+    <Compile Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml.cs">
+      <DependentUpon>GridOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml.cs">
@@ -104,9 +103,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\CustomComponentsSideTab.cs" />
-    <Compile Include="Src\Gui\OptionPanels\GridOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\RenameCategoryDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -194,7 +190,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\Gui\OptionPanels\GridOptionsPanelXAML.xaml" />
+    <Page Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml" />
     <Page Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

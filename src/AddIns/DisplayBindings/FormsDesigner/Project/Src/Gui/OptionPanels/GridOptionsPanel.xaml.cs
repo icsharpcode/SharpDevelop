@@ -25,9 +25,9 @@ namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for GridOptrionsXAML.xaml
 	/// </summary>
-	public partial class GridOptionsPanelXAML : OptionPanel
+	public partial class GridOptionsPanel : OptionPanel
 	{
-		public GridOptionsPanelXAML()
+		public GridOptionsPanel()
 		{
 			InitializeComponent();
 			bool snapToGridOn = PropertyService.Get("FormsDesigner.DesignerOptions.SnapToGridMode", false);
