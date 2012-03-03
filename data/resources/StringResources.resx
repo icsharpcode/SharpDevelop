@@ -3876,7 +3876,7 @@ has been changed externally. Do you want to reload it?</value>
     <value>Grid Properties</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.HeightLabel" xml:space="preserve">
-    <value>&amp;Height</value>
+    <value>Height</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.InPlaceEditCheckBox" xml:space="preserve">
     <value>Enable in-place editing of ToolStrips</value>
@@ -3915,7 +3915,7 @@ has been changed externally. Do you want to reload it?</value>
     <value>Snap to Grid</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.WidthLabel" xml:space="preserve">
-    <value>&amp;Width</value>
+    <value>Width</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.InsertTodoCommentInEventHandlers" xml:space="preserve">
     <value>Insert "TODO" comment in new event handlers</value>
@@ -4324,6 +4324,15 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Project Upgrade</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>The project '${ProjectName}' is targeting MSBuild ${OldToolsVersion}, but that version is not installed.
+Do you want to upgrade the project to MSBuild ${NewToolsVersion}?
+The project cannot be opened without upgrading.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
+    <value>Upgrade to MSBuild ${NewToolsVersion}</value>
+    <comment>OK button for UpdateOnLoadDueToMissingMSBuild message box</comment>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>This solution was created using a previous version of SharpDevelop.
@@ -5313,11 +5322,17 @@ Shows the full callstack of the error.</comment>
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Address</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(dynamic)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>No symbols loaded.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Symbols loaded.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(in memory)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Order</value>

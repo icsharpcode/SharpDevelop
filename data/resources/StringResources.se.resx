@@ -277,6 +277,15 @@ Ladda hem ett tillägg från Internet och klicka sedan på 'Installera Tillägg'
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>Hanteraren för Hjälp biblioteket hittades inte. Vänligen kontrollera om den har installerats på rätt sätt.</value>
   </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installerade hjälpkataloger</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Starta hjälphanteraren</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Help Viewer</value>
+  </data>
   <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
     <value>Sök</value>
   </data>
@@ -289,11 +298,20 @@ Ladda hem ett tillägg från Internet och klicka sedan på 'Installera Tillägg'
   <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
     <value>Visa hjälp</value>
   </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Använd extern hjälp</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Antal bytes per rad</value>
+  </data>
   <data name="AddIns.HexEditor.Display" xml:space="preserve">
     <value>Display</value>
   </data>
   <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
     <value>Data</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
+    <value>Numeriskt system</value>
   </data>
   <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
     <value>Decimal</value>
@@ -339,6 +357,12 @@ Ladda hem ett tillägg från Internet och klicka sedan på 'Installera Tillägg'
   </data>
   <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
     <value>Resultat</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Sammanslagna noder</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Alla funktioner för {0}</value>
   </data>
   <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
     <value>Profil</value>
@@ -462,6 +486,9 @@ Ladda hem ett tillägg från Internet och klicka sedan på 'Installera Tillägg'
   </data>
   <data name="AddIns.Subversion.ShowLog" xml:space="preserve">
     <value>Visa logg</value>
+  </data>
+  <data name="AddIns.Subversion.Switch" xml:space="preserve">
+    <value>Ändra</value>
   </data>
   <data name="AddIns.Subversion.Update" xml:space="preserve">
     <value>Uppdatera</value>
