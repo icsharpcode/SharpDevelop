@@ -128,10 +128,9 @@ namespace ICSharpCode.ILSpyAddIn
 				this.jumpToEntityTagWhenDecompilationFinished = entityTag;
 				return;
 			}
-			if (memberLocations != null) {
-				var location = memberLocations[entityTag];
+			TextLocation location;
+			if (memberLocations != null && memberLocations.TryGetValue(entityTag, out location))
 				codeView.JumpTo(location.Line, location.Column);
-			}
 		}
 		#endregion
 		
