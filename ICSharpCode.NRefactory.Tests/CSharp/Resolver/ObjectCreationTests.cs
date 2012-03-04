@@ -43,7 +43,7 @@ class A {
 		}
 		
 		[Test]
-		public void NonExistingClass()
+		public void NonExistingClass ()
 		{
 			string program = @"class A {
 	void Method() {
@@ -51,7 +51,8 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve<ErrorResolveResult>(program);
+			ResolveResult result = Resolve (program);
+			Assert.IsTrue (result.IsError);
 			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
