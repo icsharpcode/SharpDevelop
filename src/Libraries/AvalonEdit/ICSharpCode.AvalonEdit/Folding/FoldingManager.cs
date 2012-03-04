@@ -10,6 +10,7 @@ using System.Windows;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Folding
 {
@@ -127,6 +128,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 		{
 			if (startOffset >= endOffset)
 				throw new ArgumentException("startOffset must be less than endOffset");
+			if (startOffset < 0 || endOffset > document.TextLength)
+				throw new ArgumentException("Folding must be within document boundary");
 			FoldingSection fs = new FoldingSection(this, startOffset, endOffset);
 			foldings.Add(fs);
 			Redraw(fs);
@@ -242,6 +245,9 @@ namespace ICSharpCode.AvalonEdit.Folding
 				if (newFolding.StartOffset < previousStartOffset)
 					throw new ArgumentException("newFoldings must be sorted by start offset");
 				previousStartOffset = newFolding.StartOffset;
+				
+				int startOffset = newFolding.StartOffset.CoerceValue(0, document.TextLength);
+				int endOffset = newFolding.EndOffset.CoerceValue(0, document.TextLength);
 				
 				if (newFolding.StartOffset == newFolding.EndOffset)
 					continue; // ignore zero-length foldings

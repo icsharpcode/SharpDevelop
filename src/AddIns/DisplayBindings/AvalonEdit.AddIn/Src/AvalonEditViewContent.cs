@@ -137,8 +137,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			isLoading = true;
 			try {
 //				BookmarksDetach();
-				codeEditor.SyntaxHighlighting =
-					HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(file.FileName));
+				UpdateSyntaxHighlighting(file.FileName);
 				
 				if (!file.IsUntitled) {
 					codeEditor.PrimaryTextEditor.IsReadOnly = (File.GetAttributes(file.FileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
@@ -158,6 +157,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		void UpdateSyntaxHighlighting(FileName fileName)
+		{
+			codeEditor.SyntaxHighlighting =
+				HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
+		}
+		
 		protected override void OnFileNameChanged(OpenedFile file)
 		{
 			base.OnFileNameChanged(file);
@@ -175,6 +180,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				// processes the file name change
 				
 				codeEditor.FileName = newFileName;
+				UpdateSyntaxHighlighting(newFileName);
 				
 				ParserService.ParseAsync(file.FileName, codeEditor.Document).FireAndForget();
 			}

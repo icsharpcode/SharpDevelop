@@ -77,6 +77,29 @@ namespace AspNet.Mvc.Tests.Folding
 		}
 		
 		[Test]
+		public void Constructor_TextEditor_InstallFoldingManagerIsInstalled()
+		{
+			CreateFakeTextEditor();
+			CreateFoldGenerator();
+			
+			fakeTextEditor.AssertWasCalled(textEditor => textEditor.InstallFoldingManager());
+		}
+		
+		[Test]
+		public void Constructor_TextEditor_InstallFoldingManagerIsInstalledAfterParseInfoIsDisabled()
+		{
+			CreateFakeTextEditor();
+			fakeTextEditor.IsParseInformationFoldingEnabled = true;
+			bool parseInfoEnabled = true;
+			fakeTextEditor
+				.Stub(t => t.InstallFoldingManager())
+				.Do((Action)delegate { parseInfoEnabled = fakeTextEditor.IsParseInformationFoldingEnabled; });
+			CreateFoldGenerator();
+			
+			Assert.IsFalse(parseInfoEnabled);
+		}
+		
+		[Test]
 		public void GenerateFolds_MethodCalled_FoldsFromFoldParserUsedToUpdateTextEditor()
 		{
 			CreateFakeTextEditor();

@@ -74,11 +74,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (editor.Document == null)
 				return; // editor was disposed
-			// TODO: translate
+			
 			groupBox = new GroupBox();
 			groupBox.Background = SystemColors.WindowBrush;
 			groupBox.Foreground = SystemColors.WindowTextBrush;
-			groupBox.Header = "Inconsistent NewLines";
+			groupBox.Header = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Header");
 			groupBox.HorizontalAlignment = HorizontalAlignment.Right;
 			groupBox.VerticalAlignment = VerticalAlignment.Bottom;
 			groupBox.MaxWidth = 300;
@@ -95,13 +95,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				Content = ResourceService.GetString("Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton")
 			};
 			
-			normalizeButton = new Button { Content = "Normalize" };
+			normalizeButton = new Button { Content = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Normalize") };
 			cancelButton = new Button { Content = ResourceService.GetString("Global.CancelButtonText") };
 			
 			groupBox.Content = new StackPanel {
 				Children = {
-					new TextBlock { Text = "This file contains inconsistent newlines.", TextWrapping = TextWrapping.WrapWithOverflow },
-					windows, unix,
+					new TextBlock {
+						Text = ResourceService.GetString("AddIns.AvalonEdit.InconsistentNewlines.Description"),
+						TextWrapping = TextWrapping.WrapWithOverflow
+					},
+					windows,
+					unix,
 					new StackPanel {
 						Margin = new Thickness(0, 2, 0, 0),
 						Orientation = Orientation.Horizontal,

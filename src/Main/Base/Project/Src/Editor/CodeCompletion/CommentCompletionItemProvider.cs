@@ -31,7 +31,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			new string[] {"see cref=\"\"", "A reference to a member"},
 			new string[] {"seealso cref=\"\"", "A reference to a member in the seealso section"},
 			new string[] {"summary", "A summary of the object"},
-			new string[] {"value", "A description of a property"}
+			new string[] {"value", "A description of a property"},
+			new string[] {"typeparam name=\"\"", "A description for a type parameter"},
+			new string[] {"typeparamref name=\"\"", "A reference to a type parameter"}
 		};
 		
 		public override ICompletionItemList GenerateCompletionList(ITextEditor editor)

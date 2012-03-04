@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException("item");
 			}
 
-			if (item.VisibleInReport == true) {
+//			if (item.VisibleInReport == true) {
 				
 				var columnBuilder = item as IExportColumnBuilder;
 				IBaseExportColumn lineItem = null;
@@ -39,10 +39,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					                                                         lineItem.StyleDecorator.Size);
 				}
 				return lineItem;
-			} else
-			{
-				return null;
-			}
+//			} else
+//			{
+//				return null;
+//			}
 		}
 		
 		
@@ -51,16 +51,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (items == null) {
 				throw new ArgumentNullException("items");
 			}
-
+			Console.WriteLine("Convert plain collection");
 			ExporterCollection col = new ExporterCollection();
 			if (items.Count > 0) {
 				items.SortByLocation();
 				foreach(BaseReportItem item in items)
 				{
 					var converteditem = ExportHelper.ConvertLineItem(item,offset);
+					Console.WriteLine("{0} - {1}",converteditem.ToString(),converteditem.StyleDecorator.DisplayRectangle);
 					col.Add((BaseExportColumn)converteditem);
 				}
 			}
+			Console.WriteLine("");
 			return col;
 		}
 		

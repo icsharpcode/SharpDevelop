@@ -1,7 +1,8 @@
 ﻿<AddIn name        = "Machine.Specifications Addin"
        author      = "Tomasz Tretkowski"
        url         = ""
-       description = "Runner for Machine.Specifications unit tests for SharpDevelop">
+       description = "Runner for Machine.Specifications unit tests for SharpDevelop"
+       addInManagerHidden = "preinstalled">
 	
 	<Runtime>
 		<Import assembly = "MachineSpecifications.dll"/>

@@ -264,7 +264,7 @@ namespace ICSharpCode.XamlBinding
 				
 				string key = string.IsNullOrEmpty(lastElement.Prefix) ? "" : lastElement.Prefix + ":";
 				
-				if (context.ParentElement.LocalName.StartsWith(lastElement.LocalName.TrimEnd('.'), StringComparison.OrdinalIgnoreCase)) {
+				if (context.ParentElement != null && context.ParentElement.LocalName.StartsWith(lastElement.LocalName.TrimEnd('.'), StringComparison.OrdinalIgnoreCase)) {
 					AddAttributes(rt, list, includeEvents);
 					AddAttachedProperties(rt.GetUnderlyingClass(), list, key, lastElement.Name.Trim('.'));
 				} else

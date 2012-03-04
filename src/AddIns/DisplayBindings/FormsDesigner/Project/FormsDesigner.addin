@@ -307,9 +307,11 @@
 			<OptionPanel id    = "GeneralOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName}"
 			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanel"/>
+			
 			<OptionPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"
 			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GridOptionsPanel"/>
+			
 			<OptionPanel id    = "LocalizationModelOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.PanelName}"
 			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel"/>

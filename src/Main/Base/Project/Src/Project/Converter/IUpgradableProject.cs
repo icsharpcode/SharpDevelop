@@ -43,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		/// </summary>
 		/// <param name="newVersion">The new compiler version. If this property is null, the compiler version is not changed.</param>
 		/// <param name="newFramework">The new target framework. If this property is null, the target framework is not changed.</param>
+		/// <exception cref="ProjectUpgradeException">Upgrading the project failed.</exception>
 		void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework);
 	}
 	
@@ -51,11 +52,16 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		public Version MSBuildVersion { get; private set; }
 		public string DisplayName { get; private set; }
 		
+		public static readonly CompilerVersion MSBuild20 = new CompilerVersion(new Version(2, 0), "MSBuild 2.0");
+		public static readonly CompilerVersion MSBuild35 = new CompilerVersion(new Version(3, 5), "MSBuild 3.5");
+		public static readonly CompilerVersion MSBuild40 = new CompilerVersion(new Version(4, 0), "MSBuild 4.0");
+		
 		public virtual IEnumerable<TargetFramework> GetSupportedTargetFrameworks()
 		{
 			return from fx in TargetFramework.TargetFrameworks
 				where fx.MinimumMSBuildVersion != null
 				where MSBuildVersion >= fx.MinimumMSBuildVersion
+				where fx.IsAvailable()
 				select fx;
 		}
 		

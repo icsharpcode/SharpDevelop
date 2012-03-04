@@ -222,12 +222,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
+			Console.WriteLine("PrepareContainerForConverting");
 			FireSectionRendering(section);
 			LayoutHelper.SetLayoutForRow(Graphics,Layouter,simpleContainer);
 		}
 		
 		protected  Point ConvertStandardRow(ExporterCollection mylist,ISimpleContainer simpleContainer)
 		{
+			Console.WriteLine("ConvertStandardRow");
 			var rowSize = simpleContainer.Size;
 			
 			Point curPos = new Point(DefaultLeftPosition, CurrentPosition.Y);

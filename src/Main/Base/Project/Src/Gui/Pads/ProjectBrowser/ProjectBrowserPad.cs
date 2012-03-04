@@ -261,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void RefreshViewAsync()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			if (refreshViewEnqueued)
+			if (refreshViewEnqueued || WorkbenchSingleton.Workbench == null)
 				return;
 			refreshViewEnqueued = true;
 			WorkbenchSingleton.SafeThreadAsyncCall(

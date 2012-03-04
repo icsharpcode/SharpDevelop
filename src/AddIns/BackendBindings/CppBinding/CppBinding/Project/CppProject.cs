@@ -27,6 +27,7 @@ namespace ICSharpCode.CppBinding.Project
 				AddProjectConfigurationsItemGroup();
 				base.ReevaluateIfNecessary(); // provoke exception if import is invalid
 			} catch (InvalidProjectFileException ex) {
+				Dispose();
 				throw new ProjectLoadException("Please ensure that the Windows SDK is installed on your computer.\n\n" + ex.Message, ex);
 			}
 		}
@@ -34,13 +35,6 @@ namespace ICSharpCode.CppBinding.Project
 		public CppProject(ProjectLoadInformation info)
 			: base(info)
 		{
-		}
-
-		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
-		{
-			if ("ProjectConfiguration" == item.ItemType.ItemName)
-				return new ProjectConfigurationProjectItem(this, item);
-			return base.CreateProjectItem(item);
 		}
 
 		public override IAmbience GetAmbience()
@@ -85,21 +79,6 @@ namespace ICSharpCode.CppBinding.Project
 			}
 		}
 
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			const string RESOURCE_COMPILE = "ResourceCompile";
-
-			string extension = Path.GetExtension(fileName).ToLower();
-			switch (extension)
-			{
-					case ".cpp": return ItemType.ClCompile;
-					case ".c": return ItemType.ClCompile;
-					case ".hpp": return ItemType.ClInclude;
-					case ".h": return ItemType.ClInclude;
-					case ".rc": return new ItemType(RESOURCE_COMPILE);
-			}
-			return base.GetDefaultItemType(fileName);
-		}
 
 		public const string DefaultTargetsFile = @"$(VCTargetsPath)\Microsoft.Cpp.Targets";
 		public const string DefaultPropsFile = @"$(VCTargetsPath)\Microsoft.Cpp.Default.props";
@@ -200,6 +179,45 @@ namespace ICSharpCode.CppBinding.Project
 				prjConfiguration.AddMetadata("Configuration", GetConfigurationNameFromKey(target));
 				prjConfiguration.AddMetadata("Platform", GetPlatformNameFromKey(target));
 			}
+		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			CppProjectBehavior behavior = new CppProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;		}
+	}
+	
+	public class CppProjectBehavior : ProjectBehavior
+	{
+		public CppProjectBehavior(CppProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+		}
+		
+		public override ProjectItem CreateProjectItem(IProjectItemBackendStore item)
+		{
+			if ("ProjectConfiguration" == item.ItemType.ItemName)
+				return new ProjectConfigurationProjectItem(Project, item);
+			return base.CreateProjectItem(item);
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			const string RESOURCE_COMPILE = "ResourceCompile";
+
+			string extension = Path.GetExtension(fileName).ToLower();
+			switch (extension)
+			{
+					case ".cpp": return ItemType.ClCompile;
+					case ".c": return ItemType.ClCompile;
+					case ".hpp": return ItemType.ClInclude;
+					case ".h": return ItemType.ClInclude;
+					case ".rc": return new ItemType(RESOURCE_COMPILE);
+			}
+			return base.GetDefaultItemType(fileName);
 		}
 	}
 }

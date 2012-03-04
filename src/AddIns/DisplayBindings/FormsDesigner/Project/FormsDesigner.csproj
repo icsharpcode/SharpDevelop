@@ -71,7 +71,6 @@
     <EmbeddedResource Include="Resources\AddSidebarComponentsDialog.xfrm" />
     <EmbeddedResource Include="Resources\ConfigureSidebarDialog.xfrm" />
     <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
-    <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Commands\FormsCommands.cs" />
     <Compile Include="Src\Commands\SideBarCommands.cs" />
@@ -85,7 +84,14 @@
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.cs" />
+    <Compile Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml.cs">
+      <DependentUpon>GridOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml.cs">
+      <DependentUpon>LocalizationModelOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\SecondaryDisplayBinding.cs" />
     <Compile Include="Src\DesignerViewContent.cs" />
     <Compile Include="Src\FormKeyHandler.cs" />
@@ -97,9 +103,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\CustomComponentsSideTab.cs" />
-    <Compile Include="Src\Gui\OptionPanels\GridOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\RenameCategoryDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -142,9 +145,6 @@
     <EmbeddedResource Include="Src\Gui\ImageResourceEditorDialog.resx">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.resx">
-      <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\Services\DesignerSerializationService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +169,10 @@
       <Private>False</Private>
     </ProjectReference>
     <Content Include="PostBuildEvent.proj" />
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -184,6 +188,10 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml" />
+    <Page Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <Import Project="PostBuildEvent.proj" />

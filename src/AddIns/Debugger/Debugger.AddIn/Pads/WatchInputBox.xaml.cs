@@ -40,24 +40,19 @@ namespace Debugger.AddIn.Pads
 			if (ProjectService.CurrentProject == null) return;
 			
 			// get language
-			language = ProjectService.CurrentProject.Language;			
+			language = ProjectService.CurrentProject.Language;
 			resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language));
 			
 			// FIXME set language
 			if (language == "VB" || language == "VBNet") {
 				console.SetHighlighting("VBNET");
-			}
-			else {
+			} else {
+				language = "C#";
 				console.SetHighlighting("C#");
 			}
 			
 			// get process
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
-			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
-				this.Process = e.Process;
-			};
-			this.Process = debugger.DebuggedProcess;
+			this.Process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
 		}
 		
 		private Process Process { get; set; }
@@ -111,7 +106,7 @@ namespace Debugger.AddIn.Pads
 				language = "CSharp";
 			}
 			
-			SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language.ToString(), true);
+			SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language, true);
 			using (var parser = ParserFactory.CreateParser(supportedLanguage, new StringReader(command))) {
 				parser.ParseExpression();
 				if (parser.Errors.Count > 0) {

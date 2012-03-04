@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ParseableFileContentFinder
 	{
-		FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(FileService.GetOpenFiles).ToArray();
+		FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
 		
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.

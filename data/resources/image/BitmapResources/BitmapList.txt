@@ -362,6 +362,9 @@ backendicons\CSharp\project\WebProject.png
 backendicons\CSharp\project\WebService.png
 backendicons\FSharp\F#.FileIcon.png
 backendicons\FSharp\F#.ProjectIcon.png
+backendicons\FSharp\F#.Project.DOSProject.png
+backendicons\FSharp\F#.File.EmptyClass.png
+
 backendicons\JScript\SmallFile.png
 backendicons\JScript\SmallProject.png
 backendicons\JScript\file\EmptyFile.png

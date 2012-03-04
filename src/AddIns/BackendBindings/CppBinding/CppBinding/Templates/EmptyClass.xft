@@ -20,16 +20,6 @@
 		${Path}                     -> Full path of the file
 		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
 	-->
-	<!--<Properties>
-		<Property
-			name          = "IsSealed"
-			localizedName = "${res:Templates.File.Properties.IsSealed}"
-			type          = "System.Boolean"
-			defaultValue  = "False"
-			category      = "${res:Templates.File.Properties.ContextCategory}"
-			description   = "${res:Templates.File.Properties.IsSealed.Description}"
-		/>
-	</Properties>-->
 
 	<Files>
 		<File name="${FullName}.cpp" language="C++"><![CDATA[${StandardHeader.C++.NET}

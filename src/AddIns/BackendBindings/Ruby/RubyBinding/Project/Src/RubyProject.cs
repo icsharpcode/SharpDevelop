@@ -37,6 +37,36 @@ namespace ICSharpCode.RubyBinding
 			get { return RubyLanguageProperties.Default; }
 		}
 		
+		public void AddMainFile(string fileName)
+		{
+			SetProperty(null, null, "MainFile", fileName, PropertyStorageLocations.Base, true);
+		}
+		
+		/// <summary>
+		/// Returns true if a main file is already defined for this project.
+		/// </summary>
+		public bool HasMainFile {
+			get { return GetProperty(null, null, "MainFile") != null; }
+		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			if (projectBehavior != null)
+				return projectBehavior;
+			RubyProjectBehavior behavior = new RubyProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class RubyProjectBehavior : ProjectBehavior
+	{
+		public RubyProjectBehavior(RubyProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
 		/// <summary>
 		/// Returns ItemType.Compile if the filename has a Ruby extension (.rb).
 		/// </summary>
@@ -49,18 +79,6 @@ namespace ICSharpCode.RubyBinding
 				}
 			}
 			return base.GetDefaultItemType(fileName);
-		}
-		
-		public void AddMainFile(string fileName)
-		{
-			SetProperty(null, null, "MainFile", fileName, PropertyStorageLocations.Base, true);
-		}
-		
-		/// <summary>
-		/// Returns true if a main file is already defined for this project.
-		/// </summary>
-		public bool HasMainFile {
-			get { return GetProperty(null, null, "MainFile") != null; }
 		}
 	}
 }

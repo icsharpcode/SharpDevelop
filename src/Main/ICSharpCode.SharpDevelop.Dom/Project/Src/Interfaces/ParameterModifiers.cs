@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Out = 2,
 		Ref = 4,
 		Params = 8,
-		Optional = 16
+		Optional = 16,
+		This = 32
 	}
 }

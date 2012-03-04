@@ -122,6 +122,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					Size containerSize = section.Items[0].Size;
 					FillRow(simpleContainer,base.DataNavigator);
 					FireRowRendering(simpleContainer,base.DataNavigator);
+					Console.WriteLine("ConvertDazaRow");
 					base.PrepareContainerForConverting(section,simpleContainer);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 					section.Size = base.RestoreSectionSize;

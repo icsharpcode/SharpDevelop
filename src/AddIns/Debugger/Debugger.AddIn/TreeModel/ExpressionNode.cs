@@ -77,8 +77,6 @@ namespace Debugger.AddIn.TreeModel
 		
 		public override string FullName {
 			get {
-				if (!evaluated) EvaluateExpression();
-				
 				return this.expression.PrettyPrint() ?? Name.Trim();
 			}
 		}
@@ -158,6 +156,7 @@ namespace Debugger.AddIn.TreeModel
 			Value val;
 			try {
 				var process = WindowsDebugger.DebuggedProcess;
+				if (process == null) return;
 				StackFrame frame = process.GetCurrentExecutingFrame();
 				if (frame == null) return;
 				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;

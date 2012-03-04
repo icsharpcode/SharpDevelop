@@ -2,12 +2,14 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Dynamic;
+using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
-
+using System.Windows.Threading;
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
+using Debugger.AddIn.Pads.ParallelPad;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -19,14 +21,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public partial class RunningThreadsPad : DebuggerPad
 	{
-		SimpleListViewControl  runningThreadsList;
+		ListView runningThreadsList;
+		ObservableCollection<ThreadModel> runningThreads;
 		Process debuggedProcess;
 		
 		protected override void InitializeComponents()
 		{
-			runningThreadsList = new SimpleListViewControl();
+			runningThreads = new ObservableCollection<ThreadModel>();
+			runningThreadsList = new ListView();
 			runningThreadsList.ContextMenu = CreateContextMenuStrip();
-			runningThreadsList.ItemActivated += RunningThreadsListItemActivate;
+			runningThreadsList.MouseDoubleClick += RunningThreadsListItemActivate;
+			runningThreadsList.ItemsSource = runningThreads;
+			runningThreadsList.View = new GridView();
 			panel.Children.Add(runningThreadsList);
 			
 			RedrawContent();
@@ -64,13 +70,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.Paused               += debuggedProcess_Paused;
 				debuggedProcess.Threads.Added        += debuggedProcess_ThreadStarted;
 			}
-			runningThreadsList.ItemCollection.Clear();
-			RefreshPad();
+			runningThreads.Clear();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_ThreadStarted(object sender, CollectionItemEventArgs<Thread> e)
@@ -78,20 +84,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			AddThread(e.Item);
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
-				runningThreadsList.ItemCollection.Clear();
+				runningThreads.Clear();
 				return;
 			}
 			
 			using(new PrintTimes("Threads refresh")) {
 				try {
-					foreach (Thread t in debuggedProcess.Threads) {
-						if (debuggedProcess.IsPaused) {
-							Utils.DoEvents(debuggedProcess);
-						}
-						AddThread(t);
+					foreach (var t in debuggedProcess.Threads) {
+						var thread = t;
+						debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => AddThread(thread));
 					}
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(Exception) {
@@ -108,8 +112,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			if (debuggedProcess.IsPaused) {
 				if (debuggedProcess != null) {
-					dynamic obj = runningThreadsList.SelectedItems[0];
-					Thread thread = (Thread)(obj.Tag);
+					ThreadModel obj = runningThreadsList.SelectedItems[0] as ThreadModel;
+					Thread thread = obj.Thread;
 					
 					// check for options - if these options are enabled, selecting the frame should not continue
 					if ((thread.MostRecentStackFrame == null || !thread.MostRecentStackFrame.HasSymbols) &&
@@ -140,59 +144,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			// remove the object if exists
 			RemoveThread(thread);
 			
-			dynamic obj = new ExpandoObject();
-			obj.Tag = thread;
-			RefreshItem(obj);
-			runningThreadsList.ItemCollection.Add(obj);
-			thread.NameChanged += delegate {
-				RefreshItem(obj);
-			};
+			ThreadModel obj = new ThreadModel(thread);
+			
+			runningThreads.Add(obj);
 			thread.Exited += (s, e) => RemoveThread(e.Thread);
-		}
-		
-		void RefreshItem(ExpandoObject obj)
-		{
-			dynamic item = obj;
-			
-			if (item == null) return;
-			var thread = item.Tag as Thread;
-			
-			if (thread == null)
-				return;
-			
-			item.ID = thread.ID;
-			item.Tag = thread;
-			StackFrame location = null;
-			if (thread.Process.IsPaused) {
-				location = thread.MostRecentStackFrame;
-			}
-			if (location != null) {
-				item.Location = location.MethodInfo.Name;
-			} else {
-				item.Location = ResourceService.GetString("Global.NA");
-			}
-			
-			switch (thread.Priority) {
-				case System.Threading.ThreadPriority.Highest:
-					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest");
-					break;
-				case System.Threading.ThreadPriority.AboveNormal:
-					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal");
-					break;
-				case System.Threading.ThreadPriority.Normal:
-					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal");
-					break;
-				case System.Threading.ThreadPriority.BelowNormal:
-					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal");
-					break;
-				case System.Threading.ThreadPriority.Lowest:
-					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest");
-					break;
-				default:
-					item.Priority = thread.Priority.ToString();
-					break;
-			}
-			item.Frozen = ResourceService.GetString(thread.Suspended ? "Global.Yes" : "Global.No");
 		}
 		
 		void RemoveThread(Thread thread)
@@ -200,12 +155,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (thread == null)
 				return;
 			
-			foreach (dynamic item in runningThreadsList.ItemCollection) {
-				if (thread.ID == item.ID) {
-					runningThreadsList.ItemCollection.Remove(item);
-					break;
-				}
-			}
+			runningThreads.RemoveWhere(model => model.Thread == thread);
 		}
 	}
 }

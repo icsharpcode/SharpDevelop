@@ -286,9 +286,6 @@
   <data name="AddIns.HexEditor.Display" xml:space="preserve">
     <value>Gösterim</value>
   </data>
-  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
-    <value>Nesneler</value>
-  </data>
   <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
     <value>Veri</value>
   </data>
@@ -301,168 +298,35 @@
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Geçerli genişliğe sığdırmak için boyutlandır</value>
   </data>
-  <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
-    <value>Sık Kullanılan Yardımlara Ekle</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
     <value>Geri</value>
   </data>
   <data name="AddIns.HtmlHelp2.Contents" xml:space="preserve">
     <value>İçindekiler</value>
   </data>
-  <data name="AddIns.HtmlHelp2.DefaultEmptyFilter" xml:space="preserve">
-    <value>(süzgeç yok)</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Delete" xml:space="preserve">
-    <value>Sil</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.DynamicHelp" xml:space="preserve">
-    <value>Dinamik Yardım</value>
-  </data>
   <data name="AddIns.HtmlHelp2.EnterURL" xml:space="preserve">
     <value>URL girin</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Environment" xml:space="preserve">
-    <value>Yardım 2.0 Ortamı</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Favorites" xml:space="preserve">
-    <value>Sık Kullanılan Yardımlar</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.FilteredBy" xml:space="preserve">
-    <value>Süzme kriteri:</value>
   </data>
   <data name="AddIns.HtmlHelp2.Forward" xml:space="preserve">
     <value>İlet</value>
   </data>
-  <data name="AddIns.HtmlHelp2.HelpCollectionMayBeEmpty" xml:space="preserve">
-    <value>Yardım 2.0 sisteminin kurulması gerekiyor ama ya seçili kolleksiyon içeriğe sahip değil ya da içeriğe erişilemiyor.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchCaption" xml:space="preserve">
-    <value>Aranıyor</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchInProgress" xml:space="preserve">
-    <value>"${0}" aranıyor...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSystemNotAvailable" xml:space="preserve">
-    <value>Yardım sistemi mevcut değil. 
-Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateCaption" xml:space="preserve">
-    <value>Yardım güncelleştirilmesi yapılmaktadır</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateInProgress" xml:space="preserve">
-    <value>Yardım son yaptığınız değişiklikleri yansıtmak için güncelleniyor. Bu işlem bir kaç dakika sürebilir.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HighlightMatches" xml:space="preserve">
-    <value>Eşleşenleri vurgula</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Homepage" xml:space="preserve">
     <value>Ana sayfa</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Index" xml:space="preserve">
-    <value>Dizin</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.IndexResults" xml:space="preserve">
-    <value>Dizin sonuçları</value>
   </data>
   <data name="AddIns.HtmlHelp2.Location" xml:space="preserve">
     <value>Yer</value>
   </data>
-  <data name="AddIns.HtmlHelp2.LookFor" xml:space="preserve">
-    <value>Ara:</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
-    <value>Benzer kelimeleri ara</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
-    <value>başlıklar</value>
-  </data>
   <data name="AddIns.HtmlHelp2.NewWindow" xml:space="preserve">
     <value>Yeni Pencere</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NextTopic" xml:space="preserve">
-    <value>Sonraki başlık</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NoDataIsAvailableForDynamicHelp" xml:space="preserve">
-    <value>Geçerli seçim için veri bulunamadı.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.AdditionOptions" xml:space="preserve">
-    <value>Ek Seçenekler</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Groupbox" xml:space="preserve">
-    <value>Yardım Konuları</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Label" xml:space="preserve">
-    <value>Lütfen SharpDevelop içerisinde kullanmak istediğiniz yardım koleksiyonunuzu seçiniz.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Reregister" xml:space="preserve">
-    <value>SharpDevelop yardım'ı yeniden kayıt et</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.ShowTocPictures" xml:space="preserve">
-    <value>İçerikteki resimleri göster</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PreviousTopic" xml:space="preserve">
-    <value>Önceki başlık</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintSubtopics" xml:space="preserve">
-    <value>Altbaşlıkları yazdır...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopic" xml:space="preserve">
-    <value>Konuyu yazdır...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopicAndSubtopics" xml:space="preserve">
-    <value>Konuyu ve altbaşlıkları yazdır...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rank" xml:space="preserve">
-    <value>Seviye</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Refresh" xml:space="preserve">
-    <value>Yenile</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.RemoveFavorite" xml:space="preserve">
-    <value>"${0}", sık kullanılanlardan çıkarmak istiyor musnuz?</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rename" xml:space="preserve">
-    <value>Yeniden adlandır</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfIndexResults" xml:space="preserve">
-    <value>${0} için indeks sonuçları -  ${1} ${2} bulundu</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfSearchResults" xml:space="preserve">
-    <value>${0} için arama sonuçları - ${1} ${2} bulundu</value>
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Ara</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
-    <value>Sadece daha önce bulunan başlıklarda ara</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchInTitlesOnly" xml:space="preserve">
-    <value>Sadece başlıklarda ara</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchOnline" xml:space="preserve">
-    <value>Online ara</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchResults" xml:space="preserve">
-    <value>Sonuç ara</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SingleTopic" xml:space="preserve">
-    <value>başlık</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Stop" xml:space="preserve">
     <value>Dur</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SyncTOC" xml:space="preserve">
-    <value>İçindekileri senkronize et</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.TextZoom" xml:space="preserve">
-    <value>Metin büyüt</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Başlık</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
-    <value>Şu anki proje dilini kullan</value>
   </data>
   <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
     <value>Sonuçlar</value>
@@ -517,9 +381,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   </data>
   <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
     <value>Olayları takip et</value>
-  </data>
-  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
-    <value>Genel</value>
   </data>
   <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
     <value>Profilleme</value>
@@ -1150,9 +1011,6 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Parametre alan anonim metot yerleştir.</value>
   </data>
-  <data name="Dialog.About.ChangeLogTabName" xml:space="preserve">
-    <value>DeğişlikKaydı</value>
-  </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>SharpDevelop Hakkında</value>
   </data>
@@ -1165,9 +1023,6 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   <data name="Dialog.About.License" xml:space="preserve">
     <value>${License} lisansı altında dağıtılmıştır.</value>
   </data>
-  <data name="Dialog.About.ThrowExceptionButton" xml:space="preserve">
-    <value>Exception &amp;Firlat</value>
-  </data>
   <data name="Dialog.About.VersionInfoTabName" xml:space="preserve">
     <value>Sürüm Bilgisi</value>
   </data>
@@ -1177,29 +1032,14 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
     <value>Sürüm</value>
   </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadFileDescription" xml:space="preserve">
-    <value>${File} dosyasını yükle</value>
-  </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadProjectDescription" xml:space="preserve">
-    <value>${Project} projesini yükle</value>
-  </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>son dosyalar</value>
   </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentProjectsString" xml:space="preserve">
     <value>son projeler</value>
   </data>
-  <data name="Dialog.DirtyFiles.DialogName" xml:space="preserve">
-    <value>Bekleyen dosyaları kaydet?</value>
-  </data>
-  <data name="Dialog.DirtyFiles.DirtyFiles" xml:space="preserve">
-    <value>Bekleyen Dosyalar</value>
-  </data>
   <data name="Dialog.DirtyFiles.DiscardAllButton" xml:space="preserve">
     <value>&amp;Tümünü at</value>
-  </data>
-  <data name="Dialog.DirtyFiles.Files" xml:space="preserve">
-    <value>Dosyalar</value>
   </data>
   <data name="Dialog.DirtyFiles.SaveAllButton" xml:space="preserve">
     <value>Tümünü &amp;kaydet</value>
@@ -1209,15 +1049,6 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
   </data>
   <data name="Dialog.EditAvailableConfigurationsDialog.EnterNewName" xml:space="preserve">
     <value>Yeni ismi girin:</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.DialogName" xml:space="preserve">
-    <value>Html'e dönüştür</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.FolderLabel" xml:space="preserve">
-    <value>Dizin:</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.SelectTargetDirInfo" xml:space="preserve">
-    <value>Hedef dizini seçiniz.</value>
   </data>
   <data name="Dialog.Goto.DialogName" xml:space="preserve">
     <value>Git</value>
@@ -1230,20 +1061,11 @@ To create/manipulate a ActiveX/COM object, drag a class within a TypeLib/Control
 Satır numaraları, sınıf yada dosya adları girebilirsiniz.
 Örneğin: "120", "MainClass", "Main.cs, 120".</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Add" xml:space="preserve">
-    <value>Ekle</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Change" xml:space="preserve">
-    <value>Değiştir...</value>
-  </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
     <value>Arka plan rengi</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Bold" xml:space="preserve">
     <value>Koyu</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Caption" xml:space="preserve">
-    <value>Seçimin vurgu rengini buradan düzenleyebilirsiniz.</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Foreground" xml:space="preserve">
     <value>Ön plan rengi</value>
@@ -1251,329 +1073,11 @@ Satır numaraları, sınıf yada dosya adları girebilirsiniz.
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>İtalik</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.NoColor" xml:space="preserve">
-    <value>Hiçbir renk belirtilmemiş (varsayılanı kullan)</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.SystemColor" xml:space="preserve">
-    <value>Sistem rengi:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Title" xml:space="preserve">
-    <value>Rengi düzenle</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.UserDefined" xml:space="preserve">
-    <value>Kullanıcı-tanımlı renk:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Explanation" xml:space="preserve">
-    <value>Bu seçenek dosyanızdaki rakamların renklendirilmesini ayarlamanıza yarar.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Sample" xml:space="preserve">
-    <value>Rakam renk örneği:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Edit" xml:space="preserve">
-    <value>Düzenle...</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EditDlg.Title" xml:space="preserve">
-    <value>Şemayı düzenle</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnterText" xml:space="preserve">
-    <value>Metin giriniz</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.BookMarks" xml:space="preserve">
-    <value>Sık Kullanılanlar</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretMarker" xml:space="preserve">
-    <value>Düzeltme imi işaretleyicisi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Cursor" xml:space="preserve">
-    <value>İmleç</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Default" xml:space="preserve">
-    <value>Varsayılan metin/arka plan</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.EOLMarkers" xml:space="preserve">
-    <value>EOL İşaretleyicileri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldLine" xml:space="preserve">
-    <value>Karakter tamamlama satırı</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldMarker" xml:space="preserve">
-    <value>Karakter tamamlama işaretleyicisi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.InvalidLines" xml:space="preserve">
-    <value>Geçersiz satırlar</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.LineNumbers" xml:space="preserve">
-    <value>Satır numaraları</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SelectedFoldLine" xml:space="preserve">
-    <value>Seçili katlanmış satır</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Selection" xml:space="preserve">
-    <value>Seçim</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SpaceMarkers" xml:space="preserve">
-    <value>Boşluk işaretleyicileri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.TabMarkers" xml:space="preserve">
-    <value>Tab işaretleyicileri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.VRuler" xml:space="preserve">
-    <value>Dikey cetvel</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Colors" xml:space="preserve">
-    <value>Ortam renkleri:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Explanation" xml:space="preserve">
-    <value>Burada metin düzenleyicinin farklı genel ortam birimleri için vurgu renklerini tanımlayabilirsiniz.
-
-Listeden bir girdi seçin ve değişiklik için "Düzenle" 'ye basın.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Explanation" xml:space="preserve">
-    <value>Açıklama:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ColorSample" xml:space="preserve">
-    <value>Kullanılan vurgu rengi örneği:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.EnterName" xml:space="preserve">
-    <value>Yeni anahtar kelimenin adını girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Explanation" xml:space="preserve">
-    <value>Listedeki her anahtar kelime seçili vurgu rengiyle renklendirilir.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Keywords" xml:space="preserve">
-    <value>Listedeki anahtar kelimeler:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ListName" xml:space="preserve">
-    <value>Liste adı:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.NameEmpty" xml:space="preserve">
-    <value>Anahtar kelime listesi bir ada sahip olmalıdır.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.EnterName" xml:space="preserve">
-    <value>Yeni anahtar kelime listesinin adını girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Explanation" xml:space="preserve">
-    <value>Her anahtar kelime listesi yalnız kendisine atanan bir vurgu rengine sahip olabilir.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Lists" xml:space="preserve">
-    <value>Anahtar kelime listeleri:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationNext" xml:space="preserve">
-    <value>Bir sonraki rengin, seçili renkle taranmasını sağlayacak anahtar diziyi girin.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationPrev" xml:space="preserve">
-    <value>Bir önceki rengin, seçili renkle taranmasını sağlayacak anahtar diziyi girin.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.KeyString" xml:space="preserve">
-    <value>Tanınacak anahtar dizi:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.MarkMarker" xml:space="preserve">
-    <value>Anahtar dizi için de renk kullan</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.NameEmpty" xml:space="preserve">
-    <value>Anahtar dizi boş bırakılamaz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.SampleColor" xml:space="preserve">
-    <value>Bir önceki/sonraki kelime için örnek vurgu rengi:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.EnterName" xml:space="preserve">
-    <value>Yeni işaretleyici anahtar diziyi girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Explanation" xml:space="preserve">
-    <value>Burada kendilerini değil ama kendilerinden bir önceki ve sonraki kelimeleri renklendiren dizileri tanımlayabilirsiniz.
-
-Bu, örneğin, ( anahtar dizisini kullanarak metot renklendirmesi yapıldığında kullanışlıdır.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.KeyString" xml:space="preserve">
-    <value>Anahtar dizi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Next" xml:space="preserve">
-    <value>Sonraki simge işaretleyicisi anahtar diziler:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Previous" xml:space="preserve">
-    <value>Önceki simge işaretleyicisi anahtar diziler:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterName" xml:space="preserve">
-    <value>Yeni özelliğin adını girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterValue" xml:space="preserve">
-    <value>{0} özelliğinin değerini girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Explanation" xml:space="preserve">
-    <value>Burada şemanın özelliklerini tanımlayabilirsiniz.
-
-Özellikler editörün davranışlarını kontrol eden isim-değer çiftleridir. Şu an için, desteklenen tek özellik, editöre bir satırı yorum yapmanızı söylediğinizde editöre satırın başına dizi eklemesini söyleyen "LineComment" 'dir.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Name" xml:space="preserve">
-    <value>İsim</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Properties" xml:space="preserve">
-    <value>Özellikler:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Değer</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Remove" xml:space="preserve">
-    <value>Kaldır</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Delimiters" xml:space="preserve">
-    <value>Sınırlayıcılar:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Explanation" xml:space="preserve">
-    <value>Bunlar kural kümesinin genel özellikleridir.
-
-Sınırlayıcılar, kelime bölümünde hangi karakterlerin kullanılacağını belirler.
-Eğer "Başvuru Kümesi"'e bir şey girerseniz bu kümenin, adı başvuru dizisi olan başka bir şemadan aktarılan kök anahtar kümesi olacağı anlamına gelir. Bu kural kümesinin tüm diğer seçenekleri atılır. Bu, örneğin, her ikisi de aktarım için JavaScript kullanan HTML ve ASP için kullanışlıdır.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.IgnoreCase" xml:space="preserve">
-    <value>Kural kümesinde büyük harf-küçük harf ayırt etme</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Name" xml:space="preserve">
-    <value>Kural kümesinin adı:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NameEmpty" xml:space="preserve">
-    <value>Kural kümesi adı boş bırakılmamalı. Sadece kök kural kümesinin bir adı yoktur.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NoEscapeSeq" xml:space="preserve">
-    <value>Komut kümesindeki çıkış dizilerini görmezden gel</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Reference" xml:space="preserve">
-    <value>Başvurulan küme:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.SpaceAndTab" xml:space="preserve">
-    <value>Boşluk ve Sekmeler otomatik olarak eklenir.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.EnterName" xml:space="preserve">
-    <value>Yeni kural kümesinin adını girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.Explanation" xml:space="preserve">
-    <value>Burada vurgu şeması için kural kümeleri tanımlayabilirsiniz.
-
-Kural kümeleri SharpDevelop'un vurgu motorunun kalbidir. Her kural kümesi, renklendirilmiş anahtar listeleri ve ölçüm aralıklarının, verilen başlangıç ve bitiş sembolleri arasındaki karakter dizileri olan bir yığındır, örn.çift tırnak.
-Kök kural kümesi, ana dosya gövdesi için kullanılır, diğerleri (adlandırılanlar) ölçüm aralıkları içinde kullanılabilir.
-Yani, XML yorumları veya diziler gibi metnin farklı bölgelerine uygulanan bir sürü kural kümesi olabilir.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.NamedRuleSets" xml:space="preserve">
-    <value>Adlandırılan kural kümeleri:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Örnek metin</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Explanation" xml:space="preserve">
-    <value>Her vurgu şemasının, kendisini programa tanıtan benzersiz bir adı olmalıdır.
-Yerleşik adla aynı ada sahip bir kullanıcı-tanımlı şema yerleşik adı tamamen değiştirir.
-
-'Eklentiler' alanı, bu şemaya ait, noktalı virgüllerle ayrılmış dosya uzantılarının bir listesidir,örneğin '.htm;.html;.asp'. Bu dizi boşluk içermemelidir.
-Bir uzantı hem yerleşik yapı hem de kullanıcı-tanımlı şema tarafından kullanıldığında, kullanıcı-tanımlı şema önceliğe sahiptir.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Extensions" xml:space="preserve">
-    <value>Uzantılar:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Name" xml:space="preserve">
-    <value>Şema adı:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.NameEmpty" xml:space="preserve">
-    <value>Şema adı boş bırakılamaz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Begin" xml:space="preserve">
-    <value>Ölçüm aralığının başlangıcı:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginCol" xml:space="preserve">
-    <value>Başlangıç</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginEmpty" xml:space="preserve">
-    <value>Başlangıç dizisi boş bırakılamaz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginSingleWord" xml:space="preserve">
-    <value>Başlangıç Tek Kelimedir:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Colors" xml:space="preserve">
-    <value>Renkler:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.ContCol" xml:space="preserve">
-    <value>İçindekiler</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.End" xml:space="preserve">
-    <value>Ölçüm aralığı sonu:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndCol" xml:space="preserve">
-    <value>Son</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndSingleWord" xml:space="preserve">
-    <value>Son tek kelimedir:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Explanation" xml:space="preserve">
-    <value>"Başlangıç" ve "Son"'da @'in özel bir anlamı var: @!string@ başlangıç/son aranırken diziye uyuşmaz, ve @@ tek bir @ ile eşleşir.
-
-Başlangıç/son için bir renk verilmediyse, içindekiler rengi kullanılır.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Name" xml:space="preserve">
-    <value>Ölçüm aralığı adı:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NameEmpty" xml:space="preserve">
-    <value>Ölçüm aralığı adı boş bırakılamaz.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NoEscSeq" xml:space="preserve">
-    <value>Kaçış serilerini tanıma</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Ruleset" xml:space="preserve">
-    <value>Kullanılıcak kural kümesi:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.StopEol" xml:space="preserve">
-    <value>Bir son dizisi bulunamazsa ölçüm aralığı satır sonunda biter.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Use" xml:space="preserve">
-    <value>Kullan</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.EnterName" xml:space="preserve">
-    <value>Yeni ölçüm aralığı adını girin:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
-    <value>Ölçüm aralıkları bir başlangıç dizisi ve opsiyonel olarak bir son dizisi ile tanımlanan, başlı başına varsayılan vurgu rengi olan karakter dizileridir.
-
-Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin veren bir adlandırılmış kural kümesine atanabilir (örneğin HTML etiketleri veya XML yorumları).</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
-    <value>Tanımlı ölçüm aralıkları</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.DigitsColor" xml:space="preserve">
-    <value>Basamak rengi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.EnvironmentColors" xml:space="preserve">
-    <value>Ortam renkleri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordList" xml:space="preserve">
-    <value>Anahtar sözcük listesi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordLists" xml:space="preserve">
-    <value>Anahtar sözcüklerin listeleri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkNextWord" xml:space="preserve">
-    <value>Bir sonraki kelimeyi işaretle</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkPreviousWord" xml:space="preserve">
-    <value>Bir önceki kelimeyi işaretle</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Properties" xml:space="preserve">
-    <value>Özellikler</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RootRuleSet" xml:space="preserve">
-    <value>Kök Kural kümesi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSet" xml:space="preserve">
-    <value>Kural kümesi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSets" xml:space="preserve">
-    <value>Kural kümeleri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Span" xml:space="preserve">
-    <value>Ölçüm aralığı</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Spans" xml:space="preserve">
-    <value>Ölçüm aralıkları</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ValidationError" xml:space="preserve">
-    <value>Lütfen yaptığınız ayarları düzeltin:</value>
   </data>
   <data name="Dialog.NewFile.AddToProjectQuestion" xml:space="preserve">
     <value>Yeni dosyayı şu anki projede kullanmak istiyorsanız, dosyayı projeye eklemelisiniz.\nDosyayı ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
@@ -1605,26 +1109,14 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
     <value>&amp;Şablonlar:</value>
   </data>
-  <data name="Dialog.NewProject.autoCreateSubDirCheckBox" xml:space="preserve">
-    <value>Proje alt dizinlerini otomatik oluştur</value>
-  </data>
-  <data name="Dialog.NewProject.checkBox1Text" xml:space="preserve">
-    <value>Kaynaklar için &amp;dizin oluştur</value>
-  </data>
   <data name="Dialog.NewProject.DialogName" xml:space="preserve">
     <value>Yeni Proje</value>
-  </data>
-  <data name="Dialog.NewProject.EmptyProjectFieldWarning" xml:space="preserve">
-    <value>Proje oluşturulamıyor, proje veya kaynak metin kutusu boş.</value>
   </data>
   <data name="Dialog.NewProject.LocationLabelText" xml:space="preserve">
     <value>&amp;Yer:</value>
   </data>
   <data name="Dialog.NewProject.NameLabelText" xml:space="preserve">
     <value>&amp;Ad:</value>
-  </data>
-  <data name="Dialog.NewProject.NewSolutionLabelText" xml:space="preserve">
-    <value>Yeni &amp;Proje Adı:</value>
   </data>
   <data name="Dialog.NewProject.ProjectAtDescription" xml:space="preserve">
     <value>Projenin oluşturulacağı yer</value>
@@ -1764,62 +1256,11 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.Options.CodeTemplatesText" xml:space="preserve">
     <value>Kod Şablonları</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
-    <value>İnşâ</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
-    <value>İnşâ</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
-    <value>Birleşik yapılandırması</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader" xml:space="preserve">
     <value>Yapılandırma</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationManagerButton" xml:space="preserve">
-    <value>Yapılandırma Yöneticisi</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntriesGroupBox" xml:space="preserve">
-    <value>Girdiler</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryColumnHeader" xml:space="preserve">
-    <value>Girdi</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryConfigurationLabel" xml:space="preserve">
-    <value>Girdi yapılandırması</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.PlatformColumnHeader" xml:space="preserve">
     <value>Platform</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ProjectNameColumnHeader" xml:space="preserve">
-    <value>Proje Adı</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.DependsOnLabel" xml:space="preserve">
-    <value>Neye Bağlı:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.EntryLabel" xml:space="preserve">
-    <value>Giriş:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.Execute" xml:space="preserve">
-    <value>Yürüt</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.None" xml:space="preserve">
-    <value>Hiçbiri</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionColumnHeader" xml:space="preserve">
-    <value>Eylem</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionLabel" xml:space="preserve">
-    <value>Eylem</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
-    <value>Girdi</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
-    <value>&amp;Çoklu Başlangıç Projesi</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton" xml:space="preserve">
-    <value>&amp;Tekil Başlangıç Projesi</value>
   </data>
   <data name="Dialog.Options.ExternalTool.ArgumentLabel" xml:space="preserve">
     <value>&amp;Argümanlar</value>
@@ -1892,48 +1333,6 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   </data>
   <data name="Dialog.Options.ExternalToolsText" xml:space="preserve">
     <value>Dışsal Araçlar</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.GreyOut" xml:space="preserve">
-    <value>Flu görüş</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Hide" xml:space="preserve">
-    <value>Sakla</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalMembers" xml:space="preserve">
-    <value>İçsel üyeler:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalTypes" xml:space="preserve">
-    <value>İçsel tipler:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox" xml:space="preserve">
-    <value>Ağaçtaki üyelerin seçimi</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox" xml:space="preserve">
-    <value>Diğer seçenekler</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Assembly Gözcüsü</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
-    <value>Özel üyeler:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes" xml:space="preserve">
-    <value>Özel tipler:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Show" xml:space="preserve">
-    <value>Göster</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox" xml:space="preserve">
-    <value>Kaynak önizlemelerini göster</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox" xml:space="preserve">
-    <value>Ağaçtaki üyelerin geriye dönüş tiplerini göster</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods" xml:space="preserve">
-    <value>"özel" metodları göster</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox" xml:space="preserve">
-    <value>Ağaçtaki tiplerin seçimi</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
     <value>Önbelleği temizle</value>
@@ -2010,36 +1409,6 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title" xml:space="preserve">
     <value>Standart Başlıkları Düzenle</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.DescriptionLabel" xml:space="preserve">
-    <value>SharpDevelop tam ekran modunda olduğunda:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideHorizontalScrollbar" xml:space="preserve">
-    <value>Metin düzenleyicisinin yatay kaydırma çubuğunu gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideMainMenu" xml:space="preserve">
-    <value>Ana menüyü gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideStatusBar" xml:space="preserve">
-    <value>Durum çubuğunu gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideTabs" xml:space="preserve">
-    <value>Sekmeleri gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideToolbars" xml:space="preserve">
-    <value>Araç çubuklarını gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideVerticalScrollbar" xml:space="preserve">
-    <value>Metin düzenleyicisin dikey kaydırma çubuğunu gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideWindowsTaskbar" xml:space="preserve">
-    <value>Windows görev çubuğunu gizle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.ShowMainMenuOnMouseHover" xml:space="preserve">
-    <value>İmleç üstüne geldiğinde göster</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.Title" xml:space="preserve">
-    <value>Tam ekran</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.General" xml:space="preserve">
     <value>Genel</value>
   </data>
@@ -2049,17 +1418,11 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>&amp;Her zaman yedek kopya oluştur</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox" xml:space="preserve">
-    <value>&amp;Satır sonlandırıcı tarzı</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
     <value>Yükle</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
     <value>Bu belge için &amp;kullanıcı-bazlı ayarları yükle</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Yükle/Kaydet</value>
@@ -2106,17 +1469,11 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox" xml:space="preserve">
     <value>İnşa hata ile biterse hata sekmesini göster</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
-    <value>Geçerli UI dili:</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Dil seçimi için bir simgeye tıklayın.</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.PanelName" xml:space="preserve">
     <value>Kullanıcı Arabirim Dili</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
-    <value>Ayarlanacak UI dili:</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
     <value>Tercih ettiğiniz &amp;ambiyansı seçin:</value>
@@ -2331,42 +1688,8 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Tümleşkenin oluşturulacağı dizini seçin.</value>
   </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
-    <value>Yerleşik:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel" xml:space="preserve">
-    <value>Hazır vurgu düzenleri:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton" xml:space="preserve">
-    <value>Kullanıcı-tanımlı'ya kopyala</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyError" xml:space="preserve">
-    <value>Dosya kopyalanılamadı.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
-    <value>Sil</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
-    <value>Bu kullanıcı-tanımlı düzeni silmeyi gerçekten istiyor musunuz?</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteError" xml:space="preserve">
-    <value>Dosya silinemiyor.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel" xml:space="preserve">
-    <value>Kullanıcı-tanımlı düzenlerin yerleşiklere göre öncelikleri var.
-Vurgu düzenlerinde yapılacak bir değişiklik #Develop'un kapatılıp tekrar açılmasıyla belirecektir.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.LoadError" xml:space="preserve">
-    <value>Mod tanım dosyası yüklenilemedi.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton" xml:space="preserve">
-    <value>Değiştir</value>
-  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Vurgu</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel" xml:space="preserve">
-    <value>Kullanıcı-tanımlı:</value>
   </data>
   <data name="Dialog.Options.TreeViewOptions.DialogName" xml:space="preserve">
     <value>Seçenekler</value>
@@ -2385,9 +1708,6 @@ Vurgu düzenlerinde yapılacak bir değişiklik #Develop'un kapatılıp tekrar a
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile" xml:space="preserve">
     <value>{0} geçerli bir simge dosyası değil.</value>
-  </data>
-  <data name="Dialog.ProjectOptions.ApplicationSettings.LocalizedStringFileLabel" xml:space="preserve">
-    <value>Yerelleştirilmiş metin dosyası:</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.OutputName" xml:space="preserve">
     <value>Çıktı ismi:</value>
@@ -2731,9 +2051,6 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tip</value>
   </data>
-  <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
-    <value>GNU Genel Kamu Lisansı</value>
-  </data>
   <data name="Dialog.WizardDialog.FinishButton" xml:space="preserve">
     <value>Sonlandır</value>
   </data>
@@ -2757,9 +2074,6 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   </data>
   <data name="Dialog.WordCountDialog.MustBeInProtectedModeWarning" xml:space="preserve">
     <value>Proje modunda olmalısınız</value>
-  </data>
-  <data name="Dialog.WordCountDialog.SaveTheFileWarning" xml:space="preserve">
-    <value>Dosyayı kaydetmelisiniz</value>
   </data>
   <data name="Dialog.WordCountDialog.StartButton" xml:space="preserve">
     <value>&amp;Başla</value>
@@ -2902,6 +2216,9 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="Global.QuestionText" xml:space="preserve">
     <value>Soru</value>
   </data>
+  <data name="Global.Refresh" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
   <data name="Global.RemoveButtonText" xml:space="preserve">
     <value>&amp;Kaldır</value>
   </data>
@@ -3034,21 +2351,6 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo Yorumlayıcısı</value>
   </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded" xml:space="preserve">
-    <value>Hata:'Hata ayıklayıcı yüklenemedi.'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorIncompatibleDebugger" xml:space="preserve">
-    <value>Hata: 'Uyumsuz hata ayıklayıcı'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorNoProgramDebugged" xml:space="preserve">
-    <value>Hata: 'Hiçbi programın hatası ayıklammadı'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.Title" xml:space="preserve">
-    <value>Hatası Ayıklanan</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ToolTip" xml:space="preserve">
-    <value>Ayıklanan programdaki komutları çalıştırır.</value>
-  </data>
   <data name="ICSharpCode.Build.CannotFindFxCop" xml:space="preserve">
     <value>FxCop bulunamadı. Lütfen SharpDevelop seçeneklerinden FxCop kurulum dizinini seçin.</value>
   </data>
@@ -3133,19 +2435,11 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Satır Sonu</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
-    <value>NCover konsol uygulaması bulunamadı.
-
-Eğer NCover yüklüyse, Kod Kapsama seçeneklerinden uygulamanın yerini belirtin.</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated" xml:space="preserve">
     <value>Hiç kod kapsama dosyası üretilemedi:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
     <value>Kod kapsama renkleri</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
-    <value>&amp;Komut:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel" xml:space="preserve">
     <value>Nesneleri &amp;Goster:</value>
@@ -3156,26 +2450,11 @@ Eğer NCover yüklüyse, Kod Kapsama seçeneklerinden uygulamanın yerini belirt
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel" xml:space="preserve">
     <value>Öğe önalanı</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.NCoverConfigurationGroupBoxText" xml:space="preserve">
-    <value>NCover Yapılandırması</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.SampleText" xml:space="preserve">
     <value>AaBbCcDdYyZz</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.AssemblyListLabel" xml:space="preserve">
-    <value>İzlenecek tümleşkeler:</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeAttributes" xml:space="preserve">
-    <value>Hariç Tutulan Nitelikler</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Kod kapsama çalıştırılıyor...</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunTestsWithCodeCoverage" xml:space="preserve">
-    <value>Testleri kod kapsama ile çalıştır</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunWithCodeCoverage" xml:space="preserve">
-    <value>Kod kapsama ile çalıştır.</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ShowSourceCode" xml:space="preserve">
     <value>Kaynak Kodunu Göster</value>
@@ -3188,15 +2467,6 @@ Eğer NCover yüklüyse, Kod Kapsama seçeneklerinden uygulamanın yerini belirt
   </data>
   <data name="ICSharpCode.CodeCoverage.VisitCount" xml:space="preserve">
     <value>Tekrar Edilme Sayısı</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoProjectItem" xml:space="preserve">
-    <value>Proje dizinine değiştir</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoSdkItem" xml:space="preserve">
-    <value>SDK dizinine değiştir</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.PadName" xml:space="preserve">
-    <value>Konsol</value>
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.DescriptionLabel" xml:space="preserve">
     <value>Tanımlama</value>
@@ -3230,9 +2500,6 @@ Eğer NCover yüklüyse, Kod Kapsama seçeneklerinden uygulamanın yerini belirt
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.XmlFileAssozisation" xml:space="preserve">
     <value>XML Dokümanı</value>
-  </data>
-  <data name="ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation" xml:space="preserve">
-    <value>#Develop XML Formu</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage" xml:space="preserve">
     <value>NAnt bulunamadı '{0}'.
@@ -3367,60 +2634,6 @@ Başka bir dosya adı seçin veya dizinin var olduğundan ve o konuma dosya yaz�
   <data name="ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser" xml:space="preserve">
     <value>Tarayıcı</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass" xml:space="preserve">
-    <value>Soyut sınıf üstünden geçmeleri</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass.Hint" xml:space="preserve">
-    <value>Üstünden geçmek için soyut sınıf seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor" xml:space="preserve">
-    <value>Yapılandırıcı</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor.Hint" xml:space="preserve">
-    <value>Yapıcı tarafından ilklendirilecek değişkenleri seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX.Hint" xml:space="preserve">
-    <value>OnXXX işlevleri oluşturulacak olayları seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GenerateEqualsAndGetHashCode" xml:space="preserve">
-    <value>Equals ve GetHashCode metotlarını türet</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter" xml:space="preserve">
-    <value>Getiren</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter.Hint" xml:space="preserve">
-    <value>Get oluşturulacak değeişkenleri seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter" xml:space="preserve">
-    <value>Getiren ve Atayan</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter.Hint" xml:space="preserve">
-    <value>Get ve Set oluşturulacak değişkenleri seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface" xml:space="preserve">
-    <value>Arayüz gerçekleştirme</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface.Hint" xml:space="preserve">
-    <value>Gerçekleştirilecek arayüzleri seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods" xml:space="preserve">
-    <value>Üstünden geçilebilir İşlevler</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods.Hint" xml:space="preserve">
-    <value>Üstünden geçilecek işlevleri seçin</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties" xml:space="preserve">
-    <value>Özellikleri ez</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter" xml:space="preserve">
-    <value>Atayan</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter.Hint" xml:space="preserve">
-    <value>Atayıcıları üretmek için alanları seçin.</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString.Hint" xml:space="preserve">
-    <value>Tanıma eklenecek özellikleri seçin</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB" xml:space="preserve">
     <value>C# 'dan VB.NET'e</value>
   </data>
@@ -3485,9 +2698,6 @@ Not: Bu özel düzenlemeleri etkilemez.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory" xml:space="preserve">
     <value>Hedef dizin</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.ConvertCommand.FinishedMessage" xml:space="preserve">
-    <value>Proje dönüşümü başarıyla tamamlandı. Dönüştürülmüş projeyi şu konumda bulabilirsiniz:</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
     <value>C# dan Boo ya</value>
   </data>
@@ -3502,9 +2712,6 @@ Not: Bu özel düzenlemeleri etkilemez.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution" xml:space="preserve">
     <value>'${ProjectName}' için yeni bir çözüm oluştur.</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError" xml:space="preserve">
-    <value>Bu pencere içeriği basılamıyor.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError" xml:space="preserve">
     <value>YazdırılacakBelge oluşturulamadı</value>
@@ -4873,9 +4080,6 @@ Sadece harf,rakam, boşluk, '.' yada '_' kullanabilirsiniz.</value>
   <data name="NUnitPad.NUnitPadContent.TestTreeView.TestNotExecutedMessage" xml:space="preserve">
     <value>'${TestCase}' testi çalıştırılmadı.</value>
   </data>
-  <data name="ObjectBrowser.Menu.GoBack" xml:space="preserve">
-    <value>Geri Git</value>
-  </data>
   <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
     <value>Tümleşke Yükle...</value>
   </data>
@@ -5395,98 +4599,8 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   <data name="SharpDevelop.Solution.UnknownSolutionVersion" xml:space="preserve">
     <value>Microsoft {0} Çözüm dosyası biçimini okuyamıyor.</value>
   </data>
-  <data name="SharpQuery.Error.InvalidValue" xml:space="preserve">
-    <value>Parametrelerden biri (yada daha fazlası) geçersiz.</value>
-  </data>
-  <data name="SharpQuery.Error.NotSuported" xml:space="preserve">
-    <value>Desteklenmiyor</value>
-  </data>
-  <data name="SharpQuery.Error.OpenError" xml:space="preserve">
-    <value>Bağlantı açılamıyor. Bağlantı cümlenizi kontrol edin.</value>
-  </data>
-  <data name="SharpQuery.Error.ProcedureExecution" xml:space="preserve">
-    <value>Bir hatadan ötürü betik çalıştırılamıyor.</value>
-  </data>
-  <data name="SharpQuery.Error.SQLExecution" xml:space="preserve">
-    <value>Bir hatadan ötürü SQL komutunuz çalıştırılamıyor.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongConnectionString" xml:space="preserve">
-    <value>Yanlış bağlantı cümlesi!</value>
-  </data>
-  <data name="SharpQuery.Error.WrongKeyType" xml:space="preserve">
-    <value>Anahtar bir String olmalı</value>
-  </data>
-  <data name="SharpQuery.Error.WrongValueType" xml:space="preserve">
-    <value>Değer bir String olmalı</value>
-  </data>
-  <data name="SharpQuery.Label.AddConnection" xml:space="preserve">
-    <value>Bağlantı ekle ...</value>
-  </data>
-  <data name="SharpQuery.Label.Connect" xml:space="preserve">
-    <value>Veritabanına bağlan</value>
-  </data>
-  <data name="SharpQuery.Label.DataBasesRoot" xml:space="preserve">
-    <value>Veritabanı bağlantıları</value>
-  </data>
-  <data name="SharpQuery.Label.Disconnect" xml:space="preserve">
-    <value>Bağlantıyı Kes</value>
-  </data>
-  <data name="SharpQuery.Label.Execute" xml:space="preserve">
-    <value>Çalıştır</value>
-  </data>
-  <data name="SharpQuery.Label.ExtractData" xml:space="preserve">
-    <value>Veriyi Çıkar</value>
-  </data>
-  <data name="SharpQuery.Label.ModifyConnection" xml:space="preserve">
-    <value>Bağlantıyı düzenle ...</value>
-  </data>
-  <data name="SharpQuery.Label.ProceduresRoot" xml:space="preserve">
-    <value>Betikler</value>
-  </data>
-  <data name="SharpQuery.Label.Refresh" xml:space="preserve">
-    <value>Yenile</value>
-  </data>
-  <data name="SharpQuery.Label.Remove" xml:space="preserve">
-    <value>Kaldır</value>
-  </data>
-  <data name="SharpQuery.Label.Schemas" xml:space="preserve">
-    <value>Şemalar</value>
-  </data>
   <data name="SharpQuery.Label.SharpQuery" xml:space="preserve">
     <value>Veritabanı</value>
-  </data>
-  <data name="SharpQuery.Label.TablesRoot" xml:space="preserve">
-    <value>Tablolar</value>
-  </data>
-  <data name="SharpQuery.Label.ViewsRoot" xml:space="preserve">
-    <value>Görünümler</value>
-  </data>
-  <data name="SharpQuery.PadTitle" xml:space="preserve">
-    <value>Veritabanı Kaşifi</value>
-  </data>
-  <data name="SharpQuery.ToolTip.AddConnection" xml:space="preserve">
-    <value>Bağlantı ekle</value>
-  </data>
-  <data name="SharpQuery.ToolTip.Refresh" xml:space="preserve">
-    <value>Yenile</value>
-  </data>
-  <data name="SharpQuery.XMLForm.ResetButton" xml:space="preserve">
-    <value>Temizle</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterDataType" xml:space="preserve">
-    <value>Parametre veri tipi</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterInputTitle" xml:space="preserve">
-    <value>Parametre girdisi</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterName" xml:space="preserve">
-    <value>Parametre adı</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterType" xml:space="preserve">
-    <value>Parametre tipi</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterValue" xml:space="preserve">
-    <value>Parametre değeri</value>
   </data>
   <data name="SharpReport.AddinName" xml:space="preserve">
     <value>SharpDevelop Raporlama</value>
@@ -5761,42 +4875,6 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>sat ${Line} süt ${Column} ha ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Bu sınıf sürekli nesnelere kolay erişimi tanımlar.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Eklenti Seçenekleri</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>#D için boş bir menü komutu</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Menü Komutu</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>Bir #D seçenek paneli.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Ayar Paneli</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Çeşitli olaylar için kullanılabilecek bir komut.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Basit Komut</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Bir #D tepsi içeriği (örneğin #D kaşifleri).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Boş Tepsi</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Bir #D görünüm içeriği ( örneğin metin düzenleyici yada kaynak düzenleyici).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Boş Görünüm</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Çeşitli</value>
   </data>
@@ -5902,9 +4980,6 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   <data name="Templates.File.Properties.ContextCategory" xml:space="preserve">
     <value>İçerik</value>
   </data>
-  <data name="Templates.File.Properties.IsSealed.Description" xml:space="preserve">
-    <value>Bu sınıfı mühürlü olarak ayarlamak için doğru konumuna getirin.</value>
-  </data>
   <data name="Templates.File.Properties.OptionCategory" xml:space="preserve">
     <value>Seçenekler</value>
   </data>
@@ -5916,6 +4991,42 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>Kaynak dosyayı boşalt</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Bu sınıf sürekli nesnelere kolay erişimi tanımlar.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Eklenti Seçenekleri</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>#D için boş bir menü komutu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Menü Komutu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>Bir #D seçenek paneli.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Ayar Paneli</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Çeşitli olaylar için kullanılabilecek bir komut.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Basit Komut</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Bir #D tepsi içeriği (örneğin #D kaşifleri).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Boş Tepsi</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Bir #D görünüm içeriği ( örneğin metin düzenleyici yada kaynak düzenleyici).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Boş Görünüm</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>'Tek sınıf' türü bir sınıf</value>

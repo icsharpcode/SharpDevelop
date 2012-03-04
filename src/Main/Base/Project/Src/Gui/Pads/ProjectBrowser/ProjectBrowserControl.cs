@@ -395,6 +395,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Clear()
 		{
 			treeView.Clear();
+			propertyContainer.SelectedObject = null;
 		}
 		
 		public void PadActivated()

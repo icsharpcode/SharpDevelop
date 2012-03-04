@@ -232,6 +232,10 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml.cs">
+      <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
       <DependentUpon>DebugOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -239,10 +243,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml.cs">
-      <DependentUpon>WebProjectOptionsPanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml.cs">
       <DependentUpon>AddServiceReferenceDialog.xaml</DependentUpon>
@@ -299,7 +299,6 @@
     <Compile Include="Src\Gui\Pads\AbstractConsolePad.cs" />
     <Compile Include="Src\Gui\Pads\BaseWatchBox.cs" />
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
-    <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\SpecialFileNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferenceNode.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ServiceReferencesFolderNode.cs" />
@@ -323,6 +322,11 @@
     <Compile Include="Src\Internal\Templates\File\FileTemplate.cs" />
     <Compile Include="Src\Internal\Templates\TextTemplate.cs" />
     <Compile Include="Src\Internal\Templates\File\INewFileCreator.cs" />
+    <Compile Include="Src\Project\Behaviors\DefaultProjectBehavior.cs" />
+    <Compile Include="Src\Project\Behaviors\DotNetStartBehavior.cs" />
+    <Compile Include="Src\Project\Behaviors\ProjectBehavior.cs" />
+    <Compile Include="Src\Project\Behaviors\ProjectBehaviorService.cs" />
+    <Compile Include="Src\Project\Behaviors\ProjectBehaviorSupportedConditionEvaluator.cs" />
     <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\Converter\IUpgradableProject.cs" />
@@ -350,6 +354,7 @@
     <Compile Include="Src\Project\ProjectStartException.cs" />
     <Compile Include="Src\Project\ProjectLoadException.cs" />
     <Compile Include="Src\Project\ProjectPropertyChangedEventArgs.cs" />
+    <Compile Include="Src\Project\ProjectUpgradeException.cs" />
     <Compile Include="Src\Project\Solution\Project_TypeGuids.cs" />
     <Compile Include="Src\Project\TargetFramework.cs" />
     <Compile Include="Src\Services\AmbienceService\DefaultAmbience.cs" />
@@ -451,7 +456,9 @@
     <Compile Include="Src\Gui\IWorkbench.cs" />
     <Compile Include="Src\Gui\IWorkbenchLayout.cs" />
     <Compile Include="Src\Gui\IWorkbenchWindow.cs" />
-    <Compile Include="Src\Gui\IPadContent.cs" />
+    <Compile Include="Src\Gui\IPadContent.cs">
+      <DependentUpon>IProgressMonitor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Src\Gui\AbstractViewContent.cs" />
     <Compile Include="Src\Gui\AbstractPadContent.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IClipboardHandler.cs" />
@@ -567,9 +574,6 @@
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveContentExtensionEvaluator.cs" />
     <Compile Include="Src\Gui\Workbench\ViewContentEventHandler.cs" />
     <Compile Include="Src\Services\Debugger\IDebugger.cs" />
@@ -682,7 +686,6 @@
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
-    <EmbeddedResource Include="Resources\TaskListOptions.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
@@ -714,9 +717,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\aaDebugOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
@@ -779,7 +779,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
-    <Compile Include="Src\Services\WebProjectService\WebProjectService.cs" />
+    <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
@@ -846,12 +846,12 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions\WebProjectOptionsPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
@@ -883,17 +883,16 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
+    <Folder Include="Src\Project\Behaviors" />
     <Folder Include="themes" />
     <Folder Include="Src\Bookmarks\Pad\Controls" />
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
-    <Folder Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\WebProjectOptions" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />
-    <Folder Include="Src\Services\WebProjectService" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Services\NavigationService" />
     <ProjectReference Include="..\..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">

@@ -86,7 +86,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xaml" />
@@ -115,10 +114,6 @@
       <DependentUpon>ConditionCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pads\Controls\Converters.cs" />
-    <Compile Include="Pads\Controls\SimpleListViewControl.xaml.cs">
-      <DependentUpon>SimpleListViewControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
     </Compile>
@@ -130,6 +125,7 @@
       <DependentUpon>DrawSurface.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pads\ParallelPad\ParallelStackFrameModel.cs" />
     <Compile Include="Pads\ParallelPad\ParallelStackPad.cs" />
     <Compile Include="Pads\ParallelPad\ParallelStacksGraph.cs" />
     <Compile Include="Pads\ParallelPad\SelectedFrameBookmark.cs" />
@@ -175,17 +171,10 @@
     <Compile Include="Service\DebuggeeExceptionForm.Designer.cs">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Service\DebuggerEventForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Service\DebuggerEventForm.Designer.cs">
-      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Service\EditBreakpointScriptWindow.xaml.cs">
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Service\ProcessMonitor.cs" />
     <Compile Include="Tooltips\DebuggerPopup.cs" />
     <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs">
       <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
@@ -291,9 +280,6 @@
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Service\DebuggerEventForm.resx">
-      <DependentUpon>DebuggerEventForm.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Service\SetCurrentStatementCommand.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -338,7 +324,6 @@
     </Compile>
     <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
-    <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>
@@ -396,7 +381,6 @@
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Controls\ConditionCell.xaml" />
-    <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
     <Page Include="Pads\Controls\WatchList.xaml" />
     <Page Include="Pads\Controls\WatchListAutoCompleteCell.xaml" />
     <Page Include="Pads\ParallelPad\DrawSurface.xaml" />

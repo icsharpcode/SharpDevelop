@@ -462,9 +462,9 @@ namespace SearchAndReplace
 				return;
 			}
 			var editor = OpenTextArea(result.FileName, true);
-			var start = editor.Document.GetOffset(result.StartLocation);
-			var end = editor.Document.GetOffset(result.EndLocation);
 			if (editor != null) {
+				var start = editor.Document.GetOffset(result.StartLocation.Line, result.StartLocation.Column);
+				var end = editor.Document.GetOffset(result.EndLocation.Line, result.EndLocation.Column);
 				editor.Caret.Offset = start;
 				editor.Select(start, end - start);
 			}

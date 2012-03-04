@@ -46,7 +46,7 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			OpenStringListEditorEvent<ControlType> editor = new OpenStringListEditorEvent<ControlType>(parent, controlId);
 			editor.ShowBrowseButton = true;
-			editor.TitleText = StringParser.Parse("${res:Dialog.ExportProjectToHtml.FolderLabel}");
+			editor.TitleText = StringParser.Parse("${res:Global.Folder}:");
 			return editor;
 		}
 

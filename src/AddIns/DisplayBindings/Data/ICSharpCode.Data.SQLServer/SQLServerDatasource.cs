@@ -100,18 +100,23 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
 
         protected override bool HandlePopulateDatabasesException(Exception exception)
         {
-            SqlException sqlException = exception as SqlException;
-            
-            if (sqlException.Number == 67)
-            {
-                DatabaseDriver.RemoveDatasource(Name);
-                MessageBox.Show("Error while trying to populate databases.\n\n" + exception.Message, DatabaseDriver.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                return false;
-            }
-            else
-            {
-                throw exception;
-            }
+        	if (exception is SqlException) {
+        		SqlException sqlException = exception as SqlException;
+        		
+        		if (sqlException.Number == 67) {
+        			DatabaseDriver.RemoveDatasource(Name);
+        			MessageBox.Show("Error while trying to populate databases.\n\n" + exception.Message, DatabaseDriver.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        			return false;
+        		} else {
+        			throw exception;
+        		}
+        	} else if (exception is NotSupportedException) {
+        		DatabaseDriver.RemoveDatasource(Name);
+        		MessageBox.Show("Error while trying to populate databases.\n\n" + exception.Message, DatabaseDriver.Name, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        		return false;
+        	} else {
+        		throw exception;
+        	}
         }
 
         #endregion

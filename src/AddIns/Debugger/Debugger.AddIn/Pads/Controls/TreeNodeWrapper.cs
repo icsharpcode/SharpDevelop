@@ -4,11 +4,13 @@
 using System;
 using System.Linq;
 using System.Windows;
-
+using System.Windows.Threading;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TreeView;
 
 namespace Debugger.AddIn.Pads.Controls
@@ -25,17 +27,6 @@ namespace Debugger.AddIn.Pads.Controls
 		
 		public TreeNode Node { get; private set; }
 		
-		public override bool Equals(object obj)
-		{
-			var w = obj as TreeNodeWrapper;
-			return w != null && Node.Equals(w.Node);
-		}
-		
-		public override int GetHashCode()
-		{
-			return Node.GetHashCode();
-		}
-		
 		public override object Text {
 			get { return Node.Name; }
 		}
@@ -51,7 +42,8 @@ namespace Debugger.AddIn.Pads.Controls
 		protected override void LoadChildren()
 		{
 			if (Node.HasChildNodes) {
-				this.Children.AddRange(Node.ChildNodes.Select(node => node.ToSharpTreeNode()));
+				((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess
+					.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(Node.ChildNodes.Select(node => node.ToSharpTreeNode())));
 			}
 		}
 	}
@@ -82,10 +74,10 @@ namespace Debugger.AddIn.Pads.Controls
 			                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
 
 			var node = text.ToSharpTreeNode();
-			if (!WatchPad.Instance.WatchList.WatchItems.Contains(node))
+			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.FullName == ((TreeNodeWrapper)n).Node.FullName))
 				WatchPad.Instance.WatchList.WatchItems.Add(node);
 			
-			WatchPad.Instance.RefreshPad();
+			WatchPad.Instance.InvalidatePad();
 		}
 	}
 }

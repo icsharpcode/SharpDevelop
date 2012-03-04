@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 using Debugger.AddIn.Pads;
+using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -43,11 +45,11 @@ namespace Debugger.AddIn
 					                        language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp).ToSharpTreeNode();
 					var list = pad.WatchList;
 					
-					if(!list.WatchItems.Contains(text))
+					if(!list.WatchItems.Any(n => text.Node.FullName == ((TreeNodeWrapper)n).Node.FullName))
 						list.WatchItems.Add(text);
 				}
 				
-				pad.RefreshPad();
+				pad.InvalidatePad();
 			}
 		}
 	}
@@ -65,7 +67,7 @@ namespace Debugger.AddIn
 					return;
 				
 				list.WatchItems.Remove(node);
-				((WatchPad)this.Owner).RefreshPad();
+				((WatchPad)this.Owner).InvalidatePad();
 			}
 		}
 	}
@@ -75,7 +77,7 @@ namespace Debugger.AddIn
 		public override void Run()
 		{
 			if (this.Owner is WatchPad) {
-				((WatchPad)this.Owner).RefreshPad();
+				((WatchPad)this.Owner).InvalidatePad();
 			}
 		}
 	}

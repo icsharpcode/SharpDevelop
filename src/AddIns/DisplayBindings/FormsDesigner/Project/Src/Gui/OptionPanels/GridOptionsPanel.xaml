@@ -1,0 +1,52 @@
+﻿<gui:OptionPanel x:Class="ICSharpCode.FormsDesigner.Gui.OptionPanels.GridOptionsPanel"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	
+	<StackPanel>
+		
+		<GroupBox Margin="0,10,0,0"
+		          Header="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SnapModeGroupBox}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="15">
+				<RadioButton x:Name="snapToGridRadioButton"
+				             Checked="SnapToGridRadioButton_Checked"
+				             
+				             Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SnapToGridRadioButton}"></RadioButton>
+				<RadioButton x:Name="snapLinesRadioButton"
+				             Checked="SnapLinesRadioButton_Checked"
+				             Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SnapLinesRadioButton}"></RadioButton>
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+		
+		<GroupBox  Header="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox}">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="15">
+				<Grid Margin="40,5,30,0">
+					<Grid.RowDefinitions>
+						<RowDefinition></RowDefinition>
+						<RowDefinition></RowDefinition>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition></ColumnDefinition>
+						<ColumnDefinition></ColumnDefinition>
+					</Grid.ColumnDefinitions>
+					
+					<Label Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.WidthLabel}"></Label>
+					<TextBox x:Name="widthTextBox" Margin="0,0,60,0" Width="40" IsEnabled="False" Grid.Column="1" ></TextBox>
+					
+					<Label Grid.Row="1" Margin="0,5,0,0"
+					       Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.HeightLabel}"></Label>
+					
+					<TextBox x:Name="heightTextBox" Margin="0,5,60,0" Width="40"
+					         IsEnabled="False" Grid.Row="1" Grid.Column="1" ></TextBox>
+				</Grid>
+				
+				<CheckBox IsEnabled="False" x:Name="showGridCheckBox"
+				          Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.ShowGridComboBox}"></CheckBox>
+				<CheckBox IsEnabled="False" x:Name="snapToGridCheckBox"
+				          Content="{sd:Localize ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SnapToGridRadioButton}"></CheckBox>
+			</widgets:StackPanelWithSpacing>
+		</GroupBox>
+	</StackPanel>
+</gui:OptionPanel>

@@ -63,14 +63,6 @@ namespace CSharpBinding
 			            PropertyStorageLocations.ConfigurationSpecific, false);
 		}
 		
-		public override ItemType GetDefaultItemType(string fileName)
-		{
-			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase))
-				return ItemType.Compile;
-			else
-				return base.GetDefaultItemType(fileName);
-		}
-		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			if (this.MinimumSolutionVersion == Solution.SolutionVersionVS2005) {
@@ -86,7 +78,7 @@ namespace CSharpBinding
 		
 		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "C# 2.0");
 		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "C# 3.0");
-		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), "C# 4.0");
+		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), DotnetDetection.IsDotnet45Installed() ? "C# 5.0" : "C# 4.0");
 		
 		public override CompilerVersion CurrentCompilerVersion {
 			get {
@@ -105,7 +97,13 @@ namespace CSharpBinding
 		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
-			return new[] { msbuild20, msbuild35, msbuild40 };
+			List<CompilerVersion> versions = new List<CompilerVersion>();
+			if (DotnetDetection.IsDotnet35SP1Installed()) {
+				versions.Add(msbuild20);
+				versions.Add(msbuild35);
+			}
+			versions.Add(msbuild40);
+			return versions;
 		}
 		
 		/*
@@ -151,9 +149,30 @@ namespace CSharpBinding
 			return new CSharpProjectContent();
 		}
 		
-		public override ICSharpCode.SharpDevelop.Refactoring.ISymbolSearch PrepareSymbolSearch(ICSharpCode.NRefactory.TypeSystem.IEntity entity)
+		protected override ProjectBehavior GetOrCreateBehavior()
 		{
-			return new CSharpSymbolSearch(this, entity);
+			if (projectBehavior != null)
+				return projectBehavior;
+			CSharpProjectBehavior behavior = new CSharpProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
+			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
+			return projectBehavior;
+		}
+	}
+	
+	public class CSharpProjectBehavior : ProjectBehavior
+	{
+		public CSharpProjectBehavior(CSharpProject project, ProjectBehavior next = null)
+			: base(project, next)
+		{
+			
+		}
+		
+		public override ItemType GetDefaultItemType(string fileName)
+		{
+			if (string.Equals(Path.GetExtension(fileName), ".cs", StringComparison.OrdinalIgnoreCase))
+				return ItemType.Compile;
+			else
+				return base.GetDefaultItemType(fileName);
 		}
 	}
 }

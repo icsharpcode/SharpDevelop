@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 using System.Xml.Serialization;
 using Debugger;
 using Debugger.AddIn;
@@ -181,51 +182,45 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.Paused += debuggedProcess_Paused;
 				debuggedProcess.Exited += ResetPad;
 			}
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			InvalidatePad();
 		}
 		
-		public override void RefreshPad()
+		TreeNodeWrapper UpdateNode(TreeNodeWrapper node)
+		{
+			try {
+				LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
+				var nodExpression = debugger.GetExpression(node.Node.Name);
+				//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
+				ExpressionNode valNode = new ExpressionNode(null, null, node.Node.Name, nodExpression);
+				return valNode.ToSharpTreeNode();
+			} catch (GetValueException) {
+				string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
+				ErrorInfoNode infoNode = new ErrorInfoNode(node.Node.Name, error);
+				return infoNode.ToSharpTreeNode();
+			}
+		}
+		
+		protected override void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning)
 				return;
 			
 			using(new PrintTimes("Watch Pad refresh")) {
-				try {
-					Utils.DoEvents(debuggedProcess);
-					List<TreeNodeWrapper> nodes = new List<TreeNodeWrapper>();
-					
-					foreach (var node in watchList.WatchItems.OfType<TreeNodeWrapper>()) {
-						try {
-							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
-							var nodExpression = debugger.GetExpression(node.Node.Name);
-							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-							ExpressionNode valNode = new ExpressionNode(null, null, node.Node.Name, nodExpression);
-							nodes.Add(valNode.ToSharpTreeNode());
+				var nodes = watchList.WatchItems.OfType<TreeNodeWrapper>().ToArray();
+				watchList.WatchItems.Clear();
+				foreach (var n in nodes) {
+					var node = n;
+					debuggedProcess.EnqueueWork(
+						Dispatcher.CurrentDispatcher,
+						delegate {
+							watchList.WatchItems.Add(UpdateNode(node));
 						}
-						catch (GetValueException) {
-							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
-							ErrorInfoNode infoNode = new ErrorInfoNode(node.Node.Name, error);
-							nodes.Add(infoNode.ToSharpTreeNode());
-						}
-					}
-					
-					// rebuild list
-					watchList.WatchItems.Clear();
-					foreach (var node in nodes)
-						watchList.WatchItems.Add(node);
-				}
-				catch(AbortedBecauseDebuggeeResumedException) { }
-				catch(Exception ex) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						MessageService.ShowException(ex);
-					}
+					);
 				}
 			}
 		}

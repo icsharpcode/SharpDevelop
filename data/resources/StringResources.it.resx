@@ -229,6 +229,15 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato file sconosciuto:</value>
   </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
+    <value>Questo file contiene dei ritorni a capo inconsistenti.</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Header" xml:space="preserve">
+    <value>Ritorni a capo inconsistenti</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Normalize" xml:space="preserve">
+    <value>Normalizza</value>
+  </data>
   <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
     <value>Errore:</value>
   </data>
@@ -257,7 +266,7 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
     <value>Trova</value>
   </data>
   <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
-    <value>Guida</value>
+    <value>Aiuto in linea</value>
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Modalità di Aiuto</value>
@@ -304,9 +313,6 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddIns.HexEditor.Display" xml:space="preserve">
     <value>Display</value>
   </data>
-  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
-    <value>Elementi</value>
-  </data>
   <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
     <value>Dati</value>
   </data>
@@ -328,168 +334,35 @@ Scaricare un componente da internet, poi cliccare 'Install AddIn' e selezionare 
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Ridimensiona per riempire la larghezza corrente</value>
   </data>
-  <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
-    <value>Aggiunge ai Preferiti dell'Aiuto</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
     <value>Indietro</value>
   </data>
   <data name="AddIns.HtmlHelp2.Contents" xml:space="preserve">
     <value>Sommario</value>
   </data>
-  <data name="AddIns.HtmlHelp2.DefaultEmptyFilter" xml:space="preserve">
-    <value>(nessun filtro)</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Delete" xml:space="preserve">
-    <value>Cancella</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.DynamicHelp" xml:space="preserve">
-    <value>Aiuto Dinamico</value>
-  </data>
   <data name="AddIns.HtmlHelp2.EnterURL" xml:space="preserve">
     <value>Immettere l'URL</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Environment" xml:space="preserve">
-    <value>Ambiente di Help 2.0</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Favorites" xml:space="preserve">
-    <value>Argomenti di Aiuto Preferiti</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.FilteredBy" xml:space="preserve">
-    <value>Filtrato da:</value>
   </data>
   <data name="AddIns.HtmlHelp2.Forward" xml:space="preserve">
     <value>Avanti</value>
   </data>
-  <data name="AddIns.HtmlHelp2.HelpCollectionMayBeEmpty" xml:space="preserve">
-    <value>Il sistema di Aiuto 2.0 sembra essere installato, ma o la collezione selezionata non ha contenuto oppure non è disponibile</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchCaption" xml:space="preserve">
-    <value>Ricerca</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSearchInProgress" xml:space="preserve">
-    <value>Ricerca di "${0}" ...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpSystemNotAvailable" xml:space="preserve">
-    <value>Il sistema di help non è disponibile.
-Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateCaption" xml:space="preserve">
-    <value>Aggiornamento Aiuto in corso</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HelpUpdateInProgress" xml:space="preserve">
-    <value>Aiuto in aggiornamento per rispecchiare i recenti cambiamenti. Potrebbe richiedere diversi minuti</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.HighlightMatches" xml:space="preserve">
-    <value>Evidenzia corrispondenze</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Homepage" xml:space="preserve">
     <value>Pagina Iniziale</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Index" xml:space="preserve">
-    <value>Indice</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.IndexResults" xml:space="preserve">
-    <value>Risultati dell'indice</value>
   </data>
   <data name="AddIns.HtmlHelp2.Location" xml:space="preserve">
     <value>Posizione</value>
   </data>
-  <data name="AddIns.HtmlHelp2.LookFor" xml:space="preserve">
-    <value>Cerca per:</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
-    <value>Cerca parole simili</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
-    <value>argomenti</value>
-  </data>
   <data name="AddIns.HtmlHelp2.NewWindow" xml:space="preserve">
     <value>Nuova Finestra</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NextTopic" xml:space="preserve">
-    <value>Argomento successivo</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.NoDataIsAvailableForDynamicHelp" xml:space="preserve">
-    <value>Nessun dato è disponibile per la selezione corrente.</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.AdditionOptions" xml:space="preserve">
-    <value>Opzioni aggiuntive</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Groupbox" xml:space="preserve">
-    <value>Insieme degli Aiuti</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Label" xml:space="preserve">
-    <value>Selezionare l'insieme degli aiuti che si vuole utilizzare in SharpDevelop</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.Reregister" xml:space="preserve">
-    <value>Registra SharpDevelop help</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Options.ShowTocPictures" xml:space="preserve">
-    <value>Visualizza immagini nel contenuto</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PreviousTopic" xml:space="preserve">
-    <value>Argomento precedente</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintSubtopics" xml:space="preserve">
-    <value>Stampa Sottoargomento...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopic" xml:space="preserve">
-    <value>Stampa Argomento...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.PrintTopicAndSubtopics" xml:space="preserve">
-    <value>Stampa Argomento e Sottoargomenti...</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rank" xml:space="preserve">
-    <value>Posizione</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Refresh" xml:space="preserve">
-    <value>Aggiorna</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.RemoveFavorite" xml:space="preserve">
-    <value>Sei sicuro di voler rimuovere "${0}" dai preferiti?</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.Rename" xml:space="preserve">
-    <value>Rinomina</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfIndexResults" xml:space="preserve">
-    <value>Risultati dell'indice per ${0} - trovati ${1} ${2}</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.ResultsOfSearchResults" xml:space="preserve">
-    <value>Risultati della Ricerca per ${0} - trovati ${1} ${2}</value>
   </data>
   <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
     <value>Cerca</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
-    <value>Cerca solo negli argomenti trovati in precedenza</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchInTitlesOnly" xml:space="preserve">
-    <value>Cerca solo nei titoli</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchOnline" xml:space="preserve">
-    <value>Cerca online</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SearchResults" xml:space="preserve">
-    <value>Risultati della ricerca</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.SingleTopic" xml:space="preserve">
-    <value>argomento</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Stop" xml:space="preserve">
     <value>Ferma</value>
   </data>
-  <data name="AddIns.HtmlHelp2.SyncTOC" xml:space="preserve">
-    <value>Sincronizza TOC</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.TextZoom" xml:space="preserve">
-    <value>Ingrandisce testo</value>
-  </data>
   <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
     <value>Titolo</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
-    <value>Utilizza il linguaggio del progetto corrente</value>
   </data>
   <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
     <value>Risultato</value>
@@ -547,9 +420,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   </data>
   <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
     <value>Eventi tracciamento</value>
-  </data>
-  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
-    <value>Generale</value>
   </data>
   <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
     <value>Profilazione</value>
@@ -754,6 +624,9 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   </data>
   <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
     <value>Risolvi metodo di estensione {0}</value>
+  </data>
+  <data name="AddIns.SourceAnalysis.CheckProjectWithStyleCop" xml:space="preserve">
+    <value>Controlla il progetto corrente con StyleCop</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Controlla con StyleCop</value>
@@ -1513,9 +1386,6 @@ Per creare/manipolare un oggetto ActiveX/COM, trascina una classe da Libreria Ti
   <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
     <value>Inserito un metodo anonimo con parametri.</value>
   </data>
-  <data name="Dialog.About.ChangeLogTabName" xml:space="preserve">
-    <value>Cambiamenti</value>
-  </data>
   <data name="Dialog.About.DialogName" xml:space="preserve">
     <value>A proposito di SharpDevelop</value>
   </data>
@@ -1528,9 +1398,6 @@ Per creare/manipolare un oggetto ActiveX/COM, trascina una classe da Libreria Ti
   <data name="Dialog.About.License" xml:space="preserve">
     <value>Rilasciato sotto i termini della licenza ${License}.</value>
   </data>
-  <data name="Dialog.About.ThrowExceptionButton" xml:space="preserve">
-    <value>&amp;Solleva Eccezione</value>
-  </data>
   <data name="Dialog.About.VersionInfoTabName" xml:space="preserve">
     <value>Informazioni sulla versione</value>
   </data>
@@ -1540,29 +1407,14 @@ Per creare/manipolare un oggetto ActiveX/COM, trascina una classe da Libreria Ti
   <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
     <value>Versione</value>
   </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadFileDescription" xml:space="preserve">
-    <value>apri file ${FILE}</value>
-  </data>
-  <data name="Dialog.Componnents.RichMenuItem.LoadProjectDescription" xml:space="preserve">
-    <value>apri progetto ${PROJECT}</value>
-  </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
     <value>file recenti</value>
   </data>
   <data name="Dialog.Componnents.RichMenuItem.NoRecentProjectsString" xml:space="preserve">
     <value>progetti recenti</value>
   </data>
-  <data name="Dialog.DirtyFiles.DialogName" xml:space="preserve">
-    <value>Salva file temporanei?</value>
-  </data>
-  <data name="Dialog.DirtyFiles.DirtyFiles" xml:space="preserve">
-    <value>File temporanei</value>
-  </data>
   <data name="Dialog.DirtyFiles.DiscardAllButton" xml:space="preserve">
     <value>S&amp;carta tutti</value>
-  </data>
-  <data name="Dialog.DirtyFiles.Files" xml:space="preserve">
-    <value>File</value>
   </data>
   <data name="Dialog.DirtyFiles.SaveAllButton" xml:space="preserve">
     <value>Salva &amp;tutti</value>
@@ -1618,15 +1470,6 @@ Per creare/manipolare un oggetto ActiveX/COM, trascina una classe da Libreria Ti
   <data name="Dialog.EditAvailableConfigurationsDialog.InvalidName" xml:space="preserve">
     <value>Nome non valido.</value>
   </data>
-  <data name="Dialog.ExportProjectToHtml.DialogName" xml:space="preserve">
-    <value>Esporta in HTML</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.FolderLabel" xml:space="preserve">
-    <value>Cartella:</value>
-  </data>
-  <data name="Dialog.ExportProjectToHtml.SelectTargetDirInfo" xml:space="preserve">
-    <value>Selezionare destinazione.</value>
-  </data>
   <data name="Dialog.Goto.DialogName" xml:space="preserve">
     <value>Vai a</value>
   </data>
@@ -1638,20 +1481,11 @@ Per creare/manipolare un oggetto ActiveX/COM, trascina una classe da Libreria Ti
 Inserire numero linea, nome classe e nome file.
 Ad esempio: "120", "MainClass", "Main.cs, 120".</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Add" xml:space="preserve">
-    <value>Aggiungi</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Change" xml:space="preserve">
-    <value>Cambia...</value>
-  </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
     <value>Colore di sfondo</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Bold" xml:space="preserve">
     <value>Grassetto</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Caption" xml:space="preserve">
-    <value>Qui si può modificare il colore di evidenziazione selezionato.</value>
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Foreground" xml:space="preserve">
     <value>Colore carattere</value>
@@ -1659,335 +1493,11 @@ Ad esempio: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Corsivo</value>
   </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.NoColor" xml:space="preserve">
-    <value>Nessuno colore specificato (usa default)</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.SystemColor" xml:space="preserve">
-    <value>Colore di Sistema:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.Title" xml:space="preserve">
-    <value>Modifica colore</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ColorDlg.UserDefined" xml:space="preserve">
-    <value>Colore definito dall'utente:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Explanation" xml:space="preserve">
-    <value>Questa opzione permette l'impostazione del colore dei numeri nel file.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Digits.Sample" xml:space="preserve">
-    <value>Esempio colore cifre:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Edit" xml:space="preserve">
-    <value>Modifica...</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EditDlg.Title" xml:space="preserve">
-    <value>Modifica schema</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnterText" xml:space="preserve">
-    <value>Immettere testo</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.BookMarks" xml:space="preserve">
-    <value>Segnalibri</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretLine" xml:space="preserve">
-    <value>Linea Cursore</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.CaretMarker" xml:space="preserve">
-    <value>Marcatori di Carattere</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Cursor" xml:space="preserve">
-    <value>Cursore</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Default" xml:space="preserve">
-    <value>Testo/Sfondo di default</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.EOLMarkers" xml:space="preserve">
-    <value>Marcatori EOL</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldLine" xml:space="preserve">
-    <value>Linea Cartella</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.FoldMarker" xml:space="preserve">
-    <value>Marcatore Cartella</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.InvalidLines" xml:space="preserve">
-    <value>Linee non valide</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.LineNumbers" xml:space="preserve">
-    <value>Numeri di linea</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SelectedFoldLine" xml:space="preserve">
-    <value>Linea di divisione selezionata</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.Selection" xml:space="preserve">
-    <value>Selezione</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.SpaceMarkers" xml:space="preserve">
-    <value>Marcatori dello spazio</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.TabMarkers" xml:space="preserve">
-    <value>Marcatori Tab</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.EnvColors.VRuler" xml:space="preserve">
-    <value>Righello verticale</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Colors" xml:space="preserve">
-    <value>Colori dell'ambiente:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Environment.Explanation" xml:space="preserve">
-    <value>Qui si possono definire i colori evidenziati per differenti parti dell editore di testo.
-
-Selezionare una voce nella lista e cliccare su "Modifica" per fare una modifica.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Explanation" xml:space="preserve">
-    <value>Spiegazione:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ColorSample" xml:space="preserve">
-    <value>Usa i colori di esempio:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.EnterName" xml:space="preserve">
-    <value>Immettree il nome della nuova parola chiave:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Explanation" xml:space="preserve">
-    <value>Ogni parola chiave nella lista è colorata con il colore selezionato.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.Keywords" xml:space="preserve">
-    <value>Parole chiave in questa lista:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.ListName" xml:space="preserve">
-    <value>Nome lista:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordList.NameEmpty" xml:space="preserve">
-    <value>La lista delle parole chiave deve avere un nome.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.EnterName" xml:space="preserve">
-    <value>Immettere il nome della nuova lista di parole chiave:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Explanation" xml:space="preserve">
-    <value>Ogni lista di parole chiave può avere un colore individuale assegnato ad essa.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.KeywordLists.Lists" xml:space="preserve">
-    <value>Liste parole chiave:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationNext" xml:space="preserve">
-    <value>Immettere la stringa chiave che causerà la colorazione della parola seguente con il colore selezionato.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.ExplanationPrev" xml:space="preserve">
-    <value>Immettere la stringa chiave che causerà la colorazione della parola precedente con il colore selezionato.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.KeyString" xml:space="preserve">
-    <value>Stringa chiave da riconoscere:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.MarkMarker" xml:space="preserve">
-    <value>Usa il colore anche per la stringa chiave</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.NameEmpty" xml:space="preserve">
-    <value>La stringa chiave non può essere vuota.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Marker.SampleColor" xml:space="preserve">
-    <value>Esempio di colore selezionato per la parola precedente/successiva:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.EnterName" xml:space="preserve">
-    <value>Immettere nuovo marcatore stringa chiave:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Explanation" xml:space="preserve">
-    <value>Qui si possono definire stringhe che non sono colorate esse stesse ma solo le parole che le precedono/seguono.
-
-Questo è utile, per esempio, per colorare chiamate a metodi mediante using (come una stringa chiave).</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.KeyString" xml:space="preserve">
-    <value>Stringa chiave</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Next" xml:space="preserve">
-    <value>Stringa chiave della parola-marcatore successiva:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Markers.Previous" xml:space="preserve">
-    <value>Stringa chiave della parola-marcatore precedente:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterName" xml:space="preserve">
-    <value>Immettere il nome della nuova proprietà:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.EnterValue" xml:space="preserve">
-    <value>Immettere il valore della proprietà {0}:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Explanation" xml:space="preserve">
-    <value>Qui si possono definire le proprietà dello schema.
-
-Le Proprietà sono coppie nome-calore, che controllano il comportamento dell'editor. Attualmente, la sola proprietà supportata è "LineComment", la quale istruisce l'editor ad inserire una stringa all'inizio della linea che su vuole commentare.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Name" xml:space="preserve">
-    <value>Nome</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Properties.Properties" xml:space="preserve">
-    <value>Proprietà:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Valore</value>
   </data>
-  <data name="Dialog.HighlightingEditor.Remove" xml:space="preserve">
-    <value>Rimuove</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Delimiters" xml:space="preserve">
-    <value>Delimitatori:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Explanation" xml:space="preserve">
-    <value>Queste sono proprietà generali dell'insieme di regole.
-
-I delimitatori di stringa determinano quali caratteri sono usati per la divisione della parola.
-Se si inserisce qualcosa in "Referenced set", questo significa che l'insieme, sarà l'insieme di regole base importate da un altro schema il cui nome è la stringa di Riferimento. Tutte le altre opzioni di questo insieme di regole, sarà ignorato. Questo è utile, per esempio, per HTML e ASP, i quali usano JavaScript com importazione.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.IgnoreCase" xml:space="preserve">
-    <value>Ignora maiusc/minus nell'insieme di regole</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Name" xml:space="preserve">
-    <value>Nome insieme di Regole:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NameEmpty" xml:space="preserve">
-    <value>Il nome dell'insieme di regole, non può essere vuoto. Solo l'insieme di regole base non ha nome.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.NoEscapeSeq" xml:space="preserve">
-    <value>Non riconoscere sequenze di escape nell'insieme di regole</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.Reference" xml:space="preserve">
-    <value>Insieme di riferimento:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSet.SpaceAndTab" xml:space="preserve">
-    <value>Spazi e Tabulazioni sono aggiunti automaticamente.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.EnterName" xml:space="preserve">
-    <value>Immettere il nome del nuovo insieme di regole:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.Explanation" xml:space="preserve">
-    <value>Qui si possono definire gli insiemi di regole per lo schema selezionato.
-
-Gli insiemi di regole sono il cuore del motore di #Develop. Ogni insieme è una collezione di liste di parole chiave colorate e separatori, i quali sono sequenze di carattere tra certi simboli di inzio e fine, es. vigolette.
-L'insieme di regole base è usato per il corpo principale del file, gli altri (con un nome) possono essere usati all'interno delle separazioni.
-Così ci possono essere più regole the si applicano a differenti regioni di testo, come commenti XML o stringhe.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.RuleSets.NamedRuleSets" xml:space="preserve">
-    <value>Insiemi di regole con nome:</value>
-  </data>
   <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
     <value>Testo di esempio</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Explanation" xml:space="preserve">
-    <value>Ogni schema di evidenziazione deve avere un nome unico the lo identifica al programma.
-Uno schema definito dall'utente che ha lo stesso nome di uno predefinito, lo sostituisce.
-
-Il campo 'Estensione' è una lista di estensioni di file separati da ; che questo schema riconosce, per esempio '.htm;.html;.asp'. Questa stringa non deve contenere spazi.
-Quando un'estensione è usata sia da uno schema predefinito che da un outente, lo schema utente ha la priorità.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Extensions" xml:space="preserve">
-    <value>Estensioni:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.Name" xml:space="preserve">
-    <value>Nome schema:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Scheme.NameEmpty" xml:space="preserve">
-    <value>Il nome dello schema non può essere vuoto.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Begin" xml:space="preserve">
-    <value>Inizio della separazione:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginCol" xml:space="preserve">
-    <value>Inizio</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginEmpty" xml:space="preserve">
-    <value>La stringa di inizio non può essere vuota.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.BeginSingleWord" xml:space="preserve">
-    <value>L'inizio è una parola singola:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Colors" xml:space="preserve">
-    <value>Colori:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.ContCol" xml:space="preserve">
-    <value>Contenuti</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.End" xml:space="preserve">
-    <value>Fine della separazione:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndCol" xml:space="preserve">
-    <value>Fine</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EndSingleWord" xml:space="preserve">
-    <value>La fine è una parola singola:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.EscChar" xml:space="preserve">
-    <value>Carattere escape:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Explanation" xml:space="preserve">
-    <value>In "Begin" ed "End", @ ha un significato speciale: @!string#, non corrisponde ad una stringa quando si cerca l'inizio/fine, e @@, corrisponde ad un singolo @.
-
-Se non viene dato nessun colore per inizio/fine, è usato il colore del contenuto.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Name" xml:space="preserve">
-    <value>Nome della separazione:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NameEmpty" xml:space="preserve">
-    <value>Il nome del separatore non può essere vuoto.</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.NoEscSeq" xml:space="preserve">
-    <value>Non riconoscere sequenze di escape</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Ruleset" xml:space="preserve">
-    <value>Insieme di regole da usare:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.StopEol" xml:space="preserve">
-    <value>La separazione termina alla fine della linea se non viene trovata nessuna stringa di fine</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Span.Use" xml:space="preserve">
-    <value>Usa</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.EnterName" xml:space="preserve">
-    <value>Immettere il nuovo nome della separazione:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
-    <value>I Separatori sono sequenze di caratteri definiti da una stringa di Inizio, e opzionalmente da una di fine (oppure terminano alla fine della linea), che hanno un diverso colore di evidenziazione.
-
-In aggiunta, una divisione può essere assegnata ad un insieme di regole, che effettua formattazioni complesse al suo interno (tag HTML o commenti XML, per esempio).</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
-    <value>Separatori definiti:</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.DigitsColor" xml:space="preserve">
-    <value>Colore cifre</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.EnvironmentColors" xml:space="preserve">
-    <value>Colori ambiente</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordList" xml:space="preserve">
-    <value>Lista parole chiave</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.KeywordLists" xml:space="preserve">
-    <value>Liste parole chiave</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkNextWord" xml:space="preserve">
-    <value>Segna prossima parola</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.MarkPreviousWord" xml:space="preserve">
-    <value>Segna parola precedente</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Properties" xml:space="preserve">
-    <value>Proprietà</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RootRuleSet" xml:space="preserve">
-    <value>Imposta righello principale</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSet" xml:space="preserve">
-    <value>Righelli</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.RuleSets" xml:space="preserve">
-    <value>Insieme righelli</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Span" xml:space="preserve">
-    <value>Divisione</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.TreeView.Spans" xml:space="preserve">
-    <value>Divisioni</value>
-  </data>
-  <data name="Dialog.HighlightingEditor.ValidationError" xml:space="preserve">
-    <value>Prego correggere le impostazioni fatte:</value>
   </data>
   <data name="Dialog.NewFile.AddToProjectQuestion" xml:space="preserve">
     <value>Se vuoi utilizzare il nuovo file nel progetto corrente, devi prima aggiungerlo al progetto.
@@ -2023,29 +1533,17 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
     <value>&amp;Modelli:</value>
   </data>
-  <data name="Dialog.NewProject.autoCreateSubDirCheckBox" xml:space="preserve">
-    <value>&amp;Autocreazione cartella progetto</value>
-  </data>
-  <data name="Dialog.NewProject.checkBox1Text" xml:space="preserve">
-    <value>Creare &amp;cartella per Sorgenti</value>
-  </data>
   <data name="Dialog.NewProject.CreateDirectoryForSolution" xml:space="preserve">
     <value>Crea cartella per questa soluzione</value>
   </data>
   <data name="Dialog.NewProject.DialogName" xml:space="preserve">
     <value>Nuovo Progetto</value>
   </data>
-  <data name="Dialog.NewProject.EmptyProjectFieldWarning" xml:space="preserve">
-    <value>L'indicazione del sorgente o del progetto è vuota, impossibile creare il progetto.</value>
-  </data>
   <data name="Dialog.NewProject.LocationLabelText" xml:space="preserve">
     <value>&amp;Posizione:</value>
   </data>
   <data name="Dialog.NewProject.NameLabelText" xml:space="preserve">
     <value>&amp;Nome:</value>
-  </data>
-  <data name="Dialog.NewProject.NewSolutionLabelText" xml:space="preserve">
-    <value>Nome Nuovo &amp;progetto:</value>
   </data>
   <data name="Dialog.NewProject.ProjectAtDescription" xml:space="preserve">
     <value>Il Progetto sará creato in:</value>
@@ -2194,15 +1692,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplatesText" xml:space="preserve">
     <value>Modelli di codice</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
-    <value>Crea</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
-    <value>Crea</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
-    <value>Configurazione Combine</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader" xml:space="preserve">
     <value>Configurazione</value>
   </data>
@@ -2212,53 +1701,11 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationEditor.EditItem" xml:space="preserve">
     <value>&lt;Modifica&gt;</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationManagerButton" xml:space="preserve">
-    <value>Gestore Configurazione</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntriesGroupBox" xml:space="preserve">
-    <value>Etrate</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryColumnHeader" xml:space="preserve">
-    <value>Parte</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.EntryConfigurationLabel" xml:space="preserve">
-    <value>Configurazione parti</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.PlatformColumnHeader" xml:space="preserve">
     <value>Piattaforma</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Configurations.ProjectNameColumnHeader" xml:space="preserve">
-    <value>Nome Progetto</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Configurations.SolutionConfiguration" xml:space="preserve">
     <value>Config. &amp;soluzione:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.DependsOnLabel" xml:space="preserve">
-    <value>Dipende da:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Dependencies.EntryLabel" xml:space="preserve">
-    <value>Parte:</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.Execute" xml:space="preserve">
-    <value>Esecuzione</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.Action.None" xml:space="preserve">
-    <value>Nessuna</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionColumnHeader" xml:space="preserve">
-    <value>Azione</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.ActionLabel" xml:space="preserve">
-    <value>Azione</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
-    <value>Parte</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
-    <value>Progetto di avvio &amp;Multiplo</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton" xml:space="preserve">
-    <value>Progetto di avvio &amp;singolo</value>
   </data>
   <data name="Dialog.Options.ExternalTool.ArgumentLabel" xml:space="preserve">
     <value>&amp;Argomenti</value>
@@ -2331,48 +1778,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.ExternalToolsText" xml:space="preserve">
     <value>Strumenti esterni</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.GreyOut" xml:space="preserve">
-    <value>Disattiva</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Hide" xml:space="preserve">
-    <value>Nasconde</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalMembers" xml:space="preserve">
-    <value>Membri interni:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalTypes" xml:space="preserve">
-    <value>Tipi interni:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox" xml:space="preserve">
-    <value>Selezione dei membri nell'albero</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox" xml:space="preserve">
-    <value>Altre opzioni</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
-    <value>Esploratore Assembly</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
-    <value>Membri privati:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes" xml:space="preserve">
-    <value>Tipi privati:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.Show" xml:space="preserve">
-    <value>Mostra</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox" xml:space="preserve">
-    <value>Mostra anteprima risore</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox" xml:space="preserve">
-    <value>Mostra i tipi di ritorno nell'albero</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods" xml:space="preserve">
-    <value>Mostra metodi "Speciali"</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox" xml:space="preserve">
-    <value>Selezione dei tipi nell'albero</value>
   </data>
   <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
     <value>Pulisci cache</value>
@@ -2488,36 +1893,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title" xml:space="preserve">
     <value>Modifica Intestazioni Standard</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.DescriptionLabel" xml:space="preserve">
-    <value>Quando SharpDevelop è in modalita a tutto schermo:</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideHorizontalScrollbar" xml:space="preserve">
-    <value>Nasconde la barra orizzontale dell'editor</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideMainMenu" xml:space="preserve">
-    <value>Nasconde menu principale</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideStatusBar" xml:space="preserve">
-    <value>Nasconde la barra di stato</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideTabs" xml:space="preserve">
-    <value>Nasconde le Tabs</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideToolbars" xml:space="preserve">
-    <value>Nasconde le barre degli strumenti</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideVerticalScrollbar" xml:space="preserve">
-    <value>Nasconde la barra verticale dell'editor</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.HideWindowsTaskbar" xml:space="preserve">
-    <value>Nasconde Barra delle Applicazioni Windows</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.ShowMainMenuOnMouseHover" xml:space="preserve">
-    <value>Mostra quando il cursore ci si muove sopra</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.FullScreen.Title" xml:space="preserve">
-    <value>Schermo Pieno</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.General" xml:space="preserve">
     <value>Generale</value>
   </data>
@@ -2533,17 +1908,11 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>&amp;Controlla modifiche esterne ai files</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox" xml:space="preserve">
-    <value>St&amp;ile terminatore di linea</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
     <value>Carica</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
     <value>&amp;Carica impostazioni-utente con il documento</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Carica/Salva</value>
@@ -2568,9 +1937,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.WordWrap" xml:space="preserve">
     <value>Giustificato</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.Profiling" xml:space="preserve">
-    <value>Profiler</value>
   </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox" xml:space="preserve">
     <value>Compila ed Esegui opzioni</value>
@@ -2614,18 +1980,12 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Compila tutti i progetti</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
-    <value>Linguaggio IU corrente:</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Clicca su una icona per scegliere la llingua.
 </value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.PanelName" xml:space="preserve">
     <value>Linguaggio IU</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
-    <value>Linguaggio IU impostato a:</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
     <value>Selezionare l'&amp;ambiente preferito:</value>
@@ -2873,41 +2233,8 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
     <value>Seleziona la directory dove l'assembly verrà creato.</value>
   </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
-    <value>Incluse:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel" xml:space="preserve">
-    <value>Schemi di evidenziazione disponibili:</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton" xml:space="preserve">
-    <value>Copia in quelli dell'utente</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyError" xml:space="preserve">
-    <value>Non si può copiare il file.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
-    <value>Cancella</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
-    <value>Si vuole veramente cancellare questo schema definito dall'utente?</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteError" xml:space="preserve">
-    <value>Impossibile cancellare il file.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel" xml:space="preserve">
-    <value>Gli schemi dell'utente hanno precedenza su quelli inclusi. Un cambiamento negli schemi è visibile solo dopo il riavvio di #Develop.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.LoadError" xml:space="preserve">
-    <value>Non si può caricare il file di definizione.</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton" xml:space="preserve">
-    <value>Modifica</value>
-  </data>
   <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
     <value>Evidenziazioni</value>
-  </data>
-  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel" xml:space="preserve">
-    <value>Definiti dall'Utente:</value>
   </data>
   <data name="Dialog.Options.TreeViewOptions.DialogName" xml:space="preserve">
     <value>Opzioni</value>
@@ -2926,9 +2253,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile" xml:space="preserve">
     <value>{0} non è un file icona valido.</value>
-  </data>
-  <data name="Dialog.ProjectOptions.ApplicationSettings.LocalizedStringFileLabel" xml:space="preserve">
-    <value>File di stringhe localizzate:</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest" xml:space="preserve">
     <value>&amp;Manifesto applicazione:</value>
@@ -3314,9 +2638,6 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tipo</value>
   </data>
-  <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
-    <value>Licenza pubblica generale GNU</value>
-  </data>
   <data name="Dialog.WizardDialog.FinishButton" xml:space="preserve">
     <value>Finire</value>
   </data>
@@ -3340,9 +2661,6 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="Dialog.WordCountDialog.MustBeInProtectedModeWarning" xml:space="preserve">
     <value>Devi essere in modalità progetto</value>
-  </data>
-  <data name="Dialog.WordCountDialog.SaveTheFileWarning" xml:space="preserve">
-    <value>Devi salvare il file</value>
   </data>
   <data name="Dialog.WordCountDialog.StartButton" xml:space="preserve">
     <value>&amp;Inizio</value>
@@ -3515,6 +2833,9 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="Global.ReadOnly" xml:space="preserve">
     <value>sola lettura</value>
+  </data>
+  <data name="Global.Refresh" xml:space="preserve">
+    <value>Aggiorna</value>
   </data>
   <data name="Global.RemoveButtonText" xml:space="preserve">
     <value>&amp;Rimuovi</value>
@@ -3711,21 +3032,6 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Interprete Boo</value>
   </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorDebuggerNotLoaded" xml:space="preserve">
-    <value>Errore: 'Debugger non caricato'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorIncompatibleDebugger" xml:space="preserve">
-    <value>Error: 'Debugger incompatibile'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ErrorNoProgramDebugged" xml:space="preserve">
-    <value>Errore: 'Nessun programma è in fase di debug'</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.Title" xml:space="preserve">
-    <value>Debuggee</value>
-  </data>
-  <data name="ICSharpCode.BooInterpreter.Debuggee.ToolTip" xml:space="preserve">
-    <value>Esegui comandi nel programma in debug</value>
-  </data>
   <data name="ICSharpCode.Build.CannotFindFxCop" xml:space="preserve">
     <value>SharpDevelop non riesce a trovare FxCop. Per favore selezionare la cartella di installazione di FxCop dalle opzioni di SharpDevelop.</value>
   </data>
@@ -3743,6 +3049,9 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
     <value>Analisi codice</value>
+  </data>
+  <data name="ICSharpCode.CodeAnalysis.CheckProjectWithFxCop" xml:space="preserve">
+    <value>Controlla il progetto corrente con FxCop</value>
   </data>
   <data name="ICSharpCode.CodeAnalysis.CheckWithFxCop" xml:space="preserve">
     <value>Controlla con FxCop</value>
@@ -3816,19 +3125,11 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
     <value>Fine riga</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.NCoverNotFound" xml:space="preserve">
-    <value>Impossibile trovare l'applicazione console NCover
-
-Se NCover è installato, specifica la posizione dell'applicazione nelle impostazioni di Analisi del Codice.</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.NoCodeCoverageResultsGenerated" xml:space="preserve">
     <value>Non è stato generato nessun file di risultato di analisi del codice:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.CodeCoverageColoursGroupBoxText" xml:space="preserve">
     <value>Colori per copertura del codice</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.CommandLineLabel" xml:space="preserve">
-    <value>&amp;Comando:</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.DisplayItemsLabel" xml:space="preserve">
     <value>&amp;Mostra Voci:</value>
@@ -3839,17 +3140,8 @@ Se NCover è installato, specifica la posizione dell'applicazione nelle impostaz
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.ItemForegroundLabel" xml:space="preserve">
     <value>Fo&amp;reground della Voce:</value>
   </data>
-  <data name="ICSharpCode.CodeCoverage.OptionsPanel.NCoverConfigurationGroupBoxText" xml:space="preserve">
-    <value>Configurazione NCover</value>
-  </data>
   <data name="ICSharpCode.CodeCoverage.OptionsPanel.SampleText" xml:space="preserve">
     <value>AaBbCcXxYyZz</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.AssemblyListLabel" xml:space="preserve">
-    <value>&amp;Assemblies da controllare:</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeAttributes" xml:space="preserve">
-    <value>Attributi Esclusi</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeListLabel" xml:space="preserve">
     <value>Escludi</value>
@@ -3859,12 +3151,6 @@ Se NCover è installato, specifica la posizione dell'applicazione nelle impostaz
   </data>
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Esecuzione analisi del codice...</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunTestsWithCodeCoverage" xml:space="preserve">
-    <value>Esegui test con analisi del codice</value>
-  </data>
-  <data name="ICSharpCode.CodeCoverage.RunWithCodeCoverage" xml:space="preserve">
-    <value>Esegui con analisi del codice</value>
   </data>
   <data name="ICSharpCode.CodeCoverage.ShowCoverage" xml:space="preserve">
     <value>Mostra Copertura Codice</value>
@@ -3880,15 +3166,6 @@ Se NCover è installato, specifica la posizione dell'applicazione nelle impostaz
   </data>
   <data name="ICSharpCode.CodeCoverage.VisitCount" xml:space="preserve">
     <value>Conteggio Visite</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoProjectItem" xml:space="preserve">
-    <value>Cambia nella cartella del progetto</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.GotoSdkItem" xml:space="preserve">
-    <value>Cambia nella cartella dell'SDK</value>
-  </data>
-  <data name="ICSharpCode.ConsolePad.PadName" xml:space="preserve">
-    <value>Console</value>
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.DescriptionLabel" xml:space="preserve">
     <value>Descrizione</value>
@@ -3961,9 +3238,6 @@ Se NCover è installato, specifica la posizione dell'applicazione nelle impostaz
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.XmlFileAssozisation" xml:space="preserve">
     <value>Documento XML</value>
-  </data>
-  <data name="ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation" xml:space="preserve">
-    <value>Form XML di #Develop</value>
   </data>
   <data name="ICSharpCode.NAntAddIn.AbstractRunNAntCommand.NAntExeNotFoundMessage" xml:space="preserve">
     <value>Impossibile trovare NAnt '{0}'.
@@ -4126,69 +3400,6 @@ Configura il percorso di NAnt nelle opzioni di SharpDevelop.</value>
   <data name="ICSharpCode.SharpDevelop.BrowserDisplayBinding.Browser" xml:space="preserve">
     <value>Visualizzatore</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass" xml:space="preserve">
-    <value>Sovracaricamenti della classe Astratta</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.AbstractClass.Hint" xml:space="preserve">
-    <value>Selezionare classe abstract per override</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor" xml:space="preserve">
-    <value>Costruttore</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Constructor.Hint" xml:space="preserve">
-    <value>Scegli i campi da inizializzare con il costruttore</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX" xml:space="preserve">
-    <value>Metodi dell'evento OnXXX</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.EventOnXXX.Hint" xml:space="preserve">
-    <value>Scegli l'evento per cui generare i metodi OnXXX</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GenerateEqualsAndGetHashCode" xml:space="preserve">
-    <value>Genera i metodi Equals e GetHashCode</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter" xml:space="preserve">
-    <value>Getter</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Getter.Hint" xml:space="preserve">
-    <value>Scegli i campi per cui generare le proprietà in GET</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter" xml:space="preserve">
-    <value>Getter e Setter</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.GetterAndSetter.Hint" xml:space="preserve">
-    <value>Scegli i campi per cui generare le proprietà in GET e SET</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface" xml:space="preserve">
-    <value>Implementazione interfaccia</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ImplementInterface.Hint" xml:space="preserve">
-    <value>Scegli le interfaccie da implementare</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods" xml:space="preserve">
-    <value>Override Metodi</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideMethods.Hint" xml:space="preserve">
-    <value>Scegli i metodi per cui fare l'override</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties" xml:space="preserve">
-    <value>Override proprietà</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.OverrideProperties.Hint" xml:space="preserve">
-    <value>Scegli le proprietà di cui fare l'override</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter" xml:space="preserve">
-    <value>Setter</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.Setter.Hint" xml:space="preserve">
-    <value>Scegli i campi per cui generare le proprietà in SET</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString" xml:space="preserve">
-    <value>Genera il metodo ToString() di default</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString.Hint" xml:space="preserve">
-    <value>Seleziona proprietà da includere nella descrizione</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB" xml:space="preserve">
     <value>Da C# a VB.NET</value>
   </data>
@@ -4253,9 +3464,6 @@ Nota: Questa operazione non influenza i propri layout.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert.TargetDirectory" xml:space="preserve">
     <value>Cartella destinazione</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.ConvertCommand.FinishedMessage" xml:space="preserve">
-    <value>Il progetto è stato convertito con successo. Puoi trovare il progetto convertito in questa cartella:</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ConvertCSharpProjectToBoo" xml:space="preserve">
     <value>Da C# a Boo</value>
   </data>
@@ -4274,9 +3482,6 @@ Nota: Questa operazione non influenza i propri layout.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.OpenCombine.SolutionDoesNotContainProject.CreateNewSolution" xml:space="preserve">
     <value>Crea nuova soluzione per '${ProjectName}'.</value>
-  </data>
-  <data name="ICSharpCode.SharpDevelop.Commands.Print.CantPrintWindowContentError" xml:space="preserve">
-    <value>Impossibile stampare il contenuto della finestra.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Print.CreatePrintDocumentError" xml:space="preserve">
     <value>Impossibile stampare il documento</value>
@@ -4951,46 +4156,46 @@ Vai a 'Opzioni-&gt;Stile visuale' e cambia l'attuale ambiente di linguaggio.</va
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Impossibile eseguire unit test. Il file '{0}' non è stato trovato.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel" xml:space="preserve">
     <value>Web</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.ApplicationExists" xml:space="preserve">
     <value>L'applicazione esiste già.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
     <value>Crea applicazione/cartella virtuale</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
     <value>Disattiva le opzioni del web server</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.IISNotFound" xml:space="preserve">
     <value>IIS o IIS Express non sono stati trovati.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.NoIISWP" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoIISWP" xml:space="preserve">
     <value>ASP.NET/IIS (Express) worker process ({0}) non trovato.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
     <value>Non è stato specificato nessun Url di Progetto o programma esterno. Controlla il web server su Proprietà Progetto - Debug.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Porta server:</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.ProjectUrl" xml:space="preserve">
     <value>Url Progetto:</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.Server" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.Server" xml:space="preserve">
     <value>Web Server</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.UnableToAttach" xml:space="preserve">
     <value>Il debugger non riesce a collegarsi al processo.</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseIISExpress" xml:space="preserve">
     <value>Usa Web server IIS Express</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
     <value>Usa Web server IIS locale</value>
   </data>
-  <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+  <data name="ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
     <value>Applicazione/cartella virtuale creata.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
@@ -5474,6 +4679,18 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>Vuoi veramente annullare le modifiche?</value>
   </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>variabile locale</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>namespace</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>parametro</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>overload di</value>
+  </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>Desideri salvare i cambiamenti correnti?</value>
   </data>
@@ -5664,7 +4881,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>Continua</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException" xml:space="preserve">
-    <value>Impossibile intercettare le eccezioni. Il programma in debug non può proseguire e le espressioni non possono essere valutate.</value>
+    <value>Impossibile intercettare l'eccezione. Il programma in debug non può proseguire e le espressioni non possono essere valutate.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
+    <value>Impossibile intercettare l'eccezione gestita. I simboli di debug per l'origine dell'eccezione potrebbero non essere disponibili.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Nascondi Dettagli Eccezione</value>
@@ -5679,7 +4899,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>in {0} in {1}: linea {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>E' stata sollevata una eccezione di tipo {0}:\n{1}</value>
+    <value>E' stata sollevata una eccezione di tipo {0}:</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Mostra Dettagli Eccezione</value>
@@ -6094,9 +5314,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="NUnitPad.NUnitPadContent.TestTreeView.TestNotExecutedMessage" xml:space="preserve">
     <value>Il test '${TestCase}' non è stato eseguito.</value>
-  </data>
-  <data name="ObjectBrowser.Menu.GoBack" xml:space="preserve">
-    <value>Indietro</value>
   </data>
   <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
     <value>Carica l'Assembly...</value>
@@ -6705,98 +5922,8 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="SharpDevelop.Solution.UnknownSolutionVersion" xml:space="preserve">
     <value>Impossibile leggere il formato del file della Soluzione Microsoft {0}.</value>
   </data>
-  <data name="SharpQuery.Error.InvalidValue" xml:space="preserve">
-    <value>Uno (o più) dei valori dei parametri è scorretto</value>
-  </data>
-  <data name="SharpQuery.Error.NotSuported" xml:space="preserve">
-    <value>non supportato da</value>
-  </data>
-  <data name="SharpQuery.Error.OpenError" xml:space="preserve">
-    <value>Impossibile aprire la connessione. Controllare al stringa di connessione.</value>
-  </data>
-  <data name="SharpQuery.Error.ProcedureExecution" xml:space="preserve">
-    <value>Non si può eseguire la procedura a causa di un errore.</value>
-  </data>
-  <data name="SharpQuery.Error.SQLExecution" xml:space="preserve">
-    <value>Non si può eseguire la query SQL a causa di un errore.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongConnectionString" xml:space="preserve">
-    <value>Stringa di connessione errata!</value>
-  </data>
-  <data name="SharpQuery.Error.WrongKeyType" xml:space="preserve">
-    <value>chiave deve essere di tipo String.</value>
-  </data>
-  <data name="SharpQuery.Error.WrongValueType" xml:space="preserve">
-    <value>Il Valore deve essere di tipo String.</value>
-  </data>
-  <data name="SharpQuery.Label.AddConnection" xml:space="preserve">
-    <value>Aggiungere Connessione...</value>
-  </data>
-  <data name="SharpQuery.Label.Connect" xml:space="preserve">
-    <value>Connessione a database</value>
-  </data>
-  <data name="SharpQuery.Label.DataBasesRoot" xml:space="preserve">
-    <value>Connessioni a Database</value>
-  </data>
-  <data name="SharpQuery.Label.Disconnect" xml:space="preserve">
-    <value>Disconnette</value>
-  </data>
-  <data name="SharpQuery.Label.Execute" xml:space="preserve">
-    <value>Eseguire</value>
-  </data>
-  <data name="SharpQuery.Label.ExtractData" xml:space="preserve">
-    <value>Estrazione Dati</value>
-  </data>
-  <data name="SharpQuery.Label.ModifyConnection" xml:space="preserve">
-    <value>Modificare la connessione...</value>
-  </data>
-  <data name="SharpQuery.Label.ProceduresRoot" xml:space="preserve">
-    <value>Procedure</value>
-  </data>
-  <data name="SharpQuery.Label.Refresh" xml:space="preserve">
-    <value>Aggiorna</value>
-  </data>
-  <data name="SharpQuery.Label.Remove" xml:space="preserve">
-    <value>Rimuovere</value>
-  </data>
-  <data name="SharpQuery.Label.Schemas" xml:space="preserve">
-    <value>Schemi</value>
-  </data>
   <data name="SharpQuery.Label.SharpQuery" xml:space="preserve">
     <value>Database</value>
-  </data>
-  <data name="SharpQuery.Label.TablesRoot" xml:space="preserve">
-    <value>Tabelle</value>
-  </data>
-  <data name="SharpQuery.Label.ViewsRoot" xml:space="preserve">
-    <value>Viste</value>
-  </data>
-  <data name="SharpQuery.PadTitle" xml:space="preserve">
-    <value>Esplora Database</value>
-  </data>
-  <data name="SharpQuery.ToolTip.AddConnection" xml:space="preserve">
-    <value>Aggiunge connessione</value>
-  </data>
-  <data name="SharpQuery.ToolTip.Refresh" xml:space="preserve">
-    <value>Aggiorna</value>
-  </data>
-  <data name="SharpQuery.XMLForm.ResetButton" xml:space="preserve">
-    <value>Reimposta</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterDataType" xml:space="preserve">
-    <value>Tipo dei Parametri.</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterInputTitle" xml:space="preserve">
-    <value>Parametri di Ingresso</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterName" xml:space="preserve">
-    <value>Nome dei Parametri</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterType" xml:space="preserve">
-    <value>Tipo dei Parametri</value>
-  </data>
-  <data name="SharpQuery.XMLForm.SQLParameterValue" xml:space="preserve">
-    <value>Valore dei Parametri</value>
   </data>
   <data name="SharpReport.AddinName" xml:space="preserve">
     <value>SharpDevelop Reports</value>
@@ -7108,42 +6235,6 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
     <value>lin ${Line} col ${Column} car ${Character}</value>
   </data>
-  <data name="Templates.File.#Develop.AddInOptions.Description" xml:space="preserve">
-    <value>Questa classe fornisce un facile accesso alle proprietà persistenti.</value>
-  </data>
-  <data name="Templates.File.#Develop.AddInOptions.Name" xml:space="preserve">
-    <value>Opzioni AddIn</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Description" xml:space="preserve">
-    <value>Un comando di menu vuoto per #D.</value>
-  </data>
-  <data name="Templates.File.#Develop.MenuCommand.Name" xml:space="preserve">
-    <value>Comando di Menu</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Description" xml:space="preserve">
-    <value>Un pannello di opzione di #D.</value>
-  </data>
-  <data name="Templates.File.#Develop.OptionPanel.Name" xml:space="preserve">
-    <value>Pannello di Opzione</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Description" xml:space="preserve">
-    <value>Un comando che può essere usato in varie occasioni.</value>
-  </data>
-  <data name="Templates.File.#Develop.SimpleCommand.Name" xml:space="preserve">
-    <value>Comando Semplice</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Description" xml:space="preserve">
-    <value>Un contenuto di #D (per esempio l'esploratore di #D).</value>
-  </data>
-  <data name="Templates.File.#Develop.SimplePad.Name" xml:space="preserve">
-    <value>Pad Vuoto</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Description" xml:space="preserve">
-    <value>Una vista di #D (per esempio l'editor di testo o di risorse).</value>
-  </data>
-  <data name="Templates.File.#Develop.View.Name" xml:space="preserve">
-    <value>Vista Vuota</value>
-  </data>
   <data name="Templates.File.Categories.Misc" xml:space="preserve">
     <value>Varie</value>
   </data>
@@ -7258,9 +6349,6 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="Templates.File.Properties.ContextCategory" xml:space="preserve">
     <value>Contesto</value>
   </data>
-  <data name="Templates.File.Properties.IsSealed.Description" xml:space="preserve">
-    <value>Imposta a Vero per definire la classe come non ereditabile.</value>
-  </data>
   <data name="Templates.File.Properties.OptionCategory" xml:space="preserve">
     <value>Opzioni</value>
   </data>
@@ -7275,6 +6363,42 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>File di risorsa vuoto</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>Questa classe fornisce un facile accesso alle proprietà persistenti.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>Opzioni AddIn</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Description" xml:space="preserve">
+    <value>Un comando di menu vuoto per #D.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>Comando di Menu</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>Un pannello di opzione di #D.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Name" xml:space="preserve">
+    <value>Pannello di Opzione</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Description" xml:space="preserve">
+    <value>Un comando che può essere usato in varie occasioni.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimpleCommand.Name" xml:space="preserve">
+    <value>Comando Semplice</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Description" xml:space="preserve">
+    <value>Un contenuto di #D (per esempio l'esploratore di #D).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.SimplePad.Name" xml:space="preserve">
+    <value>Pad Vuoto</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>Una vista di #D (per esempio l'editor di testo o di risorse).</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
+    <value>Vista Vuota</value>
   </data>
   <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
     <value>Classe che segue il pattern Singleton</value>

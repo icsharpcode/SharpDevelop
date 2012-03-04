@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.exceptionView = new System.Windows.Forms.RichTextBox();
 			this.btnStop = new System.Windows.Forms.Button();
 			this.btnBreak = new System.Windows.Forms.Button();
+			this.btnContinue = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -60,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.btnStop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.btnStop.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.btnStop.Location = new System.Drawing.Point(340, 366);
+			this.btnStop.Location = new System.Drawing.Point(385, 366);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(115, 30);
 			this.btnStop.TabIndex = 3;
@@ -73,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			this.btnBreak.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
 			this.btnBreak.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.btnBreak.Location = new System.Drawing.Point(219, 366);
+			this.btnBreak.Location = new System.Drawing.Point(143, 366);
 			this.btnBreak.Name = "btnBreak";
 			this.btnBreak.Size = new System.Drawing.Size(115, 30);
 			this.btnBreak.TabIndex = 4;
@@ -82,9 +83,23 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.btnBreak.UseVisualStyleBackColor = true;
 			this.btnBreak.Click += new System.EventHandler(this.BtnBreakClick);
 			// 
+			// btnContinue
+			// 
+			this.btnContinue.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.btnContinue.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.btnContinue.Location = new System.Drawing.Point(264, 366);
+			this.btnContinue.Name = "btnContinue";
+			this.btnContinue.Size = new System.Drawing.Size(115, 30);
+			this.btnContinue.TabIndex = 5;
+			this.btnContinue.Text = "Continue";
+			this.btnContinue.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+			this.btnContinue.UseVisualStyleBackColor = true;
+			this.btnContinue.Click += new System.EventHandler(this.BtnContinueClick);
+			// 
 			// DebuggeeExceptionForm
 			// 
 			this.ClientSize = new System.Drawing.Size(642, 399);
+			this.Controls.Add(this.btnContinue);
 			this.Controls.Add(this.btnBreak);
 			this.Controls.Add(this.btnStop);
 			this.Controls.Add(this.exceptionView);
@@ -96,6 +111,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Button btnContinue;
 		private System.Windows.Forms.Button btnBreak;
 		private System.Windows.Forms.Button btnStop;
 		private System.Windows.Forms.RichTextBox exceptionView;

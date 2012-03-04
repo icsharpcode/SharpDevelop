@@ -78,6 +78,10 @@ namespace MSHelpSystem.Commands
 				MessageService.ShowError("${res:AddIns.HelpViewer.HLMNotFound}");
 				return;
 			}
+			if (string.IsNullOrEmpty(Help3Service.Config.ActiveCatalogId)) {
+				MessageService.ShowError("${res:AddIns.HelpViewer.HLMNoActiveCatalogError}");
+				return;
+			}
 			Process.Start(path, string.Format("/product {0} /version {1} /locale {2}", Help3Service.Config.ActiveCatalogId.Split('/')));
 		}
 	}

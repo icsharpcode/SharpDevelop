@@ -78,6 +78,11 @@
     <Compile Include="ListViewSorting\IListViewItemComparer.cs" />
     <Compile Include="ListViewSorting\ListViewItemSorter.cs" />
     <Compile Include="MouseWheelHandler.cs" />
+    <Compile Include="MyersDiff\Edit.cs" />
+    <Compile Include="MyersDiff\ISequence.cs" />
+    <Compile Include="MyersDiff\MyersDiffAlgorithm.cs" />
+    <Compile Include="MyersDiff\StringSequence.cs" />
+    <Compile Include="MyersDiff\Utils.cs" />
     <Compile Include="NumericUpDown.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
@@ -117,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images" />
+    <Folder Include="MyersDiff" />
     <Folder Include="themes" />
   </ItemGroup>
   <ItemGroup>

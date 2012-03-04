@@ -14,6 +14,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {

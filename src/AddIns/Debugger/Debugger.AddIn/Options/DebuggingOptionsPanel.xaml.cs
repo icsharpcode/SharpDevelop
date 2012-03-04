@@ -29,8 +29,8 @@ namespace Debugger.AddIn.Options
 		}
 		
 		/// <summary>
-		/// If stepOverAllProperties is true when the panel is opened then the CheckChanged event is 
-		/// fired during the InitializeComponent method call before the remaining check boxes are created. 
+		/// If stepOverAllProperties is true when the panel is opened then the CheckChanged event is
+		/// fired during the InitializeComponent method call before the remaining check boxes are created.
 		/// So check if the remaining check boxes have been created.
 		/// </summary>
 		void ChbStepOverAllProperties_CheckedChanged(object sender, RoutedEventArgs e)
@@ -51,8 +51,17 @@ namespace Debugger.AddIn.Options
 		{
 			bool result = base.SaveOptions();
 			Process proc = WindowsDebugger.CurrentProcess;
+			// debug session is running
 			if (proc != null) {
+				bool wasPausedNow = false;
+				// if it is not paused, break execution
+				if (!proc.IsPaused) {
+					proc.Break();
+					wasPausedNow = true;
+				}
 				proc.Debugger.ResetJustMyCodeStatus();
+				// continue if it was not paused before
+				if (wasPausedNow) proc.AsyncContinue();
 			}
 			return result;
 		}

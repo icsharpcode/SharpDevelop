@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.console = new ConsoleControl();
 			this.panel.Children.Add(console);
 			this.console.Encoding = Encoding.Default;
-			RefreshPad();
+			RefreshPad(); // exception
 			this.console.SetReadonly();
 			
 			DebuggerService.DebugStopped += DebuggerService_DebugStopped;

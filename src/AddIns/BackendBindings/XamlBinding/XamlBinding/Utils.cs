@@ -25,7 +25,8 @@ namespace ICSharpCode.XamlBinding
 			return Math.Min(Math.Max(value, lower), upper);
 		}
 		
-		static char[] whitespace = new char[] {' ', '\t', '\n', '\r'};
+		static readonly char[] whitespace = new[] {' ', '\t', '\n', '\r'};
+		static readonly char[] newline = new[] {'\n', '\r'};
 		
 		public static string GetNamespacePrefix(string namespaceUri, XamlContext context)
 		{
@@ -36,6 +37,13 @@ namespace ICSharpCode.XamlBinding
 			return string.Empty;
 		}
 		
+		/// <summary>
+		/// Returns the offset for a given line, column position in a file.
+		/// If the given position is not within the string it returns the first or the last offset respectively.
+		/// </summary>
+		/// <remarks>
+		/// <paramref name="line"/> and <paramref name="col"/> are 1-based!
+		/// </remarks>
 		public static int GetOffsetFromFilePos(string content, int line, int col)
 		{
 			if (line < 1)
@@ -46,16 +54,19 @@ namespace ICSharpCode.XamlBinding
 			int offset = -1;
 			
 			while (line > 1) {
-				int tmp = content.IndexOf('\n', offset + 1);
+				int tmp = content.IndexOfAny(newline, offset + 1);
 				if (tmp > -1) {
-					offset = tmp;
+					if (content[tmp] == '\r' && content.Length > tmp + 1 && content[tmp + 1] == '\n')
+						offset = tmp + 1;
+					else
+						offset = tmp;
 					line--;
 				} else {
 					return content.Length;
 				}
 			}
 			
-			return offset + col - 1;
+			return offset + col;
 		}
 		
 		public static Location GetLocationInfoFromOffset(string text, int offset)

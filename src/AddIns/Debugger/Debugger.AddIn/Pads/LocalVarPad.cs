@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
@@ -46,15 +47,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess != null) {
 				debuggedProcess.Paused += debuggedProcess_Paused;
 			}
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
 		{
-			RefreshPad();
+			InvalidatePad();
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				localVarList.WatchItems.Clear();
@@ -63,13 +64,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
-					Utils.DoEvents(debuggedProcess);
 					StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
 					if (frame == null) return;
 					
 					localVarList.WatchItems.Clear();
-					foreach (var item in new StackFrameNode(frame).ChildNodes) {
-						localVarList.WatchItems.Add(item.ToSharpTreeNode());
+					foreach (var n in new StackFrameNode(frame).ChildNodes) {
+						var node = n;
+						debuggedProcess.EnqueueWork(
+							Dispatcher.CurrentDispatcher,
+							delegate {
+								localVarList.WatchItems.Add(node.ToSharpTreeNode());
+							}
+						);
 					}
 				} 
 				catch(AbortedBecauseDebuggeeResumedException) { } 

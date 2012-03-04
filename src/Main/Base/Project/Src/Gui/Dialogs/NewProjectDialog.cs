@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			targetFrameworkComboBox.Items.Clear();
 			if (categoryTreeView.SelectedNode != null) {
 				foreach (TargetFramework fx in TargetFramework.TargetFrameworks) {
-					if (fx.DisplayName == null)
+					if (fx.DisplayName == null || !fx.IsAvailable())
 						continue;
 					foreach (TemplateItem item in ((Category)categoryTreeView.SelectedNode).Templates) {
 						if (item.Template.HasSupportedTargetFrameworks && item.Template.SupportsTargetFramework(fx)) {
