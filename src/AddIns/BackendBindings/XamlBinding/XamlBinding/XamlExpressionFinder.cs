@@ -42,7 +42,11 @@ namespace ICSharpCode.XamlBinding
 			while (offset < text.Length && IsValidChar(text[offset])) {
 				offset++;
 			}
-			return new ExpressionResult(text.Substring(start, offset - start), GetContext(text, offset));
+			
+			var startLocation = Utils.GetLocationInfoFromOffset(text, start);
+			var endLocation = Utils.GetLocationInfoFromOffset(text, offset);
+			
+			return new ExpressionResult(text.Substring(start, offset - start), GetContext(text, offset)) { Region = new DomRegion(startLocation.Line, startLocation.Column, endLocation.Line, endLocation.Column) };
 		}
 
 		public string RemoveLastPart(string expression)
