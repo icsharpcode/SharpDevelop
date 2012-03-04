@@ -228,6 +228,27 @@
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de arquivo desconhecido.</value>
   </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
+    <value>Esse arquivo contem novas linhas inconsistentes.</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Header" xml:space="preserve">
+    <value>Novas linhas inconsistente</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Normalize" xml:space="preserve">
+    <value>Normalizar</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
+    <value>Erro:</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindNextText" xml:space="preserve">
+    <value>Achar proximo</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.FindPreviousText" xml:space="preserve">
+    <value>Achar anterior</value>
+  </data>
+  <data name="AddIns.AvalonEdit.SearchPanel.UseRegexText" xml:space="preserve">
+    <value>Usar expressões regulares</value>
+  </data>
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Classes</value>
   </data>
@@ -249,8 +270,17 @@
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Modo Ajuda</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>Não pode lançar o Gerenciador de bibliotecas de Ajuda porque não há catalogo instalado/selecionado. Por favor, verifique sua configuração de ajuda( ver Ferramentas &gt; Opções &gt; Ferramentas &gt; Microsoft Visualizar Ajuda).</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>Não foi encontrado o Gerenciador de biblioteca de Ajuda. Por favor, verifique se foi instalado corretamente.</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>Catalogos de Ajuda instalados</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>Lançar o Gerenciador de bibliotecas de Ajuda</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Visualizador de Ajuda da Microsoft</value>
@@ -293,6 +323,15 @@
   </data>
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Sistema de numeração</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Decimal" xml:space="preserve">
+    <value>Decimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Hexadecimal" xml:space="preserve">
+    <value>Hexadecimal</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem.Octal" xml:space="preserve">
+    <value>Octal</value>
   </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Redimensionar para ajustar a largura atual.</value>
@@ -505,7 +544,16 @@
     <value>Executar com perfil</value>
   </data>
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
-    <value>Pesquisar...</value>
+    <value>Pesquisando...</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>Adicionar setter</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>Selecionar os campos para os quais voce deseja criar propriedades.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
+    <value>Criar propriedades</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrair método.</value>
@@ -575,6 +623,9 @@
   </data>
   <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
     <value>Resolver metodo extensão {0}</value>
+  </data>
+  <data name="AddIns.SourceAnalysis.CheckProjectWithStyleCop" xml:space="preserve">
+    <value>Verificar projeto corrente com StyleCop</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Verificar com StyleCop</value>
@@ -1317,6 +1368,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>Aguardando Aplicação para Iniciar</value>
   </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>Analize da qualidade de codigo</value>
+  </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>Inseria referência para deixar o método explícito; pressione Tab ou Enter novamente para inserir um novo método.</value>
   </data>
@@ -1788,6 +1842,12 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>Depurando</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Exceptions" xml:space="preserve">
+    <value>Exceções</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>Pausar nas exceções gerenciadas.</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Passo a Passo</value>
   </data>
@@ -1941,6 +2001,15 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Estilo visual</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Expandir referencias do projeto (refletir referencias)</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>Opções da Interface de Usuario para o Sharp Develop</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Opções da Interface de Usuario para o Sharp Develop</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Comentar Tags</value>
   </data>
@@ -1970,6 +2039,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>Cortar ou Copiar linha inteira quando nada está selecionado</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>Habilitar o espaço virtual</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>Esc&amp;onder cursor do mouse durante digitação</value>
@@ -2019,6 +2091,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>Desenha&amp;r fontes suavizadas</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Habilitar o marcador de alteração de margem</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>Habilitar &amp;Assistente de Código</value>
   </data>
@@ -2064,6 +2139,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox" xml:space="preserve">
     <value>Mostra linha do cursor</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>Habilitar animações</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Mostrar marcas de &amp;EOL</value>
   </data>
@@ -2096,6 +2174,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Marcadores e Réguas</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
+    <value>Mostrar definições escondidas (apenas conchetes)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
     <value>Mostrar e&amp;spaços</value>
@@ -2254,7 +2335,7 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
     <value>Processador Intel Itanium 64-bit</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
-    <value>Processador AMD 64 Bits</value>
+    <value>Processador x86-64 Bits</value>
   </data>
   <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
     <value>Compatível com processador Intel 32 bits</value>
@@ -2955,6 +3036,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
     <value>Análise de Código</value>
   </data>
+  <data name="ICSharpCode.CodeAnalysis.CheckProjectWithFxCop" xml:space="preserve">
+    <value>Verificar projeto atual com FxCop</value>
+  </data>
   <data name="ICSharpCode.CodeAnalysis.CheckWithFxCop" xml:space="preserve">
     <value>Verificar com FxCop</value>
   </data>
@@ -3048,6 +3132,9 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.ExcludeListLabel" xml:space="preserve">
     <value>Excluir</value>
   </data>
+  <data name="ICSharpCode.CodeCoverage.ProjectOptionsPanel.IncludeListLabel" xml:space="preserve">
+    <value>Incluir</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.RunningCodeCoverage" xml:space="preserve">
     <value>Rodando cobertura de código...</value>
   </data>
@@ -3074,6 +3161,12 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   </data>
   <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
     <value>Exibir Exceção</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
+    <value>Opções adicionais</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker" xml:space="preserve">
+    <value>Ligador</value>
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>.NET Arquivo de Recurso(binário)</value>
