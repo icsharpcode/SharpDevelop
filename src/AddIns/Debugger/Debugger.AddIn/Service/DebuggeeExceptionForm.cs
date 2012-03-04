@@ -16,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		Process process;
 		bool isUnhandled;
+		public Debugger.Exception Exception { get; private set; }
 		
 		DebuggeeExceptionForm(Process process)
 		{
@@ -57,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.process.Resumed -= ProcessHandler;
 		}
 		
-		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon, bool isUnhandled)
+		public static void Show(Process process, string title, string message, string stacktrace, Bitmap icon, bool isUnhandled, Debugger.Exception exception)
 		{
 			DebuggeeExceptionForm form = new DebuggeeExceptionForm(process);
 			form.Text = title;
@@ -66,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			form.exceptionView.Text = stacktrace;
 			form.isUnhandled = isUnhandled;
 			form.btnContinue.Enabled = !isUnhandled;
+			form.Exception = exception;
 			
 			form.Show(WorkbenchSingleton.MainWin32Window);
 		}
@@ -104,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (this.process.SelectedThread.CurrentExceptionIsUnhandled)
 				Close();
-			else if (((WindowsDebugger)DebuggerService.CurrentDebugger).BreakAndInterceptHandledException())
+			else if (((WindowsDebugger)DebuggerService.CurrentDebugger).BreakAndInterceptHandledException(Exception))
 				Close();
 		}
 		

@@ -855,7 +855,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			if (e.IsUnhandled) {
 				// Need to intercept now so that we can evaluate properties
-				if (e.Process.SelectedThread.InterceptCurrentException()) {
+				if (e.Process.SelectedThread.InterceptException(e.Exception)) {
 					stacktraceBuilder.AppendLine(e.Exception.ToString());
 					string stackTrace;
 					try {
@@ -879,12 +879,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			string message = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), e.Exception.Type);
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			
-			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, e.IsUnhandled);
+			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, e.IsUnhandled, e.Exception);
 		}
 		
-		public bool BreakAndInterceptHandledException()
+		public bool BreakAndInterceptHandledException(Debugger.Exception exception)
 		{
-			if (!debuggedProcess.SelectedThread.InterceptCurrentException()) {
+			if (!debuggedProcess.SelectedThread.InterceptException(exception)) {
 				MessageService.ShowError("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException}");
 				return false;
 			}
