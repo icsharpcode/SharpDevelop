@@ -73,7 +73,7 @@ inside SharpDevelop, there's more going on than a
 simple call to MSBuild.";
 			
 			int expected = @"SharpDevelop uses the MSBuild
-libraries".Length - 1;
+libraries".Length;
 			int line = 2;
 			int col = 10;
 			
@@ -110,7 +110,7 @@ simple call to MSBuild.";
 			int expected = @"SharpDevelop uses the MSBuild
 libraries for compilation. But when you compile a project
 inside SharpDevelop, there's more going on than a
-simple".Length - 1;
+simple".Length;
 			
 			int line = 4;
 			int col = 7;
