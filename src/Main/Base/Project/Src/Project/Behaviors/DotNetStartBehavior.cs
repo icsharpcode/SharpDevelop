@@ -338,7 +338,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				try {
 					return (StartAction)Enum.Parse(typeof(StartAction), ((MSBuildBasedProject)Project).GetEvaluatedProperty("StartAction") ?? "Project");
-				} catch (ArgumentException) {
+				} catch (ArgumentException ex) {
 					return StartAction.Project;
 				}
 			}

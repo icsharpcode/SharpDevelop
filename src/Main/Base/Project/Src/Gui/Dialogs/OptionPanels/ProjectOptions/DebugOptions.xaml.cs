@@ -31,6 +31,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			InitializeComponent();
 		}
 		
+		public ProjectProperty<StartAction> StartAction
+		{
+			get
+			{
+				return GetProperty<StartAction>("StartAction", Project.StartAction.Project, PropertyStorageLocations.ConfigurationSpecific);
+			}
+		}
 		
 		public ProjectProperty<string> StartProgram
 		{
