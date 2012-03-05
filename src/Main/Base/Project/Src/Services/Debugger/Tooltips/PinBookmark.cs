@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.FullName == currentNode.FullName)
+				if (node.Name == currentNode.Name)
 					return true;
 			}
 			
@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.FullName == currentNode.FullName) {
+				if (node.Name == currentNode.Name) {
 					mark.Nodes.Remove(currentNode);
 					return;
 				}

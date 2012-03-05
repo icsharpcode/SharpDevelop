@@ -4,13 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -207,8 +207,8 @@ namespace Debugger.AddIn.Tooltips
 				this.childPopup.IsLeaf = true;
 				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
 				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
-				if (clickedNode.ChildNodes != null) {
-					this.childPopup.ItemsSource = clickedNode.ChildNodes;
+				if (clickedNode.GetChildren != null) {
+					this.childPopup.ItemsSource = clickedNode.GetChildren().ToList();
 					this.childPopup.Open();
 				}
 			} else {
@@ -300,14 +300,14 @@ namespace Debugger.AddIn.Tooltips
 			// refresh content
 			ITreeNode node = ((FrameworkElement)e.OriginalSource).DataContext as ITreeNode;
 			
-			var resultNode = currentDebugger.GetNode(node.FullName, node.ImageName);
+			var resultNode = currentDebugger.GetNode(node.Name, node.ImageName);
 			if (resultNode == null)
 				return;
 			// HACK for updating the pins in tooltip
 			var observable = new ObservableCollection<ITreeNode>();
 			var source = lazyGrid.ItemsSource;
 			source.ForEach(item => {
-			               	if (item.CompareTo(node) == 0)
+			               	if (item.Name == node.Name)
 			               		observable.Add(resultNode);
 			               	else
 			               		observable.Add(item);

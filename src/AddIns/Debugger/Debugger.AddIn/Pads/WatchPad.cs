@@ -17,6 +17,7 @@ using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project;
 using Exception = System.Exception;
@@ -78,29 +79,26 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			
 			foreach (var element in props.Elements) {
-				watchList.WatchItems.Add(new TextNode(null, element, (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), props[element])).ToSharpTreeNode());
+				watchList.WatchItems.Add(new TreeNode(element, null).ToSharpTreeNode());
 			}
 		}
 
 		void OnWatchItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems.Count > 0) {
+			var props = GetSavedVariablesProperties();
+			if (props == null) return;
+					
+			if (e.Action == NotifyCollectionChangedAction.Add) {
 				// add to saved data
-				var data = e.NewItems.OfType<TextNode>().FirstOrDefault();
-				if (data != null) {
-					var props = GetSavedVariablesProperties();
-					if (props == null) return;
-					props.Set(data.FullName, data.Language.ToString());
+				foreach(var data in e.NewItems.OfType<TreeNode>()) {
+					props.Set(data.Name, (object)null);
 				}
 			}
 			
 			if (e.Action == NotifyCollectionChangedAction.Remove) {
 				// remove from saved data
-				var data = e.OldItems.OfType<TextNode>().FirstOrDefault();
-				if (data != null) {
-					var props = GetSavedVariablesProperties();
-					if (props == null) return;
-					props.Remove(data.FullName);
+				foreach(var data in e.OldItems.OfType<TreeNode>()) {
+					props.Remove(data.Name);
 				}
 			}
 		}
@@ -162,9 +160,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			// rebuild list
 			var nodes = new List<TreeNodeWrapper>();
 			foreach (var nod in watchList.WatchItems.OfType<TreeNodeWrapper>())
-				nodes.Add(new TextNode(null, nod.Node.Name,
-				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp)
-				          .ToSharpTreeNode());
+				nodes.Add(new TreeNode(nod.Node.Name, null).ToSharpTreeNode());
 			
 			watchList.WatchItems.Clear();
 			foreach (var nod in nodes)
@@ -194,13 +190,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			try {
 				LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
-				var nodExpression = debugger.GetExpression(node.Node.Name);
+				
 				//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-				ExpressionNode valNode = new ExpressionNode(null, null, node.Node.Name, nodExpression);
+				ExpressionNode valNode = new ExpressionNode(null, node.Node.Name, () => debugger.GetExpression(node.Node.Name).Evaluate(debuggedProcess));
 				return valNode.ToSharpTreeNode();
 			} catch (GetValueException) {
 				string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
-				ErrorInfoNode infoNode = new ErrorInfoNode(node.Node.Name, error);
+				TreeNode infoNode = new TreeNode("Icons.16x16.Error", node.Node.Name, error, string.Empty, null);
 				return infoNode.ToSharpTreeNode();
 			}
 		}

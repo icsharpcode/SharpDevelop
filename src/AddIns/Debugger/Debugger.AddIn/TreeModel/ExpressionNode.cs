@@ -4,17 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-
 using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
@@ -26,11 +27,12 @@ namespace Debugger.AddIn.TreeModel
 	/// Node in the tree which can be defined by a debugger expression.
 	/// The expression will be lazily evaluated when needed.
 	/// </summary>
-	public class ExpressionNode: TreeNode, ISetText, INotifyPropertyChanged
+	public class ExpressionNode: TreeNode, INotifyPropertyChanged
 	{
 		bool evaluated;
 		
-		Expression expression;
+		Func<Value> valueGetter;
+		Value permanentValue;
 		bool canSetText;
 		GetValueException error;
 		string fullText;
@@ -38,10 +40,6 @@ namespace Debugger.AddIn.TreeModel
 		public bool Evaluated {
 			get { return evaluated; }
 			set { evaluated = value; }
-		}
-		
-		public Expression Expression {
-			get { return expression; }
 		}
 		
 		public override bool CanSetText {
@@ -75,12 +73,6 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public override string FullName {
-			get {
-				return this.expression.PrettyPrint() ?? Name.Trim();
-			}
-		}
-		
 		public override string Type {
 			get {
 				if (!evaluated) EvaluateExpression();
@@ -88,17 +80,13 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public override IEnumerable<TreeNode> ChildNodes {
+		public override Func<IEnumerable<TreeNode>> GetChildren {
 			get {
 				if (!evaluated) EvaluateExpression();
-				return base.ChildNodes;
+				return base.GetChildren;
 			}
-		}
-		
-		public override bool HasChildNodes {
-			get {
-				if (!evaluated) EvaluateExpression();
-				return base.HasChildNodes;
+			protected set {
+				base.GetChildren = value;
 			}
 		}
 		
@@ -136,42 +124,47 @@ namespace Debugger.AddIn.TreeModel
 			
 			foreach (var descriptor in VisualizerDescriptors.GetAllDescriptors()) {
 				if (descriptor.IsVisualizerAvailable(this.expressionType)) {
-					yield return descriptor.CreateVisualizerCommand(this.Expression);
+					yield return descriptor.CreateVisualizerCommand(this.Name, () => this.Evaluate());
 				}
 			}
 		}
 
-		public ExpressionNode(TreeNode parent, IImage image, string name, Expression expression)
-			: base(parent)
+		public ExpressionNode(string imageName, string name, Func<Value> valueGetter)
+			: base(imageName, name, string.Empty, string.Empty, null)
 		{
-			this.IconImage = image;
-			this.Name = name;
-			this.expression = expression;
+			this.valueGetter = valueGetter;
 		}
 		
+		/// <summary>
+		/// Get the value of the node and cache it as long-lived reference.
+		/// We assume that the user will need this value a lot.
+		/// </summary>
+		public Value Evaluate()
+		{
+			if (permanentValue == null)
+			{
+				Stopwatch watch = new Stopwatch();
+				watch.Start();
+				permanentValue = valueGetter().GetPermanentReference();
+				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms (result cached for future use)", this.Name, watch.ElapsedMilliseconds);
+			}
+			return permanentValue;
+		}
+		
+		/// <summary>
+		/// Get the value of the node and update the UI text fields.
+		/// </summary>
 		void EvaluateExpression()
 		{
 			evaluated = true;
 			
+			Stopwatch watch = new Stopwatch();
+			watch.Start();
+			
 			Value val;
 			try {
-				var process = WindowsDebugger.DebuggedProcess;
-				if (process == null) return;
-				StackFrame frame = process.GetCurrentExecutingFrame();
-				if (frame == null) return;
-				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
-				                                                                       frame.MethodInfo.MetadataToken,
-				                                                                       Name);
-				
-				if (expression is MemberReferenceExpression) {
-					var memberExpression = (MemberReferenceExpression)expression;
-					memberExpression.TargetObject.UserData = data;
-				} else {
-					expression.UserData = data;
-				}
-				// evaluate expression
-				val = expression.Evaluate(process);
+				// Do not keep permanent reference
+				val = valueGetter();
 			} catch (GetValueException e) {
 				error = e;
 				this.Text = e.Message;
@@ -188,25 +181,22 @@ namespace Debugger.AddIn.TreeModel
 			if (val.IsNull) {
 			} else if (val.Type.IsPrimitive || val.Type.FullName == typeof(string).FullName) { // Must be before IsClass
 			} else if (val.Type.IsArray) { // Must be before IsClass
-				if (val.ArrayLength > 0)
-					this.childNodes = Utils.LazyGetChildNodesOfArray(this, this.Expression, val.ArrayDimensions);
+				if (val.ArrayLength > 0) {
+					var dims = val.ArrayDimensions;  // Eval now
+					this.GetChildren = () => Utils.GetChildNodesOfArray(this, dims, dims);
+				}
 			} else if (val.Type.IsClass || val.Type.IsValueType) {
 				if (val.Type.FullNameWithoutGenericArguments == typeof(List<>).FullName) {
 					if ((int)val.GetMemberValue("_size").PrimitiveValue > 0)
-						this.childNodes = Utils.LazyGetItemsOfIList(this, this.expression);
+						this.GetChildren = () => Utils.GetItemsOfIList(() => this.Evaluate());
 				} else {
-					this.childNodes = Utils.LazyGetChildNodesOfObject(this, this.Expression, val.Type);
+					this.GetChildren = () => Utils.GetChildNodesOfObject(this, val.Type);
 				}
 			} else if (val.Type.IsPointer) {
 				Value deRef = val.Dereference();
 				if (deRef != null) {
-					this.childNodes = new ExpressionNode [] { new ExpressionNode(this, this.IconImage, "*" + this.Name, this.Expression.AppendDereference()) };
+					this.GetChildren = () => new ExpressionNode [] { new ExpressionNode(this.ImageName, "*" + this.Name, () => this.Evaluate().Dereference()) };
 				}
-			}
-			
-			if (DebuggingOptions.Instance.ICorDebugVisualizerEnabled) {
-				TreeNode info = ICorDebug.GetDebugInfoRoot(val.AppDomain, val.CorValue);
-				this.childNodes = Utils.PrependNode(info, this.ChildNodes);
 			}
 			
 			// Do last since it may expire the object
@@ -236,6 +226,8 @@ namespace Debugger.AddIn.TreeModel
 			}
 			
 			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;
+			
+			LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms", this.Name, watch.ElapsedMilliseconds);
 		}
 		
 		string Escape(string source)
@@ -308,11 +300,9 @@ namespace Debugger.AddIn.TreeModel
 		
 		public override bool SetText(string newText)
 		{
-			string fullName = FullName;
-			
 			Value val = null;
 			try {
-				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess);
+				val = this.Evaluate();
 				if (val.Type.IsInteger && newText.StartsWith("0x")) {
 					try {
 						val.PrimitiveValue = long.Parse(newText.Substring(2), NumberStyles.HexNumber);
@@ -339,33 +329,10 @@ namespace Debugger.AddIn.TreeModel
 			return false;
 		}
 		
-		public static IImage GetImageForThis(out string imageName)
-		{
-			imageName = "Icons.16x16.Parameter";
-			return DebuggerResourceService.GetImage(imageName);
-		}
-		
-		public static IImage GetImageForParameter(out string imageName)
-		{
-			imageName = "Icons.16x16.Parameter";
-			return DebuggerResourceService.GetImage(imageName);
-		}
-		
-		public static IImage GetImageForLocalVariable(out string imageName)
-		{
-			imageName = "Icons.16x16.Local";
-			return DebuggerResourceService.GetImage(imageName);
-		}
-		
-		public static IImage GetImageForArrayIndexer(out string imageName)
-		{
-			imageName = "Icons.16x16.Field";
-			return DebuggerResourceService.GetImage(imageName);
-		}
-		
-		public static IImage GetImageForMember(IDebugMemberInfo memberInfo, out string imageName)
+		public static string GetImageForMember(IDebugMemberInfo memberInfo)
 		{
 			string name = string.Empty;
+			
 			if (memberInfo.IsPublic) {
 			} else if (memberInfo.IsAssembly) {
 				name += "Internal";
@@ -374,6 +341,7 @@ namespace Debugger.AddIn.TreeModel
 			} else if (memberInfo.IsPrivate) {
 				name += "Private";
 			}
+			
 			if (memberInfo is FieldInfo) {
 				name += "Field";
 			} else if (memberInfo is PropertyInfo) {
@@ -384,8 +352,7 @@ namespace Debugger.AddIn.TreeModel
 				throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
 			}
 			
-			imageName = "Icons.16x16." + name;
-			return DebuggerResourceService.GetImage(imageName);
+			return "Icons.16x16." + name;
 		}
 		
 //		public ContextMenuStrip GetContextMenu()

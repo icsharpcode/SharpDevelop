@@ -7,8 +7,6 @@ using System.Runtime.InteropServices;
 
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
 
 namespace Debugger
 {
@@ -251,7 +249,6 @@ namespace Debugger
 		
 		internal bool TerminateCommandIssued = false;
 		internal Queue<Breakpoint> BreakpointHitEventQueue = new Queue<Breakpoint>();
-		internal Dictionary<INode, TypedValue> ExpressionsCache = new Dictionary<INode, TypedValue>();
 		
 		#region Events
 		
@@ -330,7 +327,6 @@ namespace Debugger
 			if (action == DebuggeeStateAction.Clear) {
 				if (debuggeeState == null) throw new DebuggerException("Debugee state already cleared");
 				debuggeeState = null;
-				this.ExpressionsCache.Clear();
 			}
 		}
 		
@@ -555,19 +551,6 @@ namespace Debugger
 			
 			// Do not mark the process as exited
 			// This is done once ExitProcess callback is received
-		}
-		
-		/// <summary>
-		/// Clears the internal Expression cache used too speed up Expression evaluation.
-		/// Use this if your code evaluates expressions in a way which would cause
-		/// the cache to grow too large. The cache holds PermanentReferences so it
-		/// shouldn't grow larger than a few hundred items.
-		/// </summary>
-		public void ClearExpressionCache()
-		{
-			if (this.ExpressionsCache != null ){
-				this.ExpressionsCache.Clear();
-			}
 		}
 		
 		void SelectSomeThread()

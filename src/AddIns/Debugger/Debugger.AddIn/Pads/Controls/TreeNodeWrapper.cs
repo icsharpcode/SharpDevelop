@@ -28,22 +28,22 @@ namespace Debugger.AddIn.Pads.Controls
 		public TreeNode Node { get; private set; }
 		
 		public override object Text {
-			get { return Node.Name; }
+			get { return this.Node.Name; }
 		}
 		
 		public override object Icon {
-			get { return Node.ImageSource; }
+			get { return this.Node.ImageSource; }
 		}
 		
 		public override bool ShowExpander {
-			get { return Node.HasChildNodes; }
+			get { return this.Node.GetChildren != null; }
 		}
 		
 		protected override void LoadChildren()
 		{
-			if (Node.HasChildNodes) {
-				((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess
-					.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(Node.ChildNodes.Select(node => node.ToSharpTreeNode())));
+			if (this.Node.GetChildren != null) {
+				var process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
+				process.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(this.Node.GetChildren().Select(node => node.ToSharpTreeNode())));
 			}
 		}
 	}
@@ -69,12 +69,10 @@ namespace Debugger.AddIn.Pads.Controls
 			
 			string language = ProjectService.CurrentProject.Language;
 			
-			// FIXME languages
-			TextNode text = new TextNode(null, e.Data.GetData(DataFormats.StringFormat).ToString(),
-			                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
+			var text = new TreeNode(e.Data.GetData(DataFormats.StringFormat).ToString(), null);
 
 			var node = text.ToSharpTreeNode();
-			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.FullName == ((TreeNodeWrapper)n).Node.FullName))
+			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.Name == ((TreeNodeWrapper)n).Node.Name))
 				WatchPad.Instance.WatchList.WatchItems.Add(node);
 			
 			WatchPad.Instance.InvalidatePad();

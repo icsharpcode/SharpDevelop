@@ -11,56 +11,32 @@ using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.TreeModel
 {
-	public class StackFrameNode: TreeNode
+	public partial class Utils
 	{
-		StackFrame stackFrame;
-		
-		public StackFrame StackFrame {
-			get { return stackFrame; }
-		}
-		
-		public StackFrameNode(StackFrame stackFrame)
-			: base(null)
-		{
-			this.stackFrame = stackFrame;
-			
-			this.Name = stackFrame.MethodInfo.Name;
-			this.childNodes = LazyGetChildNodes();
-		}
-		
-		IEnumerable<TreeNode> LazyGetChildNodes()
+		public static IEnumerable<TreeNode> GetLocalVariableNodes(StackFrame stackFrame)
 		{
 			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
-				string imageName;
-				var image = ExpressionNode.GetImageForParameter(out imageName);
-				var expression = new ExpressionNode(this, image, par.Name, par.GetExpression());
-				expression.ImageName = imageName;
-				yield return expression;
+				var parCopy = par;
+				yield return new ExpressionNode("Icons.16x16.Parameter", par.Name, () => parCopy.GetValue(stackFrame));
 			}
-			if (this.stackFrame.HasSymbols) {
-				foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(this.StackFrame.IP)) {
-					string imageName;
-					var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-					var expression = new ExpressionNode(this, image, locVar.Name, locVar.GetExpression());
-					expression.ImageName = imageName;
-					yield return expression;
+			if (stackFrame.HasSymbols) {
+				foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(stackFrame.IP)) {
+					var locVarCopy = locVar;
+					yield return new ExpressionNode("Icons.16x16.Local", locVar.Name, () => locVarCopy.GetValue(stackFrame));
 				}
 			} else {
 				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 				if (debugger.debuggerDecompilerService != null) {
-					int typeToken = this.stackFrame.MethodInfo.DeclaringType.MetadataToken;
-					int methodToken = this.stackFrame.MethodInfo.MetadataToken;
+					int typeToken = stackFrame.MethodInfo.DeclaringType.MetadataToken;
+					int methodToken = stackFrame.MethodInfo.MetadataToken;
 					foreach (var localVar in debugger.debuggerDecompilerService.GetLocalVariables(typeToken, methodToken)) {
-						string imageName;
-						var image = ExpressionNode.GetImageForLocalVariable(out imageName);
-						var expression = new ExpressionNode(this, image, localVar, ExpressionEvaluator.ParseExpression(localVar, SupportedLanguage.CSharp));
-						expression.ImageName = imageName;
-						yield return expression;
+						int index = ((int[])debugger.debuggerDecompilerService.GetLocalVariableIndex(typeToken, methodToken, localVar))[0];
+						yield return new ExpressionNode("Icons.16x16.Local", localVar, () => stackFrame.GetLocalVariableValue((uint)index));
 					}
 				}
 			}
 			if (stackFrame.Thread.CurrentException != null) {
-				yield return new ExpressionNode(this, null, "__exception", new IdentifierExpression("__exception"));
+				yield return new ExpressionNode(null, "$exception", () => stackFrame.Thread.CurrentException.Value);
 			}
 		}
 	}

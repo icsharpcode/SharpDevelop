@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -228,8 +229,8 @@ namespace Debugger.AddIn.Tooltips
 				this.childPopup.IsLeaf = true;
 				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
 				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
-				if (clickedNode.ChildNodes != null) {
-					this.childPopup.ItemsSource = clickedNode.ChildNodes;
+				if (clickedNode.GetChildren != null) {
+					this.childPopup.ItemsSource = clickedNode.GetChildren().ToList();
 					this.childPopup.Open();
 				}
 			} else {
