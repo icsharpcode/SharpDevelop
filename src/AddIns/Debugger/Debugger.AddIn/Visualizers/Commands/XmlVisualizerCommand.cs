@@ -20,9 +20,9 @@ namespace Debugger.AddIn.Visualizers
 			return type.FullName == typeof(string).FullName;
 		}
 		
-		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
+		public IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue)
 		{
-			return new XmlVisualizerCommand(expression);
+			return new XmlVisualizerCommand(valueName, getValue);
 		}
 	}
 	
@@ -31,8 +31,7 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public class XmlVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public XmlVisualizerCommand(Expression expression)
-			:base(expression)
+		public XmlVisualizerCommand(string valueName, Func<Value> getValue) : base(valueName, getValue)
 		{
 		}
 		
@@ -43,11 +42,7 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression == null)
-				return;
-			var textVisualizerWindow = new TextVisualizerWindow(
-				this.Expression.PrettyPrint(), this.Expression.Evaluate(WindowsDebugger.CurrentProcess).AsString());
-			textVisualizerWindow.Mode = TextVisualizerMode.Xml;
+			var textVisualizerWindow = new TextVisualizerWindow(this.ValueName, this.GetValue().AsString(), ".xml");
 			textVisualizerWindow.ShowDialog();
 		}
 	}

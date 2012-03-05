@@ -91,19 +91,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			using(new PrintTimes("Threads refresh")) {
-				try {
-					foreach (var t in debuggedProcess.Threads) {
-						var thread = t;
-						debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => AddThread(thread));
-					}
-				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(Exception) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						throw;
-					}
+			LoggingService.Info("Threads refresh");
+			try {
+				foreach (var t in debuggedProcess.Threads) {
+					var thread = t;
+					debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => AddThread(thread));
+				}
+			} catch(Exception) {
+				if (debuggedProcess == null || debuggedProcess.HasExited) {
+					// Process unexpectedly exited
+				} else {
+					throw;
 				}
 			}
 		}

@@ -97,6 +97,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NRefactory\ExpressionEvaluator.cs" />
+    <Compile Include="NRefactory\ExpressionExtensionMethods.cs" />
     <Compile Include="Options\DebuggingOptionsPanel.xaml.cs">
       <DependentUpon>DebuggingOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -161,7 +163,6 @@
     <Compile Include="Pads\WatchPad.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Pads\WatchPadModel.cs" />
     <Compile Include="Service\AttachToProcessForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,11 +193,6 @@
     <Compile Include="Tooltips\VisualizerPicker.cs">
       <DependentUpon>VisualizerPicker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TreeModel\DebuggerResourceService.cs" />
-    <Compile Include="TreeModel\ICorDebug.cs" />
-    <Compile Include="TreeModel\IEnumerableNode.cs" />
-    <Compile Include="TreeModel\IListNode.cs" />
-    <Compile Include="TreeModel\SavedTreeNode.cs" />
     <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
@@ -209,7 +205,6 @@
     <Compile Include="Visualizers\Commands\XmlVisualizerCommand.cs" />
     <Compile Include="Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Visualizers\Common\IEvaluate.cs" />
-    <Compile Include="Visualizers\Common\IListValuesProvider.cs" />
     <Compile Include="Visualizers\Common\ObjectProperty.cs" />
     <Compile Include="Visualizers\Common\ObjectPropertyComparer.cs" />
     <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
@@ -253,12 +248,10 @@
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\ThisNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\NonPublicMembersNode.cs" />
     <Compile Include="Visualizers\Graph\ObjectGraph\TreeModel\PropertyNode.cs" />
-    <Compile Include="Visualizers\GridVisualizer\ValueProviders\GridValuesProvider.cs" />
     <Compile Include="Visualizers\PresentationBindings\DragScrollViewer.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewColumnHider.cs" />
     <Compile Include="Visualizers\PresentationBindings\GridViewHideableColumn.cs" />
     <Compile Include="Visualizers\PresentationBindings\TooltipVisibilityConverter.cs" />
-    <Compile Include="Visualizers\TextVisualizer\TextVisualizerMode.cs" />
     <Compile Include="Visualizers\TextVisualizer\TextVisualizerWindow.xaml.cs">
       <DependentUpon>TextVisualizerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -288,8 +281,6 @@
     <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="TreeModel\ArrayRangeNode.cs" />
     <Compile Include="TreeModel\ExpressionNode.cs" />
-    <Compile Include="TreeModel\IContextMenu.cs" />
-    <Compile Include="TreeModel\ISetText.cs" />
     <Compile Include="TreeModel\ChildNodesOfObject.cs" />
     <Compile Include="TreeModel\StackFrameNode.cs" />
     <Compile Include="TreeModel\Utils.cs" />
@@ -312,9 +303,6 @@
       <DependentUpon>GridVisualizerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Visualizers\GridVisualizer\ObjectValue.cs" />
-    <Compile Include="Visualizers\GridVisualizer\ValueProviders\EnumerableValuesProvider.cs" />
-    <Compile Include="Visualizers\GridVisualizer\ValueProviders\ListValuesProvider.cs" />
     <Compile Include="Visualizers\Utils\DebuggerHelpers.cs" />
     <Compile Include="Visualizers\Utils\DictionaryExtensions.cs" />
     <Compile Include="Visualizers\Utils\Lookup.cs" />
@@ -324,7 +312,6 @@
     </Compile>
     <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
-    <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Debugger.AddIn.addin">
@@ -408,6 +395,7 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="NRefactory" />
     <Folder Include="Pads\Commands" />
     <Folder Include="Pads\Controls" />
     <Folder Include="Pads\ParallelPad" />
@@ -423,7 +411,6 @@
     <Folder Include="Visualizers\Graph\ExpandedPaths" />
     <Folder Include="Visualizers\Graph\ObjectGraph\TreeModel" />
     <Folder Include="Visualizers\Graph\ObjectGraph" />
-    <Folder Include="Visualizers\GridVisualizer\ValueProviders" />
     <Folder Include="Visualizers\Common" />
     <Folder Include="Visualizers\Commands" />
     <Folder Include="Visualizers\TextVisualizer" />

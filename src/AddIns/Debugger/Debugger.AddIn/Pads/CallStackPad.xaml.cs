@@ -148,19 +148,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			List<CallStackItem> items = new List<CallStackItem>();
-			using(new PrintTimes("Callstack refresh")) {
-				bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
-				bool lastItemIsExternalMethod = false;
-				
-				foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
-					StackFrame f = frame;
-					debuggedProcess.EnqueueWork(
-						Dispatcher,
-						delegate {
-							items.AddIfNotNull(CreateItem(f, showExternalMethods, ref lastItemIsExternalMethod));
-						});
-				}
+			
+			LoggingService.Info("Callstack refresh");
+			bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
+			bool lastItemIsExternalMethod = false;
+			
+			foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
+				StackFrame f = frame;
+				debuggedProcess.EnqueueWork(
+					Dispatcher,
+					delegate {
+						items.AddIfNotNull(CreateItem(f, showExternalMethods, ref lastItemIsExternalMethod));
+					});
 			}
+			
 			view.ItemsSource = items;
 		}
 		

@@ -15,31 +15,22 @@ namespace Debugger.AddIn.TreeModel
 {
 	/// <summary>
 	/// A node in the variable tree.
-	/// The node is immutable.
 	/// </summary>
 	public class TreeNode : ITreeNode
 	{
-		IImage iconImage = null;
-		string name  = string.Empty;
-		string imageName = string.Empty;
-		string text  = string.Empty;
-		string type  = string.Empty;
-		protected IEnumerable<TreeNode> childNodes = null;
-		
-		/// <summary>
-		/// The image displayed for this node.
-		/// </summary>
-		public IImage IconImage {
-			get { return iconImage; }
-			protected set { iconImage = value; }
-		} 
+		public IImage IconImage { get; protected set; } 
+		public string ImageName { get; set; } 
+		public string Name { get; set; }
+		public virtual string Text { get; set; }
+		public virtual string Type { get; protected set; }
+		public virtual Func<IEnumerable<TreeNode>> GetChildren { get; protected set; }
 		
 		/// <summary>
 		/// System.Windows.Media.ImageSource version of <see cref="IconImage"/>.
 		/// </summary>
 		public ImageSource ImageSource {
 			get { 
-				return iconImage == null ? null : iconImage.ImageSource;
+				return this.IconImage == null ? null : this.IconImage.ImageSource;
 			}
 		}
 		
@@ -48,54 +39,26 @@ namespace Debugger.AddIn.TreeModel
 		/// </summary>
 		public Image Image {
 			get { 
-				return iconImage == null ? null : iconImage.Bitmap;
+				return this.IconImage == null ? null : this.IconImage.Bitmap;
 			}
-		}
-		
-		public string Name {
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public string ImageName {
-			get { return imageName; }
-			set { imageName = value; }
-		} 
-		
-		public virtual string FullName { 
-			get { return name; }
-			set { name = value; }
-		}
-		
-		public virtual string Text
-		{
-			get { return text; }
-			set { text = value; }
-		}
-		
-		public virtual string Type {
-			get { return type; }
-			protected set { type = value; }
-		}
-		
-		public virtual TreeNode Parent { get; protected set; }
-		
-		public virtual IEnumerable<TreeNode> ChildNodes {
-			get { return childNodes; }
-		}
-		
-		IEnumerable<ITreeNode> ITreeNode.ChildNodes {
-			get { return childNodes; }
-		}
-		
-		public virtual bool HasChildNodes {
-			get { return childNodes != null; }
 		}
 		
 		public virtual bool CanSetText { 
 			get { return false; }
 		}
 		
+		Func<IEnumerable<ITreeNode>> ITreeNode.GetChildren {
+			get {
+				if (this.GetChildren == null)
+					return null;
+				return () => this.GetChildren();
+			}
+		}
+		
+		public virtual bool HasChildNodes {
+			get { return this.GetChildren != null; }
+		}
+
 		public virtual IEnumerable<IVisualizerCommand> VisualizerCommands {
 			get {
 				return null;
@@ -110,41 +73,21 @@ namespace Debugger.AddIn.TreeModel
 		
 		public bool IsPinned { get; set; }
 		
-		public TreeNode(TreeNode parent)
+		public TreeNode(string name, Func<IEnumerable<TreeNode>> getChildren)
 		{
-			this.Parent = parent;
+			this.Name = name;
+			this.GetChildren = getChildren;
 		}
 		
-		public TreeNode(IImage iconImage, string name, string text, string type, TreeNode parent, Func<TreeNode, IEnumerable<TreeNode>> childNodes)
-			: this(parent)
+		public TreeNode(string imageName, string name, string text, string type, Func<IEnumerable<TreeNode>> getChildren)
 		{
-			if (childNodes == null)
-				throw new ArgumentNullException("childNodes");
-			this.iconImage = iconImage;
-			this.name = name;
-			this.text = text;
-			this.type = type;
-			this.childNodes = childNodes(this);
-		}
-		
-		#region Equals and GetHashCode implementation
-		public override bool Equals(object obj)
-		{
-			TreeNode other = obj as TreeNode;
-			if (other == null)
-				return false;
-			return this.FullName == other.FullName;
-		}
-		
-		public override int GetHashCode()
-		{
-			return this.FullName.GetHashCode();
-		}
-		#endregion
-
-		public int CompareTo(ITreeNode other)
-		{
-			return this.FullName.CompareTo(other.FullName);
+			this.ImageName = imageName;
+			if (imageName != null)
+				this.IconImage = new ResourceServiceImage(imageName);
+			this.Name = name;
+			this.Text = text;
+			this.Type = type;
+			this.GetChildren = getChildren;
 		}
 		
 		public virtual bool SetText(string newValue) { 

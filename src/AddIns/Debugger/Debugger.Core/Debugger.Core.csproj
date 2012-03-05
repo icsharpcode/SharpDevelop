@@ -143,8 +143,6 @@
     <Compile Include="Mono.Cecil\Mono.Cecil\MethodCallingConvention.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil\ReflectionException.cs" />
     <Compile Include="NDebugger.cs" />
-    <Compile Include="NRefactory\Ast\ExpressionExtensionMethods.cs" />
-    <Compile Include="NRefactory\Visitors\ExpressionEvaluator.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="PausedReason.cs" />
     <Compile Include="PauseSession.cs" />
@@ -197,17 +195,7 @@
     <Folder Include="Mono.Cecil\Mono.Cecil.Binary" />
     <Folder Include="Mono.Cecil\Mono.Cecil.Metadata" />
     <Folder Include="Mono.Cecil\Mono.Cecil.Signatures" />
-    <Folder Include="NRefactory" />
-    <Folder Include="NRefactory\Ast" />
-    <Folder Include="NRefactory\Visitors" />
     <Folder Include="Tests" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

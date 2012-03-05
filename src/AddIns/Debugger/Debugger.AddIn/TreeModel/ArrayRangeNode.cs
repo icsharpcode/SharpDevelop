@@ -11,40 +11,9 @@ namespace Debugger.AddIn.TreeModel
 {
 	public partial class Utils
 	{
-		public static IEnumerable<TreeNode> LazyGetChildNodesOfArray(TreeNode parent, Expression expression, ArrayDimensions dimensions)
-		{
-			if (dimensions.TotalElementCount == 0)
-				return new TreeNode[] { new TreeNode(null, "(empty)", null, null, parent, _ => null) };
-			
-			return new ArrayRangeNode(parent, expression, dimensions, dimensions).ChildNodes;
-		}
-	}
-	
-	/// <summary> This is a partent node for all elements within a given bounds </summary>
-	public class ArrayRangeNode: TreeNode
-	{
 		const int MaxElementCount = 100;
 		
-		Expression arrayTarget;
-		ArrayDimensions bounds;
-		ArrayDimensions originalBounds;
-		
-		public ArrayRangeNode(TreeNode parent, Expression arrayTarget, ArrayDimensions bounds, ArrayDimensions originalBounds)
-			: base(parent)
-		{
-			this.arrayTarget = arrayTarget;
-			this.bounds = bounds;
-			this.originalBounds = originalBounds;
-			
-			this.Name = GetName();
-			this.childNodes = LazyGetChildren();
-		}
-		
-		public override IEnumerable<TreeNode> ChildNodes {
-			get { return base.ChildNodes; }
-		}
-		
-		string GetName()
+		public static TreeNode GetArrayRangeNode(ExpressionNode expr, ArrayDimensions bounds, ArrayDimensions originalBounds)
 		{
 			StringBuilder name = new StringBuilder();
 			bool isFirst = true;
@@ -56,7 +25,7 @@ namespace Debugger.AddIn.TreeModel
 				ArrayDimension originalDim = originalBounds[i];
 				
 				if (dim.Count == 0) {
-					throw new DebuggerException("Empty dimension");
+					name.Append("-");
 				} else if (dim.Count == 1) {
 					name.Append(dim.LowerBound.ToString());
 				} else if (dim.Equals(originalDim)) {
@@ -68,33 +37,32 @@ namespace Debugger.AddIn.TreeModel
 				}
 			}
 			name.Append("]");
-			return name.ToString();
+			
+			return new TreeNode(name.ToString(), () => GetChildNodesOfArray(expr, bounds, originalBounds));
 		}
 		
-		static string GetName(int[] indices)
+		public static IEnumerable<TreeNode> GetChildNodesOfArray(ExpressionNode arrayTarget, ArrayDimensions bounds, ArrayDimensions originalBounds)
 		{
-			StringBuilder sb = new StringBuilder(indices.Length * 4);
-			sb.Append("[");
-			bool isFirst = true;
-			foreach(int index in indices) {
-				if (!isFirst) sb.Append(", ");
-				sb.Append(index.ToString());
-				isFirst = false;
+			if (bounds.TotalElementCount == 0)
+			{
+				yield return new TreeNode("(empty)", null);
+				yield break;
 			}
-			sb.Append("]");
-			return sb.ToString();
-		}
-		
-		IEnumerable<TreeNode> LazyGetChildren()
-		{
+			
 			// The whole array is small - just add all elements as childs
 			if (bounds.TotalElementCount <= MaxElementCount) {
 				foreach(int[] indices in bounds.Indices) {
-					string imageName;
-					var image = ExpressionNode.GetImageForArrayIndexer(out imageName);
-					var expression = new ExpressionNode(this, image, GetName(indices), arrayTarget.AppendIndexer(indices));
-					expression.ImageName = imageName;
-					yield return expression;
+					StringBuilder sb = new StringBuilder(indices.Length * 4);
+					sb.Append("[");
+					bool isFirst = true;
+					foreach(int index in indices) {
+						if (!isFirst) sb.Append(", ");
+						sb.Append(index.ToString());
+						isFirst = false;
+					}
+					sb.Append("]");
+					int[] indicesCopy = indices;
+					yield return new ExpressionNode("Icons.16x16.Field", sb.ToString(), () => arrayTarget.Evaluate().GetArrayElement(indicesCopy));
 				}
 				yield break;
 			}
@@ -117,7 +85,7 @@ namespace Debugger.AddIn.TreeModel
 			for(int i = splitDim.LowerBound; i <= splitDim.UpperBound; i += elementsPerSegment) {
 				List<ArrayDimension> newDims = new List<ArrayDimension>(bounds);
 				newDims[splitDimensionIndex] = new ArrayDimension(i, Math.Min(i + elementsPerSegment - 1, splitDim.UpperBound));
-				yield return new ArrayRangeNode(this, arrayTarget, new ArrayDimensions(newDims), originalBounds);
+				yield return GetArrayRangeNode(arrayTarget, new ArrayDimensions(newDims), originalBounds);
 			}
 			yield break;
 		}

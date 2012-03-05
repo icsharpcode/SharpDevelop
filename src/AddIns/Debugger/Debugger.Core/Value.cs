@@ -613,6 +613,7 @@ namespace Debugger
 		/// <summary> Invoke the ToString() method </summary>
 		public string InvokeToString(int maxLength = int.MaxValue)
 		{
+			if (this.IsNull) return AsString(maxLength);
 			if (this.Type.IsPrimitive) return AsString(maxLength);
 			if (this.Type.FullName == typeof(string).FullName) return AsString(maxLength);
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");

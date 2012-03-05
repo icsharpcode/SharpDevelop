@@ -62,29 +62,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			using(new PrintTimes("Local Variables refresh")) {
-				try {
-					StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
-					if (frame == null) return;
-					
-					localVarList.WatchItems.Clear();
-					foreach (var n in new StackFrameNode(frame).ChildNodes) {
-						var node = n;
-						debuggedProcess.EnqueueWork(
-							Dispatcher.CurrentDispatcher,
-							delegate {
-								localVarList.WatchItems.Add(node.ToSharpTreeNode());
-							}
-						);
-					}
-				} 
-				catch(AbortedBecauseDebuggeeResumedException) { } 
-				catch(Exception ex) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						MessageService.ShowException(ex);
-					}
+			LoggingService.Info("Local Variables refresh");
+			try {
+				StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+				if (frame == null) return;
+				
+				localVarList.WatchItems.Clear();
+				foreach (var n in Utils.GetLocalVariableNodes(frame)) {
+					var node = n;
+					debuggedProcess.EnqueueWork(
+						Dispatcher.CurrentDispatcher,
+						delegate {
+							localVarList.WatchItems.Add(node.ToSharpTreeNode());
+						}
+					);
+				}
+			} 
+			catch(Exception ex) {
+				if (debuggedProcess == null || debuggedProcess.HasExited) {
+					// Process unexpectedly exited
+				} else {
+					MessageService.ShowException(ex);
 				}
 			}
 		}

@@ -60,12 +60,13 @@ namespace Debugger.AddIn.Tooltips
 				
 				var nodes = new ObservableCollection<ITreeNode>();
 				foreach (var tuple in pin.SavedNodes) {
-					string imageName = !string.IsNullOrEmpty(tuple.Item1) ? tuple.Item1 : "Icons.16x16.Field";
-					var node = new Debugger.AddIn.TreeModel.SavedTreeNode(
-						new ResourceServiceImage(imageName),
+					var node = new Debugger.AddIn.TreeModel.TreeNode(
+						!string.IsNullOrEmpty(tuple.Item1) ? tuple.Item1 : "Icons.16x16.Field",
 						tuple.Item2,
-						tuple.Item3);
-					node.ImageName = imageName;
+						tuple.Item3,
+						string.Empty,
+						null
+					);
 					nodes.Add(node);
 				}
 				
@@ -96,7 +97,7 @@ namespace Debugger.AddIn.Tooltips
 					pin.SavedNodes.Add(
 						new Tuple<string, string, string>(
 							"Icons.16x16.Field",
-							node.FullName,
+							node.Name,
 							node.Text));
 				}
 				

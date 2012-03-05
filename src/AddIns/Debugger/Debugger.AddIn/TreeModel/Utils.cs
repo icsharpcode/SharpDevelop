@@ -40,44 +40,7 @@ namespace Debugger.AddIn.TreeModel
 				}
 			);
 		}
-	}
-	
-	public class AbortedBecauseDebuggeeResumedException: System.Exception
-	{
-		public AbortedBecauseDebuggeeResumedException(): base()
-		{
-			
-		}
-	}
-	
-	public class PrintTimes: PrintTime
-	{
-		public PrintTimes(string text): base(text + " - end")
-		{
-			LoggingService.InfoFormatted("{0} - start", text);
-		}
-	}
-	
-	public class PrintTime: IDisposable
-	{
-		string text;
-		System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 		
-		public PrintTime(string text)
-		{
-			this.text = text;
-			stopwatch.Start();
-		}
-		
-		public void Dispose()
-		{
-			stopwatch.Stop();
-			LoggingService.InfoFormatted("{0} ({1} ms)", text, stopwatch.ElapsedMilliseconds);
-		}
-	}
-	
-	public static class ExtensionMethods
-	{
 		public static TreeNodeWrapper ToSharpTreeNode(this TreeNode node)
 		{
 			return new TreeNodeWrapper(node);
