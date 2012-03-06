@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			if ((bool)value)
 				return parameter;
-			throw new NotSupportedException("this conversion is not supported!");
+			return Binding.DoNothing;
 		}
 	}
 }
