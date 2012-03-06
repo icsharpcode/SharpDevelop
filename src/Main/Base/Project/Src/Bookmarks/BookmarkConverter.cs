@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						b.Append('|');
 						b.Append(node.ImageName);
 						b.Append('|');
-						b.Append(node.Name);
+						b.Append(node.FullName);
 						b.Append('|');
 						b.Append(node.Text);
 					}

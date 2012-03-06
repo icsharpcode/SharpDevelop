@@ -380,16 +380,6 @@ namespace Debugger
 			return loc.GetValue(this);
 		}
 		
-		public Value GetLocalVariableValue(uint address)
-		{
-			try {
-				return new Value(this.AppDomain, this.CorILFrame.GetLocalVariable(address));
-			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
-				throw;
-			}
-		}
-		
 		/// <summary> Get instance of 'this'.  It works well with delegates and enumerators. </summary>
 		[Debugger.Tests.Ignore]
 		public Value GetLocalVariableThis()

@@ -33,17 +33,6 @@ namespace Debugger.AddIn.Visualizers.Utils
 			return new ObjectCreateExpression(listType.GetTypeReference(), iEnumerableVariableExplicitCast.SingleItemList());
 		}
 		
-		
-		public static Value CreateListFromIEnumeralbe(Value iEnumerableValue, DebugType itemType, out DebugType listType)
-		{
-			listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
-			DebugType iEnumerableType = DebugType.CreateFromType(itemType.AppDomain, typeof(IEnumerable<>), itemType);
-			ConstructorInfo ctor = listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
-			if (ctor == null)
-				throw new DebuggerException("List<T> constructor not found");
-			return (Value)ctor.Invoke(new object[] { iEnumerableValue });
-		}
-		
 		/// <summary>
 		/// Gets underlying address of object in the debuggee.
 		/// </summary>
@@ -131,7 +120,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
 			var iCollectionType = list.Type.GetInterface(typeof(System.Collections.ICollection).FullName);
 			if (iCollectionType == null)
-				throw new GetValueException("Object does not implement System.Collections.ICollection");
+				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
 			// Do not get string representation since it can be printed in hex
 			return (int)list.GetPropertyValue(iCollectionType.GetProperty("Count")).PrimitiveValue;
 		}

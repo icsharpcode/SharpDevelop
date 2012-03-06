@@ -489,7 +489,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			try {
 				var tooltipExpression = GetExpression(variableName);
-				ExpressionNode expressionNode = new ExpressionNode("Icons.16x16.Local", variableName, () => tooltipExpression.Evaluate(this.DebuggedProcess));
+				string imageName;
+				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variableName, tooltipExpression);
+				expressionNode.ImageName = imageName;
 				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = debuggedProcess.GetCurrentExecutingFrame().HasSymbols };
 			} catch (System.Exception ex) {
 				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
@@ -500,7 +503,19 @@ namespace ICSharpCode.SharpDevelop.Services
 		public ITreeNode GetNode(string variable, string currentImageName = null)
 		{
 			try {
-				return new ExpressionNode(currentImageName ?? "Icons.16x16.Local", variable, () => GetExpression(variable).Evaluate(this.DebuggedProcess));
+				var expression = GetExpression(variable);
+				string imageName;
+				IImage image;
+				if (string.IsNullOrEmpty(currentImageName)) {
+					image = ExpressionNode.GetImageForLocalVariable(out imageName);
+				}
+				else {
+					image = new ResourceServiceImage(currentImageName);
+					imageName = currentImageName;
+				}
+				ExpressionNode expressionNode = new ExpressionNode(null, image, variable, expression);
+				expressionNode.ImageName = imageName;
+				return expressionNode;
 			} catch (GetValueException) {
 				return null;
 			}
@@ -810,9 +825,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			OnIsProcessRunningChanged(EventArgs.Empty);
 			
-			LoggingService.Info("Jump to current line");
-			JumpToCurrentLine();
-			
+			using(new PrintTimes("Jump to current line")) {
+				JumpToCurrentLine();
+			}
 			// TODO update tooltip
 			/*if (currentTooltipRow != null && currentTooltipRow.IsShown) {
 				using(new PrintTimes("Update tooltip")) {

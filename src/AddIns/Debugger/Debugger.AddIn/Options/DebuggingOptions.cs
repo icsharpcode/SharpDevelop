@@ -28,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			DebuggeeExceptionWindowState = FormWindowState.Normal;
 		}
 		
+		public bool ICorDebugVisualizerEnabled { get; set; }
 		public ShowIntegersAs ShowIntegersAs { get; set; }
 		public bool ShowArgumentNames { get; set; }
 		public bool ShowArgumentValues { get; set; }

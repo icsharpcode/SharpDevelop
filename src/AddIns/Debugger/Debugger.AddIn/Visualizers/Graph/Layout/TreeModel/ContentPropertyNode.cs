@@ -6,7 +6,6 @@ using System.ComponentModel;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Drawing;
 using Debugger.MetaData;
-using ICSharpCode.SharpDevelop;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -78,7 +77,8 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			if ((this.Property != null) && (this.Property.ObjectGraphProperty != null)) {
 				var memberInfo = (IDebugMemberInfo)this.Property.ObjectGraphProperty.MemberInfo;
 				if (memberInfo != null) {
-					var image = new ResourceServiceImage(ExpressionNode.GetImageForMember(memberInfo));
+					string imageName;
+					var image = ExpressionNode.GetImageForMember(memberInfo, out imageName);
 					this.MemberIcon = image.ImageSource;
 				}
 			}

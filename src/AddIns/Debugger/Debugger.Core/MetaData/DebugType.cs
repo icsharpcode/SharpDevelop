@@ -9,6 +9,7 @@ using System.Text;
 
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.MetaData;
+using ICSharpCode.NRefactory.Ast;
 using Mono.Cecil.Signatures;
 
 namespace Debugger.MetaData

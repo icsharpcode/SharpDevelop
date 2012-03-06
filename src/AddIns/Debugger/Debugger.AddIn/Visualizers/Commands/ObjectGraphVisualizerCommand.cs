@@ -21,9 +21,9 @@ namespace Debugger.AddIn.Visualizers
 			return !type.IsAtomic() && !type.IsSystemDotObject();
 		}
 		
-		public IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue)
+		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
 		{
-			return new ObjectGraphVisualizerCommand(valueName, getValue);
+			return new ObjectGraphVisualizerCommand(expression);
 		}
 	}
 	
@@ -32,7 +32,8 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public class ObjectGraphVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public ObjectGraphVisualizerCommand(string valueName, Func<Value> getValue) : base(valueName, getValue)
+		public ObjectGraphVisualizerCommand(Expression expression)
+			:base(expression)
 		{
 		}
 		
@@ -43,9 +44,10 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
+			if (this.Expression == null)
+				return;
 			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
-			// TODO: This only works on the root level
-			objectGraphWindow.ShownExpression = new IdentifierExpression(this.ValueName);
+			objectGraphWindow.ShownExpression = this.Expression;
 		}
 	}
 }

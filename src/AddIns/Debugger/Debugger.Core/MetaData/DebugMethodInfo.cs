@@ -637,7 +637,7 @@ namespace Debugger.MetaData
 		{
 			List<DebugLocalVariableInfo> vars = new List<DebugLocalVariableInfo>();
 			foreach (ISymUnmanagedVariable symVar in symScope.GetLocals()) {
-				uint address = (uint)symVar.GetAddressField1();
+				ISymUnmanagedVariable symVarCopy = symVar;
 				int start;
 				SignatureReader sigReader = new SignatureReader(symVar.GetSignature());
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
@@ -652,7 +652,7 @@ namespace Debugger.MetaData
 							(int)symScope.GetStartOffset(),
 							(int)symScope.GetEndOffset(),
 							delegate(StackFrame context) {
-								return context.GetLocalVariableValue(address);
+								return GetLocalVariableValue(context, symVarCopy);
 							},
 							locVarType
 						);
@@ -666,7 +666,7 @@ namespace Debugger.MetaData
 						(int)symScope.GetEndOffset(),
 						locVarType,
 						delegate(StackFrame context) {
-							return context.GetLocalVariableValue(address);
+							return GetLocalVariableValue(context, symVarCopy);
 						}
 					);
 					vars.Add(locVar);
@@ -676,6 +676,18 @@ namespace Debugger.MetaData
 				vars.AddRange(GetLocalVariablesInScope(childScope));
 			}
 			return vars;
+		}
+		
+		static Value GetLocalVariableValue(StackFrame context, ISymUnmanagedVariable symVar)
+		{
+			ICorDebugValue corVal;
+			try {
+				corVal = context.CorILFrame.GetLocalVariable((uint)symVar.GetAddressField1());
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
+				throw;
+			}
+			return new Value(context.AppDomain, corVal);
 		}
 		
 		/// <inheritdoc/>

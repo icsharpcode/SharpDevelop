@@ -16,6 +16,6 @@ namespace Debugger.AddIn.Visualizers
 	public interface IVisualizerDescriptor
 	{
 		bool IsVisualizerAvailable(DebugType type);
-		IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue);
+		IVisualizerCommand CreateVisualizerCommand(Expression expression);
 	}
 }

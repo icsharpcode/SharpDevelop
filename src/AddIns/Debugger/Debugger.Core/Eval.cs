@@ -273,24 +273,24 @@ namespace Debugger
 			);
 		}
 	    
-		public static Value CreateValue(AppDomain appDomain, object value)
-		{
-			if (value == null) {
+	    public static Value CreateValue(AppDomain appDomain, object value)
+	    {
+	    	if (value == null) {
 				ICorDebugClass corClass = appDomain.ObjectType.CorType.GetClass();
 				Thread thread = GetEvaluationThread(appDomain);
 				ICorDebugEval corEval = thread.CorThread.CreateEval();
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
 				return new Value(appDomain, corValue);
 			} else if (value is string) {
-				return Eval.NewString(appDomain, (string)value);
+	    		return Eval.NewString(appDomain, (string)value);
 			} else {
-				if (!value.GetType().IsPrimitive)
-					throw new DebuggerException("Value must be primitve type.  Seen " + value.GetType());
+	    		if (!value.GetType().IsPrimitive)
+	    			throw new DebuggerException("Value must be primitve type.  Seen " + value.GetType());
 				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain.Mscorlib, value.GetType()));
 				val.PrimitiveValue = value;
 				return val;
 			}
-		}
+	    }
 		
 	    /*
 		// The following function create values only for the purpuse of evalutaion

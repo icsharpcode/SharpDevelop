@@ -74,47 +74,50 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			currentThreadStacks.Clear();
 			
-			LoggingService.Info("Create stacks");
-			try {
-				// create all simple ThreadStacks
-				foreach (Thread thread in debuggedProcess.Threads) {
-					var t = thread;
-					debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => CreateThreadStack(t));
+			using(new PrintTimes("Create stacks")) {
+				try {
+					// create all simple ThreadStacks
+					foreach (Thread thread in debuggedProcess.Threads) {
+						var t = thread;
+						debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => CreateThreadStack(t));
+					}
+				}
+				catch(AbortedBecauseDebuggeeResumedException) { }
+				catch(System.Exception) {
+					if (debuggedProcess == null || debuggedProcess.HasExited) {
+						// Process unexpectedly exited
+					} else {
+						throw;
+					}
 				}
 			}
-			catch(System.Exception) {
-				if (debuggedProcess == null || debuggedProcess.HasExited) {
-					// Process unexpectedly exited
-				} else {
-					throw;
+			using(new PrintTimes("Run algorithm")) {
+				if (isMethodView)
+				{
+					// build method view for threads
+					CreateMethodViewStacks();
+				}
+				else
+				{
+					// normal view
+					CreateCommonStacks();
 				}
 			}
 			
-			LoggingService.Info("Run algorithm");
-			if (isMethodView)
-			{
-				// build method view for threads
-				CreateMethodViewStacks();
-			}
-			else
-			{
-				// normal view
-				CreateCommonStacks();
-			}
-			
-			LoggingService.Info("Graph refresh");
-			// paint the ThreadStaks
-			graph = new ParallelStacksGraph();
-			foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
-			{
-				graph.AddVertex(stack);
+			using(new PrintTimes("Graph refresh")) {
+				// paint the ThreadStaks
+				graph = new ParallelStacksGraph();
+				foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
+				{
+					graph.AddVertex(stack);
+					
+					// add the children
+					AddChildren(stack);
+				}
 				
-				// add the children
-				AddChildren(stack);
+				if (graph.VertexCount > 0)
+					surface.SetGraph(graph);
 			}
-			
-			if (graph.VertexCount > 0)
-				surface.SetGraph(graph);
 		}
 		
 		protected override ToolBar BuildToolBar()

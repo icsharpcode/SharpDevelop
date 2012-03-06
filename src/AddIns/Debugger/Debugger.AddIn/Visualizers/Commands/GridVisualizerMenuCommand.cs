@@ -14,7 +14,9 @@ namespace Debugger.AddIn.Visualizers
 	{
 		public override void Run()
 		{
-
+			GridVisualizerWindow window = new GridVisualizerWindow();
+			window.Topmost = true;
+			window.Show();
 		}
 	}
 }

@@ -15,8 +15,8 @@ namespace ICSharpCode.NRefactory.Visitors
 {
 	public class EvaluateException: GetValueException
 	{
-		public EvaluateException(INode code, string msg):base(msg) {}
-		public EvaluateException(INode code, string msgFmt, params string[] msgArgs):base(string.Format(msgFmt, msgArgs)) {}
+		public EvaluateException(INode code, string msg):base(code, msg) {}
+		public EvaluateException(INode code, string msgFmt, params string[] msgArgs):base(code, string.Format(msgFmt, msgArgs)) {}
 	}
 	
 	class TypedValue
@@ -163,7 +163,13 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		TypedValue Evaluate(INode expression, bool permRef, object data = null)
 		{
+			// Try to get the value from cache
+			// (the cache is cleared when the process is resumed)
 			TypedValue val;
+			if (context.Process.ExpressionsCache.TryGetValue(expression, out val)) {
+				if (val == null || !val.Value.IsInvalid)
+					return val;
+			}
 			
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
@@ -171,8 +177,11 @@ namespace ICSharpCode.NRefactory.Visitors
 				val = (TypedValue)expression.AcceptVisitor(this, data);
 				if (val != null && permRef)
 					val = new TypedValue(val.Value.GetPermanentReference(), val.Type);
+			} catch (GetValueException e) {
+				e.Expression = expression;
+				throw;
 			} catch (NotImplementedException e) {
-				throw new EvaluateException(expression, "Language feature not implemented: " + e.Message);
+				throw new GetValueException(expression, "Language feature not implemented: " + e.Message);
 			} finally {
 				watch.Stop();
 				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
@@ -180,6 +189,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			if (val != null && val.Value.IsInvalid)
 				throw new DebuggerException("Expression \"" + expression.PrettyPrint() + "\" is invalid right after evaluation");
+			
+			// Add the result to cache
+			context.Process.ExpressionsCache[expression] = val;
 			
 			return val;
 		}

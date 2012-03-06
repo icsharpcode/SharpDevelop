@@ -2,12 +2,18 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
+
 using Debugger.AddIn.Pads;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -35,10 +41,11 @@ namespace Debugger.AddIn
 					
 					string language = ProjectService.CurrentProject.Language;
 					
-					var text = new TreeNode(input, null).ToSharpTreeNode();
+					var text = new TextNode(null, input,
+					                        language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp).ToSharpTreeNode();
 					var list = pad.WatchList;
 					
-					if(!list.WatchItems.Any(n => text.Node.Name == ((TreeNodeWrapper)n).Node.Name))
+					if(!list.WatchItems.Any(n => text.Node.FullName == ((TreeNodeWrapper)n).Node.FullName))
 						list.WatchItems.Add(text);
 				}
 				
@@ -99,6 +106,68 @@ namespace Debugger.AddIn
 					ClipboardWrapper.SetText(text);
 				}
 			}
+		}
+	}
+	
+	public class WatchScriptingLanguageMenuBuilder : ISubmenuBuilder, IMenuItemBuilder
+	{
+		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		{
+			List<ToolStripItem> items = new List<ToolStripItem>();
+			
+			if (owner is WatchPad) {
+				WatchPad pad = (WatchPad)owner;
+				
+				if (pad.WatchList.SelectedNode == null)
+					return items.ToArray();
+				
+				var node = pad.WatchList.SelectedNode.Node;
+				
+				while (node.Parent != null && node.Parent.Parent != null)
+				{
+					node = node.Parent;
+				}
+				
+				if (!(node is TextNode))
+					return items.ToArray();
+				
+				foreach (string item in SupportedLanguage.GetNames(typeof(SupportedLanguage))) {
+					items.Add(MakeItem(item, item, node as TextNode, (sender, e) => HandleItem(sender)));
+				}
+			}
+			
+			return items.ToArray();
+		}
+		
+		ToolStripMenuItem MakeItem(string title, string name, TextNode tag, EventHandler onClick)
+		{
+			ToolStripMenuItem menuItem = new ToolStripMenuItem(StringParser.Parse(title));
+			menuItem.Click += onClick;
+			menuItem.Name = name;
+			menuItem.Tag = tag;
+			
+			if (name == tag.Language.ToString())
+				menuItem.Checked = true;
+			
+			return menuItem;
+		}
+		
+		
+		void HandleItem(object sender)
+		{
+			ToolStripMenuItem item = null;
+			if (sender is ToolStripMenuItem)
+				item = (ToolStripMenuItem)sender;
+			
+			if (item != null) {
+				TextNode node = (TextNode)item.Tag;
+				node.Language = (SupportedLanguage)SupportedLanguage.Parse(typeof(SupportedLanguage), item.Text);
+			}
+		}
+		
+		public System.Collections.ICollection BuildItems(Codon codon, object owner)
+		{
+			return BuildSubmenu(codon, owner).TranslateToWpf();
 		}
 	}
 }
