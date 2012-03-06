@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Data;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -17,8 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
 		{
-			var s =   Array.ConvertAll<Type, Object>(targetTypes, t => value);
-			return s;
+			return Enumerable.Repeat(value, targetTypes.Length).ToArray();
 		}
 	}
 	
