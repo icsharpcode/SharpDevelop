@@ -4666,13 +4666,72 @@ class MainClass
 		}
 		
 		[Test()]
-		public void TestUsingContextCase2()
+		public void TestUsingContextCase2 ()
 		{
-			
 			CombinedProviderTest (@"$using System.U$", provider => {
 				Assert.IsNotNull (provider.Find ("IO"), "'IO' not found.");
 				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
-			});			
+			});
 		}
+
+		[Test()]
+		public void TestInterfaceReturnType ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+class MainClass
+{
+	public IEnumerable<string> Test ()
+	{
+		$return new a$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("string"), "'string' not found.");
+			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
+			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+			Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+		}
+
+		[Test()]
+		public void TestInterfaceReturnTypeCase2 ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+class MainClass
+{
+	public IEnumerable<string> Test ()
+	{
+		$return new System.Collections.Generic.a$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
+			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
+		[Test()]
+		public void TestInterfaceReturnTypeCase3 ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+class MainClass
+{
+	public IEnumerable<string> Test ()
+	{
+		$return new System.Collections.Generic.$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
+			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
 	}
 }
