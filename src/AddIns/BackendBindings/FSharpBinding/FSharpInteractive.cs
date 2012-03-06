@@ -148,8 +148,8 @@ namespace FSharpBinding
 					if (textEditor.SelectionLength > 0) {
 						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.SelectedText);
 					} else {
-						var line = textEditor.Document.GetLine(textEditor.Caret.Line);
-						fsharpInteractive.fsiProcess.StandardInput.WriteLine(line.Text);
+						var line = textEditor.Document.GetLineByNumber(textEditor.Caret.Line);
+						fsharpInteractive.fsiProcess.StandardInput.WriteLine(textEditor.Document.GetText(line));
 					}
 					fsharpInteractive.fsiProcess.StandardInput.WriteLine(";;");
 				}

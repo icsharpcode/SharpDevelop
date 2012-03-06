@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Exceptions;
@@ -38,12 +37,6 @@ namespace FSharpBinding
 			}
 		}
 		
-		public override LanguageProperties LanguageProperties {
-			get {
-				return LanguageProperties.None;
-			}
-		}
-		
 		protected override ProjectBehavior GetOrCreateBehavior()
 		{
 			if (projectBehavior != null)
@@ -51,6 +44,15 @@ namespace FSharpBinding
 			FSharpProjectBehavior behavior = new FSharpProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
 			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
 			return projectBehavior;
+		}
+		
+		public override ICSharpCode.NRefactory.TypeSystem.IProjectContent ProjectContent {
+			get { return null; }
+		}
+		
+		protected override ICSharpCode.NRefactory.TypeSystem.IProjectContent CreateProjectContent()
+		{
+			throw new NotSupportedException();
 		}
 	}
 	

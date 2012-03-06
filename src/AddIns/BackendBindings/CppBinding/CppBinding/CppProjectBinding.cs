@@ -20,7 +20,7 @@ namespace ICSharpCode.CppBinding
 			}
 		}
 
-		public readonly static CppLanguageProperties LanguageProperties = new CppLanguageProperties();
+//		public readonly static CppLanguageProperties LanguageProperties = new CppLanguageProperties();
 
 		public IProject LoadProject(ProjectLoadInformation info) {
 			return new CppProject(info);

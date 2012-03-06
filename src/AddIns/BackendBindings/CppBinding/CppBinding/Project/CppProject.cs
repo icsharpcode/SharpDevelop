@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
@@ -39,7 +39,7 @@ namespace ICSharpCode.CppBinding.Project
 
 		public override IAmbience GetAmbience()
 		{
-			return new CppAmbience();
+			return new CSharpAmbience();
 		}
 
 		public override string Language
@@ -47,10 +47,10 @@ namespace ICSharpCode.CppBinding.Project
 			get { return CppProjectBinding.LanguageName; }
 		}
 
-		public override LanguageProperties LanguageProperties
-		{
-			get { return CppProjectBinding.LanguageProperties; }
-		}
+//		public override LanguageProperties LanguageProperties
+//		{
+//			get { return LanguageProperties.; }
+//		}
 
 		public override string OutputAssemblyFullPath
 		{
@@ -187,7 +187,17 @@ namespace ICSharpCode.CppBinding.Project
 				return projectBehavior;
 			CppProjectBehavior behavior = new CppProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
 			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;		}
+			return projectBehavior;
+		}
+		
+		public override ICSharpCode.NRefactory.TypeSystem.IProjectContent ProjectContent {
+			get { return null; }
+		}
+		
+		protected override ICSharpCode.NRefactory.TypeSystem.IProjectContent CreateProjectContent()
+		{
+			throw new NotSupportedException();
+		}
 	}
 	
 	public class CppProjectBehavior : ProjectBehavior
