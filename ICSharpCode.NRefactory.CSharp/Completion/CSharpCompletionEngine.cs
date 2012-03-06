@@ -1277,7 +1277,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				
+
 				if (newParentNode is AssignmentExpression) {
 					var assign = (AssignmentExpression)newParentNode;
 					var resolved = ResolveExpression (assign.Left, expressionOrVariableDeclaration.Unit);
@@ -1285,7 +1285,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						hintType = resolved.Item1.Type;
 					}
 				}
-				
+
 				if (newParentNode is VariableDeclarationStatement) {
 					var varDecl = (VariableDeclarationStatement)newParentNode;
 					hintTypeAst = varDecl.Type;
@@ -1294,7 +1294,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						hintType = resolved.Item1.Type;
 					}
 				}
-				
+
 				if (newParentNode is FieldDeclaration) {
 					var varDecl = (FieldDeclaration)newParentNode;
 					hintTypeAst = varDecl.ReturnType;
@@ -1302,6 +1302,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (resolved != null)
 						hintType = resolved.Item1.Type;
 				}
+
+				if (newParentNode is ReturnStatement) {
+					var varDecl = (ReturnStatement)newParentNode;
+					if (ctx.CurrentMember != null)
+						hintType = ctx.CurrentMember.ReturnType;
+				}
+
 				return CreateTypeCompletionData (hintType, hintTypeAst);
 //					IType callingType = NRefactoryResolver.GetTypeAtCursor (Document.CompilationUnit, Document.FileName, new TextLocation (document.Caret.Line, document.Caret.Column));
 //					ExpressionContext newExactContext = new NewCSharpExpressionFinder (dom).FindExactContextForNewCompletion (document, Document.CompilationUnit, Document.FileName, callingType);
@@ -1409,15 +1416,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						// check if type is in inheritance tree.
 						if (hintType.GetDefinition () != null && !t.GetDefinition ().IsDerivedFrom (hintType.GetDefinition ()))
 							return false;
-						
+						if (t.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array)
+							return false;
 						// check for valid constructors
 						if (t.GetConstructors ().Count () == 0)
 							return true;
 						bool isProtectedAllowed = currentType != null ? currentType.Resolve (ctx).GetDefinition ().IsDerivedFrom (t.GetDefinition ()) : false;
 						return t.GetConstructors ().Any (m => lookup.IsAccessible (m, isProtectedAllowed));
 					};
-					DefaultCompletionString = GetShortType (hintType, GetState ());
-					wrapper.AddType (hintType, DefaultCompletionString);
+					if (!(hintType.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array)) {
+						DefaultCompletionString = GetShortType (hintType, GetState ());
+						wrapper.AddType (hintType, DefaultCompletionString);
+					}
 				} else {
 					DefaultCompletionString = hintTypeAst.ToString ();
 					wrapper.AddType (hintType, DefaultCompletionString);
@@ -2097,7 +2107,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					expr = new TypeReferenceExpression (memberType.Target.Clone ());
 				tref.ReplaceWith (expr);
 			}
-			
+
 			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
 			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
 			member2.Remove ();
