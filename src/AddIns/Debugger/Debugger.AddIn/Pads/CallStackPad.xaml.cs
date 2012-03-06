@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using Debugger;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
@@ -147,24 +147,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			List<CallStackItem> items = new List<CallStackItem>();
+			var items = new ObservableCollection<CallStackItem>();
 			using(new PrintTimes("Callstack refresh")) {
 				bool showExternalMethods = DebuggingOptions.Instance.ShowExternalMethods;
-				bool lastItemIsExternalMethod = false;
+			bool previousItemIsExternalMethod = false;
 				
-				foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
-					StackFrame f = frame;
-					debuggedProcess.EnqueueWork(
+			debuggedProcess.EnqueueForEach(
 						Dispatcher,
-						delegate {
-							items.AddIfNotNull(CreateItem(f, showExternalMethods, ref lastItemIsExternalMethod));
-						});
-				}
+				debuggedProcess.SelectedThread.GetCallstack(100),
+				f => items.AddIfNotNull(CreateItem(f, showExternalMethods, ref previousItemIsExternalMethod))
+			);
 			}
 			view.ItemsSource = items;
 		}
 		
-		CallStackItem CreateItem(StackFrame frame, bool showExternalMethods, ref bool lastItemIsExternalMethod)
+		CallStackItem CreateItem(StackFrame frame, bool showExternalMethods, ref bool previousItemIsExternalMethod)
 		{
 			CallStackItem item;
 			
@@ -187,16 +184,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				item = new CallStackItem() {
 					Name = GetFullName(frame), Language = "", Line = lineNumber, ModuleName = moduleName
 				};
-				lastItemIsExternalMethod = false;
+				previousItemIsExternalMethod = false;
 				item.Frame = frame;
 			} else {
 				// Show [External methods] in the list
-				if (lastItemIsExternalMethod) return null;
+				if (previousItemIsExternalMethod) return null;
 				item = new CallStackItem() {
 					Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"),
 					Language = ""
 				};
-				lastItemIsExternalMethod = true;
+				previousItemIsExternalMethod = true;
 			}
 			
 			return item;
