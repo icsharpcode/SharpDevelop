@@ -20,9 +20,9 @@ namespace ICSharpCode.PInvokeAddIn
 		public void Generate(ITextEditor editor, string signature)
 		{
 			using (editor.Document.OpenUndoGroup()) {
-				int startLine = editor.Document.GetLineForOffset(editor.SelectionStart).LineNumber;
+				int startLine = editor.Document.GetLineByOffset(editor.SelectionStart).LineNumber;
 				editor.SelectedText = DocumentUtilitites.NormalizeNewLines(signature, editor.Document, startLine);
-				int endLine = editor.Document.GetLineForOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
+				int endLine = editor.Document.GetLineByOffset(editor.SelectionStart + editor.SelectionLength).LineNumber;
 				editor.Language.FormattingStrategy.IndentLines(editor, startLine, endLine);
 			}
 		}
