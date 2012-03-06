@@ -435,14 +435,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var identifierStart = GetExpressionAtCursor ();
 				if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration)
 					return null;
-				
+
 				if (identifierStart != null && identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
+				}
+				
+				if (identifierStart != null && identifierStart.Node is CatchClause) {
+					if (((CatchClause)identifierStart.Node).VariableNameToken.Contains (location))
+						return null;
+					identifierStart = null;
 				}
 				if (!(char.IsLetter (completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Node.Parent is ArrayInitializerExpression))) {
 					return controlSpace ? HandleAccessorContext () ?? DefaultControlSpaceItems (identifierStart) : null;
 				}
-				
+
 				char prevCh = offset > 2 ? document.GetCharAt (offset - 2) : ';';
 				char nextCh = offset < document.TextLength ? document.GetCharAt (offset) : ' ';
 				const string allowedChars = ";,.[](){}+-*/%^?:&|~!<>=";
@@ -2119,21 +2125,21 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column - 1);
 			}
-			
+
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement> (location.Line, location.Column) != null) {
 				tmpUnit = baseUnit = ParseStub ("a();", false);
 				expr = baseUnit.GetNodeAt<InvocationExpression> (location.Line, location.Column + 1); 
 			}
-			
+
 			if (expr == null) {
 				baseUnit = ParseStub ("()");
 				expr = baseUnit.GetNodeAt<IdentifierExpression> (location.Line, location.Column - 1); 
 			}
-			
+
 			if (expr == null) {
 				baseUnit = ParseStub ("a", false);
-				expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression);
+				expr = baseUnit.GetNodeAt (location, n => n is IdentifierExpression || n is MemberReferenceExpression || n is CatchClause);
 			
 			}
 			
@@ -2463,7 +2469,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
-			"using", "while", "yield", "dynamic", "var", "dynamic"
+			"using", "while", "yield", "dynamic", "var", "dynamic",
+			"catch"
 		};
 		static string[] globalLevelKeywords = new string [] {
 			"namespace", "using", "extern", "public", "internal", 

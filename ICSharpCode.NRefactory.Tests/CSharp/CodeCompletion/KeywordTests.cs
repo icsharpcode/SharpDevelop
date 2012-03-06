@@ -63,6 +63,23 @@ class Class
 		}
 		
 		[Test()]
+		public void CatchKeywordTest ()
+		{
+			var provider = CodeCompletionBugTests.CreateProvider (
+@"
+class Class
+{
+	void Test (string t)
+	{
+		$try {} c$
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("catch"), "keyword 'catch' not found.");
+		}
+
+		[Test()]
 		public void CaseKeywordTestCase2 ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (

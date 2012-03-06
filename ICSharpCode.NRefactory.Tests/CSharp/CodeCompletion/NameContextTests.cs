@@ -121,8 +121,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 }");
 			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
 		}
-		
-		[Ignore("MCS TODO!")]
+
 		[Test()]
 		public void TestCatchExceptionName ()
 		{
