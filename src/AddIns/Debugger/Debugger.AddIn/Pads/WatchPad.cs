@@ -213,15 +213,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			using(new PrintTimes("Watch Pad refresh")) {
 				var nodes = watchList.WatchItems.OfType<TreeNodeWrapper>().ToArray();
 				watchList.WatchItems.Clear();
-				foreach (var n in nodes) {
-					var node = n;
-					debuggedProcess.EnqueueWork(
-						Dispatcher.CurrentDispatcher,
-						delegate {
-							watchList.WatchItems.Add(UpdateNode(node));
-						}
-					);
-				}
+				
+				debuggedProcess.EnqueueForEach(
+					Dispatcher.CurrentDispatcher,
+					nodes,
+					n => watchList.WatchItems.Add(UpdateNode(n))
+				);
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Threading;
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
@@ -62,29 +63,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			using(new PrintTimes("Local Variables refresh")) {
-				try {
-					StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
-					if (frame == null) return;
-					
-					localVarList.WatchItems.Clear();
-					foreach (var n in new StackFrameNode(frame).ChildNodes) {
-						var node = n;
-						debuggedProcess.EnqueueWork(
-							Dispatcher.CurrentDispatcher,
-							delegate {
-								localVarList.WatchItems.Add(node.ToSharpTreeNode());
-							}
-						);
-					}
-				} 
-				catch(AbortedBecauseDebuggeeResumedException) { } 
-				catch(Exception ex) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						MessageService.ShowException(ex);
-					}
+			LoggingService.Info("Local Variables refresh");
+			try {
+				StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+				if (frame == null) return;
+				
+				localVarList.WatchItems.Clear();
+				debuggedProcess.EnqueueForEach(
+					Dispatcher.CurrentDispatcher,
+					new StackFrameNode(frame).ChildNodes.ToList(),
+					n => localVarList.WatchItems.Add(n.ToSharpTreeNode())
+				);
+			} catch (Exception ex) {
+				if (debuggedProcess == null || debuggedProcess.HasExited) {
+					// Process unexpectedly exited
+				} else {
+					MessageService.ShowException(ex);
 				}
 			}
 		}
