@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,15 +12,13 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+
 using Debugger.AddIn.Visualizers;
+using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -424,6 +423,223 @@ namespace Debugger.AddIn.TreeModel
 			{
 				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(info));
 			}
+		}
+	}
+	
+	public partial class Utils
+	{
+		public static IEnumerable<TreeNode> GetLocalVariableNodes(StackFrame stackFrame)
+		{
+			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
+				var parCopy = par;
+				yield return new ExpressionNode("Icons.16x16.Parameter", par.Name, () => parCopy.GetValue(stackFrame));
+			}
+			if (stackFrame.HasSymbols) {
+				foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(stackFrame.IP)) {
+					var locVarCopy = locVar;
+					yield return new ExpressionNode("Icons.16x16.Local", locVar.Name, () => locVarCopy.GetValue(stackFrame));
+				}
+			} else {
+				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				if (debugger.debuggerDecompilerService != null) {
+					int typeToken = stackFrame.MethodInfo.DeclaringType.MetadataToken;
+					int methodToken = stackFrame.MethodInfo.MetadataToken;
+					foreach (var localVar in debugger.debuggerDecompilerService.GetLocalVariables(typeToken, methodToken)) {
+						int index = ((int[])debugger.debuggerDecompilerService.GetLocalVariableIndex(typeToken, methodToken, localVar))[0];
+						yield return new ExpressionNode("Icons.16x16.Local", localVar, () => stackFrame.GetLocalVariableValue((uint)index));
+					}
+				}
+			}
+			if (stackFrame.Thread.CurrentException != null) {
+				yield return new ExpressionNode(null, "$exception", () => stackFrame.Thread.CurrentException.Value);
+			}
+		}
+	}
+	
+	public partial class Utils
+	{
+		public static IEnumerable<TreeNode> GetChildNodesOfObject(ExpressionNode expr, DebugType shownType)
+		{
+			MemberInfo[] publicStatic      = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.Public    | BindingFlags.Static   | BindingFlags.DeclaredOnly);
+			MemberInfo[] publicInstance    = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.Public    | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+			MemberInfo[] nonPublicStatic   = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Static   | BindingFlags.DeclaredOnly);
+			MemberInfo[] nonPublicInstance = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+			
+			DebugType baseType = (DebugType)shownType.BaseType;
+			if (baseType != null) {
+				yield return new TreeNode(
+					"Icons.16x16.Class",
+					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
+					baseType.Name,
+					baseType.FullName,
+					baseType.FullName == "System.Object" ? (Func<IEnumerable<TreeNode>>) null : () => Utils.GetChildNodesOfObject(expr, baseType)
+				);
+			}
+			
+			if (nonPublicInstance.Length > 0) {
+				yield return new TreeNode(
+					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}"),
+					() => GetMembersOfObject(expr, nonPublicInstance)
+				);
+			}
+			
+			if (publicStatic.Length > 0 || nonPublicStatic.Length > 0) {
+				yield return new TreeNode(
+					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}"),
+					() => {
+						var children = GetMembersOfObject(expr, publicStatic).ToList();
+						if (nonPublicStatic.Length > 0) {
+							children.Insert(0, new TreeNode(
+								StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}"),
+								() => GetMembersOfObject(expr, nonPublicStatic)
+							));
+						}
+						return children;
+					}
+				);
+			}
+			
+			if (shownType.GetInterface(typeof(IList).FullName) != null) {
+				yield return new TreeNode(
+					"IList",
+					() => GetItemsOfIList(() => expr.Evaluate())
+				);
+			} else {
+				DebugType listType, iEnumerableType, itemType;
+				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
+					yield return new TreeNode(
+						null,
+						"IEnumerable",
+						"Expanding will enumerate the IEnumerable",
+						string.Empty,
+						() => GetItemsOfIList(() => DebuggerHelpers.CreateListFromIEnumeralbe(expr.Evaluate(), itemType, out listType))
+					);
+				}
+			}
+			
+			foreach(TreeNode node in GetMembersOfObject(expr, publicInstance)) {
+				yield return node;
+			}
+		}
+		
+		public static IEnumerable<TreeNode> GetMembersOfObject(ExpressionNode expr, MemberInfo[] members)
+		{
+			foreach(MemberInfo memberInfo in members.OrderBy(m => m.Name)) {
+				var memberInfoCopy = memberInfo;
+				string imageName = ExpressionNode.GetImageForMember((IDebugMemberInfo)memberInfo);
+				yield return new ExpressionNode(imageName, memberInfo.Name, () => expr.Evaluate().GetMemberValue(memberInfoCopy));
+			}
+		}
+		
+		public static IEnumerable<TreeNode> GetItemsOfIList(Func<Value> getValue)
+		{
+			Value list = null;
+			DebugType iListType = null;
+			int count = 0;
+			GetValueException error = null;
+			try {
+				// We use lambda for the value just so that we can get it in this try-catch block
+				list = getValue().GetPermanentReference();
+				iListType = (DebugType)list.Type.GetInterface(typeof(IList).FullName);
+				// Do not get string representation since it can be printed in hex
+				count = (int)list.GetPropertyValue(iListType.GetProperty("Count")).PrimitiveValue;
+			} catch (GetValueException e) {
+				// Cannot yield a value in the body of a catch clause (CS1631)
+				error = e;
+			}
+			if (error != null) {
+				yield return new TreeNode(null, "(error)", error.Message, string.Empty, null);
+			} else if (count == 0) {
+				yield return new TreeNode("(empty)", null);
+			} else {
+				PropertyInfo pi = iListType.GetProperty("Item");
+				for(int i = 0; i < count; i++) {
+					int iCopy = i;
+					yield return new ExpressionNode("Icons.16x16.Field", "[" + i + "]", () => list.GetPropertyValue(pi, Eval.CreateValue(list.AppDomain, iCopy)));
+				}
+			}
+		}
+	}
+	
+	public partial class Utils
+	{
+		const int MaxElementCount = 100;
+		
+		public static TreeNode GetArrayRangeNode(ExpressionNode expr, ArrayDimensions bounds, ArrayDimensions originalBounds)
+		{
+			StringBuilder name = new StringBuilder();
+			bool isFirst = true;
+			name.Append("[");
+			for(int i = 0; i < bounds.Count; i++) {
+				if (!isFirst) name.Append(", ");
+				isFirst = false;
+				ArrayDimension dim = bounds[i];
+				ArrayDimension originalDim = originalBounds[i];
+				
+				if (dim.Count == 0) {
+					name.Append("-");
+				} else if (dim.Count == 1) {
+					name.Append(dim.LowerBound.ToString());
+				} else if (dim.Equals(originalDim)) {
+					name.Append("*");
+				} else {
+					name.Append(dim.LowerBound);
+					name.Append("..");
+					name.Append(dim.UpperBound);
+				}
+			}
+			name.Append("]");
+			
+			return new TreeNode(name.ToString(), () => GetChildNodesOfArray(expr, bounds, originalBounds));
+		}
+		
+		public static IEnumerable<TreeNode> GetChildNodesOfArray(ExpressionNode arrayTarget, ArrayDimensions bounds, ArrayDimensions originalBounds)
+		{
+			if (bounds.TotalElementCount == 0)
+			{
+				yield return new TreeNode("(empty)", null);
+				yield break;
+			}
+			
+			// The whole array is small - just add all elements as childs
+			if (bounds.TotalElementCount <= MaxElementCount) {
+				foreach(int[] indices in bounds.Indices) {
+					StringBuilder sb = new StringBuilder(indices.Length * 4);
+					sb.Append("[");
+					bool isFirst = true;
+					foreach(int index in indices) {
+						if (!isFirst) sb.Append(", ");
+						sb.Append(index.ToString());
+						isFirst = false;
+					}
+					sb.Append("]");
+					int[] indicesCopy = indices;
+					yield return new ExpressionNode("Icons.16x16.Field", sb.ToString(), () => arrayTarget.Evaluate().GetArrayElement(indicesCopy));
+				}
+				yield break;
+			}
+			
+			// Find a dimension of size at least 2
+			int splitDimensionIndex = bounds.Count - 1;
+			for(int i = 0; i < bounds.Count; i++) {
+				if (bounds[i].Count > 1) {
+					splitDimensionIndex = i;
+					break;
+				}
+			}
+			ArrayDimension splitDim = bounds[splitDimensionIndex];
+			
+			// Split the dimension
+			int elementsPerSegment = 1;
+			while (splitDim.Count > elementsPerSegment * MaxElementCount) {
+				elementsPerSegment *= MaxElementCount;
+			}
+			for(int i = splitDim.LowerBound; i <= splitDim.UpperBound; i += elementsPerSegment) {
+				List<ArrayDimension> newDims = new List<ArrayDimension>(bounds);
+				newDims[splitDimensionIndex] = new ArrayDimension(i, Math.Min(i + elementsPerSegment - 1, splitDim.UpperBound));
+				yield return GetArrayRangeNode(arrayTarget, new ArrayDimensions(newDims), originalBounds);
+			}
+			yield break;
 		}
 	}
 }

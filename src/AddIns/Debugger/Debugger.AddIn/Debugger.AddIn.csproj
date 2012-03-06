@@ -279,10 +279,7 @@
     </Compile>
     <Compile Include="Pads\DebuggerPad.cs" />
     <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="TreeModel\ArrayRangeNode.cs" />
-    <Compile Include="TreeModel\ExpressionNode.cs" />
-    <Compile Include="TreeModel\ChildNodesOfObject.cs" />
-    <Compile Include="TreeModel\StackFrameNode.cs" />
+    <Compile Include="TreeModel\ValueNode.cs" />
     <Compile Include="TreeModel\Utils.cs" />
     <Compile Include="Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />
     <Compile Include="Visualizers\Graph\Drawing\GraphDrawer.cs" />
