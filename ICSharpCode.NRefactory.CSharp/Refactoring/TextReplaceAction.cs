@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
@@ -43,7 +42,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get;
 			set;
 		}
-		
+
+		/// <summary>
+		/// Gets or sets the text replace action where this action depends on.
+		/// For example inserting a '{' ... '}' pair would require to insert the '}' when '{' is inserted.
+		/// Therefore the both actions depend on each other.
+		/// </summary>
+		public TextReplaceAction DependsOn {
+			get;
+			set;
+		}
+
 		int removedChars;
 		/// <summary>
 		/// Gets or sets the numer of chars to removed.
