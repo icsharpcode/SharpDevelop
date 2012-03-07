@@ -98,6 +98,7 @@
     <Compile Include="Semantics\OperatorResolveResult.cs" />
     <Compile Include="Semantics\ResolveResult.cs" />
     <Compile Include="Semantics\ThisResolveResult.cs" />
+    <Compile Include="Semantics\TypeIsResolveResult.cs" />
     <Compile Include="Semantics\TypeOfResolveResult.cs" />
     <Compile Include="Semantics\TypeResolveResult.cs" />
     <Compile Include="Semantics\UnknownMemberResolveResult.cs" />

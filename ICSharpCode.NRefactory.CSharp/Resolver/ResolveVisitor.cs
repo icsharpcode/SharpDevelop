@@ -1117,8 +1117,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitAsExpression(AsExpression asExpression)
 		{
 			if (resolverEnabled) {
-				Scan(asExpression.Expression);
-				return new ResolveResult(ResolveType(asExpression.Type));
+				ResolveResult input = Resolve(asExpression.Expression);
+				var targetType = ResolveType(asExpression.Type);
+				return new ConversionResolveResult(targetType, input, Conversion.TryCast);
 			} else {
 				ScanChildren(asExpression);
 				return null;
@@ -1267,8 +1268,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitIsExpression(IsExpression isExpression)
 		{
-			ScanChildren(isExpression);
-			return new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Boolean));
+			if (resolverEnabled) {
+				ResolveResult input = Resolve(isExpression.Expression);
+				IType targetType = ResolveType(isExpression.Type);
+				IType booleanType = resolver.Compilation.FindType(KnownTypeCode.Boolean);
+				return new TypeIsResolveResult(input, targetType, booleanType);
+			} else {
+				ScanChildren(isExpression);
+				return null;
+			}
 		}
 		
 		// NamedArgumentExpression is "identifier: Expression"
