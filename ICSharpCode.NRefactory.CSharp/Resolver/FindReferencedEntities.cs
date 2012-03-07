@@ -60,9 +60,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (ferr != null) {
 				Resolved(node, ferr.GetEnumeratorCall);
 				if (ferr.CurrentProperty != null)
-					referenceFound(node, ferr.CurrentProperty);
+					referenceFound(node, ferr.CurrentProperty.MemberDefinition);
 				if (ferr.MoveNextMethod != null)
-					referenceFound(node, ferr.MoveNextMethod);
+					referenceFound(node, ferr.MoveNextMethod.MemberDefinition);
 			}
 		}
 		
