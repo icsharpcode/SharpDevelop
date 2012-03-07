@@ -600,6 +600,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					else
 						specialNodeType = null;
 					break;
+				case "GetEnumerator":
+				case "MoveNext":
+					specialNodeType = typeof(ForeachStatement);
+					break;
 				default:
 					specialNodeType = null;
 					break;
@@ -664,6 +668,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool IsMatch(ResolveResult rr)
 			{
+				if (specialNodeType != null) {
+					var ferr = rr as ForEachResolveResult;
+					if (ferr != null) {
+						return IsMatch(ferr.GetEnumeratorCall)
+							|| (ferr.MoveNextMethod != null && method == ferr.MoveNextMethod.MemberDefinition);
+					}
+				}
 				var mrr = rr as MemberResolveResult;
 				return mrr != null && method == mrr.Member.MemberDefinition;
 			}
