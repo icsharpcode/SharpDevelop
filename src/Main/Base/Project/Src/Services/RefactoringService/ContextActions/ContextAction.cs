@@ -3,10 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/*
 	/// <summary>
 	/// Base class for implementing one context action.
 	/// Useful for implementing <see cref="IContextActionsProvider" /> that provides just one action - common scenario.
@@ -17,23 +20,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public bool IsVisible { get; set; }
 		
-		public abstract bool IsAvailable(EditorContext context);
+		public abstract Task<bool> IsAvailableAsync(EditorContext context, CancellationToken cancellationToken);
 		
 		public abstract void Execute(EditorContext context);
 		
-		public EditorContext Context { get; private set; }
-		
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
+		async Task<IContextAction[]> IContextActionsProvider.GetAvailableActionsAsync(EditorContext context, CancellationToken cancellationToken)
 		{
-			this.Context = context;
-			if (this.IsAvailable(context))
-				yield return this;
-		}
-		
-		public void Execute()
-		{
-			Execute(this.Context);
+			if (await IsAvailableAsync(context, cancellationToken).ConfigureAwait(false))
+				return new IContextAction[] { this };
+			else
+				return new IContextAction[0];
 		}
 	}
-	*/
 }

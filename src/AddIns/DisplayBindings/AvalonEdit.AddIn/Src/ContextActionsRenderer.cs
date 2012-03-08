@@ -4,6 +4,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Windows.Input;
 using System.Windows.Threading;
 using ICSharpCode.Core;
@@ -15,7 +16,6 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	/*
 	/// <summary>
 	/// Renders Popup with context actions on the left side of the current line in the editor.
 	/// </summary>
@@ -64,12 +64,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Dispose()
 		{
-			ClosePopup();
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchSingleton_Workbench_ActiveViewContentChanged;
 			delayMoveTimer.Stop();
+			ClosePopup();
 		}
 		
-		void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
+		async void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (this.popup == null)
 				return;
@@ -79,9 +79,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					popup.IsDropdownOpen = true;
 					popup.Focus();
 				} else {
+					ClosePopup();
 					// Popup is not shown but user explicitely requests it
 					var popupVM = BuildPopupViewModel(this.Editor);
-					popupVM.LoadHiddenActions();
+					this.cancellationTokenSourceForPopupBeingOpened = new CancellationTokenSource();
+					var cancellationToken = cancellationTokenSourceForPopupBeingOpened.Token;
+					try {
+						await System.Threading.Tasks.Task.WhenAll(popupVM.LoadActionsAsync(cancellationToken), popupVM.LoadHiddenActionsAsync(cancellationToken));
+					} catch (OperationCanceledException) {
+						return;
+					}
+					if (cancellationToken.IsCancellationRequested)
+						return;
+					this.cancellationTokenSourceForPopupBeingOpened = null;
 					if (popupVM.HiddenActions.Count == 0)
 						return;
 					this.popup.ViewModel = popupVM;
@@ -97,8 +107,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			ClosePopup();
 		}
-
-		void TimerMoveTick(object sender, EventArgs e)
+		
+		CancellationTokenSource cancellationTokenSourceForPopupBeingOpened;
+		
+		async void TimerMoveTick(object sender, EventArgs e)
 		{
 			this.delayMoveTimer.Stop();
 			if (!IsEnabled)
@@ -106,44 +118,48 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			ClosePopup();
 			
 			ContextActionsBulbViewModel popupVM = BuildPopupViewModel(this.Editor);
-			//availableActionsVM.Title =
-			//availableActionsVM.Image =
+			this.cancellationTokenSourceForPopupBeingOpened = new CancellationTokenSource();
+			var cancellationToken = cancellationTokenSourceForPopupBeingOpened.Token;
+			try {
+				await popupVM.LoadActionsAsync(cancellationToken);
+			} catch (OperationCanceledException) {
+				LoggingService.Debug("Cancelled loading context actions.");
+				return;
+			}
+			if (cancellationToken.IsCancellationRequested)
+				return;
+			this.cancellationTokenSourceForPopupBeingOpened = null;
 			if (popupVM.Actions.Count == 0)
 				return;
 			this.popup.ViewModel = popupVM;
 			this.popup.OpenAtLineStart(this.Editor);
 		}
 		
-		EditorActionsProvider lastActions;
-
 		ContextActionsBulbViewModel BuildPopupViewModel(ITextEditor editor)
 		{
-			var actionsProvider = ContextActionsService.Instance.GetAvailableActions(editor);
-			this.lastActions = actionsProvider;
+			var actionsProvider = ContextActionsService.Instance.CreateActionsProvider(editor);
 			return new ContextActionsBulbViewModel(actionsProvider);
 		}
 
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
-			if (this.popup.IsOpen)
-			{
-				ClosePopup();
-			}
+			ClosePopup();
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Start();
 		}
 		
 		void ClosePopup()
 		{
+			if (cancellationTokenSourceForPopupBeingOpened != null) {
+				LoggingService.Debug("Loading context actions - requesting cancellation.");
+				cancellationTokenSourceForPopupBeingOpened.Cancel();
+				cancellationTokenSourceForPopupBeingOpened = null;
+			}
+			
 			this.popup.Close();
 			this.popup.IsDropdownOpen = false;
 			this.popup.IsHiddenActionsExpanded = false;
 			this.popup.ViewModel = null;
-			if (this.lastActions != null) {
-				// Clear the context to prevent memory leaks in case some users kept long-lived references to EditorContext
-				this.lastActions.EditorContext.Clear();
-				this.lastActions = null;
-			}
 		}
 		void WorkbenchSingleton_Workbench_ActiveViewContentChanged(object sender, EventArgs e)
 		{
@@ -155,5 +171,4 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				ClosePopup();
 		}
 	}
-	*/
 }

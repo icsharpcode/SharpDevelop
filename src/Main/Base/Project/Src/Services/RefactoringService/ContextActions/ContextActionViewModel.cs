@@ -15,19 +15,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class ContextActionViewModel
 	{
+		readonly EditorContext context;
+		
 		public ContextActionViewModel()
 		{
 			this.IsVisible = true;
 		}
 		
-		public ContextActionViewModel(IContextAction action)
+		public ContextActionViewModel(IContextAction action, EditorContext context)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");
+			this.IsVisible = true;
+			this.context = context;
 			this.Action = action;
 		}
 		
-		public string Name { get { return this.action.Title; } }
+		public string Name {
+			get { return this.action != null ? this.action.Title : string.Empty; }
+		}
 		
 		public string Comment { get; set; }
 		
@@ -46,9 +52,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public IContextAction Action {
 			get { return action; }
-			set { 
-				action = value; 
-				ActionCommand = new ContextActionCommand(action);
+			set {
+				action = value;
+				ActionCommand = new ContextActionCommand(action, context);
 			}
 		}
 		
@@ -60,13 +66,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class ContextActionCommand : ICommand
 	{
-		IContextAction action;
+		readonly IContextAction action;
+		readonly EditorContext context;
 		
-		public ContextActionCommand(IContextAction action)
+		public ContextActionCommand(IContextAction action, EditorContext context)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");
 			this.action = action;
+			this.context = context;
 		}
 		
 		public event EventHandler CanExecuteChanged
@@ -78,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Execute(object parameter)
 		{
-			this.action.Execute();
+			this.action.Execute(context);
 		}
 		
 		public bool CanExecute(object parameter)

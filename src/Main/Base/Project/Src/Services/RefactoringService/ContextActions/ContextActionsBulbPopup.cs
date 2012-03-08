@@ -6,7 +6,6 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	/*
 	/// <summary>
 	/// Description of ContextActionsBulbPopup.
 	/// </summary>
@@ -52,5 +51,4 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.VerticalOffset -= 16;
 		}
 	}
-	*/
 }

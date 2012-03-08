@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Refactoring;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions available for current line of the editor.
 		/// </summary>
-		IEnumerable<IContextAction> GetAvailableActions(EditorContext context);
+		Task<IContextAction[]> GetAvailableActionsAsync(EditorContext context, CancellationToken cancellationToken);
 		
 		/// <summary>
 		/// Is this provider enabled by user?

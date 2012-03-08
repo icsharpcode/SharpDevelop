@@ -16,9 +16,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Design#CA1014;-Microsoft.Design#CA2210</CodeAnalysisRules>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -242,7 +239,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\MyersDiff" />
     <Folder Include="Src\HiddenDefinition" />
     <Folder Include="Src\XmlDoc" />
   </ItemGroup>

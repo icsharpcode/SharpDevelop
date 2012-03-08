@@ -5,18 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
-/*
+
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
+	using Task = System.Threading.Tasks.Task;
+	
 	/// <summary>
 	/// Provides context actions available for current line of the editor.
 	/// </summary>
 	public sealed class ContextActionsService
 	{
-		private static ContextActionsService instance = new ContextActionsService();
+		static readonly ContextActionsService instance = new ContextActionsService();
+		
+		static ContextActionsService() {}
 		
 		/// <summary>
 		/// Key for storing the names of disabled providers in PropertyService.
@@ -24,9 +32,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		const string PropertyServiceKey = "DisabledContextActionProviders";
 		
 		public static ContextActionsService Instance {
-			get {
-				return instance;
-			}
+			get { return instance; }
 		}
 		
 		List<IContextActionsProvider> providers;
@@ -40,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public EditorActionsProvider GetAvailableActions(ITextEditor editor)
+		public EditorActionsProvider CreateActionsProvider(ITextEditor editor)
 		{
 			return new EditorActionsProvider(editor, this.providers);
 		}
@@ -62,8 +68,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class EditorActionsProvider
 	{
-		ITextEditor editor { get; set; }
-		IList<IContextActionsProvider> providers { get; set; }
+		readonly IList<IContextActionsProvider> providers;
 		public EditorContext EditorContext { get; set; }
 		
 		public EditorActionsProvider(ITextEditor editor, IList<IContextActionsProvider> providers)
@@ -72,24 +77,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("editor");
 			if (providers == null)
 				throw new ArgumentNullException("providers");
-			this.editor = editor;
 			this.providers = providers;
-			// DO NOT USE Wait on the main thread!
-			// causes deadlocks!
-			// parseTask.Wait();
-			// Reparse so that we have up-to-date DOM.
-			ParserService.ParseCurrentViewContent();
+			
 			this.EditorContext = new EditorContext(editor);
 		}
 		
-		public IEnumerable<IContextAction> GetVisibleActions()
+		public Task<IEnumerable<IContextAction>> GetVisibleActionsAsync(CancellationToken cancellationToken)
 		{
-			return GetActions(this.providers.Where(p => p.IsVisible));
+			return GetActionsAsync(this.providers.Where(p => p.IsVisible), cancellationToken);
 		}
 		
-		public IEnumerable<IContextAction> GetHiddenActions()
+		public Task<IEnumerable<IContextAction>> GetHiddenActionsAsync(CancellationToken cancellationToken)
 		{
-			return GetActions(this.providers.Where(p => !p.IsVisible));
+			return GetActionsAsync(this.providers.Where(p => !p.IsVisible), cancellationToken);
 		}
 		
 		public void SetVisible(IContextAction action, bool isVisible)
@@ -109,18 +109,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions available for current caret position in the editor.
 		/// </summary>
-		IEnumerable<IContextAction> GetActions(IEnumerable<IContextActionsProvider> providers)
+		async Task<IEnumerable<IContextAction>> GetActionsAsync(IEnumerable<IContextActionsProvider> providers, CancellationToken cancellationToken)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
-				yield break;
-			// could run providers in parallel
-			foreach (var provider in providers) {
-				foreach (var action in provider.GetAvailableActions(this.EditorContext)) {
-					providerForAction[action] = provider;
-					yield return action;
+				return EmptyList<IContextAction>.Instance;
+			var providerList = providers.ToList();
+			var actions = await Task.WhenAll(providerList.Select(p => p.GetAvailableActionsAsync(this.EditorContext, cancellationToken)));
+			for (int i = 0; i < actions.Length; i++) {
+				foreach (var action in actions[i]) {
+					providerForAction[action] = providerList[i];
 				}
 			}
+			return actions.SelectMany(_ => _);
 		}
 	}
 }
-*/

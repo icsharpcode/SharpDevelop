@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.Title = title;
 		}
 		
-		public void Execute()
+		public void Execute(EditorContext context)
 		{
 			NavigationService.NavigateTo(this.Class);
 		}

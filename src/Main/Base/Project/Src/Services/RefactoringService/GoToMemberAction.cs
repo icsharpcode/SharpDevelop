@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.Title = ambience.ConvertEntity(member);
 		}
 		
-		public void Execute()
+		public void Execute(EditorContext context)
 		{
 			NavigationService.NavigateTo(this.Member);
 		}

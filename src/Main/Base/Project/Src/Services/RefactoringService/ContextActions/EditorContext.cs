@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
@@ -21,27 +23,84 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class EditorContext
 	{
-		public ITextEditor Editor { get; private set; }
-		
-		public int CaretLine { get; private set; }
-		public int CaretColumn { get; private set; }
+		readonly ITextEditor editor;
 		
 		/// <summary>
-		/// ParseInformation for current file.
+		/// The text editor for which this editor context was created.
 		/// </summary>
-		public ParseInformation CurrentParseInformation { get; private set; }
-		
-		public ICompilation Compilation { get; private set; }
+		public ITextEditor Editor {
+			get {
+				WorkbenchSingleton.AssertMainThread();
+				return editor;
+			}
+		}
 		
 		/// <summary>
-		/// The editor line containing the caret.
+		/// Gets/Sets the file name.
 		/// </summary>
-		public IDocumentLine CurrentLine { get; private set; }
+		public FileName FileName { get; private set; }
+		
+		/// <summary>
+		/// A snapshot of the editor content, at the time when this editor context was created.
+		/// </summary>
+		public ITextSource TextSource { get; private set; }
+		
+		readonly int caretOffset;
+		
+		/// <summary>
+		/// Gets the offset of the caret, at the time when this editor context was created.
+		/// </summary>
+		public int CaretOffset {
+			get { return caretOffset; }
+		}
+		
+		volatile bool inInitializationPhase = true;
+		System.Threading.Tasks.Task<ParseInformation> parseInformation;
+		System.Threading.Tasks.Task<ICompilation> compilation;
+		
+		/// <summary>
+		/// ParseInformation for the file.
+		/// </summary>
+		public ParseInformation ParseInformation {
+			get {
+				CheckForDeadlock();
+				return parseInformation.Result;
+			}
+		}
+		
+		public ICompilation Compilation {
+			get {
+				CheckForDeadlock();
+				return compilation.Result;
+			}
+		}
+		
+		void CheckForDeadlock()
+		{
+			if (inInitializationPhase) {
+				var workbench = WorkbenchSingleton.Workbench;
+				if (workbench != null) {
+					if (workbench.MainWindow.Dispatcher.CheckAccess()) {
+						throw new InvalidOperationException("Cannot access this property on the main thread during the EditorContext initialization phase - could cause deadlocks.");
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Waits until the initialization of this editor context is done.
+		/// This is necessary to avoid deadlocks due to the main thread
+		/// waiting for the parser service.
+		/// </summary>
+		public System.Threading.Tasks.Task WaitForInitializationAsync()
+		{
+			return compilation.ContinueWith(_ => { inInitializationPhase = false; });
+		}
 		
 		/// <summary>
 		/// Caches values shared by Context actions. Used in <see cref="GetCached"/>.
 		/// </summary>
-		Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
+		readonly Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
 		
 		/// <summary>
 		/// Fully initializes the EditorContext.
@@ -50,19 +109,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
-			this.Editor = editor;
-			this.CaretLine = editor.Caret.Line;
-			this.CaretColumn = editor.Caret.Column;
-			if (CaretColumn > 1 && editor.Document.GetCharAt(editor.Document.GetOffset(CaretLine, CaretColumn - 1)) == ';') {
+			this.editor = editor;
+			caretOffset = editor.Caret.Offset;
+			if (caretOffset > 0 && editor.Document.GetCharAt(caretOffset - 1) == ';') {
 				// If caret is just after ';', pretend that caret is before ';'
 				// (works well e.g. for this.Foo();(*caret*) - we want to get "this.Foo()")
 				// This is equivalent to pretending that ; don't exist, and actually it's not such a bad idea.
-				CaretColumn -= 1;
+				caretOffset -= 1;
 			}
 			
-			this.CurrentParseInformation = ParserService.Parse(editor.FileName, editor.Document);
-			
-			this.CurrentLine = editor.Document.GetLine(CaretLine);
+			this.FileName = editor.FileName;
+			this.TextSource = editor.Document.CreateSnapshot();
+			this.parseInformation = ParserService.ParseAsync(this.FileName, this.TextSource);
+			this.compilation = parseInformation.ContinueWith(_ => ParserService.GetCompilationForFile(this.FileName));
 		}
 		
 		/// <summary>
@@ -90,19 +149,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					return cached;
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Do not call from your Context actions - used by SharpDevelop.
-		/// Sets contents of editor context to null to prevent memory leaks. Used in case users implementing IContextActionProvider
-		/// keep long-lived references to EditorContext even when warned not to do so.
-		/// </summary>
-		public void Clear()
-		{
-			this.Editor = null;
-			this.CurrentLine = null;
-			this.CurrentParseInformation = null;
-			this.Compilation = null;
 		}
 	}
 }

@@ -5,9 +5,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-/*
+
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
@@ -22,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		bool isHiddenActionsExpanded;
 		public bool IsHiddenActionsExpanded {
 			get { return isHiddenActionsExpanded; }
-			set { 
+			set {
 				isHiddenActionsExpanded = value;
 				if (PropertyChanged != null)
 					PropertyChanged(this, new PropertyChangedEventArgs("IsHiddenActionsExpanded"));
@@ -32,22 +33,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ContextActionsBulbViewModel(EditorActionsProvider model)
 		{
 			this.Model = model;
-			this.Actions = new ObservableCollection<ContextActionViewModel>(
-				model.GetVisibleActions().Select(a => new ContextActionViewModel(a) { IsVisible = true } ));
+			this.Actions = new ObservableCollection<ContextActionViewModel>();
 			this.HiddenActions = new ObservableCollection<ContextActionViewModel>();
 			this.ActionVisibleChangedCommand = new ActionVisibleChangedCommand(model);
 		}
 		
-		bool hiddenActionsLoaded = false;
-		
-		public void LoadHiddenActions()
+		public async System.Threading.Tasks.Task LoadActionsAsync(CancellationToken cancellationToken)
 		{
-			if (hiddenActionsLoaded)
-				return;
-			
-			this.HiddenActions.AddRange(
-				Model.GetHiddenActions().Select(a => new ContextActionViewModel(a) { IsVisible = false } ));
-			hiddenActionsLoaded = true;
+			this.Actions.Clear();
+			foreach (var action in await Model.GetVisibleActionsAsync(cancellationToken)) {
+				this.Actions.Add(new ContextActionViewModel(action, this.Model.EditorContext) { IsVisible = true });
+			}
+		}
+		
+		public async System.Threading.Tasks.Task LoadHiddenActionsAsync(CancellationToken cancellationToken)
+		{
+			this.HiddenActions.Clear();
+			foreach (var action in await Model.GetHiddenActionsAsync(cancellationToken)) {
+				this.HiddenActions.Add(new ContextActionViewModel(action, this.Model.EditorContext) { IsVisible = false });
+			}
 		}
 		
 		public ActionVisibleChangedCommand ActionVisibleChangedCommand { get; private set; }
@@ -85,4 +89,3 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 }
-*/

@@ -18,6 +18,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Executes this action. Called when this action is selected from the context actions popup.
 		/// </summary>
-		void Execute();
+		void Execute(EditorContext context);
 	}
 }

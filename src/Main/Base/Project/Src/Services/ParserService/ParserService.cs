@@ -23,6 +23,8 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
+	using Task = System.Threading.Tasks.Task;
+	
 	/// <summary>
 	/// Stores the compilation units for files.
 	/// </summary>
@@ -502,7 +504,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					lock (this) {
 						if (cachedParseInformation != null && bufferVersion != null && bufferVersion.BelongsToSameDocumentAs(fileContentVersion)) {
 							if (bufferVersion.CompareAge(fileContentVersion) >= 0) {
-								return TaskFromResult(cachedParseInformation);
+								return Task.FromResult(cachedParseInformation);
 							}
 						}
 					}
@@ -942,7 +944,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			var entry = GetFileEntry(fileName, true);
 			if (entry.parser == null)
-				return TaskFromResult<ResolveResult>(null);
+				return Task.FromResult<ResolveResult>(null);
 			return entry.ParseAsync(fileContent).ContinueWith(
 				delegate (Task<ParseInformation> parseInfoTask) {
 					var parseInfo = parseInfoTask.Result;
@@ -953,13 +955,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 					LoggingService.Debug("Resolved " + location + " to " + rr);
 					return rr;
 				}, cancellationToken);
-		}
-		
-		static Task<T> TaskFromResult<T>(T result)
-		{
-			TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
-			tcs.SetResult(result);
-			return tcs.Task;
 		}
 		
 		/// <summary>
