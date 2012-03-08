@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
@@ -23,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class EditorContext
 	{
+		object syncRoot;
 		readonly ITextEditor editor;
 		
 		/// <summary>
@@ -54,47 +57,29 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			get { return caretOffset; }
 		}
 		
-		volatile bool inInitializationPhase = true;
-		System.Threading.Tasks.Task<ParseInformation> parseInformation;
-		System.Threading.Tasks.Task<ICompilation> compilation;
+		Task<ParseInformation> parseInformation;
+		ICompilation compilation;
 		
 		/// <summary>
-		/// ParseInformation for the file.
+		/// Gets the ParseInformation for the file.
 		/// </summary>
-		public ParseInformation ParseInformation {
-			get {
-				CheckForDeadlock();
-				return parseInformation.Result;
-			}
-		}
-		
-		public ICompilation Compilation {
-			get {
-				CheckForDeadlock();
-				return compilation.Result;
-			}
-		}
-		
-		void CheckForDeadlock()
+		/// <remarks><inheritdoc cref="ParserService.ParseAsync"/></remarks>
+		public Task<ParseInformation> GetParseInformationAsync()
 		{
-			if (inInitializationPhase) {
-				var workbench = WorkbenchSingleton.Workbench;
-				if (workbench != null) {
-					if (workbench.MainWindow.Dispatcher.CheckAccess()) {
-						throw new InvalidOperationException("Cannot access this property on the main thread during the EditorContext initialization phase - could cause deadlocks.");
-					}
-				}
+			lock (syncRoot) {
+				if (parseInformation == null)
+					parseInformation = ParserService.ParseAsync(this.FileName, this.TextSource);
+				return parseInformation;
 			}
 		}
 		
 		/// <summary>
-		/// Waits until the initialization of this editor context is done.
-		/// This is necessary to avoid deadlocks due to the main thread
-		/// waiting for the parser service.
+		/// Gets the ICompilation for the file.
 		/// </summary>
-		public System.Threading.Tasks.Task WaitForInitializationAsync()
+		public Task<ICompilation> GetCompilationAsync()
 		{
-			return compilation.ContinueWith(_ => { inInitializationPhase = false; });
+			var c = LazyInitializer.EnsureInitialized(ref compilation, () => ParserService.GetCompilationForFile(this.FileName));
+			return Task.FromResult(c);
 		}
 		
 		/// <summary>
@@ -111,17 +96,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("editor");
 			this.editor = editor;
 			caretOffset = editor.Caret.Offset;
-			if (caretOffset > 0 && editor.Document.GetCharAt(caretOffset - 1) == ';') {
-				// If caret is just after ';', pretend that caret is before ';'
-				// (works well e.g. for this.Foo();(*caret*) - we want to get "this.Foo()")
-				// This is equivalent to pretending that ; don't exist, and actually it's not such a bad idea.
-				caretOffset -= 1;
-			}
 			
 			this.FileName = editor.FileName;
 			this.TextSource = editor.Document.CreateSnapshot();
-			this.parseInformation = ParserService.ParseAsync(this.FileName, this.TextSource);
-			this.compilation = parseInformation.ContinueWith(_ => ParserService.GetCompilationForFile(this.FileName));
 		}
 		
 		/// <summary>

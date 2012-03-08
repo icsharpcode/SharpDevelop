@@ -15,8 +15,6 @@ using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	using Task = System.Threading.Tasks.Task;
-	
 	/// <summary>
 	/// Provides context actions available for current line of the editor.
 	/// </summary>

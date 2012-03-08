@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -74,7 +75,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Call this method on asynchronous tasks if you do not care about the result, but do not want
 		/// unhandled exceptions to go unnoticed.
 		/// </summary>
-		public static void FireAndForget(this System.Threading.Tasks.Task task)
+		public static void FireAndForget(this Task task)
 		{
 			task.ContinueWith(t => { if (t.Exception != null) Core.MessageService.ShowException(t.Exception); });
 		}

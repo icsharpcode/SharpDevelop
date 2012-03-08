@@ -146,9 +146,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			);
 		}
 		
-		System.Threading.Tasks.Task ResolveReferencesAsync(ICollection<ProjectItem> projectItems, IProgressMonitor progressMonitor)
+		Task ResolveReferencesAsync(ICollection<ProjectItem> projectItems, IProgressMonitor progressMonitor)
 		{
-			return System.Threading.Tasks.Task.Factory.StartNew(
+			return Task.Run(
 				delegate {
 					var referenceItems = project.ResolveAssemblyReferences(progressMonitor.CancellationToken);
 					const double assemblyResolvingProgress = 0.3; // 30% asm resolving, 70% asm loading

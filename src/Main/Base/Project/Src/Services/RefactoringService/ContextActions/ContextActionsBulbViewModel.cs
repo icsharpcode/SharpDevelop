@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -38,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.ActionVisibleChangedCommand = new ActionVisibleChangedCommand(model);
 		}
 		
-		public async System.Threading.Tasks.Task LoadActionsAsync(CancellationToken cancellationToken)
+		public async Task LoadActionsAsync(CancellationToken cancellationToken)
 		{
 			this.Actions.Clear();
 			foreach (var action in await Model.GetVisibleActionsAsync(cancellationToken)) {
@@ -46,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public async System.Threading.Tasks.Task LoadHiddenActionsAsync(CancellationToken cancellationToken)
+		public async Task LoadHiddenActionsAsync(CancellationToken cancellationToken)
 		{
 			this.HiddenActions.Clear();
 			foreach (var action in await Model.GetHiddenActionsAsync(cancellationToken)) {

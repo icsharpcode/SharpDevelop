@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			this.taskView.ClearTasks();
 			
-			foreach (Task t in TaskService.CommentTasks) {
+			foreach (SDTask t in TaskService.CommentTasks) {
 				this.AddItem(t);
 			}
 			
@@ -171,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.taskView.EndUpdate();
 		}
 		
-		void AddItem(Task item)
+		void AddItem(SDTask item)
 		{
 			foreach (KeyValuePair<string, bool> pair in displayedTokens) {
 				if (item.Description.StartsWith(pair.Key) && pair.Value && IsInScope(item))
@@ -179,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		bool IsInScope(Task item)
+		bool IsInScope(SDTask item)
 		{
 			var current = GetCurrentClass();
 			var itemClass = GetCurrentClass(item);
@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return null;
 		}
 		
-		IUnresolvedTypeDefinition GetCurrentClass(Task item)
+		IUnresolvedTypeDefinition GetCurrentClass(SDTask item)
 		{
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.

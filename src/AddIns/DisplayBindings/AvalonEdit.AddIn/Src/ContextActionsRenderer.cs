@@ -5,8 +5,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -85,7 +87,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.cancellationTokenSourceForPopupBeingOpened = new CancellationTokenSource();
 					var cancellationToken = cancellationTokenSourceForPopupBeingOpened.Token;
 					try {
-						await System.Threading.Tasks.Task.WhenAll(popupVM.LoadActionsAsync(cancellationToken), popupVM.LoadHiddenActionsAsync(cancellationToken));
+						await Task.WhenAll(popupVM.LoadActionsAsync(cancellationToken), popupVM.LoadHiddenActionsAsync(cancellationToken));
 					} catch (OperationCanceledException) {
 						return;
 					}

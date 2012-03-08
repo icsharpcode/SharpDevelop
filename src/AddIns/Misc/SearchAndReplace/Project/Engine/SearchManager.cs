@@ -67,7 +67,7 @@ namespace SearchAndReplace
 			public IDisposable Subscribe(IObserver<SearchedFile> observer)
 			{
 				LoggingService.Debug("Parallel FindAll starting");
-				var task = new System.Threading.Tasks.Task(
+				var task = Task.Factory.StartNew(
 					delegate {
 						var list = fileList.ToList();
 						ThrowIfCancellationRequested();
@@ -82,7 +82,6 @@ namespace SearchAndReplace
 							observer.OnCompleted();
 						this.Dispose();
 					});
-				task.Start();
 				return this;
 			}
 			
@@ -109,7 +108,7 @@ namespace SearchAndReplace
 					}
 					if (exceptions.Count > 0) break;
 					FileName file = files[i];
-					queue.Enqueue(System.Threading.Tasks.Task.Factory.StartNew(() => SearchFile(file)));
+					queue.Enqueue(Task.Factory.StartNew(() => SearchFile(file)));
 				}
 				while (queue.Count > 0) {
 					HandleResult(queue.Dequeue(), observer, exceptions, files);

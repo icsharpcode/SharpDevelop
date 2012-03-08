@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		/// shows the <see cref="ErrorListPad"/>.</remarks>
 		public static void AddNoSingleFileCompilationError()
 		{
-			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
+			TaskService.Add(new SDTask(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
 			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 	}

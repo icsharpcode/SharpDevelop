@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop
 
 				ClearErrors();
 				if (newEnabled) {
-					foreach (Task task in TaskService.Tasks) {
+					foreach (SDTask task in TaskService.Tasks) {
 						AddTask(task);
 					}
 				}
@@ -109,10 +109,10 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>Returns true when there were markers deleted, false when there were no error markers.</returns>
 		void ClearErrors()
 		{
-			markerService.RemoveAll(marker => marker.Tag is Task);
+			markerService.RemoveAll(marker => marker.Tag is SDTask);
 		}
 		
-		bool CheckTask(Task task)
+		bool CheckTask(SDTask task)
 		{
 			if (textEditor.FileName == null)
 				return false;
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop
 			return FileUtility.IsEqualFileName(task.FileName, textEditor.FileName);
 		}
 		
-		void AddTask(Task task)
+		void AddTask(SDTask task)
 		{
 			if (!isEnabled)
 				return;
@@ -178,7 +178,7 @@ namespace ICSharpCode.SharpDevelop
 			ClearErrors();
 			if (!isEnabled)
 				return;
-			foreach (Task task in TaskService.Tasks) {
+			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
 		}

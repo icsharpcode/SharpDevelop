@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public BuildResults BuildResults = null;
 		
-		void AddTask(Task task)
+		void AddTask(SDTask task)
 		{
 			switch (task.TaskType) {
 				case TaskType.Warning:
@@ -200,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			taskView.BeginUpdate();
 			taskView.ClearTasks();
 			
-			foreach (Task task in TaskService.Tasks) {
+			foreach (SDTask task in TaskService.Tasks) {
 				AddTask(task);
 			}
 			

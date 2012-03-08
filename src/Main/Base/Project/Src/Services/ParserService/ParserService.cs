@@ -23,8 +23,6 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	using Task = System.Threading.Tasks.Task;
-	
 	/// <summary>
 	/// Stores the compilation units for files.
 	/// </summary>
@@ -94,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			timer.Stop();
 		}
 		
-		static System.Threading.Tasks.Task lastParseRun;
+		static Task lastParseRun;
 		
 		static void timer_Tick(object sender, EventArgs e)
 		{
@@ -554,7 +552,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				SnapshotFileContentForAsyncOperation(ref fileContent, out lookupOpenFileOnTargetThread);
 				
 				// TODO: don't use background task if fileContent was specified and up-to-date parse info is available
-				return System.Threading.Tasks.Task.Factory.StartNew(
+				return Task.Run(
 					delegate {
 						try {
 							if (lookupOpenFileOnTargetThread) {
@@ -734,7 +732,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </returns>
 		/// <remarks>
 		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
-		/// so waiting for the task can cause deadlocks.
+		/// so waiting for the task can cause deadlocks. (however, using C# 5 'await' is safe)
 		/// </remarks>
 		public static Task<ParseInformation> ParseAsync(FileName fileName, ITextSource fileContent = null)
 		{
@@ -766,6 +764,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Async version of ParseFile().
 		/// </summary>
+		/// <remarks><inheritdoc cref="ParseAsync"/></remarks>
 		public static Task<IParsedFile> ParseFileAsync(FileName fileName, ITextSource fileContent = null)
 		{
 			return GetFileEntry(fileName, true).ParseFileAsync(fileContent);

@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				WorkbenchSingleton.StatusBar.SetMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				BuildError error = new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				results.Add(error);
-				TaskService.Add(new Task(error));
+				TaskService.Add(new SDTask(error));
 				results.Result = BuildResultCode.MSBuildAlreadyRunning;
 				if (options.Callback != null) {
 					options.Callback(results);
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				WorkbenchSingleton.SafeThreadAsyncCall(
 					delegate {
-						TaskService.Add(new Task(error));
+						TaskService.Add(new SDTask(error));
 					});
 			}
 			

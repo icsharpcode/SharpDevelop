@@ -9,15 +9,15 @@ namespace ICSharpCode.SharpDevelop
 	
 	public class TaskEventArgs : EventArgs
 	{
-		Task task;
+		SDTask task;
 		
-		public Task Task {
+		public SDTask Task {
 			get {
 				return task;
 			}
 		}
 		
-		public TaskEventArgs(Task task)
+		public TaskEventArgs(SDTask task)
 		{
 			this.task = task;
 		}
