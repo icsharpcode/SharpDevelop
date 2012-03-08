@@ -109,6 +109,23 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(UnaryOperatorType.Await, nested.Op);
 			Assert.IsTrue(nested.Expression is IdentifierExpression);
 		}
+		
+		[Test]
+		public void AwaitStaticMethodCall()
+		{
+			var uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>("await Task.WhenAll(a, b)");
+			Assert.AreEqual(UnaryOperatorType.Await, uoe.Op);
+			Assert.IsTrue(uoe.Expression is InvocationExpression);
+		}
+		
+		[Test]
+		public void AwaitStaticMethodCallStatement()
+		{
+			var es = ParseUtilCSharp.ParseStatement<ExpressionStatement>("await Task.WhenAll(a, b);");
+			UnaryOperatorExpression uoe = (UnaryOperatorExpression)es.Expression;
+			Assert.AreEqual(UnaryOperatorType.Await, uoe.Op);
+			Assert.IsTrue(uoe.Expression is InvocationExpression);
+		}
 		#endregion
 		
 		#region VB.NET
