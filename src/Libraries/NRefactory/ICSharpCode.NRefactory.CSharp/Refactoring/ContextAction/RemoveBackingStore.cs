@@ -1,6 +1,6 @@
 ﻿// 
 // RemoveBackingStore.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -45,8 +45,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			context.ReplaceReferences (field, property);
 			
-			// create new auto property 
-			var newProperty = (PropertyDeclaration)property.Clone ();	
+			// create new auto property
+			var newProperty = (PropertyDeclaration)property.Clone ();
 			newProperty.Getter.Body = BlockStatement.Null;
 			newProperty.Setter.Body = BlockStatement.Null;
 			
@@ -74,14 +74,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 //				}
 //			}
 //		}
-//		
+//
+		static readonly Version csharp3 = new Version(3, 0);
+		
 		static IField GetBackingField (RefactoringContext context)
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
 			// automatic properties always need getter & setter
 			if (propertyDeclaration == null || propertyDeclaration.Getter.IsNull || propertyDeclaration.Setter.IsNull || propertyDeclaration.Getter.Body.IsNull || propertyDeclaration.Setter.Body.IsNull)
 				return null;
-			if (!context.HasCSharp3Support || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ClassType.Interface)
+			if (!context.Supports(csharp3) || propertyDeclaration.HasModifier (ICSharpCode.NRefactory.CSharp.Modifiers.Abstract) || ((TypeDeclaration)propertyDeclaration.Parent).ClassType == ClassType.Interface)
 				return null;
 			var getterField = ScanGetter (context, propertyDeclaration);
 			if (getterField == null)

@@ -2,9 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
@@ -13,6 +14,8 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -83,22 +86,59 @@ namespace CSharpBinding.Parser
 			}
 			
 			CSharpParsedFile file = cu.ToTypeSystem();
+			ParseInformation parseInfo;
 			
 			if (fullParseInformationRequested)
-				return new CSharpFullParseInformation(file, cu);
+				parseInfo = new CSharpFullParseInformation(file, cu);
 			else
-				return new ParseInformation(file, fullParseInformationRequested);
+				parseInfo = new ParseInformation(file, fullParseInformationRequested);
+			
+			AddCommentTags(cu, parseInfo.TagComments, fileContent);
+			
+			return parseInfo;
 		}
 		
-		/*void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
+		void AddCommentTags(CompilationUnit cu, IList<TagComment> tagComments, ITextSource fileContent)
 		{
-			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {
-				DomRegion tagRegion = new DomRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
-				var tag = new ICSharpCode.SharpDevelop.Dom.TagComment(tagComment.Tag, tagRegion, tagComment.CommentText);
-				cu.TagComments.Add(tag);
+			ReadOnlyDocument document = null;
+			foreach (var comment in cu.Descendants.OfType<Comment>().Where(c => c.CommentType != CommentType.InactiveCode)) {
+				int matchLength;
+				int index = IndexOfAny(comment.Content, lexerTags, 0, out matchLength);
+				if (index > -1) {
+					if (document == null)
+						document = new ReadOnlyDocument(fileContent);
+					int startOffset = document.GetOffset(comment.StartLocation);
+					int commentSignLength = comment.CommentType == CommentType.Documentation || comment.CommentType == CommentType.MultiLineDocumentation ? 3 : 2;
+					int commentEndSignLength = comment.CommentType == CommentType.MultiLine || comment.CommentType == CommentType.MultiLineDocumentation ? 2 : 0;
+					do {
+						int absoluteOffset = startOffset + index + commentSignLength;
+						var startLocation = document.GetLocation(absoluteOffset);
+						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, document.GetOffset(comment.EndLocation) - commentEndSignLength);
+						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
+						tagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
+						index = IndexOfAny(comment.Content, lexerTags, endOffset - startOffset - commentSignLength, out matchLength);
+					} while (index > -1);
+				}
 			}
 		}
-		 */
+		
+		static int IndexOfAny(string haystack, string[] needles, int startIndex, out int matchLength)
+		{
+			if (haystack == null)
+				throw new ArgumentNullException("haystack");
+			if (needles == null)
+				throw new ArgumentNullException("needles");
+			int index = -1;
+			matchLength = 0;
+			foreach (var needle in needles) {
+				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
+				if (i != -1 && (index == -1 || index > i)) {
+					index = i;
+					matchLength = needle.Length;
+				}
+			}
+			return index;
+		}
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{

@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				lock (Project.SyncRoot) {
 					TargetFramework oldFramework = ((CompilableProject)Project).CurrentTargetFramework;
 					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
-						((CompilableProject)Project).SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
+						((CompilableProject)Project).ToolsVersion = newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor;
 					}
 					if (newFramework != null) {
 						UpdateAppConfig(newFramework);

@@ -1,6 +1,6 @@
 ﻿// 
 // RefactoringContext.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -44,9 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			protected set;
 		}
 		
-		public abstract bool HasCSharp3Support {
-			get;
-		}
+		public abstract bool Supports(Version version);
 		
 		public ICompilation Compilation {
 			get;
@@ -121,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			int number = -1;
 			string proposedName;
-			do { 
+			do {
 				proposedName = AppendNumberToName (baseName, number++);
 			} while (type.Members.Select (m => m.GetChildByRole (AstNode.Roles.Identifier)).Any (n => n.Name == proposedName));
 			return proposedName;

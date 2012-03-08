@@ -30,6 +30,17 @@ namespace CSharpBinding
 			get { return CSharpProjectBinding.LanguageName; }
 		}
 		
+		public Version LanguageVersion {
+			get {
+				string toolsVersion;
+				lock (SyncRoot) toolsVersion = this.ToolsVersion;
+				Version version = new Version(toolsVersion);
+				if (version == new Version(4, 0) && DotnetDetection.IsDotnet45Installed())
+					return new Version(5, 0);
+				return version;
+			}
+		}
+		
 		void Init()
 		{
 			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");

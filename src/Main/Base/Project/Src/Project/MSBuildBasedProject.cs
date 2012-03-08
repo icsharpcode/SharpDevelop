@@ -118,16 +118,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public event EventHandler MinimumSolutionVersionChanged;
 		
-		protected internal void SetToolsVersion(string newToolsVersion)
-		{
-			PerformUpdateOnProjectFile(
-				delegate {
-					projectFile.ToolsVersion = newToolsVersion;
-					userProjectFile.ToolsVersion = newToolsVersion;
-				});
-			
-			if (MinimumSolutionVersionChanged != null)
-				MinimumSolutionVersionChanged(this, EventArgs.Empty);
+		public string ToolsVersion {
+			get { return projectFile.ToolsVersion; }
+			protected internal set {
+				PerformUpdateOnProjectFile(
+					delegate {
+						projectFile.ToolsVersion = value;
+						userProjectFile.ToolsVersion = value;
+					});
+				
+				if (MinimumSolutionVersionChanged != null)
+					MinimumSolutionVersionChanged(this, EventArgs.Empty);
+			}
 		}
 		
 		public void PerformUpdateOnProjectFile(Action action)
@@ -1637,6 +1639,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return formattedText.ToString();
 		}
-		#endregion		
+		#endregion
 	}
 }
