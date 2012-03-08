@@ -48,7 +48,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		public static ICompilation GetCompilationForFile(FileName fileName)
 		{
-			return GetCurrentSolutionSnapshot().GetCompilation(ProjectService.OpenSolution.FindProjectContainingFile(fileName));
+			Solution solution = ProjectService.OpenSolution;
+			return GetCurrentSolutionSnapshot().GetCompilation(solution != null ? solution.FindProjectContainingFile(fileName) : null);
 		}
 		
 		/// <summary>
@@ -64,23 +65,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public static IProjectContent GetProjectContent(IProject project)
 		{
 			return project.ProjectContent;
-		}
-		
-		/// <summary>
-		/// Gets the project that owns the specified project content.
-		/// Returns null for referenced assemblies.
-		/// </summary>
-		public static IProject GetProject(IProjectContent projectContent)
-		{
-			if (projectContent == null)
-				return null;
-			if (ProjectService.OpenSolution != null) {
-				foreach (var project in ProjectService.OpenSolution.Projects) {
-					if (project.ProjectContent == projectContent)
-						return project;
-				}
-			}
-			return null;
 		}
 		#endregion
 		

@@ -128,6 +128,21 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Gets the project for which the specified compilation was created.
+		/// Returns null if the compilation was not created using the SharpDevelop project system.
+		/// </summary>
+		public static IProject GetProject(this ICompilation compilation)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			var snapshot = compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
+			if (snapshot != null)
+				return snapshot.GetProject(compilation.MainAssembly.UnresolvedAssembly as IProjectContent);
+			else
+				return null;
+		}
+		
+		/// <summary>
 		/// Creates an array containing a part of the array (similar to string.Substring).
 		/// </summary>
 		public static T[] Splice<T>(this T[] array, int startIndex)
@@ -549,12 +564,12 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Gets the ambience for the specified project content.
+		/// Gets the ambience for the specified compilation.
 		/// Never returns null.
 		/// </summary>
-		public static IAmbience GetAmbience(this IProjectContent pc)
+		public static IAmbience GetAmbience(this ICompilation compilation)
 		{
-			IProject p = ParserService.GetProject(pc);
+			IProject p = compilation.GetProject();
 			if (p != null)
 				return p.GetAmbience();
 			else

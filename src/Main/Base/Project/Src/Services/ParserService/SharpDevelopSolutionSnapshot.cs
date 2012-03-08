@@ -35,12 +35,23 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public IProjectContent GetProjectContent(IProject project)
 		{
 			if (project == null)
-				throw new ArgumentNullException("project");
+				return null;
 			IProjectContent pc;
 			if (projectContentSnapshots.TryGetValue(project, out pc))
 				return pc;
 			else
 				return null;
+		}
+		
+		public IProject GetProject(IProjectContent projectContent)
+		{
+			if (projectContent == null)
+				return null;
+			foreach (var pair in projectContentSnapshots) {
+				if (pair.Value == projectContent)
+					return pair.Key;
+			}
+			return null;
 		}
 		
 		public ICompilation GetCompilation(IProject project)

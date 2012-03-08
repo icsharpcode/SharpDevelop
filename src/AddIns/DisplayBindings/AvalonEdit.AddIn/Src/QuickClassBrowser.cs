@@ -242,28 +242,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			IUnresolvedTypeDefinition selectedClass = item != null ? item.Entity as IUnresolvedTypeDefinition : null;
 			memberItems = new List<EntityItem>();
 			if (selectedClass != null) {
-				var project = ProjectService.OpenSolution.FindProjectContainingFile(FileName.Create(selectedClass.ParsedFile.FileName));
-				if (project != null) {
-					ICompilation c = ParserService.GetCompilation(project);
-					// HACK: Resolving an IUnresolvedTypeDefinition currently does strange things in NR5 if the unresolved typedef
-					// is not part of the compilation (e.g. replaced with newer version), so we need this hack to ensure we
-					// use it only as a type name:
-					var typeRef = ReflectionHelper.ParseReflectionName(selectedClass.ReflectionName);
-					var context = new SimpleTypeResolveContext(c.MainAssembly);
-					ITypeDefinition compoundClass = typeRef.Resolve(context).GetDefinition();
-					if (compoundClass != null) {
-						var ambience = project.GetAmbience();
-						foreach (var member in compoundClass.Members) {
-							if (member.IsSynthetic)
-								continue;
-							bool isInSamePart = string.Equals(member.UnresolvedMember.ParsedFile.FileName, selectedClass.ParsedFile.FileName, StringComparison.OrdinalIgnoreCase);
-							memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
-						}
-						memberItems.Sort();
-						if (jumpOnSelectionChange) {
-							AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
-							JumpTo(item, selectedClass.Region);
-						}
+				ICompilation compilation = ParserService.GetCompilationForFile(FileName.Create(selectedClass.ParsedFile.FileName));
+				var context = new SimpleTypeResolveContext(compilation.MainAssembly);
+				ITypeDefinition compoundClass = selectedClass.Resolve(context).GetDefinition();
+				if (compoundClass != null) {
+					var ambience = compilation.GetAmbience();
+					foreach (var member in compoundClass.Members) {
+						if (member.IsSynthetic)
+							continue;
+						bool isInSamePart = string.Equals(member.UnresolvedMember.ParsedFile.FileName, selectedClass.ParsedFile.FileName, StringComparison.OrdinalIgnoreCase);
+						memberItems.Add(new EntityItem(member, ambience) { IsInSamePart = isInSamePart });
+					}
+					memberItems.Sort();
+					if (jumpOnSelectionChange) {
+						AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
+						JumpTo(item, selectedClass.Region);
 					}
 				}
 			}
