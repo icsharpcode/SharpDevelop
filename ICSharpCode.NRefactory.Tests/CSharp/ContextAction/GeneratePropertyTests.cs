@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		public void Test ()
 		{
 			string result = RunContextAction (
-				new GenerateGetter (),
+				new GenerateProperty (),
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +

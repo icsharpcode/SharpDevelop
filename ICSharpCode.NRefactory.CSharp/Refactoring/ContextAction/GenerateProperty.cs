@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class GenerateProp : IContextAction
+	public class GenerateProperty : IContextAction
 	{
 		public bool IsValid (RefactoringContext context)
 		{
