@@ -80,9 +80,9 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Runs an action for all elements in the input.
+		/// Obsolete. Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.
 		/// </summary>
-		[Obsolete("Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.")]
+		//[Obsolete("Please use a regular foreach loop instead. ForEach() is executed for its side-effects, and side-effects mix poorly with a functional programming style.")]
 		public static void ForEach<T>(this IEnumerable<T> input, Action<T> action)
 		{
 			if (input == null)
@@ -574,6 +574,24 @@ namespace ICSharpCode.SharpDevelop
 				return p.GetAmbience();
 			else
 				return AmbienceService.GetCurrentAmbience();
+		}
+		#endregion
+		
+		#region Compatibility extension methods (to reduce merge conflicts SD4->SD5)
+		/// <summary>
+		/// Obsolete. Use GetOffset() instead.
+		/// </summary>
+		public static int PositionToOffset(this IDocument document, int line, int column)
+		{
+			return document.GetOffset(line, column);
+		}
+		
+		/// <summary>
+		/// Obsolete. Use GetLineByNumber() instead.
+		/// </summary>
+		public static IDocumentLine GetLine(this IDocument document, int lineNumber)
+		{
+			return document.GetLineByNumber(lineNumber);
 		}
 		#endregion
 	}
