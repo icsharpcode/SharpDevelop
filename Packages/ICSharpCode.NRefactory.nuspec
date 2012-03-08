@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>ICSharpCode.NRefactory</id>
-    <version>5.0.0.4</version>
+    <version>5.0.0.5</version>
     <title>NRefactory</title>
     <authors>Daniel Grunwald, Mike Krüger</authors>
     <owners>Daniel Grunwald</owners>
