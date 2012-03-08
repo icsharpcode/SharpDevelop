@@ -236,6 +236,7 @@
     <Compile Include="CSharp\ContextAction\ConvertForeachToForTests.cs" />
     <Compile Include="CSharp\ContextAction\AddAnotherAccessorTests.cs" />
     <Compile Include="CSharp\ContextAction\RemoveRegionTests.cs" />
+    <Compile Include="CSharp\ContextAction\GeneratePropertyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
