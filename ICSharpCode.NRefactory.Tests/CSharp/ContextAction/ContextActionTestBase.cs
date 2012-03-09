@@ -27,6 +27,7 @@
 using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
@@ -35,9 +36,9 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		protected static string RunContextAction (IContextAction action, string input)
 		{
 			var context = new TestRefactoringContext (input);
-			if (!action.IsValid (context))
+			if (!action.IsValid (context, default (CancellationToken)))
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (action.IsValid (context), action.GetType () + " is invalid.");
+			Assert.IsTrue (action.IsValid (context, default (CancellationToken)), action.GetType () + " is invalid.");
 			
 			action.Run (context);
 			
@@ -48,9 +49,9 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		protected static void TestWrongContext (IContextAction action, string input)
 		{
 			var context = new TestRefactoringContext (input);
-			if (!action.IsValid (context))
+			if (!action.IsValid (context, default (CancellationToken)))
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!action.IsValid (context), action.GetType () + " shouldn't be valid there.");
+			Assert.IsTrue (!action.IsValid (context, default (CancellationToken)), action.GetType () + " shouldn't be valid there.");
 		}
 	}
 }

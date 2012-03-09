@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.FormattingTests;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
@@ -136,9 +137,9 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		#endregion
 		
 		#region Resolving
-		public override ResolveResult Resolve (AstNode node)
+		public override ResolveResult Resolve (AstNode node, CancellationToken cancellationToken)
 		{
-			return resolver.Resolve(node);
+			return resolver.Resolve(node, cancellationToken);
 		}		
 		#endregion
 		
