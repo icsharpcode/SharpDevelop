@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
@@ -18,6 +19,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Executes this action. Called when this action is selected from the context actions popup.
 		/// </summary>
-		void Execute(EditorContext context);
+		Task ExecuteAsync(EditorContext context);
 	}
 }

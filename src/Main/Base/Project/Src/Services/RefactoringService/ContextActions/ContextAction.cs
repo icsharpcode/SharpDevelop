@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <remarks><inheritdoc cref="IContextActionsProvider.GetAvailableActionsAsync"/></remarks>
 		public abstract Task<bool> IsAvailableAsync(EditorContext context, CancellationToken cancellationToken);
 		
-		public abstract void Execute(EditorContext context);
+		public abstract Task ExecuteAsync(EditorContext context);
 		
 		async Task<IContextAction[]> IContextActionsProvider.GetAvailableActionsAsync(EditorContext context, CancellationToken cancellationToken)
 		{

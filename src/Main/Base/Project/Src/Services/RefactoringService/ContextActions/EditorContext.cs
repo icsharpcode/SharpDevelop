@@ -59,6 +59,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			get { return caretOffset; }
 		}
 		
+		/// <summary>
+		/// Gets caret location, at the time when this editor context was created.
+		/// </summary>
+		public TextLocation CaretLocation {
+			get { return caretLocation; }
+		}
+		
 		Task<ParseInformation> parseInformation;
 		Task<ICompilation> compilation;
 		

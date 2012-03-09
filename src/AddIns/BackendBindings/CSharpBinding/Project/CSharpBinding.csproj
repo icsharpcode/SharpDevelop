@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Refactoring\SDScript.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
@@ -74,10 +75,10 @@
     <Compile Include="Src\Completion\CSharpCompletionDataFactory.cs" />
     <Compile Include="Src\Completion\EntityCompletionData.cs" />
     <Compile Include="Src\CSharpBracketSearcher.cs" />
-    <Compile Include="Src\CSharpContextActionDoozer.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
-    <Compile Include="Src\SDRefactoringContext.cs" />
+    <Compile Include="Src\Refactoring\CSharpContextActionDoozer.cs" />
+    <Compile Include="Src\Refactoring\SDRefactoringContext.cs" />
     <Compile Include="Src\CSharpSemanticHighlighter.cs" />
     <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
@@ -134,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Completion" />
+    <Folder Include="Src\Refactoring" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

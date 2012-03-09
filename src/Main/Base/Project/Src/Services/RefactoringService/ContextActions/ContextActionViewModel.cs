@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Execute(object parameter)
 		{
-			this.action.Execute(context);
+			this.action.ExecuteAsync(context).FireAndForget();
 		}
 		
 		public bool CanExecute(object parameter)

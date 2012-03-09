@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace CSharpBinding
+namespace CSharpBinding.Refactoring
 {
 	using NR5ContextAction = ICSharpCode.NRefactory.CSharp.Refactoring.IContextAction;
 	
@@ -57,28 +58,37 @@ namespace CSharpBinding
 			{
 				if (!string.Equals(Path.GetExtension(context.FileName), ".cs", StringComparison.OrdinalIgnoreCase))
 					return Task.FromResult(false);
+				ITextEditor editor = context.Editor;
+				// grab SelectionStart/SelectionLength while we're still on the main thread
+				int selectionStart = editor.SelectionStart;
+				int selectionLength = editor.SelectionLength;
 				return Task.Run(
 					async delegate {
-//						var parseInfo = (await context.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
-//						if (parseInfo == null)
-//							return false;
-						lock (this) {
-							if (!contextActionCreated) {
-								contextActionCreated = true;
-								contextAction = (NR5ContextAction)addIn.CreateObject(className);
-							}
-						}
+						CreateContextAction();
 						if (contextAction == null)
 							return false;
 						CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
-						//var refactoringContext = new SDRefactoringContext(context, resolver, cancellationToken);
-						return true;
+						var refactoringContext = new SDRefactoringContext(context.TextSource, resolver, context.CaretLocation, selectionStart, selectionLength, cancellationToken);
+						return contextAction.IsValid(refactoringContext);
 					}, cancellationToken);
 			}
 			
-			public override void Execute(EditorContext context)
+			void CreateContextAction()
 			{
-				throw new NotImplementedException();
+				lock (this) {
+					if (!contextActionCreated) {
+						contextActionCreated = true;
+						contextAction = (NR5ContextAction)addIn.CreateObject(className);
+					}
+				}
+			}
+			
+			public override async Task ExecuteAsync(EditorContext context)
+			{
+				var resolver = await context.GetAstResolverAsync();
+				var refactoringContext = new SDRefactoringContext(context.Editor, resolver, context.CaretLocation);
+				CreateContextAction();
+				contextAction.Run(refactoringContext);
 			}
 		}
 	}

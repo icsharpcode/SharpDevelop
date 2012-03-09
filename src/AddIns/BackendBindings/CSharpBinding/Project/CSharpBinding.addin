@@ -10,7 +10,7 @@
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll">
-			<Doozer name="CSharpContextAction" class="CSharpBinding.CSharpContextActionDoozer"/>
+			<Doozer name="CSharpContextAction" class="CSharpBinding.Refactoring.CSharpContextActionDoozer"/>
 		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = ":ICSharpCode.NRefactory.CSharp"/>
@@ -156,7 +156,7 @@
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter" />
 		<!--<CSharpContextAction id = "GenerateProperty"
 			displayName = "Generate property"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />-->
 		<CSharpContextAction id = "GenerateSwitchLabels"
 			displayName = "Generate switch labels"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateSwitchLabels" />
@@ -175,9 +175,9 @@
 		<CSharpContextAction id = "RemoveBraces"
 			displayName = "Remove braces"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBraces" />
-		<CSharpContextAction id = "RemoveRegion"
+		<!--<CSharpContextAction id = "RemoveRegion"
 			displayName = "Remove #region"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />-->
 		<CSharpContextAction id = "ReplaceEmptyString"
 			displayName = "Use string.Empty"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ReplaceEmptyString" />
@@ -192,6 +192,6 @@
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseExplicitType" />
 		<CSharpContextAction id = "UseVarKeyword"
 			displayName = "Use 'var' keyword"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeyword" />-->
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeyword" />
 	</Path>
 </AddIn>

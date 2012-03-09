@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Threading.Tasks;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -22,9 +23,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.DisplayName = ambience.ConvertEntity(entity);
 		}
 		
-		public void Execute(EditorContext context)
+		public Task ExecuteAsync(EditorContext context)
 		{
 			NavigationService.NavigateTo(this.Entity);
+			return Task.FromResult<object>(null);
 		}
 	}
 }
