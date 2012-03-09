@@ -88,6 +88,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
+		/// Gets the compilation for this resolver.
+		/// </summary>
+		public ICompilation Compilation {
+			get { return initialResolverState.Compilation; }
+		}
+		
+		/// <summary>
+		/// Gets the root node for which this CSharpAstResolver was created.
+		/// </summary>
+		public AstNode RootNode {
+			get { return rootNode; }
+		}
+		
+		/// <summary>
+		/// Gets the parsed file used by this CSharpAstResolver.
+		/// Can return null.
+		/// </summary>
+		public CSharpParsedFile ParsedFile {
+			get { return parsedFile; }
+		}
+		
+		/// <summary>
 		/// Applies a resolver navigator. This will resolve the nodes requested by the navigator, and will inform the
 		/// navigator of the results.
 		/// This method must be called as the first operation on the CSharpAstResolver, it is invalid to apply a navigator
