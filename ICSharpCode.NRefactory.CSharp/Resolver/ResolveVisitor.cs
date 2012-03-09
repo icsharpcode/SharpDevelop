@@ -473,7 +473,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			while (!resolverBeforeDict.TryGetValue(parent, out storedResolver)) {
 				parent = parent.Parent;
 				if (parent == null)
-					throw new InvalidOperationException("Could not find a resolver state for any parent of the specified node. Did you forget to call 'Scan(compilationUnit);'?");
+					throw new InvalidOperationException("Could not find a resolver state for any parent of the specified node. Are you trying to resolve a node that is not a descendant of the CSharpAstResolver's root node?");
 			}
 			return storedResolver;
 		}
@@ -1255,7 +1255,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ResolveResult rr = resolver.ResolveIndexer(targetResult, arguments, argumentNames);
 				ArrayAccessResolveResult aarr = rr as ArrayAccessResolveResult;
 				if (aarr != null) {
-					ProcessConversionResults(indexerExpression.Arguments, aarr.Indices);
+					ProcessConversionResults(indexerExpression.Arguments, aarr.Indexes);
 				} else {
 					ProcessConversionsInInvocation(target, indexerExpression.Arguments, rr as CSharpInvocationResolveResult);
 				}

@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory
 		private EmptyList() {}
 		
 		T IList<T>.this[int index] {
-			get { throw new IndexOutOfRangeException(); }
-			set { throw new IndexOutOfRangeException(); }
+			get { throw new ArgumentOutOfRangeException("index"); }
+			set { throw new ArgumentOutOfRangeException("index"); }
 		}
 		
 		int ICollection<T>.Count {
