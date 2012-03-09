@@ -2699,14 +2699,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (minit == null)
 					return null;
 				var init = new ArrayInitializerExpression ();
-				var braceLocs = LocationsBag.GetLocations (minit);
-				if (braceLocs != null)
-					init.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), ArrayInitializerExpression.Roles.LBrace);
-						
 				AddConvertCollectionOrObjectInitializers (init, minit);
-				if (braceLocs != null && braceLocs.Count > 1)
-					init.AddChild (new CSharpTokenNode (Convert (braceLocs [1])), ArrayInitializerExpression.Roles.RBrace);
-
 				return init;
 			}
 			

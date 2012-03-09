@@ -147,6 +147,7 @@ namespace Mono.CSharp
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation, savedOperatorLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		bool HadAttributeParens;
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> attributeArgumentCommas = new List<Location> ();
 		List<Location> parameterListCommas = new List<Location> ();
@@ -779,6 +780,8 @@ attribute
 			attributeArgumentCommas.Add (savedAttrParenCloseLocation);
 			lbag.AddLocation ($$, attributeArgumentCommas);
 			attributeArgumentCommas.Clear ();
+		} else if (HadAttributeParens) {
+			lbag.AddLocation ($$, savedAttrParenOpenLocation, savedAttrParenCloseLocation);
 		}
 	  }
 	;
@@ -788,12 +791,13 @@ attribute_name
 	;
 
 opt_attribute_arguments
-	: /* empty */   { $$ = null; }
+	: /* empty */   { $$ = null; HadAttributeParens = false;  }
 	| OPEN_PARENS attribute_arguments CLOSE_PARENS
 	  {
 		savedAttrParenOpenLocation = GetLocation ($1);
 		savedAttrParenCloseLocation = GetLocation ($3);
 		$$ = $2;
+		HadAttributeParens = true;
 	  }
 	;
 
@@ -3261,8 +3265,10 @@ member_initializer
 	  {
 		if ($2 == null)
 			$$ = null;
-		else
+		else {
 	  		$$ = new CollectionElementInitializer ((List<Expression>)$2, GetLocation ($1));
+			lbag.AddLocation ($$, GetLocation ($2));
+	  	}
 	  }
 	| OPEN_BRACE CLOSE_BRACE
 	  {
@@ -4695,12 +4701,12 @@ block_prepared
 	  {
 		--lexer.parsing_block;
 		$$ = end_block (GetLocation ($4));
-	  }
-	| CLOSE_BRACE {
+	  } | CLOSE_BRACE
+	  {
 		report.Error (1525, GetLocation ($1), "Unexpected symbol '}', expected '{'");
-		lexer.putback ('}');	
+		lexer.putback ('}');
 		$$ = end_block (GetLocation ($1));
-	}
+	  }
 	;
 
 opt_statement_list
