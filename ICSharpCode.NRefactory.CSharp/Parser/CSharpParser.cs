@@ -1885,7 +1885,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					varInit.AddChild (Identifier.Create (blockVariableDeclaration.Variable.Name, Convert (blockVariableDeclaration.Variable.Location)), VariableInitializer.Roles.Identifier);
 					if (blockVariableDeclaration.Initializer != null) {
 						if (initLocation != null)
-							varInit.AddChild (new CSharpTokenNode (Convert (location [0])), VariableInitializer.Roles.Assign);
+							varInit.AddChild (new CSharpTokenNode (Convert (initLocation [0])), VariableInitializer.Roles.Assign);
 						varInit.AddChild ((Expression)blockVariableDeclaration.Initializer.Accept (this), VariableInitializer.Roles.Expression);
 					}
 					
@@ -2221,9 +2221,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new UnaryOperatorExpression ();
 				result.Operator = UnaryOperatorType.Dereference;
-				var location = LocationsBag.GetLocations (indirectionExpression);
-				if (location != null)
-					result.AddChild (new CSharpTokenNode (Convert (location [0])), UnaryOperatorExpression.DereferenceRole);
+				result.AddChild (new CSharpTokenNode (Convert (indirectionExpression.Location)), UnaryOperatorExpression.DereferenceRole);
 				if (indirectionExpression.Expr != null)
 					result.AddChild ((Expression)indirectionExpression.Expr.Accept (this), UnaryOperatorExpression.Roles.Expression);
 				return result;
