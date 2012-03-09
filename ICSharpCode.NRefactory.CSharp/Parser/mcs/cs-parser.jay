@@ -2875,7 +2875,10 @@ opt_type_parameter_list
 			FeatureIsNotAvailable (GetLocation ($1), "generics");
 	  
 		$$ = $2;
-		lbag.AppendTo ($$, GetLocation ($1), GetLocation ($3));
+		var list = locationListStack.Pop ();
+		list.Add (GetLocation ($1));
+		list.Add (GetLocation ($2));
+		lbag.AddLocation ($2, list);
 	  }
 	;
 
@@ -2885,13 +2888,14 @@ type_parameters
 		var tparams = new TypeParameters ();
 		tparams.Add ((TypeParameter)$1);
 		$$ = tparams;
+		locationListStack.Push (new List<Location> ());
 	  }
 	| type_parameters COMMA type_parameter
 	  {
 		var tparams = (TypeParameters) $1;
 		tparams.Add ((TypeParameter)$3);
 		$$ = tparams;
-		lbag.AddLocation ($3, GetLocation ($3));
+		locationListStack.Peek ().Add (GetLocation ($2));
 	  }	  
 	;
 
