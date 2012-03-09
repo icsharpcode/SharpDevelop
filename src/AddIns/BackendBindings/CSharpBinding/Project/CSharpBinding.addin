@@ -9,8 +9,11 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "CSharpBinding.dll"/>
+		<Import assembly = "CSharpBinding.dll">
+			<Doozer name="CSharpContextAction" class="CSharpBinding.CSharpContextActionDoozer"/>
+		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+		<Import assembly = ":ICSharpCode.NRefactory.CSharp"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -61,8 +64,8 @@
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding
 			id="CSharp"
-		    class="CSharpBinding.CSharpLanguageBinding"
-		    extensions=".cs" />
+			class="CSharpBinding.CSharpLanguageBinding"
+			extensions=".cs" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SyntaxModes">
@@ -94,14 +97,6 @@
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 	
-	<!--
-	depreciated, use LanguageBinding instead
-
-	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">
-		<Class id ="CSharpFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
-	</Path>
-	-->
-	
 	<Path name = "/Workspace/Icons">
 		<!-- C# -->
 		<Icon id         = "C#Prj"
@@ -120,6 +115,83 @@
 		                projectfileextension = ".csproj"
 		                class                = "CSharpBinding.CSharpProjectBinding" />
 	</Path>
+	
+	<Path path = "/SharpDevelop/ViewContent/AvalonEdit/ContextActions">
+		<!-- TODO: translate -->
+		<CSharpContextAction id = "AddAnotherAccessor"
+			displayName = "Add another accessor"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.AddAnotherAccessor" />
+		<CSharpContextAction id = "CheckIfParameterIsNull"
+			displayName = "${res:AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel}"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CheckIfParameterIsNull" />
+		<CSharpContextAction id = "ConvertDecToHex"
+			displayName = "Convert to hexadecimal"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertDecToHex" />
+		<CSharpContextAction id = "ConvertHexToDec"
+			displayName = "Convert to decimal"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertHexToDec" />
+		<CSharpContextAction id = "ConvertForeachToFor"
+			displayName = "Convert to for loop"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertForeachToFor" />
+		<CSharpContextAction id = "CreateBackingStore"
+			displayName = "${res:SharpDevelop.Refactoring.ExpandAutomaticProperty}"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateBackingStore" />
+		<CSharpContextAction id = "CreateEventInvocator"
+			displayName = "${res:SharpDevelop.Refactoring.CreateOnEventMethod}"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocator" />
+		<CSharpContextAction id = "CreateField"
+			displayName = "Introduce field"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateField" />
+		<CSharpContextAction id = "CreateLocalVariable"
+			displayName = "Introduce local variable"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariable" />
+		<CSharpContextAction id = "CreateProperty"
+			displayName = "Create property"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateProperty" />
+		<CSharpContextAction id = "FlipOperatorArguments"
+			displayName = "Flip operands"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.FlipOperatorArguments" />
+		<CSharpContextAction id = "GenerateGetter"
+			displayName = "Generate getter"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter" />
+		<!--<CSharpContextAction id = "GenerateProperty"
+			displayName = "Generate property"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />
+		<CSharpContextAction id = "GenerateSwitchLabels"
+			displayName = "Generate switch labels"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateSwitchLabels" />
+		<CSharpContextAction id = "InsertAnonymousMethodSignature"
+			displayName = "Create anonymous method"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.InsertAnonymousMethodSignature" />
+		<CSharpContextAction id = "IntroduceFormatItem"
+			displayName = "Introduce string.Format call"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceFormatItem" />
+		<CSharpContextAction id = "InvertIf"
+			displayName = "Invert if"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.InvertIf" />
+		<CSharpContextAction id = "RemoveBackingStore"
+			displayName = "${res:SharpDevelop.Refactoring.ConvertToAutomaticProperty}"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBackingStore" />
+		<CSharpContextAction id = "RemoveBraces"
+			displayName = "Remove braces"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBraces" />
+		<CSharpContextAction id = "RemoveRegion"
+			displayName = "Remove #region"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />
+		<CSharpContextAction id = "ReplaceEmptyString"
+			displayName = "Use string.Empty"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ReplaceEmptyString" />
+		<CSharpContextAction id = "SplitDeclarationAndAssignment"
+			displayName = "Split declaration and assignment"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitDeclarationAndAssignment" />
+		<CSharpContextAction id = "SplitString"
+			displayName = "Split string literal"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitString" />
+		<CSharpContextAction id = "UseExplicitType"
+			displayName = "Use explicit type"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseExplicitType" />
+		<CSharpContextAction id = "UseVarKeyword"
+			displayName = "Use 'var' keyword"
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeyword" />-->
+	</Path>
 </AddIn>
-
-

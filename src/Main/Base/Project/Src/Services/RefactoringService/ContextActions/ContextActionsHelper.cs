@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			protected ContextActionViewModel MakeGoToClassAction(ITypeDefinition @class, ObservableCollection<ContextActionViewModel> childActions)
 			{
 				return new ContextActionViewModel {
-					Action = new GoToClassAction(@class, this.LabelAmbience.ConvertEntity(@class)),
+					Action = new GoToEntityAction(@class, this.LabelAmbience),
 					Image = CompletionImage.GetImage(@class),
 					Comment = string.Format("(in {0})", @class.Namespace),
 					ChildActions = childActions
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					return null;
 				
 				return new ContextActionViewModel {
-					Action = new GoToMemberAction(derivedMember, this.LabelAmbience),
+					Action = new GoToEntityAction(derivedMember, this.LabelAmbience),
 					Image = CompletionImage.GetImage(derivedMember),
 					Comment = string.Format("(in {0})", containingClass.FullName),
 					ChildActions = childActions

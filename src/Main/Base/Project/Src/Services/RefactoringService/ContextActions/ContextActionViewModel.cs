@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		public string Name {
-			get { return this.action != null ? this.action.Title : string.Empty; }
+			get { return this.action != null ? this.action.DisplayName : string.Empty; }
 		}
 		
 		public string Comment { get; set; }

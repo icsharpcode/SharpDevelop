@@ -16,16 +16,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public abstract class ContextAction : IContextActionsProvider, IContextAction
 	{
-		public abstract string Title { get; }
+		public virtual string ID {
+			get { return GetType().FullName; }
+		}
+		
+		public abstract string DisplayName { get; }
 		
 		public bool IsVisible { get; set; }
 		
+		/// <summary>
+		/// Gets whether this context action is available in the given context.
+		/// </summary>
+		/// <remarks><inheritdoc cref="IContextActionsProvider.GetAvailableActionsAsync"/></remarks>
 		public abstract Task<bool> IsAvailableAsync(EditorContext context, CancellationToken cancellationToken);
 		
 		public abstract void Execute(EditorContext context);
 		
 		async Task<IContextAction[]> IContextActionsProvider.GetAvailableActionsAsync(EditorContext context, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			if (await IsAvailableAsync(context, cancellationToken).ConfigureAwait(false))
 				return new IContextAction[] { this };
 			else

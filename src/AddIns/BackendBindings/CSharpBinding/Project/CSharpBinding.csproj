@@ -74,9 +74,11 @@
     <Compile Include="Src\Completion\CSharpCompletionDataFactory.cs" />
     <Compile Include="Src\Completion\EntityCompletionData.cs" />
     <Compile Include="Src\CSharpBracketSearcher.cs" />
+    <Compile Include="Src\CSharpContextActionDoozer.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
     <Compile Include="Src\CSharpSemanticHighlighter.cs" />
+    <Compile Include="Src\ExtensionMethods.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">

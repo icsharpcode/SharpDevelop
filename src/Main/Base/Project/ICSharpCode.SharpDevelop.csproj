@@ -421,12 +421,10 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopup.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
-    <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
-    <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
-    <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />
+    <Compile Include="Src\Services\RefactoringService\GoToEntityAction.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeGraphNode.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeName.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />

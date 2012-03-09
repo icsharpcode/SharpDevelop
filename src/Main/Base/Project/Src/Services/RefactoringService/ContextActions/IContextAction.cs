@@ -12,9 +12,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public interface IContextAction
 	{
 		/// <summary>
-		/// Title displayed in the context actions popup.
+		/// Name displayed in the context actions popup.
 		/// </summary>
-		string Title { get; }
+		string DisplayName { get; }
 		/// <summary>
 		/// Executes this action. Called when this action is selected from the context actions popup.
 		/// </summary>

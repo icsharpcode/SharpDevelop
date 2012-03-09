@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class EditorContext
 	{
-		object syncRoot;
+		readonly object syncRoot = new object();
 		readonly ITextEditor editor;
 		
 		/// <summary>
@@ -49,6 +50,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ITextSource TextSource { get; private set; }
 		
 		readonly int caretOffset;
+		readonly TextLocation caretLocation;
 		
 		/// <summary>
 		/// Gets the offset of the caret, at the time when this editor context was created.
@@ -58,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		Task<ParseInformation> parseInformation;
-		ICompilation compilation;
+		Task<ICompilation> compilation;
 		
 		/// <summary>
 		/// Gets the ParseInformation for the file.
@@ -78,14 +80,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public Task<ICompilation> GetCompilationAsync()
 		{
-			var c = LazyInitializer.EnsureInitialized(ref compilation, () => ParserService.GetCompilationForFile(this.FileName));
-			return Task.FromResult(c);
+			lock (syncRoot) {
+				if (compilation == null)
+					compilation = Task.FromResult(ParserService.GetCompilationForFile(this.FileName));
+				return compilation;
+			}
 		}
 		
 		/// <summary>
 		/// Caches values shared by Context actions. Used in <see cref="GetCached"/>.
 		/// </summary>
-		readonly Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
+		readonly ConcurrentDictionary<Type, Task> cachedValues = new ConcurrentDictionary<Type, Task>();
 		
 		/// <summary>
 		/// Fully initializes the EditorContext.
@@ -96,36 +101,52 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("editor");
 			this.editor = editor;
 			caretOffset = editor.Caret.Offset;
+			caretLocation = editor.Caret.Location;
 			
 			this.FileName = editor.FileName;
 			this.TextSource = editor.Document.CreateSnapshot();
 		}
 		
+		Task<ResolveResult> currentSymbol;
+		
 		/// <summary>
 		/// The resolved symbol at editor caret.
 		/// </summary>
-		public ResolveResult CurrentSymbol {
-			get {
-				throw new NotImplementedException();
+		public Task<ResolveResult> GetCurrentSymbolAsync()
+		{
+			lock (syncRoot) {
+				if (currentSymbol == null)
+					currentSymbol = ResolveCurrentSymbolAsync();
+				return currentSymbol;
 			}
+		}
+		
+		async Task<ResolveResult> ResolveCurrentSymbolAsync()
+		{
+			var parser = ParserService.GetParser(this.FileName);
+			if (parser == null)
+				return null;
+			var parseInfo = await GetParseInformationAsync().ConfigureAwait(false);
+			if (parseInfo == null)
+				return null;
+			var compilation = await GetCompilationAsync().ConfigureAwait(false);
+			return await Task.Run(() => ParserService.ResolveAsync(this.FileName, caretLocation, this.TextSource, CancellationToken.None)).ConfigureAwait(false);
 		}
 		
 		/// <summary>
 		/// Gets cached value shared by context actions. Initializes a new value if not present.
 		/// </summary>
-		public T GetCached<T>() where T : IContextActionCache, new()
+		public Task<T> GetCachedAsync<T>(Func<EditorContext, T> initializationFunc)
 		{
-			lock (cachedValues) {
-				Type t = typeof(T);
-				if (cachedValues.ContainsKey(t)) {
-					return (T)cachedValues[t];
-				} else {
-					T cached = new T();
-					cached.Initialize(this);
-					cachedValues[t] = cached;
-					return cached;
-				}
-			}
+			return (Task<T>)cachedValues.GetOrAdd(typeof(T), _ => Task.FromResult(initializationFunc(this)));
+		}
+		
+		/// <summary>
+		/// Gets cached value shared by context actions. Initializes a new value if not present.
+		/// </summary>
+		public Task<T> GetCachedAsync<T>(Func<EditorContext, Task<T>> initializationFunc)
+		{
+			return (Task<T>)cachedValues.GetOrAdd(typeof(T), _ => initializationFunc(this));
 		}
 	}
 }

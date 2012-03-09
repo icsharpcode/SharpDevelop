@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -29,14 +30,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			add { this.ActionsTreeView.ActionExecuted += value; }
 			remove { this.ActionsTreeView.ActionExecuted -= value; }
 		}
-		
-		/*
-		public new ContextActionsBulbViewModel DataContext
-		{
-			get { return (ContextActionsBulbViewModel)base.DataContext; }
-			set { base.DataContext = value; }
-		}
-		*/
 		
 		bool isOpen;
 		public bool IsOpen {
@@ -70,9 +63,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		void Expander_Expanded(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
-			#warning NotImplementedException
-			//this.DataContext.LoadHiddenActions();
+			((ContextActionsBulbViewModel)this.DataContext).LoadHiddenActionsAsync(CancellationToken.None).FireAndForget();
 		}
 		
 		void CheckBox_Click(object sender, RoutedEventArgs e)

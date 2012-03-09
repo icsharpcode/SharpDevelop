@@ -7,24 +7,24 @@ using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	public class GoToMemberAction : IContextAction
+	public class GoToEntityAction : IContextAction
 	{
-		public string Title { get; private set; }
-		public IMember Member { get; private set; }
+		public string DisplayName { get; private set; }
+		public IEntity Entity { get; private set; }
 		
-		public GoToMemberAction(IMember member, IAmbience ambience)
+		public GoToEntityAction(IEntity entity, IAmbience ambience)
 		{
 			if (ambience == null)
 				throw new ArgumentNullException("ambience");
-			if (member == null)
-				throw new ArgumentNullException("member");
-			this.Member = member;
-			this.Title = ambience.ConvertEntity(member);
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+			this.Entity = entity;
+			this.DisplayName = ambience.ConvertEntity(entity);
 		}
 		
 		public void Execute(EditorContext context)
 		{
-			NavigationService.NavigateTo(this.Member);
+			NavigationService.NavigateTo(this.Entity);
 		}
 	}
 }

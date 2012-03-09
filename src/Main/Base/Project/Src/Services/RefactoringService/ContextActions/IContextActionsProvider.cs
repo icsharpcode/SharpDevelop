@@ -14,8 +14,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public interface IContextActionsProvider
 	{
 		/// <summary>
+		/// Unique identifier for the context actions provider; used to hide context actions
+		/// that were disabled by the user.
+		/// </summary>
+		string ID { get; }
+		
+		/// <summary>
 		/// Gets actions available for current line of the editor.
 		/// </summary>
+		/// <remarks>
+		/// This method gets called on the GUI thread. The method implementation should use
+		/// 'Task.Run()' to move the implementation onto a background thread.
+		/// </remarks>
 		Task<IContextAction[]> GetAvailableActionsAsync(EditorContext context, CancellationToken cancellationToken);
 		
 		/// <summary>
