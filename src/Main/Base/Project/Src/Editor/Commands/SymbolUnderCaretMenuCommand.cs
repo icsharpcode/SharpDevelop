@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
@@ -19,10 +20,15 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			if (editorProvider != null) {
-				ITextEditor editor = editorProvider.TextEditor;
-				var resolveResult = ParserService.Resolve(editor.FileName, editor.Caret.Location, editor.Document);
-				RunImpl(editor, editor.Caret.Offset, resolveResult);
+				Run(editorProvider.TextEditor, editorProvider.TextEditor.Caret.Offset);
 			}
+		}
+		
+		public void Run(ITextEditor editor, int caretOffset)
+		{
+			var location = editor.Document.GetLocation(caretOffset);
+			var resolveResult = ParserService.Resolve(editor.FileName, location, editor.Document);
+			RunImpl(editor, editor.Caret.Offset, resolveResult);
 		}
 		
 		protected abstract void RunImpl(ITextEditor editor, int caretOffset, ResolveResult symbol);

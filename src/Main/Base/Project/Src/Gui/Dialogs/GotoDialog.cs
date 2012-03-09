@@ -234,8 +234,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = project.ProjectContent;
 					if (projectContent != null) {
-						#warning also consider nested types
-						foreach (IUnresolvedTypeDefinition c in projectContent.TopLevelTypeDefinitions) {
+						foreach (IUnresolvedTypeDefinition c in projectContent.GetAllTypeDefinitions()) {
 							string className = c.Name;
 							if (className.Length >= text.Length) {
 								if (className.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0) {

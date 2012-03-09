@@ -202,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return WorkbenchSingleton.Workbench.ViewContentCollection.OfType<ITextEditorProvider>().Any(provider => item.FileName == provider.TextEditor.FileName);
 				case 3:
 					// Document
-					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == FileName.Create(item.FileName);
+					return WorkbenchSingleton.Workbench.ActiveViewContent != null && WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName == item.FileName;
 				case 4:
 					// Namespace
 					return current != null && itemClass != null && current.Namespace == itemClass.Namespace;

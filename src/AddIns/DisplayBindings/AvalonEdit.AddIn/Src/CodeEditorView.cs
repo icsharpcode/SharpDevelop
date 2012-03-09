@@ -481,10 +481,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position == null)
 					return;
-				throw new NotImplementedException();
-				//Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
-				//var goToDefinitionCommand = new GoToDefinition();
-				//goToDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
+				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
+				var goToDefinitionCommand = new GoToDefinition();
+				goToDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value.Location));
 				e.Handled = true;
 			}
 		}
