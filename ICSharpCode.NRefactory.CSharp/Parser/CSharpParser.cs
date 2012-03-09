@@ -3199,8 +3199,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				var fromClause = new QueryFromClause ();
-				var location = LocationsBag.GetLocations (queryStart);
-				
+
 				fromClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location)), QueryFromClause.FromKeywordRole);
 				
 				if (queryStart.IdentifierType != null)
@@ -3208,8 +3207,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert (queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
+				var location = LocationsBag.GetLocations (queryStart);
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location [0])), QueryFromClause.InKeywordRole);
+
 				if (queryStart.Expr != null)
 					fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
 				return fromClause;
@@ -3218,8 +3219,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (Mono.CSharp.Linq.SelectMany queryStart)
 			{
 				var fromClause = new QueryFromClause ();
-				var location = LocationsBag.GetLocations (queryStart);
-				
+
 				fromClause.AddChild (new CSharpTokenNode (Convert (queryStart.Location)), QueryFromClause.FromKeywordRole);
 				
 				if (queryStart.IdentifierType != null)
@@ -3227,9 +3227,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				fromClause.AddChild (Identifier.Create (queryStart.IntoVariable.Name, Convert (queryStart.IntoVariable.Location)), QueryFromClause.Roles.Identifier);
 				
+				var location = LocationsBag.GetLocations (queryStart);
 				if (location != null)
 					fromClause.AddChild (new CSharpTokenNode (Convert (location [0])), QueryFromClause.InKeywordRole);
-				
+
 				if (queryStart.Expr != null)
 					fromClause.AddChild ((Expression)queryStart.Expr.Accept (this), QueryFromClause.Roles.Expression);
 				return fromClause;
@@ -3291,6 +3292,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0])), QueryJoinClause.InKeywordRole);
+
 				if (join.Expr != null)
 					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
 				
@@ -3323,15 +3325,17 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0])), QueryJoinClause.InKeywordRole);
 				
+				if (join.Expr != null)
+					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
+
+				if (location != null && location.Count > 1)
+					result.AddChild (new CSharpTokenNode (Convert (location [1])), QueryJoinClause.OnKeywordRole);
+
 				var outer = join.OuterSelector.Statements.FirstOrDefault () as ContextualReturn;
 				if (outer != null)
 					result.AddChild ((Expression)outer.Expr.Accept (this), QueryJoinClause.OnExpressionRole);
 				
-				if (location != null && location.Count > 1)
-					result.AddChild (new CSharpTokenNode (Convert (location [1])), QueryJoinClause.OnKeywordRole);
-				if (join.Expr != null)
-					result.AddChild ((Expression)join.Expr.Accept (this), QueryJoinClause.InExpressionRole);
-				
+
 				if (location != null && location.Count > 2)
 					result.AddChild (new CSharpTokenNode (Convert (location [2])), QueryJoinClause.EqualsKeywordRole);
 				var inner = join.InnerSelector.Statements.FirstOrDefault () as ContextualReturn;

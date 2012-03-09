@@ -147,6 +147,8 @@ namespace Mono.CSharp
 		Location parameterModifierLocation, savedLocation, savedOpenLocation, savedCloseLocation;
 		Location savedAttrParenOpenLocation, savedAttrParenCloseLocation, savedOperatorLocation;
 		Stack<List<Location>> locationListStack = new Stack<List<Location>> (); // used for type parameters
+		Stack<Location> opt_intoStack = new Stack<Location> ();
+
 		bool HadAttributeParens;
 		List<Location> attributeCommas = new List<Location> ();
 		List<Location> attributeArgumentCommas = new List<Location> ();
@@ -5917,7 +5919,9 @@ first_from_clause
 	  
 		var lt = (Tokenizer.LocatedToken) $2;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		$$ = new Linq.QueryExpression (new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1)));
+		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1));
+		lbag.AddLocation (start, GetLocation ($3));
+		$$ = new Linq.QueryExpression (start);
 	  }
 	| FROM_FIRST type identifier_inside_body IN expression
 	  {
@@ -5925,11 +5929,11 @@ first_from_clause
 	  
 		var lt = (Tokenizer.LocatedToken) $3;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		$$ = new Linq.QueryExpression (
-			new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
-				IdentifierType = (FullNamedExpression)$2
-			}
-		);
+		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
+			IdentifierType = (FullNamedExpression)$2
+		};
+		lbag.AddLocation (start, GetLocation ($4));
+		$$ = new Linq.QueryExpression (start);
 	  }
 	;
 
@@ -5940,7 +5944,9 @@ nested_from_clause
 	  
 		var lt = (Tokenizer.LocatedToken) $2;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		$$ = new Linq.QueryExpression (new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1)));
+		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$4, rv, GetLocation ($1));
+		lbag.AddLocation (start, GetLocation ($3));
+		$$ = new Linq.QueryExpression (start);
 	  }
 	| FROM type identifier_inside_body IN expression
 	  {
@@ -5948,11 +5954,11 @@ nested_from_clause
 	  
 		var lt = (Tokenizer.LocatedToken) $3;
 		var rv = new Linq.RangeVariable (lt.Value, lt.Location);
-		$$ = new Linq.QueryExpression (
-			new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
-				IdentifierType = (FullNamedExpression)$2
-			}
-		);
+		var start = new Linq.QueryStartClause ((Linq.QueryBlock)current_block, (Expression)$5, rv, GetLocation ($1)) {
+			IdentifierType = (FullNamedExpression)$2
+		};
+		lbag.AddLocation (start, GetLocation ($4));
+		$$ = new Linq.QueryExpression (start);
 	  }
 	;
 	
@@ -5969,8 +5975,9 @@ from_clause
 		
 		current_block.SetEndLocation (lexer.Location);
 		current_block = current_block.Parent;
-		
 		((Linq.QueryBlock)current_block).AddRangeVariable (sn);
+
+		lbag.AddLocation ($$, GetLocation ($3));
 	  }	  
 	| FROM type identifier_inside_body IN
 	  {
@@ -5989,6 +5996,8 @@ from_clause
 		current_block = current_block.Parent;
 		
 		((Linq.QueryBlock)current_block).AddRangeVariable (sn);
+		
+		lbag.AddLocation ($$, GetLocation ($4));
 	  }
 	;	
 
@@ -6165,7 +6174,7 @@ join_clause
 			into = new Linq.RangeVariable (lt.Value, lt.Location);
 
 			$$ = new Linq.GroupJoin (block, sn, (Expression)$5, outer_selector, (Linq.QueryBlock) current_block, into, GetLocation ($1));	
-			lbag.AddLocation ($$, GetLocation ($3), GetLocation ($6), GetLocation ($9), GetLocation ($12));
+			lbag.AddLocation ($$, GetLocation ($3), GetLocation ($6), GetLocation ($9), opt_intoStack.Pop ());
 		}
 
 		current_block = block.Parent;
@@ -6212,6 +6221,7 @@ join_clause
 	  		$$ = new Linq.Join (block, sn, (Expression)$6, outer_selector, (Linq.QueryBlock) current_block, GetLocation ($1)) {
 	  			IdentifierType = (FullNamedExpression)$2
 	  		};
+			lbag.AddLocation ($$, GetLocation ($3), GetLocation ($6), GetLocation ($9));
 		} else {
 			//
 			// Set equals right side parent to beginning of linq query, it is not accessible therefore cannot cause name collisions
@@ -6230,6 +6240,7 @@ join_clause
 			$$ = new Linq.GroupJoin (block, sn, (Expression)$6, outer_selector, (Linq.QueryBlock) current_block, into, GetLocation ($1)) {
 	  			IdentifierType = (FullNamedExpression)$2
 	  		};			
+			lbag.AddLocation ($$, GetLocation ($3), GetLocation ($6), GetLocation ($9), opt_intoStack.Pop ());
 		}
 		
 		current_block = block.Parent;
@@ -6241,6 +6252,7 @@ opt_join_into
 	: /* empty */
 	| INTO identifier_inside_body
 	  {
+		opt_intoStack.Push (GetLocation ($1));
 		$$ = $2;
 	  }
 	;
