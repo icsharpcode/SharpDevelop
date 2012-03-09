@@ -6350,8 +6350,10 @@ void case_445()
 {
 		if (yyVals[-1+yyTop] == null)
 			yyVal = null;
-		else
+		else {
 	  		yyVal = new CollectionElementInitializer ((List<Expression>)yyVals[-1+yyTop], GetLocation (yyVals[-2+yyTop]));
+			lbag.AddLocation (yyVal, GetLocation (yyVals[0+yyTop])); // properly patched upstream
+		}
 	  }
 
 void case_446()

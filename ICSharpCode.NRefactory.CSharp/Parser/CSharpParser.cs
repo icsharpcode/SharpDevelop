@@ -2699,7 +2699,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (minit == null)
 					return null;
 				var init = new ArrayInitializerExpression ();
+				var braceLocs = LocationsBag.GetLocations (minit);
+				if (braceLocs != null)
+					init.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), ArrayInitializerExpression.Roles.LBrace);
+						
 				AddConvertCollectionOrObjectInitializers (init, minit);
+				if (braceLocs != null && braceLocs.Count > 1)
+					init.AddChild (new CSharpTokenNode (Convert (braceLocs [1])), ArrayInitializerExpression.Roles.RBrace);
+
 				return init;
 			}
 			
@@ -2715,10 +2722,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (collectionInit != null) {
 						var parent = new ArrayInitializerExpression ();
 						
-						var braceLocs = LocationsBag.GetLocations (expr);
-						if (braceLocs != null)
-							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), ArrayInitializerExpression.Roles.LBrace);
-						
+						parent.AddChild (new CSharpTokenNode (Convert (expr.Location)), ArrayInitializerExpression.Roles.LBrace);
+
 						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
 							var arg = collectionInit.Arguments [i] as CollectionElementInitializer.ElementInitializerArgument;
 							if (arg == null)
@@ -2726,8 +2731,9 @@ namespace ICSharpCode.NRefactory.CSharp
 							parent.AddChild ((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept (this), ArrayInitializerExpression.Roles.Expression);
 						}
 						
+						var braceLocs = LocationsBag.GetLocations (expr);
 						if (braceLocs != null)
-							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [1])), ArrayInitializerExpression.Roles.RBrace);
+							parent.AddChild (new CSharpTokenNode (Convert (braceLocs [0])), ArrayInitializerExpression.Roles.RBrace);
 							
 						init.AddChild (parent, ArrayInitializerExpression.Roles.Expression);
 					} else {

@@ -173,7 +173,7 @@ class B {
 			Assert.AreEqual("Point.X", result.Member.FullName);
 		}
 		
-		[Test, Ignore("Parser returns incorrect positions")]
+		[Test]
 		public void CollectionInitializerTest()
 		{
 			string program = @"using System.Collections.Generic;
