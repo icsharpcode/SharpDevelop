@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using Microsoft.Win32;
 using MSHelpSystem.Core;
 using MSHelpSystem.Controls;
@@ -21,7 +22,7 @@ namespace MSHelpSystem.Commands
 		{
 			ICSharpCode.SharpDevelop.Gui.TaskView view = (TaskView)Owner;
 
-			foreach (Task t in new List<Task>(view.SelectedTasks)) {
+			foreach (var t in view.SelectedTasks.ToArray()) {
 				if (t.BuildError == null)
 					continue;
 

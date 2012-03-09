@@ -54,6 +54,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken);
 		
-		void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken);
+		void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken);
 	}
 }

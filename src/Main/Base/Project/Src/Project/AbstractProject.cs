@@ -610,7 +610,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
 		{
-			return null;
+			return GetOrCreateBehavior().PrepareSymbolSearch(entity);
 		}
 		
 		protected virtual ProjectBehavior CreateDefaultBehavior()

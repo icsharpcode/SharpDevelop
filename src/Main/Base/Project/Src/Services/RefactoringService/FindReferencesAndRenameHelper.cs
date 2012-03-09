@@ -369,8 +369,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					else
 						highlighter = null;
 				}
-				var start = r.Region.Begin;
-				var end = r.Region.End;
+				var start = r.StartLocation;
+				var end = r.EndLocation;
 				var startOffset = document.GetOffset(start);
 				var endOffset = document.GetOffset(end);
 				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
@@ -530,14 +530,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void RunFindReferences(IEntity entity)
 		{
 			string entityName = (entity.DeclaringTypeDefinition != null ? entity.DeclaringTypeDefinition.Name + "." + entity.Name : entity.Name);
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true)) {
-				List<Reference> references = new List<Reference>();
-				FindReferenceService.FindReferences(entity, monitor, r => { lock (references) references.Add(r); });
-				FindReferencesAndRenameHelper.ShowAsSearchResults(
-					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-					                   new StringTagPair("Name", entityName)),
-					references);
-			}
+			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var results = FindReferenceService.FindReferences(entity, monitor);
+			SearchResultsPad.Instance.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", entityName)), results);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		public static void RunFindReferences(LocalResolveResult local)

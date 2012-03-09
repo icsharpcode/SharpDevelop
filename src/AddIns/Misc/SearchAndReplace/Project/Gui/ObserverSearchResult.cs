@@ -49,7 +49,7 @@ namespace SearchAndReplace
 			
 			return items;
 		}
-	
+		
 		void StopButtonClick(object sender, RoutedEventArgs e)
 		{
 			try {

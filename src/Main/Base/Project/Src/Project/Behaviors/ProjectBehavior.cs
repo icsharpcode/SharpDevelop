@@ -9,6 +9,7 @@ using System.Linq;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project.Converter;
@@ -111,6 +112,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (this.next != null)
 				next.SetMemento(memento);
+		}
+		
+		public virtual Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		{
+			if (this.next != null)
+				return this.next.PrepareSymbolSearch(entity);
+			return null;
 		}
 	}
 }

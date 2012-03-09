@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop
 			readonly object syncLock = new object();
 			readonly IObserver<T> observer;
 			readonly IProgressMonitor childProgressMonitor;
+			readonly IProgressMonitor progressMonitor;
 			
 			public TaskToObserverSubscription(Func<CancellationToken, Action<T>, Task> func, IObserver<T> observer)
 			{
@@ -55,6 +56,7 @@ namespace ICSharpCode.SharpDevelop
 			public TaskToObserverSubscription(Func<IProgressMonitor, Action<T>, Task> func, IProgressMonitor progressMonitor, IObserver<T> observer)
 			{
 				this.observer = observer;
+				this.progressMonitor = progressMonitor;
 				this.childProgressMonitor = progressMonitor.CreateSubTask(1, cts.Token);
 				func(childProgressMonitor, Callback).ContinueWith(TaskCompleted);
 			}
@@ -70,6 +72,8 @@ namespace ICSharpCode.SharpDevelop
 			{
 				if (childProgressMonitor != null)
 					childProgressMonitor.Dispose();
+				if (progressMonitor != null)
+					progressMonitor.Dispose();
 				if (task.Exception != null)
 					observer.OnError(task.Exception.InnerExceptions[0]);
 				else

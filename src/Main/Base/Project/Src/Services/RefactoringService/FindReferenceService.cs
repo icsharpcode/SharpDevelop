@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -57,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// FindReferences may internally use parallelism, and may invoke the callback on multiple
 		/// threads in parallel.
 		/// </summary>
-		public static void FindReferences(IEntity entity, IProgressMonitor progressMonitor, Action<Reference> callback)
+		public static async Task FindReferencesAsync(IEntity entity, IProgressMonitor progressMonitor, Action<SearchedFile> callback)
 		{
 			if (entity == null)
 				throw new ArgumentNullException("entity");
@@ -78,12 +80,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			foreach (ISymbolSearch s in symbolSearches) {
 				progressMonitor.CancellationToken.ThrowIfCancellationRequested();
 				using (var childProgressMonitor = progressMonitor.CreateSubTask(s.WorkAmount / totalWorkAmount)) {
-					s.FindReferences(new SymbolSearchArgs(childProgressMonitor, parseableFileContentFinder), callback);
+					await s.FindReferencesAsync(new SymbolSearchArgs(childProgressMonitor, parseableFileContentFinder), callback);
 				}
 				
 				workDone += s.WorkAmount;
 				progressMonitor.Progress = workDone / totalWorkAmount;
 			}
+		}
+		
+		public static IObservable<SearchedFile> FindReferences(IEntity entity, IProgressMonitor progressMonitor)
+		{
+			return ReactiveExtensions.CreateObservable<SearchedFile>((monitor, callback) => FindReferencesAsync(entity, monitor, callback), progressMonitor);
 		}
 		
 		/// <summary>
@@ -97,11 +104,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("callback");
 			var fileName = FileName.Create(variable.Region.FileName);
 			IParser parser = ParserService.GetParser(fileName);
-			ParseInformation pi = ParserService.Parse(fileName);
+			var fileContent = ParserService.GetParseableFileContent(fileName);
+			ParseInformation pi = ParserService.Parse(fileName, fileContent);
 			if (pi == null || parser == null)
 				return;
 			var compilation = ParserService.GetCompilationForFile(fileName);
-			parser.FindLocalReferences(pi, variable, compilation, callback, CancellationToken.None);
+			parser.FindLocalReferences(pi, fileContent, variable, compilation, callback, CancellationToken.None);
 		}
 		#endregion
 		
@@ -222,6 +230,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		double WorkAmount { get; }
 		
-		void FindReferences(SymbolSearchArgs searchArguments, Action<Reference> callback);
+		Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback);
 	}
 }

@@ -8,12 +8,12 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.Search
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return new DummySearchResult { Text = title };
 		}
 		
-		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, TextDocument document, IHighlighter highlighter)
+		public static HighlightedInlineBuilder CreateInlineBuilder(TextLocation startPosition, TextLocation endPosition, IDocument document, IHighlighter highlighter)
 		{
 			if (startPosition.Line >= 1 && startPosition.Line <= document.LineCount) {
 				var matchedLine = document.GetLineByNumber(startPosition.Line);

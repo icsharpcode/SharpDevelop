@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
@@ -16,6 +17,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -149,17 +151,31 @@ namespace CSharpBinding.Parser
 			return ResolveAtLocation.Resolve(compilation, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, location, cancellationToken);
 		}
 		
-		public void FindLocalReferences(ParseInformation parseInfo, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
+		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)
 		{
 			var csParseInfo = parseInfo as CSharpFullParseInformation;
 			if (csParseInfo == null)
 				throw new ArgumentException("Parse info does not have CompilationUnit");
 			
+			ReadOnlyDocument document = null;
+			DocumentHighlighter highlighter = null;
+			
 			new FindReferences().FindLocalReferences(
 				variable, csParseInfo.ParsedFile, csParseInfo.CompilationUnit, compilation,
 				delegate (AstNode node, ResolveResult result) {
+					if (document == null) {
+						document = new ReadOnlyDocument(fileContent);
+						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(csParseInfo.FileName));
+						if (highlighting != null)
+							highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
+						else
+							highlighter = null;
+					}
 					var region = new DomRegion(parseInfo.FileName, node.StartLocation, node.EndLocation);
-					callback(new Reference(region, result));
+					int offset = document.GetOffset(node.StartLocation);
+					int length = document.GetOffset(node.EndLocation) - offset;
+					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
+					callback(new Reference(region, result, offset, length, builder));
 				}, cancellationToken);
 		}
 	}

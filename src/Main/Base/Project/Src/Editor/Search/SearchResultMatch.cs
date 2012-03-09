@@ -120,9 +120,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	{
 		public FileName FileName { get; private set; }
 		
-		public IList<SearchResultMatch> Matches { get; private set; }
+		public IReadOnlyList<SearchResultMatch> Matches { get; private set; }
 		
-		public SearchedFile(FileName fileName, IList<SearchResultMatch> matches)
+		public SearchedFile(FileName fileName, IReadOnlyList<SearchResultMatch> matches)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");

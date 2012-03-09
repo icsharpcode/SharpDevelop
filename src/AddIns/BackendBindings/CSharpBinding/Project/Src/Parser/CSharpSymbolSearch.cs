@@ -3,11 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using CSharpBinding.Parser;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -16,6 +19,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -53,30 +57,33 @@ namespace CSharpBinding
 			get { return workAmount; }
 		}
 		
-		public void FindReferences(SymbolSearchArgs args, Action<Reference> callback)
+		public Task FindReferencesAsync(SymbolSearchArgs args, Action<SearchedFile> callback)
 		{
 			if (callback == null)
 				throw new ArgumentNullException("callback");
 			var cancellationToken = args.ProgressMonitor.CancellationToken;
-			
-			for (int i = 0; i < searchScopes.Count; i++) {
-				IFindReferenceSearchScope searchScope = searchScopes[i];
-				object progressLock = new object();
-				Parallel.ForEach(
-					interestingFileNames[i],
-					new ParallelOptions {
-						MaxDegreeOfParallelism = Environment.ProcessorCount,
-						CancellationToken = cancellationToken
-					},
-					delegate (string fileName) {
-						FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
-						lock (progressLock)
-							args.ProgressMonitor.Progress += workAmountInverse;
-					});
-			}
+			return Task.Run(
+				() => {
+					for (int i = 0; i < searchScopes.Count; i++) {
+						IFindReferenceSearchScope searchScope = searchScopes[i];
+						object progressLock = new object();
+						Parallel.ForEach(
+							interestingFileNames[i],
+							new ParallelOptions {
+								MaxDegreeOfParallelism = Environment.ProcessorCount,
+								CancellationToken = cancellationToken
+							},
+							delegate (string fileName) {
+								FindReferencesInFile(args, searchScope, FileName.Create(fileName), callback, cancellationToken);
+								lock (progressLock)
+									args.ProgressMonitor.Progress += workAmountInverse;
+							});
+					}
+				}, cancellationToken
+			);
 		}
 		
-		void FindReferencesInFile(SymbolSearchArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<Reference> callback, CancellationToken cancellationToken)
+		void FindReferencesInFile(SymbolSearchArgs args, IFindReferenceSearchScope searchScope, FileName fileName, Action<SearchedFile> callback, CancellationToken cancellationToken)
 		{
 			ITextSource textSource = args.ParseableFileContentFinder.Create(fileName);
 			if (textSource == null)
@@ -89,12 +96,27 @@ namespace CSharpBinding
 			var parseInfo = ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
 				return;
+			ReadOnlyDocument document = null;
+			DocumentHighlighter highlighter = null;
+			List<Reference> results = new List<Reference>();
 			fr.FindReferencesInFile(
 				searchScope, parseInfo.ParsedFile, parseInfo.CompilationUnit, compilation,
 				delegate (AstNode node, ResolveResult result) {
+					if (document == null) {
+						document = new ReadOnlyDocument(textSource);
+						var highlighting = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(fileName));
+						if (highlighting != null)
+							highlighter = new DocumentHighlighter(document, highlighting.MainRuleSet);
+						else
+							highlighter = null;
+					}
 					var region = new DomRegion(fileName, node.StartLocation, node.EndLocation);
-					callback(new Reference(region, result));
+					int offset = document.GetOffset(node.StartLocation);
+					int length = document.GetOffset(node.EndLocation) - offset; 
+					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
+					results.Add(new Reference(region, result, offset, length, builder));
 				}, cancellationToken);
+			callback(new SearchedFile(fileName, results));
 		}
 	}
 }

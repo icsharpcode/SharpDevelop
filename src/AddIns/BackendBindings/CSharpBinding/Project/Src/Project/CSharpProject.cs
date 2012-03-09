@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding
 {
@@ -184,6 +185,13 @@ namespace CSharpBinding
 				return ItemType.Compile;
 			else
 				return base.GetDefaultItemType(fileName);
+		}
+		
+		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		{
+			// TODO implement CompositeSymbolSearch to allow multiple instances to be returned, e.g., XamlSymbolSearch, etc.
+			// return CompositeSymbolSearch.Create(new XamlSymbolSearch(...), base.PrepareSymbolSearch(...))
+			return new CSharpSymbolSearch(Project, entity);
 		}
 	}
 }
