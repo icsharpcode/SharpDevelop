@@ -35,6 +35,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		IProgressMonitor CreateSubTask(double workAmount);
 		
 		/// <summary>
+		/// Creates a nested task.
+		/// </summary>
+		/// <param name="workAmount">The amount of work this sub-task performs in relation to the work of this task.
+		/// That means, this parameter is used as a scaling factor for work performed within the subtask.</param>
+		/// <returns>A new progress monitor representing the sub-task.
+		/// Multiple child progress monitors can be used at once; even concurrently on multiple threads.</returns>
+		IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken);
+		
+		/// <summary>
 		/// Gets/Sets the name to show while the task is active.
 		/// </summary>
 		string TaskName { get; set; }
@@ -99,6 +108,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public IProgressMonitor CreateSubTask(double workAmount)
 		{
 			return new DummyProgressMonitor() { CancellationToken = this.CancellationToken };
+		}
+		
+		public IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken)
+		{
+			return new DummyProgressMonitor() { CancellationToken = cancellationToken };
 		}
 		
 		public void Dispose()

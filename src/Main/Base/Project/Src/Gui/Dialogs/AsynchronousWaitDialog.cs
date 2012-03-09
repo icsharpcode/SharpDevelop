@@ -311,6 +311,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return collector.ProgressMonitor.CreateSubTask(workAmount);
 		}
 		
+		/// <inheritdoc/>
+		public IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken)
+		{
+			return collector.ProgressMonitor.CreateSubTask(workAmount, cancellationToken);
+		}
+		
 		public void Dispose()
 		{
 			collector.ProgressMonitor.Dispose();

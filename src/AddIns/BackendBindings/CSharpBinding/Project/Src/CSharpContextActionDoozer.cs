@@ -59,9 +59,9 @@ namespace CSharpBinding
 					return Task.FromResult(false);
 				return Task.Run(
 					async delegate {
-						var parseInfo = (await context.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
-						if (parseInfo == null)
-							return false;
+//						var parseInfo = (await context.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
+//						if (parseInfo == null)
+//							return false;
 						lock (this) {
 							if (!contextActionCreated) {
 								contextActionCreated = true;
@@ -71,6 +71,7 @@ namespace CSharpBinding
 						if (contextAction == null)
 							return false;
 						CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
+						//var refactoringContext = new SDRefactoringContext(context, resolver, cancellationToken);
 						return true;
 					}, cancellationToken);
 			}

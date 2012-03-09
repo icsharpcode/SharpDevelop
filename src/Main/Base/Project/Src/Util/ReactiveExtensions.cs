@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
-
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
@@ -27,6 +27,59 @@ namespace ICSharpCode.SharpDevelop
 					)
 				)
 			);
+		}
+		
+		public static IObservable<T> CreateObservable<T>(Func<CancellationToken, Action<T>, Task> func)
+		{
+			return new AnonymousObservable<T>(observer => new TaskToObserverSubscription<T>(func, observer));
+		}
+		
+		public static IObservable<T> CreateObservable<T>(Func<IProgressMonitor, Action<T>, Task> func, IProgressMonitor progressMonitor)
+		{
+			return new AnonymousObservable<T>(observer => new TaskToObserverSubscription<T>(func, progressMonitor, observer));
+		}
+		
+		sealed class TaskToObserverSubscription<T> : IDisposable
+		{
+			readonly CancellationTokenSource cts = new CancellationTokenSource();
+			readonly object syncLock = new object();
+			readonly IObserver<T> observer;
+			readonly IProgressMonitor childProgressMonitor;
+			
+			public TaskToObserverSubscription(Func<CancellationToken, Action<T>, Task> func, IObserver<T> observer)
+			{
+				this.observer = observer;
+				func(cts.Token, Callback).ContinueWith(TaskCompleted);
+			}
+			
+			public TaskToObserverSubscription(Func<IProgressMonitor, Action<T>, Task> func, IProgressMonitor progressMonitor, IObserver<T> observer)
+			{
+				this.observer = observer;
+				this.childProgressMonitor = progressMonitor.CreateSubTask(1, cts.Token);
+				func(childProgressMonitor, Callback).ContinueWith(TaskCompleted);
+			}
+			
+			void Callback(T item)
+			{
+				// Needs lock because callbacks may be called in parallel, but OnNext may not.
+				lock (syncLock)
+					observer.OnNext(item);
+			}
+			
+			void TaskCompleted(Task task)
+			{
+				if (childProgressMonitor != null)
+					childProgressMonitor.Dispose();
+				if (task.Exception != null)
+					observer.OnError(task.Exception.InnerExceptions[0]);
+				else
+					observer.OnCompleted();
+			}
+			
+			public void Dispose()
+			{
+				cts.Cancel();
+			}
 		}
 		
 		public static IDisposable Subscribe<T>(this IObservable<T> source, Action<T> onNext, Action<Exception> onError, Action onCompleted)

@@ -15,7 +15,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public sealed class ProgressCollector : INotifyPropertyChanged
 	{
 		readonly ISynchronizeInvoke eventThread;
-		readonly CancellationToken cancellationToken;
 		readonly MonitorImpl root;
 		readonly LinkedList<string> namedMonitors = new LinkedList<string>();
 		readonly object updateLock = new object();
@@ -31,8 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (eventThread == null)
 				throw new ArgumentNullException("eventThread");
 			this.eventThread = eventThread;
-			this.cancellationToken = cancellationToken;
-			this.root = new MonitorImpl(this, null, 1);
+			this.root = new MonitorImpl(this, null, 1, cancellationToken);
 		}
 		
 		public event EventHandler ProgressMonitorDisposed;
@@ -213,16 +211,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			readonly ProgressCollector collector;
 			readonly MonitorImpl parent;
 			readonly double scaleFactor;
+			readonly CancellationToken cancellationToken;
 			LinkedListNode<string> nameEntry;
 			double currentProgress;
 			OperationStatus localStatus, currentStatus;
 			int childrenWithWarnings, childrenWithErrors;
 			
-			public MonitorImpl(ProgressCollector collector, MonitorImpl parent, double scaleFactor)
+			public MonitorImpl(ProgressCollector collector, MonitorImpl parent, double scaleFactor, CancellationToken cancellationToken)
 			{
 				this.collector = collector;
 				this.parent = parent;
 				this.scaleFactor = scaleFactor;
+				this.cancellationToken = cancellationToken;
 			}
 			
 			public bool ShowingDialog {
@@ -254,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			public CancellationToken CancellationToken {
-				get { return collector.cancellationToken; }
+				get { return cancellationToken; }
 			}
 			
 			public double Progress {
@@ -317,7 +317,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public IProgressMonitor CreateSubTask(double workAmount)
 			{
-				return new MonitorImpl(collector, this, workAmount);
+				return new MonitorImpl(collector, this, workAmount, cancellationToken);
+			}
+			
+			public IProgressMonitor CreateSubTask(double workAmount, CancellationToken cancellationToken)
+			{
+				return new MonitorImpl(collector, this, workAmount, cancellationToken);
 			}
 			
 			public void Dispose()
