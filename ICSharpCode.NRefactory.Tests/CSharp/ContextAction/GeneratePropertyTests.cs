@@ -1,10 +1,10 @@
-﻿// 
-// CompletionCategory.cs
+// 
+// GeneratePropertyTests.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Xamarin Inc.
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using NUnit.Framework;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace ICSharpCode.NRefactory.Completion
+namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
-	public abstract class CompletionCategory : IComparable<CompletionCategory>
+	[TestFixture]
+	public class GeneratePropertyTests : ContextActionTestBase
 	{
-		public string DisplayText { get; set; }
-		
-		public string Icon { get; set; }
-		
-		protected CompletionCategory ()
+		[Ignore("Insert with cursor is not implemented.")]
+		[Test()]
+		public void Test ()
 		{
+			string result = RunContextAction (
+				new GenerateProperty (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	int $myField;" + Environment.NewLine +
+					"}"
+			);
+			
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	int myField;" + Environment.NewLine +
+				"	public int MyField {" + Environment.NewLine +
+				"		get {" + Environment.NewLine +
+				"			return myFileld;" + Environment.NewLine +
+				"		}" + Environment.NewLine +
+				"		set {" + Environment.NewLine +
+				"			myFileld = value;" + Environment.NewLine +
+				"		}" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
 		}
-		
-		protected CompletionCategory (string displayText, string icon)
-		{
-			this.DisplayText = displayText;
-			this.Icon = icon;
-		}
-		
-		public abstract int CompareTo (CompletionCategory other);
 	}
 }
-

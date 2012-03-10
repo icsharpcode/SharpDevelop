@@ -174,7 +174,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return name; }
 			set {
 				if (value == null)
-					throw new ArgumentNullException();
+					throw new ArgumentNullException("value");
 				ThrowIfFrozen();
 				name = value;
 			}

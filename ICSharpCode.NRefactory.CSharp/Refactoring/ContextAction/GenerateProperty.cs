@@ -1,10 +1,10 @@
 // 
-// GenerateGetter.cs
+// GenerateProperty.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
@@ -31,7 +30,7 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class GenerateGetter : IContextAction
+	public class GenerateProperty : IContextAction
 	{
 		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
 		{
@@ -54,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var field = initializer.Parent as FieldDeclaration;
 			
 			using (var script = context.StartScript ()) {
-				script.InsertWithCursor ("Create getter", GeneratePropertyDeclaration (context, field, initializer), Script.InsertPosition.After);
+				script.InsertWithCursor ("Create property", GeneratePropertyDeclaration (context, field, initializer), Script.InsertPosition.After);
 			}
 		}
 		
@@ -71,6 +70,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Getter = new Accessor () {
 					Body = new BlockStatement () {
 						new ReturnStatement (new IdentifierExpression (initializer.Name))
+					}
+				},
+				Setter = new Accessor () {
+					Body = new BlockStatement () {
+						new ExpressionStatement (new AssignmentExpression (new IdentifierExpression (initializer.Name), new IdentifierExpression ("value")))
 					}
 				}
 			};

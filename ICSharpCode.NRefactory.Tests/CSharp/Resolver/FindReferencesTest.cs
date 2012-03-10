@@ -107,5 +107,27 @@ class Test {
 			Assert.AreEqual(new [] { new TextLocation(4, 49), new TextLocation(7, 2) },
 			                FindReferences(m_string).Select(n => n.StartLocation).ToArray());
 		}
+		
+		[Test]
+		public void FindReferenceToGetEnumeratorUsedImplicitlyInForeach()
+		{
+			Init(@"using System;
+class MyEnumerable {
+ public System.Collections.IEnumerator GetEnumerator();
+}
+class Test {
+ static void T() {
+  var x = new MyEnumerable();
+  foreach (var y in x) {
+  }
+ }
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "MyEnumerable");
+			var getEnumerator = test.Methods.Single(m => m.Name == "GetEnumerator");
+			var actual = FindReferences(getEnumerator).ToList();
+			Assert.AreEqual(2, actual.Count);
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 3 && r is MethodDeclaration));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 8 && r is ForeachStatement));
+		}
 	}
 }

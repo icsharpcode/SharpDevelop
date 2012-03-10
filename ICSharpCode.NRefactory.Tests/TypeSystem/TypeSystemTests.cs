@@ -613,7 +613,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute));
 			var arr = (ArrayCreateResolveResult)type.Attributes.Single().PositionalArguments.Single();
-			Assert.AreEqual(5, arr.InitializerElements.Length);
+			Assert.AreEqual(5, arr.InitializerElements.Count);
 			return arr.InitializerElements[index];
 		}
 		

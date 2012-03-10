@@ -704,7 +704,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			FormatCommas (constructorDeclaration, policy.SpaceBeforeConstructorDeclarationParameterComma, policy.SpaceAfterConstructorDeclarationParameterComma);
 		
-			object result = null;
 			if (!constructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle (policy.ConstructorBraceStyle, constructorDeclaration.Body.LBraceToken, constructorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)
@@ -725,7 +724,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			int offset = this.document.GetOffset (lParen.StartLocation);
 			ForceSpaceBefore (offset, policy.SpaceBeforeConstructorDeclarationParentheses);
 			
-			object result = null;
 			if (!destructorDeclaration.Body.IsNull) {
 				EnforceBraceStyle (policy.DestructorBraceStyle, destructorDeclaration.Body.LBraceToken, destructorDeclaration.Body.RBraceToken);
 				if (policy.IndentMethodBody)

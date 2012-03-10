@@ -17,67 +17,31 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Globalization;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Utils
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Holds 16 boolean values.
+	/// Resolve result for a C# 'is' expression.
+	/// "Input is TargetType".
 	/// </summary>
-	[Serializable]
-	[CLSCompliant(false)]
-	public struct BitVector16 : IEquatable<BitVector16>
+	public class TypeIsResolveResult : ResolveResult
 	{
-		ushort data;
+		public readonly ResolveResult Input;
+		/// <summary>
+		/// Type that is being compared with.
+		/// </summary>
+		public readonly IType TargetType;
 		
-		public bool this[ushort mask] {
-			get { return (data & mask) != 0; }
-			set {
-				if (value)
-					data |= mask;
-				else
-					data &= unchecked((ushort)~mask);
-			}
-		}
-		
-		public ushort Data {
-			get { return data; }
-			set { data = value; }
-		}
-		
-		#region Equals and GetHashCode implementation
-		public override bool Equals(object obj)
+		public TypeIsResolveResult(ResolveResult input, IType targetType, IType booleanType)
+			: base(booleanType)
 		{
-			if (obj is BitVector16)
-				return Equals((BitVector16)obj); // use Equals method below
-			else
-				return false;
-		}
-		
-		public bool Equals(BitVector16 other)
-		{
-			return this.data == other.data;
-		}
-		
-		public override int GetHashCode()
-		{
-			return data;
-		}
-		
-		public static bool operator ==(BitVector16 left, BitVector16 right)
-		{
-			return left.data == right.data;
-		}
-		
-		public static bool operator !=(BitVector16 left, BitVector16 right)
-		{
-			return left.data != right.data;
-		}
-		#endregion
-		
-		public override string ToString()
-		{
-			return data.ToString("x4", CultureInfo.InvariantCulture);
+			if (input == null)
+				throw new ArgumentNullException("input");
+			if (targetType == null)
+				throw new ArgumentNullException("targetType");
+			this.Input = input;
+			this.TargetType = targetType;
 		}
 	}
 }

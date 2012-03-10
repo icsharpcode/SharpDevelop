@@ -14,7 +14,7 @@
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Design#CA1026;-Microsoft.Security#CA2104</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1000;-Microsoft.Design#CA1004;-Microsoft.Design#CA1005;-Microsoft.Design#CA1006;-Microsoft.Design#CA1026;-Microsoft.Design#CA1033;-Microsoft.Design#CA1051;-Microsoft.Design#CA1063;-Microsoft.Naming#CA1702;-Microsoft.Naming#CA1704;-Microsoft.Naming#CA1710;-Microsoft.Naming#CA1716;-Microsoft.Naming#CA1720;-Microsoft.Performance#CA1800;-Microsoft.Security#CA2104</CodeAnalysisRules>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
@@ -35,6 +35,7 @@
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <StartAction>Project</StartAction>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -91,6 +92,7 @@
     <Compile Include="Semantics\ConversionResolveResult.cs" />
     <Compile Include="Semantics\ErrorResolveResult.cs" />
     <Compile Include="Semantics\Conversion.cs" />
+    <Compile Include="Semantics\ForEachResolveResult.cs" />
     <Compile Include="Semantics\InvocationResolveResult.cs" />
     <Compile Include="Semantics\LocalResolveResult.cs" />
     <Compile Include="Semantics\MemberResolveResult.cs" />
@@ -98,6 +100,7 @@
     <Compile Include="Semantics\OperatorResolveResult.cs" />
     <Compile Include="Semantics\ResolveResult.cs" />
     <Compile Include="Semantics\ThisResolveResult.cs" />
+    <Compile Include="Semantics\TypeIsResolveResult.cs" />
     <Compile Include="Semantics\TypeOfResolveResult.cs" />
     <Compile Include="Semantics\TypeResolveResult.cs" />
     <Compile Include="Semantics\UnknownMemberResolveResult.cs" />

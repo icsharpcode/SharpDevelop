@@ -44,8 +44,8 @@
     <DebugType>none</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -327,6 +327,7 @@
     <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
     <Compile Include="Ast\TokenRole.cs" />
     <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
+    <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -347,4 +348,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Parser\mcs\cs-parser.jay" />
+  </ItemGroup>
 </Project>
