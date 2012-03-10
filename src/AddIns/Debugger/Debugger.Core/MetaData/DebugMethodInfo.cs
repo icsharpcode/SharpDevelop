@@ -548,7 +548,7 @@ namespace Debugger.MetaData
 				return new List<DebugLocalVariableInfo>();
 			
 			localVariables = GetLocalVariablesInScope(this.SymMethod.GetRootScope());
-			if (declaringType.IsDisplayClass || declaringType.IsYieldEnumerator) {
+			if (declaringType.IsDisplayClass || declaringType.IsYieldEnumerator || declaringType.IsAsyncStateMachine) {
 				// Get display class from self
 				AddCapturedLocalVariables(
 					localVariables,
@@ -593,7 +593,7 @@ namespace Debugger.MetaData
 		
 		static void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, DebugType captureClassType)
 		{
-			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator) {
+			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator || captureClassType.IsAsyncStateMachine) {
 				foreach(DebugFieldInfo fieldInfo in captureClassType.GetFields()) {
 					DebugFieldInfo fieldInfoCopy = fieldInfo;
 					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore

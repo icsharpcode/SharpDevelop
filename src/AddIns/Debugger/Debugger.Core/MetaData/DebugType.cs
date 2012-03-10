@@ -818,6 +818,16 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		public bool IsAsyncStateMachine {
+			get {
+				if (this.IsCompilerGenerated) {
+					// TODO : replace this by typeof(...).FullName in later releases
+					return GetInterface("System.Runtime.CompilerServices.IAsyncStateMachine") != null;
+				}
+				return false;
+			}
+		}
+		
 		bool IDebugMemberInfo.IsAssembly {
 			get { return false; }
 		}
