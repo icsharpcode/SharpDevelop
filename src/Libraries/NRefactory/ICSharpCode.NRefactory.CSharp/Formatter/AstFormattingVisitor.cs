@@ -37,8 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		CSharpFormattingOptions policy;
 		IDocument document;
-		IActionFactory factory;
-		List<TextReplaceAction> changes = new List<TextReplaceAction> ();
+		Script script;
+		//List<TextReplaceAction> changes = new List<TextReplaceAction> ();
 		Indent curIndent = new Indent ();
 
 		public int IndentLevel {
@@ -55,10 +55,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public List<TextReplaceAction> Changes {
-			get { return this.changes; }
-		}
-
 		public bool CorrectBlankLines {
 			get;
 			set;
@@ -71,16 +67,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string EolMarker { get; set; }
 
-		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, IActionFactory factory,
-		                             bool tabsToSpaces = false, int indentationSize = 4)
+		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, Script script, bool tabsToSpaces = false, int indentationSize = 4)
 		{
-			if (factory == null)
-				throw new ArgumentNullException ("factory");
+			if (policy == null)
+				throw new ArgumentNullException("policy");
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (script == null)
+				throw new ArgumentNullException("script");
 			this.policy = policy;
 			this.document = document;
+			this.script = script;
 			this.curIndent.TabsToSpaces = tabsToSpaces;
 			this.curIndent.TabSize = indentationSize;
-			this.factory = factory;
 			this.EolMarker = Environment.NewLine;
 			CorrectBlankLines = true;
 		}
@@ -972,34 +971,35 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		void AddChange (int offset, int removedChars, string insertedText)
 		{
-			if (changes.Any (c => c.Offset == offset && c.RemovedChars == removedChars 
-				&& c.InsertedText == insertedText))
-				return;
-			string currentText = document.GetText (offset, removedChars);
-			if (currentText == insertedText)
-				return;
-			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t' || c == '{' || c == '}')))
-				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
-			foreach (var change in changes) {
-				if (change.Offset == offset) {
-					if (removedChars > 0 && insertedText == change.InsertedText) {
-						change.RemovedChars = removedChars;
+			script.Replace(offset, removedChars, insertedText);
+//			if (changes.Any (c => c.Offset == offset && c.RemovedChars == removedChars 
+//				&& c.InsertedText == insertedText))
+//				return;
+//			string currentText = document.GetText (offset, removedChars);
+//			if (currentText == insertedText)
+//				return;
+//			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t' || c == '{' || c == '}')))
+//				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
+//			foreach (var change in changes) {
+//				if (change.Offset == offset) {
+//					if (removedChars > 0 && insertedText == change.InsertedText) {
+//						change.RemovedChars = removedChars;
+////						change.InsertedText = insertedText;
+//						return;
+//					}
+//					if (!string.IsNullOrEmpty (change.InsertedText)) {
+//						change.InsertedText += insertedText;
+//					} else {
 //						change.InsertedText = insertedText;
-						return;
-					}
-					if (!string.IsNullOrEmpty (change.InsertedText)) {
-						change.InsertedText += insertedText;
-					} else {
-						change.InsertedText = insertedText;
-					}
-					change.RemovedChars = System.Math.Max (removedChars, change.RemovedChars);
-					return;
-				}
-			}
-			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."));
-			//Console.WriteLine (Environment.StackTrace);
-			
-			changes.Add (factory.CreateTextReplaceAction (offset, removedChars, insertedText));
+//					}
+//					change.RemovedChars = System.Math.Max (removedChars, change.RemovedChars);
+//					return;
+//				}
+//			}
+//			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."));
+//			//Console.WriteLine (Environment.StackTrace);
+//			
+//			changes.Add (factory.CreateTextReplaceAction (offset, removedChars, insertedText));
 		}
 
 		public bool IsLineIsEmptyUpToEol (TextLocation startLocation)

@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			using (var script = context.StartScript ()) {
 				script.InsertBefore (pdecl.RBraceToken, accessor);
 				script.Select (accessorStatement);
-				script.FormatText (ctx => GetPropertyDeclaration (context));
+				script.FormatText (pdecl);
 			}
 		}
 

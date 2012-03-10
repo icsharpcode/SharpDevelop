@@ -346,6 +346,14 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		/// <summary>
+		/// Creates an immutable snapshot of this document.
+		/// </summary>
+		public IDocument CreateDocumentSnapshot()
+		{
+			return new ReadOnlyDocument(this);
+		}
+		
+		/// <summary>
 		/// Creates a snapshot of the current text.
 		/// Additionally, creates a checkpoint that allows tracking document changes.
 		/// </summary>

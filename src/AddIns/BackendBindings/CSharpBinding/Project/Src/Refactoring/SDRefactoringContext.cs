@@ -22,26 +22,24 @@ namespace CSharpBinding.Refactoring
 	{
 		readonly ITextEditor editor;
 		readonly ITextSource textSource;
+		readonly TextLocation location;
 		volatile IDocument document;
 		readonly CSharpAstResolver resolver;
 		int selectionStart, selectionLength;
-		CancellationToken cancellationToken;
 		
 		public SDRefactoringContext(ITextSource textSource, CSharpAstResolver resolver, TextLocation location, int selectionStart, int selectionLength, CancellationToken cancellationToken)
+			: base(resolver, cancellationToken)
 		{
 			this.textSource = textSource;
 			this.document = textSource as IDocument;
 			this.resolver = resolver;
 			this.selectionStart = selectionStart;
 			this.selectionLength = selectionLength;
-			this.cancellationToken = cancellationToken;
-			
-			this.Unit = resolver.RootNode as CompilationUnit;
-			this.Compilation = resolver.Compilation;
-			this.Location = location;
+			this.location = location;
 		}
 		
-		public SDRefactoringContext(ITextEditor editor,  CSharpAstResolver resolver, TextLocation location)
+		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location)
+			: base(resolver, CancellationToken.None)
 		{
 			this.editor = editor;
 			this.textSource = editor.Document;
@@ -49,10 +47,7 @@ namespace CSharpBinding.Refactoring
 			this.resolver = resolver;
 			this.selectionStart = editor.SelectionStart;
 			this.selectionLength = editor.SelectionLength;
-			
-			this.Unit = resolver.RootNode as CompilationUnit;
-			this.Compilation = resolver.Compilation;
-			this.Location = location;
+			this.location = location;
 		}
 		
 		public override bool Supports(Version version)
@@ -63,16 +58,15 @@ namespace CSharpBinding.Refactoring
 			return project.LanguageVersion >= version;
 		}
 		
-		public override NodeOutputAction CreateNodeOutputAction(int offset, int removedChars, NodeOutput output)
-		{
-			return new SDScript.SDNodeOutputAction(document, offset, removedChars, output);
-		}
-		
 		public override Script StartScript()
 		{
 			if (editor == null)
 				throw new InvalidOperationException("Cannot start a script in IsAvailable().");
-			return new SDScript(editor, this);
+			return new SDScript(editor, this.EolMarker);
+		}
+		
+		public override TextLocation Location {
+			get { return location; }
 		}
 		
 		public override int SelectionStart {
@@ -93,17 +87,6 @@ namespace CSharpBinding.Refactoring
 			get {
 				return textSource.GetText(selectionStart, selectionLength);
 			}
-		}
-		
-		public override ResolveResult Resolve(AstNode expression)
-		{
-			lock (resolver)
-				return resolver.Resolve(expression, cancellationToken);
-		}
-		
-		public override void ReplaceReferences(IMember member, MemberDeclaration replaceWidth)
-		{
-			throw new NotImplementedException();
 		}
 		
 		public override bool IsSomethingSelected {
@@ -131,17 +114,11 @@ namespace CSharpBinding.Refactoring
 			return document.GetLocation(offset);
 		}
 		
-		public override CSharpFormattingOptions FormattingOptions {
-			get {
-				return new CSharpFormattingOptions();
-			}
-		}
-		
 		public override string EolMarker {
 			get {
 				if (document == null)
 					document = new ReadOnlyDocument(textSource);
-				return DocumentUtilitites.GetLineTerminator(document, 1);
+				return DocumentUtilitites.GetLineTerminator(document, location.Line);
 			}
 		}
 		

@@ -43,16 +43,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var property = context.GetNode<PropertyDeclaration> ();
 			var field = GetBackingField (context);
 			
-			context.ReplaceReferences (field, property);
-			
 			// create new auto property
 			var newProperty = (PropertyDeclaration)property.Clone ();
 			newProperty.Getter.Body = BlockStatement.Null;
 			newProperty.Setter.Body = BlockStatement.Null;
 			
 			using (var script = context.StartScript ()) {
-				script.Remove (context.Unit.GetNodeAt<FieldDeclaration> (field.Region.BeginLine, field.Region.BeginColumn));
+				script.Remove (context.RootNode.GetNodeAt<FieldDeclaration> (field.Region.BeginLine, field.Region.BeginColumn));
 				script.Replace (property, newProperty);
+				script.Rename (field, newProperty.Name);
 			}
 			
 		}

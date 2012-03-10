@@ -77,7 +77,15 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void FireAndForget(this Task task)
 		{
-			task.ContinueWith(t => { if (t.Exception != null) Core.MessageService.ShowException(t.Exception); });
+			task.ContinueWith(
+				t => {
+					if (t.Exception != null) {
+						if (t.Exception.InnerExceptions.Count == 1)
+							Core.MessageService.ShowException(t.Exception.InnerExceptions[0]);
+						else
+							Core.MessageService.ShowException(t.Exception);
+					}
+				});
 		}
 		
 		/// <summary>

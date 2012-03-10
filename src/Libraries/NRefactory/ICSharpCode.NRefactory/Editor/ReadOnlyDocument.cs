@@ -325,6 +325,12 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public IDocument CreateDocumentSnapshot()
+		{
+			return this; // ReadOnlyDocument is immutable
+		}
+		
+		/// <inheritdoc/>
 		public System.IO.TextReader CreateReader()
 		{
 			return textSource.CreateReader();

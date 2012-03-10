@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InvertIf.cs
 //  
 // Author:
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				script.Replace (ifStatement.Condition, CSharpUtil.InvertCondition (ifStatement.Condition));
 				script.Replace (ifStatement.TrueStatement, ifStatement.FalseStatement);
 				script.Replace (ifStatement.FalseStatement, ifStatement.TrueStatement);
-				script.FormatText (ctx => GetIfElseStatement (ctx));
+				script.FormatText (ifStatement);
 			}
 		}
 		

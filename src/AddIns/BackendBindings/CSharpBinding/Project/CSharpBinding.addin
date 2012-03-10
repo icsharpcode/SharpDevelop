@@ -146,7 +146,7 @@
 			displayName = "Introduce local variable"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariable" />
 		<CSharpContextAction id = "CreateProperty"
-			displayName = "Create property"
+			displayName = "Introduce property"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateProperty" />
 		<CSharpContextAction id = "FlipOperatorArguments"
 			displayName = "Flip operands"
