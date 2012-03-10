@@ -123,7 +123,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			resolveVisitor.cancellationToken = cancellationToken;
 			try {
 				ResolveResult rr = resolveVisitor.GetResolveResult(node);
-				Debug.Assert(rr != null);
+				if (rr == null)
+					Debug.Fail (node.GetType () + " resolved to null.", node.StartLocation + ":'" + node.GetText () + "'");
 				return rr;
 			} finally {
 				resolveVisitor.cancellationToken = CancellationToken.None;
