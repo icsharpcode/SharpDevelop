@@ -362,40 +362,6 @@
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
-    <Compile Include="Xml\AbstractAXmlVisitor.cs" />
-    <Compile Include="Xml\AXmlAttribute.cs" />
-    <Compile Include="Xml\AXmlAttributeCollection.cs" />
-    <Compile Include="Xml\AXmlContainer.cs" />
-    <Compile Include="Xml\AXmlDocument.cs" />
-    <Compile Include="Xml\AXmlElement.cs" />
-    <Compile Include="Xml\AXmlObject.cs" />
-    <Compile Include="Xml\AXmlObjectCollection.cs" />
-    <Compile Include="Xml\AXmlObjectEventArgs.cs" />
-    <Compile Include="Xml\AXmlParser.cs" />
-    <Compile Include="Xml\AXmlTag.cs" />
-    <Compile Include="Xml\AXmlText.cs" />
-    <Compile Include="Xml\CanonicalPrintAXmlVisitor.cs" />
-    <Compile Include="Xml\InternalException.cs" />
-    <Compile Include="Xml\TrackedSegmentCollection.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\FilteredCollection.cs" />
-    <Compile Include="Xml\IAXmlVisitor.cs" />
-    <Compile Include="Xml\MergedCollection.cs" />
-    <Compile Include="Xml\PrettyPrintAXmlVisitor.cs" />
-    <Compile Include="Xml\SyntaxError.cs" />
-    <Compile Include="Xml\TagMatchingHeuristics.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\TagReader.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\TextType.cs">
-      <DependentUpon>AXmlText.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Xml\TokenReader.cs">
-      <DependentUpon>AXmlParser.cs</DependentUpon>
-    </Compile>
     <Resource Include="themes\RightArrow.cur" />
     <EmbeddedResource Include="Highlighting\Resources\ASPX.xshd" />
     <EmbeddedResource Include="Highlighting\Resources\Boo.xshd" />
