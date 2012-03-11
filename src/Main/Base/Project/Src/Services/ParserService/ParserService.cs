@@ -463,7 +463,8 @@ namespace ICSharpCode.SharpDevelop.Parser
 					if (parseInfo != null && this.activeListeners != null)
 						this.activeListeners(parseInfo, null);
 				}
-				RaiseParseInformationUpdated(new ParseInformationEventArgs(parseInfo, null));
+				if (parseInfo != null)
+					RaiseParseInformationUpdated(new ParseInformationEventArgs(parseInfo, null));
 			}
 			
 			void SnapshotFileContentForAsyncOperation(ref ITextSource fileContent, out bool lookupOpenFileOnTargetThread)
