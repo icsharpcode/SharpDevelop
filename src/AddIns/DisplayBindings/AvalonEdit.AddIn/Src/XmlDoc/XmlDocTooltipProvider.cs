@@ -25,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			MemberResolveResult mrr = e.ResolveResult as MemberResolveResult;
 			LocalResolveResult lrr = e.ResolveResult as LocalResolveResult;
 			if (trr != null && trr.Type.GetDefinition() != null) {
-				e.SetToolTip(CreateTooltip(trr.Type.GetDefinition()));
+				e.SetToolTip(CreateTooltip(trr.Type));
 			} else if (mrr != null) {
 				e.SetToolTip(CreateTooltip(mrr.Member));
 			} else if (lrr != null) {
@@ -62,6 +62,27 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			{
 				return true;
 			}
+		}
+		
+		object CreateTooltip(IType type)
+		{
+			var ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			string header = ambience.ConvertType(type);
+			ITypeDefinition entity = type.GetDefinition();
+			if (entity != null) {
+				var documentation = XmlDocumentationElement.Get(entity);
+				if (documentation != null) {
+					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+					DocumentationUIBuilder b = new DocumentationUIBuilder(ambience);
+					b.AddCodeBlock(header, keepLargeMargin: true);
+					foreach (var child in documentation.Children) {
+						b.AddDocumentationElement(child);
+					}
+					return new FlowDocumentTooltip(b.FlowDocument);
+				}
+			}
+			return header;
 		}
 		
 		object CreateTooltip(IEntity entity)

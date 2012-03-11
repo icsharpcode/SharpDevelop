@@ -154,9 +154,9 @@
 		<CSharpContextAction id = "GenerateGetter"
 			displayName = "Generate getter"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter" />
-		<!--<CSharpContextAction id = "GenerateProperty"
+		<CSharpContextAction id = "GenerateProperty"
 			displayName = "Generate property"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />-->
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />
 		<CSharpContextAction id = "GenerateSwitchLabels"
 			displayName = "Generate switch labels"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateSwitchLabels" />
@@ -175,9 +175,9 @@
 		<CSharpContextAction id = "RemoveBraces"
 			displayName = "Remove braces"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBraces" />
-		<!--<CSharpContextAction id = "RemoveRegion"
+		<CSharpContextAction id = "RemoveRegion"
 			displayName = "Remove #region"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />-->
+			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />
 		<CSharpContextAction id = "ReplaceEmptyString"
 			displayName = "Use string.Empty"
 			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ReplaceEmptyString" />
