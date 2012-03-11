@@ -68,17 +68,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		readonly string eolMarker;
+		protected string eolMarker = Environment.NewLine;
 		readonly CSharpFormattingOptions formattingOptions;
 		Dictionary<AstNode, ISegment> segmentsForInsertedNodes = new Dictionary<AstNode, ISegment>();
 		
-		protected Script(string eolMarker, CSharpFormattingOptions formattingOptions)
+		protected Script(CSharpFormattingOptions formattingOptions)
 		{
-			if (eolMarker == null)
-				throw new ArgumentNullException("eolMarker");
 			if (formattingOptions == null)
 				throw new ArgumentNullException("formattingOptions");
-			this.eolMarker = eolMarker;
 			this.formattingOptions = formattingOptions;
 		}
 		
@@ -258,7 +255,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			End
 		}
 		
-		public abstract void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition);
+		public virtual void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+		{
+			throw new NotImplementedException();
+		}
 
 		protected virtual int GetIndentLevelAt (int offset)
 		{
@@ -352,9 +352,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <summary>
 		/// Performs a rename refactoring.
 		/// </summary>
-		public abstract void Rename(IEntity entity, string name);
+		public virtual void Rename(IEntity entity, string name)
+		{
+		}
 		
-		public abstract void Dispose();
+		public virtual void Dispose()
+		{
+		}
 	}
 }
 

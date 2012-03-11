@@ -69,6 +69,7 @@
     <Compile Include="Editor\ReadOnlyDocument.cs" />
     <Compile Include="Editor\StringTextSource.cs" />
     <Compile Include="Editor\TextChangeEventArgs.cs" />
+    <Compile Include="Editor\TextSourceVersionProvider.cs" />
     <Compile Include="IAnnotatable.cs" />
     <Compile Include="PatternMatching\BacktrackingInfo.cs" />
     <Compile Include="PatternMatching\Choice.cs" />

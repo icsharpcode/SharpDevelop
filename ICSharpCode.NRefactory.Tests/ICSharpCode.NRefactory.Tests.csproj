@@ -199,6 +199,7 @@
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
     <EmbeddedResource Include="TypeSystem\TypeSystemTests.TestCase.cs" />
     <Compile Include="Utils\CSharpPrimitiveCastTests.cs" />
+    <Compile Include="Utils\StringBuilderDocument.cs" />
     <Compile Include="Utils\TreeTraversalTests.cs" />
     <Compile Include="FormattingTests\TextEditorTestAdapter.cs" />
     <Compile Include="FormattingTests\TestBlankLineFormatting.cs" />

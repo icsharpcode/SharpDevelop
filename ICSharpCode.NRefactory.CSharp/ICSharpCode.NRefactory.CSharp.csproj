@@ -264,6 +264,7 @@
     <Compile Include="Refactoring\ContextAction\SplitString.cs" />
     <Compile Include="Refactoring\ContextAction\UseExplicitType.cs" />
     <Compile Include="Refactoring\ContextAction\UseVarKeyword.cs" />
+    <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Refactoring\IContextAction.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />

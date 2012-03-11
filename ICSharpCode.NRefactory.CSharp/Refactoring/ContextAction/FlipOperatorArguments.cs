@@ -40,8 +40,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var binop = GetBinaryOperatorExpression (context);
 			
 			using (var script = context.StartScript ()) {
-				script.Replace (binop.Left, binop.Right);
-				script.Replace (binop.Right, binop.Left);
+				script.Replace (binop.Left, binop.Right.Clone());
+				script.Replace (binop.Right, binop.Left.Clone());
 			}
 		}
 		
