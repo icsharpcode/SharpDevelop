@@ -67,8 +67,6 @@
     <Compile Include="RoundtripTest.cs" />
     <Compile Include="Solution.cs" />
     <Compile Include="Xml\IncrementalXmlParserTests.cs" />
-    <Compile Include="Xml\TestTextSource.cs" />
-    <Compile Include="Xml\TestTextSourceVersion.cs" />
     <Compile Include="Xml\XmlReaderTest.cs" />
   </ItemGroup>
   <ItemGroup>

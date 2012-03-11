@@ -24,6 +24,7 @@ namespace ICSharpCode.NRefactory.Editor
 	/// <summary>
 	/// Read-only implementation of <see cref="IDocument"/>.
 	/// </summary>
+	[Serializable]
 	public sealed class ReadOnlyDocument : IDocument
 	{
 		readonly ITextSource textSource;
