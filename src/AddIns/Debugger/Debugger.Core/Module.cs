@@ -203,6 +203,7 @@ namespace Debugger
 			
 			LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
 			ResetJustMyCodeStatus();
+			LoadSymbolsDynamic();
 		}
 		
 		public void UnloadSymbols()
