@@ -35,6 +35,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <summary>
 	/// Contains the main resolver logic.
 	/// </summary>
+	/// <remarks>
+	/// Despite being immutable, this class is not thread-safe. (due to caches)
+	/// TODO: fix this, it's very hard for NR users to tell whether two CSharpResolvers share the same caches
+	/// </remarks>
 	public class CSharpResolver
 	{
 		static readonly ResolveResult ErrorResult = ErrorResolveResult.UnknownError;

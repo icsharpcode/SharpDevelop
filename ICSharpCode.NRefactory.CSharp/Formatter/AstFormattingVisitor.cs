@@ -1,6 +1,6 @@
 ﻿// 
 // AstFormattingVisitor.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +36,23 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class AstFormattingVisitor : DepthFirstAstVisitor
 	{
+		sealed class TextReplaceAction
+		{
+			internal readonly int Offset;
+			internal readonly int RemovalLength;
+			internal readonly string NewText;
+			internal TextReplaceAction DependsOn;
+			
+			public TextReplaceAction(int offset, int removalLength, string newText)
+			{
+				this.Offset = offset;
+				this.RemovalLength = removalLength;
+				this.NewText = newText;
+			}
+		}
+		
 		CSharpFormattingOptions policy;
 		IDocument document;
-		IActionFactory factory;
 		List<TextReplaceAction> changes = new List<TextReplaceAction> ();
 		Indent curIndent = new Indent ();
 
@@ -55,10 +70,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public List<TextReplaceAction> Changes {
-			get { return this.changes; }
-		}
-
 		public bool CorrectBlankLines {
 			get;
 			set;
@@ -71,18 +82,69 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string EolMarker { get; set; }
 
-		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, IActionFactory factory,
-		                             bool tabsToSpaces = false, int indentationSize = 4)
+		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, bool tabsToSpaces = false, int indentationSize = 4)
 		{
-			if (factory == null)
-				throw new ArgumentNullException ("factory");
+			if (policy == null)
+				throw new ArgumentNullException("policy");
+			if (document == null)
+				throw new ArgumentNullException("document");
 			this.policy = policy;
 			this.document = document;
 			this.curIndent.TabsToSpaces = tabsToSpaces;
 			this.curIndent.TabSize = indentationSize;
-			this.factory = factory;
 			this.EolMarker = Environment.NewLine;
 			CorrectBlankLines = true;
+		}
+		
+		/// <summary>
+		/// Applies the changes to the input document.
+		/// </summary>
+		public void ApplyChanges()
+		{
+			ApplyChanges(0, document.TextLength, document.Replace);
+		}
+		
+		public void ApplyChanges(int startOffset, int length)
+		{
+			ApplyChanges(startOffset, length, document.Replace);
+		}
+		
+		/// <summary>
+		/// Applies the changes to the given Script instance.
+		/// </summary>
+		public void ApplyChanges(Script script)
+		{
+			ApplyChanges(0, document.TextLength, script.Replace);
+		}
+		
+		public void ApplyChanges(int startOffset, int length, Script script)
+		{
+			ApplyChanges(startOffset, length, script.Replace);
+		}
+		
+		void ApplyChanges(int startOffset, int length, Action<int, int, string> documentReplace)
+		{
+			int endOffset = startOffset + length;
+			int lastChangeEnd = 0;
+			int delta = 0;
+			foreach (var change in changes.OrderBy(c => c.Offset)) {
+				if (change.Offset < lastChangeEnd) {
+					Debug.Fail("Detected overlapping change");
+					continue;
+				}
+				lastChangeEnd = change.Offset + change.RemovalLength;
+				if (change.Offset < startOffset) {
+					// skip all changes in front of the begin offset
+					continue;
+				} else if (change.Offset > endOffset) {
+					// skip this change unless it depends on one that we already applied
+					continue;
+				}
+				
+				documentReplace(change.Offset + delta, change.RemovalLength, change.NewText);
+				delta += change.NewText.Length - change.RemovalLength;
+			}
+			changes.Clear();
 		}
 
 		public override void VisitCompilationUnit (CompilationUnit unit)
@@ -1007,35 +1069,9 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		TextReplaceAction AddChange (int offset, int removedChars, string insertedText)
 		{
-			if (changes.Any (c => c.Offset == offset && c.RemovedChars == removedChars 
-				&& c.InsertedText == insertedText))
-				return null;
-			string currentText = document.GetText (offset, removedChars);
-			if (currentText == insertedText)
-				return null;
-			if (currentText.Any (c => !(char.IsWhiteSpace (c) || c == '\r' || c == '\t' || c == '{' || c == '}')))
-				throw new InvalidOperationException ("Tried to remove non ws chars: '" + currentText + "'");
-			foreach (var change in changes) {
-				if (change.Offset == offset) {
-					if (removedChars > 0 && insertedText == change.InsertedText) {
-						change.RemovedChars = removedChars;
-//						change.InsertedText = insertedText;
-						return null;
-					}
-					if (!string.IsNullOrEmpty (change.InsertedText)) {
-						change.InsertedText += insertedText;
-					} else {
-						change.InsertedText = insertedText;
-					}
-					change.RemovedChars = System.Math.Max (removedChars, change.RemovedChars);
-					return null;
-				}
-			}
-			//Console.WriteLine ("offset={0}, removedChars={1}, insertedText={2}, removedText={3}", offset, removedChars, insertedText == null ? "<null>" : insertedText.Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", "."), removedChars > 0 ? document.GetText (offset, removedChars).Replace ("\n", "\\n").Replace ("\r", "\\r").Replace ("\t", "\\t").Replace (" ", ".") : "null");
-			//Console.WriteLine (Environment.StackTrace);
-			var result = factory.CreateTextReplaceAction (offset, removedChars, insertedText);
-			changes.Add (result);
-			return result;
+			var action = new TextReplaceAction(offset, removedChars, insertedText);
+			changes.Add(action);
+			return action;
 		}
 
 		public bool IsLineIsEmptyUpToEol (TextLocation startLocation)

@@ -220,8 +220,9 @@ namespace ICSharpCode.NRefactory.Editor
 			get { return lines.Length; }
 		}
 		
-		ITextSourceVersion ITextSource.Version {
-			get { return null; }
+		/// <inheritdoc/>
+		public ITextSourceVersion Version {
+			get { return textSource.Version; }
 		}
 		
 		/// <inheritdoc/>
@@ -322,6 +323,12 @@ namespace ICSharpCode.NRefactory.Editor
 		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			return textSource.CreateSnapshot(offset, length);
+		}
+		
+		/// <inheritdoc/>
+		public IDocument CreateDocumentSnapshot()
+		{
+			return this; // ReadOnlyDocument is immutable
 		}
 		
 		/// <inheritdoc/>

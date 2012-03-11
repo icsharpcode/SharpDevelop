@@ -1,4 +1,4 @@
-// 
+﻿// 
 // SplitDeclarationAndAssignment.cs
 //  
 // Author:
@@ -32,10 +32,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class SplitDeclarationAndAssignment : IContextAction
 	{
-		public bool IsValid (RefactoringContext context, CancellationToken cancellationToken)
+		public bool IsValid (RefactoringContext context)
 		{
 			AstType type;
-			return GetVariableDeclarationStatement (context, out type, cancellationToken) != null;
+			return GetVariableDeclarationStatement (context, out type) != null;
 		}
 		
 		public void Run (RefactoringContext context)
