@@ -220,4 +220,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		partial void PartialMethodWithoutImplementation();
 	}
+	
+	public class ClassWithStaticAndNonStaticMembers
+	{
+		public static event System.EventHandler Event1 { add {} remove{} }
+		public event System.EventHandler Event2 { add {} remove{} }
+		#pragma warning disable 67
+		public static event System.EventHandler Event3;
+		public event System.EventHandler Event4;
+
+		public static int Prop1 { get { return 0; } set {} }
+		public int Prop2 { get { return 0; } set {} }
+		public static int Prop3 { get; set; }
+		public int Prop4 { get; set; }
+	}
 }

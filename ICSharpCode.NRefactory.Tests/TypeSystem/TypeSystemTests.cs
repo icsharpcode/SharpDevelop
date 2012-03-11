@@ -688,5 +688,57 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("T", ((IMethod)test.ImplementedInterfaceMembers[0].MemberDefinition).Parameters.Single().Type.Name);
 			Assert.AreEqual("S", ((IMethod)test.ImplementedInterfaceMembers[1].MemberDefinition).Parameters.Single().Type.Name);
 		}
+		
+		[Test]
+		public void StaticityOfEventAccessors()
+		{
+			// https://github.com/icsharpcode/NRefactory/issues/20
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithStaticAndNonStaticMembers));
+			var evt1 = type.Events.Single(e => e.Name == "Event1");
+			Assert.IsTrue(evt1.IsStatic);
+			Assert.IsTrue(evt1.AddAccessor.IsStatic);
+			Assert.IsTrue(evt1.RemoveAccessor.IsStatic);
+
+			var evt2 = type.Events.Single(e => e.Name == "Event2");
+			Assert.IsFalse(evt2.IsStatic);
+			Assert.IsFalse(evt2.AddAccessor.IsStatic);
+			Assert.IsFalse(evt2.RemoveAccessor.IsStatic);
+
+			var evt3 = type.Events.Single(e => e.Name == "Event3");
+			Assert.IsTrue(evt3.IsStatic);
+			Assert.IsTrue(evt3.AddAccessor.IsStatic);
+			Assert.IsTrue(evt3.RemoveAccessor.IsStatic);
+
+			var evt4 = type.Events.Single(e => e.Name == "Event4");
+			Assert.IsFalse(evt4.IsStatic);
+			Assert.IsFalse(evt4.AddAccessor.IsStatic);
+			Assert.IsFalse(evt4.RemoveAccessor.IsStatic);
+		}
+		
+		[Test]
+		public void StaticityOfPropertyAccessors()
+		{
+			// https://github.com/icsharpcode/NRefactory/issues/20
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithStaticAndNonStaticMembers));
+			var prop1 = type.Properties.Single(e => e.Name == "Prop1");
+			Assert.IsTrue(prop1.IsStatic);
+			Assert.IsTrue(prop1.Getter.IsStatic);
+			Assert.IsTrue(prop1.Setter.IsStatic);
+
+			var prop2 = type.Properties.Single(e => e.Name == "Prop2");
+			Assert.IsFalse(prop2.IsStatic);
+			Assert.IsFalse(prop2.Getter.IsStatic);
+			Assert.IsFalse(prop2.Setter.IsStatic);
+
+			var prop3 = type.Properties.Single(e => e.Name == "Prop3");
+			Assert.IsTrue(prop3.IsStatic);
+			Assert.IsTrue(prop3.Getter.IsStatic);
+			Assert.IsTrue(prop3.Setter.IsStatic);
+
+			var prop4 = type.Properties.Single(e => e.Name == "Prop4");
+			Assert.IsFalse(prop4.IsStatic);
+			Assert.IsFalse(prop4.Getter.IsStatic);
+			Assert.IsFalse(prop4.Setter.IsStatic);
+		}
 	}
 }
