@@ -36,8 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Contains the main resolver logic.
 	/// </summary>
 	/// <remarks>
-	/// Despite being immutable, this class is not thread-safe. (due to caches)
-	/// TODO: fix this, it's very hard for NR users to tell whether two CSharpResolvers share the same caches
+	/// This class is thread-safe.
 	/// </remarks>
 	public class CSharpResolver
 	{
@@ -1356,14 +1355,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							break;
 					}
 					if (cache != null) {
-						foundInCache = cache.TryGetValue(identifier, out r);
+						lock (cache)
+							foundInCache = cache.TryGetValue(identifier, out r);
 					}
 				}
 				if (!foundInCache) {
 					r = LookInCurrentType(identifier, typeArguments, lookupMode, parameterizeResultType);
 					if (cache != null) {
 						// also cache missing members (r==null)
-						cache[identifier] = r;
+						lock (cache)
+							cache[identifier] = r;
 					}
 				}
 				if (r != null)
