@@ -437,6 +437,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				m.IsExtensionMethod = true;
 				currentTypeDefinition.HasExtensionMethods = true;
 			}
+			if (methodDeclaration.HasModifier(Modifiers.Partial)) {
+				if (methodDeclaration.Body.IsNull)
+					m.IsPartialMethodDeclaration = true;
+				else
+					m.IsPartialMethodImplementation = true;
+			}
 			
 			ConvertParameters(m.Parameters, methodDeclaration.Parameters);
 			if (!methodDeclaration.PrivateImplementationType.IsNull) {

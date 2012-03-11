@@ -63,6 +63,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		internal const ushort FlagFieldIsVolatile = 0x2000;
 		// flags for DefaultMethod:
 		internal const ushort FlagExtensionMethod = 0x1000;
+		internal const ushort FlagPartialMethodDeclaration = 0x2000;
+		internal const ushort FlagPartialMethodImplemenation = 0x4000;
 		
 		public bool IsFrozen {
 			get { return flags[FlagFrozen]; }

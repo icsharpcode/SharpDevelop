@@ -203,4 +203,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		void IGenericInterfaceWithUnifiableMethods<T, S>.Test(T a) {}
 		void IGenericInterfaceWithUnifiableMethods<T, S>.Test(S a) {}
 	}
+	
+	public partial class PartialClass
+	{
+		partial void PartialMethodWithImplementation(int a);
+		
+		partial void PartialMethodWithImplementation(System.Int32 a)
+		{
+		}
+		
+		partial void PartialMethodWithImplementation(string a);
+		
+		partial void PartialMethodWithImplementation(System.String a)
+		{
+		}
+		
+		partial void PartialMethodWithoutImplementation();
+	}
 }

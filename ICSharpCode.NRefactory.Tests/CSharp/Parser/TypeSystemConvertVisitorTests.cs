@@ -106,6 +106,26 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 				Assert.AreEqual(genericParamType.ReflectionName, interfaceGenericParamType.ReflectionName);
 			}
 		}
+		
+		[Test]
+		public void PartialMethodWithImplementation()
+		{
+			var t = compilation.FindType(typeof(PartialClass));
+			var methods = t.GetMethods(m => m.Name == "PartialMethodWithImplementation").ToList();
+			Assert.AreEqual(2, methods.Count);
+			var method1 = methods.Single(m => m.Parameters[0].Type.FullName == "System.Int32");
+			var method2 = methods.Single(m => m.Parameters[0].Type.FullName == "System.String");
+			Assert.AreEqual(2, method1.Parts.Count);
+			Assert.AreEqual(2, method2.Parts.Count);
+		}
+		
+		[Test]
+		public void PartialMethodWithoutImplementation()
+		{
+			var t = compilation.FindType(typeof(PartialClass));
+			var method = t.GetMethods(m => m.Name == "PartialMethodWithoutImplementation").Single();
+			Assert.AreEqual(1, method.Parts.Count);
+		}
 	}
 	
 	[TestFixture]
