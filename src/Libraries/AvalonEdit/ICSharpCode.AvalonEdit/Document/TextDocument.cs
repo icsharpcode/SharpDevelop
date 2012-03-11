@@ -75,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		readonly DocumentLineTree lineTree;
 		readonly LineManager lineManager;
 		readonly TextAnchorTree anchorTree;
-		ChangeTrackingCheckpoint currentCheckpoint;
+		readonly TextSourceVersionProvider versionProvider = new TextSourceVersionProvider();
 		
 		/// <summary>
 		/// Create an empty text document.
@@ -329,9 +329,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public ITextSource CreateSnapshot()
 		{
 			lock (lockObject) {
-				if (currentCheckpoint == null)
-					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
-				return new RopeTextSource(rope, currentCheckpoint);
+				return new RopeTextSource(rope, versionProvider.CurrentVersion);
 			}
 		}
 		
@@ -346,41 +344,15 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		/// <summary>
-		/// Creates an immutable snapshot of this document.
-		/// </summary>
+		/// <inheritdoc/>
 		public IDocument CreateDocumentSnapshot()
 		{
 			return new ReadOnlyDocument(this);
 		}
 		
-		/// <summary>
-		/// Creates a snapshot of the current text.
-		/// Additionally, creates a checkpoint that allows tracking document changes.
-		/// </summary>
-		/// <remarks><inheritdoc cref="CreateSnapshot()"/><inheritdoc cref="ChangeTrackingCheckpoint"/></remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "Need to return snapshot and checkpoint together to ensure thread-safety")]
-		public ITextSource CreateSnapshot(out ChangeTrackingCheckpoint checkpoint)
-		{
-			lock (lockObject) {
-				if (currentCheckpoint == null)
-					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
-				checkpoint = currentCheckpoint;
-				return new RopeTextSource(rope, currentCheckpoint);
-			}
-		}
-		
-		internal ChangeTrackingCheckpoint CreateChangeTrackingCheckpoint()
-		{
-			lock (lockObject) {
-				if (currentCheckpoint == null)
-					currentCheckpoint = new ChangeTrackingCheckpoint(lockObject);
-				return currentCheckpoint;
-			}
-		}
-		
-		ITextSourceVersion ITextSource.Version {
-			get { return CreateChangeTrackingCheckpoint(); }
+		/// <inheritdoc/>
+		public ITextSourceVersion Version {
+			get { return versionProvider.CurrentVersion; }
 		}
 		
 		/// <inheritdoc/>
@@ -742,10 +714,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			DelayedEvents delayedEvents = new DelayedEvents();
 			
 			lock (lockObject) {
-				// create linked list of checkpoints, if required
-				if (currentCheckpoint != null) {
-					currentCheckpoint = currentCheckpoint.Append(args);
-				}
+				// create linked list of checkpoints
+				versionProvider.AppendChange(args);
 				
 				// now update the textBuffer and lineTree
 				if (offset == 0 && length == rope.Length) {
