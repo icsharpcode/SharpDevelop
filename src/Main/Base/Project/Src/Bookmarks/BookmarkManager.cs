@@ -105,7 +105,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			WorkbenchSingleton.AssertMainThread();
 			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
 			foreach (SDBookmark mark in bookmarks) {
-				if (mark.IsSaved && mark.FileName != null) {
+				// Only return those bookmarks which belong to the specified project.
+				if (mark.IsSaved && mark.FileName != null && project.IsFileInProject(mark.FileName)) {
 					projectBookmarks.Add(mark);
 				}
 			}
