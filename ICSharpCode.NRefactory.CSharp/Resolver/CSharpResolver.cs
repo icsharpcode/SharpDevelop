@@ -804,6 +804,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				lhs = Convert(lhs, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
 				rhs = Convert(rhs, m.Parameters[1].Type, builtinOperatorOR.ArgumentConversions[1]);
+				if (builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator) {
+					return new OperatorResolveResult(
+						resultType, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
+						null, true, new[] { lhs, rhs });
+				}
 				return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
 			}
 		}
