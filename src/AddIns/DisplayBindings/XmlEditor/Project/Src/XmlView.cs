@@ -13,6 +13,7 @@ using System.Xml.XPath;
 using System.Xml.Xsl;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -154,7 +155,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static void AddTask(string fileName, string message, int column, int line, TaskType taskType)
 		{
-			TaskService.Add(new Task(FileName.Create(fileName), message, column, line, taskType));
+			TaskService.Add(new SDTask(FileName.Create(fileName), message, column, line, taskType));
 		}
 		
 		#region XmlView methods

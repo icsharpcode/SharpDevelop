@@ -594,9 +594,9 @@ namespace ICSharpCode.XmlEditor
 			if (view != null) {
 				ITextEditor editor = view.TextEditor;
 				if (editor == null) return;
-				int corLine = Math.Min(line + 1, editor.Document.TotalNumberOfLines - 1);
+				int corLine = Math.Min(line + 1, editor.Document.LineCount - 1);
 				editor.JumpTo(corLine, column + 1);
-				if (length > 0 && line < editor.Document.TotalNumberOfLines) {
+				if (length > 0 && line < editor.Document.LineCount) {
 					int offset = editor.Document.PositionToOffset(line + 1, column + 1);
 					editor.Select(offset, length);
 				}

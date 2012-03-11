@@ -86,13 +86,13 @@
     <Compile Include="Src\CopyXmlTreeNode.cs" />
     <Compile Include="Src\CreateSchemaCommand.cs" />
     <Compile Include="Src\CutXmlTreeNode.cs" />
-    <Compile Include="Src\DefaultParserService.cs" />
     <Compile Include="Src\DefaultXmlFileExtensions.cs" />
     <Compile Include="Src\DefaultXmlSchemaFileAssociations.cs" />
     <Compile Include="Src\DeleteXmlTreeNode.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\FoldingManagerAdapter.cs" />
+    <Compile Include="Src\FoldingRegion.cs" />
     <Compile Include="Src\FormatXmlCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionEditAction.cs" />
@@ -105,7 +105,6 @@
     <Compile Include="Src\InsertElementBeforeCommand.cs" />
     <Compile Include="Src\InsertTextNodeAfterCommand.cs" />
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
-    <Compile Include="Src\IParserService.cs" />
     <Compile Include="Src\ISelectXmlSchemaWindow.cs" />
     <Compile Include="Src\IXmlFoldParser.cs" />
     <Compile Include="Src\IXmlSchemaCompletionDataFactory.cs" />
@@ -199,6 +198,10 @@
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>

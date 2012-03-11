@@ -3,7 +3,8 @@
 
 using System;
 using System.Xml;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.XmlEditor
 {

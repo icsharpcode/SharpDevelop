@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.0.8658-Beta 2
+# SharpDevelop 4.2.0.8662-Beta 2
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -160,6 +160,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvalonEdit.AddIn", "src\Add
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "src\AddIns\DisplayBindings\HexEditor\Project\HexEditor.csproj", "{E618A9CD-A39F-4925-A538-E8A3FEF24E54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "src\AddIns\DisplayBindings\XmlEditor\Project\XmlEditor.csproj", "{DCA2703D-250A-463E-A68A-07ED105AE6BD}"
 EndProject
 Project("{00000000-0000-0000-0000-000000000000}") = "Tools", "src\Tools\Tools.build", "{3DF4060F-5EE0-41CF-8096-F27355FD5511}"
 EndProject
@@ -523,6 +525,22 @@ Global
 		{70966F84-74C9-4067-A379-0C674A929233}.Release|x86.ActiveCfg = Release|Any CPU
 		{70966F84-74C9-4067-A379-0C674A929233}.Release|Debug.Build.0 = Release|Any CPU
 		{70966F84-74C9-4067-A379-0C674A929233}.Release|Debug.ActiveCfg = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|Win32.Build.0 = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|x86.Build.0 = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|Debug.Build.0 = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Debug|Debug.ActiveCfg = Debug|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|Win32.Build.0 = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|Win32.ActiveCfg = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|x86.Build.0 = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|Debug.Build.0 = Release|Any CPU
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD}.Release|Debug.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -568,5 +586,6 @@ Global
 		{0008FCE9-9EB4-4E2E-979B-553278E5BBA6} = {59A30AA6-D600-41AB-B7A1-9543469DBE36}
 		{0162E499-42D0-409B-AA25-EED21F75336B} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
 		{E618A9CD-A39F-4925-A538-E8A3FEF24E54} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
+		{DCA2703D-250A-463E-A68A-07ED105AE6BD} = {11BF9245-88A3-4A0A-9A8A-EC9D98036B0F}
 	EndGlobalSection
 EndGlobal

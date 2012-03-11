@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XmlEditor
@@ -35,7 +36,7 @@ namespace ICSharpCode.XmlEditor
 		public void AddMarker(XPathNodeMatch node)
 		{
 			if (node.HasLineInfo() && node.Value.Length > 0) {
-				int offset = document.PositionToOffset(node.LineNumber + 1, node.LinePosition + 1);
+				int offset = document.GetOffset(node.LineNumber + 1, node.LinePosition + 1);
 				if (markerService != null) {
 					ITextMarker marker = markerService.Create(offset, node.Value.Length);
 					marker.Tag = typeof(XPathNodeTextMarker);

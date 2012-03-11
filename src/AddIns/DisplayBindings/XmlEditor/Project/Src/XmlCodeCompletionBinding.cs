@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 namespace ICSharpCode.XmlEditor
 {
 	public class XmlCodeCompletionBinding : ICodeCompletionBinding
-	{	
+	{
 		XmlSchemaFileAssociations schemaFileAssociations;
 		XmlSchemaCompletionCollection schemas;
 		
@@ -84,6 +84,11 @@ namespace ICSharpCode.XmlEditor
 				editor.ShowCompletionWindow(completionItems);
 				return true;
 			}
+			return false;
+		}
+		
+		public bool HandleKeyPressed(ITextEditor editor, char ch)
+		{
 			return false;
 		}
 	}
