@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ConvertForeachToFor.cs
 //  
 // Author:
@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

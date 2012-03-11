@@ -99,22 +99,22 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			}
 		}
 		
-		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : AttributedNode
+		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : EntityDeclaration
 		{
 			CSharpParser parser = new CSharpParser();
 			var members = parser.ParseTypeMembers(new StringReader(expr));
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (err => Console.WriteLine (err.Message));
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
-			AttributedNode m = members.Single();
+			EntityDeclaration m = members.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(m.GetType()), String.Format("Parsed member was {0} instead of {1} ({2})", m.GetType(), type, m));
 			return (T)m;
 		}
 		
-		public static void AssertTypeMember(string code, CSharp.AttributedNode expectedMember)
+		public static void AssertTypeMember(string code, CSharp.EntityDeclaration expectedMember)
 		{
-			var member = ParseTypeMember<CSharp.AttributedNode>(code);
+			var member = ParseTypeMember<CSharp.EntityDeclaration>(code);
 			if (!expectedMember.IsMatch(member)) {
 				Assert.Fail("Expected '{0}' but was '{1}'", ToCSharp(expectedMember), ToCSharp(member));
 			}
@@ -143,9 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		static string ToCSharp(AstNode node)
 		{
-			StringWriter w = new StringWriter();
-			node.AcceptVisitor(new CSharpOutputVisitor(w, new CSharpFormattingOptions()), null);
-			return w.ToString();
+			return node.GetText();
 		}
 	}
 }

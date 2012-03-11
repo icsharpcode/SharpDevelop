@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			AXmlParser parser = new AXmlParser();
 			StringBuilder b = new StringBuilder(originalXmlFile.Text);
 			IncrementalParserState parserState = null;
-			TestTextSourceVersion version = new TestTextSourceVersion();
+			var versionProvider = new TextSourceVersionProvider();
 			int totalCharactersParsed = 0;
 			int totalCharactersChanged = originalXmlFile.TextLength;
 			TimeSpan incrementalParseTime = TimeSpan.Zero;
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			Stopwatch w = new Stopwatch();
 			for (int iteration = 0; iteration < 100; iteration++) {
 				totalCharactersParsed += b.Length;
-				var textSource = new TextSourceWithVersion(new StringTextSource(b.ToString()), version);
+				var textSource = new StringTextSource(b.ToString(), versionProvider.CurrentVersion);
 				w.Restart();
 				var incrementalResult = parser.ParseIncremental(parserState, textSource, out parserState);
 				w.Stop();
@@ -104,10 +104,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					b.Remove(offset, removalLength);
 					string insertedText = originalXmlFile.GetText(originalOffset, insertionLength);
 					b.Insert(offset, insertedText);
-					changes.Add(new TextChangeEventArgs(offset, removedText, insertedText));
+					versionProvider.AppendChange(new TextChangeEventArgs(offset, removedText, insertedText));
 					totalCharactersChanged += insertionLength;
 				}
-				version = new TestTextSourceVersion(version, changes);
 			}
 			Console.WriteLine("Incremental parse time:     " + incrementalParseTime + " for " + totalCharactersChanged + " characters changed");
 			Console.WriteLine("Non-Incremental parse time: " + nonIncrementalParseTime + " for " + totalCharactersParsed + " characters");

@@ -50,7 +50,6 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			Assert.AreEqual (
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
-				"	" + Environment.NewLine +
 				"	public int Field {" + Environment.NewLine +
 				"		get;" + Environment.NewLine +
 				"		set;" + Environment.NewLine +

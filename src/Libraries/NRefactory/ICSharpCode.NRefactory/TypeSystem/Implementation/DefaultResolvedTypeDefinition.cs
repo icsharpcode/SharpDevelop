@@ -150,11 +150,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			internal readonly IUnresolvedMember[] unresolvedMembers;
 			internal readonly IMember[] resolvedMembers;
 			
-			public MemberList(ITypeResolveContext[] contextPerMember, IUnresolvedMember[] unresolvedMembers)
+			public MemberList(ITypeResolveContext[] contextPerMember, IUnresolvedMember[] unresolvedMembers, List<PartialMethodInfo> partialMethodInfos)
 			{
 				this.contextPerMember = contextPerMember;
 				this.unresolvedMembers = unresolvedMembers;
 				this.resolvedMembers = new IMember[unresolvedMembers.Length];
+				if (partialMethodInfos != null) {
+					foreach (var info in partialMethodInfos) {
+						unresolvedMembers[info.MemberIndex] = info.Parts[0];
+						contextPerMember[info.MemberIndex] = info.PrimaryContext;
+						resolvedMembers[info.MemberIndex] = DefaultResolvedMethod.CreateFromMultipleParts(
+							info.Parts.ToArray(), info.PrimaryContext, false);
+					}
+				}
 			}
 			
 			public IMember this[int index] {
@@ -236,6 +244,44 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		sealed class PartialMethodInfo
+		{
+			public readonly string Name;
+			public readonly int TypeParameterCount;
+			public readonly IList<IParameter> Parameters;
+			public readonly int MemberIndex;
+			public readonly List<IUnresolvedMethod> Parts = new List<IUnresolvedMethod>();
+			public ITypeResolveContext PrimaryContext;
+			
+			public PartialMethodInfo(IUnresolvedMethod method, ITypeResolveContext context, int memberIndex)
+			{
+				this.Name = method.Name;
+				this.TypeParameterCount = method.TypeParameters.Count;
+				this.Parameters = method.Parameters.CreateResolvedParameters(context);
+				this.MemberIndex = memberIndex;
+				this.Parts.Add(method);
+				this.PrimaryContext = context;
+			}
+			
+			public void AddPart(IUnresolvedMethod method, ITypeResolveContext context)
+			{
+				if (method.IsPartialMethodImplementation) {
+					// make the implementation the primary part
+					this.Parts.Insert(0, method);
+					this.PrimaryContext = context;
+				} else {
+					this.Parts.Add(method);
+				}
+			}
+			
+			public bool IsSameSignature(PartialMethodInfo other, StringComparer nameComparer)
+			{
+				return nameComparer.Equals(this.Name, other.Name)
+					&& this.TypeParameterCount == other.TypeParameterCount
+					&& ParameterListComparer.Instance.Equals(this.Parameters, other.Parameters);
+			}
+		}
+		
 		MemberList memberList;
 		
 		MemberList GetMemberList()
@@ -247,11 +293,34 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			List<IUnresolvedMember> unresolvedMembers = new List<IUnresolvedMember>();
 			List<ITypeResolveContext> contextPerMember = new List<ITypeResolveContext>();
+			List<PartialMethodInfo> partialMethodInfos = null;
 			bool addDefaultConstructorIfRequired = false;
 			foreach (IUnresolvedTypeDefinition part in parts) {
 				ITypeResolveContext parentContextForPart = part.CreateResolveContext(parentContext);
 				ITypeResolveContext contextForPart = parentContextForPart.WithCurrentTypeDefinition(this);
 				foreach (var member in part.Members) {
+					IUnresolvedMethod method = member as IUnresolvedMethod;
+					if (method != null && (method.IsPartialMethodDeclaration || method.IsPartialMethodImplementation)) {
+						// Merge partial method declaration and implementation
+						if (partialMethodInfos == null)
+							partialMethodInfos = new List<PartialMethodInfo>();
+						PartialMethodInfo newInfo = new PartialMethodInfo(method, contextForPart, unresolvedMembers.Count);
+						PartialMethodInfo existingInfo = null;
+						foreach (var info in partialMethodInfos) {
+							if (newInfo.IsSameSignature(info, Compilation.NameComparer)) {
+								existingInfo = info;
+								break;
+							}
+						}
+						if (existingInfo != null) {
+							// Add the unresolved method to the PartialMethodInfo:
+							existingInfo.AddPart(method, contextForPart);
+							// We handled this unresolved method; do not add it to unresolvedMembers.
+							continue;
+						} else {
+							partialMethodInfos.Add(newInfo);
+						}
+					}
 					unresolvedMembers.Add(member);
 					contextPerMember.Add(contextForPart);
 				}
@@ -270,7 +339,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					unresolvedMembers.Add(DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]));
 				}
 			}
-			return LazyInit.GetOrSet(ref this.memberList, new MemberList(contextPerMember.ToArray(), unresolvedMembers.ToArray()));
+			result = new MemberList(contextPerMember.ToArray(), unresolvedMembers.ToArray(), partialMethodInfos);
+			return LazyInit.GetOrSet(ref this.memberList, result);
 		}
 		
 		public IList<IMember> Members {
@@ -674,6 +744,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IEnumerable<IMethod> GetConstructors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
+			if (ComHelper.IsComImport(this)) {
+				IType coClass = ComHelper.GetCoClass(this);
+				using (var busyLock = BusyManager.Enter(this)) {
+					if (busyLock.Success) {
+						return coClass.GetConstructors(filter, options).Select(m => new SpecializedMethod(this, m));
+					}
+				}
+				return EmptyList<IMethod>.Instance;
+			}
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
 				return GetFilteredMembers<IUnresolvedMethod, IMethod>(Utils.ExtensionMethods.And(m => m.IsConstructor && !m.IsStatic, filter));
 			} else {

@@ -28,6 +28,7 @@ using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

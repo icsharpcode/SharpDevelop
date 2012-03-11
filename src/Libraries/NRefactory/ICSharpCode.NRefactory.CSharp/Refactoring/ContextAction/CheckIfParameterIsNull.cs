@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

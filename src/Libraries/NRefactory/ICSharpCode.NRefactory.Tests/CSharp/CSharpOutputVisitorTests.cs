@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				policy = new CSharpFormattingOptions();
 			StringWriter w = new StringWriter();
 			w.NewLine = "\n";
-			node.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "$" }, policy), null);
+			node.AcceptVisitor(new CSharpOutputVisitor(new TextWriterOutputFormatter(w) { IndentationString = "$" }, policy));
 			Assert.AreEqual(expected.Replace("\r", ""), w.ToString());
 		}
 		
@@ -70,11 +70,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void InlineCommentAtEndOfCondition()
 		{
 			IfElseStatement condition = new IfElseStatement();
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 1), 2), IfElseStatement.IfKeywordRole);
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 4), 1), IfElseStatement.Roles.LPar);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 1)), IfElseStatement.IfKeywordRole);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 4)), IfElseStatement.Roles.LPar);
 			condition.AddChild(new IdentifierExpression("cond", new TextLocation(1, 5)), IfElseStatement.ConditionRole);
 			condition.AddChild(new Comment(CommentType.MultiLine, new TextLocation(1, 9), new TextLocation(1, 14)) { Content = "a" }, IfElseStatement.Roles.Comment);
-			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 14), 1), IfElseStatement.Roles.RPar);
+			condition.AddChild(new CSharpTokenNode(new TextLocation(1, 14)), IfElseStatement.Roles.RPar);
 			condition.AddChild(new ReturnStatement(), IfElseStatement.TrueRole);
 			
 			AssertOutput("if (cond/*a*/)\n$return;\n", condition);

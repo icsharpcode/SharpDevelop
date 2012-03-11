@@ -28,12 +28,13 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class RemoveBackingStore : IContextAction
 	{
-		public bool  IsValid (RefactoringContext context)
+		public bool IsValid (RefactoringContext context)
 		{
 			return GetBackingField (context) != null;
 		}

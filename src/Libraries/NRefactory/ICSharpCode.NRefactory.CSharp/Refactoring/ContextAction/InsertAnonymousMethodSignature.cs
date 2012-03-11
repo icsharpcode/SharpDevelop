@@ -27,6 +27,7 @@ using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

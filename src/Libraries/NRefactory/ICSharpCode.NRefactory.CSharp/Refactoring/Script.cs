@@ -68,17 +68,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		readonly string eolMarker;
+		protected string eolMarker = Environment.NewLine;
 		readonly CSharpFormattingOptions formattingOptions;
 		Dictionary<AstNode, ISegment> segmentsForInsertedNodes = new Dictionary<AstNode, ISegment>();
 		
-		protected Script(string eolMarker, CSharpFormattingOptions formattingOptions)
+		protected Script(CSharpFormattingOptions formattingOptions)
 		{
-			if (eolMarker == null)
-				throw new ArgumentNullException("eolMarker");
 			if (formattingOptions == null)
 				throw new ArgumentNullException("formattingOptions");
-			this.eolMarker = eolMarker;
 			this.formattingOptions = formattingOptions;
 		}
 		
@@ -134,12 +131,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return formattingOptions; }
 		}
 		
-		public void Remove (AstNode node)
-		{
-			var segment = GetSegment(node);
-			Replace(segment.Offset, segment.Length, string.Empty);
-		}
-		
 		public void InsertBefore (AstNode node, AstNode insertNode)
 		{
 			var startOffset = GetCurrentOffset (new TextLocation(node.StartLocation.Line, 1));
@@ -178,52 +169,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 		}
 		
-		public virtual void FormatText (AstNode node)
-		{
-			var segment = GetSegment(node);
-			FormatText(segment.Offset, segment.Length);
-		}
+		public abstract void Remove (AstNode node, bool removeEmptyLine = true);
 		
-		/// <summary>
-		/// Format the specified node and surrounding whitespace.
-		/// </summary>
-		public virtual void FormatTextAround (AstNode node)
-		{
-			int startOffset;
-			if (node.PrevSibling != null)
-				startOffset = GetSegment(node.PrevSibling).EndOffset;
-			else
-				startOffset = GetSegment(node).Offset;
-			int endOffset;
-			if (node.NextSibling != null)
-				endOffset = GetSegment(node.NextSibling).Offset;
-			else
-				endOffset = GetSegment(node).EndOffset;
-			FormatText(startOffset, endOffset - startOffset);
-		}
-		
-		public abstract void FormatText (int offset, int length);
+		public abstract void FormatText (AstNode node);
 		
 		public virtual void Select (AstNode node)
-		{
-			var segment = GetSegment(node);
-			Select(segment.Offset, segment.Length);
-		}
-		
-		public virtual void Select (int offset, int length)
 		{
 			// default implementation: do nothing
 			// Derived classes are supposed to set the text editor's selection
 		}
 		
-		public enum InsertPosition {
+		public enum InsertPosition
+		{
 			Start,
 			Before,
 			After,
 			End
 		}
 		
-		public abstract void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition);
+		public virtual void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+		{
+			throw new NotImplementedException();
+		}
 
 		protected virtual int GetIndentLevelAt (int offset)
 		{
@@ -236,24 +203,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Stack<int> startOffsets = new Stack<int>();
 			readonly StringWriter stringWriter;
 			
-			public SegmentTrackingOutputFormatter(StringWriter stringWriter)
+			public SegmentTrackingOutputFormatter (StringWriter stringWriter)
 				: base(stringWriter)
 			{
 				this.stringWriter = stringWriter;
 			}
 			
-			public override void StartNode(AstNode node)
+			public override void StartNode (AstNode node)
 			{
-				base.StartNode(node);
+				base.StartNode (node);
 				startOffsets.Push(stringWriter.GetStringBuilder ().Length);
 			}
 			
-			public override void EndNode(AstNode node)
+			public override void EndNode (AstNode node)
 			{
 				int startOffset = startOffsets.Pop();
 				int endOffset = stringWriter.GetStringBuilder ().Length;
 				NewSegments.Add(new KeyValuePair<AstNode, Segment>(node, new Segment(startOffset, endOffset - startOffset)));
-				base.EndNode(node);
+				base.EndNode (node);
 			}
 		}
 		
@@ -266,7 +233,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (startWithNewLine)
 				formatter.NewLine ();
 			var visitor = new CSharpOutputVisitor (formatter, formattingOptions);
-			node.AcceptVisitor (visitor, null);
+			node.AcceptVisitor (visitor);
 			string text = stringWriter.ToString().TrimEnd();
 			
 			if (node is FieldDeclaration)
@@ -317,9 +284,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		/// <summary>
 		/// Performs a rename refactoring.
 		/// </summary>
-		public abstract void Rename(IEntity entity, string name);
+		public virtual void Rename(IEntity entity, string name)
+		{
+		}
 		
-		public abstract void Dispose();
+		public virtual void Dispose()
+		{
+		}
 	}
 }
 

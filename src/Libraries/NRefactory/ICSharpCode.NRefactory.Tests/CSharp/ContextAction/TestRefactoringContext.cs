@@ -35,63 +35,41 @@ using ICSharpCode.NRefactory.FormattingTests;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
 	class TestRefactoringContext : RefactoringContext
 	{
-		internal IDocument doc;
-		CSharpParsedFile parsedFile;
-		CSharpAstResolver resolver;
+		internal readonly IDocument doc;
+		readonly TextLocation location;
 		
-		public override bool HasCSharp3Support {
-			get {
-				return true;
-			}
-		}
-		
-
-		public override CSharpFormattingOptions FormattingOptions {
-			get {
-				return new CSharpFormattingOptions ();
-			}
-		}
-		
-		public override AstType CreateShortType (IType fullType)
+		public TestRefactoringContext(IDocument document, TextLocation location, CSharpAstResolver resolver) : base(resolver, CancellationToken.None)
 		{
-			AstNode node = Unit.GetNodeAt(Location);
-			CSharpResolver csResolver = resolver.GetResolverStateBefore(node);
-			var builder = new TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
+			this.doc = document;
+			this.location = location;
 		}
 		
-		public override void ReplaceReferences (IMember member, MemberDeclaration replaceWidth)
+		public override bool Supports(Version version)
 		{
-//			throw new NotImplementedException ();
+			return true;
 		}
 		
-		class MyScript : Script
-		{
-			TestRefactoringContext trc;
-			
-			public MyScript (TestRefactoringContext trc) : base (trc)
-			{
-				this.trc = trc;
-			}
-			
-			public override void Dispose ()
-			{
-				trc.doc = new ReadOnlyDocument (TestBase.ApplyChanges (trc.doc.Text, new List<TextReplaceAction> (Actions.Where (act => act is TextReplaceAction).Cast<TextReplaceAction>())));
-			}
-			
-			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
-			{
-				throw new NotImplementedException ();
-			}
+		public override TextLocation Location {
+			get { return location; }
 		}
+		
 		public override Script StartScript ()
 		{
-			return new MyScript (this);
+			return new TestScript (this);
+		}
+		
+		sealed class TestScript : DocumentScript
+		{
+			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions())
+			{
+				this.eolMarker = context.EolMarker;
+			}
 		}
 		
 		#region Text stuff
@@ -123,18 +101,19 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		{
 			return doc.GetText (offset, length);
 		}
-		#endregion
 		
-		#region Resolving
-		public override ResolveResult Resolve (AstNode node)
+		public override string GetText (ISegment segment)
 		{
-			return resolver.Resolve(node);
-		}		
+			return doc.GetText (segment);
+		}
+		
+		public override IDocumentLine GetLineByOffset (int offset)
+		{
+			return doc.GetLineByOffset (offset);
+		}
 		#endregion
 		
-		
-		
-		public TestRefactoringContext (string content)
+		public static TestRefactoringContext Create(string content)
 		{
 			int idx = content.IndexOf ("$");
 			if (idx >= 0)
@@ -142,94 +121,43 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			int idx1 = content.IndexOf ("<-");
 			int idx2 = content.IndexOf ("->");
 			
+			int selectionStart = 0;
+			int selectionEnd = 0;
 			if (0 <= idx1 && idx1 < idx2) {
 				content = content.Substring (0, idx2) + content.Substring (idx2 + 2);
 				content = content.Substring (0, idx1) + content.Substring (idx1 + 2);
 				selectionStart = idx1;
-				idx = selectionEnd = idx2 - 2;
+				selectionEnd = idx2 - 2;
+				idx = selectionEnd;
 			}
 			
-			doc = new ReadOnlyDocument (content);
+			var doc = new StringBuilderDocument (content);
 			var parser = new CSharpParser ();
-			Unit = parser.Parse (content, "program.cs");
+			var unit = parser.Parse (content, "program.cs");
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));
 			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
-			parsedFile = Unit.ToTypeSystem();
+			var parsedFile = unit.ToTypeSystem();
 			
 			IProjectContent pc = new CSharpProjectContent();
 			pc = pc.UpdateProjectContent(null, parsedFile);
 			pc = pc.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			Compilation = pc.CreateCompilation();
-			resolver = new CSharpAstResolver(Compilation, Unit, parsedFile);
+			var compilation = pc.CreateCompilation();
+			var resolver = new CSharpAstResolver(compilation, unit, parsedFile);
+			TextLocation location = TextLocation.Empty;
 			if (idx >= 0)
-				Location = doc.GetLocation (idx);
+				location = doc.GetLocation (idx);
+			return new TestRefactoringContext(doc, location, resolver) {
+				selectionStart = selectionStart,
+				selectionEnd = selectionEnd
+			};
 		}
 		
 		internal static void Print (AstNode node)
 		{
 			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
-			node.AcceptVisitor (v, null);
+			node.AcceptVisitor (v);
 		}
-		
-		#region IActionFactory implementation
-		public override TextReplaceAction CreateTextReplaceAction (int offset, int removedChars, string insertedText)
-		{
-			return new TestBase.TestTextReplaceAction (offset, removedChars, insertedText);
-		}
-
-		public override NodeOutputAction CreateNodeOutputAction (int offset, int removedChars, NodeOutput output)
-		{
-			return new TestNodeOutputAction (offset, removedChars, output);
-		}
-
-		public override NodeSelectionAction CreateNodeSelectionAction (AstNode node)
-		{
-			return new TestNodeSelectAction (node);
-		}
-
-		public override FormatTextAction CreateFormatTextAction (Func<RefactoringContext, AstNode> callback)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public override CreateLinkAction CreateLinkAction (IEnumerable<AstNode> linkedNodes)
-		{
-			return new TestNodeLinkAction (linkedNodes);
-		}
-		
-		class TestNodeLinkAction : CreateLinkAction
-		{
-			public TestNodeLinkAction (IEnumerable<AstNode> linkedNodes) : base (linkedNodes)
-			{
-			}
-			
-			public override void Perform (Script script)
-			{
-			}
-		}
-		class TestNodeSelectAction : NodeSelectionAction
-		{
-			public TestNodeSelectAction (AstNode astNode) : base (astNode)
-			{
-			}
-			public override void Perform (Script script)
-			{
-			}
-		}
-		
-		public class TestNodeOutputAction : NodeOutputAction
-		{
-			public TestNodeOutputAction (int offset, int removedChars, NodeOutput output) : base (offset, removedChars, output)
-			{
-			}
-			
-			public override void Perform (Script script)
-			{
-			}
-		}
-		#endregion
 	}
-	
 }

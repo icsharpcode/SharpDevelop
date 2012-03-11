@@ -1303,6 +1303,7 @@ namespace Mono.CSharp
 	{
 		IAssemblyDefinition DeclaringAssembly { get; }
 		string Namespace { get; }
+		bool IsPartial { get; }
 		int TypeParametersCount { get; }
 		TypeParameterSpec[] TypeParameters { get; }
 
@@ -1324,12 +1325,6 @@ namespace Mono.CSharp
 		public static readonly InternalType ErrorType = new InternalType ("<error>");
 
 		readonly string name;
-
-		InternalType (string name, MemberCache cache)
-			: this (name)
-		{
-			this.cache = cache;
-		}
 
 		InternalType (string name)
 			: base (MemberKind.InternalCompilerType, null, null, null, Modifiers.PUBLIC)
@@ -1357,6 +1352,12 @@ namespace Mono.CSharp
 		}
 
 		bool IMemberDefinition.IsImported {
+			get {
+				return false;
+			}
+		}
+
+		bool ITypeDefinition.IsPartial {
 			get {
 				return false;
 			}
@@ -1473,6 +1474,12 @@ namespace Mono.CSharp
 		#region Properties
 
 		public TypeSpec Element { get; private set; }
+
+		bool ITypeDefinition.IsPartial {
+			get {
+				return false;
+			}
+		}
 
 		public override string Name {
 			get {

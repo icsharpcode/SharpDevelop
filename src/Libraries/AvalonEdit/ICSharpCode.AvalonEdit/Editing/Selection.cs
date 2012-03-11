@@ -230,9 +230,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (this.IsEmpty)
 				return false;
-			if (this.SurroundingSegment.Contains(offset)) {
+			if (this.SurroundingSegment.Contains(offset, 0)) {
 				foreach (ISegment s in this.Segments) {
-					if (s.Contains(offset)) {
+					if (s.Contains(offset, 0)) {
 						return true;
 					}
 				}

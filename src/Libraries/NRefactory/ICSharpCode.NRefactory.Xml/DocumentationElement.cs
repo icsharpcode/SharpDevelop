@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.Xml
 		/// Gets whether this is a pure text node.
 		/// </summary>
 		public bool IsTextNode {
-			get { return element == null; }
+			get { return xmlObject == null; }
 		}
 		
 		/// <summary>
@@ -244,6 +244,18 @@ namespace ICSharpCode.NRefactory.Xml
 						list.Add(new XmlDocumentationElement(childElement, declaringEntity, crefResolver) { nestingLevel = nestingLevel });
 					}
 				}
+			}
+			if (list.Count > 0 && list[0].IsTextNode) {
+				if (string.IsNullOrWhiteSpace(list[0].textContent))
+					list.RemoveAt(0);
+				else
+					list[0].textContent = list[0].textContent.TrimStart();
+			}
+			if (list.Count > 0 && list[list.Count - 1].IsTextNode) {
+				if (string.IsNullOrWhiteSpace(list[list.Count - 1].textContent))
+					list.RemoveAt(list.Count - 1);
+				else
+					list[list.Count - 1].textContent = list[list.Count - 1].textContent.TrimEnd();
 			}
 			return list;
 		}

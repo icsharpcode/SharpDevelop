@@ -41,12 +41,11 @@
     <DefineConstants>TRACE;FULL_AST</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>PdbOnly</DebugType>
+    <DebugType>none</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -161,7 +160,7 @@
     <Compile Include="Ast\Statements\YieldBreakStatement.cs" />
     <Compile Include="Ast\Statements\YieldReturnStatement.cs" />
     <Compile Include="Ast\TypeMembers\Accessor.cs" />
-    <Compile Include="Ast\TypeMembers\AttributedNode.cs" />
+    <Compile Include="Ast\TypeMembers\EntityDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\ConstructorDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\DestructorDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\EnumMemberDeclaration.cs" />
@@ -170,7 +169,6 @@
     <Compile Include="Ast\TypeMembers\FixedFieldDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\FixedVariableInitializer.cs" />
     <Compile Include="Ast\TypeMembers\IndexerDeclaration.cs" />
-    <Compile Include="Ast\TypeMembers\MemberDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\MethodDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\OperatorDeclaration.cs" />
     <Compile Include="Ast\TypeMembers\ParameterDeclaration.cs" />
@@ -266,6 +264,7 @@
     <Compile Include="Refactoring\ContextAction\SplitString.cs" />
     <Compile Include="Refactoring\ContextAction\UseExplicitType.cs" />
     <Compile Include="Refactoring\ContextAction\UseVarKeyword.cs" />
+    <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Refactoring\IContextAction.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
@@ -320,6 +319,9 @@
     <Compile Include="Parser\mcs\module.cs" />
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
+    <Compile Include="Ast\TokenRole.cs" />
+    <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
+    <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -340,4 +342,7 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <None Include="Parser\mcs\cs-parser.jay" />
+  </ItemGroup>
 </Project>

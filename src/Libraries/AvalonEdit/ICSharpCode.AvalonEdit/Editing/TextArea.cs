@@ -19,6 +19,7 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {

@@ -152,7 +152,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			rope.VerifyRange(startIndex, length);
 			
 			while (length > 0) {
-				var entry = rope.FindNodeUsingCache(startIndex).UnsafePeek();
+				var entry = rope.FindNodeUsingCache(startIndex).PeekOrDefault();
 				char[] contents = entry.node.contents;
 				int startWithinNode = startIndex - entry.nodeStartIndex;
 				int nodeLength = Math.Min(entry.node.length, startWithinNode + length);

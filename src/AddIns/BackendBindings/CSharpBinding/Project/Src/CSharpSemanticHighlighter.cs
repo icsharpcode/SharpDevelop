@@ -22,7 +22,7 @@ namespace CSharpBinding
 	/// <summary>
 	/// Semantic highlighting for C#.
 	/// </summary>
-	public class CSharpSemanticHighlighter : DepthFirstAstVisitor<object, object>, IHighlighter, IDisposable
+	public class CSharpSemanticHighlighter : DepthFirstAstVisitor, IHighlighter, IDisposable
 	{
 		readonly ITextEditor textEditor;
 		readonly ISyntaxHighlighter syntaxHighlighter;
@@ -273,24 +273,22 @@ namespace CSharpBinding
 		#endregion
 		
 		#region AST Traversal
-		protected override object VisitChildren(AstNode node, object data)
+		protected override void VisitChildren(AstNode node)
 		{
 			for (var child = node.FirstChild; child != null; child = child.NextSibling) {
 				if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber)
 					child.AcceptVisitor(this);
 			}
-			return null;
 		}
 		
-		public override object VisitSimpleType(SimpleType simpleType, object data)
+		public override void VisitSimpleType(SimpleType simpleType)
 		{
 			Colorize(simpleType.IdentifierToken, GetColor(resolver.Resolve(simpleType)));
 			foreach (AstNode node in simpleType.TypeArguments)
 				node.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitMemberType(MemberType memberType, object data)
+		public override void VisitMemberType(MemberType memberType)
 		{
 			// Ensure we visit/colorize the children in the correct order.
 			// This is required so that the resulting HighlightedSections are sorted correctly.
@@ -298,10 +296,9 @@ namespace CSharpBinding
 			Colorize(memberType.MemberNameToken, GetColor(resolver.Resolve(memberType)));
 			foreach (AstNode node in memberType.TypeArguments)
 				node.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
+		public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
 		{
 			Identifier ident = identifierExpression.GetChildByRole(IdentifierExpression.Roles.Identifier);
 			if (isInAccessor && identifierExpression.Identifier == "value") {
@@ -313,10 +310,9 @@ namespace CSharpBinding
 			
 			foreach (AstNode node in identifierExpression.TypeArguments)
 				node.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+		public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
 		{
 			memberReferenceExpression.Target.AcceptVisitor(this);
 			
@@ -325,10 +321,9 @@ namespace CSharpBinding
 			
 			foreach (AstNode node in memberReferenceExpression.TypeArguments)
 				node.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitInvocationExpression(InvocationExpression invocationExpression, object data)
+		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 		{
 			Expression target = invocationExpression.Target;
 			target.AcceptVisitor(this);
@@ -342,20 +337,19 @@ namespace CSharpBinding
 			
 			foreach (AstNode node in invocationExpression.Arguments)
 				node.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitAccessor(Accessor accessor, object data)
+		public override void VisitAccessor(Accessor accessor)
 		{
 			isInAccessor = true;
 			try {
-				return base.VisitAccessor(accessor, data);
+				base.VisitAccessor(accessor);
 			} finally {
 				isInAccessor = false;
 			}
 		}
 		
-		public override object VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
 			methodDeclaration.ReturnType.AcceptVisitor(this);
 			Colorize(methodDeclaration.NameToken, methodCallColor);
@@ -366,10 +360,9 @@ namespace CSharpBinding
 			foreach (var node in methodDeclaration.Constraints)
 				node.AcceptVisitor(this);
 			methodDeclaration.Body.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
 			if (typeDeclaration.ClassType == ClassType.Enum || typeDeclaration.ClassType == ClassType.Struct)
 				Colorize(typeDeclaration.NameToken, valueTypeColor);
@@ -384,13 +377,12 @@ namespace CSharpBinding
 				node.AcceptVisitor(this);
 			foreach (var node in typeDeclaration.Members)
 				node.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration, object data)
+		public override void VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration)
 		{
 			if (typeParameterDeclaration.Variance == VarianceModifier.Contravariant)
-				Colorize(typeParameterDeclaration.GetChildByRole(TypeParameterDeclaration.VarianceRole), parameterModifierColor);
+				Colorize(typeParameterDeclaration.VarianceToken, parameterModifierColor);
 			
 			bool isValueType = false;
 			if (typeParameterDeclaration.Parent != null) {
@@ -401,10 +393,9 @@ namespace CSharpBinding
 				}
 			}
 			Colorize(typeParameterDeclaration.NameToken, isValueType ? valueTypeColor : referenceTypeColor);
-			return null;
 		}
 		
-		public override object VisitConstraint(Constraint constraint, object data)
+		public override void VisitConstraint(Constraint constraint)
 		{
 			if (constraint.Parent != null && constraint.Parent.GetChildrenByRole(AstNode.Roles.TypeParameter).Any(tp => tp.Name == constraint.TypeParameter.Identifier)) {
 				bool isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
@@ -412,16 +403,14 @@ namespace CSharpBinding
 			}
 			foreach (var baseType in constraint.BaseTypes)
 				baseType.AcceptVisitor(this);
-			return null;
 		}
 		
-		public override object VisitVariableInitializer(VariableInitializer variableInitializer, object data)
+		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
 		{
 			if (variableInitializer.Parent is FieldDeclaration) {
 				Colorize(variableInitializer.NameToken, fieldAccessColor);
 			}
 			variableInitializer.Initializer.AcceptVisitor(this);
-			return null;
 		}
 		#endregion
 	}

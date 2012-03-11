@@ -108,8 +108,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.startLocation = startLocation;
 		}
 		#endregion
-
-		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data = default(T))
+		
+		public override void AcceptVisitor (IAstVisitor visitor)
+		{
+			visitor.VisitComment (this);
+		}
+			
+		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
+		{
+			return visitor.VisitComment (this);
+		}
+		
+		public override S AcceptVisitor<T, S> (IAstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComment (this, data);
 		}

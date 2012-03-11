@@ -100,6 +100,18 @@ namespace CSharpBinding.Refactoring
 			return textSource.GetText(offset, length);
 		}
 		
+		public override string GetText(ISegment segment)
+		{
+			return textSource.GetText(segment);
+		}
+		
+		public override IDocumentLine GetLineByOffset(int offset)
+		{
+			if (document == null)
+				document = new ReadOnlyDocument(textSource);
+			return document.GetLineByOffset(offset);
+		}
+		
 		public override int GetOffset(TextLocation location)
 		{
 			if (document == null)

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.AvalonEdit.Utils
 {
@@ -451,7 +452,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				if (unchecked((uint)index >= (uint)this.Length)) {
 					throw new ArgumentOutOfRangeException("index", index, "0 <= index < " + this.Length.ToString(CultureInfo.InvariantCulture));
 				}
-				RopeCacheEntry entry = FindNodeUsingCache(index).UnsafePeek();
+				RopeCacheEntry entry = FindNodeUsingCache(index).PeekOrDefault();
 				return entry.node.contents[index - entry.nodeStartIndex];
 			}
 			set {
@@ -511,10 +512,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 			if (stack == null) {
 				stack = ImmutableStack<RopeCacheEntry>.Empty.Push(new RopeCacheEntry(root, 0));
 			}
-			while (!stack.UnsafePeek().IsInside(index))
+			while (!stack.PeekOrDefault().IsInside(index))
 				stack = stack.Pop();
 			while (true) {
-				RopeCacheEntry entry = stack.UnsafePeek();
+				RopeCacheEntry entry = stack.PeekOrDefault();
 				// check if we've reached a leaf or function node
 				if (entry.node.height == 0) {
 					if (entry.node.contents == null) {
@@ -640,7 +641,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			VerifyRange(startIndex, count);
 			
 			while (count > 0) {
-				var entry = FindNodeUsingCache(startIndex).UnsafePeek();
+				var entry = FindNodeUsingCache(startIndex).PeekOrDefault();
 				T[] contents = entry.node.contents;
 				int startWithinNode = startIndex - entry.nodeStartIndex;
 				int nodeLength = Math.Min(entry.node.length, startWithinNode + count);

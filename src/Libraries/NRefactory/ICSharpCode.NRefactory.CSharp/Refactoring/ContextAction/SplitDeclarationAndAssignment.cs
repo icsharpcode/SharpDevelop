@@ -1,4 +1,4 @@
-// 
+﻿// 
 // SplitDeclarationAndAssignment.cs
 //  
 // Author:
@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -45,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var assign = new AssignmentExpression (new IdentifierExpression (varDecl.Variables.First ().Name), AssignmentOperatorType.Assign, varDecl.Variables.First ().Initializer.Clone ());
 			
 			var newVarDecl = (VariableDeclarationStatement)varDecl.Clone ();
+			newVarDecl.Role = BlockStatement.StatementRole;
 			
 			if (newVarDecl.Type.IsMatch (new SimpleType ("var")))
 				newVarDecl.Type = type;
@@ -57,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 		
-		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context, out AstType resolvedType)
+		static VariableDeclarationStatement GetVariableDeclarationStatement (RefactoringContext context, out AstType resolvedType, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var result = context.GetNode<VariableDeclarationStatement> ();
 			if (result != null && result.Variables.Count == 1 && !result.Variables.First ().Initializer.IsNull && result.Variables.First ().NameToken.Contains (context.Location.Line, context.Location.Column)) {

@@ -22,11 +22,18 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AttributedNode : AstNode
+	public abstract class EntityDeclaration : AstNode
 	{
 		public static readonly Role<AttributeSection> AttributeRole = new Role<AttributeSection>("Attribute");
 		public static readonly Role<AttributeSection> UnattachedAttributeRole = new Role<AttributeSection>("UnattachedAttribute");
 		public static readonly Role<CSharpModifierToken> ModifierRole = new Role<CSharpModifierToken>("Modifier");
+		public static readonly Role<AstType> PrivateImplementationTypeRole = new Role<AstType>("PrivateImplementationType", AstType.Null);
+		
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
+		}
+		
+		public abstract NRefactory.TypeSystem.EntityType EntityType { get; }
 		
 		public AstNodeCollection<AttributeSection> Attributes {
 			get { return base.GetChildrenByRole (AttributeRole); }
@@ -37,8 +44,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetModifiers(this, value); }
 		}
 		
+		public bool HasModifier (Modifiers mod)
+		{
+			return (Modifiers & mod) == mod;
+		}
+		
 		public IEnumerable<CSharpModifierToken> ModifierTokens {
 			get { return GetChildrenByRole (ModifierRole); }
+		}
+		
+		public virtual string Name {
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, Identifier.Create (value, TextLocation.Empty));
+			}
+		}
+		
+		public virtual Identifier NameToken {
+			get { return GetChildByRole (Roles.Identifier); }
+			set { SetChildByRole (Roles.Identifier, value); }
+		}
+		
+		public virtual AstType ReturnType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		internal static Modifiers GetModifiers(AstNode node)
@@ -74,14 +105,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		protected bool MatchAttributesAndModifiers (AttributedNode o, PatternMatching.Match match)
+		protected bool MatchAttributesAndModifiers (EntityDeclaration o, PatternMatching.Match match)
 		{
 			return (this.Modifiers == Modifiers.Any || this.Modifiers == o.Modifiers) && this.Attributes.DoMatch (o.Attributes, match);
-		}
-		
-		public bool HasModifier (Modifiers mod)
-		{
-			return (Modifiers & mod) == mod;
 		}
 	}
 }

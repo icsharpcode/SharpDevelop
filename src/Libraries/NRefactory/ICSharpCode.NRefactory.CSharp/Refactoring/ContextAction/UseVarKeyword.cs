@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UseVarKeyword.cs
 //  
 // Author:
@@ -26,6 +26,7 @@
 using System;
 using System.Linq;
 using ICSharpCode.NRefactory.PatternMatching;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {

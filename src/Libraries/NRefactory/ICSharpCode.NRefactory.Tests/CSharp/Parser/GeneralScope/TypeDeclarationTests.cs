@@ -326,7 +326,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A, }");
 			Assert.AreEqual(
 				new Role[] {
-					AstNode.Roles.Keyword,
+					TypeDeclaration.EnumKeywordRole,
 					AstNode.Roles.Identifier,
 					AstNode.Roles.LBrace,
 					TypeDeclaration.MemberRole,
@@ -341,7 +341,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A, };");
 			Assert.AreEqual(
 				new Role[] {
-					AstNode.Roles.Keyword,
+					TypeDeclaration.EnumKeywordRole,
 					AstNode.Roles.Identifier,
 					AstNode.Roles.LBrace,
 					TypeDeclaration.MemberRole,
@@ -357,7 +357,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A };");
 			Assert.AreEqual(
 				new Role[] {
-					AstNode.Roles.Keyword,
+					TypeDeclaration.EnumKeywordRole,
 					AstNode.Roles.Identifier,
 					AstNode.Roles.LBrace,
 					TypeDeclaration.MemberRole,

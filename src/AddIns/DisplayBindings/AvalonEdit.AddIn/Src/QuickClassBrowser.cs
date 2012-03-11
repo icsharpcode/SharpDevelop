@@ -47,7 +47,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.IsInSamePart = true;
 				this.entity = member.UnresolvedMember;
 				if (entity is ITypeDefinition)
-					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.UseFullyQualifiedMemberNames;
+					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowDeclaringType;
 				else
 					ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList | ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames;
 				text = ambience.ConvertEntity(member);

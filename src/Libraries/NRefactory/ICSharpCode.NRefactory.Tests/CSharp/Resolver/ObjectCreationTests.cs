@@ -43,7 +43,7 @@ class A {
 		}
 		
 		[Test]
-		public void NonExistingClass()
+		public void NonExistingClass ()
 		{
 			string program = @"class A {
 	void Method() {
@@ -51,7 +51,8 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve<ErrorResolveResult>(program);
+			ResolveResult result = Resolve (program);
+			Assert.IsTrue (result.IsError);
 			Assert.AreSame(SpecialType.UnknownType, result.Type);
 		}
 		
@@ -172,7 +173,7 @@ class B {
 			Assert.AreEqual("Point.X", result.Member.FullName);
 		}
 		
-		[Test, Ignore("Parser returns incorrect positions")]
+		[Test]
 		public void CollectionInitializerTest()
 		{
 			string program = @"using System.Collections.Generic;
@@ -185,7 +186,7 @@ class B {
 			Assert.AreEqual("System.Collections.Generic.List.Add", result.Member.FullName);
 		}
 		
-		[Test, Ignore("Parser returns incorrect positions")]
+		[Test]
 		public void DictionaryInitializerTest()
 		{
 			string program = @"using System.Collections.Generic;

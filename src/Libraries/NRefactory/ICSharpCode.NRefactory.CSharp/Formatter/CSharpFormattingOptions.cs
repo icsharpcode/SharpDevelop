@@ -37,7 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		EndOfLineWithoutSpace,
 		NextLine,
 		NextLineShifted,
-		NextLineShifted2
+		NextLineShifted2,
+		BannerStyle
 	}
 
 	public enum BraceForcement

@@ -304,20 +304,18 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		}
 		
 		class TestLocVisitor
-		: ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor<object, object>
+		: ICSharpCode.NRefactory.CSharp.DepthFirstAstVisitor
 		{
 			public List<Tuple<TextLocation, string>> output = new List<Tuple<TextLocation, string>> ();
 			
-			public override object VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, object data)
+			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
 			{
 				output.Add (Tuple.Create (memberReferenceExpression.MemberNameToken.StartLocation, memberReferenceExpression.MemberName));
-				return base.VisitMemberReferenceExpression (memberReferenceExpression, data);
 			}
 			
-			public override object VisitIdentifierExpression (IdentifierExpression identifierExpression, object data)
+			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
 			{
 				output.Add (Tuple.Create (identifierExpression.StartLocation, identifierExpression.Identifier));
-				return base.VisitIdentifierExpression (identifierExpression, data);
 			}
 		}
 		
@@ -1568,24 +1566,7 @@ class A
 		}
 		
 		
-		/// <summary>
-		/// Bug 2198 - Typing generic argument to a class/method pops up type completion window
-		/// </summary>
-		[Test()]
-		public void TestBug2198 ()
-		{
-			CombinedProviderTest (@"$class Klass <T$", provider => {
-				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
-			});
-		}
-		
-		[Test()]
-		public void TestBug2198Case2 ()
-		{
-			CombinedProviderTest (@"$class Klass { void Test<T$", provider => {
-				Assert.AreEqual (0, provider.Count, "provider needs to be empty");
-			});
-		}
+	
 		
 		
 		/// <summary>
@@ -4404,7 +4385,6 @@ namespace Test
 			});
 		}
 		
-		[Ignore("Fixme!")]
 		[Test()]
 		public void TestAnonymousArguments ()
 		{
@@ -4580,7 +4560,6 @@ namespace Foobar
 			Assert.IsNotNull (provider.Find ("Intent"), "'Intent' not found.");
 		}
 		
-		[Ignore("Mcs bug")]
 		[Test()]
 		public void TestForConditionContext ()
 		{
@@ -4597,5 +4576,162 @@ class MainClass
 ");
 			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
 		}
+		
+		[Ignore("Mcs bug")]
+		[Test()]
+		public void TestConditionalExpression ()
+		{
+			CompletionDataList provider = CreateProvider (
+@"using System;
+
+class MainClass
+{
+	public static void Main (string[] args)
+	{
+		int a;
+		$a = true ? System.$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("Math"), "'Math' not found.");
+		}
+		
+		/// <summary>
+		/// Bug 3655 - Autocompletion does not work for the assembly attribute [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("MyExternalAssembly")] 
+		/// </summary>
+		[Test()]
+		public void Test3655 ()
+		{
+			CombinedProviderTest (@"$[a$", provider => {
+				Assert.IsNotNull (provider.Find ("assembly"), "'assembly' not found.");
+				Assert.IsNotNull (provider.Find ("System"), "'System' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.R$", provider => {
+				Assert.IsNotNull (provider.Find ("Runtime"), "'Runtime' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case2Part2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.$", provider => {
+				Assert.IsNotNull (provider.Find ("Runtime"), "'Runtime' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case3 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.C$", provider => {
+				Assert.IsNotNull (provider.Find ("CompilerServices"), "'CompilerServices' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case3Part2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.$", provider => {
+				Assert.IsNotNull (provider.Find ("CompilerServices"), "'CompilerServices' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case4 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.I$", provider => {
+				Assert.IsNotNull (provider.Find ("InternalsVisibleTo"), "'InternalsVisibleTo' not found.");
+			});
+		}
+		
+		[Test()]
+		public void Test3655Case4Part2 ()
+		{
+			CombinedProviderTest (@"$[assembly:System.Runtime.CompilerServices.$", provider => {
+				Assert.IsNotNull (provider.Find ("InternalsVisibleTo"), "'InternalsVisibleTo' not found.");
+			});
+		}
+		
+		[Test()]
+		public void TestUsingContext ()
+		{
+			CombinedProviderTest (@"$using System.$", provider => {
+				Assert.IsNotNull (provider.Find ("IO"), "'IO' not found.");
+				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+			});
+		}
+		
+		[Test()]
+		public void TestUsingContextCase2 ()
+		{
+			CombinedProviderTest (@"$using System.U$", provider => {
+				Assert.IsNotNull (provider.Find ("IO"), "'IO' not found.");
+				Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+			});
+		}
+
+		[Test()]
+		public void TestInterfaceReturnType ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+class MainClass
+{
+	public IEnumerable<string> Test ()
+	{
+		$return new a$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("string"), "'string' not found.");
+			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
+			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+			Assert.IsNull (provider.Find ("Console"), "'Console' found.");
+		}
+
+		[Test()]
+		public void TestInterfaceReturnTypeCase2 ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+class MainClass
+{
+	public IEnumerable<string> Test ()
+	{
+		$return new System.Collections.Generic.a$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
+			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
+		[Test()]
+		public void TestInterfaceReturnTypeCase3 ()
+		{
+			var provider = CreateProvider (
+@"using System;
+using System.Collections.Generic;
+
+class MainClass
+{
+	public IEnumerable<string> Test ()
+	{
+		$return new System.Collections.Generic.$
+	}
+}
+");
+			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
+			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
 	}
 }

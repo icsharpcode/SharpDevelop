@@ -1,4 +1,4 @@
-// 
+﻿// 
 // FlipOperatorArguments.cs
 //  
 // Author:
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -39,8 +40,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var binop = GetBinaryOperatorExpression (context);
 			
 			using (var script = context.StartScript ()) {
-				script.Replace (binop.Left, binop.Right);
-				script.Replace (binop.Right, binop.Left);
+				script.Replace (binop.Left, binop.Right.Clone());
+				script.Replace (binop.Right, binop.Left.Clone());
 			}
 		}
 		

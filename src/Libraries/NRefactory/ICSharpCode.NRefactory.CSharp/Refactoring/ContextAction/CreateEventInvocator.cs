@@ -27,6 +27,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -101,7 +102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				initializer = null;
 				return null;
 			}
-			initializer = result.Variables.First (v => v.NameToken.Contains (context.Location));
+			initializer = result.Variables.FirstOrDefault (v => v.NameToken.Contains (context.Location));
 			return initializer != null ? result : null;
 		}
 	}

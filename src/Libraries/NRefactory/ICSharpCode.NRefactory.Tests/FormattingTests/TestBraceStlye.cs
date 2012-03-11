@@ -64,6 +64,30 @@ namespace B {
 	}");
 		}
 
+
+		[Test()]
+		public void TestAnonymousMethodBraceStyle ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			policy.AnonymousMethodBraceStyle = BraceStyle.EndOfLine;
+
+			Test (policy,
+@"class Test
+{
+	void Foo ()
+	{
+		EventHandler handler = delegate(object sender, EventArgs e){};
+	}
+}",
+@"class Test
+{
+	void Foo ()
+	{
+		EventHandler handler = delegate(object sender, EventArgs e) {
+		};
+	}
+}");
+		}
 		[Test()]
 		public void TestClassBraceStlye ()
 		{
@@ -409,5 +433,34 @@ namespace B {
 	}
 }");
 		}
+		
+		[Test()]
+		public void TestTryCatchWithBannerStyle ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			policy.StatementBraceStyle = BraceStyle.BannerStyle;
+			Test (policy, @"class Test
+{
+	void Foo ()
+	{
+					try  {
+			Foo (); } catch (Exception) { } catch (Exception) { } finally { Foo ();}
+	}
+}",
+@"class Test
+{
+	void Foo ()
+	{
+		try {
+			Foo ();
+			} catch (Exception) {
+			} catch (Exception) {
+			} finally {
+			Foo ();
+			}
+	}
+}");
+		}
+
 	}
 }

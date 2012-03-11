@@ -181,13 +181,13 @@ namespace ICSharpCode.NRefactory.Documentation
 		/// <summary>
 		/// Parse the ID string into a member reference.
 		/// </summary>
-		/// <param name="memberIDString">The ID string representing the member (with "M:", "F:", "P:" or "E:" prefix).</param>
+		/// <param name="memberIdString">The ID string representing the member (with "M:", "F:", "P:" or "E:" prefix).</param>
 		/// <returns>A member reference that represents the ID string.</returns>
 		/// <exception cref="ReflectionNameParseException">The syntax of the ID string is invalid</exception>
 		public static IMemberReference ParseMemberIdString(string memberIdString)
 		{
 			if (memberIdString == null)
-				throw new ArgumentNullException("memberIDString");
+				throw new ArgumentNullException("memberIdString");
 			if (memberIdString.Length < 2 || memberIdString[1] != ':')
 				throw new ReflectionNameParseException(0, "Missing type tag");
 			char typeChar = memberIdString[0];

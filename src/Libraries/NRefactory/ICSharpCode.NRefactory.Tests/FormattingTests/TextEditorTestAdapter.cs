@@ -11,28 +11,7 @@ namespace ICSharpCode.NRefactory.FormattingTests
 {
 	public abstract class TestBase
 	{
-		static IActionFactory factory = new TestFactory ();
-		
-		internal class TestTextReplaceAction : TextReplaceAction
-		{
-			public TestTextReplaceAction (int offset, int removedChars, string insertedText) : base (offset, removedChars, insertedText)
-			{
-			}
-			
-			public override void Perform (Script script)
-			{
-			}
-		}
-		
-		class TestFactory : AbstractActionFactory
-		{
-			public override TextReplaceAction CreateTextReplaceAction (int offset, int removedChars, string insertedText)
-			{
-				return new TestTextReplaceAction (offset, removedChars, insertedText);
-			}
-		}
-		
-		public static string ApplyChanges (string text, List<TextReplaceAction> changes)
+		/*public static string ApplyChanges (string text, List<TextReplaceAction> changes)
 		{
 			changes.Sort ((x, y) => y.Offset.CompareTo (x.Offset));
 			StringBuilder b = new StringBuilder(text);
@@ -47,18 +26,18 @@ namespace ICSharpCode.NRefactory.FormattingTests
 //			Console.WriteLine ("---result:");
 //			Console.WriteLine (adapter.Text);
 			return b.ToString();
-		}
+		}*/
 		
 		protected static IDocument GetResult (CSharpFormattingOptions policy, string input)
 		{
 			input = NormalizeNewlines(input);
-			var adapter = new ReadOnlyDocument (input);
-			var visitor = new AstFormattingVisitor (policy, adapter, factory);
+			var document = new StringBuilderDocument (input);
+			var visitor = new AstFormattingVisitor (policy, document);
 			visitor.EolMarker = "\n";
-			var compilationUnit = new CSharpParser ().Parse (new StringReader (input), "test.cs");
-			compilationUnit.AcceptVisitor (visitor, null);
-			
-			return new ReadOnlyDocument (ApplyChanges (input, visitor.Changes));
+			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");
+			compilationUnit.AcceptVisitor (visitor);
+			visitor.ApplyChanges();
+			return document;
 		}
 		
 		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput)
@@ -80,11 +59,12 @@ namespace ICSharpCode.NRefactory.FormattingTests
 		protected static void Continue (CSharpFormattingOptions policy, IDocument document, string expectedOutput)
 		{
 			expectedOutput = NormalizeNewlines(expectedOutput);
-			var visitior = new AstFormattingVisitor (policy, document, factory);
+			var visitior = new AstFormattingVisitor (policy, document);
 			visitior.EolMarker = "\n";
-			var compilationUnit = new CSharpParser ().Parse (new StringReader (document.Text), "test.cs");
-			compilationUnit.AcceptVisitor (visitior, null);
-			string newText = ApplyChanges (document.Text, visitior.Changes);
+			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");
+			compilationUnit.AcceptVisitor (visitior);
+			visitior.ApplyChanges();
+			string newText = document.Text;
 			if (expectedOutput != newText) {
 				Console.WriteLine (newText);
 			}

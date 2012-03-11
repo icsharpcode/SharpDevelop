@@ -203,6 +203,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					break;
 				case EntityType.Property:
 					scope = FindMemberReferences(entity, m => new FindPropertyReferences((IProperty)m));
+					if (entity.Name == "Current")
+						additionalScope = FindEnumeratorCurrentReferences((IProperty)entity);
 					break;
 				case EntityType.Event:
 					scope = FindMemberReferences(entity, m => new FindEventReferences((IEvent)m));
@@ -222,7 +224,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					additionalScope = FindChainedConstructorReferences(ctor);
 					break;
 				case EntityType.Destructor:
-					return EmptyList<IFindReferenceSearchScope>.Instance;
+					scope = GetSearchScopeForDestructor((IMethod)entity);
+					break;
 				default:
 					throw new ArgumentException("Unknown entity type " + entity.EntityType);
 			}
@@ -562,6 +565,39 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Find References to IEnumerator.Current
+		SearchScope FindEnumeratorCurrentReferences(IProperty property)
+		{
+			IProperty propertyDefinition = (IProperty)property.MemberDefinition;
+			return new SearchScope(
+				delegate(ICompilation compilation) {
+					IProperty imported = compilation.Import(propertyDefinition);
+					return imported != null ? new FindEnumeratorCurrentReferencesNavigator(imported) : null;
+				});
+		}
+		
+		sealed class FindEnumeratorCurrentReferencesNavigator : FindReferenceNavigator
+		{
+			IProperty property;
+			
+			public FindEnumeratorCurrentReferencesNavigator(IProperty property)
+			{
+				this.property = property;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				return node is ForeachStatement;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				ForEachResolveResult ferr = rr as ForEachResolveResult;
+				return ferr != null && ferr.CurrentProperty != null && ferr.CurrentProperty.MemberDefinition == property;
+			}
+		}
+		#endregion
+		
 		#region Find Method References
 		SearchScope GetSearchScopeForMethod(IMethod method)
 		{
@@ -599,6 +635,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						specialNodeType = typeof(InvocationExpression);
 					else
 						specialNodeType = null;
+					break;
+				case "GetEnumerator":
+				case "MoveNext":
+					specialNodeType = typeof(ForeachStatement);
 					break;
 				default:
 					specialNodeType = null;
@@ -664,6 +704,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			internal override bool IsMatch(ResolveResult rr)
 			{
+				if (specialNodeType != null) {
+					var ferr = rr as ForEachResolveResult;
+					if (ferr != null) {
+						return IsMatch(ferr.GetEnumeratorCall)
+							|| (ferr.MoveNextMethod != null && method == ferr.MoveNextMethod.MemberDefinition);
+					}
+				}
 				var mrr = rr as MemberResolveResult;
 				return mrr != null && method == mrr.Member.MemberDefinition;
 			}
@@ -1000,6 +1047,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Find Destructor References
+		SearchScope GetSearchScopeForDestructor(IMethod dtor)
+		{
+			dtor = (IMethod)dtor.MemberDefinition;
+			string searchTerm = null;
+			if (KnownTypeReference.GetCSharpNameByTypeCode(dtor.DeclaringTypeDefinition.KnownTypeCode) == null) {
+				// not a built-in type
+				searchTerm = dtor.DeclaringTypeDefinition.Name;
+			}
+			return new SearchScope (
+				searchTerm,
+				delegate (ICompilation compilation) {
+				IMethod imported = compilation.Import(dtor);
+				if (imported != null) {
+					return new FindDestructorReferencesNavigator (imported);
+				} else {
+					return null;
+				}
+			});
+		}
+		
+		sealed class FindDestructorReferencesNavigator : FindReferenceNavigator
+		{
+			readonly IMethod dtor;
+			
+			public FindDestructorReferencesNavigator (IMethod dtor)
+			{
+				this.dtor = dtor;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				return node is DestructorDeclaration;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				MemberResolveResult mrr = rr as MemberResolveResult;
+				return mrr != null && dtor == mrr.Member.MemberDefinition;
+			}
+		}
+		#endregion
+
 		#region Find Local Variable References
 		/// <summary>
 		/// Finds all references of a given variable.

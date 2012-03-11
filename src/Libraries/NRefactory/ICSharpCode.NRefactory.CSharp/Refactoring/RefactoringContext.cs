@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Linq;
 using System.Threading;
@@ -31,6 +32,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -114,13 +116,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual int SelectionLength {
 			get { return 0; }
 		}
+
 		public abstract int GetOffset (TextLocation location);
+
+		public abstract IDocumentLine GetLineByOffset (int offset);
+		
 		public int GetOffset (int line, int col)
 		{
 			return GetOffset (new TextLocation (line, col));
 		}
+
 		public abstract TextLocation GetLocation (int offset);
+
 		public abstract string GetText (int offset, int length);
+
+		public abstract string GetText (ISegment segment);
 		#endregion
 		
 		#region Resolving

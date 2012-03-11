@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GenerateGetter.cs
 //  
 // Author:
@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.NRefactory.PatternMatching;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
