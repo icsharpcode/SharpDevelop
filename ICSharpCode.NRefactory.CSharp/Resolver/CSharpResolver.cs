@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly ResolveResult NullResult = new ResolveResult(SpecialType.NullType);
 		
 		readonly ICompilation compilation;
-		internal readonly Conversions conversions;
+		internal readonly CSharpConversions conversions;
 		readonly CSharpTypeResolveContext context;
 		readonly bool checkForOverflow;
 		readonly bool isWithinLambdaExpression;
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			this.compilation = compilation;
-			this.conversions = Conversions.Get(compilation);
+			this.conversions = CSharpConversions.Get(compilation);
 			this.context = new CSharpTypeResolveContext(compilation.MainAssembly);
 		}
 		
@@ -65,13 +65,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.compilation = context.Compilation;
-			this.conversions = Conversions.Get(compilation);
+			this.conversions = CSharpConversions.Get(compilation);
 			this.context = context;
 			if (context.CurrentTypeDefinition != null)
 				currentTypeDefinitionCache = new TypeDefinitionCache(context.CurrentTypeDefinition);
 		}
 		
-		private CSharpResolver(ICompilation compilation, Conversions conversions, CSharpTypeResolveContext context, bool checkForOverflow, bool isWithinLambdaExpression, TypeDefinitionCache currentTypeDefinitionCache, ImmutableStack<IVariable> localVariableStack, ObjectInitializerContext objectInitializerStack)
+		private CSharpResolver(ICompilation compilation, CSharpConversions conversions, CSharpTypeResolveContext context, bool checkForOverflow, bool isWithinLambdaExpression, TypeDefinitionCache currentTypeDefinitionCache, ImmutableStack<IVariable> localVariableStack, ObjectInitializerContext objectInitializerStack)
 		{
 			this.compilation = compilation;
 			this.conversions = conversions;
@@ -1732,7 +1732,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return IsEligibleExtensionMethod(compilation, conversions, targetType, method, useTypeInference, out outInferredTypes);
 		}
 		
-		internal static bool IsEligibleExtensionMethod(ICompilation compilation, Conversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
+		internal static bool IsEligibleExtensionMethod(ICompilation compilation, CSharpConversions conversions, IType targetType, IMethod method, bool useTypeInference, out IType[] outInferredTypes)
 		{
 			outInferredTypes = null;
 			if (targetType == null)

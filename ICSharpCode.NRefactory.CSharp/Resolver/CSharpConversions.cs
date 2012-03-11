@@ -34,13 +34,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <remarks>
 	/// This class is thread-safe.
 	/// </remarks>
-	public sealed class Conversions
+	public sealed class CSharpConversions
 	{
 		readonly ConcurrentDictionary<TypePair, Conversion> implicitConversionCache = new ConcurrentDictionary<TypePair, Conversion>();
 		readonly ICompilation compilation;
 		readonly IType objectType;
 		
-		public Conversions(ICompilation compilation)
+		public CSharpConversions(ICompilation compilation)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
@@ -53,14 +53,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the Conversions instance for the specified <see cref="ICompilation"/>.
 		/// This will make use of the context's cache manager to reuse the Conversions instance.
 		/// </summary>
-		public static Conversions Get(ICompilation compilation)
+		public static CSharpConversions Get(ICompilation compilation)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
 			CacheManager cache = compilation.CacheManager;
-			Conversions operators = (Conversions)cache.GetShared(typeof(Conversions));
+			CSharpConversions operators = (CSharpConversions)cache.GetShared(typeof(CSharpConversions));
 			if (operators == null) {
-				operators = (Conversions)cache.GetOrAddShared(typeof(Conversions), new Conversions(compilation));
+				operators = (CSharpConversions)cache.GetOrAddShared(typeof(CSharpConversions), new CSharpConversions(compilation));
 			}
 			return operators;
 		}
@@ -267,7 +267,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			readonly IType objectType;
 			
-			public DynamicErasure(Conversions conversions)
+			public DynamicErasure(CSharpConversions conversions)
 			{
 				this.objectType = conversions.objectType;
 			}

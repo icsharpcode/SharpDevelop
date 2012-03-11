@@ -1846,7 +1846,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			}
 			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, CSharpConversions conversions)
 			{
 				Log.WriteLine("Testing validity of {0} for return-type {1}...", this, returnType);
 				Log.Indent();
@@ -1996,7 +1996,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return parameters; }
 			}
 			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, CSharpConversions conversions)
 			{
 				Log.WriteLine("Testing validity of {0} for parameters ({1}) and return-type {2}...",
 				              this, string.Join<IType>(", ", parameterTypes), returnType);
@@ -2179,7 +2179,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return c;
 			}
 			
-			public Conversion IsValid(IType returnType, Conversions conversions)
+			public Conversion IsValid(IType returnType, CSharpConversions conversions)
 			{
 				bool valid = success && IsValidLambda(isValidAsVoidMethod, isEndpointUnreachable, lambda.IsAsync, returnValues, returnType, conversions);
 				return new AnonymousFunctionConversion(returnType, this, valid);
@@ -2373,7 +2373,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				|| expr is AssignmentExpression;
 		}
 		
-		static bool IsValidLambda(bool isValidAsVoidMethod, bool isEndpointUnreachable, bool isAsync, IList<ResolveResult> returnValues, IType returnType, Conversions conversions)
+		static bool IsValidLambda(bool isValidAsVoidMethod, bool isEndpointUnreachable, bool isAsync, IList<ResolveResult> returnValues, IType returnType, CSharpConversions conversions)
 		{
 			if (returnType.Kind == TypeKind.Void) {
 				// Lambdas that are valid statement lambdas or expression lambdas with a statement-expression
@@ -3143,7 +3143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return parameters; }
 			}
 			
-			public override Conversion IsValid(IType[] parameterTypes, IType returnType, Conversions conversions)
+			public override Conversion IsValid(IType[] parameterTypes, IType returnType, CSharpConversions conversions)
 			{
 				if (parameterTypes.Length == parameters.Length) {
 					this.inferredParameterTypes = parameterTypes;
