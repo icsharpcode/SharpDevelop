@@ -28,7 +28,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class DocumentScript : Script
 	{
 		readonly IDocument currentDocument;
+		
+		public IDocument CurrentDocument {
+			get { return currentDocument; }
+		}
 		readonly IDocument originalDocument;
+		
+		public IDocument OriginalDocument {
+			get { return originalDocument; }
+		}
 		readonly IDisposable undoGroup;
 		
 		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions) : base(formattingOptions)
@@ -46,19 +54,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			base.Dispose();
 		}
 		
+		public override void Remove(AstNode node, bool removeEmptyLine)
+		{
+			var segment = GetSegment (node);
+			int startOffset = segment.Offset;
+			int endOffset = segment.EndOffset;
+			var startLine = currentDocument.GetLineByOffset (startOffset);
+			var endLine = currentDocument.GetLineByOffset (endOffset);
+			
+			if (startLine != null && endLine != null) {
+				bool removeStart = string.IsNullOrWhiteSpace (currentDocument.GetText (startLine.Offset, startOffset - startLine.Offset));
+				if (removeStart)
+					startOffset = startLine.Offset;
+				bool removeEnd = string.IsNullOrWhiteSpace (currentDocument.GetText (endOffset, endLine.EndOffset - endOffset));
+				if (removeEnd)
+					endOffset = endLine.EndOffset;
+				
+				// Remove delimiter if the whole line get's removed.
+				if (removeStart && removeEnd)
+					endOffset += endLine.DelimiterLength;
+			}
+			
+			Replace (startOffset, endOffset - startOffset, string.Empty);
+		}
+		
 		public override void Replace(int offset, int length, string newText)
 		{
 			currentDocument.Replace(offset, length, newText);
-		}
-		
-		public override string GetText(int offset, int length)
-		{
-			return currentDocument.GetText(offset, length);
-		}
-		
-		public override IDocumentLine GetLineByOffset(int offset)
-		{
-			return currentDocument.GetLineByOffset(offset);
 		}
 		
 		public override int GetCurrentOffset(TextLocation originalDocumentLocation)
@@ -72,21 +94,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return originalDocument.Version.MoveOffsetTo(currentDocument.Version, originalDocumentOffset, AnchorMovementType.Default);
 		}
 		
-		public override void FormatText(int offset, int length)
+		public override void FormatText(AstNode node)
 		{
+			var segment = GetSegment(node);
 			var cu = CompilationUnit.Parse(currentDocument, "dummy.cs");
 			var formatter = new AstFormattingVisitor(this.FormattingOptions, currentDocument);
 			cu.AcceptVisitor(formatter);
-			formatter.ApplyChanges(offset, length);
+			formatter.ApplyChanges(segment.Offset, segment.Length);
 		}
 		
 		protected override int GetIndentLevelAt(int offset)
 		{
-			int oldOffset = currentDocument.Version.MoveOffsetTo(originalDocument.Version, offset, AnchorMovementType.Default);
-			var line = currentDocument.GetLineByOffset(oldOffset);
+			var line = currentDocument.GetLineByOffset(offset);
 			int spaces = 0;
 			int indentationLevel = 0;
-			for (int i = line.Offset; i < offset; i++) {
+			for (int i = line.Offset; i < currentDocument.TextLength; i++) {
 				char c = currentDocument.GetCharAt(i);
 				if (c == '\t') {
 					spaces = 0;

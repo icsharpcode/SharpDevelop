@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory
 	[Serializable]
 	public sealed class EmptyList<T> : IList<T>, IEnumerator<T>
 	{
-		public static readonly IList<T> Instance = new EmptyList<T>();
+		public static readonly EmptyList<T> Instance = new EmptyList<T>();
 		
 		private EmptyList() {}
 		

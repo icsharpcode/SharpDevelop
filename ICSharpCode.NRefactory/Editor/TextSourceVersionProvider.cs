@@ -34,10 +34,17 @@ namespace ICSharpCode.NRefactory.Editor
 			this.currentVersion = new Version(this);
 		}
 		
+		/// <summary>
+		/// Gets the current version.
+		/// </summary>
 		public ITextSourceVersion CurrentVersion {
 			get { return currentVersion; }
 		}
 		
+		/// <summary>
+		/// Replaces the current version with a new version.
+		/// </summary>
+		/// <param name="change">Change from current version to new version</param>
 		public void AppendChange(TextChangeEventArgs change)
 		{
 			if (change == null)
@@ -52,9 +59,10 @@ namespace ICSharpCode.NRefactory.Editor
 			// Reference back to the provider.
 			// Used to determine if two checkpoints belong to the same document.
 			readonly TextSourceVersionProvider provider;
+			// ID used for CompareAge()
 			readonly int id;
 			
-			// the change this version to the next version
+			// the change from this version to the next version
 			internal TextChangeEventArgs change;
 			internal Version next;
 			

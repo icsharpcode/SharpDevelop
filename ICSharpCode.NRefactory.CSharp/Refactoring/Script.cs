@@ -131,12 +131,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return formattingOptions; }
 		}
 		
-		public void Remove (AstNode node)
-		{
-			var segment = GetSegment(node);
-			Replace(segment.Offset, segment.Length, string.Empty);
-		}
-		
 		public void InsertBefore (AstNode node, AstNode insertNode)
 		{
 			var startOffset = GetCurrentOffset (new TextLocation(node.StartLocation.Line, 1));
@@ -175,73 +169,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 		}
 		
-		/// <summary>
-		/// Gets a document line by it's current offset.
-		/// </summary>
-		public abstract IDocumentLine GetLineByOffset (int offset);
+		public abstract void Remove (AstNode node, bool removeEmptyLine = true);
 		
-		/// <summary>
-		/// Gets text from the current document.
-		/// </summary>
-		public abstract string GetText(int offset, int length);
-		
-		public void Remove (AstNode node, bool removeEmptyLine = true)
-		{
-			var segment = GetSegment (node);
-			int startOffset = segment.Offset;
-			int endOffset = segment.EndOffset;
-			var startLine = GetLineByOffset (startOffset);
-			var endLine = GetLineByOffset (endOffset);
-			
-			if (startLine != null && endLine != null) {
-				bool removeStart = string.IsNullOrWhiteSpace (GetText (startLine.Offset, startOffset - startLine.Offset));
-				if (removeStart)
-					startOffset = startLine.Offset;
-				bool removeEnd = string.IsNullOrWhiteSpace (GetText (endOffset, endLine.EndOffset - endOffset));
-				if (removeEnd)
-					endOffset = endLine.EndOffset;
-				
-				// Remove delimiter if the whole line get's removed.
-				if (removeStart && removeEnd)
-					endOffset += endLine.DelimiterLength;
-			}
-			
-			Replace (startOffset, endOffset - startOffset, string.Empty);
-		}
-		
-		/// <summary>
-		/// Format the specified node and surrounding whitespace.
-		/// </summary>
-		public virtual void FormatTextAround (AstNode node)
-		{
-			int startOffset;
-			if (node.PrevSibling != null)
-				startOffset = GetSegment(node.PrevSibling).EndOffset;
-			else
-				startOffset = GetSegment(node).Offset;
-			int endOffset;
-			if (node.NextSibling != null)
-				endOffset = GetSegment(node.NextSibling).Offset;
-			else
-				endOffset = GetSegment(node).EndOffset;
-			FormatText(startOffset, endOffset - startOffset);
-		}
-		
-		public virtual void FormatText (AstNode node)
-		{
-			var segment = GetSegment(node);
-			Select(segment.Offset, segment.Length);
-		}
-		
-		public abstract void FormatText (int offset, int length);
+		public abstract void FormatText (AstNode node);
 		
 		public virtual void Select (AstNode node)
-		{
-			var segment = GetSegment(node);
-			Select(segment.Offset, segment.Length);
-		}
-		
-		public virtual void Select (int offset, int length)
 		{
 			// default implementation: do nothing
 			// Derived classes are supposed to set the text editor's selection

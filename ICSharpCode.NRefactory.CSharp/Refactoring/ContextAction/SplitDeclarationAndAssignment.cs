@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var assign = new AssignmentExpression (new IdentifierExpression (varDecl.Variables.First ().Name), AssignmentOperatorType.Assign, varDecl.Variables.First ().Initializer.Clone ());
 			
 			var newVarDecl = (VariableDeclarationStatement)varDecl.Clone ();
+			newVarDecl.Role = BlockStatement.StatementRole;
 			
 			if (newVarDecl.Type.IsMatch (new SimpleType ("var")))
 				newVarDecl.Type = type;
