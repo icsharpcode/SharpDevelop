@@ -224,7 +224,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					additionalScope = FindChainedConstructorReferences(ctor);
 					break;
 				case EntityType.Destructor:
-					return EmptyList<IFindReferenceSearchScope>.Instance;
+					scope = GetSearchScopeForDestructor((IMethod)entity);
+					break;
 				default:
 					throw new ArgumentException("Unknown entity type " + entity.EntityType);
 			}
@@ -1046,6 +1047,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Find Destructor References
+		SearchScope GetSearchScopeForDestructor(IMethod dtor)
+		{
+			dtor = (IMethod)dtor.MemberDefinition;
+			string searchTerm = null;
+			if (KnownTypeReference.GetCSharpNameByTypeCode(dtor.DeclaringTypeDefinition.KnownTypeCode) == null) {
+				// not a built-in type
+				searchTerm = dtor.DeclaringTypeDefinition.Name;
+			}
+			return new SearchScope (
+				searchTerm,
+				delegate (ICompilation compilation) {
+				IMethod imported = compilation.Import(dtor);
+				if (imported != null) {
+					return new FindDestructorReferencesNavigator (imported);
+				} else {
+					return null;
+				}
+			});
+		}
+		
+		sealed class FindDestructorReferencesNavigator : FindReferenceNavigator
+		{
+			readonly IMethod dtor;
+			
+			public FindDestructorReferencesNavigator (IMethod dtor)
+			{
+				this.dtor = dtor;
+			}
+			
+			internal override bool CanMatch(AstNode node)
+			{
+				return node is DestructorDeclaration;
+			}
+			
+			internal override bool IsMatch(ResolveResult rr)
+			{
+				MemberResolveResult mrr = rr as MemberResolveResult;
+				return mrr != null && dtor == mrr.Member.MemberDefinition;
+			}
+		}
+		#endregion
+
 		#region Find Local Variable References
 		/// <summary>
 		/// Finds all references of a given variable.
