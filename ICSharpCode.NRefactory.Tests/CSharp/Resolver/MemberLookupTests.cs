@@ -19,10 +19,10 @@
 using System;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -342,6 +342,26 @@ class Derived<T> : Base where T : Derived<T>
 			rr = Resolve<CSharpInvocationResolveResult>(program.Replace("c.Test()", "$c.Test()$"));
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual(0, rr.Member.Parameters.Count);
+		}
+		
+		[Test]
+		public void MethodGroupConversionForGenericMethodHasSpecializedMethod()
+		{
+			string program = @"using System;
+class TestClass {
+	void F<T>(T x) {}
+	public void M() {
+		System.Action<int> f;
+		f = $F$;
+	}
+}";
+			var conversion = GetConversion(program);
+			Assert.IsTrue(conversion.IsValid);
+			Assert.IsTrue(conversion.IsMethodGroupConversion);
+			Assert.IsInstanceOf<SpecializedMethod>(conversion.Method);
+			Assert.AreEqual(
+				new[] { "System.Int32" },
+				((SpecializedMethod)conversion.Method).TypeArguments.Select(t => t.ReflectionName).ToArray());
 		}
 	}
 }

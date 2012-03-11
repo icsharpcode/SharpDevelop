@@ -804,7 +804,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			var or = rr.PerformOverloadResolution(compilation, args, allowExpandingParams: false, conversions: this);
 			if (or.FoundApplicableCandidate)
-				return Conversion.MethodGroupConversion((IMethod)or.BestCandidate);
+				return Conversion.MethodGroupConversion((IMethod)or.GetBestCandidateWithSubstitutedTypeArguments());
 			else
 				return Conversion.None;
 		}

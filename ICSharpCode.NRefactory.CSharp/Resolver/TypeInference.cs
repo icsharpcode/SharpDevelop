@@ -513,7 +513,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					                                        allowExtensionMethods: false,
 					                                        allowExpandingParams: false);
 					if (or.FoundApplicableCandidate && or.BestCandidateAmbiguousWith == null) {
-						IType returnType = or.BestCandidate.ReturnType;
+						IType returnType = or.GetBestCandidateWithSubstitutedTypeArguments().ReturnType;
 						MakeLowerBoundInference(returnType, m.ReturnType);
 					}
 				}
