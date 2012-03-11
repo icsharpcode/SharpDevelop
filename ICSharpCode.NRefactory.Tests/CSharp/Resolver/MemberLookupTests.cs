@@ -363,5 +363,53 @@ class TestClass {
 				new[] { "System.Int32" },
 				((SpecializedMethod)conversion.Method).TypeArguments.Select(t => t.ReflectionName).ToArray());
 		}
+		
+		[Test]
+		public void PartialMethod_WithoutImplementation()
+		{
+			string program = @"using System;
+class TestClass {
+	$partial void M();$
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("TestClass.M", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void PartialMethod_Declaration()
+		{
+			string program = @"using System;
+class TestClass {
+	$partial void M();$
+	
+	partial void M() {}
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("TestClass.M", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void PartialMethod_Implementation()
+		{
+			string program = @"using System;
+class TestClass {
+	partial void M();
+	
+	$partial void M() {}$
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("TestClass.M", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void MembersWithoutWhitespace()
+		{
+			string program = @"using System;
+class TestClass {
+	void A();$void B();$void C();
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("TestClass.B", mrr.Member.FullName);
+		}
 	}
 }

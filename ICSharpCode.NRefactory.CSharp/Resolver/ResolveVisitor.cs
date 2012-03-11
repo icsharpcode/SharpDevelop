@@ -653,7 +653,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ITypeDefinition typeDef = resolver.CurrentTypeDefinition;
 			if (typeDef == null)
 				return null;
-			return typeDef.GetMembers(m => m.ParsedFile == parsedFile && m.Region.IsInside(location), GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions).FirstOrDefault();
+			return typeDef.GetMembers(
+				delegate (IUnresolvedMember m) {
+					if (m.ParsedFile != parsedFile)
+						return false;
+					DomRegion region = m.Region;
+					return !region.IsEmpty && region.Begin <= location && region.End > location;
+				},
+				GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
+			).FirstOrDefault();
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitVariableInitializer(VariableInitializer variableInitializer)
