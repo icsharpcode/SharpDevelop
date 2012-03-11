@@ -39,16 +39,26 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.ActionVisibleChangedCommand = new ActionVisibleChangedCommand(model);
 		}
 		
+		bool actionsLoaded;
+		
 		public async Task LoadActionsAsync(CancellationToken cancellationToken)
 		{
+			if (actionsLoaded)
+				return;
+			actionsLoaded = true;
 			this.Actions.Clear();
 			foreach (var action in await Model.GetVisibleActionsAsync(cancellationToken)) {
 				this.Actions.Add(new ContextActionViewModel(action, this.Model.EditorContext) { IsVisible = true });
 			}
 		}
 		
+		bool hiddenActionsLoaded;
+		
 		public async Task LoadHiddenActionsAsync(CancellationToken cancellationToken)
 		{
+			if (hiddenActionsLoaded)
+				return;
+			hiddenActionsLoaded = true;
 			this.HiddenActions.Clear();
 			foreach (var action in await Model.GetHiddenActionsAsync(cancellationToken)) {
 				this.HiddenActions.Add(new ContextActionViewModel(action, this.Model.EditorContext) { IsVisible = false });

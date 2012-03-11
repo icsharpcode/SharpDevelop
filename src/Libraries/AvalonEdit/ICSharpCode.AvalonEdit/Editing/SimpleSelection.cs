@@ -89,10 +89,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (e == null)
 				throw new ArgumentNullException("e");
+			int newStartOffset, newEndOffset;
+			if (startOffset <= endOffset) {
+				newStartOffset = e.GetNewOffset(startOffset, AnchorMovementType.Default);
+				newEndOffset = Math.Max(newStartOffset, e.GetNewOffset(endOffset, AnchorMovementType.BeforeInsertion));
+			} else {
+				newEndOffset = e.GetNewOffset(endOffset, AnchorMovementType.Default);
+				newStartOffset = Math.Max(newEndOffset, e.GetNewOffset(startOffset, AnchorMovementType.BeforeInsertion));
+			}
 			return Selection.Create(
 				textArea,
-				new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.Default)), start.VisualColumn),
-				new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(endOffset, AnchorMovementType.Default)), end.VisualColumn)
+				new TextViewPosition(textArea.Document.GetLocation(newStartOffset), start.VisualColumn),
+				new TextViewPosition(textArea.Document.GetLocation(newEndOffset), end.VisualColumn)
 			);
 		}
 		

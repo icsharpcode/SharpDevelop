@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				Body = new BlockStatement { accessorStatement }
 			};
 			
-			pdecl.AddChild (accessor, pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole);
+			accessor.Role = pdecl.Setter.IsNull ? PropertyDeclaration.SetterRole : PropertyDeclaration.GetterRole;
 			
 			using (var script = context.StartScript ()) {
 				script.InsertBefore (pdecl.RBraceToken, accessor);

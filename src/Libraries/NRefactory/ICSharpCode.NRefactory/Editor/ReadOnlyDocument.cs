@@ -220,8 +220,9 @@ namespace ICSharpCode.NRefactory.Editor
 			get { return lines.Length; }
 		}
 		
-		ITextSourceVersion ITextSource.Version {
-			get { return null; }
+		/// <inheritdoc/>
+		public ITextSourceVersion Version {
+			get { return textSource.Version; }
 		}
 		
 		/// <inheritdoc/>

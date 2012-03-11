@@ -169,6 +169,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Role Role {
 			get { return role; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				if (!value.IsValid(this))
+					throw new ArgumentException("This node is not valid in the new role.");
+				role = value;
+			}
 		}
 		
 		public AstNode NextSibling {
@@ -350,7 +357,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					parent.lastChild = prevSibling;
 				}
 				parent = null;
-				role = Roles.Root;
 				prevSibling = null;
 				nextSibling = null;
 			}
@@ -408,7 +414,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				parent = null;
 				prevSibling = null;
 				nextSibling = null;
-				role = Roles.Root;
 			}
 		}
 		
@@ -450,7 +455,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			AstNode copy = (AstNode)MemberwiseClone ();
 			// First, reset the shallow pointer copies
 			copy.parent = null;
-			copy.role = Roles.Root;
 			copy.firstChild = null;
 			copy.lastChild = null;
 			copy.prevSibling = null;
@@ -588,6 +592,18 @@ namespace ICSharpCode.NRefactory.CSharp
 					break;
 			}
 			return result;
+		}
+		
+		/// <summary>
+		/// Gets the node that fully contains the range from startLocation to endLocation.
+		/// </summary>
+		public AstNode GetNodeContaining(TextLocation startLocation, TextLocation endLocation)
+		{
+			for (AstNode child = firstChild; child != null; child = child.nextSibling) {
+				if (child.StartLocation <= startLocation && endLocation <= child.EndLocation)
+					return child.GetNodeContaining(startLocation, endLocation);
+			}
+			return this;
 		}
 		
 		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)

@@ -1,6 +1,6 @@
-// 
+﻿// 
 // CreateBackingStore.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public bool IsValid (RefactoringContext context)
 		{
 			var propertyDeclaration = context.GetNode<PropertyDeclaration> ();
-			return propertyDeclaration != null && 
+			return propertyDeclaration != null &&
 				!propertyDeclaration.Getter.IsNull && !propertyDeclaration.Setter.IsNull && // automatic properties always need getter & setter
 				propertyDeclaration.Getter.Body.IsNull &&
 				propertyDeclaration.Setter.Body.IsNull;
@@ -53,13 +53,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			// create new property & implement the get/set bodies
 			var newProperty = (PropertyDeclaration)property.Clone ();
-			var id1 = new IdentifierExpression (backingStoreName);
-			var id2 = new IdentifierExpression (backingStoreName);
+			Expression id1;
+			if (backingStoreName == "value")
+				id1 = new ThisReferenceExpression().Member("value");
+			else
+				id1 = new IdentifierExpression (backingStoreName);
+			Expression id2 = id1.Clone();
 			newProperty.Getter.Body = new BlockStatement () {
 				new ReturnStatement (id1)
 			};
 			newProperty.Setter.Body = new BlockStatement () {
-				new ExpressionStatement (new AssignmentExpression (id2, AssignmentOperatorType.Assign, new IdentifierExpression ("value")))
+				new AssignmentExpression (id2, AssignmentOperatorType.Assign, new IdentifierExpression ("value"))
 			};
 			
 			using (var script = context.StartScript ()) {

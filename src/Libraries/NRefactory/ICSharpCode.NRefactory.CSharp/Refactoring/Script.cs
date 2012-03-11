@@ -178,15 +178,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 		}
 		
-		public void FormatText (AstNode node)
+		public virtual void FormatText (AstNode node)
 		{
 			var segment = GetSegment(node);
 			FormatText(segment.Offset, segment.Length);
 		}
 		
+		/// <summary>
+		/// Format the specified node and surrounding whitespace.
+		/// </summary>
+		public virtual void FormatTextAround (AstNode node)
+		{
+			int startOffset;
+			if (node.PrevSibling != null)
+				startOffset = GetSegment(node.PrevSibling).EndOffset;
+			else
+				startOffset = GetSegment(node).Offset;
+			int endOffset;
+			if (node.NextSibling != null)
+				endOffset = GetSegment(node.NextSibling).Offset;
+			else
+				endOffset = GetSegment(node).EndOffset;
+			FormatText(startOffset, endOffset - startOffset);
+		}
+		
 		public abstract void FormatText (int offset, int length);
 		
-		public void Select (AstNode node)
+		public virtual void Select (AstNode node)
 		{
 			var segment = GetSegment(node);
 			Select(segment.Offset, segment.Length);
