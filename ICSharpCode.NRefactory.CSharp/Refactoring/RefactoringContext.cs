@@ -98,7 +98,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public virtual string EolMarker {
 			get { return Environment.NewLine; }
 		}
-		
+
 		public virtual bool IsSomethingSelected {
 			get { return this.SelectionLength > 0; }
 		}
@@ -117,20 +117,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return 0; }
 		}
 
-		public abstract int GetOffset (TextLocation location);
-
-		public abstract IDocumentLine GetLineByOffset (int offset);
-		
-		public int GetOffset (int line, int col)
-		{
-			return GetOffset (new TextLocation (line, col));
+		public abstract IDocument Document {
+			get;
 		}
-
-		public abstract TextLocation GetLocation (int offset);
-
-		public abstract string GetText (int offset, int length);
-
-		public abstract string GetText (ISegment segment);
 		#endregion
 		
 		#region Resolving
