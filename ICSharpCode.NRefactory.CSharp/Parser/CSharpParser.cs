@@ -1196,7 +1196,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newDestructor, location);
 				if (location != null)
 					newDestructor.AddChild (new CSharpTokenNode (Convert (location [0])), DestructorDeclaration.TildeRole);
-				newDestructor.AddChild (Identifier.Create (d.MemberName.Name, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
+				newDestructor.AddChild (Identifier.Create (d.Identifer, Convert (d.MemberName.Location)), AstNode.Roles.Identifier);
 				
 				if (location != null) {
 					newDestructor.AddChild (new CSharpTokenNode (Convert (location [1])), DestructorDeclaration.Roles.LPar);
