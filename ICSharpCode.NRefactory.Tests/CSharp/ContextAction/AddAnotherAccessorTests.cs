@@ -33,7 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 	[TestFixture]
 	public class AddAnotherAccessorTests : ContextActionTestBase
 	{
-		[Ignore("Format action is not implemented.")]
 		[Test()]
 		public void TestAddSet ()
 		{
@@ -65,7 +64,6 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				"}", result);
 		}
 		
-		[Ignore("Format action is not implemented.")]
 		[Test()]
 		public void TestAddGet ()
 		{
