@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.Editor;
+using ICSharpCode.NRefactory.Editor;
 using NUnit.Framework;
 
 namespace ICSharpCode.AvalonEdit.Document
