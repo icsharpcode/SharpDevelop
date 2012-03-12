@@ -3,7 +3,7 @@
 
 using System;
 using System.Text;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
@@ -11,7 +11,7 @@ namespace ICSharpCode.XamlBinding
 	/// <summary>
 	/// Represents the context of a location in a XAML document.
 	/// </summary>
-	public sealed class XamlExpressionContext : ExpressionContext
+	public sealed class XamlExpressionContext
 	{
 		public static readonly XamlExpressionContext Empty = new XamlExpressionContext(new XmlElementPath(), null, false);
 
@@ -26,11 +26,6 @@ namespace ICSharpCode.XamlBinding
 			this.ElementPath = elementPath;
 			this.AttributeName = attributeName;
 			this.InAttributeValue = inAttributeValue;
-		}
-
-		public override bool ShowEntry(ICompletionEntry o)
-		{
-			return true;
 		}
 
 		public override string ToString()

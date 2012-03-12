@@ -64,17 +64,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XamlParsedFile.cs" />
+    <Compile Include="XamlSymbolSearch.cs" />
     <None Include="XamlBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CompilationUnitCreatorVisitor.cs" />
     <Compile Include="Comparers.cs" />
     <Compile Include="MarkupExtensionInfo.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
-    <Compile Include="CompletionDataHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="MarkupExtensionTokenizer.cs" />
     <Compile Include="MarkupExtensionToken.cs">
@@ -87,41 +87,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Options\XamlBindingOptions.cs" />
-    <Compile Include="PowerToys\Commands\CreateBusinessFormCommand.cs" />
-    <Compile Include="PowerToys\Commands\CreateBusinessFormFromClassCommand.cs" />
-    <Compile Include="PowerToys\Commands\EditGridColumnsAndRowsCommand.cs" />
-    <Compile Include="PowerToys\Commands\ExtractPropertiesAsStyleCommand.cs" />
-    <Compile Include="PowerToys\Commands\GroupIntoRefactorings.cs" />
-    <Compile Include="PowerToys\Commands\PropertyEntry.cs" />
-    <Compile Include="PowerToys\Commands\RemoveMarginCommand.cs" />
-    <Compile Include="PowerToys\Commands\RemoveUnnecessaryAttributesCommand.cs" />
-    <Compile Include="PowerToys\Dialogs\DragDropMarkerAdorner.cs" />
-    <Compile Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml.cs">
-      <DependentUpon>EditGridColumnsAndRowsDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml.cs">
-      <DependentUpon>ExtractPropertiesAsStyleDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\FieldEditor.xaml.cs">
-      <DependentUpon>FieldEditor.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\GridLengthEditor.xaml.cs">
-      <DependentUpon>GridLengthEditor.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml.cs">
-      <DependentUpon>SelectSourceClassDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\SourceClassFormEditor.xaml.cs">
-      <DependentUpon>SourceClassFormEditor.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="PowerToys\Dialogs\UndoStep.cs" />
-    <Compile Include="PowerToys\XamlMenuCommand.cs" />
     <Compile Include="PropertyPathParser.cs" />
     <Compile Include="PropertyPathSegment.cs" />
     <Compile Include="PropertyPathTokenizer.cs" />
@@ -131,17 +96,11 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XamlBehavior.cs" />
-    <Compile Include="XamlClassReturnType.cs" />
     <Compile Include="XamlCodeCompletionBinding.cs" />
-    <Compile Include="XamlCompilationUnit.cs" />
-    <Compile Include="XamlCompletionItem.cs" />
     <Compile Include="XamlCompletionItemList.cs" />
     <Compile Include="XamlCompletionSettings.cs" />
     <Compile Include="XamlContext.cs" />
     <Compile Include="XamlExpressionContext.cs" />
-    <Compile Include="XamlExpressionFinder.cs">
-    </Compile>
-    <Compile Include="XamlColorizer.cs" />
     <Compile Include="MarkupExtensionParseException.cs">
     </Compile>
     <Compile Include="XamlLanguageBinding.cs" />
@@ -151,7 +110,16 @@
     </Compile>
     <Compile Include="XamlOutlineNode.cs" />
     <Compile Include="XamlParser.cs" />
-    <Compile Include="XamlResolver.cs" />
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -177,11 +145,6 @@
       <Name>ICSharpCode.Core.Presentation</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
@@ -204,19 +167,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="PowerToys" />
     <Folder Include="Options" />
-    <Folder Include="PowerToys\Commands" />
-    <Folder Include="PowerToys\Dialogs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Options\CodeCompletion.xaml" />
-    <Page Include="PowerToys\Dialogs\EditGridColumnsAndRowsDialog.xaml" />
-    <Page Include="PowerToys\Dialogs\ExtractPropertiesAsStyleDialog.xaml" />
-    <Page Include="PowerToys\Dialogs\FieldEditor.xaml" />
-    <Page Include="PowerToys\Dialogs\GridLengthEditor.xaml" />
-    <Page Include="PowerToys\Dialogs\SelectSourceClassDialog.xaml" />
-    <Page Include="PowerToys\Dialogs\SourceClassFormEditor.xaml" />
     <Page Include="XamlOutlineContentHost.xaml" />
   </ItemGroup>
 </Project>

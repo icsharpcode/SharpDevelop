@@ -1,23 +1,26 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.AvalonEdit.Xml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.XmlEditor;
 
 namespace ICSharpCode.XamlBinding
 {
 	// Fetch a copy of all relevant values of the AXmlDocument so that XamlContext can be used
 	// without having to acquire the reader lock.
-	public class ElementWrapper {
+	public class ElementWrapper
+	{
 		public ElementWrapper(AXmlElement element)
 		{
 			this.LocalName  = element.LocalName;
@@ -63,7 +66,8 @@ namespace ICSharpCode.XamlBinding
 		}
 	}
 	
-	public class AttributeWrapper {
+	public class AttributeWrapper
+	{
 		public string LocalName { get; set; }
 		public string Namespace { get; set; }
 		public string Prefix { get; set; }
@@ -94,7 +98,8 @@ namespace ICSharpCode.XamlBinding
 		}
 	}
 	
-	public class XamlContext : ExpressionContext {
+	public class XamlContext
+	{
 		public ElementWrapper ActiveElement { get; set; }
 		public ElementWrapper ParentElement { get; set; }
 		public List<ElementWrapper> Ancestors { get; set; }
@@ -109,15 +114,6 @@ namespace ICSharpCode.XamlBinding
 		public ReadOnlyCollection<string> IgnoredXmlns { get; set; }
 		public string XamlNamespacePrefix { get; set; }
 		
-		public IProjectContent ProjectContent {
-			get { 
-				if (ParseInformation != null)
-					return ParseInformation.CompilationUnit.ProjectContent;
-				else
-					return null;
-			}
-		}
-		
 		public XamlContext() {}
 		
 		public bool InAttributeValueOrMarkupExtension {
@@ -129,14 +125,10 @@ namespace ICSharpCode.XamlBinding
 			get { return Description == XamlContextDescription.InComment ||
 					Description == XamlContextDescription.InCData; }
 		}
-		
-		public override bool ShowEntry(ICompletionEntry o)
-		{
-			return true;
-		}
 	}
 	
-	public class XamlCompletionContext : XamlContext {
+	public class XamlCompletionContext : XamlContext
+	{
 		public XamlCompletionContext() { }
 		
 		public XamlCompletionContext(XamlContext context)
@@ -161,7 +153,8 @@ namespace ICSharpCode.XamlBinding
 		public ITextEditor Editor { get; set; }
 	}
 	
-	public enum XamlContextDescription {
+	public enum XamlContextDescription
+	{
 		/// <summary>
 		/// Outside any tag
 		/// </summary>

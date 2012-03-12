@@ -12,10 +12,11 @@ using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.XmlEditor;
@@ -161,8 +162,9 @@ namespace ICSharpCode.XamlBinding
 		public static string GetWordBeforeCaretExtended(this ITextEditor editor)
 		{
 			IDocumentLine line = editor.Document.GetLine(editor.Caret.Line);
-			int index = Math.Min(editor.Caret.Column - 1, line.Text.Length);
-			string text = line.Text.Substring(0, index);
+			string lineText = editor.Document.GetText(line);
+			int index = Math.Min(editor.Caret.Column - 1, lineText.Length);
+			string text = lineText.Substring(0, index);
 			int startIndex = text.LastIndexOfAny(' ', '\t', '"', '=', '<', '\'', '>', '{', '}');
 			if (startIndex > -1)
 				return text.Substring(startIndex + 1);
@@ -236,12 +238,12 @@ namespace ICSharpCode.XamlBinding
 			return thisValue.LinePosition;
 		}
 		
-		public static Location GetLocation(this IXmlLineInfo thisValue)
+		public static TextLocation GetLocation(this IXmlLineInfo thisValue)
 		{
-			return new Location(thisValue.GetLinePosition(), thisValue.GetLineNumber());
+			return new TextLocation(thisValue.GetLinePosition(), thisValue.GetLineNumber());
 		}
 		
-		public static bool IsInRange(this IXmlLineInfo item, Location begin, Location end)
+		public static bool IsInRange(this IXmlLineInfo item, TextLocation begin, TextLocation end)
 		{
 			return IsInRange(item, begin.Line, begin.Column, end.Line, end.Column);
 		}
@@ -261,41 +263,21 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		public static bool IsCollectionType(this IClass thisValue)
+		public static bool IsCollectionType(this IType thisValue)
 		{
 			if (thisValue == null)
 				throw new ArgumentNullException("thisValue");
-			return thisValue.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.ICollection");
+			return thisValue.GetAllBaseTypeDefinitions().Any(t => t.FullName == "System.Collections.ICollection");
 		}
 		
-		public static bool IsCollectionReturnType(this IReturnType type)
-		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			if (type.GetUnderlyingClass() != null)
-				return type.GetUnderlyingClass().IsCollectionType();
-			
-			return false;
-		}
-		
-		public static bool IsListType(this IClass thisValue)
+		public static bool IsListType(this IType thisValue)
 		{
 			if (thisValue == null)
 				throw new ArgumentNullException("thisValue");
-			return thisValue.ClassInheritanceTree.Any(cla => cla.FullyQualifiedName == "System.Collections.IList");
+			return thisValue.GetAllBaseTypeDefinitions().Any(t => t.FullName == "System.Collections.IList");
 		}
 		
-		public static bool IsListReturnType(this IReturnType type)
-		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			if (type.GetUnderlyingClass() != null)
-				return type.GetUnderlyingClass().IsListType();
-			
-			return false;
-		}
-		
-		public static bool HasAttached(this IClass thisValue, bool lookForProperties, bool lookForEvents)
+		public static bool HasAttached(this ITypeDefinition thisValue, bool lookForProperties, bool lookForEvents)
 		{
 			if (!lookForProperties && !lookForEvents)
 				return false;
@@ -310,12 +292,12 @@ namespace ICSharpCode.XamlBinding
 		
 		public static bool IsAttached(this IField field, bool lookForProperties, bool lookForEvents)
 		{
-			if (!field.IsPublic || !field.IsStatic || !field.IsReadonly || field.ReturnType == null)
+			if (!field.IsPublic || !field.IsStatic || !field.IsReadOnly || field.ReturnType == null)
 				return false;
 			
 			bool foundMethod = false;
 			
-			if (lookForProperties && field.ReturnType.FullyQualifiedName == "System.Windows.DependencyProperty") {
+			if (lookForProperties && field.ReturnType.FullName == "System.Windows.DependencyProperty") {
 				if (field.Name.Length <= "Property".Length)
 					return false;
 				if (!field.Name.EndsWith("Property", StringComparison.Ordinal))
@@ -323,7 +305,7 @@ namespace ICSharpCode.XamlBinding
 				
 				string fieldName = field.Name.Remove(field.Name.Length - "Property".Length);
 				
-				foreach (IMethod method in field.DeclaringType.Methods) {
+				foreach (IMethod method in field.DeclaringTypeDefinition.Methods) {
 					if (!method.IsPublic || !method.IsStatic || method.Name.Length <= 3)
 						continue;
 					if (!method.Name.StartsWith("Get") && !method.Name.StartsWith("Set"))
@@ -334,7 +316,7 @@ namespace ICSharpCode.XamlBinding
 				}
 			}
 			
-			if (lookForEvents && !foundMethod && field.ReturnType.FullyQualifiedName == "System.Windows.RoutedEvent") {
+			if (lookForEvents && !foundMethod && field.ReturnType.FullName == "System.Windows.RoutedEvent") {
 				if (field.Name.Length <= "Event".Length)
 					return false;
 				if (!field.Name.EndsWith("Event", StringComparison.Ordinal))
@@ -347,9 +329,10 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		/// <remarks>Works only if fullyQualifiedClassName is the name of a class!</remarks>
-		public static bool DerivesFrom(this IClass myClass, string fullyQualifiedClassName)
+		public static bool DerivesFrom(this ITypeDefinition myClass, string fullyQualifiedClassName)
 		{
-			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualifiedClassName);
+//			return myClass.ClassInheritanceTreeClassesOnly.Any(c => c.FullyQualifiedName == fullyQualifiedClassName);
+			return false;
 		}
 		
 		public static T PopOrDefault<T>(this Stack<T> stack)

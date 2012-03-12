@@ -69,12 +69,12 @@ namespace ICSharpCode.XamlBinding
 			return offset + col;
 		}
 		
-		public static Location GetLocationInfoFromOffset(string text, int offset)
+		public static TextLocation GetLocationInfoFromOffset(string text, int offset)
 		{
 			string[] lines = text.Substring(0, MinMax(offset, 0, text.Length)).Split('\n');
 			string line = lines.LastOrDefault() ?? string.Empty;
 			
-			return new Location(line.Length + 1, lines.Length);
+			return new TextLocation(line.Length + 1, lines.Length);
 		}
 		
 		/// <summary>

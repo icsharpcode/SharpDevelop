@@ -7,11 +7,11 @@ using System.IO;
 using System.Linq;
 
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -23,6 +23,11 @@ namespace ICSharpCode.XamlBinding
 				return ItemType.Page;
 			
 			return base.GetDefaultItemType(fileName);
+		}
+		
+		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
+		{
+			return new XamlSymbolSearch(entity);
 		}
 	}
 	

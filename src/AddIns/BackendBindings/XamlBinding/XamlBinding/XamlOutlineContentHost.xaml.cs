@@ -5,11 +5,12 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -33,13 +34,11 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (this.editor == null || !FileUtility.IsEqualFileName(this.editor.FileName, e.FileName))
 				return;
-			if (!e.IsPrimaryParseInfoForFile)
-				return;
 			
-			var cu = e.NewCompilationUnit as XamlCompilationUnit;
-			
-			if (cu != null && cu.TreeRootNode != null)
-				UpdateTree(cu.TreeRootNode);
+//			var cu = e.NewCompilationUnit as XamlCompilationUnit;
+//			
+//			if (cu != null && cu.TreeRootNode != null)
+//				UpdateTree(cu.TreeRootNode);
 		}
 		
 		void UpdateTree(NodeWrapper root)

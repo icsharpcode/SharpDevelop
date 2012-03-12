@@ -2,12 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Dom;
 using System.Collections.Generic;
 
 namespace ICSharpCode.XamlBinding
 {
-	sealed class ParameterComparer : IEqualityComparer<IParameter> {
+	/*sealed class ParameterComparer : IEqualityComparer<IParameter> {
 		public bool Equals(IParameter x, IParameter y)
 		{
 			return x.Compare(y);
@@ -45,5 +44,5 @@ namespace ICSharpCode.XamlBinding
 			else
 				return string.CompareOrdinal(x.Assembly, y.Assembly);
 		}
-	}
+	}*/
 }
