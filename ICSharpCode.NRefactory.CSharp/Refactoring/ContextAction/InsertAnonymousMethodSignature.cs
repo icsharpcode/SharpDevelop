@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			sb.Append (")");
 			
 			using (var script = context.StartScript ()) {
-				script.InsertText (context.Document.GetOffset (anonymousMethodExpression.DelegateToken.EndLocation), sb.ToString ());
+				script.InsertText (context.GetOffset (anonymousMethodExpression.DelegateToken.EndLocation), sb.ToString ());
 			}
 		}
 		

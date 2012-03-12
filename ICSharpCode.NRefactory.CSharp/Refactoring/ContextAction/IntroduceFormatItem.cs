@@ -92,10 +92,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		static PrimitiveExpression CreateFormatString (RefactoringContext context, PrimitiveExpression pExpr, int argumentNumber)
 		{
-			var start = context.Document.GetOffset (pExpr.StartLocation);
-			var end = context.Document.GetOffset (pExpr.EndLocation);
+			var start = context.GetOffset (pExpr.StartLocation);
+			var end = context.GetOffset (pExpr.EndLocation);
 			
-			return new PrimitiveExpression ("", context.Document.GetText (start, context.SelectionStart - start) + "{" + argumentNumber + "}" + context.Document.GetText (context.SelectionEnd, end - context.SelectionEnd));
+			return new PrimitiveExpression ("", context.GetText (start, context.SelectionStart - start) + "{" + argumentNumber + "}" + context.GetText (context.SelectionEnd, end - context.SelectionEnd));
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public void Run (RefactoringContext context)
 		{
 			var pexpr = context.GetNode<PrimitiveExpression> ();
-			int offset = context.Document.GetOffset (context.Location);
+			int offset = context.GetOffset (context.Location);
 			using (var script = context.StartScript ()) {
 				script.InsertText (offset, pexpr.LiteralValue.StartsWith ("@") ? "\" + @\"" : "\" + \"");
 			}
