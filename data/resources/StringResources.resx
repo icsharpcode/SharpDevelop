@@ -3963,6 +3963,10 @@ THIS DOES NOT AFFECT THE SOURCE CODE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Failed to load designer. Check the source code for syntax errors and check if all references are available.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>One or more errors occurred while trying to flush the designer content. This might be due to an unhandled exception in a custom/third-party component on the form/control.</value>
+    <comment>Message displayed when errors occur while flushing</comment>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Can't load side bar component library.
 No Windows Forms components will be avaiable, please configure the side bar manually.

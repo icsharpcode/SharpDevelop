@@ -629,6 +629,9 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
     <value>Erweiterungsmethode {0} auflösen</value>
   </data>
+  <data name="AddIns.SourceAnalysis.CheckProjectWithStyleCop" xml:space="preserve">
+    <value>Aktuelles Projekt mit StyleCop überprüfen</value>
+  </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Mit StyleCop überprüfen</value>
   </data>

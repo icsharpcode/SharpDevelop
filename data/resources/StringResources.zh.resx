@@ -262,8 +262,14 @@
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>帮助模式</value>
   </data>
+  <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
+    <value>没有找到帮助文档库管理工具，请检查是否正确安装。</value>
+  </data>
   <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
     <value>帮助所在目录</value>
+  </data>
+  <data name="AddIns.HelpViewer.LaunchHelpLibraryManagerCommand" xml:space="preserve">
+    <value>启动帮助文档管理工具</value>
   </data>
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>微软帮助查看器</value>
@@ -531,6 +537,12 @@
   <data name="AddIns.SearchReplace.SearchProgressTitle" xml:space="preserve">
     <value>查找...</value>
   </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.AddSetterLabel" xml:space="preserve">
+    <value>添加setter方法</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.CreateProperties.Description" xml:space="preserve">
+    <value>选择想要创建属性的字段：</value>
+  </data>
   <data name="AddIns.SharpRefactoring.CreateProperties.Title" xml:space="preserve">
     <value>创建属性</value>
   </data>
@@ -600,6 +612,9 @@
   </data>
   <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
     <value>处理属性: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>解析扩展方法{0}</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>用FxCop检验</value>
@@ -758,8 +773,14 @@
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
     <value>使用数据收集器</value>
   </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>让SharpDevelop根据初始对象确定类型</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>编辑网格的列和行</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>将属性提取为类型</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
     <value>没有选择有效元素！</value>
@@ -864,6 +885,9 @@
   <data name="ComponentInspector.ActionMenu.EventLoggingMenuItem" xml:space="preserve">
     <value>事件记录(&amp;E)</value>
   </data>
+  <data name="ComponentInspector.ActionMenu.OnDesignSurfaceMenuItem" xml:space="preserve">
+    <value>设计时接口</value>
+  </data>
   <data name="ComponentInspector.ActionMenu.PasteObjectMenuItem" xml:space="preserve">
     <value>粘贴对象(&amp;P)</value>
   </data>
@@ -879,6 +903,9 @@
   <data name="ComponentInspector.ActionMenu.UnregisterTypeLibMenuItem" xml:space="preserve">
     <value>取消注册TypeLib</value>
   </data>
+  <data name="ComponentInspector.AssemblyTreeNode.Text" xml:space="preserve">
+    <value>已打开的程序集</value>
+  </data>
   <data name="ComponentInspector.AttachDialog.AttachFailedMessage" xml:space="preserve">
     <value>附加到进程{0}出错。</value>
   </data>
@@ -893,6 +920,18 @@
   </data>
   <data name="ComponentInspector.CastDialog.CannotFindTypeInAssembliesMessage" xml:space="preserve">
     <value>在当前打开的程序集中找不到类型{0}</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.CastToLabel" xml:space="preserve">
+    <value>转换为</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.DetermineTypeOfCastFailedMessage" xml:space="preserve">
+    <value>确定类型转换时出现错误</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.RememberCastCheckBox" xml:space="preserve">
+    <value>记住不同区域的强制转换？</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.TypeIncompatibleMessage" xml:space="preserve">
+    <value>对象的类型进行转换时不兼容。</value>
   </data>
   <data name="ComponentInspector.ComCategoryRootTreeNode.Text" xml:space="preserve">
     <value>组件类别</value>
@@ -995,6 +1034,12 @@
   <data name="ComponentInspector.EventLogList.TimeColumnHeader" xml:space="preserve">
     <value>时间</value>
   </data>
+  <data name="ComponentInspector.FindDialog.AllLevelsLabel" xml:space="preserve">
+    <value>所有级别</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.ContainsRadioButton" xml:space="preserve">
+    <value>包含</value>
+  </data>
   <data name="ComponentInspector.FindDialog.FindButton" xml:space="preserve">
     <value>查找</value>
   </data>
@@ -1009,6 +1054,9 @@
   </data>
   <data name="ComponentInspector.FindDialog.FullNameLabel" xml:space="preserve">
     <value>全名</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.LevelSelectOnlyDownLabel" xml:space="preserve">
+    <value>只向下</value>
   </data>
   <data name="ComponentInspector.FindDialog.LevelsLabel" xml:space="preserve">
     <value>级别</value>
@@ -1051,6 +1099,9 @@
   </data>
   <data name="ComponentInspector.FindDialog.StartingWithLabel" xml:space="preserve">
     <value>以此打头：</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.StartsWithRadioButton" xml:space="preserve">
+    <value>开始于</value>
   </data>
   <data name="ComponentInspector.FindDialog.Title" xml:space="preserve">
     <value>查找</value>
@@ -1285,6 +1336,9 @@
   </data>
   <data name="ComponentInspector.WaitingForAppDialog.Title" xml:space="preserve">
     <value>程序正在启动请稍等</value>
+  </data>
+  <data name="CQA.MainWindow.FormTitle" xml:space="preserve">
+    <value>代码质量分析</value>
   </data>
   <data name="CSharpBinding.GenerateNewHandlerInstructions" xml:space="preserve">
     <value>插入对特定方法的引用;可再按跳格键(Tab)或回车键(Enter)来添加新的方法.</value>
@@ -1760,6 +1814,9 @@
   <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
     <value>调试</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
+    <value>遇到捕获的异常时暂停</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>调试</value>
   </data>
@@ -1853,6 +1910,9 @@
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.PanelName" xml:space="preserve">
     <value>项目和解决方案</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ParallelBuild" xml:space="preserve">
+    <value>并行编译的工程数量:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ProjectLocationLabel" xml:space="preserve">
     <value>默认项目位置：</value>
   </data>
@@ -1910,6 +1970,9 @@
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>外观效果</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Sharp Develop用户界面选项</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>标签和注释</value>
   </data>
@@ -1939,6 +2002,9 @@
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
     <value>当选择为空时剪切或复制整行</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.EnableVirtualSpace" xml:space="preserve">
+    <value>启用虚拟空间</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
     <value>文字输入时自动隐藏鼠标光标(&amp;H)</value>
@@ -2029,6 +2095,12 @@
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.BracketMatchingStyle.BeforeCaret" xml:space="preserve">
     <value>输入之前</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.CaretCheckBox" xml:space="preserve">
+    <value>显示光标所在行</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox" xml:space="preserve">
+    <value>启用动画效果</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>显示行尾标记</value>
@@ -2461,6 +2533,9 @@
   </data>
   <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
     <value>创建新类：</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Description" xml:space="preserve">
+    <value>无法直接创建此方法，因为没有此类的可用源代码。请选择用于创建此扩展方法的静态类。</value>
   </data>
   <data name="Dialog.Refactoring.IntroduceMethod.Title" xml:space="preserve">
     <value>导入方法</value>
@@ -3074,6 +3149,12 @@
   <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes" xml:space="preserve">
     <value>头文件位置</value>
   </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.UndefineAll" xml:space="preserve">
+    <value>取消所有已经定义的预处理符号的定义</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions" xml:space="preserve">
+    <value>取消以下预处理符号的定义</value>
+  </data>
   <data name="ICSharpCode.CppBinding.ProjectOptions.SymbolLabel" xml:space="preserve">
     <value>符号</value>
   </data>
@@ -3245,6 +3326,9 @@
   </data>
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>选中的对象不是类或者可重载的成员方法，因此无法显示派生属性。</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>无法找到光标所在位置的对象的类型定义。</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>发送行到Ruby控制台</value>
@@ -3602,6 +3686,12 @@
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.AssignmentRadioButton" xml:space="preserve">
     <value>指派属性 (数量少时很快，但数量很大时可扩展性很差)</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.DefaultLocalizationModel" xml:space="preserve">
+    <value>默认的本地化模式</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.KeepModelCheckBox" xml:space="preserve">
+    <value>保持现有的本地化模式不变</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.PanelName" xml:space="preserve">
     <value>Localization Model</value>
   </data>
@@ -3768,6 +3858,9 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
     <value>未找到工具</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DialogTitle" xml:space="preserve">
+    <value>识别接口需要帐号和密码</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DomainLabel" xml:space="preserve">
     <value>域名(&amp;D):</value>
   </data>
@@ -3797,6 +3890,9 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Pads.PropertyPad.ContextMenu.ShowDescription" xml:space="preserve">
     <value>显示说明(&amp;S)</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Pads.PropertyPadResetCommand" xml:space="preserve">
+    <value>重置失败。原因：由于另一个属性发生变化导致重置的值可能失效。</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.ParserService.Parsing" xml:space="preserve">
     <value>解析</value>
@@ -3845,6 +3941,12 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description" xml:space="preserve">
     <value>此引用支持的语言</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes" xml:space="preserve">
+    <value>嵌入互操作(interop)类型</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes.Description" xml:space="preserve">
+    <value>请指定是否将定义在引用的程序集中的COM交互类型嵌入到目标程序集中</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy" xml:space="preserve">
     <value>本地复制</value>
@@ -3942,6 +4044,11 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>项目升级</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>工程'${ProjectName}'要求采用MSBuild ${OldToolsVersion}，但该版本并未安装。
+请问是否将它升级到MSBuild  ${NewToolsVersion}?
+如果不升级那么此工程将无法打开。</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>这个解决方案是用SharpDevelop的旧版本创建的。
 您需要转换为新版本的解决方案，因为它支持新语言或框架的新特性。</value>
@@ -4001,6 +4108,9 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>无法运行单元测试。找不到文件'{0}'。</value>
   </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel" xml:space="preserve">
+    <value>网络</value>
+  </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.ApplicationExists" xml:space="preserve">
     <value>应用程序已经存在。</value>
   </data>
@@ -4013,6 +4123,12 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   <data name="ICSharpCode.WebProjectOptionsPanel.IISNotFound" xml:space="preserve">
     <value>本机没有找到IIS或IIS Express。</value>
   </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>ASP.NET/IIS(Express)的工作进程({0})没有找到。</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>未指定工程的URL地址或外部程序。请到工程属性的“调试”选项卡中检查WEB服务器的设置</value>
+  </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>服务器端口：</value>
   </data>
@@ -4024,6 +4140,12 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.UnableToAttach" xml:space="preserve">
     <value>调试器无法附加到进程。</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>使用本地IIS服务器</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>应用程序/虚拟目录已经创建.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>添加扩展</value>
@@ -4042,6 +4164,12 @@ THIS DOES NOT AFFECT THE SOURCE CODE.
   </data>
   <data name="ICSharpCode.WixBinding.CompilerParametersPanel.CompilerExtensionsGroupBox" xml:space="preserve">
     <value>扩展</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.CompilerParametersPanel.CulturesLabel" xml:space="preserve">
+    <value>文化(本地化类别)：</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.CompilerParametersPanel.SuppressIces" xml:space="preserve">
+    <value>禁用ICEs</value>
   </data>
   <data name="ICSharpCode.WixBinding.CompilerParametersPanel.TreatWarningsAsErrorsCheckBox" xml:space="preserve">
     <value>将警告作为错误处理:</value>
@@ -4090,6 +4218,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ICSharpCode.WixBinding.PackageFilesView.AllWixFilesContainErrorsMessage" xml:space="preserve">
     <value>无法找到安装文件. WiX文件中包含错误.</value>
+  </data>
+  <data name="ICSharpCode.WixBinding.PackageFilesView.NoRootDirectoryFoundMessage" xml:space="preserve">
+    <value>无法找到TARGETDIR(目标)文件夹或DirectoryRef(文件夹引用)元素。可能是它们在WiX文档中不存在， 或者是WiX文档不是针对WiX 3.0的并且对应用的命名空间不是"http://schemas.microsoft.com/wix/2006/wi"。</value>
   </data>
   <data name="ICSharpCode.WixBinding.PackageFilesView.NoWixFileFoundInProjectMessage" xml:space="preserve">
     <value>在'{0}'项目中没有找到WiX文件(.wxs)</value>
@@ -4490,6 +4621,18 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>您真的想放弃您所作的更改吗?</value>
   </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>局部变量</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>命名空间</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>参数</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>重载于</value>
+  </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>要保存改动吗？</value>
   </data>
@@ -4616,14 +4759,23 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
     <value>显示模块的名称</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
+    <value>请求</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Break" xml:space="preserve">
     <value>中断</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Breakpoint" xml:space="preserve">
     <value>断点</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHit" xml:space="preserve">
+    <value>遇到断点!</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAt" xml:space="preserve">
     <value>在{1}中的第{0}行遇到断点。</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
+    <value>条件</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
     <value>条件</value>
@@ -4674,7 +4826,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>在{1}里的{0}: (第{2}行)</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>调试器抛出异常{0}:</value>
+    <value>抛出了类型为{0}的异常:</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>显示异常详细信息</value>
@@ -4748,11 +4900,32 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>静态成员</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>内存</value>
+  </data>
   <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
     <value>没有找到地址{0} ！</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>显示字节大小:</value>
+  </data>
   <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
     <value>跳转到地址：</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>下一个虚拟地址</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>没有对内存地址的映射！</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>未调试状态或进程已经在运行！</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>前一个虚拟地址</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>从{0}读取到[1}中， 大小:{2}.</value>
   </data>
   <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
     <value>刷新当前地址</value>
@@ -4763,11 +4936,17 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>地址</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(动态)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>未加载任何符号。</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>已加载符号。</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(在内存中)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>排序</value>
@@ -4808,6 +4987,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>由于没有选择活动的方法, 无法进行单步调试.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>无法切换到没有对应的上下文的线程。</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>调试器在运行时您不能切换线程.</value>
   </data>
@@ -4837,6 +5019,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>线程切换</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>切换方法视图</value>
   </data>
   <data name="MainWindow.Windows.Debug.Watch" xml:space="preserve">
     <value>监视</value>
@@ -5155,6 +5340,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation" xml:space="preserve">
     <value>从XML注释中生成文档</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.NeedToEditBuildOptions" xml:space="preserve">
+    <value>您必须修改项目的生成选项才能生成XML文档文件。</value>
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
     <value>XML文件不存在，您需要编译该项目。</value>
@@ -5722,6 +5910,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="SharpReport.FieldsExplorer.ContextMenu.Columns.Remove" xml:space="preserve">
     <value>移除节点</value>
   </data>
+  <data name="SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort" xml:space="preserve">
+    <value>切换排序顺序</value>
+  </data>
   <data name="SharpReport.FieldsExplorer.ContextMenu.Section.Clear" xml:space="preserve">
     <value>移除节点</value>
   </data>
@@ -5794,6 +5985,12 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="SharpReport.Toolbar.Functions.TodaysDate" xml:space="preserve">
     <value>今天</value>
   </data>
+  <data name="SharpReport.Toolbar.GroupFooter" xml:space="preserve">
+    <value>分组页脚</value>
+  </data>
+  <data name="SharpReport.Toolbar.GroupHeader" xml:space="preserve">
+    <value>分组表头</value>
+  </data>
   <data name="SharpReport.Toolbar.Image" xml:space="preserve">
     <value>图像</value>
   </data>
@@ -5805,6 +6002,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="SharpReport.Toolbar.Rectangle" xml:space="preserve">
     <value>矩形</value>
+  </data>
+  <data name="SharpReport.Toolbar.Table" xml:space="preserve">
+    <value>表</value>
   </data>
   <data name="SharpReport.Toolbar.TextBox" xml:space="preserve">
     <value>标签</value>
@@ -5841,6 +6041,12 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="SharpReport.Wizard.BaseSettings.ReportType" xml:space="preserve">
     <value>报表类型</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Column" xml:space="preserve">
+    <value>选择分组列</value>
+  </data>
+  <data name="SharpReport.Wizard.Layout.Grouping" xml:space="preserve">
+    <value>分组</value>
   </data>
   <data name="SharpReport.Wizard.Layout.ListLayout" xml:space="preserve">
     <value>列表布局</value>
@@ -5971,6 +6177,9 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   <data name="Templates.File.ConfigurationElementCollection.Name" xml:space="preserve">
     <value>配置元素集合</value>
   </data>
+  <data name="Templates.File.ConfigurationSection.Description" xml:space="preserve">
+    <value>实现ConfigurationSection的类</value>
+  </data>
   <data name="Templates.File.ConfigurationSection.Name" xml:space="preserve">
     <value>配置部分(Configuration Section)</value>
   </data>
@@ -6075,6 +6284,21 @@ SharpDevelop 编译资源时发现不对应：资源名称不是文件名，而�
   </data>
   <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
     <value>空资源文件</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Description" xml:space="preserve">
+    <value>此类使得永久属性更易于访问.</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.AddInOptions.Name" xml:space="preserve">
+    <value>插件选项</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.MenuCommand.Name" xml:space="preserve">
+    <value>菜单命令</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.OptionPanel.Description" xml:space="preserve">
+    <value>SharpDevelop选项面板</value>
+  </data>
+  <data name="Templates.File.SharpDevelop.View.Description" xml:space="preserve">
+    <value>SharpDevelop的视图内容(比如文本编辑顺或资源编辑器).</value>
   </data>
   <data name="Templates.File.SharpDevelop.View.Name" xml:space="preserve">
     <value>空视图</value>
