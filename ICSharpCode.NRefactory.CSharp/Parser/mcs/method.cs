@@ -2100,7 +2100,7 @@ namespace Mono.CSharp {
 
 		public static readonly string MetadataName = "Finalize";
 
-		public string Identifer {
+		public string Identifier {
 			get;
 			set;
 		}
