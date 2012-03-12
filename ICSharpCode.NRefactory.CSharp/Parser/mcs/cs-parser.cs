@@ -5602,9 +5602,7 @@ void case_278()
 		
 		Destructor d = new Destructor (current_type, (Modifiers) yyVals[-6+yyTop],
 			ParametersCompiled.EmptyReadOnlyParameters, (Attributes) yyVals[-7+yyTop], lt.Location);
-#if FULL_AST
 		d.Identifier = lt.Value;
-#endif
 		if (doc_support)
 			d.DocComment = ConsumeStoredComment ();
 		  

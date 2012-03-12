@@ -2313,9 +2313,7 @@ destructor_declaration
 		
 		Destructor d = new Destructor (current_type, (Modifiers) $2,
 			ParametersCompiled.EmptyReadOnlyParameters, (Attributes) $1, lt.Location);
-#if FULL_AST
 		d.Identifier = lt.Value;
-#endif
 		if (doc_support)
 			d.DocComment = ConsumeStoredComment ();
 		  
