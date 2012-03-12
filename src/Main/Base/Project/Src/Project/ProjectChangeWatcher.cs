@@ -6,6 +6,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -122,11 +123,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				wasChangedExternally = false;
 
 				if (ProjectService.OpenSolution != null) {
-					int result = MessageService.ShowCustomDialog(MessageService.DefaultMessageBoxTitle, "${res:ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage}", 0, 1, "${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}", "${res:ICSharpCode.SharpDevelop.ExceptionBox.ExitSharpDevelop}");
+					int result = MessageService.ShowCustomDialog(MessageService.DefaultMessageBoxTitle, "${res:ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage}", 0, 1, "${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}", "${res:ICSharpCode.SharpDevelop.Project.CloseSolution}");
 					if (result == 0)
 						ProjectService.LoadSolution(ProjectService.OpenSolution.FileName);
 					else if (result == 2)
-						new ExitWorkbenchCommand().Run();
+						new CloseSolution().Run();
 				}
 			}
 		}
