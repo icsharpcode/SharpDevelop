@@ -449,6 +449,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ConstantResolveResult(resultType, val);
 			} else {
 				expression = Convert(expression, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
+				if (builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator) {
+					return new OperatorResolveResult(
+						resultType, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
+						null, true, new[] { expression });
+				}
 				return UnaryOperatorResolveResult(resultType, op, expression);
 			}
 		}
