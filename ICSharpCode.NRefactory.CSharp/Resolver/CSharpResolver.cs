@@ -1842,7 +1842,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null) {
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
 				if (or.BestCandidate != null) {
-					return or.CreateResolveResult(mgrr.TargetResult);
+					if (or.BestCandidate.IsStatic && !(mgrr.TargetResult is TypeResolveResult))
+						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetResult.Type));
+					else
+						return or.CreateResolveResult(mgrr.TargetResult);
 				} else {
 					// No candidate found at all (not even an inapplicable one).
 					// This can happen with empty method groups (as sometimes used with extension methods)
