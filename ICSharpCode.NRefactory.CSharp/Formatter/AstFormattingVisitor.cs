@@ -1270,7 +1270,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			foreach (CaseLabel label in switchSection.CaseLabels) {
-				FixStatementIndentation(label.StartLocation);
+				label.AcceptVisitor(this);
 			}
 			if (policy.IndentCaseBody) {
 				curIndent.Level++;
@@ -1279,7 +1279,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (var stmt in switchSection.Statements) {
 				if (stmt is BreakStatement && !policy.IndentBreakStatements && policy.IndentCaseBody) {
 					curIndent.Level--;
-					FixStatementIndentation(stmt);
+					FixStatementIndentation(stmt.StartLocation);
 					stmt.AcceptVisitor (this);
 					curIndent.Level++;
 					continue;
@@ -1293,10 +1293,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				curIndent.Level--;
 		}
 
-		public override void VisitCaseLabel (CaseLabel caseLabel)
+		public override void VisitCaseLabel(CaseLabel caseLabel)
 		{
-			// handled in switchsection
-			return;
+			FixStatementIndentation(caseLabel.StartLocation);
+			FixSemicolon(caseLabel.ColonToken);
 		}
 
 		public override void VisitThrowStatement (ThrowStatement throwStatement)
