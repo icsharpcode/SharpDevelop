@@ -29,7 +29,7 @@ using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace ICSharpCode.NRefactory.FormattingTests
+namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	[TestFixture()]
 	public class TestSpacingVisitor : TestBase

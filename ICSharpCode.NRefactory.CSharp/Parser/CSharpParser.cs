@@ -775,9 +775,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 			}
 
-			public override void Visit (Field f)
+			public override void Visit(Field f)
 			{
-				var location = LocationsBag.GetMemberLocation (f);
+				var location = LocationsBag.GetMemberLocation(f);
 				
 				FieldDeclaration newField = new FieldDeclaration ();
 				AddAttributeSection (newField, f);
