@@ -165,8 +165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 	T MyMethod<T>(T a) where T : ISomeInterface;
 }
 ",
-				new TypeDeclaration {
-					ClassType = ClassType.Interface,
+				new TypeDeclaration.Interface {
 					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
@@ -191,8 +190,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 	void MyMethod<T>(T a) where T : ISomeInterface;
 }
 ",
-				new TypeDeclaration {
-					ClassType = ClassType.Interface,
+				new TypeDeclaration.Interface {
 					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
@@ -210,15 +208,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		}
 		
 		[Test]
-		public void ShadowingMethodInInterface()
+		public void ShadowingMethodInInterface ()
 		{
-			ParseUtilCSharp.AssertGlobal(
+			ParseUtilCSharp.AssertGlobal (
 				@"interface MyInterface : IDisposable {
 	new void Dispose();
 }
 ",
-				new TypeDeclaration {
-					ClassType = ClassType.Interface,
+				new TypeDeclaration.Interface {
 					Name = "MyInterface",
 					BaseTypes = { new SimpleType("IDisposable") },
 					Members = {

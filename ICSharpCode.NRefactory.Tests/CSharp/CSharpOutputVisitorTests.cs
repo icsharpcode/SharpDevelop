@@ -51,10 +51,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		[Test]
-		public void EnumDeclarationWithInitializers()
+		public void EnumDeclarationWithInitializers ()
 		{
-			TypeDeclaration type = new TypeDeclaration {
-				ClassType = ClassType.Enum,
+			TypeDeclaration type = new TypeDeclaration.Enum {
 				Name = "DisplayFlags",
 				Members = {
 					new EnumMemberDeclaration {

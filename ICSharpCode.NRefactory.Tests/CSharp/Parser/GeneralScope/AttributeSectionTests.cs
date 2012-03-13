@@ -97,7 +97,7 @@ public class Form1 {
 		{
 			ParseUtilCSharp.AssertGlobal(
 				@"[A, B] class Test {}",
-				new TypeDeclaration {
+				new TypeDeclaration.Class {
 					Name = "Test",
 					Attributes = {
 						new AttributeSection {
@@ -113,8 +113,7 @@ public class Form1 {
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"class Test<[A,B]C> {}",
-				new TypeDeclaration {
-					ClassType = ClassType.Class,
+				new TypeDeclaration.Class {
 					Name = "Test",
 					TypeParameters = {
 						new TypeParameterDeclaration {
@@ -169,11 +168,11 @@ public class Form1 {
 		// TODO: Tests for other contexts where attributes can appear
 		
 		[Test]
-		public void AttributeWithNamedArguments()
+		public void AttributeWithNamedArguments ()
 		{
-			ParseUtilCSharp.AssertTypeMember(
+			ParseUtilCSharp.AssertTypeMember (
 				@"[A(0, a:1, b=2)] class Test {}",
-				new TypeDeclaration {
+				new TypeDeclaration.Class {
 					Name = "Test",
 					Attributes = {
 						new AttributeSection {
