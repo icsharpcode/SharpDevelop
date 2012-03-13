@@ -740,5 +740,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(prop4.Getter.IsStatic);
 			Assert.IsFalse(prop4.Setter.IsStatic);
 		}
+		
+		[Test]
+		public void EventAccessorNames()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithStaticAndNonStaticMembers));
+			var customEvent = type.Events.Single(e => e.Name == "Event1");
+			Assert.AreEqual("add_Event1", customEvent.AddAccessor.Name);
+			Assert.AreEqual("remove_Event1", customEvent.RemoveAccessor.Name);
+			
+			var normalEvent = type.Events.Single(e => e.Name == "Event3");
+			Assert.AreEqual("add_Event3", normalEvent.AddAccessor.Name);
+			Assert.AreEqual("remove_Event3", normalEvent.RemoveAccessor.Name);
+		}
 	}
 }
