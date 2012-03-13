@@ -94,8 +94,8 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				var node =  pad.WatchList.SelectedNode;
-				if (node != null && node.Node is ExpressionNode) {
-					string text = ((ExpressionNode)node.Node).FullText;
+				if (node != null && node.Node is ValueNode) {
+					string text = ((ValueNode)node.Node).FullText;
 					ClipboardWrapper.SetText(text);
 				}
 			}

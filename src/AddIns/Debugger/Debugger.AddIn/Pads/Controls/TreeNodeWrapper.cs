@@ -32,7 +32,7 @@ namespace Debugger.AddIn.Pads.Controls
 		}
 		
 		public override object Icon {
-			get { return this.Node.ImageSource; }
+			get { return this.Node.Image.ImageSource; }
 		}
 		
 		public override bool ShowExpander {

@@ -28,6 +28,7 @@ using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 using Mono.Cecil;
 using Process = Debugger.Process;
+using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -39,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			Cancel = 2
 		}
 		
-		bool useRemotingForThreadInterop = false;
 		bool attached;
 		
 		NDebugger debugger;
@@ -491,18 +491,18 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			try {
 				var tooltipExpression = GetExpression(variableName);
-				ExpressionNode expressionNode = new ExpressionNode("Icons.16x16.Local", variableName, () => tooltipExpression.Evaluate(this.DebuggedProcess));
-				return new DebuggerTooltipControl(logicalPosition, expressionNode) { ShowPins = debuggedProcess.GetCurrentExecutingFrame().HasSymbols };
+				var valueNode = new ValueNode("Icons.16x16.Local", variableName, () => tooltipExpression.Evaluate(this.DebuggedProcess));
+				return new DebuggerTooltipControl(new TreeNode[] { valueNode });
 			} catch (System.Exception ex) {
 				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
 				return null;
 			}
 		}
 		
-		public ITreeNode GetNode(string variable, string currentImageName = null)
+		public Debugger.AddIn.TreeModel.TreeNode GetNode(string variable, string currentImageName = null)
 		{
 			try {
-				return new ExpressionNode(currentImageName ?? "Icons.16x16.Local", variable, () => GetExpression(variable).Evaluate(this.DebuggedProcess));
+				return new ValueNode(currentImageName ?? "Icons.16x16.Local", variable, () => GetExpression(variable).Evaluate(this.DebuggedProcess));
 			} catch (GetValueException) {
 				return null;
 			}
@@ -539,12 +539,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void InitializeService()
 		{
-			if (useRemotingForThreadInterop) {
-				// This needs to be called before instance of NDebugger is created
-				string path = RemotingConfigurationHelpper.GetLoadedAssemblyPath("Debugger.Core.dll");
-				new RemotingConfigurationHelpper(path).Configure();
-			}
-			
 			// get decompiler service
 			var items = AddInTree.BuildItems<IDebuggerDecompilerService>("/SharpDevelop/Services/DebuggerDecompilerService", null, false);
 			if (items.Count > 0)

@@ -53,9 +53,9 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 			
 			if (e.Key == Key.Enter) {
-				if(SelectedNode.Node is ExpressionNode) {
-					var node = (ExpressionNode)SelectedNode.Node;
-					node.SetText(((TextBox)sender).Text);
+				if(SelectedNode.Node is ValueNode) {
+					var node = (ValueNode)SelectedNode.Node;
+					node.Value = ((TextBox)sender).Text;
 				}
 			}
 			if (e.Key == Key.Enter || e.Key == Key.Escape) {

@@ -34,14 +34,19 @@ namespace Debugger.AddIn.Visualizers.Utils
 		}
 		
 		
-		public static Value CreateListFromIEnumeralbe(Value iEnumerableValue, DebugType itemType, out DebugType listType)
+		public static Value CreateListFromIEnumeralbe(Value iEnumerableValue)
 		{
-			listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
-			DebugType iEnumerableType = DebugType.CreateFromType(itemType.AppDomain, typeof(IEnumerable<>), itemType);
+			DebugType iEnumerableType, itemType;
+			if (!iEnumerableValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
+				throw new GetValueException("Value is not IEnumeralbe");
+			    	
+			DebugType listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
 			ConstructorInfo ctor = listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
 			if (ctor == null)
 				throw new DebuggerException("List<T> constructor not found");
-			return (Value)ctor.Invoke(new object[] { iEnumerableValue });
+			
+			// Keep reference since we do not want to keep reenumerating it
+			return ((Value)ctor.Invoke(new object[] { iEnumerableValue })).GetPermanentReference();
 		}
 		
 		/// <summary>

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Reflection;
 
 namespace Debugger.MetaData
 {
@@ -10,6 +11,8 @@ namespace Debugger.MetaData
 		ValueGetter getter;
 		int localIndex;
 		DebugType localType;
+		
+		public DebugMethodInfo Member { get; private set; }
 		
 		/// <inheritdoc/>
 		public override int LocalIndex {
@@ -34,8 +37,9 @@ namespace Debugger.MetaData
 		public bool IsThis { get; internal set; }
 		public bool IsCaptured { get; internal set; }
 		
-		public DebugLocalVariableInfo(string name, int localIndex, int startOffset, int endOffset, DebugType localType, ValueGetter getter)
+		public DebugLocalVariableInfo(DebugMethodInfo member, string name, int localIndex, int startOffset, int endOffset, DebugType localType, ValueGetter getter)
 		{
+			this.Member = member;
 			this.Name = name;
 			this.localIndex = localIndex;
 			this.StartOffset = startOffset;
@@ -46,6 +50,11 @@ namespace Debugger.MetaData
 		
 		public Value GetValue(StackFrame context)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			if (context.MethodInfo != this.Member)
+				throw new GetValueException("Expected stack frame: " + this.Member.ToString());
+			
 			return getter(context);
 		}
 		

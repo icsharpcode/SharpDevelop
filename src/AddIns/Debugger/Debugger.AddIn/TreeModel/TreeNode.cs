@@ -16,62 +16,81 @@ namespace Debugger.AddIn.TreeModel
 	/// <summary>
 	/// A node in the variable tree.
 	/// </summary>
-	public class TreeNode : ITreeNode
+	public class TreeNode : INotifyPropertyChanged
 	{
-		public IImage IconImage { get; protected set; } 
-		public string ImageName { get; set; } 
-		public string Name { get; set; }
-		public virtual string Text { get; set; }
-		public virtual string Type { get; protected set; }
-		public virtual Func<IEnumerable<TreeNode>> GetChildren { get; protected set; }
+		public event EventHandler<PropertyEventArgs> PropertyRead;
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 		
-		/// <summary>
-		/// System.Windows.Media.ImageSource version of <see cref="IconImage"/>.
-		/// </summary>
-		public ImageSource ImageSource {
-			get { 
-				return this.IconImage == null ? null : this.IconImage.ImageSource;
-			}
-		}
-		
-		/// <summary>
-		/// System.Drawing.Image version of <see cref="IconImage"/>.
-		/// </summary>
-		public Image Image {
-			get { 
-				return this.IconImage == null ? null : this.IconImage.Bitmap;
-			}
-		}
-		
-		public virtual bool CanSetText { 
-			get { return false; }
-		}
-		
-		Func<IEnumerable<ITreeNode>> ITreeNode.GetChildren {
+		IImage image;
+		string name;
+		string value;
+		string type;
+				
+		public IImage Image {
 			get {
-				if (this.GetChildren == null)
-					return null;
-				return () => this.GetChildren();
+				OnPropertyRead("Image");
+				return this.image;
+			}
+			set {
+				if (this.image != value) {
+					this.image = value;
+					OnPropertyChanged("Image");
+				}
 			}
 		}
 		
-		public virtual bool HasChildNodes {
-			get { return this.GetChildren != null; }
-		}
-
-		public virtual IEnumerable<IVisualizerCommand> VisualizerCommands {
+		public string Name {
 			get {
-				return null;
+				OnPropertyRead("Name");
+				return this.name;
+			}
+			set {
+				if (this.name != value) {
+					this.name = value;
+					OnPropertyChanged("Name");
+				}
 			}
 		}
 		
-		public virtual bool HasVisualizerCommands {
+		public bool CanSetName { get; protected set; }
+		
+		public string Value {
 			get {
-				return (VisualizerCommands != null) && (VisualizerCommands.Count() > 0);
+				OnPropertyRead("Value");
+				return this.value;
+			}
+			set {
+				if (this.value != value) {
+					this.value = value;
+					OnPropertyChanged("Value");
+				}
 			}
 		}
 		
-		public bool IsPinned { get; set; }
+		public bool CanSetValue { get; protected set; }
+		
+		public string Type {
+			get {
+				OnPropertyRead("Type");
+				return this.type;
+			}
+			set {
+				if (this.type != value) {
+					this.type = value;
+					OnPropertyChanged("Type");
+				}
+			}
+		}
+		
+		public Func<IEnumerable<TreeNode>> GetChildren { get; protected set; }
+		
+		public bool HasChildren {
+			get { return GetChildren != null; }
+		}
+		
+		public IEnumerable<IVisualizerCommand> VisualizerCommands { get; protected set; }
+		
+		public bool HasVisualizerCommands { get; protected set; }
 		
 		public TreeNode(string name, Func<IEnumerable<TreeNode>> getChildren)
 		{
@@ -79,19 +98,32 @@ namespace Debugger.AddIn.TreeModel
 			this.GetChildren = getChildren;
 		}
 		
-		public TreeNode(string imageName, string name, string text, string type, Func<IEnumerable<TreeNode>> getChildren)
+		public TreeNode(string imageName, string name, string value, string type, Func<IEnumerable<TreeNode>> getChildren)
 		{
-			this.ImageName = imageName;
-			if (imageName != null)
-				this.IconImage = new ResourceServiceImage(imageName);
+			this.Image = string.IsNullOrEmpty(imageName) ? null : new ResourceServiceImage(imageName);
 			this.Name = name;
-			this.Text = text;
+			this.Value = value;
 			this.Type = type;
 			this.GetChildren = getChildren;
 		}
 		
-		public virtual bool SetText(string newValue) { 
-			return false;
+		protected virtual void OnPropertyRead(string name)
+		{
+			if (PropertyRead != null) {
+				PropertyRead(this, new PropertyEventArgs() { Name = name});
+			}
 		}
+		
+		protected virtual void OnPropertyChanged(string name)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+		}
+	}
+	
+	public class PropertyEventArgs: EventArgs
+	{
+		public string Name { get; set; }
 	}
 }

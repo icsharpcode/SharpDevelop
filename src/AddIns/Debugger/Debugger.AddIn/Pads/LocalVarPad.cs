@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				
 				debuggedProcess.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
-					Utils.GetLocalVariableNodes(frame).ToList(),
+					ValueNode.GetLocalVariables().ToList(),
 					n => localVarList.WatchItems.Add(n.ToSharpTreeNode())
 				);
 			} catch (Exception ex) {

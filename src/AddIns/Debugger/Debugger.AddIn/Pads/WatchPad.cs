@@ -192,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
 				
 				//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-				ExpressionNode valNode = new ExpressionNode(null, node.Node.Name, () => debugger.GetExpression(node.Node.Name).Evaluate(debuggedProcess));
+				ValueNode valNode = new ValueNode(null, node.Node.Name, () => debugger.GetExpression(node.Node.Name).Evaluate(debuggedProcess));
 				return valNode.ToSharpTreeNode();
 			} catch (GetValueException) {
 				string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);

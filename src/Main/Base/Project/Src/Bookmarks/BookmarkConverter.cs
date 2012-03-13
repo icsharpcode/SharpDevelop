@@ -64,24 +64,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bbm.Condition = script;
 						bookmark = bbm;
 						break;
-					case "PinBookmark":
-						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
-						pin.Comment = v[4];
-						pin.PinPosition =
-							new Point
-						{
-							X = double.Parse(v[5], culture),
-							Y = double.Parse(v[6], culture)
-						};
-						
-						// pop-up nodes
-						pin.SavedNodes = new System.Collections.Generic.List<Tuple<string, string, string>>();
-						for (int i = 7; i < v.Length; i+=3) {
-							pin.SavedNodes.Add(new Tuple<string, string, string>(v[i], v[i+1], v[i+2]));
-						}
-						
-						bookmark = pin;
-						break;
 					default:
 						bookmark = new Bookmark(fileName, new Location(columnNumber, lineNumber));
 						break;
@@ -102,10 +84,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				} else if (bookmark is Debugging.BreakpointBookmark) {
 					b.Append("Breakpoint");
 				} else {
-					if (bookmark is PinBookmark)
-						b.Append("PinBookmark");
-					else
-						b.Append("Bookmark");
+					b.Append("Bookmark");
 				}
 				b.Append('|');
 				b.Append(bookmark.FileName);
@@ -136,27 +115,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(bbm.Condition);
 				}
 				
-				if (bookmark is PinBookmark) {
-					var pin = (PinBookmark)bookmark;
-					b.Append('|');
-					b.Append(pin.Comment ?? string.Empty);
-					
-					// popup position
-					b.Append('|');
-					b.Append(pin.PinPosition.Value.X);
-					b.Append('|');
-					b.Append(pin.PinPosition.Value.Y);
-					
-					//popup nodes
-					foreach(var node in pin.Nodes) {
-						b.Append('|');
-						b.Append(node.ImageName);
-						b.Append('|');
-						b.Append(node.Name);
-						b.Append('|');
-						b.Append(node.Text);
-					}
-				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

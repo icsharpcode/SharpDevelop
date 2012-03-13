@@ -78,7 +78,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			if ((this.Property != null) && (this.Property.ObjectGraphProperty != null)) {
 				var memberInfo = (IDebugMemberInfo)this.Property.ObjectGraphProperty.MemberInfo;
 				if (memberInfo != null) {
-					var image = new ResourceServiceImage(ExpressionNode.GetImageForMember(memberInfo));
+					var image = new ResourceServiceImage(ValueNode.GetImageForMember(memberInfo));
 					this.MemberIcon = image.ImageSource;
 				}
 			}

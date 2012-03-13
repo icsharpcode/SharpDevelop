@@ -21,7 +21,7 @@
 			<Setter Property="Visibility">
 				<Setter.Value>
 					<MultiBinding Converter="{StaticResource boolToVisibility}" ConverterParameter="True">
-						<Binding Path="Node.CanSetText" />
+						<Binding Path="Node.CanSetValue" />
 						<Binding Path="IsSelected" />
 					</MultiBinding>
 				</Setter.Value>
@@ -32,7 +32,7 @@
 			<Setter Property="Visibility">
 				<Setter.Value>
 					<MultiBinding Converter="{StaticResource boolToVisibility}" ConverterParameter="False">
-						<Binding Path="Node.CanSetText" />
+						<Binding Path="Node.CanSetValue" />
 						<Binding Path="IsSelected" />
 					</MultiBinding>
 				</Setter.Value>
@@ -41,8 +41,8 @@
 		<!-- Value column -->
 		<DataTemplate x:Key="CellTemplate_Value">
 			<StackPanel Orientation="Horizontal">
-				<TextBlock VerticalAlignment="Center" MinWidth="200" Text="{Binding Node.Text}" Style="{StaticResource TextBlockValueStyle}" />
-				<TextBox Text="{Binding Node.Text, Mode=OneWay}" Style="{StaticResource TextBoxValueStyle}" KeyUp="OnValueTextBoxKeyUp" />
+				<TextBlock VerticalAlignment="Center" MinWidth="200" Text="{Binding Node.Value}" Style="{StaticResource TextBlockValueStyle}" />
+				<TextBox Text="{Binding Node.Value, Mode=OneWay}" Style="{StaticResource TextBoxValueStyle}" KeyUp="OnValueTextBoxKeyUp" />
 			</StackPanel>
 		</DataTemplate>
 		<!-- Type column -->

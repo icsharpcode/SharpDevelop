@@ -578,6 +578,7 @@ namespace Debugger.MetaData
 				// Add this
 				if (!this.IsStatic) {
 					DebugLocalVariableInfo thisVar = new DebugLocalVariableInfo(
+						this,
 						"this",
 						-1,
 						0, int.MaxValue,
@@ -593,13 +594,14 @@ namespace Debugger.MetaData
 			return localVariables;
 		}
 		
-		static void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, DebugType captureClassType)
+		void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, DebugType captureClassType)
 		{
 			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator || captureClassType.IsAsyncStateMachine) {
 				foreach(DebugFieldInfo fieldInfo in captureClassType.GetFields()) {
 					DebugFieldInfo fieldInfoCopy = fieldInfo;
 					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
+						this,
 						fieldInfo.Name,
 						-1,
 						scopeStartOffset,
@@ -661,6 +663,7 @@ namespace Debugger.MetaData
 					}
 				} else {
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
+						this,
 						symVar.GetName(),
 						(int)symVar.GetAddressField1(),
 						// symVar also has Get*Offset methods, but the are not implemented

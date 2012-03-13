@@ -176,20 +176,9 @@
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Tooltips\DebuggerPopup.cs" />
     <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs">
       <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tooltips\LazyItemsControl.cs" />
-    <Compile Include="Tooltips\PinCloseControl.xaml.cs">
-      <DependentUpon>PinCloseControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Tooltips\PinDebuggerControl.xaml.cs">
-      <DependentUpon>PinDebuggerControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Tooltips\PinLayer.cs" />
-    <Compile Include="Tooltips\PinningBinding.cs" />
-    <Compile Include="Tooltips\VirtualizingIEnumerable.cs" />
     <Compile Include="Tooltips\VisualizerPicker.cs">
       <DependentUpon>VisualizerPicker.xaml</DependentUpon>
     </Compile>
@@ -205,6 +194,7 @@
     <Compile Include="Visualizers\Commands\XmlVisualizerCommand.cs" />
     <Compile Include="Visualizers\Common\DebuggerVisualizerException.cs" />
     <Compile Include="Visualizers\Common\IEvaluate.cs" />
+    <Compile Include="Visualizers\Common\IVisualizerCommand.cs" />
     <Compile Include="Visualizers\Common\ObjectProperty.cs" />
     <Compile Include="Visualizers\Common\ObjectPropertyComparer.cs" />
     <Compile Include="Visualizers\Common\VirtualizingCollection.cs" />
@@ -267,7 +257,6 @@
     <EmbeddedResource Include="Service\DebuggeeExceptionForm.resx">
       <DependentUpon>DebuggeeExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Service\RunToCursorCommand.cs" />
     <Compile Include="Service\WindowsDebugger.cs" />
     <EmbeddedResource Include="Options\DebuggingSymbolsPanel.resx">
@@ -372,9 +361,6 @@
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
-    <Page Include="Tooltips\PinCloseControl.xaml" />
-    <Page Include="Tooltips\PinControlsDictionary.xaml" />
-    <Page Include="Tooltips\PinDebuggerControl.xaml" />
     <Page Include="Tooltips\VisualizerPicker.xaml" />
     <Page Include="Visualizers\Graph\Drawing\NodeControlResources.xaml" />
     <Page Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />

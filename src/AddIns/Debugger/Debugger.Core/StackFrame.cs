@@ -345,6 +345,8 @@ namespace Debugger
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
+			this.Process.AssertPaused();
+			
 			ICorDebugValue corValue;
 			try {
 				// Non-static methods include 'this' as first argument
@@ -382,6 +384,7 @@ namespace Debugger
 		
 		public Value GetLocalVariableValue(uint address)
 		{
+			this.Process.AssertPaused();
 			try {
 				return new Value(this.AppDomain, this.CorILFrame.GetLocalVariable(address));
 			} catch (COMException e) {

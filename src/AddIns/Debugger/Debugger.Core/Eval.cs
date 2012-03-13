@@ -246,7 +246,7 @@ namespace Debugger
 				Value arg = args[i];
 				DebugType paramType = (DebugType)method.GetParameters()[i].ParameterType;
 				if (!arg.Type.CanImplicitelyConvertTo(paramType))
-					throw new GetValueException("Inncorrect parameter type");
+					throw new GetValueException("Inncorrect parameter type. Expected " + paramType.ToString());
 				// Implicitely convert to correct primitve type
 				if (paramType.IsPrimitive && args[i].Type != paramType) {
 					object oldPrimVal = arg.PrimitiveValue;
