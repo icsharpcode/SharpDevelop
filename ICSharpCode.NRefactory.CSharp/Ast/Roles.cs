@@ -71,6 +71,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly Role<PreProcessorDirective> PreProcessorDirective = new Role<PreProcessorDirective> ("PreProcessorDirective");
 		public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");
 			
+		public readonly static Role<AstType> BaseType = new Role<AstType> ("BaseType", AstType.Null);
+
+		public static readonly Role<Attribute> Attribute = new Role<Attribute> ("Attribute");
+		public static readonly Role<CSharpTokenNode> AttributeTargetRole = new Role<CSharpTokenNode> ("AttributeTarget", CSharpTokenNode.Null);
+
+		public readonly static TokenRole WhereKeyword = new TokenRole ("where");
+		public readonly static Role<SimpleType> ConstraintTypeParameter = new Role<SimpleType> ("TypeParameter", SimpleType.Null);
 	}
 }
 

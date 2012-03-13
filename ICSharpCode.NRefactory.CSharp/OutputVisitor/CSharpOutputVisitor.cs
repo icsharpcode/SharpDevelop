@@ -1364,7 +1364,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode (attributeSection);
 			WriteToken (Roles.LBracket);
 			if (!string.IsNullOrEmpty (attributeSection.AttributeTarget)) {
-				WriteToken (attributeSection.AttributeTarget, AttributeSection.TargetRole);
+				WriteToken (attributeSection.AttributeTarget, Roles.AttributeTargetRole);
 				WriteToken (Roles.Colon);
 				Space ();
 			}
@@ -1410,35 +1410,35 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode (namespaceDeclaration);
 		}
 		
-		public void VisitTypeDeclaration (TypeDeclaration typeDeclaration)
+		public void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
-			StartNode (typeDeclaration);
-			WriteAttributes (typeDeclaration.Attributes);
-			WriteModifiers (typeDeclaration.ModifierTokens);
+			StartNode(typeDeclaration);
+			WriteAttributes(typeDeclaration.Attributes);
+			WriteModifiers(typeDeclaration.ModifierTokens);
 			BraceStyle braceStyle;
 			switch (typeDeclaration.ClassType) {
 				case ClassType.Enum:
-					WriteKeyword (TypeDeclaration.EnumKeywordRole);
+					WriteKeyword(TypeDeclaration.EnumKeywordRole);
 					braceStyle = policy.EnumBraceStyle;
 					break;
 				case ClassType.Interface:
-					WriteKeyword (TypeDeclaration.InterfaceKeywordRole);
+					WriteKeyword(TypeDeclaration.InterfaceKeywordRole);
 					braceStyle = policy.InterfaceBraceStyle;
 					break;
 				case ClassType.Struct:
-					WriteKeyword (TypeDeclaration.StructKeywordRole);
+					WriteKeyword(TypeDeclaration.StructKeywordRole);
 					braceStyle = policy.StructBraceStyle;
 					break;
 				default:
-					WriteKeyword (TypeDeclaration.ClassKeywordRole);
+					WriteKeyword(TypeDeclaration.ClassKeywordRole);
 					braceStyle = policy.ClassBraceStyle;
 					break;
 			}
-			WriteIdentifier (typeDeclaration.Name);
-			WriteTypeParameters (typeDeclaration.TypeParameters);
-			if (typeDeclaration.BaseTypes.Any ()) {
-				Space ();
-				WriteToken (TypeDeclaration.ColonRole);
+			WriteIdentifier(typeDeclaration.Name);
+			WriteTypeParameters(typeDeclaration.TypeParameters);
+			if (typeDeclaration.BaseTypes.Any()) {
+				Space();
+				WriteToken(Roles.Colon);
 				Space ();
 				WriteCommaSeparatedList (typeDeclaration.BaseTypes);
 			}
@@ -2338,14 +2338,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode (typeParameterDeclaration);
 		}
 		
-		public void VisitConstraint (Constraint constraint)
+		public void VisitConstraint(Constraint constraint)
 		{
-			StartNode (constraint);
-			Space ();
-			WriteKeyword (Constraint.WhereKeywordRole);
-			WriteIdentifier (constraint.TypeParameter.Identifier);
-			Space ();
-			WriteToken (Constraint.ColonRole);
+			StartNode(constraint);
+			Space();
+			WriteKeyword(Roles.WhereKeyword);
+			WriteIdentifier(constraint.TypeParameter.Identifier);
+			Space();
+			WriteToken(Roles.Colon);
 			Space ();
 			WriteCommaSeparatedList (constraint.BaseTypes);
 			EndNode (constraint);

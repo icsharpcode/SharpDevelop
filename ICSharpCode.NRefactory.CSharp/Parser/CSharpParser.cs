@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				
 				foreach (var attr in GetAttributes (optAttributes)) {
-					result.AddChild (attr, AttributeSection.AttributeRole);
+					result.AddChild (attr, Roles.Attribute);
 				}
 				// optional comma
 				if (loc != null && pos < loc.Count - 1 && !loc [pos].Equals (loc [pos + 1]))
@@ -481,14 +481,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			Stack<TypeDeclaration> typeStack = new Stack<TypeDeclaration> ();
 			
-			public override void Visit (Class c)
+			public override void Visit(Class c)
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Class;
-				AddAttributeSection (newType, c);
+				AddAttributeSection(newType, c);
 				
-				var location = LocationsBag.GetMemberLocation (c);
-				AddModifiers (newType, location);
+				var location = LocationsBag.GetMemberLocation(c);
+				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.ClassKeywordRole);
@@ -503,7 +503,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var commaLocations = LocationsBag.GetLocations (c.TypeBaseExpressions);
 					int i = 0;
 					foreach (var baseTypes in c.TypeBaseExpressions) {
-						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
+						newType.AddChild (ConvertToType (baseTypes), Roles.BaseType);
 						if (commaLocations != null && i < commaLocations.Count) {
 							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [i])), Roles.Comma);
 							i++;
@@ -532,13 +532,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddType (newType);
 			}
 			
-			public override void Visit (Struct s)
+			public override void Visit(Struct s)
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Struct;
-				AddAttributeSection (newType, s);
-				var location = LocationsBag.GetMemberLocation (s);
-				AddModifiers (newType, location);
+				AddAttributeSection(newType, s);
+				var location = LocationsBag.GetMemberLocation(s);
+				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.StructKeywordRole);
@@ -551,7 +551,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var commaLocations = LocationsBag.GetLocations (s.TypeBaseExpressions);
 					int i = 0;
 					foreach (var baseTypes in s.TypeBaseExpressions) {
-						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
+						newType.AddChild (ConvertToType (baseTypes), Roles.BaseType);
 						if (commaLocations != null && i < commaLocations.Count) {
 							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [i])), Roles.Comma);
 							i++;
@@ -577,13 +577,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddType (newType);
 			}
 			
-			public override void Visit (Interface i)
+			public override void Visit(Interface i)
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Interface;
-				AddAttributeSection (newType, i);
-				var location = LocationsBag.GetMemberLocation (i);
-				AddModifiers (newType, location);
+				AddAttributeSection(newType, i);
+				var location = LocationsBag.GetMemberLocation(i);
+				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.InterfaceKeywordRole);
@@ -596,7 +596,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var commaLocations = LocationsBag.GetLocations (i.TypeBaseExpressions);
 					int j = 0;
 					foreach (var baseTypes in i.TypeBaseExpressions) {
-						newType.AddChild (ConvertToType (baseTypes), TypeDeclaration.BaseTypeRole);
+						newType.AddChild (ConvertToType (baseTypes), Roles.BaseType);
 						if (commaLocations != null && j < commaLocations.Count) {
 							newType.AddChild (new CSharpTokenNode (Convert (commaLocations [j])), Roles.Comma);
 							j++;
@@ -666,14 +666,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override void Visit (Mono.CSharp.Enum e)
+			public override void Visit(Mono.CSharp.Enum e)
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
-				AddAttributeSection (newType, e);
+				AddAttributeSection(newType, e);
 				newType.ClassType = ClassType.Enum;
-				var location = LocationsBag.GetMemberLocation (e);
+				var location = LocationsBag.GetMemberLocation(e);
 				
-				AddModifiers (newType, location);
+				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), TypeDeclaration.EnumKeywordRole);
@@ -682,7 +682,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (e.BaseTypeExpression != null) {
 					if (location != null && curLoc < location.Count)
 						newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.Colon);
-					newType.AddChild (ConvertToType (e.BaseTypeExpression), TypeDeclaration.BaseTypeRole);
+					newType.AddChild (ConvertToType (e.BaseTypeExpression), Roles.BaseType);
 				}
 
 				if (location != null && curLoc < location.Count)
@@ -2557,7 +2557,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					parent.AddChild (new CSharpTokenNode (Convert (chevronLocs [chevronLocs.Count - 1])), Roles.RChevron);
 			}
 			
-			void AddConstraints (AstNode parent, TypeParameters d)
+			void AddConstraints(AstNode parent, TypeParameters d)
 			{
 				if (d == null)
 					return;
@@ -2570,15 +2570,15 @@ namespace ICSharpCode.NRefactory.CSharp
 						continue;
 					var location = LocationsBag.GetLocations (c);
 					var constraint = new Constraint ();
-					constraint.AddChild (new CSharpTokenNode (Convert (c.Location)), Constraint.WhereKeywordRole);
-					constraint.AddChild (new SimpleType (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location))), Constraint.TypeParameterRole);
+					constraint.AddChild (new CSharpTokenNode (Convert (c.Location)), Roles.WhereKeyword);
+					constraint.AddChild (new SimpleType (Identifier.Create (c.TypeParameter.Value, Convert (c.TypeParameter.Location))), Roles.ConstraintTypeParameter);
 					if (location != null)
-						constraint.AddChild (new CSharpTokenNode (Convert (location [0])), Constraint.ColonRole);
+						constraint.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Colon);
 					var commaLocs = LocationsBag.GetLocations (c.ConstraintExpressions);
 					int curComma = 0;
 					if (c.ConstraintExpressions != null) {
 						foreach (var expr in c.ConstraintExpressions) {
-							constraint.AddChild (ConvertToType (expr), Constraint.BaseTypeRole);
+							constraint.AddChild (ConvertToType (expr), Roles.BaseType);
 							if (commaLocs != null && curComma < commaLocs.Count)
 								constraint.AddChild (new CSharpTokenNode (Convert (commaLocs [curComma++])), Roles.Comma);
 						}

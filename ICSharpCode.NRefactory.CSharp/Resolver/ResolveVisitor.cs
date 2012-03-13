@@ -2979,7 +2979,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!resolverEnabled)
 				return null;
 			KnownTypeCode typeCode = primitiveType.KnownTypeCode;
-			if (typeCode == KnownTypeCode.None && primitiveType.Parent is Constraint && primitiveType.Role == Constraint.BaseTypeRole) {
+			if (typeCode == KnownTypeCode.None && primitiveType.Parent is Constraint && primitiveType.Role == Roles.BaseType) {
 				switch (primitiveType.Keyword) {
 					case "class":
 					case "struct":
@@ -3005,7 +3005,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type;
 			if (outermostType.Parent is UsingDeclaration || outermostType.Parent is UsingAliasDeclaration) {
 				lookupMode = SimpleNameLookupMode.TypeInUsingDeclaration;
-			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == TypeDeclaration.BaseTypeRole) {
+			} else if (outermostType.Parent is TypeDeclaration && outermostType.Role == Roles.BaseType) {
 				lookupMode = SimpleNameLookupMode.BaseTypeReference;
 			}
 			
