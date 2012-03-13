@@ -654,8 +654,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent(eventDeclaration) && IsSimpleEvent(eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenEventFields);
-			} else if (IsMember (eventDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
+			} else if (IsMember(eventDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenMembers);
 			}
 		}
 
@@ -664,8 +664,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			FormatAttributedNode(eventDeclaration);
 			if (eventDeclaration.NextSibling is EventDeclaration && IsSimpleEvent(eventDeclaration) && IsSimpleEvent(eventDeclaration.NextSibling)) {
 				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenEventFields);
-			} else if (IsMember (eventDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter (eventDeclaration, policy.BlankLinesBetweenMembers);
+			} else if (IsMember(eventDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(eventDeclaration, policy.BlankLinesBetweenMembers);
 			}
 			
 			var lastLoc = eventDeclaration.StartLocation;
@@ -693,8 +693,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			FormatCommas(fieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fieldDeclaration.NextSibling is FieldDeclaration || fieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter(fieldDeclaration, policy.BlankLinesBetweenFields);
-			} else if (IsMember (fieldDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter (fieldDeclaration, policy.BlankLinesBetweenMembers);
+			} else if (IsMember(fieldDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(fieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
 			
 			var lastLoc = fieldDeclaration.StartLocation;
@@ -715,8 +715,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			FormatCommas(fixedFieldDeclaration, policy.SpaceBeforeFieldDeclarationComma, policy.SpaceAfterFieldDeclarationComma);
 			if (fixedFieldDeclaration.NextSibling is FieldDeclaration || fixedFieldDeclaration.NextSibling is FixedFieldDeclaration) {
 				EnsureBlankLinesAfter(fixedFieldDeclaration, policy.BlankLinesBetweenFields);
-			} else if (IsMember (fixedFieldDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter (fixedFieldDeclaration, policy.BlankLinesBetweenMembers);
+			} else if (IsMember(fixedFieldDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(fixedFieldDeclaration, policy.BlankLinesBetweenMembers);
 			}
 			
 			var lastLoc = fixedFieldDeclaration.StartLocation;
@@ -753,8 +753,8 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			if (delegateDeclaration.NextSibling is TypeDeclaration || delegateDeclaration.NextSibling is DelegateDeclaration) {
 				EnsureBlankLinesAfter(delegateDeclaration, policy.BlankLinesBetweenTypes);
-			} else if (IsMember (delegateDeclaration.NextSibling)) {
-				EnsureBlankLinesAfter (delegateDeclaration, policy.BlankLinesBetweenMembers);
+			} else if (IsMember(delegateDeclaration.NextSibling)) {
+				EnsureBlankLinesAfter(delegateDeclaration, policy.BlankLinesBetweenMembers);
 			}
 
 			base.VisitDelegateDeclaration(delegateDeclaration);
@@ -944,7 +944,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			FixEmbeddedStatment(braceStyle, braceForcement, null, false, node);
 		}
 
-		void FixEmbeddedStatment(BraceStyle braceStyle, BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node)
+		void FixEmbeddedStatment(BraceStyle braceStyle, BraceForcement braceForcement, CSharpTokenNode token, bool allowInLine, AstNode node, bool statementAlreadyIndented = false)
 		{
 			if (node == null) {
 				return;
@@ -1007,7 +1007,9 @@ namespace ICSharpCode.NRefactory.CSharp
 						nextStatementIndent = " ";
 					}
 				} else {
-					EnforceBraceStyle(braceStyle, block.LBraceToken, block.RBraceToken);
+					if (!statementAlreadyIndented) {
+						EnforceBraceStyle(braceStyle, block.LBraceToken, block.RBraceToken);
+					}
 				}
 				if (braceStyle == BraceStyle.NextLineShifted2) {
 					curIndent.Level++;
@@ -1025,7 +1027,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (isBlock) {
 				VisitBlockWithoutFixingBraces((BlockStatement)node, false);
 			} else {
-				FixStatementIndentation(node.StartLocation);
+				if (!statementAlreadyIndented) {
+					FixStatementIndentation(node.StartLocation);
+				}
 				node.AcceptVisitor(this);
 			}
 			curIndent.Level = originalLevel;
@@ -1263,7 +1267,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					forcement = BraceForcement.DoNotChange;
 					PlaceOnNewLine(policy.PlaceElseIfOnNewLine, ((IfElseStatement)ifElseStatement.FalseStatement).IfToken);
 				}
-				FixEmbeddedStatment(policy.StatementBraceStyle, forcement, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement);
+				FixEmbeddedStatment(policy.StatementBraceStyle, forcement, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement, ifElseStatement.FalseStatement is IfElseStatement);
 			}
 		}
 
@@ -1700,10 +1704,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 				} else if (forceSpace) {
 					if (!insertedSpace) {
-						AddChange (offset, IsSpacing (ch) ? 1 : 0, " ");
+						AddChange(offset, IsSpacing(ch) ? 1 : 0, " ");
 						insertedSpace = true;
-					} else if (IsSpacing (ch)) {
-						AddChange (offset, 1, null);
+					} else if (IsSpacing(ch)) {
+						AddChange(offset, 1, null);
 					}
 				}
 
@@ -1846,3 +1850,4 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 	}
 }
+
