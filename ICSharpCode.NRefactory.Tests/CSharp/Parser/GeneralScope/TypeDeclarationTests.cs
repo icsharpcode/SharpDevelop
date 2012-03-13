@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual(1, td.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(1, td.StartLocation.Column, "StartLocation.X");
-			TextLocation bodyStartLocation = td.GetChildByRole(AstNode.Roles.LBrace).PrevSibling.EndLocation;
+			TextLocation bodyStartLocation = td.GetChildByRole(Roles.LBrace).PrevSibling.EndLocation;
 			Assert.AreEqual(1, bodyStartLocation.Line, "BodyStartLocation.Y");
 			Assert.AreEqual(14, bodyStartLocation.Column, "BodyStartLocation.X");
 			Assert.AreEqual(3, td.EndLocation.Line, "EndLocation.Y");
@@ -327,11 +327,11 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual(
 				new Role[] {
 					TypeDeclaration.EnumKeywordRole,
-					AstNode.Roles.Identifier,
-					AstNode.Roles.LBrace,
+					Roles.Identifier,
+					Roles.LBrace,
 					TypeDeclaration.MemberRole,
-					AstNode.Roles.Comma,
-					AstNode.Roles.RBrace
+					Roles.Comma,
+					Roles.RBrace
 				}, td.Children.Select(c => c.Role).ToArray());
 		}
 		
@@ -342,12 +342,12 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual(
 				new Role[] {
 					TypeDeclaration.EnumKeywordRole,
-					AstNode.Roles.Identifier,
-					AstNode.Roles.LBrace,
+					Roles.Identifier,
+					Roles.LBrace,
 					TypeDeclaration.MemberRole,
-					AstNode.Roles.Comma,
-					AstNode.Roles.RBrace,
-					AstNode.Roles.Semicolon
+					Roles.Comma,
+					Roles.RBrace,
+					Roles.Semicolon
 				}, td.Children.Select(c => c.Role).ToArray());
 		}
 		
@@ -358,11 +358,11 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual(
 				new Role[] {
 					TypeDeclaration.EnumKeywordRole,
-					AstNode.Roles.Identifier,
-					AstNode.Roles.LBrace,
+					Roles.Identifier,
+					Roles.LBrace,
 					TypeDeclaration.MemberRole,
-					AstNode.Roles.RBrace,
-					AstNode.Roles.Semicolon
+					Roles.RBrace,
+					Roles.Semicolon
 				}, td.Children.Select(c => c.Role).ToArray());
 		}
 	}

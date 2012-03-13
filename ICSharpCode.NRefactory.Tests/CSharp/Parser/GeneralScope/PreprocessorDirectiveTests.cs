@@ -38,15 +38,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			
 			Assert.AreEqual(new Role[] {
 			                	NamespaceDeclaration.NamespaceKeywordRole,
-			                	AstNode.Roles.Identifier,
-			                	AstNode.Roles.LBrace,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.Comment,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.RBrace
+			                	Roles.Identifier,
+			                	Roles.LBrace,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	Roles.RBrace
 			                }, ns.Children.Select(c => c.Role).ToArray());
 			
-			var pp = ns.GetChildrenByRole(AstNode.Roles.PreProcessorDirective);
+			var pp = ns.GetChildrenByRole(Roles.PreProcessorDirective);
 			
 			Assert.AreEqual(PreProcessorDirectiveType.If, pp.First().Type);
 			Assert.IsFalse(pp.First().Take);
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(new TextLocation(2, 2), pp.First().StartLocation);
 			Assert.AreEqual(new TextLocation(2, 15), pp.First().EndLocation);
 			
-			var comment = ns.GetChildByRole(AstNode.Roles.Comment);
+			var comment = ns.GetChildByRole(Roles.Comment);
 			Assert.AreEqual(CommentType.InactiveCode, comment.CommentType);
 			Assert.AreEqual(new TextLocation(3, 1), comment.StartLocation);
 			Assert.AreEqual(new TextLocation(4, 2), comment.EndLocation);
@@ -84,16 +84,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			
 			Assert.AreEqual(new Role[] {
 			                	NamespaceDeclaration.NamespaceKeywordRole,
-			                	AstNode.Roles.Identifier,
-			                	AstNode.Roles.LBrace,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.Comment,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.Comment,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.Comment,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.RBrace
+			                	Roles.Identifier,
+			                	Roles.LBrace,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	Roles.RBrace
 			                }, ns.Children.Select(c => c.Role).ToArray());
 		}
 		
@@ -111,16 +111,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			
 			Assert.AreEqual(new Role[] {
 			                	NamespaceDeclaration.NamespaceKeywordRole,
-			                	AstNode.Roles.Identifier,
-			                	AstNode.Roles.LBrace,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.Comment,
-			                	AstNode.Roles.Comment,
-			                	AstNode.Roles.PreProcessorDirective,
-			                	AstNode.Roles.RBrace
+			                	Roles.Identifier,
+			                	Roles.LBrace,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	Roles.RBrace
 			                }, ns.Children.Select(c => c.Role).ToArray());
-			Assert.AreEqual(CommentType.SingleLine, ns.GetChildrenByRole(AstNode.Roles.Comment).First().CommentType);
-			Assert.AreEqual(CommentType.InactiveCode, ns.GetChildrenByRole(AstNode.Roles.Comment).Last().CommentType);
+			Assert.AreEqual(CommentType.SingleLine, ns.GetChildrenByRole(Roles.Comment).First().CommentType);
+			Assert.AreEqual(CommentType.InactiveCode, ns.GetChildrenByRole(Roles.Comment).Last().CommentType);
 		}
 		
 		[Ignore("Fixme!")]

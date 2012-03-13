@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			CSharpParser parser = new CSharpParser();
 			CompilationUnit cu = parser.Parse(new StringReader(code), "parsed.cs");
 			PropertyDeclaration pd = (PropertyDeclaration)cu.Children.Single().GetChildByRole(TypeDeclaration.MemberRole);
-			Assert.AreEqual(new TextLocation(2, code.IndexOf("{\n\t\tget") - line2Pos + 1), pd.GetChildByRole(AstNode.Roles.LBrace).StartLocation);
+			Assert.AreEqual(new TextLocation(2, code.IndexOf("{\n\t\tget") - line2Pos + 1), pd.GetChildByRole(Roles.LBrace).StartLocation);
 			Assert.AreEqual(new TextLocation(5, 3), pd.EndLocation);
 			Assert.AreEqual(new TextLocation(3, code.IndexOf("{ return") - line3Pos + 1), pd.Getter.Body.StartLocation);
 			Assert.AreEqual(new TextLocation(3, code.IndexOf("}\n\t\tset") + 1 - line3Pos + 1), pd.Getter.Body.EndLocation);

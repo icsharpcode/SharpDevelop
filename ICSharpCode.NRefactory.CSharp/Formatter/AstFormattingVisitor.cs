@@ -1151,7 +1151,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			FixStatementIndentation (forStatement.StartLocation);
 			foreach (AstNode node in forStatement.Children) {
-				if (node.Role == ForStatement.Roles.Semicolon) {
+				if (node.Role == Roles.Semicolon) {
 					if (node.NextSibling is CSharpTokenNode || node.NextSibling is EmptyStatement)
 						continue;
 					ForceSpacesBefore (node, policy.SpaceBeforeForSemicolon);
@@ -1504,7 +1504,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (parent.IsNull)
 				return;
-			foreach (CSharpTokenNode comma in parent.Children.Where (node => node.Role == FieldDeclaration.Roles.Comma)) {
+			foreach (CSharpTokenNode comma in parent.Children.Where (node => node.Role == Roles.Comma)) {
 				ForceSpacesAfter (comma, after);
 				ForceSpacesBefore (comma, before);
 			}
