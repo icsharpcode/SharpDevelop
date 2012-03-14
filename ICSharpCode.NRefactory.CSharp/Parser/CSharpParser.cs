@@ -3255,7 +3255,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new QueryGroupClause ();
 				var location = LocationsBag.GetLocations (groupBy);
 				result.AddChild (new CSharpTokenNode (Convert (groupBy.Location)), QueryGroupClause.GroupKeywordRole);
-				result.AddChild ((Expression)groupBy.ElementSelector.Accept (this), QueryGroupClause.ProjectionRole);
+				if (groupBy.ElementSelector != null)
+					result.AddChild ((Expression)groupBy.ElementSelector.Accept (this), QueryGroupClause.ProjectionRole);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location [0])), QueryGroupClause.ByKeywordRole);
 				if (groupBy.Expr != null)
