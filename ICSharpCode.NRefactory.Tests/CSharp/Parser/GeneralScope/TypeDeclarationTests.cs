@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual(1, td.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(1, td.StartLocation.Column, "StartLocation.X");
-			TextLocation bodyStartLocation = td.GetChildByRole(AstNode.Roles.LBrace).PrevSibling.EndLocation;
+			TextLocation bodyStartLocation = td.GetChildByRole(Roles.LBrace).PrevSibling.EndLocation;
 			Assert.AreEqual(1, bodyStartLocation.Line, "BodyStartLocation.Y");
 			Assert.AreEqual(14, bodyStartLocation.Column, "BodyStartLocation.X");
 			Assert.AreEqual(3, td.EndLocation.Line, "EndLocation.Y");
@@ -89,9 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"public class G<T> {}",
-				new TypeDeclaration {
+				new TypeDeclaration.Class {
 					Modifiers = Modifiers.Public,
-					ClassType = ClassType.Class,
 					Name = "G",
 					TypeParameters = { new TypeParameterDeclaration { Name = "T" } }
 				});
@@ -102,9 +101,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			ParseUtilCSharp.AssertGlobal(
 				@"public class Test<T> where T : IMyInterface { }",
-				new TypeDeclaration {
+				new TypeDeclaration.Class {
 					Modifiers = Modifiers.Public,
-					ClassType = ClassType.Class,
 					Name = "Test",
 					TypeParameters = { new TypeParameterDeclaration { Name = "T" } },
 					Constraints = {
@@ -120,9 +118,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"public interface Generic<in T, out S> : System.IComparable where S : G<T[]>, new() where  T : MyNamespace.IMyInterface {}",
-				new TypeDeclaration {
+				new TypeDeclaration.Interface {
 					Modifiers = Modifiers.Public,
-					ClassType = ClassType.Interface,
 					Name = "Generic",
 					TypeParameters = {
 						new TypeParameterDeclaration { Variance = VarianceModifier.Contravariant, Name = "T" },
@@ -167,7 +164,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 {
 }",
-				new TypeDeclaration {
+				new TypeDeclaration.Class {
 					Attributes = {
 						new AttributeSection {
 							Attributes = {
@@ -176,7 +173,6 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 						}
 					},
 					Modifiers = Modifiers.Public | Modifiers.Abstract,
-					ClassType = ClassType.Class,
 					Name = "MyClass",
 					BaseTypes = {
 						new SimpleType("MyBase"),
@@ -223,9 +219,8 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"partial class partial<[partial: where] where> where where : partial<where> { }",
-				new TypeDeclaration {
+				new TypeDeclaration.Class {
 					Modifiers = Modifiers.Partial,
-					ClassType = ClassType.Class,
 					Name = "partial",
 					TypeParameters = {
 						new TypeParameterDeclaration {
@@ -305,12 +300,11 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test, Ignore("Mono parser crash")]
-		public void EnumWithIncorrectNewlineAfterIntegerLiteral()
+		public void EnumWithIncorrectNewlineAfterIntegerLiteral ()
 		{
-			ParseUtilCSharp.AssertGlobal(
+			ParseUtilCSharp.AssertGlobal (
 				"enum DisplayFlags { D = 4\r\r\n}",
-				new TypeDeclaration {
-					ClassType = ClassType.Enum,
+				new TypeDeclaration.Enum {
 					Name = "DisplayFlags",
 					Members = {
 						new EnumMemberDeclaration {
@@ -326,12 +320,12 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A, }");
 			Assert.AreEqual(
 				new Role[] {
-					TypeDeclaration.EnumKeywordRole,
-					AstNode.Roles.Identifier,
-					AstNode.Roles.LBrace,
-					TypeDeclaration.MemberRole,
-					AstNode.Roles.Comma,
-					AstNode.Roles.RBrace
+					Roles.EnumKeyword,
+					Roles.Identifier,
+					Roles.LBrace,
+					Roles.TypeMemberRole,
+					Roles.Comma,
+					Roles.RBrace
 				}, td.Children.Select(c => c.Role).ToArray());
 		}
 		
@@ -341,13 +335,13 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A, };");
 			Assert.AreEqual(
 				new Role[] {
-					TypeDeclaration.EnumKeywordRole,
-					AstNode.Roles.Identifier,
-					AstNode.Roles.LBrace,
-					TypeDeclaration.MemberRole,
-					AstNode.Roles.Comma,
-					AstNode.Roles.RBrace,
-					AstNode.Roles.Semicolon
+					Roles.EnumKeyword,
+					Roles.Identifier,
+					Roles.LBrace,
+					Roles.TypeMemberRole,
+					Roles.Comma,
+					Roles.RBrace,
+					Roles.Semicolon
 				}, td.Children.Select(c => c.Role).ToArray());
 		}
 		
@@ -357,12 +351,12 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum { A };");
 			Assert.AreEqual(
 				new Role[] {
-					TypeDeclaration.EnumKeywordRole,
-					AstNode.Roles.Identifier,
-					AstNode.Roles.LBrace,
-					TypeDeclaration.MemberRole,
-					AstNode.Roles.RBrace,
-					AstNode.Roles.Semicolon
+					Roles.EnumKeyword,
+					Roles.Identifier,
+					Roles.LBrace,
+					Roles.TypeMemberRole,
+					Roles.RBrace,
+					Roles.Semicolon
 				}, td.Children.Select(c => c.Role).ToArray());
 		}
 	}

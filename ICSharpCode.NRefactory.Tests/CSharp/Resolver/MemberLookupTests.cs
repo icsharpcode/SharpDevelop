@@ -164,6 +164,51 @@ class Derived : Base {
 		}
 		
 		[Test]
+		public void InstanceMethodImplicitThis()
+		{
+			string program = @"using System;
+class Test {
+	void F() {}
+	public void M() {
+		$F()$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("Test.F", rr.Member.FullName);
+			Assert.IsInstanceOf<ThisResolveResult>(rr.TargetResult);
+		}
+		
+		[Test]
+		public void InstanceMethodExplicitThis()
+		{
+			string program = @"using System;
+class Test {
+	void F() {}
+	public void M() {
+		$this.F()$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("Test.F", rr.Member.FullName);
+			Assert.IsInstanceOf<ThisResolveResult>(rr.TargetResult);
+		}
+		
+		[Test]
+		public void StaticMethod()
+		{
+			string program = @"using System;
+class Test {
+	static void F() {}
+	public void M() {
+		$F()$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("Test.F", rr.Member.FullName);
+			Assert.IsInstanceOf<TypeResolveResult>(rr.TargetResult);
+		}
+		
+		[Test]
 		public void TestOuterTemplateParameter()
 		{
 			string program = @"public class A<T>

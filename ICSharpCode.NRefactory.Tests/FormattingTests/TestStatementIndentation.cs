@@ -29,10 +29,10 @@ using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace ICSharpCode.NRefactory.FormattingTests
+namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	[TestFixture()]
-	public class TestStatementIndentation : TestBase
+	public class TestStatements : TestBase
 	{
 		[Test()]
 		public void TestInvocationIndentation ()
@@ -149,6 +149,28 @@ this.TestMethod ();
 		}
 
 		[Test()]
+		public void TestBreakSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+
+			Test (policy, 
+@"class Test
+{
+	Test TestMethod ()
+	{
+		break     ;
+	}
+}",
+@"class Test
+{
+	Test TestMethod ()
+	{
+		break;
+	}
+}");
+		}
+
+		[Test()]
 		public void TestCheckedIndentation ()
 		{
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
@@ -224,6 +246,26 @@ continue;
 	}
 }",
 @"class Test {
+	Test TestMethod ()
+	{
+		continue;
+	}
+}");
+		}
+
+		[Test()]
+		public void TestContinueSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		continue ;
+	}
+}",
+@"class Test
+{
 	Test TestMethod ()
 	{
 		continue;
@@ -368,6 +410,27 @@ goto label;
 		}
 
 		[Test()]
+		public void TestGotoSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		goto label
+;
+	}
+}",
+@"class Test
+{
+	Test TestMethod ()
+	{
+		goto label;
+	}
+}");
+		}
+
+		[Test()]
 		public void TestReturnIndentation ()
 		{
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
@@ -376,7 +439,7 @@ goto label;
 			Test (policy, @"class Test {
 	Test TestMethod ()
 	{
-return;
+		return;
 	}
 }",
 @"class Test {
@@ -387,6 +450,25 @@ return;
 }");
 		}
 
+		[Test()]
+		public void TestReturnSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		return ;
+	}
+}",
+@"class Test
+{
+	Test TestMethod ()
+	{
+		return;
+	}
+}");
+		}
 		[Test()]
 		public void TestLockIndentation ()
 		{
@@ -423,6 +505,26 @@ throw new NotSupportedException ();
 	}
 }",
 @"class Test {
+	Test TestMethod ()
+	{
+		throw new NotSupportedException ();
+	}
+}");
+		}
+
+		[Test()]
+		public void TestThrowSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+		throw new NotSupportedException () 	 ;
+	}
+}",
+@"class Test
+{
 	Test TestMethod ()
 	{
 		throw new NotSupportedException ();
@@ -609,7 +711,7 @@ const int a = 5;
 		}
 
 		[Test()]
-		public void TestYieldIndentation ()
+		public void TestYieldReturnIndentation ()
 		{
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
 			
@@ -628,6 +730,65 @@ yield return null;
 }");
 		}
 
+		[Test()]
+		public void TestYieldReturnSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			Test (policy, @"class Test {
+	Test TestMethod ()
+	{
+		yield return null     ;
+	}
+}",
+@"class Test {
+	Test TestMethod ()
+	{
+		yield return null;
+	}
+}");
+		}
+
+		[Test()]
+		public void TestYieldBreakIndentation ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			Test (policy, @"class Test {
+	Test TestMethod ()
+	{
+yield break;
+	}
+}",
+@"class Test {
+	Test TestMethod ()
+	{
+		yield break;
+	}
+}");
+		}
+
+		[Test()]
+		public void TestYieldBreakSemicolon ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			
+			policy.ClassBraceStyle = BraceStyle.EndOfLine;
+			Test (policy, @"class Test {
+	Test TestMethod ()
+	{
+		yield break      ;
+	}
+}",
+@"class Test {
+	Test TestMethod ()
+	{
+		yield break;
+	}
+}");
+		}
 		[Test()]
 		public void TestWhileIndentation ()
 		{
@@ -1061,8 +1222,7 @@ if (b) {
 {
 	void TestMethod ()
 	{
-		if (true) {
-			// TestComment
+		if (true) { // TestComment
 			Call ();
 		}
 	}
@@ -1312,6 +1472,7 @@ if (b) {
 	{
 		fixed (object* obj = &obj)
 			{
+
 			;
 			}
 	}
@@ -1787,6 +1948,62 @@ if (b) {
 			;
 		}
 		while (true);
+	}
+}");
+		}
+
+		[Test()]
+		public void TestBlockStatementWithComments ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+{
+//CMT1
+;
+/* cmt 2 */
+}
+	}
+}", @"class Test
+{
+	Test TestMethod ()
+	{
+		{
+			//CMT1
+			;
+			/* cmt 2 */
+		}
+	}
+}");
+		}
+
+		[Test()]
+		public void TestBlockStatementWithPreProcessorDirective ()
+		{
+			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+
+			Test (policy, @"class Test
+{
+	Test TestMethod ()
+	{
+{
+" + @"#if true
+;
+" + @"#endif
+}
+	}
+}", @"class Test
+{
+	Test TestMethod ()
+	{
+		{
+" + @"			#if true
+			;
+" + @"			#endif
+		}
 	}
 }");
 		}

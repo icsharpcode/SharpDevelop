@@ -7,7 +7,7 @@ using ICSharpCode.NRefactory.Editor;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace ICSharpCode.NRefactory.FormattingTests
+namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	public abstract class TestBase
 	{

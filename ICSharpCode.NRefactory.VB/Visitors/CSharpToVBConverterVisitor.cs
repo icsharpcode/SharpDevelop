@@ -1894,7 +1894,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			
 			// look for type in parent
 			decl.Type = (AstType)variableInitializer.Parent
-				.GetChildByRole(CSharp.VariableInitializer.Roles.Type)
+				.GetChildByRole(ICSharpCode.NRefactory.CSharp.Roles.Type)
 				.AcceptVisitor(this, data);
 			decl.Identifiers.Add(new VariableIdentifier() { Name = variableInitializer.Name });
 			decl.Initializer = (Expression)variableInitializer.Initializer.AcceptVisitor(this, data);
@@ -2062,7 +2062,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			};
 			
 			var constraint = typeParameterDeclaration.Parent
-				.GetChildrenByRole(CSharp.AstNode.Roles.Constraint)
+				.GetChildrenByRole(ICSharpCode.NRefactory.CSharp.Roles.Constraint)
 				.SingleOrDefault(c => c.TypeParameter.Identifier == typeParameterDeclaration.Name);
 			
 			if (constraint != null)

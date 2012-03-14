@@ -29,7 +29,7 @@ using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp;
 
-namespace ICSharpCode.NRefactory.FormattingTests
+namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	[TestFixture()]
 	public class TestFormattingBugs : TestBase
@@ -134,6 +134,8 @@ using (IDisposable b = null) {
 			int end = result.GetOffset (result.LineCount - 1, 1);
 			string text = result.GetText (start, end - start).Trim ();
 			expectedOutput = NormalizeNewlines(expectedOutput).Replace ("\n", "\n\t\t");
+			if (expectedOutput != text)
+				Console.WriteLine (text);
 			Assert.AreEqual (expectedOutput, text);
 		}
 
