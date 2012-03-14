@@ -70,6 +70,8 @@ namespace ICSharpCode.NRefactory
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
+			if (nullObject == null)
+				throw new ArgumentNullException ("nullObject");
 			this.nullObject = nullObject;
 			this.name = name;
 		}
