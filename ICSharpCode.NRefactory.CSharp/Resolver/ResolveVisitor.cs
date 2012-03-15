@@ -425,31 +425,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolveResultCache.TryGetValue(node, out result))
 				return result;
 			
-			bool needResolveParent = (node.NodeType == NodeType.Token || IsVar(node));
-			
-			AstNode nodeToResolve = node;
-			if (needResolveParent) {
-				nodeToResolve = node.Parent;
-				if (resolveResultCache.ContainsKey(nodeToResolve))
-					return null;
-			}
-			
 			AstNode parent;
-			CSharpResolver storedResolver = GetPreviouslyScannedContext(nodeToResolve, out parent);
+			CSharpResolver storedResolver = GetPreviouslyScannedContext(node, out parent);
 			ResetContext(
 				storedResolver,
 				delegate {
-					navigator = new NodeListResolveVisitorNavigator(node, nodeToResolve);
+					navigator = new NodeListResolveVisitorNavigator(node);
 					Debug.Assert(!resolverEnabled);
 					Scan(parent);
 					navigator = skipAllNavigator;
 				});
 			
 			MergeUndecidedLambdas();
-			if (resolveResultCache.TryGetValue(node, out result))
-				return result;
-			else
-				return null;
+			return resolveResultCache[node];
 		}
 		
 		CSharpResolver GetPreviouslyScannedContext(AstNode node, out AstNode parent)
@@ -517,7 +505,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return result;
 			} else {
 				ResolveResult rr = GetResolveResult(expr);
-				return new ConversionWithTargetType(Conversion.IdentityConversion, rr != null ? rr.Type : SpecialType.UnknownType);
+				return new ConversionWithTargetType(Conversion.IdentityConversion, rr.Type);
 			}
 		}
 		#endregion
