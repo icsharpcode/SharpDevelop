@@ -392,7 +392,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
 					if ((code >= TypeCode.Char && code <= TypeCode.Decimal) || type.Kind == TypeKind.Enum || type.Kind == TypeKind.Pointer)
-						return UnaryOperatorResolveResult(expression.Type, op, expression);
+						return UnaryOperatorResolveResult(expression.Type, op, expression, isNullable);
 					else
 						return new ErrorResolveResult(expression.Type);
 				case UnaryOperatorType.Plus:
@@ -412,7 +412,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
 							return CheckErrorAndResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
 						} else {
-							return UnaryOperatorResolveResult(expression.Type, op, expression);
+							return UnaryOperatorResolveResult(expression.Type, op, expression, isNullable);
 						}
 					} else {
 						methodGroup = operators.BitwiseComplementOperators;
@@ -449,18 +449,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ConstantResolveResult(resultType, val);
 			} else {
 				expression = Convert(expression, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
-				if (builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator) {
-					return new OperatorResolveResult(
-						resultType, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
-						null, true, new[] { expression });
-				}
-				return UnaryOperatorResolveResult(resultType, op, expression);
+				return UnaryOperatorResolveResult(resultType, op, expression,
+				                                  builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator);
 			}
 		}
 		
-		OperatorResolveResult UnaryOperatorResolveResult(IType resultType, UnaryOperatorType op, ResolveResult expression)
+		OperatorResolveResult UnaryOperatorResolveResult(IType resultType, UnaryOperatorType op, ResolveResult expression, bool isLifted = false)
 		{
-			return new OperatorResolveResult(resultType, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow), expression);
+			return new OperatorResolveResult(
+				resultType, UnaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
+				null, isLifted, new[] { expression });
 		}
 		#endregion
 		
@@ -808,12 +806,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				lhs = Convert(lhs, m.Parameters[0].Type, builtinOperatorOR.ArgumentConversions[0]);
 				rhs = Convert(rhs, m.Parameters[1].Type, builtinOperatorOR.ArgumentConversions[1]);
-				if (builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator) {
-					return new OperatorResolveResult(
-						resultType, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
-						null, true, new[] { lhs, rhs });
-				}
-				return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+				return BinaryOperatorResolveResult(resultType, lhs, op, rhs,
+				                                   builtinOperatorOR.BestCandidate is OverloadResolution.ILiftedOperator);
 			}
 		}
 		
@@ -822,9 +816,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return NullableType.IsNullable(type) || type.IsReferenceType != false;
 		}
 		
-		ResolveResult BinaryOperatorResolveResult(IType resultType, ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs)
+		ResolveResult BinaryOperatorResolveResult(IType resultType, ResolveResult lhs, BinaryOperatorType op, ResolveResult rhs, bool isLifted = false)
 		{
-			return new OperatorResolveResult(resultType, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow), lhs, rhs);
+			return new OperatorResolveResult(
+				resultType, BinaryOperatorExpression.GetLinqNodeType(op, this.CheckForOverflow),
+				null, isLifted, new[] { lhs, rhs });
 		}
 		#endregion
 		
@@ -876,7 +872,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return ResolveBinaryOperator(op, lhs, rhs);
 			}
 			IType resultType = compilation.FindType(KnownTypeCode.Boolean);
-			return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+			return BinaryOperatorResolveResult(resultType, lhs, op, rhs, isNullable);
 		}
 		
 		/// <summary>
@@ -897,7 +893,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return CheckErrorAndResolveCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
 			}
 			IType resultType = MakeNullable(elementType, isNullable);
-			return BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs);
+			return BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs, isNullable);
 		}
 		
 		/// <summary>
@@ -923,7 +919,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return CheckErrorAndResolveCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
 			}
 			IType resultType = MakeNullable(enumType, isNullable);
-			return BinaryOperatorResolveResult(resultType, lhs, op, rhs);
+			return BinaryOperatorResolveResult(resultType, lhs, op, rhs, isNullable);
 		}
 		
 		IType MakeNullable(IType type, bool isNullable)
