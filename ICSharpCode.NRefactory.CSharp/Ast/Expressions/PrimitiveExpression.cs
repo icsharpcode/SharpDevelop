@@ -47,14 +47,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		object value;
+		
 		public object Value {
-			get;
-			set;
+			get { return this.value; }
+			set { 
+				ThrowIfFrozen(); 
+				this.value = value;
+			}
 		}
 		
 		public string LiteralValue {
-			get {
-				return literalValue;
+			get { return literalValue; }
+			set {
+				ThrowIfFrozen();
+				literalValue = value;
 			}
 		}
 		

@@ -129,5 +129,23 @@ class Test {
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 3 && r is MethodDeclaration));
 			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 8 && r is ForeachStatement));
 		}
+		
+		[Test]
+		public void FindReferencesForOpImplicitInLocalVariableInitialization()
+		{
+			Init(@"using System;
+class Test {
+ static void T() {
+  int x = new Test();
+ }
+ public static implicit operator int(Test x) { return 0; }
+}");
+			var test = compilation.MainAssembly.TopLevelTypeDefinitions.Single(t => t.Name == "Test");
+			var opImplicit = test.Methods.Single(m => m.Name == "op_Implicit");
+			var actual = FindReferences(opImplicit).ToList();
+			Assert.AreEqual(2, actual.Count);
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 4 && r is ObjectCreateExpression));
+			Assert.IsTrue(actual.Any(r => r.StartLocation.Line == 6 && r is OperatorDeclaration));
+		}
 	}
 }
