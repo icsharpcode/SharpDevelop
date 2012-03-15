@@ -452,20 +452,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 		}
 		
-		/// <summary>
-		/// Gets the resolve result for the specified node.
-		/// If the node was not resolved by the navigator, this method will return null.
-		/// </summary>
-		public ResolveResult GetResolveResultIfResolved(AstNode node)
-		{
-			MergeUndecidedLambdas();
-			ResolveResult result;
-			if (resolveResultCache.TryGetValue(node, out result))
-				return result;
-			else
-				return null;
-		}
-		
 		CSharpResolver GetPreviouslyScannedContext(AstNode node, out AstNode parent)
 		{
 			parent = node;
@@ -530,7 +516,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (conversionDict.TryGetValue(expr, out result)) {
 				return result;
 			} else {
-				ResolveResult rr = GetResolveResultIfResolved(expr);
+				ResolveResult rr = GetResolveResult(expr);
 				return new ConversionWithTargetType(Conversion.IdentityConversion, rr != null ? rr.Type : SpecialType.UnknownType);
 			}
 		}
@@ -2515,7 +2501,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			resolver = resolver.PushBlock();
 			IVariable v;
-			if (IsVar(foreachStatement.VariableType)) {
+			if (isImplicitlyTypedVariable) {
 				StoreCurrentState(foreachStatement.VariableType);
 				StoreResult(foreachStatement.VariableType, new TypeResolveResult(elementType));
 				v = MakeVariable(elementType, foreachStatement.VariableNameToken);
