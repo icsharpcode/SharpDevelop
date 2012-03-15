@@ -118,7 +118,7 @@ namespace Debugger
 	}
 	
 	[Serializable]
-	class StepperEventArgs: ProcessEventArgs
+	class StepperEventArgs: EventArgs
 	{
 		Stepper stepper;
 		CorDebugStepReason reason;
@@ -131,7 +131,7 @@ namespace Debugger
 			get { return reason; }
 		}
 		
-		public StepperEventArgs(Stepper stepper, CorDebugStepReason reason): base(stepper.Process)
+		public StepperEventArgs(Stepper stepper, CorDebugStepReason reason)
 		{
 			this.stepper = stepper;
 			this.reason = reason;

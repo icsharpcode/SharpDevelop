@@ -13,6 +13,7 @@ using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TreeView;
 
 namespace Debugger.AddIn.Pads.Controls
@@ -60,10 +61,7 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 			if (e.Key == Key.Enter || e.Key == Key.Escape) {
 				myList.UnselectAll();
-				if (LocalVarPad.Instance != null)
-					LocalVarPad.Instance.InvalidatePad();
-				if (WatchPad.Instance != null)
-					WatchPad.Instance.InvalidatePad();
+				WindowsDebugger.RefreshPads();
 			}
 		}
 		
@@ -77,7 +75,7 @@ namespace Debugger.AddIn.Pads.Controls
 			SelectedNode.Node.Name = cell.CommandText;
 			myList.UnselectAll();
 			if (WatchType == WatchListType.Watch && WatchPad.Instance != null) {
-				WatchPad.Instance.InvalidatePad();
+				WindowsDebugger.RefreshPads();
 			}
 			SelectedNode.IsEditing = false;
 		}

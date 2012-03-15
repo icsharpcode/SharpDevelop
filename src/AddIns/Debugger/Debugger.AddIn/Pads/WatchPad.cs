@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -20,16 +21,21 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Services;
 using Exception = System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class WatchPad : DebuggerPad
+	public class WatchPad : AbstractPadContent
 	{
+		DockPanel panel;
 		WatchList watchList;
-		Process debuggedProcess;
 
 		static WatchPad instance;
+		
+		public override object Control {
+			get { return panel; }
+		}
 		
 		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
 		public static WatchPad Instance {
@@ -44,15 +50,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public WatchPad()
 		{
+			this.panel = new DockPanel();
+			
 			instance = this;
-		}
-		
-		public Process Process {
-			get { return debuggedProcess; }
-		}
-		
-		protected override void InitializeComponents()
-		{
+			
 			watchList = new WatchList(WatchListType.Watch);
 			watchList.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			
@@ -68,6 +69,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ProjectService.SolutionClosed += delegate { watchList.WatchItems.Clear(); };
 			ProjectService.ProjectAdded += delegate { LoadSavedNodes(); };
 			ProjectService.SolutionLoaded += delegate { LoadSavedNodes(); };
+			
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			WindowsDebugger.RefreshPads();
 		}
 
 		#region Saved nodes
@@ -167,32 +171,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				watchList.WatchItems.Add(nod);
 		}
 		
-		protected override void SelectProcess(Process process)
-		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused -= debuggedProcess_Paused;
-				debuggedProcess.Exited -= ResetPad;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused += debuggedProcess_Paused;
-				debuggedProcess.Exited += ResetPad;
-			}
-			InvalidatePad();
-		}
-		
-		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
-		{
-			InvalidatePad();
-		}
-		
-		TreeNodeWrapper UpdateNode(TreeNodeWrapper node)
+		TreeNodeWrapper UpdateNode(TreeNodeWrapper node, Process process)
 		{
 			try {
 				LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
 				
 				//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-				ValueNode valNode = new ValueNode(null, node.Node.Name, () => debugger.GetExpression(node.Node.Name).Evaluate(debuggedProcess));
+				ValueNode valNode = new ValueNode(null, node.Node.Name, () => ((WindowsDebugger)DebuggerService.CurrentDebugger).GetExpression(node.Node.Name).Evaluate(process));
 				return valNode.ToSharpTreeNode();
 			} catch (GetValueException) {
 				string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
@@ -201,8 +186,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		protected override void RefreshPad()
+		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
 		{
+			Process debuggedProcess = dbg.Process;
+			
+			ResetPad(null, null);
+			
 			if (debuggedProcess == null || debuggedProcess.IsRunning)
 				return;
 			
@@ -213,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
 					nodes,
-					n => watchList.WatchItems.Add(UpdateNode(n))
+					n => watchList.WatchItems.Add(UpdateNode(n, debuggedProcess))
 				);
 			}
 		}

@@ -49,6 +49,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		public object InternalBreakpointObject { get; set; }
+		
 		public virtual bool IsHealthy {
 			get {
 				return isHealthy;

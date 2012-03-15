@@ -20,14 +20,19 @@ using Thread = Debugger.Thread;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public partial class RunningThreadsPad : DebuggerPad
+	public partial class RunningThreadsPad : AbstractPadContent
 	{
+		DockPanel panel;
 		ListView runningThreadsList;
 		ObservableCollection<ThreadModel> runningThreads;
-		Process debuggedProcess;
 		
-		protected override void InitializeComponents()
+		public override object Control {
+			get { return panel; }
+		}
+		
+		public RunningThreadsPad()
 		{
+			this.panel = new DockPanel();
 			runningThreads = new ObservableCollection<ThreadModel>();
 			runningThreadsList = new ListView();
 			runningThreadsList.ContextMenu = CreateContextMenuStrip();
@@ -38,6 +43,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			WindowsDebugger.RefreshPads();
 		}
 		
 		public void RedrawContent()
@@ -60,33 +68,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			                             80);
 		}
 
-		protected override void SelectProcess(Process process)
+		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
 		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused               -= debuggedProcess_Paused;
-				debuggedProcess.Threads.Added        -= debuggedProcess_ThreadStarted;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused               += debuggedProcess_Paused;
-				debuggedProcess.Threads.Added        += debuggedProcess_ThreadStarted;
-			}
-			runningThreads.Clear();
-			InvalidatePad();
-		}
-		
-		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
-		{
-			InvalidatePad();
-		}
-		
-		void debuggedProcess_ThreadStarted(object sender, CollectionItemEventArgs<Thread> e)
-		{
-			AddThread(e.Item);
-		}
-		
-		protected override void RefreshPad()
-		{
+			Process debuggedProcess = dbg.Process;
+			
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				runningThreads.Clear();
 				return;
@@ -103,10 +88,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
+			ThreadModel obj = runningThreadsList.SelectedItems[0] as ThreadModel;
+			Thread thread = obj.Thread;
+			Process debuggedProcess = thread.Process;
+			
 			if (debuggedProcess != null) {
 				if (debuggedProcess.IsPaused) {
-					ThreadModel obj = runningThreadsList.SelectedItems[0] as ThreadModel;
-					Thread thread = obj.Thread;
 					
 					// check for options - if these options are enabled, selecting the frame should not continue
 					if ((thread.MostRecentStackFrame == null || !thread.MostRecentStackFrame.HasSymbols) &&
@@ -120,14 +107,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					debuggedProcess.SelectedThread.SelectedStackFrame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 					if (debuggedProcess.SelectedThread.SelectedStackFrame != null) {
 						debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentThreadChanged;
-						debuggedProcess.OnPaused(); // Force refresh of pads - artificial pause
+						WindowsDebugger.RefreshPads(); // Force refresh of pads - artificial pause
 					} else {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 					}
-				} else {
-					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
-				}
+			} else {
+				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 			}
+		}
 		}
 		
 		void AddThread(Thread thread)
@@ -140,7 +127,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ThreadModel obj = new ThreadModel(thread);
 			
 			runningThreads.Add(obj);
-			thread.Exited += (s, e) => RemoveThread(e.Thread);
 		}
 		
 		void RemoveThread(Thread thread)

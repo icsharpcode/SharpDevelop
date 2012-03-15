@@ -1075,7 +1075,7 @@ namespace Debugger.MetaData
 		
 		public static DebugType CreateFromCorClass(AppDomain appDomain, bool? valueType, ICorDebugClass corClass, DebugType[] genericArguments)
 		{
-			MetaDataImport metaData = appDomain.Process.Modules[corClass.GetModule()].MetaData;
+			MetaDataImport metaData = appDomain.Process.GetModule(corClass.GetModule()).MetaData;
 			
 			if (valueType == null) {
 				uint superClassToken = metaData.GetTypeDefProps(corClass.GetToken()).SuperClassToken;
@@ -1175,7 +1175,7 @@ namespace Debugger.MetaData
 					genericArguments.Add(DebugType.CreateFromCorType(appDomain, t));
 				}
 				// Get class props
-				this.module = appDomain.Process.Modules[corType.GetClass().GetModule()];
+				this.module = appDomain.Process.GetModule(corType.GetClass().GetModule());
 				this.classProps = module.MetaData.GetTypeDefProps(corType.GetClass().GetToken());
 				if (this.DebugModule.AppDomain != appDomain)
 					throw new DebuggerException("The specified AppDomain was inccorect");

@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using Debugger;
 using Debugger.AddIn.Pads.ParallelPad;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -48,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				bool suspended = item.Thread.Suspended;
 				
-				if (!debuggedProcess.IsPaused) {
+				if (WindowsDebugger.CurrentProcess == null || WindowsDebugger.CurrentProcess.IsRunning) {
 					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotFreezeWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.Freeze}");
 					return;
 				}
@@ -56,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				foreach(ThreadModel current in items.OfType<ThreadModel>()) {
 					current.Thread.Suspended = !suspended;
 				}
-				InvalidatePad();
+				WindowsDebugger.RefreshPads();
 			};
 			
 			menu.Items.Add(freezeItem);

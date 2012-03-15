@@ -11,17 +11,23 @@ using Debugger;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.Pads.ParallelPad;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public class LoadedModulesPad : DebuggerPad
+	public class LoadedModulesPad : AbstractPadContent
 	{
+		DockPanel panel;
 		ListView loadedModulesList;
-		Process debuggedProcess;
 		ObservableCollection<ModuleModel> loadedModules;
 		
-		protected override void InitializeComponents()
+		public override object Control {
+			get { return panel; }
+		}
+		
+		public LoadedModulesPad()
 		{
+			this.panel = new DockPanel();
 			loadedModulesList = new ListView();
 			loadedModules = new ObservableCollection<ModuleModel>();
 			loadedModulesList.ItemsSource = loadedModules;
@@ -29,6 +35,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			panel.Children.Add(loadedModulesList);
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			WindowsDebugger.RefreshPads();
 		}
 		
 		public void RedrawContent()
@@ -46,48 +55,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			                            new Binding { Path = new PropertyPath("Symbols") }, 130);
 		}
 		
-		protected override void SelectProcess(Process process)
+		void RefreshPad(object sender, DebuggerEventArgs dbg)
 		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Modules.Added -= debuggedProcess_ModuleLoaded;
-				debuggedProcess.Modules.Removed -= debuggedProcess_ModuleUnloaded;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Modules.Added += debuggedProcess_ModuleLoaded;
-				debuggedProcess.Modules.Removed += debuggedProcess_ModuleUnloaded;
-			}
-			InvalidatePad();
-		}
-		
-		void debuggedProcess_ModuleLoaded(object sender, CollectionItemEventArgs<Module> e)
-		{
-			AddModule(e.Item);
-		}
-		
-		void debuggedProcess_ModuleUnloaded(object sender, CollectionItemEventArgs<Module> e)
-		{
-			RemoveModule(e.Item);
-		}
-		
-		protected override void RefreshPad()
-		{
+			Process debuggedProcess = dbg.Process;
+			
 			loadedModules.Clear();
 			if (debuggedProcess != null) {
 				foreach(Module module in debuggedProcess.Modules) {
-					AddModule(module);
+					loadedModules.Add(new ModuleModel(module));
 				}
 			}
-		}
-		
-		void AddModule(Module module)
-		{
-			loadedModules.Add(new ModuleModel(module));
-		}
-
-		void RemoveModule(Module module)
-		{
-			loadedModules.RemoveWhere(model => model.Module == module);
 		}
 	}
 	

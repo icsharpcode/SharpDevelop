@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		string Evaluate(string code)
 		{
+			Process process = WindowsDebugger.CurrentProcess;
 			if (process == null) {
 				return "No process is being debugged";
 			}
@@ -52,11 +53,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return "The process is running";
 			}
 			try {
-				var debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-				StackFrame frame = debugger.DebuggedProcess.GetCurrentExecutingFrame();
+				StackFrame frame = process.GetCurrentExecutingFrame();
 				if (frame == null) return "No current execution frame";
 				
-				object data = debugger.debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+				object data = ((WindowsDebugger)DebuggerService.CurrentDebugger).debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
 				                                                                       frame.MethodInfo.MetadataToken,
 				                                                                       code);
 				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, frame, data);
@@ -64,13 +64,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			} catch (GetValueException e) {
 				return e.Message;
 			}
-		}
-		
-		Process process;
-		
-		public Process Process {
-			get { return process; }
-			set { process = value; }
 		}
 		
 		protected override string Prompt {
@@ -102,32 +95,28 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public ConsolePad()
 		{
 			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
-			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
-				this.Process = e.Process;
-			};
-			this.Process = debugger.DebuggedProcess;
 		}
 		
 		protected override void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
 		{
-			if (this.process == null || this.process.IsRunning)
+			Process process = WindowsDebugger.CurrentProcess;
+			if (process == null || process.IsRunning)
 				return;
 			
-			StackFrame frame = this.process.GetCurrentExecutingFrame();
+			StackFrame frame = process.GetCurrentExecutingFrame();
 			if (frame == null)
 				return;
 			
 			foreach (char ch in e.Text) {
 				if (ch == '.') {
-					ShowDotCompletion(console.CommandText);
+					ShowDotCompletion(process, console.CommandText);
 				}
 			}
 		}
 		
-		void ShowDotCompletion(string currentText)
+		void ShowDotCompletion(Process process, string currentText)
 		{
-			StackFrame frame = this.process.GetCurrentExecutingFrame();
+			StackFrame frame = process.GetCurrentExecutingFrame();
 			if (frame == null)
 				return;
 			

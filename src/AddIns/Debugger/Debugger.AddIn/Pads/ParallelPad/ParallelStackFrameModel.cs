@@ -73,7 +73,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			if (thread == null)
 				throw new ArgumentNullException("thread");
 			this.thread = thread;
-			thread.NameChanged += delegate { RaisePropertyChanged(() => Name); };
 		}
 		
 		public Thread Thread {
@@ -131,13 +130,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			if (module == null)
 				throw new ArgumentNullException("module");
 			this.module = module;
-			this.module.SymbolsUpdated += delegate {
-				RaisePropertyChanged(() => Name);
-				RaisePropertyChanged(() => Address);
-				RaisePropertyChanged(() => Path);
-				RaisePropertyChanged(() => Order);
-				RaisePropertyChanged(() => Symbols);
-			};
 		}
 		
 		public Module Module {

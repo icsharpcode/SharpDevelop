@@ -355,17 +355,6 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			string identifier = identifierExpression.Identifier;
 			
-			if (identifier == "__exception") {
-				if (context.Thread.CurrentException != null) {
-					return new TypedValue(
-						context.Thread.CurrentException.Value,
-						DebugType.CreateFromType(context.AppDomain.Mscorlib, typeof(System.Exception))
-					);
-				} else {
-					throw new GetValueException("No current exception");
-				}
-			}
-			
 			DebugParameterInfo par = context.MethodInfo.GetParameter(identifier);
 			if (par != null)
 				return new TypedValue(par.GetValue(context), (DebugType)par.ParameterType);

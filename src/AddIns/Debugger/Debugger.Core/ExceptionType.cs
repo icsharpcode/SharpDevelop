@@ -3,7 +3,7 @@
 
 namespace Debugger
 {
-	public enum ExceptionType
+	enum ExceptionType
 	{
 		FirstChance = 1,
 		UserFirstChance = 2,

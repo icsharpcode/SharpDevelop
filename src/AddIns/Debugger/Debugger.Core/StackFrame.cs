@@ -83,14 +83,14 @@ namespace Debugger
 		{
 			this.process = thread.Process;
 			this.thread = thread;
-			this.appDomain = process.AppDomains[corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain()];
+			this.appDomain = process.GetAppDomain(corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain());
 			this.corILFrame = corILFrame;
 			this.corILFramePauseSession = process.PauseSession;
 			this.corFunction = corILFrame.GetFunction();
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
 			
-			MetaDataImport metaData = thread.Process.Modules[corFunction.GetClass().GetModule()].MetaData;
+			MetaDataImport metaData = thread.Process.GetModule(corFunction.GetClass().GetModule()).MetaData;
 			int methodGenArgs = metaData.EnumGenericParams(corFunction.GetToken()).Length;
 			// Class parameters are first, then the method ones
 			List<ICorDebugType> corGenArgs = ((ICorDebugILFrame2)corILFrame).EnumerateTypeParameters().ToList();
@@ -263,7 +263,7 @@ namespace Debugger
 		{
 			process.AssertPaused();
 			
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, null, line, column);
+			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, line, column);
 			
 			if (segment != null && segment.CorFunction.GetToken() == this.MethodInfo.MetadataToken) {
 				try {
@@ -274,7 +274,7 @@ namespace Debugger
 						CorILFrame.SetIP((uint)segment.ILStart);
 						process.NotifyResumed(DebuggeeStateAction.Keep);
 						process.NotifyPaused(PausedReason.SetIP);
-						process.RaisePausedEvents();
+						process.OnPaused(new DebuggerEventArgs(process));
 					}
 				} catch {
 					return null;

@@ -21,8 +21,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	/// </summary>
 	public partial class CallStackPadContent : UserControl
 	{
-		Process debuggedProcess;
-		
 		public CallStackPadContent()
 		{
 			InitializeComponent();
@@ -31,6 +29,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
 			((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
+			
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			WindowsDebugger.RefreshPads();
 		}
 		
 		ContextMenu CreateMenu()
@@ -40,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods;
 			extMethodsItem.Click += delegate {
 				extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
-				CallStackPad.InvalidateCallstackPad();
+				WindowsDebugger.RefreshPads();
 			};
 			
 			MenuItem moduleItem = new MenuItem();
@@ -49,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			moduleItem.Click += delegate {
 				moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames = !DebuggingOptions.Instance.ShowModuleNames;
 				((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
-				CallStackPad.InvalidateCallstackPad();
+				WindowsDebugger.RefreshPads();
 			};
 			
 			MenuItem argNamesItem = new MenuItem();
@@ -57,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			argNamesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentNames;
 			argNamesItem.Click += delegate {
 				argNamesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentNames = !DebuggingOptions.Instance.ShowArgumentNames;
-				CallStackPad.InvalidateCallstackPad();
+				WindowsDebugger.RefreshPads();
 			};
 			
 			MenuItem argValuesItem = new MenuItem();
@@ -65,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			argValuesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentValues;
 			argValuesItem.Click += delegate {
 				argValuesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentValues = !DebuggingOptions.Instance.ShowArgumentValues;
-				CallStackPad.InvalidateCallstackPad();
+				WindowsDebugger.RefreshPads();
 			};
 			
 			MenuItem lineItem = new MenuItem();
@@ -74,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			lineItem.Click += delegate {
 				lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers = !DebuggingOptions.Instance.ShowLineNumbers;
 				((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
-				CallStackPad.InvalidateCallstackPad();
+				WindowsDebugger.RefreshPads();
 			};
 			
 			return new ContextMenu() {
@@ -89,33 +90,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			};
 		}
 		
-		public void SelectProcess(Process process)
-		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused -= debuggedProcess_Paused;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused += debuggedProcess_Paused;
-			}
-			CallStackPad.InvalidateCallstackPad();
-		}
-
-		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
-		{
-			CallStackPad.InvalidateCallstackPad();
-		}
-		
 		void View_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
-			if (debuggedProcess == null)
+			CallStackItem item = view.SelectedItem as CallStackItem;
+			if (item == null)
 				return;
+			
+			Process debuggedProcess = item.Process;
+			
 			if (debuggedProcess.IsPaused) {
-				CallStackItem item = view.SelectedItem as CallStackItem;
-				
-				if (item == null)
-					return;
-
 				if (item.Frame != null && debuggedProcess.SelectedThread != null) {
 					// check for options - if these options are enabled, selecting the frame should not continue
 					if (!item.Frame.HasSymbols && !debuggedProcess.Options.DecompileCodeWithoutSymbols) {
@@ -125,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 					debuggedProcess.SelectedThread.SelectedStackFrame = item.Frame;
 					debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentFunctionChanged;
-					debuggedProcess.OnPaused(); // Force refresh of pads - artificial pause
+					WindowsDebugger.RefreshPads();
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
@@ -140,8 +123,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		internal void RefreshPad()
+		void RefreshPad(object sender, DebuggerEventArgs dbg)
 		{
+			Process debuggedProcess = dbg.Process;
+			
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedThread == null) {
 				view.ItemsSource = null;
 				return;
@@ -155,13 +140,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			debuggedProcess.EnqueueForEach(
 						Dispatcher,
 				debuggedProcess.SelectedThread.GetCallstack(100),
-				f => items.AddIfNotNull(CreateItem(f, showExternalMethods, ref previousItemIsExternalMethod))
+				f => items.AddIfNotNull(CreateItem(debuggedProcess, f, showExternalMethods, ref previousItemIsExternalMethod))
 			);
 			}
 			view.ItemsSource = items;
 		}
 		
-		CallStackItem CreateItem(StackFrame frame, bool showExternalMethods, ref bool previousItemIsExternalMethod)
+		CallStackItem CreateItem(Process process, StackFrame frame, bool showExternalMethods, ref bool previousItemIsExternalMethod)
 		{
 			CallStackItem item;
 			
@@ -195,6 +180,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				};
 				previousItemIsExternalMethod = true;
 			}
+			
+			item.Process = process;
 			
 			return item;
 		}
@@ -253,6 +240,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	
 	public class CallStackItem
 	{
+		public Process Process { get; set; }
 		public string Name { get; set; }
 		public string Language { get; set; }
 		public StackFrame Frame { get; set; }
@@ -264,7 +252,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		}
 	}
 	
-	public class CallStackPad : DebuggerPad
+	public class CallStackPad : AbstractPadContent
 	{
 		CallStackPadContent callStackList;
 		
@@ -277,33 +265,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public CallStackPad()
 		{
 			instance = this;
+			callStackList = new CallStackPadContent();
 		}
 		
 		public override object Control {
 			get {
 				return callStackList;
 			}
-		}
-		
-		protected override void InitializeComponents()
-		{
-			callStackList = new CallStackPadContent();
-		}
-		
-		protected override void SelectProcess(Process process)
-		{
-			callStackList.SelectProcess(process);
-		}
-		
-		protected override void RefreshPad()
-		{
-			callStackList.RefreshPad();
-		}
-		
-		public static void InvalidateCallstackPad()
-		{
-			if (instance != null)
-				instance.InvalidatePad();
 		}
 	}
 }

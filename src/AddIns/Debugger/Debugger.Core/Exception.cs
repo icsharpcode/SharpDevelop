@@ -15,9 +15,16 @@ namespace Debugger
 			get { return exception; }
 		}
 		
-		public Exception(Value exception)
+		ExceptionType ExceptionType { get; set; }
+		
+		public bool IsUnhandled {
+			get { return this.ExceptionType == ExceptionType.Unhandled; }
+		}
+		
+		internal Exception(Value exception, ExceptionType exceptionType)
 		{
 			this.exception = exception;
+			this.ExceptionType = exceptionType;
 		}
 		
 		/// <summary> The <c>GetType().FullName</c> of the exception. </summary>
@@ -42,7 +49,7 @@ namespace Debugger
 		public Exception InnerException {
 			get {
 				Value innerException = exception.GetMemberValue("_innerException");
-				return innerException.IsNull ? null : new Exception(innerException);
+				return innerException.IsNull ? null : new Exception(innerException, this.ExceptionType);
 			}
 		}
 		
@@ -90,32 +97,6 @@ namespace Debugger
 				sb.AppendLine();
 			}
 			return sb.ToString();
-		}
-	}
-	
-	public class ExceptionEventArgs: ProcessEventArgs
-	{
-	    readonly Exception exception;
-	    readonly ExceptionType exceptionType;
-	    readonly bool isUnhandled;
-		
-		public Exception Exception {
-			get { return exception; }
-		}
-		
-		public ExceptionType ExceptionType {
-			get { return exceptionType; }
-		}
-		
-		public bool IsUnhandled {
-			get { return isUnhandled; }
-		}
-		
-		public ExceptionEventArgs(Process process, Exception exception, ExceptionType exceptionType, bool isUnhandled):base(process)
-		{
-			this.exception = exception;
-			this.exceptionType = exceptionType;
-			this.isUnhandled = isUnhandled;
 		}
 	}
 }

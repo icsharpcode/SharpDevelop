@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -17,8 +18,8 @@ namespace Debugger
 		ManagedCallbackSwitch      managedCallbackSwitch;
 		ManagedCallbackProxy       managedCallbackProxy;
 		
-		BreakpointCollection breakpoints;
-		ProcessCollection processes;
+		internal List<Breakpoint> breakpoints = new List<Breakpoint>();
+		internal List<Process> processes = new List<Process>();
 		
 		MTA2STA mta2sta = new MTA2STA();
 		
@@ -49,24 +50,30 @@ namespace Debugger
 			set { options = value; }
 		}
 		
-		public BreakpointCollection Breakpoints {
-			get { return breakpoints; }
+		public IEnumerable<Breakpoint> Breakpoints {
+			get { return this.breakpoints; }
 		}
 		
-		public ProcessCollection Processes {
-			get { return processes; }
+		public IEnumerable<Process> Processes {
+			get { return this.processes; }
 		}
 		
 		public NDebugger()
 		{
-			processes   = new ProcessCollection(this);
-			breakpoints = new BreakpointCollection(this);
-			
 			if (ApartmentState.STA == System.Threading.Thread.CurrentThread.GetApartmentState()) {
 				mta2sta.CallMethod = CallMethod.HiddenFormWithTimeout;
 			} else {
 				mta2sta.CallMethod = CallMethod.DirectCall;
 			}
+		}
+		
+		internal Process GetProcess(ICorDebugProcess corProcess) {
+			foreach (Process process in this.Processes) {
+				if (process.CorProcess == corProcess) {
+					return process;
+				}
+			}
+			return null;
 		}
 		
 		/// <summary>
@@ -137,38 +144,57 @@ namespace Debugger
 		
 		internal void TerminateDebugger()
 		{
-			// Mark breakpints as deactivated
-			foreach (Breakpoint b in this.Breakpoints) {
-				b.MarkAsDeactivated();
+			foreach(Breakpoint breakpoint in this.Breakpoints) {
+				breakpoint.NotifyDebuggerTerminated();
 			}
 			
-			TraceMessage("Reset done");
-			
 			corDebug.Terminate();
-			
 			TraceMessage("ICorDebug terminated");
 			
 			int released = TrackedComObjects.ReleaseAll();
-			
 			TraceMessage("Released " + released + " tracked COM objects");
 		}
 		
-		/// <summary>
-		/// Internal: Used to debug the debugger library.
-		/// </summary>
-		public event EventHandler<MessageEventArgs> DebuggerTraceMessage;
-		
-		protected internal virtual void OnDebuggerTraceMessage(MessageEventArgs e)
+		public Breakpoint AddBreakpoint(string fileName, int line, int column = 0, bool enabled = true)
 		{
-			if (DebuggerTraceMessage != null) {
-				DebuggerTraceMessage(this, e);
+			Breakpoint breakpoint = new Breakpoint(fileName, line, column, enabled);
+			AddBreakpoint(breakpoint);
+			return breakpoint;
+		}
+		
+		public ILBreakpoint AddILBreakpoint(string typeName, int line, int metadataToken, int memberToken, int offset, bool enabled)
+		{
+			ILBreakpoint breakpoint = new ILBreakpoint(typeName, line, metadataToken, memberToken, offset, enabled);
+			AddBreakpoint(breakpoint);
+			return breakpoint;
+		}
+		
+		void AddBreakpoint(Breakpoint breakpoint)
+		{
+			this.breakpoints.Add(breakpoint);
+			
+			foreach (Process process in this.Processes) {
+				foreach(Module module in process.Modules) {
+					breakpoint.SetBreakpoint(module);
+				}				
 			}
+		}
+		
+		internal Breakpoint GetBreakpoint(ICorDebugBreakpoint corBreakpoint)
+		{
+			foreach (Breakpoint breakpoint in this.Breakpoints) {
+				if (breakpoint.IsOwnerOf(corBreakpoint)) {
+					return breakpoint;
+				}
+			}
+			return null;
 		}
 		
 		internal void TraceMessage(string message)
 		{
-			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
-			OnDebuggerTraceMessage(new MessageEventArgs(null, message));
+			message = "Debugger: " + message;
+			System.Console.WriteLine(message);
+			System.Diagnostics.Debug.WriteLine(message);
 		}
 		
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
@@ -181,39 +207,36 @@ namespace Debugger
 		
 		internal object ProcessIsBeingCreatedLock = new object();
 		
-		public Process Start(string filename, string workingDirectory, string arguments)		
+		public Process Start(string filename, string workingDirectory, string arguments, bool breakInMain)
 		{
 			InitDebugger(GetProgramVersion(filename));
 			lock(ProcessIsBeingCreatedLock) {
 				Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 				// Expose a race conditon
 				System.Threading.Thread.Sleep(0);
-				this.Processes.Add(process);
+				process.BreakInMain = breakInMain;
+				this.processes.Add(process);
 				return process;
 			}
 		}
 		
-		public Process Attach(System.Diagnostics.Process existingProcess)		
+		public Process Attach(System.Diagnostics.Process existingProcess)
 		{
 			string mainModule = existingProcess.MainModule.FileName;
 			InitDebugger(GetProgramVersion(mainModule));
-			ICorDebugProcess corDebugProcess = corDebug.DebugActiveProcess((uint)existingProcess.Id, 0);
-			// TODO: Can we get the acutal working directory?
-			Process process = new Process(this, corDebugProcess, Path.GetDirectoryName(mainModule));
-			this.Processes.Add(process);
-			return process;
+			lock(ProcessIsBeingCreatedLock) {
+				ICorDebugProcess corDebugProcess = corDebug.DebugActiveProcess((uint)existingProcess.Id, 0);
+				// TODO: Can we get the acutal working directory?
+				Process process = new Process(this, corDebugProcess, Path.GetDirectoryName(mainModule));
+				this.processes.Add(process);
+				return process;
+			}
 		}
 		
 		public void Detach()
 		{
-			// Deactivate breakpoints
-			foreach (Breakpoint b in this.Breakpoints) {
-				b.Deactivate();
-			}
-			
 			// Detach all processes.
-			for (int i = 0; i < this.Processes.Count; ++i) {
-				Process process = this.Processes[i];
+			foreach(Process process in this.Processes) {
 				if (process == null || process.HasExited) 
 					continue;
 				process.Detach();
@@ -264,57 +287,49 @@ namespace Debugger
 	}
 	
 	[Serializable]
-	public class DebuggerEventArgs : EventArgs 
+	public class DebuggerEventArgs: EventArgs
 	{
-		NDebugger debugger;
+		public Process Process { get; internal set; }
+		public Breakpoint[] BreakpointsHit { get; internal set; }
+		public Exception ExceptionThrown { get; internal set; }
 		
-		public NDebugger Debugger {
-			get {
-				return debugger;
-			}
-		}
-		
-		public DebuggerEventArgs(NDebugger debugger)
+		public DebuggerEventArgs(Process process)
 		{
-			this.debugger = debugger;
+			this.Process = process;
 		}
 	}
 	
 	[Serializable]
-	public class MessageEventArgs : ProcessEventArgs
+	public class ModuleEventArgs: DebuggerEventArgs
 	{
-		int level;
-		string message;
-		string category;
+		public Module Module { get; private set; }
 		
-		public int Level {
-			get {
-				return level;
-			}
-		}
-		
-		public string Message {
-			get {
-				return message;
-			}
-		}
-		
-		public string Category {
-			get {
-				return category;
-			}
-		}
-		
-		public MessageEventArgs(Process process, string message): this(process, 0, message, String.Empty)
+		public ModuleEventArgs(Module module) : base(module.Process)
 		{
-			this.message = message;
+			this.Module = module;
+		}
+	}
+	
+	[Serializable]
+	public class MessageEventArgs : EventArgs
+	{
+		public Process Process { get; private set; }
+		public int Level { get; private set; }
+		public string Message { get; private set; }
+		public string Category { get; private set; }
+		
+		public MessageEventArgs(Process process, string message)
+		{
+			this.Process = process;
+			this.Message = message;
 		}
 		
-		public MessageEventArgs(Process process, int level, string message, string category): base(process)
+		public MessageEventArgs(Process process, int level, string message, string category)
 		{
-			this.level = level;
-			this.message = message;
-			this.category = category;
+			this.Process = process;
+			this.Level = level;
+			this.Message = message;
+			this.Category = category;
 		}
 	}
 }

@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void BtnBreakClick(object sender, EventArgs e)
 		{
-			if (this.process.SelectedThread.CurrentExceptionIsUnhandled)
+			if (Exception.IsUnhandled)
 				Close();
 			else if (((WindowsDebugger)DebuggerService.CurrentDebugger).BreakAndInterceptHandledException(Exception))
 				Close();

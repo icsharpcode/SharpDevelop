@@ -232,8 +232,8 @@ namespace Debugger.Tests {
 			process.Options.StepOverSingleLineProperties = false;
 			process.Options.StepOverFieldAccessProperties = true;
 			
-			ObjectDump("DefinedTypes", process.Modules["DebugType_Tests.exe"].GetNamesOfDefinedTypes());
-			ObjectDump("DefinedTypes", process.Modules["DebugType_Tests.exe"].GetDefinedTypes());
+			ObjectDump("DefinedTypes", process.GetModule("DebugType_Tests.exe").GetNamesOfDefinedTypes());
+			ObjectDump("DefinedTypes", process.GetModule("DebugType_Tests.exe").GetDefinedTypes());
 			
 			ObjectDump("Members", process.SelectedStackFrame.GetLocalVariableValue("members").Type.GetMembers(DebugType.BindingFlagsAllDeclared));
 			ObjectDump("Access-Members", process.SelectedStackFrame.GetLocalVariableValue("access").Type.GetMembers());

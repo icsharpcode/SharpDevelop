@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
+using System.Windows.Controls;
 using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
@@ -8,21 +9,33 @@ using System.Linq;
 using System.Windows;
 using Debugger;
 using Debugger.AddIn.Visualizers.Graph;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	/// <summary>
 	/// Description of ObjectGraphPad.
 	/// </summary>
-	public class ObjectGraphPad : DebuggerPad
+	public class ObjectGraphPad : AbstractPadContent
 	{
-		Process debuggedProcess;
+		DockPanel panel;
 		ObjectGraphControl objectGraphControl;
 		static ObjectGraphPad instance;
 		
+		public override object Control {
+			get { return panel; }
+		}
+		
 		public ObjectGraphPad()
 		{
+			this.panel = new DockPanel();
 			instance = this;
+			
+			objectGraphControl = new ObjectGraphControl();
+			panel.Children.Add(objectGraphControl);
+			
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			WindowsDebugger.RefreshPads();
 		}
 		
 		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
@@ -30,15 +43,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return instance; }
 		}
 		
-		protected override void InitializeComponents()
+		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
 		{
-			objectGraphControl = new ObjectGraphControl();
-			panel.Children.Add(objectGraphControl);
-		}
-		
-		
-		protected override void RefreshPad()
-		{
+			Process debuggedProcess = dbg.Process;
+			
 			// BUG: if pad window is undocked and floats standalone, IsVisible == false (so pad won't refresh)
 			// REQUEST: need to refresh when pad becomes visible -> VisibleChanged event?
 			if (!objectGraphControl.IsVisible)
@@ -50,23 +58,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			this.objectGraphControl.RefreshView();
-		}
-		
-		protected override void SelectProcess(Process process)
-		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused -= debuggedProcess_Paused;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused += debuggedProcess_Paused;
-			}
-			InvalidatePad();
-		}
-		
-		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
-		{
-			InvalidatePad();
 		}
 	}
 }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Debugger.Interop;
@@ -23,6 +24,9 @@ namespace Debugger
 		Process process;
 		bool pauseOnNextExit;
 		bool isInCallback = false;
+		
+		List<Breakpoint> breakpointsHit = new List<Breakpoint>();
+		Exception exceptionThrown;
 		
 		[Debugger.Tests.Ignore]
 		public Process Process {
@@ -74,7 +78,7 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugThread pThread)
 		{
 			EnterCallback(pausedReason, name, pThread.GetProcess());
-			process.SelectedThread = process.Threads[pThread];
+			process.SelectedThread = process.GetThread(pThread);
 		}
 		
 		void ExitCallback()
@@ -84,8 +88,7 @@ namespace Debugger
 				process.TraceMessage("Process has queued callbacks");
 			
 			// only process callbacks if no exception occurred
-			// if no thread is selected CurrentException must be null
-			if (hasQueuedCallbacks && (process.SelectedThread == null || process.SelectedThread.CurrentException == null)) {
+			if (hasQueuedCallbacks && exceptionThrown == null) {
 				// Exception has Exception2 queued after it
 				process.AsyncContinue(DebuggeeStateAction.Keep, null, null);
 			} else if (process.Evaluating) {
@@ -113,11 +116,15 @@ namespace Debugger
 				// Do not set selected stack frame
 				// Do not raise events
 			} else {
+				DebuggerEventArgs e = new DebuggerEventArgs(process);
+				e.BreakpointsHit = breakpointsHit.ToArray();
+				e.ExceptionThrown = exceptionThrown;
+				breakpointsHit.Clear();
+				exceptionThrown = null;
+				
 				// Raise the pause event outside the callback
 				// Warning: Make sure that process in not resumed in the meantime
-				process.Debugger.MTA2STA.AsyncCall(process.RaisePausedEvents);
-				
-				// The event might probably get called out of order when the process is running again
+				process.Debugger.MTA2STA.AsyncCall(delegate { process.OnPaused(e); });
 			}
 		}
 		
@@ -128,7 +135,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.StepComplete, "StepComplete (" + reason.ToString() + ")", pThread);
 			
-			Thread thread = process.Threads[pThread];
+			Thread thread = process.GetThread(pThread);
 			Stepper stepper = process.GetStepper(pStepper);
 			
 			StackFrame currentStackFrame = process.SelectedThread.MostRecentStackFrame;
@@ -169,9 +176,11 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Breakpoint, "Breakpoint", pThread);
 			
-			Breakpoint breakpoint = process.Debugger.Breakpoints[corBreakpoint];
-			// The event will be risen outside the callback
-			process.BreakpointHitEventQueue.Enqueue(breakpoint);
+			Breakpoint breakpoint = process.Debugger.GetBreakpoint(corBreakpoint);
+			// Could be tempBreakpoint
+			if (breakpoint != null) {
+				breakpointsHit.Add(breakpoint);
+			}
 			
 			pauseOnNextExit = true;
 			
@@ -246,14 +255,14 @@ namespace Debugger
 		
 		public void EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
-			EnterCallback(PausedReason.EvalComplete, "EvalException (" + process.ActiveEvals[corEval].Description + ")", pThread);
+			EnterCallback(PausedReason.EvalComplete, "EvalException (" + process.GetActiveEval(corEval).Description + ")", pThread);
 			
 			HandleEvalComplete(pAppDomain, pThread, corEval, true);
 		}
 		
 		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
-			EnterCallback(PausedReason.EvalComplete, "EvalComplete (" + process.ActiveEvals[corEval].Description + ")", pThread);
+			EnterCallback(PausedReason.EvalComplete, "EvalComplete (" + process.GetActiveEval(corEval).Description + ")", pThread);
 			
 			HandleEvalComplete(pAppDomain, pThread, corEval, false);
 		}
@@ -261,9 +270,9 @@ namespace Debugger
 		void HandleEvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval, bool exception)
 		{
 			// Let the eval know that the CorEval has finished
-			Eval eval = process.ActiveEvals[corEval];
+			Eval eval = process.GetActiveEval(corEval);
 			eval.NotifyEvaluationComplete(!exception);
-			process.ActiveEvals.Remove(eval);
+			process.activeEvals.Remove(eval);
 			
 			pauseOnNextExit = true;
 			ExitCallback();
@@ -299,7 +308,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "UpdateModuleSymbols", pAppDomain);
 			
-			Module module = process.Modules[pModule];
+			Module module = process.GetModule(pModule);
 			if (module.CorModule is ICorDebugModule3 && module.IsDynamic) {
 				// In .NET 4.0, we use the LoadClass callback to load dynamic modules
 				// because it always works - UpdateModuleSymbols does not.
@@ -343,7 +352,7 @@ namespace Debugger
 			EnterCallback(PausedReason.Other, "CreateAppDomain", pAppDomain);
 
 			pAppDomain.Attach();
-			process.AppDomains.Add(new AppDomain(process, pAppDomain));
+			process.appDomains.Add(new AppDomain(process, pAppDomain));
 
 			ExitCallback();
 		}
@@ -359,8 +368,9 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LoadModule " + pModule.GetName(), pAppDomain);
 			
-			Module module = new Module(process.AppDomains[pAppDomain], pModule);
-			process.Modules.Add(module);
+			Module module = new Module(process.GetAppDomain(pAppDomain), pModule);
+			process.modules.Add(module);
+			process.OnModuleLoaded(module);
 			
 			ExitCallback();
 		}
@@ -378,9 +388,6 @@ namespace Debugger
 				
 				EnterCallback(PausedReason.Other, "NameChange: pThread", pThread);
 				
-				Thread thread = process.Threads[pThread];
-				thread.NotifyNameChanged();
-				
 				ExitCallback();
 				
 			}
@@ -393,7 +400,7 @@ namespace Debugger
 			EnterCallback(PausedReason.Other, "CreateThread " + pThread.GetID(), pAppDomain);
 			
 			Thread thread = new Thread(process, pThread);
-			process.Threads.Add(thread);
+			process.threads.Add(thread);
 			
 			thread.CorThread.SetDebugState(process.NewThreadState);
 			
@@ -404,7 +411,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LoadClass", pAppDomain);
 			
-			Module module = process.Modules[c.GetModule()];
+			Module module = process.GetModule(c.GetModule());
 			
 			// Dynamic module has been extended - reload symbols to inlude new class
 			module.LoadSymbolsDynamic();
@@ -427,7 +434,9 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "UnloadModule", pAppDomain);
 			
-			process.Modules.Remove(process.Modules[pModule]);
+			Module module = process.GetModule(pModule);
+			process.modules.Remove(module);
+			process.OnModuleUnloaded(module);
 			
 			ExitCallback();
 		}
@@ -441,11 +450,13 @@ namespace Debugger
 		
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
+			Thread thread = process.TryGetThread(pThread);
+			
 			// ICorDebugThread is still not dead and can be used for some operations
-			if (process.Threads.Contains(pThread)) {
+			if (thread != null) {
 				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), pThread);
 				
-				process.Threads[pThread].NotifyExited();
+				thread.NotifyExited();
 			} else {
 				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), process.CorProcess);
 				
@@ -466,7 +477,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "ExitAppDomain", pAppDomain);
 			
-			process.AppDomains.Remove(process.AppDomains[pAppDomain]);
+			process.appDomains.Remove(process.GetAppDomain(pAppDomain));
 			
 			ExitCallback();
 		}
@@ -476,7 +487,7 @@ namespace Debugger
 			// ExitProcess may be called at any time when debuggee is killed
 			process.TraceMessage("Callback: ExitProcess");
 			
-			process.NotifyHasExited();
+			process.OnExited();
 		}
 		
 		#endregion
@@ -518,11 +529,9 @@ namespace Debugger
 			if (exceptionType == ExceptionType.Unhandled || (pauseOnHandled && exceptionType == ExceptionType.CatchHandlerFound)) {
 				// sanity check: we can only handle one exception after another
 				// TODO : create Exception queue if CLR throws multiple exceptions
-				Debug.Assert(process.SelectedThread.CurrentException == null);
-				process.SelectedThread.CurrentException = new Exception(new Value(process.AppDomains[pAppDomain], process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference());
-				process.SelectedThread.CurrentException_DebuggeeState = process.DebuggeeState;
-				process.SelectedThread.CurrentExceptionType = exceptionType;
-				process.SelectedThread.CurrentExceptionIsUnhandled = exceptionType == ExceptionType.Unhandled;
+				Debug.Assert(exceptionThrown == null);
+				Value value = new Value(process.GetAppDomain(pAppDomain), process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference();
+				exceptionThrown = new Exception(value, exceptionType);
 				
 				pauseOnNextExit = true;
 			}

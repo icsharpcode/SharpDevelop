@@ -28,8 +28,8 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Breakpoint_Tests()
 		{
-			Breakpoint breakpoint1 = debugger.Breakpoints.Add(@"Breakpoint_Tests.cs", 14);
-			Breakpoint breakpoint2 = debugger.Breakpoints.Add(@"Breakpoint_Tests.cs", 15);
+			Breakpoint breakpoint1 = debugger.AddBreakpoint(@"Breakpoint_Tests.cs", 14);
+			Breakpoint breakpoint2 = debugger.AddBreakpoint(@"Breakpoint_Tests.cs", 15);
 			
 			StartTest();
 			
@@ -64,16 +64,16 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break Breakpoint_Tests.cs:12,4-12,40</DebuggingPaused>
     <Breakpoint1>
       <Breakpoint
-        Enabled="True"
         FileName="Breakpoint_Tests.cs"
+        IsEnabled="True"
         IsSet="True"
         Line="14"
         OriginalLocation="Breakpoint_Tests.cs:14,4-14,49" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        Enabled="True"
         FileName="Breakpoint_Tests.cs"
+        IsEnabled="True"
         IsSet="True"
         Line="15"
         OriginalLocation="Breakpoint_Tests.cs:16,4-16,49" />
@@ -89,15 +89,15 @@ namespace Debugger.Tests {
     <ProcessExited />
     <Breakpoint1>
       <Breakpoint
-        Enabled="True"
         FileName="Breakpoint_Tests.cs"
+        IsEnabled="True"
         Line="14"
         OriginalLocation="Breakpoint_Tests.cs:14,4-14,49" />
     </Breakpoint1>
     <Breakpoint2>
       <Breakpoint
-        Enabled="True"
         FileName="Breakpoint_Tests.cs"
+        IsEnabled="True"
         Line="15"
         OriginalLocation="Breakpoint_Tests.cs:16,4-16,49" />
     </Breakpoint2>

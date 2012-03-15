@@ -7,25 +7,39 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
-
 using Debugger;
 using Debugger.Interop;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public sealed class MemoryPad : DebuggerPad
+	public sealed class MemoryPad : AbstractPadContent
 	{
+		DockPanel panel;
+		ToolBar toolbar;
+		
 		int currentAddressIndex;
 		ConsoleControl console;
 		int columnsNumber = 16;
 		byte displayByteSize = 1;
 		byte[] memory;
-		Process debuggedProcess;
 		List<Tuple<long, long>> memoryAddresses = new List<Tuple<long, long>>();
 		Dictionary<long, int> addressesMapping = new Dictionary<long, int>();
+		
+		public override object Control {
+			get {
+				return panel;
+			}
+		}
+		
+		public Process debuggedProcess {
+			get {
+				return WindowsDebugger.CurrentProcess;
+			}
+		}
 		
 		/// <summary>
 		/// Gets or sets the number of columns in the display
@@ -61,10 +75,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public MemoryPad()
 		{
+			this.panel = new DockPanel();
+			this.toolbar = ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/MemoryPad/ToolBar");
+			this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
+			this.panel.Children.Add(toolbar);
+			
 			this.console = new ConsoleControl();
 			this.panel.Children.Add(console);
 			this.console.Encoding = Encoding.Default;
-			RefreshPad(); // exception
+			Refresh();
 			this.console.SetReadonly();
 			
 			DebuggerService.DebugStopped += DebuggerService_DebugStopped;
@@ -75,21 +94,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			memoryAddresses.Clear();
 			addressesMapping.Clear();
 			memory = null;
-		}
-		
-		protected override ToolBar BuildToolBar()
-		{
-			return ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/MemoryPad/ToolBar");
-		}
-		
-		protected override void SelectProcess(Process process)
-		{
-			if (process == null)
-				return;
-			
-			debuggedProcess = process;
-			memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
-			currentAddressIndex = 0;
 		}
 		
 		public void JumpToAddress(string address)
@@ -135,13 +139,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public bool Refresh(bool refreshMemoryAddresses = false)
+		public bool Refresh(object sender, DebuggerEventArgs dbg)
 		{
+			return Refresh();
+		}
+		
+		public bool Refresh()
+		{
+			memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
+			currentAddressIndex = 0;
+			
 			if (console == null)
 				return false;
 			
 			console.Clear();
-			if (debuggedProcess == null || debugger.IsProcessRunning) {
+			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				console.Append(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning"));
 				return false;
 			}
@@ -151,9 +163,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				currentAddressIndex = -1;
 				return false;
 			}
-			
-			if (refreshMemoryAddresses)
-				memoryAddresses = debuggedProcess.GetVirtualMemoryAddresses();
 			
 			if (memoryAddresses.Count == 0) {
 				console.Append(ResourceService.GetString("MainWindow.Windows.Debug.MemoryPad.NoMappings"));

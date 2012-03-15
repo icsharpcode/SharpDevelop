@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
@@ -183,7 +183,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			if (selectedItem == null)
 				return;
 			
-			var thread = Process.Threads.Find(t => t.ID == threadId);
+			var thread = Process.Threads.FirstOrDefault(t => t.ID == threadId);
 			if (thread == null)
 				return;
 

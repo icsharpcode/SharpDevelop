@@ -20,6 +20,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -29,43 +30,45 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		Tasks
 	}
 	
-	public class ParallelStackPad : DebuggerPad
+	public class ParallelStackPad : AbstractPadContent
 	{
+		DockPanel panel;
+		ToolBar toolbar;
+		
 		DrawSurface surface;
-		Process debuggedProcess;
 		ParallelStacksGraph graph;
 		List<ThreadStack> currentThreadStacks = new List<ThreadStack>();
 		ParallelStacksView parallelStacksView;
 		StackFrame selectedFrame;
 		bool isMethodView;
 		
+		public override object Control {
+			get { return panel; }
+		}
+		
 		#region Overrides
 		
-		protected override void InitializeComponents()
+		public ParallelStackPad()
 		{
+			this.panel = new DockPanel();
+			this.toolbar = ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/ParallelStacksPad/ToolBar");
+			this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
+			this.panel.Children.Add(toolbar);
+			
 			surface = new DrawSurface();
 			
 			panel.Children.Add(surface);
-		}
-		
-		protected override void SelectProcess(Process process)
-		{
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused -= OnProcessPaused;
-			}
-			debuggedProcess = process;
-			if (debuggedProcess != null) {
-				debuggedProcess.Paused += OnProcessPaused;
-			}
-			
+
+			WindowsDebugger.RefreshingPads += RefreshPad;
+			WindowsDebugger.RefreshPads();
 			DebuggerService.DebugStarted += OnReset;
-			DebuggerService.DebugStopped += OnReset;
-			
-			InvalidatePad();
+			DebuggerService.DebugStopped += OnReset;			
 		}
 		
-		protected override void RefreshPad()
+		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
 		{
+			Process debuggedProcess = dbg.Process;
+			
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				return;
 			}
@@ -95,12 +98,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (isMethodView)
 				{
 					// build method view for threads
-					CreateMethodViewStacks();
+					CreateMethodViewStacks(debuggedProcess);
 				}
 				else
 				{
 					// normal view
-					CreateCommonStacks();
+					CreateCommonStacks(debuggedProcess);
 				}
 			}
 			
@@ -119,11 +122,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					surface.SetGraph(graph);
 			}
 		}
-		
-		protected override ToolBar BuildToolBar()
-		{
-			return ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/ParallelStacksPad/ToolBar");
-		}
 
 		#endregion
 		
@@ -133,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return parallelStacksView; }
 			set {
 				parallelStacksView = value;
-				InvalidatePad();
+				WindowsDebugger.RefreshPads();
 			}
 		}
 		
@@ -141,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return isMethodView; }
 			set {
 				isMethodView = value;
-				InvalidatePad();
+				WindowsDebugger.RefreshPads();
 			}
 		}
 		
@@ -163,11 +161,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			BookmarkManager.RemoveAll(b => b is SelectedFrameBookmark);
 		}
 
-		void OnProcessPaused(object sender, ProcessEventArgs e)
-		{
-			InvalidatePad();
-		}
-		
 		void AddChildren(ThreadStack parent)
 		{
 			if(parent.ThreadStackChildren == null || parent.ThreadStackChildren.Count == 0)
@@ -187,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		void CreateCommonStacks()
+		void CreateCommonStacks(Process debuggedProcess)
 		{
 			// stack.ItemCollection     order
 			// 0 -> top of stack 		= S.C
@@ -369,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
-		void CreateMethodViewStacks()
+		void CreateMethodViewStacks(Process debuggedProcess)
 		{
 			var list = new List<Tuple<ObservableCollection<ParallelStackFrameModel>, ObservableCollection<ParallelStackFrameModel>, List<uint>>>();
 			
@@ -439,6 +432,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void CreateThreadStack(Thread thread)
 		{
+			Process debuggedProcess = thread.Process;
+			
 			var items = CreateItems(thread);
 			if (items == null || items.Count == 0)
 				return;
@@ -465,6 +460,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			int noTasks = 0;
 			var result = new ObservableCollection<ParallelStackFrameModel>();
 			var callstack = thread.GetCallstack(100);
+			Process debuggedProcess = thread.Process;
 			
 			if (parallelStacksView == ParallelStacksView.Threads) {
 				foreach (StackFrame frame in callstack) {
@@ -536,7 +532,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			if (frame.Thread.SelectedStackFrame != null &&
-			    frame.Thread.ID == debuggedProcess.SelectedThread.ID &&
+			    frame.Thread.ID == WindowsDebugger.CurrentProcess.SelectedThread.ID &&
 			    frame.Thread.SelectedStackFrame.IP == frame.IP &&
 			    frame.Thread.SelectedStackFrame.GetMethodName() == frame.GetMethodName()) {
 				model.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
@@ -583,7 +579,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ToggleSelectedFrameBookmark(e.Location);
 			
 			if (isMethodView)
-				InvalidatePad();
+				WindowsDebugger.RefreshPads();
 		}
 		
 		#endregion

@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn
 {
@@ -42,7 +43,7 @@ namespace Debugger.AddIn
 						list.WatchItems.Add(text);
 				}
 				
-				pad.InvalidatePad();
+				WindowsDebugger.RefreshPads();
 			}
 		}
 	}
@@ -60,7 +61,8 @@ namespace Debugger.AddIn
 					return;
 				
 				list.WatchItems.Remove(node);
-				((WatchPad)this.Owner).InvalidatePad();
+				
+				WindowsDebugger.RefreshPads();
 			}
 		}
 	}
@@ -69,9 +71,7 @@ namespace Debugger.AddIn
 	{
 		public override void Run()
 		{
-			if (this.Owner is WatchPad) {
-				((WatchPad)this.Owner).InvalidatePad();
-			}
+			WindowsDebugger.RefreshPads();
 		}
 	}
 	

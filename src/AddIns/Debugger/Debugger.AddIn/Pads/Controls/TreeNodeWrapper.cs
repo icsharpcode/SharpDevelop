@@ -75,7 +75,7 @@ namespace Debugger.AddIn.Pads.Controls
 			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.Name == ((TreeNodeWrapper)n).Node.Name))
 				WatchPad.Instance.WatchList.WatchItems.Add(node);
 			
-			WatchPad.Instance.InvalidatePad();
+			WindowsDebugger.RefreshPads();
 		}
 	}
 }

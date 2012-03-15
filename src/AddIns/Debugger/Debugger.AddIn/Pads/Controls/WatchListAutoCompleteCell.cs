@@ -65,14 +65,7 @@ namespace Debugger.AddIn.Pads.Controls
 			
 			// get process
 			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			
-			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
-				this.Process = e.Process;
-			};
-			this.Process = debugger.DebuggedProcess;
 		}
-		
-		private Process Process { get; set; }
 		
 		/// <summary>
 		/// Gets/sets the command text displayed at the command prompt.
@@ -150,7 +143,7 @@ namespace Debugger.AddIn.Pads.Controls
 		
 		private void ShowDotCompletion(string currentText)
 		{
-			var seg = Process.SelectedStackFrame.NextStatement;
+			var seg = WindowsDebugger.CurrentProcess.SelectedStackFrame.NextStatement;
 			
 			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 			var info = ParserService.GetParseInformation(seg.Filename);

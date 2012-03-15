@@ -24,14 +24,6 @@ namespace Debugger
 		
 		StackFrame selectedStackFrame;
 		
-		Exception     currentException;
-		DebuggeeState currentException_DebuggeeState;
-		ExceptionType currentExceptionType;
-		bool          currentExceptionIsUnhandled;
-
-		public event EventHandler<ThreadEventArgs> NameChanged;
-		public event EventHandler<ThreadEventArgs> Exited;
-		
 		public Process Process {
 			get { return process; }
 		}
@@ -94,15 +86,7 @@ namespace Debugger
 			}
 			
 			this.HasExited = true;
-			OnExited(new ThreadEventArgs(this));
-			process.Threads.Remove(this);
-		}
-		
-		protected virtual void OnExited(ThreadEventArgs e)
-		{
-			if (Exited != null) {
-				Exited(this, e);
-			}
+			process.threads.Remove(this);
 		}
 		
 		/// <summary> If the thread is not at safe point, it is not posible to evaluate
@@ -142,7 +126,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.GetObject();
-				return new Value(process.AppDomains[this.CorThread.GetAppDomain()], corValue);
+				return new Value(process.GetAppDomain(this.CorThread.GetAppDomain()), corValue);
 			}
 		}
 		
@@ -158,44 +142,6 @@ namespace Debugger
 				if (runtimeName.IsNull) return string.Empty;
 				return runtimeName.AsString(100);
 			}
-		}
-		
-		protected virtual void OnNameChanged(ThreadEventArgs e)
-		{
-			if (NameChanged != null) {
-				NameChanged(this, e);
-			}
-		}
-		
-		internal void NotifyNameChanged()
-		{
-			OnNameChanged(new ThreadEventArgs(this));
-		}
-		
-		public Exception CurrentException {
-			get {
-				if (currentException_DebuggeeState == process.DebuggeeState) {
-					return currentException;
-				} else {
-					return null;
-				}
-			}
-			internal set { currentException = value; }
-		}
-		
-		internal DebuggeeState CurrentException_DebuggeeState {
-			get { return currentException_DebuggeeState; }
-			set { currentException_DebuggeeState = value; }
-		}
-		
-		public ExceptionType CurrentExceptionType {
-			get { return currentExceptionType; }
-			internal set { currentExceptionType = value; }
-		}
-		
-		public bool CurrentExceptionIsUnhandled {
-			get { return currentExceptionIsUnhandled; }
-			internal set { currentExceptionIsUnhandled = value; }
 		}
 		
 		/// <summary> Tryies to intercept the current exception.
@@ -219,9 +165,6 @@ namespace Debugger
 				}
 			}
 			if (mostRecentUnoptimized == null) return false;
-			
-			if (exception == null)
-				exception = currentException;
 			
 			try {
 				// Interception will expire the CorValue so keep permanent reference
@@ -378,23 +321,6 @@ namespace Debugger
 					return false;
 				}
 			}
-		}
-	}
-	
-	[Serializable]
-	public class ThreadEventArgs : ProcessEventArgs
-	{
-		Thread thread;
-		
-		public Thread Thread {
-			get {
-				return thread;
-			}
-		}
-		
-		public ThreadEventArgs(Thread thread): base(thread.Process)
-		{
-			this.thread = thread;
 		}
 	}
 }

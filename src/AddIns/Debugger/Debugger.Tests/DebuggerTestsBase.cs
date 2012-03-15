@@ -196,33 +196,30 @@ namespace Debugger.Tests
 			
 			log = "";
 			lastLogMessage = null;
-			process = debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), testName);
+			process = debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), testName, false);
 			process.LogMessage += delegate(object sender, MessageEventArgs e) {
 				log += e.Message;
 				lastLogMessage = e.Message;
 				LogEvent("LogMessage", e.Message.Replace("\r",@"\r").Replace("\n",@"\n"));
 			};
-			process.Modules.Added += delegate(object sender, CollectionItemEventArgs<Module> e) {
-				LogEvent("ModuleLoaded", e.Item.Name + (e.Item.HasSymbols ? " (Has symbols)" : " (No symbols)"));
+			process.ModuleLoaded += delegate(object sender, ModuleEventArgs e) {
+				LogEvent("ModuleLoaded", e.Module.Name + (e.Module.HasSymbols ? " (Has symbols)" : " (No symbols)"));
 			};
-			process.Paused += delegate(object sender, ProcessEventArgs e) {
+			process.Paused += delegate(object sender, DebuggerEventArgs e) {
+				if (e.ExceptionThrown != null) {
+					StringBuilder msg = new StringBuilder();
+					if (process.SelectedThread.InterceptException(e.ExceptionThrown)) {
+						msg.Append(e.ExceptionThrown.ToString());
+					} else {
+						// For example, happens on stack overflow
+						msg.Append("Could not intercept: ");
+						msg.Append(e.ExceptionThrown.ToString());
+					}
+					LogEvent("ExceptionThrown", msg.ToString());	
+				}
 				LogEvent("DebuggingPaused", e.Process.PauseSession.PausedReason.ToString() + " " + e.Process.SelectedStackFrame.NextStatement.ToString());
 			};
-//			process.DebuggingResumed += delegate(object sender, ProcessEventArgs e) {
-//				LogEvent("DebuggingResumed", e.Process.PausedReason.ToString());
-//			};
-			process.ExceptionThrown += delegate(object sender, ExceptionEventArgs e) {
-				StringBuilder msg = new StringBuilder();
-				if (process.SelectedThread.InterceptException(e.Exception)) {
-					msg.Append(e.Exception.ToString());
-				} else {
-					// For example, happens on stack overflow
-					msg.Append("Could not intercept: ");
-					msg.Append(e.Exception.ToString());
-				}
-				LogEvent("ExceptionThrown", msg.ToString());
-			};
-			process.Exited += delegate(object sender, EventArgs e) {
+			process.Exited += delegate(object sender, DebuggerEventArgs e) {
 				LogEvent("ProcessExited", null);
 			};
 			

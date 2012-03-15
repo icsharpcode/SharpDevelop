@@ -266,7 +266,6 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Pads\DebuggerPad.cs" />
     <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="TreeModel\ValueNode.cs" />
     <Compile Include="TreeModel\Utils.cs" />
