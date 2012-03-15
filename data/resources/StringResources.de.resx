@@ -1865,6 +1865,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Einzelschrittausführung</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Code ohne Symbole dekompilieren</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>"Nur eigenen Code"-Feature aktivieren</value>
   </data>
@@ -2096,6 +2099,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
     <value>Schriften &amp;glätten</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ChangeMarkerMarginCheckBox" xml:space="preserve">
+    <value>Änderungsmarkierungen anzeigen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
     <value>&amp;Code Completion aktivieren</value>
   </data>
@@ -2176,6 +2182,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Markierungen und Liniale</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
+    <value>Verdeckte Definitionen anzeigen (nur geschweifte Klammern)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
     <value>&amp;Leerzeichen anzeigen</value>
@@ -3039,6 +3048,9 @@ Bitte einen anderen Dateinamen wählen.</value>
   <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
     <value>Code-Analyse</value>
   </data>
+  <data name="ICSharpCode.CodeAnalysis.CheckProjectWithFxCop" xml:space="preserve">
+    <value>Aktuelles Projekt mit FxCop prüfen</value>
+  </data>
   <data name="ICSharpCode.CodeAnalysis.CheckWithFxCop" xml:space="preserve">
     <value>Mit FxCop überprüfen</value>
   </data>
@@ -3305,6 +3317,9 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
     <value>NAnt an&amp;halten</value>
   </data>
+  <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
+    <value>Es ist kein Startprojekt zum Debuggen vorhanden.</value>
+  </data>
   <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
     <value>Unit-Tests</value>
   </data>
@@ -3367,6 +3382,9 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   </data>
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>Das gewählte Element ist keine Klasse oder überschreibbares Mitglied, daher können keine Symbole angezeigt werden.</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>Konnte keine Typdefinition an der Einfügemarkenposition finden.</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Zeile an Ruby Konsole senden</value>
@@ -3770,6 +3788,9 @@ wurde außerhalb der Applikation geändert. Wollen Sie die Datei neu laden?</val
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Konnte den Designer nicht laden. Prüfen Sie den Sourcecode auf Syntaxfehler und stellen Sie sicher, dass alle Referenzen verfügbar sind.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>Ein oder mehrere Fehler traten auf, beim Versuch den Designer-Inhalt zu erneuern. Ein Grund dafür könnte eine unbehandelte Ausnahme in Benutzer-/Dritthersteller-Komponenten, die auf dem Control/der Form verwendet werden, sein.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Konnte Sidebar Komponentenbibliothek nicht laden.
 Keine Windows Forms Komponenten werden verfügbar sein, bitte konfigurieren Sie den Sidebar manuell.
@@ -4054,6 +4075,9 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Lade ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Projektmappe schließen</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>Alte Projektmappe offen halten</value>
   </data>
@@ -4086,6 +4110,14 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Projekt-Update</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>Das Projekt '${ProjectName}' hat als Build-Ziel MSBuild ${OldToolsVersion}, aber diese Version ist nicht installiert.
+Möchten Sie das Projekt auf MSBuild ${NewToolsVersion} upgraden?
+Das Projekt kann nicht ohne Upgrade geöffnet werden.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
+    <value>Auf MSBuild ${NewToolsVersion} upgraden</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>Diese Projektmappe wurde mit einer vorherigen Version von SharpDevelop erstellt. Sie möchten sie vielleicht aktualisieren, um neue Sprach- und Framework-Features verwenden zu können.</value>
@@ -4147,6 +4179,48 @@ In "Optionen-&gt;Visueller Stil" kann die Sprachumgebung neu eingestellt werden.
   </data>
   <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
     <value>Die Unit Tests können nicht ausgeführt werden. Die Datei {0} kann nicht gefunden werden.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.ApplicationExists" xml:space="preserve">
+    <value>Applikation existiert bereits.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
+    <value>Applikation/Virtuelles Verzeichnis erstellen</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Web-Server Optionen deaktivieren</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.IISNotFound" xml:space="preserve">
+    <value>Ein lokaler IIS oder IIS Express Server wurde nicht gefunden.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoIISWP" xml:space="preserve">
+    <value>Der ASP.NET/IIS (Express) Worker-Prozess ({0}) wurde nicht gefunden.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
+    <value>Es wurde kein extern Programm oder URL zum Start angegeben. Bitte prüfen Sie die Webserver-Einstellungen in den Projekteigenschaften auf der Registerkarte "Web".</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Server-Port:</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.ProjectUrl" xml:space="preserve">
+    <value>Projekt URL:</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.Server" xml:space="preserve">
+    <value>Webserver</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>Der Debugger konnte nicht an den Prozess angehängt werden.</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseIISExpress" xml:space="preserve">
+    <value>IIS Express Webserver verwenden</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.UseLocalIIS" xml:space="preserve">
+    <value>Lokalen IIS Webserver verwenden</value>
+  </data>
+  <data name="ICSharpCode.WebProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
+    <value>Applikation/Virtuelles Verzeichnis wurde angelegt.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Erweiterungen hinzufügen</value>
@@ -4743,6 +4817,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbols" xml:space="preserve">
     <value>Es kann nicht zu einer Funktion ohne Debugsymbole gewechselt werden.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
+    <value>Sie können nicht zu einer Funktion ohne Debug-Symbole wechseln. Entweder kompilieren Sie sie mit Debug-Symbolen erneut oder aktivieren "Code ohne Symbole dekompilieren" in den Optionen.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Externe Methoden]</value>
   </data>
@@ -4752,6 +4829,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.CallStack.Language" xml:space="preserve">
     <value>Sprache</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Modul</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowArgumentNames" xml:space="preserve">
     <value>Parameternamen anzeigen</value>
   </data>
@@ -4760,6 +4840,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ShowExternalMethods" xml:space="preserve">
     <value>Externe Methoden anzeigen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowLineNumber" xml:space="preserve">
+    <value>Zeilennummern anzeigen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
+    <value>Modulnamen anzeigen</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Ask" xml:space="preserve">
     <value>Nachfragen</value>
@@ -4820,6 +4906,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException" xml:space="preserve">
     <value>Konnte Exception nicht abfangen. Das debuggte Programm kann nicht fortgesetzt werden.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
+    <value>Die behandelte Ausnahme kann nicht abgefangen werden. Debug-Symbole sind möglicherweise nicht für den Ursprung der Ausnahme vorhanden.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Verstecke Ausnahmen-Details</value>
@@ -4908,6 +4997,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Statische Mitglieder</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
+    <value>Debugging nicht aktiv oder der Prozess ist nicht angehalten!</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Module</value>
   </data>
@@ -4956,8 +5048,14 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Threads.CannotStepNoActiveFunction" xml:space="preserve">
     <value>Sie können keinen Einzelschritt ausführen, weil keine aktive Funktion ausgewählt ist.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame" xml:space="preserve">
+    <value>Sie können nicht zu einem Thread wechseln, für den kein Frame vorhanden ist.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning" xml:space="preserve">
     <value>Sie können nicht zwischen Threads umschalten, während der Debugger läuft.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions" xml:space="preserve">
+    <value>You cannot switch to a thread paused at a function without debug symbols. Either recompile it with symbols or enable "Decompile code without symbols" in the options.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Threads.Freeze" xml:space="preserve">
     <value>Einfrieren</value>
@@ -6166,6 +6264,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Leere Datei</value>
   </data>
+  <data name="Templates.File.Exception.Description" xml:space="preserve">
+    <value>Erstellt eine neue Exception-Klasse.</value>
+  </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
     <value>Ausnahme</value>
   </data>
@@ -6330,6 +6431,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Form</value>
+  </data>
+  <data name="Templates.File.WebHandler.Description" xml:space="preserve">
+    <value>Erstellt einen ASP.NET WebHandler mit Code-Datei.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET Web Handler</value>

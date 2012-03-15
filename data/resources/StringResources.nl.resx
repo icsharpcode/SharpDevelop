@@ -1868,6 +1868,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stapsgewijs</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Code decompileren zonder symbolen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>Stap naar 'Alleen mijn code' kenmerk</value>
   </data>
@@ -2017,15 +2020,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Vormgeving</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Project referenties uitbreiden (referenties weergeven)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>SharpDevelop UI opties</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>SharpDevelop UI opties</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Commentaar labels</value>
@@ -3787,6 +3781,9 @@ DIT HEEFT GEEN INVLOED OP DE BRON CODE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Laden van ontwerpvlak is mislukt. Ga na of de broncode syntactische fouten bevat en alle referenties beschikbaar zijn.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>Een of meer fouten traden op bij het spoelen van de designer inhoud.Dit kan te wijten zijn aan een niet-afgehandelde uitzondering in een aangepaste/thitd party component op het formulier/besturingselement.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Kan de zijkolom Component bibliotheek niet laden. Er zijn geen Windows Forms componenten beschikbaar, stel aub zijkolom handmatig in. (Rechts klikken op een zijkolom categorie -&gt; Zijkolom instellen)</value>
   </data>
@@ -4068,6 +4065,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Oplossing sluiten</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>De oude oplossing open houden.</value>
   </data>
@@ -4189,7 +4189,7 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
     <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Er is geen project URL of extern programma gespecificeerd. Check de Web server bij Project eigenschappen -&gt; Foutzoeken tab.</value>
+    <value>Er is geen extern programma of URL gespecificeerd. Controleer de web server bij Project eigenschappen - Web tab.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server poort:</value>
@@ -4808,7 +4808,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Overschakelen naar een functie zonder symbolen is niet mogelijk.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
-    <value>Wisselen naar een functie zonder symbolen zonder dat de gedecompileerde code opties zijn ingeschakeld.</value>
+    <value>Kan niet wisselen naar een functie zonder debug symbolen, tenzij hercompileren wordt uitgevoerd en de optie "Decompileer code zonder symbolen" is ingeschakeld.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Externe methodes]</value>

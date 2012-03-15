@@ -2001,15 +2001,6 @@ Para criar/manipular um objeto ActiveX/COM, arraste uma classe contida em um Typ
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Estilo visual</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Expandir referencias do projeto (refletir referencias)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>Opções da Interface de Usuario para o Sharp Develop</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>Opções da Interface de Usuario para o Sharp Develop</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Comentar Tags</value>
   </data>

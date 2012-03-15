@@ -1927,6 +1927,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stepping</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Decompile code without symbols</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>Use 'Just My Code' feature for stepping</value>
   </data>
@@ -2085,15 +2088,6 @@ system. I don't think that it needs translation.</comment>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Appearance</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Expand project references (reflect references)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>Sharp Develop UI options</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>Sharp Develop UI options</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Comment Tags</value>
@@ -4292,6 +4286,9 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Loading ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Close solution</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>Keep old solution open</value>
     <comment>Button text to keep old solution open</comment>
@@ -4422,7 +4419,7 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
     <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>There's no Project Url specified or external program. Check the web server at Project Properties - Debug tab.</value>
+    <value>There is no external program or URL specified. Check the web server at Project Properties - Web tab.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server port:</value>
@@ -5085,7 +5082,7 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
     <value>You cannot switch to a function without symbols.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
-    <value>You cannot switch to a function without symbols without enabling decompiled code options.</value>
+    <value>You cannot switch to a function without debug symbols. Either recompile it with symbols or enable "Decompile code without symbols" in the options.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[External methods]</value>
@@ -6831,7 +6828,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>ASP.NET Web Form</value>
   </data>
   <data name="Templates.File.WebHandler.Description" xml:space="preserve">
-    <value>Creates a ASP.NET WebHandler with code-behind.</value>
+    <value>Creates an ASP.NET WebHandler with code-behind.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET Web Handler</value>
