@@ -31,5 +31,6 @@ namespace Debugger
 		public string[] SymbolsSearchPaths { get; set; }
 		public bool SuspendOtherThreads { get; set; }
 		public bool PauseOnHandledExceptions { get; set; }
+		public bool DecompileCodeWithoutSymbols { get; set; }
 	}
 }

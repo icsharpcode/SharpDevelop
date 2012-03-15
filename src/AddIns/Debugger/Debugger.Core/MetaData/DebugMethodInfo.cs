@@ -187,12 +187,12 @@ namespace Debugger.MetaData
 		
 		/// <inheritdoc/>
 		public override bool IsGenericMethod {
-			get { throw new NotSupportedException(); }
+			get { return methodDefSig.GenericParameterCount > 0; }
 		}
 		
 		/// <inheritdoc/>
 		public override bool IsGenericMethodDefinition {
-			get { throw new NotSupportedException(); }
+			get { return methodDefSig.GenericParameterCount > 0; }
 		}
 		
 		/// <inheritdoc/>
@@ -294,10 +294,12 @@ namespace Debugger.MetaData
 		}
 		
 		/// <summary> Gets value indicating whether this method should be stepped over
-		/// accoring to current options </summary>
+		/// according to current options </summary>
 		public bool StepOver {
 			get {
 				Options opt = this.Process.Options;
+				if (opt.DecompileCodeWithoutSymbols)
+					return false;
 				if (opt.StepOverNoSymbols) {
 					if (this.SymMethod == null) return true;
 				}

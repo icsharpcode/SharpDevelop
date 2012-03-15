@@ -66,13 +66,16 @@ namespace ICSharpCode.ILSpyAddIn
 			if (string.IsNullOrEmpty(typeName))
 				throw new ArgumentException("typeName is null or empty");
 			
-			// jump to line number if the decompiled view content exits - no need for a new decompilation
+			// jump to line number if the decompiled view content exists - no need for a new decompilation
 			foreach (var viewContent in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<DecompiledViewContent>()) {
 				if (string.Equals(viewContent.AssemblyFile, assemblyFile, StringComparison.OrdinalIgnoreCase) && typeName == viewContent.FullTypeName) {
 					if (updateMarker) {
 						viewContent.UpdateDebuggingUI();
 					}
-					viewContent.JumpToLineNumber(lineNumber);
+					if (lineNumber > 0)
+						viewContent.JumpToLineNumber(lineNumber);
+					else
+						viewContent.JumpToEntity(entityTag);
 					viewContent.WorkbenchWindow.SelectWindow();
 					return true;
 				}
@@ -84,7 +87,10 @@ namespace ICSharpCode.ILSpyAddIn
 				if (updateMarker) {
 					decompiledView.UpdateDebuggingUI();
 				}
-				decompiledView.JumpToLineNumber(lineNumber);
+				if (lineNumber > 0)
+					decompiledView.JumpToLineNumber(lineNumber);
+				else
+					decompiledView.JumpToEntity(entityTag);
 			};
 			WorkbenchSingleton.Workbench.ShowView(decompiledView);
 			return true;

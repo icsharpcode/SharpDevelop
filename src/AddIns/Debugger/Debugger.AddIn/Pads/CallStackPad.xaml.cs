@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 				if (item.Frame != null && debuggedProcess.SelectedThread != null) {
 					// check for options - if these options are enabled, selecting the frame should not continue
-					if (!item.Frame.HasSymbols && (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols)) {
+					if (!item.Frame.HasSymbols && !debuggedProcess.Options.DecompileCodeWithoutSymbols) {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions}",
 						                           "${res:MainWindow.Windows.Debug.CallStack.FunctionSwitch}");
 						return;

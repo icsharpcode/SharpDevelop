@@ -103,14 +103,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
-			if (debuggedProcess.IsPaused) {
-				if (debuggedProcess != null) {
+			if (debuggedProcess != null) {
+				if (debuggedProcess.IsPaused) {
 					ThreadModel obj = runningThreadsList.SelectedItems[0] as ThreadModel;
 					Thread thread = obj.Thread;
 					
 					// check for options - if these options are enabled, selecting the frame should not continue
 					if ((thread.MostRecentStackFrame == null || !thread.MostRecentStackFrame.HasSymbols) &&
-					    (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols)) {
+					    !DebuggingOptions.Instance.DecompileCodeWithoutSymbols) {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions}",
 						                           "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 						return;
@@ -124,9 +124,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					} else {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 					}
+				} else {
+					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 				}
-			} else {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 			}
 		}
 		

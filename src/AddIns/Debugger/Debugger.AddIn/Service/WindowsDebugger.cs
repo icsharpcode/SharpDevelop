@@ -942,7 +942,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			// check for options - if these options are enabled, debugging decompiled code should not continue
-			if (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols) {
+			if (!debuggedProcess.Options.DecompileCodeWithoutSymbols) {
 				LoggingService.Info("Decompiled code debugging is disabled!");
 				return;
 			}
@@ -961,13 +961,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				// update marker & navigate to line
 				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
 				                             debugType.FullNameWithoutGenericArguments,
-				                             string.Empty,
+				                             IDStringProvider.GetIDString(frame.MethodInfo),
 				                             line);
 			} else {
 				// no line => do decompilation
 				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
 				                             debugType.FullNameWithoutGenericArguments,
-				                             string.Empty);
+				                             IDStringProvider.GetIDString(frame.MethodInfo));
+				
 			}
 		}
 		

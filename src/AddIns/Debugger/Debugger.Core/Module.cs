@@ -336,7 +336,7 @@ namespace Debugger
 		}
 		
 		/// <summary> Sets all code as being 'my code'.  The code will be gradually
-		/// set to not-user-code as encountered acording to stepping options </summary>
+		/// set to not-user-code as encountered according to stepping options </summary>
 		public void ResetJustMyCodeStatus()
 		{
 			uint unused = 0;
