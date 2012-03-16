@@ -71,7 +71,7 @@ namespace ICSharpCode.CppBinding.Project
 					{
 						// in #D every project is compiled by msbuild separately, this mean that SolutionDir will
 						// be equal to ProjectDir, so it has to be replaced with actual solution directory
-						string evaluatedSolutionDir = GetEvaluatedProperty("SolutionDir");
+						string evaluatedSolutionDir = GetEvaluatedProperty("SolutionDir") ?? "";
 						outputPath = Path.Combine(ParentSolution.Directory, outputPath.Substring(evaluatedSolutionDir.Length));
 					}
 					return FileUtility.NormalizePath(Path.Combine(outputPath, AssemblyName + GetExtension(OutputType)));

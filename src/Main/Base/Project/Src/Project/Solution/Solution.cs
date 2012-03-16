@@ -1199,7 +1199,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void UpdateMSBuildProperties()
 		{
-			MSBuildProjectCollection.SetGlobalProperty("SolutionDir", Directory + @"\");
+			var dict = new Dictionary<string, string>();
+			AddMSBuildSolutionProperties(dict);
+			foreach (var pair in dict) {
+				MSBuildProjectCollection.SetGlobalProperty(pair.Key, pair.Value);
+			}
+		}
+		
+		public void AddMSBuildSolutionProperties(IDictionary<string, string> propertyDict)
+		{
+			propertyDict["SolutionDir"] = EnsureBackslash(this.Directory);
+			propertyDict["SolutionExt"] = ".sln";
+			propertyDict["SolutionFileName"] = Path.GetFileName(this.FileName);
+			propertyDict["SolutionName"] = this.Name;
+			propertyDict["SolutionPath"] = this.FileName;
+		}
+		
+		static string EnsureBackslash(string path)
+		{
+			if (path.EndsWith("\\", StringComparison.Ordinal))
+				return path;
+			else
+				return path + "\\";
 		}
 		
 		#endregion
