@@ -813,7 +813,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult)
+		/// <summary>
+		/// Creates a ResolveResult representing the result of overload resolution.
+		/// </summary>
+		/// <param name="targetResolveResult">
+		/// The target expression of the call. May be <c>null</c> for static methods/constructors.
+		/// </param>
+		/// <param name="initializerStatements">
+		/// Statements for Objects/Collections initializer.
+		/// <see cref="InvocationResolveResult.InitializerStatements"/>
+		/// </param>
+		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null)
 		{
 			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
 			if (member == null)
@@ -827,7 +837,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,
 				isDelegateInvocation: false,
-				argumentToParameterMap: this.GetArgumentToParameterMap());
+				argumentToParameterMap: this.GetArgumentToParameterMap(),
+				initializerStatements: initializerStatements);
 		}
 	}
 }

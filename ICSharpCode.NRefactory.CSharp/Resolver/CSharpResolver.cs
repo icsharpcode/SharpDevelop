@@ -278,12 +278,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Object Initializer Context
 		sealed class ObjectInitializerContext
 		{
-			internal readonly IType type;
+			internal readonly ResolveResult initializedObject;
 			internal readonly ObjectInitializerContext prev;
 			
-			public ObjectInitializerContext(IType type, CSharpResolver.ObjectInitializerContext prev)
+			public ObjectInitializerContext(ResolveResult initializedObject, CSharpResolver.ObjectInitializerContext prev)
 			{
-				this.type = type;
+				this.initializedObject = initializedObject;
 				this.prev = prev;
 			}
 		}
@@ -298,18 +298,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Pushes the type of the object that is currently being initialized.
 		/// </summary>
-		public CSharpResolver PushInitializerType(IType type)
+		public CSharpResolver PushObjectInitializer(ResolveResult initializedObject)
 		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			return WithObjectInitializerStack(new ObjectInitializerContext(type, objectInitializerStack));
+			if (initializedObject == null)
+				throw new ArgumentNullException("initializedObject");
+			return WithObjectInitializerStack(new ObjectInitializerContext(initializedObject, objectInitializerStack));
 		}
 		
-		public CSharpResolver PopInitializerType()
+		public CSharpResolver PopObjectInitializer()
 		{
 			if (objectInitializerStack == null)
 				throw new InvalidOperationException();
 			return WithObjectInitializerStack(objectInitializerStack.prev);
+		}
+		
+		/// <summary>
+		/// Gets whether this context is within an object initializer.
+		/// </summary>
+		public bool IsInObjectInitializer {
+			get { return objectInitializerStack != null; }
+		}
+		
+		/// <summary>
+		/// Gets the current object initializer. This usually is an <see cref="InitializedObjectResolveResult"/>
+		/// or (for nested initializers) a semantic tree based on an <see cref="InitializedObjectResolveResult"/>.
+		/// Returns ErrorResolveResult if there is no object initializer.
+		/// </summary>
+		public ResolveResult CurrentObjectInitializer {
+			get {
+				return objectInitializerStack != null ? objectInitializerStack.initializedObject : ErrorResult;
+			}
 		}
 		
 		/// <summary>
@@ -318,7 +336,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// has unknown type).
 		/// </summary>
 		public IType CurrentObjectInitializerType {
-			get { return objectInitializerStack != null ? objectInitializerStack.type : SpecialType.UnknownType; }
+			get { return CurrentObjectInitializer.Type; }
 		}
 		#endregion
 		
@@ -1644,8 +1662,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveIdentifierInObjectInitializer(string identifier)
 		{
 			MemberLookup memberLookup = CreateMemberLookup();
-			ResolveResult target = new ResolveResult(this.CurrentObjectInitializerType);
-			return memberLookup.Lookup(target, identifier, EmptyList<IType>.Instance, false);
+			return memberLookup.Lookup(this.CurrentObjectInitializer, identifier, EmptyList<IType>.Instance, false);
 		}
 		#endregion
 		
@@ -2025,8 +2042,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Whether to allow calling protected constructors.
 		/// This should be false except when resolving constructor initializers.
 		/// </param>
+		/// <param name="initializerStatements">
+		/// Statements for Objects/Collections initializer.
+		/// <see cref="InvocationResolveResult.InitializerStatements"/>
+		/// </param>
 		/// <returns>InvocationResolveResult or ErrorResolveResult</returns>
-		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null, bool allowProtectedAccess = false)
+		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null, bool allowProtectedAccess = false, IList<ResolveResult> initializerStatements = null)
 		{
 			if (type.Kind == TypeKind.Delegate && arguments.Length == 1) {
 				return Convert(arguments[0], type);
@@ -2040,7 +2061,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					or.AddCandidate(ctor, OverloadResolutionErrors.Inaccessible);
 			}
 			if (or.BestCandidate != null) {
-				return or.CreateResolveResult(null);
+				return or.CreateResolveResult(null, initializerStatements);
 			} else {
 				return new ErrorResolveResult(type);
 			}
