@@ -1672,6 +1672,37 @@ class A
 				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
 			});
 		}
+		[Test()]
+		public void TestOverrideCompletion ()
+		{
+			CombinedProviderTest (
+@"using System;
+
+class Base
+{
+
+	public virtual int Property { get;}
+	public virtual int Method () { }
+	public virtual event EventHandler Event;
+	public virtual int this[int i] { get { } }
+}
+
+
+class A : Base
+{
+	$public override $
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Property"), "'Property' not found.");
+				Assert.IsNotNull (provider.Find ("Method"), "'Method' not found.");
+				Assert.IsNotNull (provider.Find ("Event"), "'Event' not found.");
+				Assert.IsNotNull (provider.Find ("ToString"), "'Event' not found.");
+				Assert.IsNotNull (provider.Find ("GetHashCode"), "'GetHashCode' not found.");
+				Assert.IsNotNull (provider.Find ("Equals"), "'Equals' not found.");
+				Assert.AreEqual (7, provider.Count);
+			});
+		}
+		
 		
 		/// <summary>
 		/// Bug 3370 -MD ignores member hiding

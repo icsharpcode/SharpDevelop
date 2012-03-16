@@ -1529,11 +1529,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return e.Name + "`" + e.TypeParameters.Count;
 		}
 		
-		void AddVirtuals (Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+		void AddVirtuals(Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
-			if (curType == null)
+			if (curType == null) {
 				return;
-			foreach (var m in curType.GetMethods (m => !m.IsConstructor && !m.IsDestructor).Cast<IMember> ().Concat (curType.GetProperties ().Cast<IMember> ()).Reverse ()) {
+			}
+			foreach (var m in curType.GetMembers ().Reverse ()) {
 				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !m.IsOverridable)
 					continue;
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
