@@ -60,8 +60,10 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 			if (e.Key == Key.Enter || e.Key == Key.Escape) {
 				myList.UnselectAll();
-				LocalVarPad.Instance.InvalidatePad();
-				WatchPad.Instance.InvalidatePad();
+				if (LocalVarPad.Instance != null)
+					LocalVarPad.Instance.InvalidatePad();
+				if (WatchPad.Instance != null)
+					WatchPad.Instance.InvalidatePad();
 			}
 		}
 		
@@ -74,7 +76,7 @@ namespace Debugger.AddIn.Pads.Controls
 			
 			SelectedNode.Node.Name = cell.CommandText;
 			myList.UnselectAll();
-			if (WatchType == WatchListType.Watch) {
+			if (WatchType == WatchListType.Watch && WatchPad.Instance != null) {
 				WatchPad.Instance.InvalidatePad();
 			}
 			SelectedNode.IsEditing = false;
