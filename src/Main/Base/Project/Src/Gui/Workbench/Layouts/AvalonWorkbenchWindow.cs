@@ -259,6 +259,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (viewTabControl != null) {
 				this.viewTabControl.SelectedIndex = viewNumber;
+				
+				IViewContent vc = this.ActiveViewContent;
+				if (vc != null && this.IsActiveContent)
+					SetFocus(this, () => vc.InitiallyFocusedControl as IInputElement, true);
 			}
 		}
 		
@@ -317,11 +321,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						if (--index < 0)
 							index = this.Items.Count - 1;
 					}
-					this.SelectedIndex = index;
-					
-					IViewContent vc = parentWindow.ActiveViewContent;
-					if (vc != null)
-						SetFocus(parentWindow, () => vc.InitiallyFocusedControl as IInputElement, true);
+					parentWindow.SwitchView(index);
 					
 					e.Handled = true;
 				}
