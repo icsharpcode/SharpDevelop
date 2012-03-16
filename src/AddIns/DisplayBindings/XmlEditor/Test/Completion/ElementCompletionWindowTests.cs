@@ -42,7 +42,7 @@ namespace XmlEditor.Tests.Completion
 		public void HandleKeyPress_LessThanKeyPressed_KeyPressResultIsCompletedAfterPressingLessThanSign()
 		{
 			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');
-			Assert.AreEqual(CodeCompletionKeyPressResult.Completed, keyPressResult);
+			Assert.AreEqual(CodeCompletionKeyPressResult.EatKey, keyPressResult);
 		}
 		
 		[Test]

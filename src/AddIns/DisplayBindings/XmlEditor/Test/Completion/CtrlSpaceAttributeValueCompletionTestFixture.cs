@@ -47,13 +47,6 @@ namespace XmlEditor.Tests.Completion
 		}
 		
 		[Test]
-		public void CtrlSpaceMethodResultIsFalseWhenCursorIsOutsideAttributeValue()
-		{
-			textEditor.Caret.Offset = 0;
-			Assert.IsFalse(completionBinding.CtrlSpace(textEditor));
-		}
-		
-		[Test]
 		public void ShowCompletionWindowCalledWithCompletionItems()
 		{
 			ICompletionItem[] items = textEditor.CompletionItemsDisplayedToArray();
