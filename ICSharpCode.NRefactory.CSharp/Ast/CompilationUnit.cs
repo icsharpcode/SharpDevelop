@@ -58,6 +58,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public AstNodeCollection<AstNode> Members {
+			get { return GetChildrenByRole(MemberRole); }
+		}
+		
 		List<Error> errors = new List<Error> ();
 		
 		public List<Error> Errors {

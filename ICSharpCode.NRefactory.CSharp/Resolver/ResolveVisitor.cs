@@ -248,7 +248,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			#if DEBUG
 			CSharpResolver oldResolver;
 			if (resolverBeforeDict.TryGetValue(node, out oldResolver)) {
-				Debug.Assert(oldResolver.LocalVariables.Count() == resolver.LocalVariables.Count());
+				Debug.Assert(oldResolver.LocalVariables.SequenceEqual(resolver.LocalVariables));
 			}
 			#endif
 			
@@ -1891,6 +1891,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Implicitly typed
+		// Implicitly-typed lambdas are really complex, as the lambda depends on the target type (the delegate to which
+		// the lambda is converted), but figuring out the target type might involve overload resolution (for method
+		// calls in which the lambda is used as argument), which requires knowledge about the lamdba.
+		// 
+		// The implementation in NRefactory works like this:
+		// 1. The lambda resolves to a ImplicitlyTypedLambda (derived from LambdaResolveResult).
+		//     The lambda body is not resolved yet (one of the few places where ResolveVisitor
+		//     deviates from the usual depth-first AST traversal).
+		// 2. The parent statement is resolved as usual. This might require analyzing the lambda in detail (for example
+		//    as part of overload resolution). Such analysis happens using LambdaResolveResult.IsValid, where the caller
+		//    (i.e. the overload resolution algorithm) supplies the parameter types to the lambda body. For every IsValid()
+		//    call, a nested LambdaTypeHypothesis is constructed for analyzing the lambda using the supplied type assignment.
+		//    Multiple IsValid() calls may use several LambdaTypeHypothesis instances, one for each set of parameter types.
+		// 3. When the resolver reports the conversions that occurred as part of the parent statement (as with any
+		//    conversions), the results from the LambdaTypeHypothesis corresponding to the actually chosen
+		//    conversion are merged into the main resolver.
+		// 4. LambdaResolveResult.Body is set to the main resolve result from the chosen nested resolver. I think this
+		//    is the only place where NRefactory is mutating a ResolveResult (normally all resolve results are immutable).
+		//    As this step is guaranteed to occur before the resolver returns the LamdbaResolveResult to user code, the
+		//    mutation shouldn't cause any problems.
 		sealed class ImplicitlyTypedLambda : LambdaBase
 		{
 			readonly LambdaExpression lambda;
@@ -1899,7 +1919,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			readonly CSharpResolver storedContext;
 			readonly CSharpParsedFile parsedFile;
 			readonly List<LambdaTypeHypothesis> hypotheses = new List<LambdaTypeHypothesis>();
-			readonly List<IParameter> parameters = new List<IParameter>();
+			internal IList<IParameter> parameters = new List<IParameter>();
 			
 			internal LambdaTypeHypothesis winningHypothesis;
 			internal ResolveResult bodyResult;
@@ -1953,7 +1973,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				: this(parentVisitor)
 			{
 				this.selectClause = selectClause;
-				this.parameters.AddRange(parameters);
+				foreach (IParameter p in parameters)
+					this.parameters.Add(p);
 				
 				RegisterUndecidedLambda();
 			}
@@ -2078,7 +2099,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		sealed class LambdaTypeHypothesis : IResolveVisitorNavigator
 		{
 			readonly ImplicitlyTypedLambda lambda;
-			internal readonly IParameter[] lambdaParameters;
+			readonly IParameter[] lambdaParameters;
 			internal readonly IType[] parameterTypes;
 			readonly ResolveVisitor visitor;
 			
@@ -2172,6 +2193,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new InvalidOperationException("Trying to merge conflicting hypotheses");
 				
 				lambda.winningHypothesis = this;
+				lambda.parameters = lambdaParameters; // replace untyped parameters with typed parameters
 				if (lambda.BodyExpression is Expression && returnValues.Count == 1) {
 					lambda.bodyResult = returnValues[0];
 				}
@@ -3365,9 +3387,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				implicitlyTypedLambda.EnforceMerge(this);
-				if (implicitlyTypedLambda.winningHypothesis.parameterTypes.Length == 2) {
+				if (implicitlyTypedLambda.Parameters.Count == 2) {
 					StoreCurrentState(queryJoinClause.IntoIdentifierToken);
-					groupVariable = implicitlyTypedLambda.winningHypothesis.lambdaParameters[1];
+					groupVariable = implicitlyTypedLambda.Parameters[1];
 				} else {
 					groupVariable = null;
 				}

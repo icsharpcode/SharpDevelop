@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		IEnumerable<TextLocation> FindDollarSigns(string code)
+		protected IEnumerable<TextLocation> FindDollarSigns(string code)
 		{
 			int line = 1;
 			int col = 1;
@@ -172,12 +172,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			project = project.UpdateProjectContent(null, parsedFile);
 			compilation = project.CreateCompilation();
 			
-			FindNodeVisitor fnv = new FindNodeVisitor(dollars[0], dollars[1]);
-			cu.AcceptVisitor(fnv);
-			Assert.IsNotNull(fnv.ResultNode, "Did not find DOM node at the specified location");
-			
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
-			return Tuple.Create(resolver, fnv.ResultNode);
+			return Tuple.Create(resolver, FindNode(cu, dollars[0], dollars[1]));
 		}
 		
 		protected ResolveResult Resolve(string code)
@@ -214,6 +210,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				Assert.IsTrue(rr.GetType() == typeof(T), "Resolve should be " + typeof(T).Name + ", but was " + rr.GetType().Name);
 			}
 			return (T)rr;
+		}
+		
+		protected AstNode FindNode(CompilationUnit cu, TextLocation start, TextLocation end)
+		{
+			FindNodeVisitor fnv = new FindNodeVisitor(start, end);
+			cu.AcceptVisitor(fnv);
+			Assert.IsNotNull(fnv.ResultNode, "Did not find DOM node at the specified location");
+			return fnv.ResultNode;
 		}
 		
 		sealed class FindNodeVisitor : DepthFirstAstVisitor

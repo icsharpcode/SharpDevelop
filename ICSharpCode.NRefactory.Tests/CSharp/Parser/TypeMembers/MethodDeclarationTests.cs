@@ -165,7 +165,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 	T MyMethod<T>(T a) where T : ISomeInterface;
 }
 ",
-				new TypeDeclaration.Interface {
+				new TypeDeclaration {
+					ClassType = ClassType.Interface,
 					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
@@ -190,7 +191,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 	void MyMethod<T>(T a) where T : ISomeInterface;
 }
 ",
-				new TypeDeclaration.Interface {
+				new TypeDeclaration {
+					ClassType = ClassType.Interface,
 					Name = "MyInterface",
 					Members = {
 						new MethodDeclaration {
@@ -215,7 +217,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 	new void Dispose();
 }
 ",
-				new TypeDeclaration.Interface {
+				new TypeDeclaration {
+					ClassType = ClassType.Interface,
 					Name = "MyInterface",
 					BaseTypes = { new SimpleType("IDisposable") },
 					Members = {

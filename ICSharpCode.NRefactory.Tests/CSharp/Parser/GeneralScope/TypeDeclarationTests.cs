@@ -89,7 +89,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"public class G<T> {}",
-				new TypeDeclaration.Class {
+				new TypeDeclaration {
+					ClassType = ClassType.Class,
 					Modifiers = Modifiers.Public,
 					Name = "G",
 					TypeParameters = { new TypeParameterDeclaration { Name = "T" } }
@@ -101,7 +102,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			ParseUtilCSharp.AssertGlobal(
 				@"public class Test<T> where T : IMyInterface { }",
-				new TypeDeclaration.Class {
+				new TypeDeclaration {
+					ClassType = ClassType.Class,
 					Modifiers = Modifiers.Public,
 					Name = "Test",
 					TypeParameters = { new TypeParameterDeclaration { Name = "T" } },
@@ -118,7 +120,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"public interface Generic<in T, out S> : System.IComparable where S : G<T[]>, new() where  T : MyNamespace.IMyInterface {}",
-				new TypeDeclaration.Interface {
+				new TypeDeclaration {
+					ClassType = ClassType.Interface,
 					Modifiers = Modifiers.Public,
 					Name = "Generic",
 					TypeParameters = {
@@ -164,7 +167,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 {
 }",
-				new TypeDeclaration.Class {
+				new TypeDeclaration {
+					ClassType = ClassType.Class,
 					Attributes = {
 						new AttributeSection {
 							Attributes = {
@@ -219,7 +223,8 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			ParseUtilCSharp.AssertGlobal(
 				"partial class partial<[partial: where] where> where where : partial<where> { }",
-				new TypeDeclaration.Class {
+				new TypeDeclaration {
+					ClassType = ClassType.Class,
 					Modifiers = Modifiers.Partial,
 					Name = "partial",
 					TypeParameters = {
@@ -304,7 +309,8 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			ParseUtilCSharp.AssertGlobal (
 				"enum DisplayFlags { D = 4\r\r\n}",
-				new TypeDeclaration.Enum {
+				new TypeDeclaration {
+					ClassType = ClassType.Enum,
 					Name = "DisplayFlags",
 					Members = {
 						new EnumMemberDeclaration {
