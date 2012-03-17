@@ -131,13 +131,9 @@ namespace Grunwald.BooBinding
 			}
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			BooProjectBehavior behavior = new BooProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new BooProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

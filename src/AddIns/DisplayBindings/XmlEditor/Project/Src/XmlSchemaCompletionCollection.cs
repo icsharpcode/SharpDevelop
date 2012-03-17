@@ -26,7 +26,8 @@ namespace ICSharpCode.XmlEditor
 		
 		public XmlCompletionItemCollection GetNamespaceCompletion(string textUpToCursor)
 		{
-			if (XmlParser.IsNamespaceDeclaration(textUpToCursor, textUpToCursor.Length)) {
+			string attrName = XmlParser.GetAttributeNameAtIndex(textUpToCursor, textUpToCursor.Length);
+			if (attrName == "xmlns" || attrName.StartsWith("xmlns:")) {
 				return GetNamespaceCompletion();
 			}
 			return new XmlCompletionItemCollection();

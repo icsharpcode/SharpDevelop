@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -19,13 +20,9 @@ namespace ICSharpCode.XmlEditor
 	/// since we are interested in the complete path or tree to the
 	/// currently active element.
 	/// </remarks>
-	public sealed class XmlParser
+	public static class XmlParser
 	{
 		static readonly char[] whitespaceCharacters = new char[] {' ', '\n', '\t', '\r'};
-		
-		XmlParser()
-		{
-		}
 		
 		/// <summary>
 		/// Gets path of the xml element start tag that the specified
@@ -687,9 +684,21 @@ namespace ICSharpCode.XmlEditor
 			return path;
 		}
 		
-		static bool IsQuoteChar(char ch)
+		public static bool IsQuoteChar(char ch)
 		{
 			return (ch == '\"') || (ch == '\'');
+		}
+		
+		public static string GetXmlIdentifierBeforeIndex(ITextBuffer document, int index)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			if (index < 0 || index > document.TextLength)
+				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + document.TextLength);
+			int i = index - 1;
+			while (i >= 0 && IsXmlNameChar(document.GetCharAt(i)) && document.GetCharAt(i) != '/')
+				i--;
+			return document.GetText(i + 1, index - i - 1);
 		}
 	}
 }

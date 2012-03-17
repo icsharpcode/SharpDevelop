@@ -211,13 +211,9 @@ namespace ICSharpCode.VBNetBinding
 			base.GenerateCodeFromCodeDom(compileUnit, writer);
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			VBProjectBehavior behavior = new VBProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new VBProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -91,33 +92,25 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
-			using(new PrintTimes("Threads refresh")) {
-				try {
-					foreach (var t in debuggedProcess.Threads) {
-						var thread = t;
-						debuggedProcess.EnqueueWork(Dispatcher.CurrentDispatcher, () => AddThread(thread));
-					}
-				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(Exception) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						throw;
-					}
-				}
-			}
+			LoggingService.Info("Threads refresh");
+			
+			debuggedProcess.EnqueueForEach(
+				Dispatcher.CurrentDispatcher,
+				debuggedProcess.Threads.ToList(),
+				t => AddThread(t)
+			);
 		}
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
-			if (debuggedProcess.IsPaused) {
-				if (debuggedProcess != null) {
+			if (debuggedProcess != null) {
+				if (debuggedProcess.IsPaused) {
 					ThreadModel obj = runningThreadsList.SelectedItems[0] as ThreadModel;
 					Thread thread = obj.Thread;
 					
 					// check for options - if these options are enabled, selecting the frame should not continue
 					if ((thread.MostRecentStackFrame == null || !thread.MostRecentStackFrame.HasSymbols) &&
-					    (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols)) {
+					    !DebuggingOptions.Instance.DecompileCodeWithoutSymbols) {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions}",
 						                           "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 						return;
@@ -131,9 +124,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					} else {
 						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 					}
+				} else {
+					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 				}
-			} else {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
 			}
 		}
 		

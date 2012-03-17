@@ -40,15 +40,15 @@ namespace XmlEditor.Tests.Completion
 		}
 		
 		[Test]
-		public void KeyPressResultIsCompletedAfterPressingSpaceBar()
+		public void KeyPressResultIsNotCompletedAfterPressingSpaceBar()
 		{
-			Assert.AreEqual(CodeCompletionKeyPressResult.Completed, keyPressResult);
+			Assert.AreEqual(CodeCompletionKeyPressResult.None, keyPressResult);
 		}
 		
 		[Test]
-		public void CompletionListUsedInShowCompletionWindowHasItems()
+		public void CompletionListUsedInShowCompletionWindowHasNoItems()
 		{
-			Assert.IsTrue(textEditor.CompletionItemsDisplayedToArray().Length > 0);
+			Assert.IsTrue(textEditor.CompletionItemsDisplayedToArray().Length == 0);
 		}
 	}
 }

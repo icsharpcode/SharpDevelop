@@ -2,10 +2,11 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Threading;
+
 using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
@@ -40,6 +41,49 @@ namespace Debugger.AddIn.TreeModel
 				}
 			);
 		}
+
+		public static void EnqueueForEach<T>(this Process process, Dispatcher dispatcher, IList<T> items, Action<T> work)
+		{
+			DebuggeeState debuggeeStateWhenEnqueued = process.DebuggeeState;
+			
+			dispatcher.BeginInvoke(
+				DispatcherPriority.Normal,
+				(Action)delegate { ProcessItems(process, dispatcher, 0, items, work, debuggeeStateWhenEnqueued); }
+			);
+		}
+		
+		static void ProcessItems<T>(Process process, Dispatcher dispatcher, int startIndex, IList<T> items, Action<T> work, DebuggeeState debuggeeStateWhenEnqueued)
+		{
+			var watch = new System.Diagnostics.Stopwatch();
+			watch.Start();
+			
+			for (int i = startIndex; i < items.Count; i++) {
+				int index = i;
+				if (process.IsPaused && debuggeeStateWhenEnqueued == process.DebuggeeState) {
+					try {
+						// Do the work, this may recursively enqueue more work
+						work(items[index]);
+					} catch (System.Exception ex) {
+						if (process == null || process.HasExited) {
+							// Process unexpectedly exited - silently ignore
+						} else {
+							MessageService.ShowException(ex);
+						}
+						break;
+					}
+				}
+				
+				// if we are too slow move to background
+				if (watch.ElapsedMilliseconds > 100) {
+					dispatcher.BeginInvoke(
+						DispatcherPriority.Background,
+						(Action)delegate { ProcessItems(process, dispatcher, index, items, work, debuggeeStateWhenEnqueued); }
+					);
+					break;
+				}
+			}
+		}
+		
 	}
 	
 	public class AbortedBecauseDebuggeeResumedException: System.Exception

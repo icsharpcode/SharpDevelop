@@ -229,6 +229,15 @@ Descargue un complemento de Internet, luego haga clic en "Instalar AddIn" y sele
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de archivo desconocido:</value>
   </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Description" xml:space="preserve">
+    <value>Este archivo contiene finales de línea inconsistentes.</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Header" xml:space="preserve">
+    <value>Finales de Línea Inconsistentes</value>
+  </data>
+  <data name="AddIns.AvalonEdit.InconsistentNewlines.Normalize" xml:space="preserve">
+    <value>Normalizar</value>
+  </data>
   <data name="AddIns.AvalonEdit.SearchPanel.ErrorText" xml:space="preserve">
     <value>Error:</value>
   </data>
@@ -261,6 +270,9 @@ Descargue un complemento de Internet, luego haga clic en "Instalar AddIn" y sele
   </data>
   <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
     <value>Modo de Ayuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HLMNoActiveCatalogError" xml:space="preserve">
+    <value>No se pudo ejecutar el Manejador de Bibliotecas de Ayuda, debido a que no se hay instalado/seleccionado un catalogo. Por favor verifique las opciones de ayuda. (vea Herramientas &gt; Opciones &gt; Herramientas &gt; Microsoft Help View).</value>
   </data>
   <data name="AddIns.HelpViewer.HLMNotFound" xml:space="preserve">
     <value>No se encontró Help Library Manager. Por favor verifique que halla sido instalado correctamente.</value>
@@ -617,6 +629,9 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   </data>
   <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
     <value>Resolver método de extensión {0}</value>
+  </data>
+  <data name="AddIns.SourceAnalysis.CheckProjectWithStyleCop" xml:space="preserve">
+    <value>Verificar el proyecto actual con StyleCop</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Verificar con StyleCop</value>
@@ -2001,15 +2016,6 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Apariencia</value>
   </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Expandir referencias de proyectos (reflect references)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>Opciones de Interfaz Gráfica de Sharp Develop</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>Opciones de Interfaz Gráfica de Sharp Develop</value>
-  </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Etiquetas de comentarios</value>
   </data>
@@ -3037,6 +3043,9 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   </data>
   <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
     <value>Análisis de Código</value>
+  </data>
+  <data name="ICSharpCode.CodeAnalysis.CheckProjectWithFxCop" xml:space="preserve">
+    <value>Verificar el proyecto actual con FxCop</value>
   </data>
   <data name="ICSharpCode.CodeAnalysis.CheckWithFxCop" xml:space="preserve">
     <value>Verificar con FxCop</value>
@@ -4661,6 +4670,18 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.DiscardChangesMessage" xml:space="preserve">
     <value>¿Desea realmente descartar los cambios?</value>
   </data>
+  <data name="MainWindow.Editor.Tooltip.LocalVar" xml:space="preserve">
+    <value>variable local</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Namespace" xml:space="preserve">
+    <value>espacio de nombres</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.Parameter" xml:space="preserve">
+    <value>parámetro</value>
+  </data>
+  <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
+    <value>overload de</value>
+  </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>¿Desea guardar los cambios hechos?</value>
   </data>
@@ -4853,6 +4874,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptException" xml:space="preserve">
     <value>No se pudo interceptar la excepción. El programa depurado no puede continuar y sus propiedades no se pueden evaluar.</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
+    <value>No se pudo interceptar una excepción controlada. Los símbolos de depuración pueden no estar disponibles para la fuente de la excepción.</value>
+  </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>Ocultar Detalles de la Excepción</value>
   </data>
@@ -4979,11 +5003,17 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Dirección</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(dinámico)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>No se cargaron símbolos.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Símbolos cargados.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(en memoria)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Ordenar</value>

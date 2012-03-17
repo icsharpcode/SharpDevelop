@@ -100,6 +100,7 @@ namespace CSharpBinding
 					case Solution.SolutionVersionVS2008:
 						return msbuild35;
 					case Solution.SolutionVersionVS2010:
+					case Solution.SolutionVersionVS11:
 						return msbuild40;
 					default:
 						throw new NotSupportedException();
@@ -161,13 +162,9 @@ namespace CSharpBinding
 			return new CSharpProjectContent();
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			CSharpProjectBehavior behavior = new CSharpProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new CSharpProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

@@ -39,6 +39,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				string guid = ((MSBuildBasedProject)project).GetEvaluatedProperty("ProjectTypeGuids");
 				if (!string.IsNullOrEmpty(guid))
 					return guid;
+			} else if (project is UnknownProject || project is MissingProject) {
+				// don't return any GUID for projects that could not be loaded
+				return string.Empty;
 			}
 			
 			return project.TypeGuid;

@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -27,42 +27,37 @@ namespace ICSharpCode.XmlEditor
 			this.schemas = schemaFileAssociations.Schemas;
 		}
 		
+		char[] ignoredChars = new[] { '\\', '/', '"', '\'', '=', '>' };
+		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
-			XmlCompletionItemCollection completionItems = GetCompletionItems(editor, ch, defaultSchema);
-			if (completionItems.HasItems) {
-				completionItems.Sort();
-				ICompletionListWindow completionWindow = editor.ShowCompletionWindow(completionItems);
-				if (completionWindow != null) {
-					SetCompletionWindowWidth(completionWindow, completionItems);
-				}
-			}
-				
-			if ((ch == '<') || (ch == ' ') || (ch == '=')) {
-				return CodeCompletionKeyPressResult.Completed;
-			}
-			return CodeCompletionKeyPressResult.None;
+			if (char.IsWhiteSpace(ch) || editor.SelectionLength > 0)
+				return CodeCompletionKeyPressResult.None;
+			if (ignoredChars.Contains(ch))
+				return CodeCompletionKeyPressResult.None;
+			if (XmlParser.GetXmlIdentifierBeforeIndex(editor.Document, editor.Caret.Offset).Length > 0)
+				return CodeCompletionKeyPressResult.None;
+			editor.Document.Insert(editor.Caret.Offset, ch.ToString());
+			CtrlSpace(editor);
+			return CodeCompletionKeyPressResult.EatKey;
 		}
 		
-		XmlCompletionItemCollection GetCompletionItems(ITextEditor editor, char characterTyped, XmlSchemaCompletion defaultSchema)
+		XmlCompletionItemCollection GetCompletionItems(ITextEditor editor, XmlSchemaCompletion defaultSchema)
 		{
-			string textUpToCursor = GetTextUpToCursor(editor, characterTyped);
+			int offset = editor.Caret.Offset;
+			string textUpToCursor = editor.Document.GetText(0, offset);
 			
-			switch (characterTyped) {
-				case '=':
-					return schemas.GetNamespaceCompletion(textUpToCursor);
-				case '<':
-					return schemas.GetElementCompletion(textUpToCursor, defaultSchema);
-				case ' ':
-					return schemas.GetAttributeCompletion(textUpToCursor, defaultSchema);
-			}			
-			return schemas.GetAttributeValueCompletion(characterTyped, textUpToCursor, defaultSchema);
-		}
-		
-		string GetTextUpToCursor(ITextEditor editor, char characterTyped)
-		{
-			return editor.Document.GetText(0, editor.Caret.Offset) + characterTyped;
+			XmlCompletionItemCollection items = new XmlCompletionItemCollection();
+			if (XmlParser.IsInsideAttributeValue(textUpToCursor, offset)) {
+				items = schemas.GetNamespaceCompletion(textUpToCursor);
+				if (items.Count == 0)
+					items = schemas.GetAttributeValueCompletion(textUpToCursor, editor.Caret.Offset, defaultSchema);
+			} else {
+				items = schemas.GetAttributeCompletion(textUpToCursor, defaultSchema);
+				if (items.Count == 0)
+					items = schemas.GetElementCompletion(textUpToCursor, defaultSchema);
+			}
+			return items;
 		}
 		
 		void SetCompletionWindowWidth(ICompletionListWindow completionWindow, XmlCompletionItemCollection completionItems)
@@ -74,14 +69,18 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public bool CtrlSpace(ITextEditor editor)
-		{	
-			string text = editor.Document.Text;
-			int offset = editor.Caret.Offset;
-	
+		{
 			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
-			XmlCompletionItemCollection completionItems = schemas.GetAttributeValueCompletion(text, offset, defaultSchema);
+			
+			XmlCompletionItemCollection completionItems = GetCompletionItems(editor, defaultSchema);
 			if (completionItems.HasItems) {
-				editor.ShowCompletionWindow(completionItems);
+				completionItems.Sort();
+				string identifier = XmlParser.GetXmlIdentifierBeforeIndex(editor.Document, editor.Caret.Offset);
+				completionItems.PreselectionLength = identifier.Length;
+				ICompletionListWindow completionWindow = editor.ShowCompletionWindow(completionItems);
+				if (completionWindow != null) {
+					SetCompletionWindowWidth(completionWindow, completionItems);
+				}
 				return true;
 			}
 			return false;

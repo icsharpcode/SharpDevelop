@@ -156,6 +156,8 @@ namespace XmlEditor.Tests.Utils
 		public ICompletionItem[] CompletionItemsDisplayedToArray()
 		{
 			List<ICompletionItem> items = new List<ICompletionItem>();
+			if (completionItemsDisplayed == null)
+				return items.ToArray();
 			foreach (ICompletionItem item in completionItemsDisplayed.Items) {
 				items.Add(item);
 			}

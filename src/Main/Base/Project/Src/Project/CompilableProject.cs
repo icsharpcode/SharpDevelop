@@ -266,6 +266,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		protected override ProjectBehavior CreateDefaultBehavior()
+		{
+			return new DotNetStartBehavior(this, base.CreateDefaultBehavior());
+		}
+		
 		
 		public override void Dispose()
 		{
@@ -292,6 +297,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					case Solution.SolutionVersionVS2008:
 						return CompilerVersion.MSBuild35;
 					case Solution.SolutionVersionVS2010:
+					case Solution.SolutionVersionVS11:
 						return CompilerVersion.MSBuild40;
 					default:
 						throw new NotSupportedException();

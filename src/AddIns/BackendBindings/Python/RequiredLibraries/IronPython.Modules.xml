@@ -4,6 +4,79 @@
         <name>IronPython.Modules</name>
     </assembly>
     <members>
+        <member name="F:IronPython.Runtime.ZipImportModule.zipimporter._search_order">
+            <summary>
+            zip_searchorder defines how we search for a module in the Zip
+            archive: we first search for a package __init__, then for
+            non-package .pyc, .pyo and .py entries. The .pyc and .pyo entries
+            are swapped by initzipimport() if we run in optimized mode. Also,
+            '/' is replaced by SEP there.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.ZipImportModule.zipimporter.GetData(System.String,IronPython.Runtime.PythonTuple)">
+            <summary>
+            Given a path to a Zip file and a toc_entry, return the (uncompressed)
+            data as a new reference.
+            </summary>
+            <param name="archive"></param>
+            <param name="toc_entry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IronPython.Runtime.ZipImportModule.zipimporter.GetCodeFromData(IronPython.Runtime.CodeContext,System.Boolean,System.Boolean,System.Int32,IronPython.Runtime.PythonTuple)">
+            <summary>
+            Return the code object for the module named by 'fullname' from the
+            Zip archive as a new reference.
+            </summary>
+            <param name="context"></param>
+            <param name="ispackage"></param>
+            <param name="isbytecode"></param>
+            <param name="mtime"></param>
+            <param name="toc_entry"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IronPython.Runtime.ZipImportModule.zipimporter.ReadDirectory(System.String)">
+            <summary>
+            Given a path to a Zip archive, build a dict, mapping file names
+            (local to the archive, using SEP as a separator) to toc entries.
+            
+            A toc_entry is a tuple:
+            (__file__,      # value to use for __file__, available for all files
+             compress,      # compression kind; 0 for uncompressed
+             data_size,     # size of compressed data on disk
+             file_size,     # size of decompressed data
+             file_offset,   # offset of file header from start of archive
+             time,          # mod time of file (in dos format)
+             date,          # mod data of file (in dos format)
+             crc,           # crc checksum of the data
+             )
+            Directories can be recognized by the trailing SEP in the name,
+            data_size and file_offset are 0.
+            </summary>
+            <param name="archive"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IronPython.Runtime.ZipImportModule.zipimporter.MakeFilename(System.String,System.String)">
+            <summary>
+            Given a (sub)modulename, write the potential file path in the
+            archive (without extension) to the path buffer. 
+            </summary>
+            <param name="prefix"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IronPython.Runtime.ZipImportModule.zipimporter.GetModuleInfo(IronPython.Runtime.CodeContext,System.String)">
+            <summary>
+            Determines the type of module we have (package or module, or not found).
+            </summary>
+            <param name="context"></param>
+            <param name="fullname"></param>
+            <returns></returns>
+        </member>
+        <member name="T:IronPython.Runtime.ZipImportModule.SourceStringContentProvider">
+            <summary>
+            Provides a StreamContentProvider for a stream of content backed by a file on disk.
+            </summary>
+        </member>
         <member name="T:ComponentAce.Compression.Libs.ZLib.Adler32">
             <summary>
             This class represents adler32 checksum algorithm

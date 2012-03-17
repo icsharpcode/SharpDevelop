@@ -134,7 +134,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public ICompletionItem SuggestedItem {
 			get { 
-				if (HasItems) {
+				if (HasItems && PreselectionLength == 0) {
 					return this[0];
 				}
 				return null;

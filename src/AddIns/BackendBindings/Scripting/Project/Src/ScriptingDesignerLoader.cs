@@ -10,7 +10,9 @@ using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Resources;
 using System.Security.Permissions;
+using System.Text;
 
+using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.Scripting
@@ -151,6 +153,16 @@ namespace ICSharpCode.Scripting
 		protected virtual IComponentWalker CreateComponentWalker(IComponentCreator componentCreator)
 		{
 			return null;
+		}
+		
+		protected override void ReportFlushErrors(ICollection errors)
+		{
+			StringBuilder sb = new StringBuilder(StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors}") + Environment.NewLine + Environment.NewLine);
+			foreach (var error in errors) {
+				sb.AppendLine(error.ToString());
+				sb.AppendLine();
+			}
+			MessageService.ShowError(sb.ToString());
 		}
 	}
 }

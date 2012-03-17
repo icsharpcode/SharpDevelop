@@ -71,7 +71,7 @@ namespace ICSharpCode.CppBinding.Project
 					{
 						// in #D every project is compiled by msbuild separately, this mean that SolutionDir will
 						// be equal to ProjectDir, so it has to be replaced with actual solution directory
-						string evaluatedSolutionDir = GetEvaluatedProperty("SolutionDir");
+						string evaluatedSolutionDir = GetEvaluatedProperty("SolutionDir") ?? "";
 						outputPath = Path.Combine(ParentSolution.Directory, outputPath.Substring(evaluatedSolutionDir.Length));
 					}
 					return FileUtility.NormalizePath(Path.Combine(outputPath, AssemblyName + GetExtension(OutputType)));
@@ -181,13 +181,9 @@ namespace ICSharpCode.CppBinding.Project
 			}
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			CppProjectBehavior behavior = new CppProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new CppProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 		
 		public override ICSharpCode.NRefactory.TypeSystem.IProjectContent ProjectContent {

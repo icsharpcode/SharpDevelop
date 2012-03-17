@@ -5,12 +5,14 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+	xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project"
 >
 	
 	<optionpanels:ProjectOptionPanel.Resources>
 		<local:StorageLocationConverter x:Key="converter"/>
+		<local:StartActionToBooleanConverter x:Key="startActionToBool"/>
 	</optionpanels:ProjectOptionPanel.Resources>
-
+	
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="130"></RowDefinition>
@@ -45,40 +47,43 @@
 					VerticalAlignment="Center">
 					<optionpanels:StorageLocationPicker.Location>
 						<MultiBinding Converter="{StaticResource converter}">
+							<Binding Path="StartAction.Location"/>
 							<Binding Path="StartProgram.Location"/>
 							<Binding Path="StartURL.Location"/>
 						</MultiBinding>
 					</optionpanels:StorageLocationPicker.Location>
 				</optionpanels:StorageLocationPicker>
-			
-				<RadioButton IsChecked="True"
+				
+				<RadioButton IsChecked="{Binding StartAction.Value, Converter={StaticResource startActionToBool}, ConverterParameter={x:Static projects:StartAction.Project}}"
 				             Grid.Column="1" VerticalAlignment="Center"
 				             Margin="4,0,0,0" Content="Start Project">
 				</RadioButton>
 				
 				<RadioButton x:Name="startexternal"
-					Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0"
-					Content="Start external program:">
+				             Grid.Row="1" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0"
+				             IsChecked="{Binding StartAction.Value, Converter={StaticResource startActionToBool}, ConverterParameter={x:Static projects:StartAction.Program}}"
+				             Content="Start external program:">
 				</RadioButton>
 				
 				<RadioButton x:Name="startUrl"
-					Grid.Row="2" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0"
-					Content="Start browser in URL:">
+				             Grid.Row="2" VerticalAlignment="Center" Grid.Column="1" Margin="4,0,0,0"
+				             IsChecked="{Binding StartAction.Value, Converter={StaticResource startActionToBool}, ConverterParameter={x:Static projects:StartAction.StartURL}}"
+				             Content="Start browser in URL:">
 				</RadioButton>
-								
+				
 				<TextBox Grid.Row="1" Grid.Column="2" Margin="5"
-				          IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
-				         Text="{Binding StartProgram.Value, UpdateSourceTrigger=PropertyChanged}">				         
+				         IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
+				         Text="{Binding StartProgram.Value, UpdateSourceTrigger=PropertyChanged}">
 				</TextBox>
-								
+				
 				<Button  Grid.Row="1" Grid.Column="3" Margin="5" Content="..."
 				        IsEnabled="{Binding ElementName=startexternal, Path=IsChecked}"
 				        Click="ExternalProgramButton_Click">
 				</Button>
 				
 				<TextBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5"
-				          IsEnabled="{Binding ElementName=startUrl, Path=IsChecked}"
-				         Text="{Binding StartURL.Value, UpdateSourceTrigger=PropertyChanged}" >				        
+				         IsEnabled="{Binding ElementName=startUrl, Path=IsChecked}"
+				         Text="{Binding StartURL.Value, UpdateSourceTrigger=PropertyChanged}" >
 				</TextBox>
 			
 			</Grid>
@@ -90,7 +95,7 @@
 		          Grid.Column="0"
 		          Grid.Row="1"
 		          Grid.ColumnSpan="3"
-		           Margin="0,5,0,0"
+		          Margin="0,5,0,0"
 		          HorizontalAlignment="Stretch">
 			<Grid>
 				<Grid.RowDefinitions>
@@ -104,7 +109,7 @@
 					<ColumnDefinition Width="40"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
 				
-
+				
 				<optionpanels:StorageLocationPicker
 					Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Center">
 					<optionpanels:StorageLocationPicker.Location>
@@ -115,10 +120,10 @@
 					</optionpanels:StorageLocationPicker.Location>
 				</optionpanels:StorageLocationPicker>
 				
-
-				<Label Content="Command line" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" ></Label>				      
+				
+				<Label Content="Command line" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0" ></Label>
 				<Label Content="Working directory:" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Margin="4,0,0,0"></Label>
-				           
+				
 				<TextBox   Grid.Column="2" Grid.ColumnSpan="2" Margin="5"
 				         Text="{Binding StartArguments.Value, UpdateSourceTrigger=PropertyChanged}">
 				</TextBox>
@@ -126,8 +131,8 @@
 				<TextBox Grid.Row="1" Grid.Column="2" Margin="5"
 				         Text="{Binding StartWorkingDirectory.Value, UpdateSourceTrigger=PropertyChanged}">
 				</TextBox>
-			
-				<Button  Grid.Row="1" Grid.Column="3" Margin="5" 
+				
+				<Button  Grid.Row="1" Grid.Column="3" Margin="5"
 				        Click="BrwoseForFolder_Click"
 				        Content="...">
 				</Button>

@@ -1111,21 +1111,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			// which is necessary to resolve the referenced project's OutputPath.
 			projectOptions.Properties["CurrentSolutionConfigurationContents"] = solutionConfigurationXml.ToString();
 			
-			projectOptions.Properties["SolutionDir"] = EnsureBackslash(solution.Directory);
-			projectOptions.Properties["SolutionExt"] = ".sln";
-			projectOptions.Properties["SolutionFileName"] = Path.GetFileName(solution.FileName);
-			projectOptions.Properties["SolutionName"] = solution.Name;
-			projectOptions.Properties["SolutionPath"] = solution.FileName;
+			solution.AddMSBuildSolutionProperties(projectOptions.Properties);
 			
 			return projectOptions;
-		}
-		
-		static string EnsureBackslash(string path)
-		{
-			if (path.EndsWith("\\", StringComparison.Ordinal))
-				return path;
-			else
-				return path + "\\";
 		}
 		#endregion
 		

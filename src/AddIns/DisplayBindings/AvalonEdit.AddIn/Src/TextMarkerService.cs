@@ -62,6 +62,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#region ITextMarkerService
 		public ITextMarker Create(int startOffset, int length)
 		{
+			if (markers == null)
+				throw new InvalidOperationException("Cannot create a marker when not attached to a document");
+			
 			int textLength = codeEditor.Document.TextLength;
 			if (startOffset < 0 || startOffset > textLength)
 				throw new ArgumentOutOfRangeException("startOffset", startOffset, "Value must be between 0 and " + textLength);
@@ -76,20 +79,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public IEnumerable<ITextMarker> GetMarkersAtOffset(int offset)
 		{
-			return markers.FindSegmentsContaining(offset);
+			if (markers == null)
+				return Enumerable.Empty<ITextMarker>();
+			else
+				return markers.FindSegmentsContaining(offset);
 		}
 		
 		public IEnumerable<ITextMarker> TextMarkers {
-			get { return markers; }
+			get { return markers ?? Enumerable.Empty<ITextMarker>(); }
 		}
 		
 		public void RemoveAll(Predicate<ITextMarker> predicate)
 		{
 			if (predicate == null)
 				throw new ArgumentNullException("predicate");
-			foreach (TextMarker m in markers.ToArray()) {
-				if (predicate(m))
-					Remove(m);
+			if (markers != null) {
+				foreach (TextMarker m in markers.ToArray()) {
+					if (predicate(m))
+						Remove(m);
+				}
 			}
 		}
 		
@@ -98,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (marker == null)
 				throw new ArgumentNullException("marker");
 			TextMarker m = marker as TextMarker;
-			if (markers.Remove(m)) {
+			if (markers != null && markers.Remove(m)) {
 				Redraw(m);
 				m.OnDeleted();
 			}
