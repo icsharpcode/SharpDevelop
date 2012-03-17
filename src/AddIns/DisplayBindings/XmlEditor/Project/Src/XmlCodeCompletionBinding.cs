@@ -31,15 +31,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			if (char.IsWhiteSpace(ch) || editor.SelectionLength > 0)
-				return CodeCompletionKeyPressResult.None;
-			if (ignoredChars.Contains(ch))
-				return CodeCompletionKeyPressResult.None;
-			if (XmlParser.GetXmlIdentifierBeforeIndex(editor.Document, editor.Caret.Offset).Length > 0)
-				return CodeCompletionKeyPressResult.None;
-			editor.Document.Insert(editor.Caret.Offset, ch.ToString());
-			CtrlSpace(editor);
-			return CodeCompletionKeyPressResult.EatKey;
+			return CodeCompletionKeyPressResult.None;
 		}
 		
 		XmlCompletionItemCollection GetCompletionItems(ITextEditor editor, XmlSchemaCompletion defaultSchema)
@@ -88,7 +80,13 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool HandleKeyPressed(ITextEditor editor, char ch)
 		{
-			return false;
+			if (char.IsWhiteSpace(ch) || editor.SelectionLength > 0)
+				return false;
+			if (ignoredChars.Contains(ch))
+				return false;
+			if (XmlParser.GetXmlIdentifierBeforeIndex(editor.Document, editor.Caret.Offset).Length > 1)
+				return false;
+			return CtrlSpace(editor);
 		}
 	}
 }
