@@ -42,5 +42,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileName = fileName;
 			TypeGuid = "{00000000-0000-0000-0000-000000000000}";
 		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			// don't add behaviors from AddIn-Tree to UnknownProject
+			lock (SyncRoot) {
+				if (projectBehavior == null)
+					projectBehavior = new DefaultProjectBehavior(this);
+				return projectBehavior;
+			}
+		}
 	}
 }

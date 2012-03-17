@@ -181,13 +181,10 @@ namespace ICSharpCode.CppBinding.Project
 			}
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			CppProjectBehavior behavior = new CppProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;		}
+			return new CppProjectBehavior(this, base.CreateDefaultBehavior());
+		}
 	}
 	
 	public class CppProjectBehavior : ProjectBehavior

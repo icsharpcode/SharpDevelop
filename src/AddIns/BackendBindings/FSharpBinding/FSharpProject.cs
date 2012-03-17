@@ -44,13 +44,9 @@ namespace FSharpBinding
 			}
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			FSharpProjectBehavior behavior = new FSharpProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new FSharpProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

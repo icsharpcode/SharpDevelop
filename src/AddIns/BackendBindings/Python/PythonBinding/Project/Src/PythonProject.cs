@@ -53,13 +53,9 @@ namespace ICSharpCode.PythonBinding
 			get { return GetProperty(null, null, "MainFile") != null; }
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			PythonProjectBehavior behavior = new PythonProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new PythonProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

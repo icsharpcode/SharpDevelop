@@ -591,9 +591,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected virtual ProjectBehavior GetOrCreateBehavior()
 		{
-			if (projectBehavior == null)
-				projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, CreateDefaultBehavior());
-			return projectBehavior;
+			lock (SyncRoot) {
+				if (projectBehavior == null)
+					projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, CreateDefaultBehavior());
+				return projectBehavior;
+			}
 		}
 	}
 }

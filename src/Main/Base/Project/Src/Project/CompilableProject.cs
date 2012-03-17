@@ -263,6 +263,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		protected override ProjectBehavior CreateDefaultBehavior()
+		{
+			return new DotNetStartBehavior(this, base.CreateDefaultBehavior());
+		}
+		
 		#region IUpgradableProject
 		[Browsable(false)]
 		public virtual bool UpgradeDesired {

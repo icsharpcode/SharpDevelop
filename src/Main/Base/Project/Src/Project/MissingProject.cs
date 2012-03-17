@@ -20,5 +20,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
+		
+		protected override ProjectBehavior GetOrCreateBehavior()
+		{
+			// don't add behaviors from AddIn-Tree to MissingProject
+			lock (SyncRoot) {
+				if (projectBehavior == null)
+					projectBehavior = new DefaultProjectBehavior(this);
+				return projectBehavior;
+			}
+		}
 	}
 }
