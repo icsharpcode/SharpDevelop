@@ -427,6 +427,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			var frame = debuggedProcess.GetCurrentExecutingFrame();
+			if (frame == null)
+				return null;
 			object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
 			                                                              frame.MethodInfo.MetadataToken,
 			                                                              variableName);
