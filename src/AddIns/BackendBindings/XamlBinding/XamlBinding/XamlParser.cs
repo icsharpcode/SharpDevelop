@@ -54,7 +54,6 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		AXmlParser parser = new AXmlParser();
 		volatile ITextSourceVersion lastParsedVersion;
 		
 		/// <summary>
@@ -149,7 +148,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			throw new NotImplementedException();
+			return ErrorResolveResult.UnknownError;
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)

@@ -398,7 +398,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public bool HandleKeyPressed(ITextEditor editor, char ch)
 		{
-			throw new NotImplementedException();
+			return false;
 		}
 	}
 }

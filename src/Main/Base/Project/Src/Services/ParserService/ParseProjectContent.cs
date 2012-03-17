@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			return (
 				from p in projectItems
-				where p.ItemType == ItemType.Compile && !String.IsNullOrEmpty(p.FileName)
+				where (p.ItemType == ItemType.Compile || p.ItemType == ItemType.Page) && !String.IsNullOrEmpty(p.FileName)
 				select FileName.Create(p.FileName));
 		}
 		
