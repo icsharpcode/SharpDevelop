@@ -84,10 +84,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		/// <summary>
-		/// Creates DocumentChangeEventArgs for the reverse change.
-		/// </summary>
-		public DocumentChangeEventArgs Invert()
+		/// <inheritdoc/>
+		public override TextChangeEventArgs Invert()
 		{
 			OffsetChangeMap map = this.OffsetChangeMapOrNull;
 			if (map != null) {

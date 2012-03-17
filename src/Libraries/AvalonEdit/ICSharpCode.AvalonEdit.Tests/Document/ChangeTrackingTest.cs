@@ -15,11 +15,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void NoChanges()
 		{
 			TextDocument document = new TextDocument("initial text");
-			ChangeTrackingCheckpoint checkpoint1, checkpoint2;
-			ITextSource snapshot1 = document.CreateSnapshot(out checkpoint1);
-			ITextSource snapshot2 = document.CreateSnapshot(out checkpoint2);
-			Assert.AreEqual(0, checkpoint1.CompareAge(checkpoint2));
-			Assert.AreEqual(0, checkpoint1.GetChangesTo(checkpoint2).Count());
+			ITextSource snapshot1 = document.CreateSnapshot();
+			ITextSource snapshot2 = document.CreateSnapshot();
+			Assert.AreEqual(0, snapshot1.Version.CompareAge(snapshot2.Version));
+			Assert.AreEqual(0, snapshot1.Version.GetChangesTo(snapshot2.Version).Count());
 			Assert.AreEqual(document.Text, snapshot1.Text);
 			Assert.AreEqual(document.Text, snapshot2.Text);
 		}
@@ -28,13 +27,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void ForwardChanges()
 		{
 			TextDocument document = new TextDocument("initial text");
-			ChangeTrackingCheckpoint checkpoint1, checkpoint2;
-			ITextSource snapshot1 = document.CreateSnapshot(out checkpoint1);
+			ITextSource snapshot1 = document.CreateSnapshot();
 			document.Replace(0, 7, "nw");
 			document.Insert(1, "e");
-			ITextSource snapshot2 = document.CreateSnapshot(out checkpoint2);
-			Assert.AreEqual(-1, checkpoint1.CompareAge(checkpoint2));
-			DocumentChangeEventArgs[] arr = checkpoint1.GetChangesTo(checkpoint2).ToArray();
+			ITextSource snapshot2 = document.CreateSnapshot();
+			Assert.AreEqual(-1, snapshot1.Version.CompareAge(snapshot2.Version));
+			TextChangeEventArgs[] arr = snapshot1.Version.GetChangesTo(snapshot2.Version).ToArray();
 			Assert.AreEqual(2, arr.Length);
 			Assert.AreEqual("nw", arr[0].InsertedText);
 			Assert.AreEqual("e", arr[1].InsertedText);
@@ -47,13 +45,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		public void BackwardChanges()
 		{
 			TextDocument document = new TextDocument("initial text");
-			ChangeTrackingCheckpoint checkpoint1, checkpoint2;
-			ITextSource snapshot1 = document.CreateSnapshot(out checkpoint1);
+			ITextSource snapshot1 = document.CreateSnapshot();
 			document.Replace(0, 7, "nw");
 			document.Insert(1, "e");
-			ITextSource snapshot2 = document.CreateSnapshot(out checkpoint2);
-			Assert.AreEqual(1, checkpoint2.CompareAge(checkpoint1));
-			DocumentChangeEventArgs[] arr = checkpoint2.GetChangesTo(checkpoint1).ToArray();
+			ITextSource snapshot2 = document.CreateSnapshot();
+			Assert.AreEqual(1, snapshot2.Version.CompareAge(snapshot1.Version));
+			TextChangeEventArgs[] arr = snapshot2.Version.GetChangesTo(snapshot1.Version).ToArray();
 			Assert.AreEqual(2, arr.Length);
 			Assert.AreEqual("", arr[0].InsertedText);
 			Assert.AreEqual("initial", arr[1].InsertedText);

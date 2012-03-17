@@ -79,13 +79,7 @@ namespace CSharpBinding.Parser
 		{
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
-			CompilationUnit cu;
-			try {
-				cu = parser.Parse(fileContent.CreateReader(), fileName);
-			} catch (Exception ex) {
-				LoggingService.Error(ex);
-				cu = new CompilationUnit();
-			}
+			CompilationUnit cu = parser.Parse(fileContent.CreateReader(), fileName);
 			
 			CSharpParsedFile file = cu.ToTypeSystem();
 			ParseInformation parseInfo;

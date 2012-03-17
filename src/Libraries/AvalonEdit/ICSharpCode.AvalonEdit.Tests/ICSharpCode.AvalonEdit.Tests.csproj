@@ -20,6 +20,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\bin\UnitTests\</OutputPath>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -91,12 +92,7 @@
     <Compile Include="Utils\IndentationStringTests.cs" />
     <Compile Include="Utils\RopeTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
-    <Compile Include="XmlParser\ParserTests.cs" />
-    <Compile Include="XmlParser\TextReplacementTests.cs" />
     <None Include="app.config" />
-    <None Include="XmlParser\W3C.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
