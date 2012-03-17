@@ -177,7 +177,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (expr == null) {
 						return null;
 					}
-				// do not complete <number>. (but <number>.<number>.)
+					// do not complete <number>. (but <number>.<number>.)
 					if (expr.Node is PrimitiveExpression) {
 						var pexpr = (PrimitiveExpression)expr.Node;
 						if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains('.')) {
@@ -478,6 +478,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 					var contextList = new CompletionDataWrapper (this);
 					var identifierStart = GetExpressionAtCursor();
+
 					if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration) {
 						return null;
 					}

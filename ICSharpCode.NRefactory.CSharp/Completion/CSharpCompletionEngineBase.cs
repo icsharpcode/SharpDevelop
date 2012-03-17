@@ -421,7 +421,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (mt == null) {
 				return null;
 			}
-			
+
 			string memberText = mt.Item1;
 			var memberLocation = mt.Item2;
 			int closingBrackets = 1;
@@ -429,18 +429,36 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var wrapper = new StringBuilder ();
 			bool wrapInClass = memberLocation != new TextLocation (1, 1);
 			if (wrapInClass) {
-				/*				foreach (var child in Unit.Children) {
-					if (child is UsingDeclaration) {
-						var offset = document.GetOffset (child.StartLocation);
-						wrapper.Append (document.GetText (offset, document.GetOffset (child.EndLocation) - offset));
+				var nodeAtLocation = Unit.GetNodeAt(memberLocation, n => n is TypeDeclaration || n is NamespaceDeclaration);
+				foreach (var n in nodeAtLocation.AncestorsAndSelf) {
+					if (memberLocation == n.StartLocation) {
+						continue;
 					}
-				}*/
-				wrapper.Append("class Stub {");
-				wrapper.AppendLine();
-				closingBrackets++;
-				generatedLines = 1;
+					if (n is TypeDeclaration) {
+						var t = (TypeDeclaration)n;
+						switch (t.ClassType) {
+							case ClassType.Class:
+								wrapper.Append("class");
+								break;
+							case ClassType.Struct:
+								wrapper.Append("struct");
+								break;
+							case ClassType.Interface:
+								wrapper.Append("interface");
+								break;
+							case ClassType.Enum:
+								wrapper.Append("enum");
+								break;
+						}
+						wrapper.Append(" " + t.Name + " {");
+						wrapper.AppendLine();
+						closingBrackets++;
+						generatedLines++;
+					} else {
+						Console.WriteLine(n);
+					}
+				}
 			}
-			
 			wrapper.Append(memberText);
 			wrapper.Append(continuation);
 			AppendMissingClosingBrackets(wrapper, memberText, appendSemicolon);
@@ -486,7 +504,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				--startOffset;
 			}
-			startOffset = 0;
 			if (cachedText == null)
 				cachedText = document.GetText (startOffset, offset - startOffset);
 			
@@ -552,10 +569,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return ResolveExpression (tuple.Node, tuple.Unit);
 		}
 
-		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (AstNode expr, CompilationUnit unit)
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression(AstNode expr, CompilationUnit unit)
 		{
-			if (expr == null)
+			if (expr == null) {
 				return null;
+			}
 			AstNode resolveNode;
 			if (expr is Expression || expr is AstType) {
 				resolveNode = expr;
@@ -565,19 +583,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			try {
-				var csResolver = new CSharpAstResolver (GetState (), unit, CSharpParsedFile);
-				var result = csResolver.Resolve (resolveNode);
-				var state = csResolver.GetResolverStateBefore (resolveNode);
-				return Tuple.Create (result, state);
-			} catch (Exception) {
+				var ctx = CSharpParsedFile.GetResolver(Compilation, location);
+				var root = expr.AncestorsAndSelf.FirstOrDefault(n => n is EntityDeclaration || n is CompilationUnit);
+				if (root == null) {
+					return null;
+				}
+				var csResolver = new CSharpAstResolver (ctx, root, CSharpParsedFile);
+				var result = csResolver.Resolve(resolveNode);
+				var state = csResolver.GetResolverStateBefore(resolveNode);
+				return Tuple.Create(result, state);
+			} catch (Exception e) {
+				Console.WriteLine(e);
 				return null;
 			}
-		}
-		
-		protected static void Print (AstNode node)
-		{
-			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
-			node.AcceptVisitor (v);
 		}
 		
 		#endregion
@@ -702,6 +720,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return bracketStack.Any (t => t == '{');
 		}		
 	}
+
 	
 	}
 }
