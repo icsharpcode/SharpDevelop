@@ -56,6 +56,20 @@ namespace UnitTesting.Tests.Frameworks
 		}
 		
 		[Test]
+		public void TargetCpuAnyCPUDotnet45()
+		{
+			MockCSharpProject project = new MockCSharpProject();
+			project.ActiveConfiguration = "Debug";
+			project.ActivePlatform = "AnyCPU";
+			project.SetProperty("PlatformTarget", "AnyCPU");
+			project.SetProperty("TargetFrameworkVersion", "v4.5");
+			
+			SelectedTests selectedTests = new SelectedTests(project);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			Assert.AreEqual(@"D:\SharpDevelop\bin\Tools\NUnit\nunit-console.exe", app.FileName);
+		}
+		
+		[Test]
 		public void NUnitConsole32BitUsedWhenTargetCpuIs32BitDotnet2()
 		{
 			MockCSharpProject project = new MockCSharpProject();

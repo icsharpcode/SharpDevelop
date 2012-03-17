@@ -240,10 +240,9 @@ namespace ICSharpCode.UnitTesting
 		
 		bool ProjectUsesDotnet20Runtime(IProject project)
 		{
-			MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
-			if (msbuildProject != null) {
-				string targetFrameworkVersion = msbuildProject.GetEvaluatedProperty("TargetFrameworkVersion");
-				return !String.Equals(targetFrameworkVersion, "v4.0", StringComparison.OrdinalIgnoreCase);
+			var p = project as ICSharpCode.SharpDevelop.Project.Converter.IUpgradableProject;
+			if (p != null && p.CurrentTargetFramework != null) {
+				return p.CurrentTargetFramework.SupportedRuntimeVersion == "v2.0.50727";
 			}
 			return false;
 		}
