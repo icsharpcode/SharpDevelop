@@ -8,17 +8,11 @@
 	<StackPanel>
 		<GroupBox Margin="5" Header="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping}">
 			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
-				<CheckBox x:Name="chbEnableJustMyCode"
-				          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode}"
-				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.EnableJustMyCode}" />
-				<CheckBox x:Name="chbStepOverNoSymbols"
-				          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverNoSymbols}"
-				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverNoSymbols}" />
+				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols}"
+				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.DecompileCodeWithoutSymbols}" />
 				<CheckBox x:Name="chbStepOverDebuggerAttributes"
 				          Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.StepOverDebuggerAttributes}"
 				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.StepOverDebuggerAttributes}" />
-				<CheckBox Content="{sd:Localize Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols}"
-				          IsChecked="{sd:OptionBinding debugger:DebuggingOptions.DecompileCodeWithoutSymbols}" />
 				<CheckBox x:Name="chbStepOverAllProperties"
 				          Checked="ChbStepOverAllProperties_CheckedChanged"
 				          Unchecked="ChbStepOverAllProperties_CheckedChanged"
