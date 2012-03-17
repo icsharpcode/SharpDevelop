@@ -1415,7 +1415,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 
 					if (newParentNode is ReturnStatement) {
-						var varDecl = (ReturnStatement)newParentNode;
+						//var varDecl = (ReturnStatement)newParentNode;
 						if (ctx.CurrentMember != null) {
 							hintType = ctx.CurrentMember.ReturnType;
 						}
@@ -1562,7 +1562,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var wrapper = new CompletionDataWrapper (this);
 			var alreadyInserted = new Dictionary<string, bool> ();
-			bool addedVirtuals = false;
+			//bool addedVirtuals = false;
 			
 			int declarationBegin = offset;
 			int j = declarationBegin;
@@ -1742,7 +1742,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			IMethod delegateMethod = delegateType.GetDelegateInvokeMethod();
 			var thisLineIndent = GetLineIndent(location.Line);
 			string delegateEndString = EolMarker + thisLineIndent + "}" + (addSemicolon ? ";" : "");
-			bool containsDelegateData = completionList.Result.Any(d => d.DisplayText.StartsWith("delegate("));
+			//bool containsDelegateData = completionList.Result.Any(d => d.DisplayText.StartsWith("delegate("));
 			if (addDefault) {
 				completionList.AddCustom("delegate", "Creates anonymous delegate.", "delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString);
 			}
@@ -1800,8 +1800,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			if (member.IsInternal || member.IsProtectedAndInternal || member.IsProtectedOrInternal) {
-				var type1 = member is ITypeDefinition ? (ITypeDefinition)member : member.DeclaringTypeDefinition;
-				var type2 = currentMember is ITypeDefinition ? (ITypeDefinition)currentMember : currentMember.DeclaringTypeDefinition;
+				//var type1 = member is ITypeDefinition ? (ITypeDefinition)member : member.DeclaringTypeDefinition;
+				//var type2 = currentMember is ITypeDefinition ? (ITypeDefinition)currentMember : currentMember.DeclaringTypeDefinition;
 				bool result = true;
 				// easy case, projects are the same
 				/*//				if (type1.ProjectContent == type2.ProjectContent) {
@@ -2008,7 +2008,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			IType type = resolveResult.Type;
-			var typeDef = resolveResult.Type.GetDefinition();
+			//var typeDef = resolveResult.Type.GetDefinition();
 			var result = new CompletionDataWrapper (this);
 			bool includeStaticMembers = false;
 			
@@ -2240,7 +2240,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				return null;
 			}
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression>(location); 
 				if (invoke != null) {
@@ -2290,14 +2290,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		ExpressionResult GetExpressionAtCursor()
 		{
-			TextLocation memberLocation;
-			if (currentMember != null) {
-				memberLocation = currentMember.Region.Begin;
-			} else if (currentType != null) {
-				memberLocation = currentType.Region.Begin;
-			} else {
-				memberLocation = location;
-			}
+//			TextLocation memberLocation;
+//			if (currentMember != null) {
+//				memberLocation = currentMember.Region.Begin;
+//			} else if (currentType != null) {
+//				memberLocation = currentType.Region.Begin;
+//			} else {
+//				memberLocation = location;
+//			}
 			var baseUnit = ParseStub("a");
 			
 			var tmpUnit = baseUnit;

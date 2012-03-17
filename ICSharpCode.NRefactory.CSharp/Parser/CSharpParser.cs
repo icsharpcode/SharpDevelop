@@ -3658,7 +3658,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				var file = new SourceFile (fileName, fileName, 0);
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
-				var driver = new Driver (ctx);
 				var parser = Driver.Parse (reader, file, module, lineModifier);
 				
 				var top = new CompilerCompilationUnit () { 

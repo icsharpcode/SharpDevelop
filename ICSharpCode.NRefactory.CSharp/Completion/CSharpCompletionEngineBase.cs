@@ -365,7 +365,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var bracketStack = GetBracketStack (memberText);
 			bool didAppendSemicolon = !appendSemicolon;
-			char lastBracket = '\0';
+			//char lastBracket = '\0';
 			while (bracketStack.Count > 0) {
 				var t = bracketStack.Pop ();
 				switch (t.Item1) {
@@ -373,19 +373,19 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.Append (')');
 					if (appendSemicolon)
 						didAppendSemicolon = false;
-					lastBracket = ')';
+					//lastBracket = ')';
 					break;
 				case '[':
 					wrapper.Append (']');
 					if (appendSemicolon)
 						didAppendSemicolon = false;
-					lastBracket = ']';
+					//lastBracket = ']';
 					break;
 				case '<':
 					wrapper.Append ('>');
 					if (appendSemicolon)
 						didAppendSemicolon = false;
-					lastBracket = '>';
+					//lastBracket = '>';
 					break;
 				case '{':
 					int o = t.Item2 - 1;
@@ -508,7 +508,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			baseUnit = ParseStub (afterBracket ? "" : "x");
 			
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt (location.Line, location.Column - 1, n => n is InvocationExpression || n is ObjectCreateExpression); 
 			AstNode expr = null;
 			if (mref is InvocationExpression) {
@@ -569,7 +569,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var result = csResolver.Resolve (resolveNode);
 				var state = csResolver.GetResolverStateBefore (resolveNode);
 				return Tuple.Create (result, state);
-			} catch (Exception e) {
+			} catch (Exception) {
 				return null;
 			}
 		}
@@ -594,7 +594,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		public void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
 		{
-			var document = engine.document;
+			//var document = engine.document;
 			var location = engine.location;
 			
 			currentType = null;
@@ -648,7 +648,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			int startOffset = document.GetOffset (currentType.Region.Begin);
 			int endOffset = document.GetOffset (location);
-			bool foundEndBracket = false;
+			//bool foundEndBracket = false;
 		
 			var bracketStack = new Stack<char> ();
 		
