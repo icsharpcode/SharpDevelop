@@ -424,7 +424,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			string memberText = mt.Item1;
 			var memberLocation = mt.Item2;
-			int closingBrackets = 0;
+			int closingBrackets = 1;
 			int generatedLines = 0;
 			var wrapper = new StringBuilder ();
 			bool wrapInClass = memberLocation != new TextLocation (1, 1);
@@ -449,12 +449,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (closingBrackets > 0) { 
 				wrapper.Append(new string ('}', closingBrackets));
 			}
-			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
 					var result = parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
-					
 					return result;
 				} catch (Exception) {
 					Console.WriteLine("------");

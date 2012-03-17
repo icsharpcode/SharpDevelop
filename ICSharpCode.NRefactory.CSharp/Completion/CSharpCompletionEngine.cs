@@ -478,7 +478,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 					var contextList = new CompletionDataWrapper (this);
 					var identifierStart = GetExpressionAtCursor();
-					Console.WriteLine("id:" + identifierStart);
 					if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration) {
 						return null;
 					}

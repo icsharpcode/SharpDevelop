@@ -107,7 +107,6 @@ namespace ICSharpCode.NRefactory.CSharp
 							subContainer.Accept(this);
 						}
 					}
-					Console.WriteLine("attr:" + mc.UnattachedAttributes);
 					if (nDecl != null) {
 						AddAttributeSection (nDecl, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 						if (loc != null && loc.Count > 2)
