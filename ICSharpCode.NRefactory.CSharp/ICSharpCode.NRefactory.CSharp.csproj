@@ -126,7 +126,6 @@
     <Compile Include="Ast\GeneralScope\UsingDeclaration.cs" />
     <Compile Include="Ast\IAstVisitor.cs" />
     <Compile Include="Ast\Identifier.cs" />
-    <Compile Include="Ast\IRelocatable.cs" />
     <Compile Include="Ast\MemberType.cs" />
     <Compile Include="Ast\Modifiers.cs" />
     <Compile Include="Ast\NodeType.cs" />

@@ -3606,16 +3606,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public static void AdjustLineLocations (AstNode node, int lineModifier)
-		{
-			if (node is IRelocatable) {
-				((IRelocatable)node).SetStartLocation (new TextLocation (node.StartLocation.Line + lineModifier, node.StartLocation.Column));
-			}
-			foreach (var child in node.Children) {
-				AdjustLineLocations (child, lineModifier);
-			}
-		}
-		
 		public CompilationUnit Parse (CompilerCompilationUnit top, string fileName, int lineModifier = 0)
 		{
 			if (top == null)
@@ -3625,8 +3615,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			InsertComments (top, conversionVisitor);
 			if (CompilationUnitCallback != null)
 				CompilationUnitCallback (top);
-			if (lineModifier != 0)
-				AdjustLineLocations (conversionVisitor.Unit, lineModifier);
 			if (top.LastYYValue is Mono.CSharp.Expression)
 				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept (conversionVisitor) as AstNode;
 			conversionVisitor.Unit.FileName = fileName;
@@ -3655,7 +3643,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		internal static object parseLock = new object ();
 		
-		public CompilationUnit Parse (Stream stream, string fileName, int lineModifier = 0)
+		public CompilationUnit Parse(Stream stream, string fileName, int lineModifier = 0)
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
@@ -3666,7 +3654,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var driver = new Driver (ctx);
-				var parser = Driver.Parse (reader, file, module);
+				var parser = Driver.Parse (reader, file, module, lineModifier);
 				
 				var top = new CompilerCompilationUnit () { 
 					ModuleCompiled = module,

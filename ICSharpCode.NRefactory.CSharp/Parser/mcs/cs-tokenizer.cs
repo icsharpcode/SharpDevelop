@@ -376,6 +376,9 @@ namespace Mono.CSharp
 			get {
 				return ref_line;
 			}
+			set {
+				ref_line = value;
+			}
 		}
 
 		//
