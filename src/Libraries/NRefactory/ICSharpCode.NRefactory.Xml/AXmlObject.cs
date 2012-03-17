@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory.Xml
 		#endregion
 		
 		/// <summary> Call appropriate visit method on the given visitor </summary>
-		public abstract void AcceptVisitor(IAXmlVisitor visitor);
+		public abstract void AcceptVisitor(AXmlVisitor visitor);
 		
 		/// <summary>
 		/// Gets the start offset of the segment.

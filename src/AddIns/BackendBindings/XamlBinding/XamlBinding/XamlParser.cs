@@ -131,21 +131,19 @@ namespace ICSharpCode.XamlBinding
 //			return compilationUnit;
 //		}
 		
-		volatile IncrementalParserState parserState = null;
+		volatile IncrementalParserState parserState;
 		
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested)
 		{
 			AXmlParser parser = new AXmlParser();
 			AXmlDocument document;
-			try {
-				document = parser.ParseIncremental(parserState, fileContent, out parserState);
-			} catch (Exception ex) {
-				LoggingService.Error(ex);
-				document = null; // TODO empty document?
-			}
-			XamlParsedFile parsedFile = XamlParsedFile.Create(fileName, fileContent.Text, document);
+			IncrementalParserState newParserState;
+			document = parser.ParseIncremental(parserState, fileContent, out newParserState);
+			parserState = newParserState;
+			XamlParsedFile parsedFile = XamlParsedFile.Create(fileName, fileContent, document);
 			
-			// TODO if (fullParseInformationRequested)
+			if (fullParseInformationRequested)
+				return new XamlFullParseInformation(parsedFile, document);
 			return new ParseInformation(parsedFile, false);
 		}
 		
@@ -159,6 +157,4 @@ namespace ICSharpCode.XamlBinding
 			throw new NotImplementedException();
 		}
 	}
-	
-
 }

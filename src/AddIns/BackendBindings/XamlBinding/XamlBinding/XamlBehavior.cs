@@ -17,6 +17,11 @@ namespace ICSharpCode.XamlBinding
 {
 	public class XamlBehavior : ProjectBehavior
 	{
+		/// <summary>
+		/// value: http://schemas.microsoft.com/winfx/2006/xaml
+		/// </summary>
+		public const string XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
+		
 		public override ItemType GetDefaultItemType(string fileName)
 		{
 			if (".xaml".Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))

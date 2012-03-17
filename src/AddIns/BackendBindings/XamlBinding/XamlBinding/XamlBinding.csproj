@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XamlFullParseInformation.cs" />
     <Compile Include="XamlParsedFile.cs" />
     <Compile Include="XamlSymbolSearch.cs" />
     <None Include="XamlBinding.addin">
