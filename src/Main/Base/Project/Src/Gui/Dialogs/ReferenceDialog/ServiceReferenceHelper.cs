@@ -1,14 +1,11 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Peter Forstmeier
- * Date: 24.10.2011
- * Time: 20:39
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Security;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 
@@ -35,8 +32,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 						list.Add ((string)key.GetValue(name));
 					}
 				}
-			} catch (Exception)
-			{
+			} catch (SecurityException) {
+			} catch (UnauthorizedAccessException) {
+			} catch (IOException) {
 			};
 			return list;
 		}
