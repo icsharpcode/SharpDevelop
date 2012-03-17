@@ -147,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			CheckIsHighlighting();
 			isHighlighting = true;
 			try {
-				HighlightUpTo(lineNumber);
+				HighlightUpTo(lineNumber - 1);
 				IDocumentLine line = document.GetLineByNumber(lineNumber);
 				highlightedLine = new HighlightedLine(document, line);
 				HighlightLineAndUpdateTreeList(line, lineNumber);
@@ -170,13 +170,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			ThrowUtil.CheckInRangeInclusive(lineNumber, "lineNumber", 0, document.LineCount);
 			if (firstInvalidLine <= lineNumber) {
-				CheckIsHighlighting();
-				isHighlighting = true;
-				try {
-					HighlightUpTo(lineNumber + 1);
-				} finally {
-					isHighlighting = false;
-				}
+				UpdateHighlightingState(lineNumber);
 			}
 			return storedSpanStacks[lineNumber];
 		}
@@ -194,10 +188,22 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			}
 		}
 		
+		/// <inheritdoc/>
+		public void UpdateHighlightingState(int lineNumber)
+		{
+			CheckIsHighlighting();
+			isHighlighting = true;
+			try {
+				HighlightUpTo(lineNumber);
+			} finally {
+				isHighlighting = false;
+			}
+		}
+		
 		void HighlightUpTo(int targetLineNumber)
 		{
-			Debug.Assert(highlightedLine == null); // ensure this method is only used for
-			while (firstInvalidLine < targetLineNumber) {
+			Debug.Assert(highlightedLine == null); // ensure this method is only outside the actual highlighting logic
+			while (firstInvalidLine <= targetLineNumber) {
 				HighlightLineAndUpdateTreeList(document.GetLineByNumber(firstInvalidLine), firstInvalidLine);
 			}
 		}
@@ -217,7 +223,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				} else {
 					firstInvalidLine = int.MaxValue;
 				}
-				OnHighlightStateChanged(line, lineNumber);
+				OnHighlightStateChanged(lineNumber);
 			} else if (firstInvalidLine == lineNumber) {
 				isValid[lineNumber] = true;
 				firstInvalidLine = isValid.IndexOf(false);
@@ -228,7 +234,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		
 		static bool EqualSpanStacks(SpanStack a, SpanStack b)
 		{
-			// We must use value equality between the stacks because TextViewDocumentHighlighter.OnHighlightStateChanged
+			// We must use value equality between the stacks because HighlightingColorizer.OnHighlightStateChanged
 			// depends on the fact that equal input state + unchanged line contents produce equal output state.
 			if (a == b)
 				return true;
@@ -245,14 +251,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			return a.IsEmpty && b.IsEmpty;
 		}
 		
+		/// <inheritdoc/>
+		public event HighlightingStateChangedEventHandler HighlightingStateChanged;
+		
 		/// <summary>
 		/// Is called when the highlighting state at the end of the specified line has changed.
 		/// </summary>
 		/// <remarks>This callback must not call HighlightLine or InvalidateHighlighting.
 		/// It may call GetSpanStack, but only for the changed line and lines above.
 		/// This method must not modify the document.</remarks>
-		protected virtual void OnHighlightStateChanged(IDocumentLine line, int lineNumber)
+		protected virtual void OnHighlightStateChanged(int lineNumber)
 		{
+			if (HighlightingStateChanged != null)
+				HighlightingStateChanged(this, lineNumber);
 		}
 		
 		#region Highlighting Engine

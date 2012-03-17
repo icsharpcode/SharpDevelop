@@ -171,6 +171,15 @@ namespace CSharpBinding
 			return null;
 		}
 		
+		event HighlightingStateChangedEventHandler IHighlighter.HighlightingStateChanged {
+			add { }
+			remove { }
+		}
+		
+		void IHighlighter.UpdateHighlightingState(int lineNumber)
+		{
+		}
+		
 		public HighlightedLine HighlightLine(int lineNumber)
 		{
 			IDocumentLine documentLine = textEditor.Document.GetLineByNumber(lineNumber);

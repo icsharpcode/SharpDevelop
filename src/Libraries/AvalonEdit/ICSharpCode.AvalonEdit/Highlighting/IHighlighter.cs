@@ -37,5 +37,34 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <param name="lineNumber">The line to highlight.</param>
 		/// <returns>A <see cref="HighlightedLine"/> line object that represents the highlighted sections.</returns>
 		HighlightedLine HighlightLine(int lineNumber);
+		
+		/// <summary>
+		/// Enforces a highlighting state update (triggering the HighlightingStateChanged event if necessary)
+		/// for all lines up to (and inclusive) the specified line number.
+		/// </summary>
+		void UpdateHighlightingState(int lineNumber);
+		
+		/// <summary>
+		/// Notification when the highlighter detects that the highlighting state at the end of a line
+		/// has changed.
+		/// This event gets raised for each line as it is processed by the highlighter
+		/// unless the highlighting state for the line is equal to the old state (when the same line was highlighted previously).
+		/// </summary>
+		/// <remarks>
+		/// For implementers: there is the requirement that, if there was no state changed reported at line X,
+		/// and there were no document changes between line X and Y (with Y > X), then
+		/// this event must not be raised for any line between X and Y.
+		/// 
+		/// Equal input state + unchanged line = Equal output state.
+		/// 
+		/// See the comment in the HighlightingColorizer.OnHighlightStateChanged implementation
+		/// for details about the requirements for a correct custom IHighlighter.
+		/// </remarks>
+		event HighlightingStateChangedEventHandler HighlightingStateChanged;
 	}
+	
+	/// <summary>
+	/// Event handler for <see cref="IHighlighter.HighlightingStateChanged"/>
+	/// </summary>
+	public delegate void HighlightingStateChangedEventHandler(IHighlighter sender, int lineNumber);
 }

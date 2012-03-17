@@ -145,6 +145,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.customizations = customizations;
 				this.highlightingDefinition = highlightingDefinition;
 				this.baseHighlighter = baseHighlighter;
+				baseHighlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
 			}
 
 			public IDocument Document {
@@ -155,6 +156,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				get { return highlightingDefinition; }
 			}
 			
+			public event HighlightingStateChangedEventHandler HighlightingStateChanged;
+			
+			public void UpdateHighlightingState(int lineNumber)
+			{
+				baseHighlighter.UpdateHighlightingState(lineNumber);
+				foreach (var h in additionalHighlighters) {
+					h.UpdateHighlightingState(lineNumber);
+				}
+			}
+			
 			public void AddAdditionalHighlighter(IHighlighter highlighter)
 			{
 				if (highlighter == null)
@@ -162,11 +173,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (highlighter.Document != baseHighlighter.Document)
 					throw new ArgumentException("Additional highlighters must use the same document as the base highlighter");
 				additionalHighlighters.Add(highlighter);
+				highlighter.HighlightingStateChanged += highlighter_HighlightingStateChanged;
 			}
 			
 			public void RemoveAdditionalHighlighter(IHighlighter highlighter)
 			{
 				additionalHighlighters.Remove(highlighter);
+				highlighter.HighlightingStateChanged -= highlighter_HighlightingStateChanged;
+			}
+			
+			void highlighter_HighlightingStateChanged(IHighlighter sender, int lineNumber)
+			{
+				if (HighlightingStateChanged != null)
+					HighlightingStateChanged(this, lineNumber);
 			}
 			
 			public IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber)
@@ -195,118 +214,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			{
 				HighlightedLine line = baseHighlighter.HighlightLine(lineNumber);
 				foreach (IHighlighter h in additionalHighlighters) {
-					MergeHighlighting(line, h.HighlightLine(lineNumber));
+					line.MergeWith(h.HighlightLine(lineNumber));
 				}
 				foreach (HighlightedSection section in line.Sections) {
 					section.Color = CustomizeColor(section.Color);
 				}
 				return line;
 			}
-			
-			#region MergeHighlighting
-			/// <summary>
-			/// Merges the highlighting sections from additionalLine into line.
-			/// </summary>
-			void MergeHighlighting(HighlightedLine line, HighlightedLine additionalLine)
-			{
-				if (additionalLine == null)
-					return;
-				ValidateInvariants(line);
-				ValidateInvariants(additionalLine);
-				
-				int pos = 0;
-				Stack<int> activeSectionEndOffsets = new Stack<int>();
-				int lineEndOffset = line.DocumentLine.EndOffset;
-				activeSectionEndOffsets.Push(lineEndOffset);
-				foreach (HighlightedSection newSection in additionalLine.Sections) {
-					int newSectionStart = newSection.Offset;
-					// Track the existing sections using the stack, up to the point where
-					// we need to insert the first part of the newSection
-					while (pos < line.Sections.Count) {
-						HighlightedSection s = line.Sections[pos];
-						if (newSection.Offset < s.Offset)
-							break;
-						while (s.Offset > activeSectionEndOffsets.Peek()) {
-							activeSectionEndOffsets.Pop();
-						}
-						activeSectionEndOffsets.Push(s.Offset + s.Length);
-						pos++;
-					}
-					// Now insert the new section
-					// Create a copy of the stack so that we can track the sections we traverse
-					// during the insertion process:
-					Stack<int> insertionStack = new Stack<int>(activeSectionEndOffsets.Reverse());
-					// The stack enumerator reverses the order of the elements, so we call Reverse() to restore
-					// the original order.
-					int i;
-					for (i = pos; i < line.Sections.Count; i++) {
-						HighlightedSection s = line.Sections[i];
-						if (newSection.Offset + newSection.Length <= s.Offset)
-							break;
-						// Insert a segment in front of s:
-						Insert(line.Sections, ref i, ref newSectionStart, s.Offset, newSection.Color, insertionStack);
-						
-						while (s.Offset > insertionStack.Peek()) {
-							insertionStack.Pop();
-						}
-						insertionStack.Push(s.Offset + s.Length);
-					}
-					Insert(line.Sections, ref i, ref newSectionStart, newSection.Offset + newSection.Length, newSection.Color, insertionStack);
-				}
-				
-				ValidateInvariants(line);
-			}
-			
-			void Insert(IList<HighlightedSection> sections, ref int pos, ref int newSectionStart, int insertionEndPos, HighlightingColor color, Stack<int> insertionStack)
-			{
-				if (newSectionStart >= insertionEndPos) {
-					// nothing to insert here
-					return;
-				}
-				
-				while (insertionStack.Peek() <= newSectionStart) {
-					insertionStack.Pop();
-				}
-				while (insertionStack.Peek() < insertionEndPos) {
-					int end = insertionStack.Pop();
-					// insert the portion from newSectionStart to end
-					sections.Insert(pos++, new HighlightedSection {
-					                	Offset = newSectionStart,
-					                	Length = end - newSectionStart,
-					                	Color = color
-					                });
-					newSectionStart = end;
-				}
-				sections.Insert(pos++, new HighlightedSection {
-				                	Offset = newSectionStart,
-				                	Length = insertionEndPos - newSectionStart,
-				                	Color = color
-				                });
-				newSectionStart = insertionEndPos;
-			}
-			
-			[Conditional("DEBUG")]
-			void ValidateInvariants(HighlightedLine line)
-			{
-				int lineStartOffset = line.DocumentLine.Offset;
-				int lineEndOffset = line.DocumentLine.EndOffset;
-				for (int i = 0; i < line.Sections.Count; i++) {
-					HighlightedSection s1 = line.Sections[i];
-					if (s1.Offset < lineStartOffset || s1.Length < 0 || s1.Offset + s1.Length > lineEndOffset)
-						throw new InvalidOperationException("Section is outside line bounds");
-					for (int j = i + 1; j < line.Sections.Count; j++) {
-						HighlightedSection s2 = line.Sections[j];
-						if (s2.Offset >= s1.Offset + s1.Length) {
-							// s2 is after s1
-						} else if (s2.Offset >= s1.Offset && s2.Offset + s2.Length <= s1.Offset + s1.Length) {
-							// s2 is nested within s1
-						} else {
-							throw new InvalidOperationException("Sections are overlapping or incorrectly sorted.");
-						}
-					}
-				}
-			}
-			#endregion
 			
 			HighlightingColor CustomizeColor(HighlightingColor color)
 			{
