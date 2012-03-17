@@ -78,10 +78,12 @@ namespace Debugger
 				AppendTypeName(b, type.GetElementType());
 				if (type.IsArray) {
 					b.Append('[');
-					for (int i = 0; i < type.GetArrayRank(); i++) {
-						if (i > 0)
-							b.Append(',');
-						b.Append("0:");
+					if (type.GetArrayRank() > 1) {
+						for (int i = 0; i < type.GetArrayRank(); i++) {
+							if (i > 0)
+								b.Append(',');
+							b.Append("0:");
+						}
 					}
 					b.Append(']');
 				}

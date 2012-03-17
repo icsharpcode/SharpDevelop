@@ -728,6 +728,13 @@ namespace Debugger.MetaData
 		}
 		
 		/// <inheritdoc/>
+		public override bool IsEnum {
+			get {
+				return this.BaseType == DebugType.CreateFromType(this.AppDomain.Mscorlib, typeof(Enum));
+			}
+		}
+		
+		/// <inheritdoc/>
 		public override bool IsSubclassOf(Type superType)
 		{
 			if (!(superType is DebugType)) {
