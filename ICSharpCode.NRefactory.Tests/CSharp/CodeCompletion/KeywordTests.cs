@@ -406,6 +406,45 @@ class Test
 		}
 		
 		[Test()]
+		public void RefOutParamsTest1 ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+class Test
+{
+	$public void MyMethod (o$
+}
+", (provider) => {
+				Console.WriteLine (provider.Count);
+				
+				Assert.IsNotNull (provider.Find ("ref"), "keyword 'ref' not found.");
+				Assert.IsNotNull (provider.Find ("out"), "keyword 'out' not found.");
+				Assert.IsNotNull (provider.Find ("params"), "keyword 'params' not found.");
+			});
+		}
+		
+		[Test()]
+		public void RefOutParamsTest ()
+		{
+			CodeCompletionBugTests.CombinedProviderTest (
+@"using System;
+class Test
+{
+	public void MyMethod ()
+	{
+		$Call(i$
+	}
+}
+", (provider) => {
+				Console.WriteLine (provider.Count);
+				
+				Assert.IsNotNull (provider.Find ("ref"), "keyword 'ref' not found.");
+				Assert.IsNotNull (provider.Find ("out"), "keyword 'out' not found.");
+				Assert.IsNull (provider.Find ("params"), "keyword 'params' found.");
+			});
+		}
+
+		[Test()]
 		public void VariableDeclarationTestMethodDeclarationCase ()
 		{
 			CodeCompletionBugTests.CombinedProviderTest (
