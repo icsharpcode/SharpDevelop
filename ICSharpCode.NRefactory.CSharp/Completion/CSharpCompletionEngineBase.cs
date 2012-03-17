@@ -415,49 +415,45 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				wrapper.Append (';');
 		}
 
-		protected CompilationUnit ParseStub (string continuation, bool appendSemicolon = true, string afterContinuation = null)
+		protected CompilationUnit ParseStub(string continuation, bool appendSemicolon = true, string afterContinuation = null)
 		{
-			var mt = GetMemberTextToCaret ();
-			if (mt == null)
+			var mt = GetMemberTextToCaret();
+			if (mt == null) {
 				return null;
+			}
 			
 			string memberText = mt.Item1;
-			bool wrapInClass = mt.Item2;
-			
+			var memberLocation = mt.Item2;
+			int closingBrackets = 0;
+			int generatedLines = 0;
 			var wrapper = new StringBuilder ();
-			
+			bool wrapInClass = memberLocation != new TextLocation (1, 1);
 			if (wrapInClass) {
-/*				foreach (var child in Unit.Children) {
+				/*				foreach (var child in Unit.Children) {
 					if (child is UsingDeclaration) {
 						var offset = document.GetOffset (child.StartLocation);
 						wrapper.Append (document.GetText (offset, document.GetOffset (child.EndLocation) - offset));
 					}
 				}*/
-				wrapper.Append ("class Stub {");
-				wrapper.AppendLine ();
+				wrapper.Append("class Stub {");
+				wrapper.AppendLine();
+				closingBrackets++;
+				generatedLines = 1;
 			}
 			
-			wrapper.Append (memberText);
-			wrapper.Append (continuation);
-			AppendMissingClosingBrackets (wrapper, memberText, appendSemicolon);
-			wrapper.Append (afterContinuation);
+			wrapper.Append(memberText);
+			wrapper.Append(continuation);
+			AppendMissingClosingBrackets(wrapper, memberText, appendSemicolon);
+			wrapper.Append(afterContinuation);
 			
-			if (wrapInClass)
-				wrapper.Append ('}');
-			
-			TextLocation memberLocation;
-			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
-				memberLocation = currentMember.Region.Begin;
-			} else if (currentType != null) {
-				memberLocation = currentType.Region.Begin;
-			} else {
-				memberLocation = new TextLocation (1, 1);
+			if (closingBrackets > 0) { 
+				wrapper.Append(new string ('}', closingBrackets));
 			}
-
+			
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
-					return parser.Parse (stream, "stub.cs", wrapInClass ? memberLocation.Line - 2 : 0);
+					return parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
 				} catch (Exception) {
 					Console.WriteLine ("------");
 					Console.WriteLine (wrapper);
@@ -473,13 +469,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			cachedText = null;
 		}
 		
-		protected Tuple<string, bool> GetMemberTextToCaret ()
+		protected Tuple<string, TextLocation> GetMemberTextToCaret ()
 		{
 			int startOffset;
 			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
-				startOffset = document.GetOffset (currentMember.Region.BeginLine, currentMember.Region.BeginColumn);
+				startOffset = document.GetOffset (currentMember.Region.Begin);
 			} else if (currentType != null) {
-				startOffset = document.GetOffset (currentType.Region.BeginLine, currentType.Region.BeginColumn);
+				startOffset = document.GetOffset (currentType.Region.Begin);
 			} else {
 				startOffset = 0;
 			}
@@ -492,7 +488,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (cachedText == null)
 				cachedText = document.GetText (startOffset, offset - startOffset);
 			
-			return Tuple.Create (cachedText, startOffset != 0);
+			return Tuple.Create (cachedText, document.GetLocation (startOffset));
 		}
 		
 		protected ExpressionResult GetInvocationBeforeCursor (bool afterBracket)
