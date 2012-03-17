@@ -453,10 +453,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {
 					var parser = new CSharpParser ();
-					return parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
+					var result = parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
+					
+					return result;
 				} catch (Exception) {
-					Console.WriteLine ("------");
-					Console.WriteLine (wrapper);
+					Console.WriteLine("------");
+					Console.WriteLine(wrapper);
 					throw;
 				}
 			}
@@ -469,22 +471,24 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			cachedText = null;
 		}
 		
-		protected Tuple<string, TextLocation> GetMemberTextToCaret ()
+		protected Tuple<string, TextLocation> GetMemberTextToCaret()
 		{
 			int startOffset;
 			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
-				startOffset = document.GetOffset (currentMember.Region.Begin);
+				startOffset = document.GetOffset(currentMember.Region.Begin);
 			} else if (currentType != null) {
-				startOffset = document.GetOffset (currentType.Region.Begin);
+				startOffset = document.GetOffset(currentType.Region.Begin);
 			} else {
 				startOffset = 0;
 			}
 			while (startOffset > 0) {
-				char ch = document.GetCharAt (startOffset - 1);
-				if (ch != ' ' && ch != '\t')
+				char ch = document.GetCharAt(startOffset - 1);
+				if (ch != ' ' && ch != '\t') {
 					break;
+				}
 				--startOffset;
 			}
+			startOffset = 0;
 			if (cachedText == null)
 				cachedText = document.GetText (startOffset, offset - startOffset);
 			
@@ -498,13 +502,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				baseUnit = ParseStub ("", false);
 				var section = baseUnit.GetNodeAt<AttributeSection> (location.Line, location.Column - 2);
 				var attr = section != null ? section.Attributes.LastOrDefault () : null;
-				if (attr != null) {
-					// insert target type into compilation unit, to respect the 
-					attr.Remove ();
-					var node = Unit.GetNodeAt (location) ?? Unit;
-					node.AddChild (attr, Roles.Attribute);
-					return new ExpressionResult ((AstNode)attr, Unit);
-				}
+				if (attr != null)
+					return new ExpressionResult ((AstNode)attr, baseUnit);
 			}
 			if (currentMember == null && currentType == null) {
 				return null;
@@ -529,11 +528,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (expr == null)
 					return null;
 			}
-			var member = Unit.GetNodeAt<EntityDeclaration> (memberLocation);
-			var member2 = baseUnit.GetNodeAt<EntityDeclaration> (memberLocation);
-			member2.Remove ();
-			member.ReplaceWith (member2);
-			return new ExpressionResult ((AstNode)expr, Unit);
+			return new ExpressionResult ((AstNode)expr, baseUnit);
 		}
 		
 		public class ExpressionResult

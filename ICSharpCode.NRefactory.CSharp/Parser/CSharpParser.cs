@@ -66,46 +66,48 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new TextLocation (loc.Row, loc.Column);
 			}
 			
-			public override void Visit (ModuleContainer mc)
+			public override void Visit(ModuleContainer mc)
 			{
 				bool first = true;
 				foreach (var container in mc.Containers) {
 					var nspace = container as NamespaceContainer;
 					if (nspace == null) {
-						container.Accept (this);
+						container.Accept(this);
 						continue;
 					}
 					NamespaceDeclaration nDecl = null;
-					var loc = LocationsBag.GetLocations (nspace);
+					var loc = LocationsBag.GetLocations(nspace);
 					
-					if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
+					if (nspace.NS != null && !string.IsNullOrEmpty(nspace.NS.Name)) {
 						nDecl = new NamespaceDeclaration ();
-						if (loc != null)
-							nDecl.AddChild (new CSharpTokenNode (Convert (loc [0])), Roles.NamespaceKeyword);
-						ConvertNamespaceName (nspace.RealMemberName, nDecl);
-						if (loc != null && loc.Count > 1)
-							nDecl.AddChild (new CSharpTokenNode (Convert (loc [1])), Roles.LBrace);
-						AddToNamespace (nDecl);
-						namespaceStack.Push (nDecl);
+						if (loc != null) {
+							nDecl.AddChild(new CSharpTokenNode (Convert(loc [0])), Roles.NamespaceKeyword);
+						}
+						ConvertNamespaceName(nspace.RealMemberName, nDecl);
+						if (loc != null && loc.Count > 1) {
+							nDecl.AddChild(new CSharpTokenNode (Convert(loc [1])), Roles.LBrace);
+						}
+						AddToNamespace(nDecl);
+						namespaceStack.Push(nDecl);
 					}
 					
 					if (nspace.Usings != null) {
 						foreach (var us in nspace.Usings) {
-							us.Accept (this);
+							us.Accept(this);
 						}
 					}
 					
 					if (first) {
 						first = false;
-						AddAttributeSection (Unit, mc);
+						AddAttributeSection(Unit, mc);
 					}
 					
 					if (nspace.Containers != null) {
 						foreach (var subContainer in nspace.Containers) {
-							subContainer.Accept (this);
+							subContainer.Accept(this);
 						}
 					}
-						
+					Console.WriteLine("attr:" + mc.UnattachedAttributes);
 					if (nDecl != null) {
 						AddAttributeSection (nDecl, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 						if (loc != null && loc.Count > 2)
@@ -344,37 +346,38 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			public override void Visit (NamespaceContainer nspace)
+			public override void Visit(NamespaceContainer nspace)
 			{
 				NamespaceDeclaration nDecl = null;
-				var loc = LocationsBag.GetLocations (nspace);
+				var loc = LocationsBag.GetLocations(nspace);
 				
-				if (nspace.NS != null && !string.IsNullOrEmpty (nspace.NS.Name)) {
+				if (nspace.NS != null && !string.IsNullOrEmpty(nspace.NS.Name)) {
 					nDecl = new NamespaceDeclaration ();
-					if (loc != null)
-						nDecl.AddChild (new CSharpTokenNode (Convert (loc [0])), Roles.NamespaceKeyword);
-					ConvertNamespaceName (nspace.RealMemberName, nDecl);
-					if (loc != null && loc.Count > 1)
-						nDecl.AddChild (new CSharpTokenNode (Convert (loc [1])), Roles.LBrace);
-					AddToNamespace (nDecl);
-					namespaceStack.Push (nDecl);
+					if (loc != null) {
+						nDecl.AddChild(new CSharpTokenNode (Convert(loc [0])), Roles.NamespaceKeyword);
+					}
+					ConvertNamespaceName(nspace.RealMemberName, nDecl);
+					if (loc != null && loc.Count > 1) {
+						nDecl.AddChild(new CSharpTokenNode (Convert(loc [1])), Roles.LBrace);
+					}
+					AddToNamespace(nDecl);
+					namespaceStack.Push(nDecl);
 				}
 				
 				if (nspace.Usings != null) {
 					foreach (var us in nspace.Usings) {
-						us.Accept (this);
+						us.Accept(this);
 					}
 				}
 				
 				if (nspace.Containers != null) {
 					foreach (var container in nspace.Containers) {
-						container.Accept (this);
+						container.Accept(this);
 					}
 				}
 				
-				
 				if (nDecl != null) {
-					AddAttributeSection (nDecl, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
+					AddAttributeSection(nDecl, nspace.UnattachedAttributes, EntityDeclaration.UnattachedAttributeRole);
 					if (loc != null && loc.Count > 2)
 						nDecl.AddChild (new CSharpTokenNode (Convert (loc [2])), Roles.RBrace);
 					if (loc != null && loc.Count > 3)
@@ -3606,17 +3609,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public CompilationUnit Parse (CompilerCompilationUnit top, string fileName, int lineModifier = 0)
+		public CompilationUnit Parse(CompilerCompilationUnit top, string fileName, int lineModifier = 0)
 		{
-			if (top == null)
+			if (top == null) {
 				return null;
+			}
 			CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (GenerateTypeSystemMode, top.LocationsBag);
-			top.ModuleCompiled.Accept (conversionVisitor);
-			InsertComments (top, conversionVisitor);
-			if (CompilationUnitCallback != null)
-				CompilationUnitCallback (top);
-			if (top.LastYYValue is Mono.CSharp.Expression)
-				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept (conversionVisitor) as AstNode;
+			top.ModuleCompiled.Accept(conversionVisitor);
+			InsertComments(top, conversionVisitor);
+			if (CompilationUnitCallback != null) {
+				CompilationUnitCallback(top);
+			}
+			if (top.LastYYValue is Mono.CSharp.Expression) {
+				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept(conversionVisitor) as AstNode;
+			}
 			conversionVisitor.Unit.FileName = fileName;
 			return conversionVisitor.Unit;
 		}
