@@ -1211,7 +1211,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			propertyDict["SolutionDir"] = EnsureBackslash(this.Directory);
 			propertyDict["SolutionExt"] = ".sln";
 			propertyDict["SolutionFileName"] = Path.GetFileName(this.FileName);
-			propertyDict["SolutionName"] = this.Name;
+			propertyDict["SolutionName"] = this.Name ?? string.Empty;
 			propertyDict["SolutionPath"] = this.FileName;
 		}
 		
