@@ -52,13 +52,35 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return GetCurrentSolutionSnapshot().GetCompilation(solution != null ? solution.FindProjectContainingFile(fileName) : null);
 		}
 		
+		// Use a WeakReference for caching the solution snapshot - it can require
+		// lots of memory and may not be invalidated soon enough if the user
+		// is only browsing code.
+		volatile static WeakReference<SharpDevelopSolutionSnapshot> currentSolutionSnapshot;
+		
 		/// <summary>
-		/// Gets a snapshot of the current compilations. This method is useful when a consistent snapshot
-		/// across multiple compilations is needed.
+		/// Gets a snapshot of the current compilations
+		/// This method is useful when a consistent snapshot across multiple compilations is needed.
 		/// </summary>
 		public static SharpDevelopSolutionSnapshot GetCurrentSolutionSnapshot()
 		{
-			return new SharpDevelopSolutionSnapshot();
+			var weakRef = currentSolutionSnapshot;
+			SharpDevelopSolutionSnapshot result;
+			if (weakRef == null || !weakRef.TryGetTarget(out result)) {
+				// create new snapshot if we don't have one cached
+				result = new SharpDevelopSolutionSnapshot(ProjectService.OpenSolution);
+				currentSolutionSnapshot = new WeakReference<SharpDevelopSolutionSnapshot>(result);
+			}
+			return result;
+		}
+		
+		/// <summary>
+		/// Invalidates the current solution snapshot, causing
+		/// the next <see cref="GetCurrentSolutionSnapshot()"/> call to create a new one.
+		/// This method needs to be called whenever IProject.ProjectContent changes.
+		/// </summary>
+		public static void InvalidateCurrentSolutionSnapshot()
+		{
+			currentSolutionSnapshot = null;
 		}
 		
 		[Obsolete("Use project.ProjectContent instead")]
@@ -901,6 +923,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			//foreach (IProject project in ProjectService.OpenSolution.Projects) {
 			//	RegisterProjectContentForAddedProject(project);
 			//}
+			InvalidateCurrentSolutionSnapshot();
 		}
 		
 		internal static void OnSolutionClosed()
@@ -910,6 +933,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				//projectContents.Clear();
 			}
 			ClearAllFileEntries();
+			InvalidateCurrentSolutionSnapshot();
 		}
 		
 		static void ClearAllFileEntries()

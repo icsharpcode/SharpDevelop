@@ -15,14 +15,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		Dictionary<IProject, IProjectContent> projectContentSnapshots = new Dictionary<IProject, IProjectContent>();
 		Lazy<ICompilation> dummyCompilation;
 		
-		public SharpDevelopSolutionSnapshot()
-			: this(ProjectService.OpenSolution)
-		{
-			dummyCompilation = new Lazy<ICompilation>(() => new SimpleCompilation(this, MinimalCorlib.Instance));
-		}
-		
 		public SharpDevelopSolutionSnapshot(Solution solution)
 		{
+			dummyCompilation = new Lazy<ICompilation>(() => new SimpleCompilation(this, MinimalCorlib.Instance));
 			if (solution != null) {
 				foreach (IProject project in solution.Projects) {
 					var pc = project.ProjectContent;

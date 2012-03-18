@@ -50,6 +50,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			lock (lockObj) {
 				if (!disposed)
 					projectContent = projectContent.UpdateProjectContent(oldFile, newFile);
+				ParserService.InvalidateCurrentSolutionSnapshot();
 			}
 		}
 		
@@ -180,6 +181,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					lock (lockObj) {
 						projectContent = projectContent.RemoveAssemblyReferences(this.references).AddAssemblyReferences(newReferences);
 						this.references = newReferences.ToArray();
+						ParserService.InvalidateCurrentSolutionSnapshot();
 					}
 				}, progressMonitor.CancellationToken);
 		}
