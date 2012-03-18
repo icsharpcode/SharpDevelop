@@ -66,9 +66,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			LoggingService.Info("Local Variables refresh");
 			try {
 				StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+				localVarList.WatchItems.Clear();
 				if (frame == null) return;
 				
-				localVarList.WatchItems.Clear();
 				debuggedProcess.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
 					new StackFrameNode(frame).ChildNodes.ToList(),
