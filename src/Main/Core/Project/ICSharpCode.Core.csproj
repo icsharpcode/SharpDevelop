@@ -50,7 +50,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <StartAction>Program</StartAction>
-    <StartProgram>cghkjfkhjh</StartProgram>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
