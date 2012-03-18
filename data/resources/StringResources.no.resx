@@ -1920,6 +1920,9 @@ Eksempler: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Bygg alle prosjekter</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Nåværende UI-språk:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Klikk på et ikon for å endre språk.</value>
   </data>

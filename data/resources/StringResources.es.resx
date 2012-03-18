@@ -1967,6 +1967,9 @@ Para crear/manipular un objeto ActiveX/COM, arrastre una clase de un Control/Bib
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Generar todos los proyectos</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Idioma Actual de la Interfaz:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Clic en un icono para seleccionar el lenguaje.</value>
   </data>

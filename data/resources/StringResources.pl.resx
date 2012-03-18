@@ -1344,6 +1344,9 @@ Czy chcesz dodać nowy plik do projektu ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox" xml:space="preserve">
     <value>Pokaż zakładkę listy błędów jeśli budowanie zakończy się z błędami</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Aktualny język interfejsu użytkownika:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Kliknij na ikonę aby wybrać język.</value>
   </data>

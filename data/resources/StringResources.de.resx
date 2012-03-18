@@ -1988,6 +1988,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Erstelle alle Projekte</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Aktuelle Oberflächensprache:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Auf Icon klicken, um neue Sprache zu wählen.</value>
   </data>
@@ -4997,8 +5000,38 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Statische Mitglieder</value>
   </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
+    <value>Speicher</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.AddressNotFound" xml:space="preserve">
+    <value>Speicheradresse {0} nicht gefunden!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ByteSize" xml:space="preserve">
+    <value>Byte-Größe der Ansicht:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.JumpTo" xml:space="preserve">
+    <value>Zu Adresse springen:</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NextAddress" xml:space="preserve">
+    <value>Nächste virtuelle Adressen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.NoMappings" xml:space="preserve">
+    <value>Keine Zuordnungen von Speicheradressen vorhanden!</value>
+  </data>
   <data name="MainWindow.Windows.Debug.MemoryPad.NotDebuggingOrProcessRunning" xml:space="preserve">
     <value>Debugging nicht aktiv oder der Prozess ist nicht angehalten!</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.PreviousAddress" xml:space="preserve">
+    <value>Vorherige virtuelle Adressen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.ReadingFromFormat" xml:space="preserve">
+    <value>Lese von {0} bis {1} - Größe {2}.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.Refresh" xml:space="preserve">
+    <value>Adressen aktualisieren</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.MemoryPad.UnableToReadFormat" xml:space="preserve">
+    <value>Konnte keinen Block der Größe {1} an Adresse {0} lesen.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
     <value>Module</value>
@@ -5006,11 +5039,17 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Adresse</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(dynamisch)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>Keine Symbole geladen.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Symbole geladen.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(im Speicher)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Reihenfolge</value>
@@ -5030,11 +5069,17 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
     <value>Objektgraph</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
+    <value>Parallele Aufrufstacks</value>
+  </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Bis zum Cursor ausführen</value>
   </data>
   <data name="MainWindow.Windows.Debug.SetCurrentStatement" xml:space="preserve">
     <value>Aktive Anweisung festlegen</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.StopDebugging.Message" xml:space="preserve">
+    <value>Wollen Sie das Debuggen beenden?</value>
   </data>
   <data name="MainWindow.Windows.Debug.StopProcessDialog.Message" xml:space="preserve">
     <value>Soll der Debugger vom Prozess getrennt werden oder der Prozess beendet werden?</value>
@@ -5083,6 +5128,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Thread-Wechsel</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>Methodenansicht umschalten</value>
   </data>
   <data name="MainWindow.Windows.Debug.Watch" xml:space="preserve">
     <value>Überwachen</value>
