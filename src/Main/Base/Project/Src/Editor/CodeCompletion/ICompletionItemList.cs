@@ -20,10 +20,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		ICompletionItem SuggestedItem { get; }
 		
 		/// <summary>
-		/// Gets the length of the preselection (text in front of the completion list that
-		/// should be included as completed expression).
+		/// Gets the length of the preselection (text in front of the caret that should be included as completed expression).
 		/// </summary>
 		int PreselectionLength { get; }
+		
+		/// <summary>
+		/// Gets the length of the postselection (text after the caret that should be included as completed expression).
+		/// </summary>
+		int PostselectionLength { get; }
 		
 		/// <summary>
 		/// Processes the specified key press.
@@ -96,6 +100,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		/// <inheritdoc/>
 		public int PreselectionLength { get; set; }
+		
+		/// <inheritdoc/>
+		public int PostselectionLength { get; set; }
 		
 		/// <inheritdoc/>
 		public ICompletionItem SuggestedItem { get; set; }

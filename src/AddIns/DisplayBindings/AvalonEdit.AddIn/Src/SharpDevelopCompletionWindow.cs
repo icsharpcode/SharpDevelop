@@ -88,6 +88,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.CompletionList.SelectedItem = adapter;
 			}
 			this.StartOffset -= itemList.PreselectionLength;
+			this.EndOffset += itemList.PostselectionLength;
 		}
 		
 		public static readonly DependencyProperty EmptyTextProperty =

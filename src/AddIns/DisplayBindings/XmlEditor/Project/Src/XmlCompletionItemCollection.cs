@@ -142,6 +142,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public int PreselectionLength { get; set; }
+		public int PostselectionLength { get; set; }
 		
 		public void Complete(CompletionContext context, ICompletionItem item)
 		{

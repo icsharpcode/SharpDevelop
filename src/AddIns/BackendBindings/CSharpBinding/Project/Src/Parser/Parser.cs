@@ -80,6 +80,7 @@ namespace CSharpBinding.Parser
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
 			CompilationUnit cu = parser.Parse(fileContent.CreateReader(), fileName);
+			cu.Freeze();
 			
 			CSharpParsedFile file = cu.ToTypeSystem();
 			ParseInformation parseInfo;

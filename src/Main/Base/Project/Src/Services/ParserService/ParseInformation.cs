@@ -20,7 +20,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		readonly IParsedFile parsedFile;
 		IList<TagComment> tagComments = new List<TagComment>();
 		readonly bool isFullParseInformation;
-		bool isFrozen;
 		
 		public ParseInformation(IParsedFile parsedFile, bool isFullParseInformation)
 		{
