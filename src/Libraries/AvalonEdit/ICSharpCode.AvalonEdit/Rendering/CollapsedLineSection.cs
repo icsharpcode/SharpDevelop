@@ -13,7 +13,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// </summary>
 	public sealed class CollapsedLineSection
 	{
-		bool isCollapsed = true;
 		DocumentLine start, end;
 		HeightTree heightTree;
 		

@@ -67,6 +67,10 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		internal void ValidateCollapsedLineSections()
 		{
+			if (!isFolded) {
+				RemoveCollapsedLineSection();
+				return;
+			}
 			DocumentLine startLine = manager.document.GetLineByOffset(StartOffset);
 			DocumentLine endLine = manager.document.GetLineByOffset(EndOffset);
 			if (startLine == endLine) {
