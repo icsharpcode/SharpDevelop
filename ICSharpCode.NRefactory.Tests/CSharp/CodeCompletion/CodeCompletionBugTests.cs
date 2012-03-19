@@ -219,6 +219,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
 			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
+			compilationUnit.Freeze ();
 			
 			var parsedFile = compilationUnit.ToTypeSystem ();
 			pctx = pctx.UpdateProjectContent (null, parsedFile);
@@ -4762,6 +4763,31 @@ class MainClass
 ");
 			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
 			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
+
+		/// <summary>
+		/// Bug 3957 - [New Resolver]Override completion doesn't work well for overloaded methods
+		/// </summary>
+		[Test()]
+		public void TestBug3957 ()
+		{
+			var provider = CreateProvider (
+@"class A
+{
+    public virtual void Method()
+    {}
+    public virtual void Method(int i)
+    {}
+}
+
+class B : A
+{
+	$override $
+}
+
+");
+			Assert.AreEqual (2, provider.Data.Where (d => d.DisplayText == "Method").Count ());
 		}
 
 	}
