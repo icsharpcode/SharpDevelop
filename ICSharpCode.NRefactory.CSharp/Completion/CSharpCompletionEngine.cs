@@ -73,6 +73,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.IndentString = "\t";
 		}
 
+		public bool TryGetCompletionWord (int offset, out int startPos, out int wordLength)
+		{
+			startPos = wordLength = 0;
+			int pos = offset - 1;
+			while (pos >= 0) {
+				char c = document.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos--;
+			}
+			if (pos == -1)
+				return false;
+
+			pos++;
+			startPos = pos;
+
+			while (pos < document.TextLength) {
+				char c = document.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos++;
+			}
+			wordLength = pos - startPos;
+			return true;
+		}
+
+
+
 		public IEnumerable<ICompletionData> GetCompletionData(int offset, bool controlSpace)
 		{
 			this.AutoCompleteEmptyMatch = true;
