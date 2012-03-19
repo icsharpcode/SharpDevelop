@@ -79,9 +79,8 @@ namespace ICSharpCode.NRefactory.Xml
 		/// </summary>
 		public IList<AXmlObject> Children {
 			get {
-				var result = this.children;
+				var result = LazyInit.VolatileRead(ref this.children);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
 					if (internalObject.NestedObjects != null) {
