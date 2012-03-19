@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.XmlEditor;
 

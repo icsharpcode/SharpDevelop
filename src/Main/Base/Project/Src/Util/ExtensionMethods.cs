@@ -560,6 +560,24 @@ namespace ICSharpCode.SharpDevelop
 			return newContent;
 		}
 		
+		public static int IndexOfAny(this string haystack, string[] needles, int startIndex, out int matchLength)
+		{
+			if (haystack == null)
+				throw new ArgumentNullException("haystack");
+			if (needles == null)
+				throw new ArgumentNullException("needles");
+			int index = -1;
+			matchLength = 0;
+			foreach (var needle in needles) {
+				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
+				if (i != -1 && (index == -1 || index > i)) {
+					index = i;
+					matchLength = needle.Length;
+				}
+			}
+			return index;
+		}
+		
 		#region Dom, AST, Editor, Document
 		public static string GetText(this IDocument document, TextLocation startPos, TextLocation endPos)
 		{

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -14,6 +13,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.NRefactory.Xml;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
@@ -140,15 +140,40 @@ namespace ICSharpCode.XamlBinding
 			document = parser.ParseIncremental(parserState, fileContent, out newParserState);
 			parserState = newParserState;
 			XamlParsedFile parsedFile = XamlParsedFile.Create(fileName, fileContent, document);
-			
+			ParseInformation parseInfo;
 			if (fullParseInformationRequested)
-				return new XamlFullParseInformation(parsedFile, document);
-			return new ParseInformation(parsedFile, false);
+				parseInfo = new XamlFullParseInformation(parsedFile, document, fileContent);
+			else
+				parseInfo = new ParseInformation(parsedFile, false);
+			AddTagComments(document, parseInfo, fileContent);
+			return parseInfo;
+		}
+		
+		void AddTagComments(AXmlDocument xmlDocument, ParseInformation parseInfo, ITextSource fileContent)
+		{
+			ReadOnlyDocument document = null;
+			foreach (var tag in TreeTraversal.PreOrder<AXmlObject>(xmlDocument, node => node.Children).OfType<AXmlTag>().Where(t => t.IsComment)) {
+				int matchLength;
+				AXmlText comment = tag.Children.OfType<AXmlText>().First();
+				int index = comment.Value.IndexOfAny(lexerTags, 0, out matchLength);
+				if (index > -1) {
+					if (document == null)
+						document = new ReadOnlyDocument(fileContent);
+					do {
+						TextLocation startLocation = document.GetLocation(comment.StartOffset + index);
+						int startOffset = index + comment.StartOffset;
+						int endOffset = Math.Min(document.GetLineByOffset(startOffset).EndOffset, comment.EndOffset);
+						string content = document.GetText(startOffset, endOffset - startOffset);
+						parseInfo.TagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(parseInfo.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
+						index = comment.Value.IndexOfAny(lexerTags, endOffset - comment.StartOffset, out matchLength);
+					} while (index > -1);
+				}
+			}
 		}
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)
 		{
-			return ErrorResolveResult.UnknownError;
+			return new XamlResolver().Resolve((XamlFullParseInformation)parseInfo, location, compilation, cancellationToken);
 		}
 		
 		public void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken)

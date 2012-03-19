@@ -91,7 +91,7 @@ namespace CSharpBinding.Parser
 			
 			AddCommentTags(cu, parseInfo.TagComments, fileContent);
 			
-			return parseInfo;
+			return parseInfo; 
 		}
 		
 		void AddCommentTags(CompilationUnit cu, IList<TagComment> tagComments, ITextSource fileContent)
@@ -99,7 +99,7 @@ namespace CSharpBinding.Parser
 			ReadOnlyDocument document = null;
 			foreach (var comment in cu.Descendants.OfType<Comment>().Where(c => c.CommentType != CommentType.InactiveCode)) {
 				int matchLength;
-				int index = IndexOfAny(comment.Content, lexerTags, 0, out matchLength);
+				int index = comment.Content.IndexOfAny(lexerTags, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
 						document = new ReadOnlyDocument(fileContent);
@@ -112,28 +112,10 @@ namespace CSharpBinding.Parser
 						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, document.GetOffset(comment.EndLocation) - commentEndSignLength);
 						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
 						tagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = IndexOfAny(comment.Content, lexerTags, endOffset - startOffset - commentSignLength, out matchLength);
+						index = comment.Content.IndexOfAny(lexerTags, endOffset - startOffset - commentSignLength, out matchLength);
 					} while (index > -1);
 				}
 			}
-		}
-		
-		static int IndexOfAny(string haystack, string[] needles, int startIndex, out int matchLength)
-		{
-			if (haystack == null)
-				throw new ArgumentNullException("haystack");
-			if (needles == null)
-				throw new ArgumentNullException("needles");
-			int index = -1;
-			matchLength = 0;
-			foreach (var needle in needles) {
-				int i = haystack.IndexOf(needle, startIndex, StringComparison.Ordinal);
-				if (i != -1 && (index == -1 || index > i)) {
-					index = i;
-					matchLength = needle.Length;
-				}
-			}
-			return index;
 		}
 		
 		public ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken)

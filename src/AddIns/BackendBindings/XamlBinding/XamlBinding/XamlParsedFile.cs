@@ -112,7 +112,6 @@ namespace ICSharpCode.XamlBinding
 			
 			IParsedFile file;
 			AXmlDocument currentDocument;
-			AXmlElement rootElement;
 			ReadOnlyDocument textDocument;
 			
 			public XamlDocumentVisitor(IParsedFile file, ITextSource fileContent)
@@ -124,47 +123,41 @@ namespace ICSharpCode.XamlBinding
 			public override void VisitDocument(AXmlDocument document)
 			{
 				currentDocument = document;
-				rootElement = currentDocument.Children.OfType<AXmlElement>().FirstOrDefault();
+				AXmlElement rootElement = currentDocument.Children.OfType<AXmlElement>().FirstOrDefault();
+				if (rootElement != null) {
+					string className = rootElement.GetAttributeValue(XamlBehavior.XamlNamespace, "Class");
+					if (className != null) {
+						TypeDefinition = new DefaultUnresolvedTypeDefinition(className) {
+							Kind = TypeKind.Class,
+							ParsedFile = file,
+							Region = new DomRegion(file.FileName, textDocument.GetLocation(rootElement.StartOffset), textDocument.GetLocation(rootElement.EndOffset))
+						};
+						TypeDefinition.Members.Add(
+							new DefaultUnresolvedMethod(TypeDefinition, "InitializeComponent") {
+								Accessibility = Accessibility.Public,
+								ReturnType = KnownTypeReference.Void
+							});
+					}
+				}
 				base.VisitDocument(document);
 			}
 			
-			public override void VisitAttribute(AXmlAttribute attribute)
+			public override void VisitElement(AXmlElement element)
 			{
-				if (attribute.Namespace == XamlBehavior.XamlNamespace) {
-					string prefix = attribute.Prefix;
-					switch (attribute.LocalName) {
-						case "Class":
-							if (attribute.ParentElement == rootElement) {
-								TypeDefinition = new DefaultUnresolvedTypeDefinition(attribute.Value) {
-									Kind = TypeKind.Class,
-									ParsedFile = file,
-									Region = new DomRegion(file.FileName, textDocument.GetLocation(rootElement.StartOffset), textDocument.GetLocation(rootElement.EndOffset))
-								};
-								TypeDefinition.Members.Add(
-									new DefaultUnresolvedMethod(TypeDefinition, "InitializeComponent") {
-										Accessibility = Accessibility.Public,
-										ReturnType = KnownTypeReference.Void
-									});
-							}
-							break;
-						case "Name":
-							if (TypeDefinition != null) {
-								var field = new DefaultUnresolvedField(TypeDefinition, attribute.Value);
-								if (attribute.ParentElement != null) {
-									var modifier = attribute.ParentElement.Attributes.FirstOrDefault(a => a.Prefix == prefix && a.LocalName == "FieldModifier");
-									field.Accessibility = Accessibility.Internal;
-									field.Region = new DomRegion(file.FileName, textDocument.GetLocation(attribute.ParentElement.StartOffset), textDocument.GetLocation(attribute.ParentElement.EndOffset));
-									if (modifier != null) {
-										field.Accessibility = ParseAccessibility(modifier.Value);
-									}
-								}
-								TypeDefinition.Members.Add(field);
-							}
-							break;
-					}
+				string name = element.GetAttributeValue(XamlBehavior.XamlNamespace, "Name") ??
+					element.GetAttributeValue("Name");
+				string modifier = element.GetAttributeValue(XamlBehavior.XamlNamespace, "FieldModifier");
+				
+				if (name != null) {
+					var field = new DefaultUnresolvedField(TypeDefinition, name);
+					field.Accessibility = Accessibility.Internal;
+					field.Region = new DomRegion(file.FileName, textDocument.GetLocation(element.StartOffset), textDocument.GetLocation(element.EndOffset));
+					if (modifier != null)
+						field.Accessibility = ParseAccessibility(modifier);
+					TypeDefinition.Members.Add(field);
 				}
 				
-				base.VisitAttribute(attribute);
+				base.VisitElement(element);
 			}
 			
 			Accessibility ParseAccessibility(string value)

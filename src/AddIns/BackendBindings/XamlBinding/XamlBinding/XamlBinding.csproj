@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="XamlFullParseInformation.cs" />
     <Compile Include="XamlParsedFile.cs" />
+    <Compile Include="XamlResolver.cs" />
     <Compile Include="XamlSymbolSearch.cs" />
     <None Include="XamlBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -111,6 +112,11 @@
     </Compile>
     <Compile Include="XamlOutlineNode.cs" />
     <Compile Include="XamlParser.cs" />
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
       <Name>ICSharpCode.NRefactory.Xml</Name>
