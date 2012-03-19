@@ -105,6 +105,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			InvalidateHighlighting();
 		}
 		
+		void ILineTracker.ChangeComplete(DocumentChangeEventArgs e)
+		{
+		}
+		
 		ImmutableStack<HighlightingSpan> initialSpanStack = SpanStack.Empty;
 		
 		/// <summary>

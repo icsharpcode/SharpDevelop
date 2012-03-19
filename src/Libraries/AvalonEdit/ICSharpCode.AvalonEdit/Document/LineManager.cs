@@ -284,5 +284,14 @@ namespace ICSharpCode.AvalonEdit.Document
 			return line;
 		}
 		#endregion
+		
+		#region ChangeComplete
+		public void ChangeComplete(DocumentChangeEventArgs e)
+		{
+			foreach (ILineTracker lt in lineTrackers) {
+				lt.ChangeComplete(e);
+			}
+		}
+		#endregion
 	}
 }

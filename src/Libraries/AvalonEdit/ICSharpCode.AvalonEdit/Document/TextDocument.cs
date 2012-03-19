@@ -746,6 +746,8 @@ namespace ICSharpCode.AvalonEdit.Document
 				}
 			}
 			
+			lineManager.ChangeComplete(args);
+			
 			// raise delayed events after our data structures are consistent again
 			delayedEvents.RaiseEvents();
 			

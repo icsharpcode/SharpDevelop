@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} else {
 				// if the file is not under subversion, the document is the opened document
 				if (baseDocument == null) {
-					baseDocument = new ReadOnlyDocument(document.CreateSnapshot());
+					baseDocument = document.CreateDocumentSnapshot();
 				}
 			}
 		}
@@ -185,6 +185,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			changeList.Clear();
 			changeList.InsertRange(0, document.LineCount + 1, new LineChangeInfo(ChangeType.Unsaved, 1, baseDocument.LineCount));
+		}
+		
+		void ILineTracker.ChangeComplete(DocumentChangeEventArgs e)
+		{
 		}
 		
 		bool disposed = false;
