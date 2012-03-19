@@ -1,11 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using CSharpBinding.Completion;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Editor;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace CSharpBinding.Tests
 {
@@ -13,6 +16,7 @@ namespace CSharpBinding.Tests
 	/// Tests code completion after the 'override' keyword
 	/// </summary>
 	[TestFixture]
+	[Ignore("Override completion is not yet implemented")]
 	public class OverrideCompletionTests
 	{
 		string programStart = @"using System;
@@ -34,23 +38,23 @@ class DerivedClass : BaseClass {
 		string programEnd = "\n}";
 		
 		MockTextEditor textEditor;
-		CodeCompletionKeyPressResult keyPressResult;
+		bool keyPressResult;
 		
 		[SetUp]
 		public void SetUp()
 		{
 			textEditor = new MockTextEditor();
-			textEditor.Document.Text = programStart + "override" + programEnd;
-			textEditor.Caret.Offset = programStart.Length + "override".Length;
+			textEditor.Document.Text = programStart + "override " + programEnd;
+			textEditor.Caret.Offset = programStart.Length + "override ".Length;
 			textEditor.CreateParseInformation();
 			CSharpCompletionBinding completion = new CSharpCompletionBinding();
-			keyPressResult = completion.HandleKeyPress(textEditor, ' ');
+			keyPressResult = completion.HandleKeyPressed(textEditor, ' ');
 		}
 		
 		[Test]
 		public void CheckKeyPressResult()
 		{
-			Assert.AreEqual(CodeCompletionKeyPressResult.Completed, keyPressResult);
+			Assert.IsTrue(keyPressResult);
 		}
 		
 		[Test]

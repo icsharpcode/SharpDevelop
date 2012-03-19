@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.Collections.Generic;
@@ -43,8 +44,9 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				get { return readOnly; }
 			}
 			
-			public override ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
-				get { return ICSharpCode.SharpDevelop.Dom.LanguageProperties.CSharp; }
+			protected override IProjectContent CreateProjectContent()
+			{
+				throw new NotImplementedException();
 			}
 			
 			protected override ProjectBehavior CreateDefaultBehavior()

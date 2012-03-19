@@ -6,7 +6,6 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
@@ -40,11 +39,6 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		void SetProjectDirectory(string directory)
 		{
 			fakeProject.Stub(p => p.Directory).Return(directory);			
-		}
-		
-		void SetProjectCodeDomProvider(LanguageProperties languageProperties)
-		{
-			fakeProject.Stub(p => p.LanguageProperties).Return(languageProperties);
 		}
 		
 		ProjectItem GetFirstServiceReferenceFileInMSBuildProject(ServiceReferenceFileName fileName)
@@ -95,18 +89,6 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			string expectedFolder = @"d:\projects\MyProject\Service References";
 			
 			Assert.AreEqual(expectedFolder, folder);
-		}
-		
-		[Test]
-		public void CodeDomProvider_UnderlyingProjectUsesCSharpCodeDomProvider_ProjectUsesCSharpCodeDomProvider()
-		{
-			CreateProject();
-			SetProjectCodeDomProvider(LanguageProperties.CSharp);
-			
-			ICodeDomProvider codeDomProvider = project.CodeDomProvider;
-			string fileExtension = codeDomProvider.FileExtension;
-			
-			Assert.AreEqual("cs", fileExtension);
 		}
 		
 		[Test]

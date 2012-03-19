@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -15,6 +16,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.Search;
@@ -92,7 +94,7 @@ namespace CSharpBinding.Parser
 			
 			AddCommentTags(cu, parseInfo.TagComments, fileContent);
 			
-			return parseInfo; 
+			return parseInfo;
 		}
 		
 		void AddCommentTags(CompilationUnit cu, IList<TagComment> tagComments, ITextSource fileContent)
@@ -154,6 +156,24 @@ namespace CSharpBinding.Parser
 					var builder = SearchResultsPad.CreateInlineBuilder(node.StartLocation, node.EndLocation, document, highlighter);
 					callback(new Reference(region, result, offset, length, builder));
 				}, cancellationToken);
+		}
+		
+		static readonly Lazy<IAssemblyReference[]> defaultReferences = new Lazy<IAssemblyReference[]>(
+			delegate {
+				Assembly[] assemblies = {
+					typeof(object).Assembly,
+					typeof(Uri).Assembly,
+					typeof(Enumerable).Assembly
+				};
+				return assemblies.Select(asm => new CecilLoader().LoadAssemblyFile(asm.Location)).ToArray();
+			});
+		
+		public ICompilation CreateCompilationForSingleFile(FileName fileName, IParsedFile parsedFile)
+		{
+			return new CSharpProjectContent()
+				.AddAssemblyReferences(defaultReferences.Value)
+				.UpdateProjectContent(null, parsedFile)
+				.CreateCompilation();
 		}
 	}
 }

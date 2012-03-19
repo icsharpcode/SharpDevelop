@@ -55,5 +55,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		ResolveResult Resolve(ParseInformation parseInfo, TextLocation location, ICompilation compilation, CancellationToken cancellationToken);
 		
 		void FindLocalReferences(ParseInformation parseInfo, ITextSource fileContent, IVariable variable, ICompilation compilation, Action<Reference> callback, CancellationToken cancellationToken);
+		
+		/// <summary>
+		/// Creates a compilation for a single file that does not belong to any project.
+		/// Used by <see cref="ParserService.GetCompilationForFile"/>.
+		/// May return null if this operation is not supported.
+		/// </summary>
+		ICompilation CreateCompilationForSingleFile(FileName fileName, IParsedFile parsedFile);
 	}
 }

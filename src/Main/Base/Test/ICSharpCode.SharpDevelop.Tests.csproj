@@ -80,7 +80,6 @@
     <Compile Include="GetElementByReflectionNameTests.cs" />
     <Compile Include="Highlighting\AddInHighlightingResourceTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
-    <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OutputTextLineParserTests.cs" />
     <Compile Include="OverridableMethodsTestFixture.cs" />
@@ -94,7 +93,6 @@
     <Compile Include="SearchClassTests.cs" />
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
-    <Compile Include="MemberLookupHelperTests.cs" />
     <Compile Include="ServiceReferences\DirectoryNodeFactoryTests.cs" />
     <Compile Include="ServiceReferences\ItemTypeTests.cs" />
     <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />

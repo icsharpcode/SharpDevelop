@@ -6,11 +6,7 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.NRefactory.Visitors;
 using NUnit.Framework;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
@@ -21,18 +17,17 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class CodeConverterTests
 	{
 		#region TestProgram (converting code)
-		ProjectContentRegistry projectContentRegistry = AssemblyParserService.DefaultProjectContentRegistry;
-		
 		void TestProgramCS2VB(string sourceCode, string expectedOutput)
 		{
-			TestProgram(SupportedLanguage.CSharp, sourceCode, expectedOutput);
+			Assert.Ignore("Code converter is not implemented");
 		}
 		
 		void TestProgramVB2CS(string sourceCode, string expectedOutput)
 		{
-			TestProgram(SupportedLanguage.VBNet, sourceCode, expectedOutput);
+			Assert.Ignore("Code converter is not implemented");
 		}
 		
+		/*
 		void TestProgram(SupportedLanguage sourceLanguage, string sourceCode, string expectedOutput)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
@@ -80,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput.Replace("\r", ""), outputVisitor.Text.Trim().Replace("\r", ""));
-		}
+		}*/
 		#endregion
 		
 		#region TestMember/TestStatement/TestExpression

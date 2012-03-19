@@ -180,5 +180,11 @@ namespace ICSharpCode.XamlBinding
 		{
 			throw new NotImplementedException();
 		}
+		
+		public ICompilation CreateCompilationForSingleFile(FileName fileName, IParsedFile parsedFile)
+		{
+			// TODO: create a simple compilation with WPF references?
+			return null;
+		}
 	}
 }

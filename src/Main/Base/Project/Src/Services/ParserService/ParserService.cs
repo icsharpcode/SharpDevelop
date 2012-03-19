@@ -49,7 +49,20 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public static ICompilation GetCompilationForFile(FileName fileName)
 		{
 			Solution solution = ProjectService.OpenSolution;
-			return GetCurrentSolutionSnapshot().GetCompilation(solution != null ? solution.FindProjectContainingFile(fileName) : null);
+			IProject project = solution != null ? solution.FindProjectContainingFile(fileName) : null;
+			if (project != null)
+				return GetCompilation(project);
+			
+			var entry = GetFileEntry(fileName, false);
+			if (entry != null && entry.parser != null) {
+				var parsedFile = entry.GetExistingParsedFile();
+				if (parsedFile != null) {
+					ICompilation compilation = entry.parser.CreateCompilationForSingleFile(fileName, parsedFile);
+					if (compilation != null)
+						return compilation;
+				}
+			}
+			return MinimalCorlib.Instance.CreateCompilation();
 		}
 		
 		// Use a WeakReference for caching the solution snapshot - it can require
@@ -275,6 +288,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 				this.parser = CreateParser(fileName);
 			}
 			
+			public FileEntry(FileName fileName, ParseInformation parseInfo, IParser parser)
+			{
+				this.fileName = fileName;
+				this.parser = parser;
+				this.mainParsedFile = parseInfo != null ? parseInfo.ParsedFile : null;
+				if (parseInfo != null && parseInfo.IsFullParseInformation)
+					this.cachedParseInformation = parseInfo;
+			}
+			
 			public void AddParsedFileListener(ParsedFileListener listener, bool startAsyncParse)
 			{
 				bool isNewEntry;
@@ -304,20 +326,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 					lock (this) {
 						return this.activeListeners != null;
 					}
-				}
-			}
-			
-			/// <summary>
-			/// Intended for unit tests only
-			/// </summary>
-			public void RegisterParseInformation(ParseInformation parseInfo)
-			{
-				lock (this) {
-					this.mainParsedFile = (parseInfo != null) ? parseInfo.ParsedFile : null;
-					if (parseInfo != null && parseInfo.IsFullParseInformation)
-						this.cachedParseInformation = parseInfo;
-					else
-						this.cachedParseInformation = null;
 				}
 			}
 			
@@ -839,10 +847,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// Registers a compilation unit in the parser service.
 		/// Does not fire the OnParseInformationUpdated event, please use this for unit tests only!
 		/// </summary>
-		public static void RegisterParseInformation(ParseInformation parseInfo)
+		public static void RegisterParseInformation(FileName fileName, ParseInformation parseInfo, IParser parser = null)
 		{
-			FileEntry entry = GetFileEntry(parseInfo.FileName, true);
-			entry.RegisterParseInformation(parseInfo);
+			lock (syncLock) {
+				fileEntryDict[fileName] = new FileEntry(fileName, parseInfo, parser);
+			}
 		}
 		
 		/// <summary>
