@@ -136,13 +136,12 @@ namespace ICSharpCode.XamlBinding
 		
 		ResolveResult ResolveAttributeValue(IMember propertyOrEvent, AXmlAttribute attribute)
 		{
-			ITypeDefinition type = parseInfo.ParsedFile.GetTopLevelTypeDefinition(location).Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
-			if (type == null)
-				return ErrorResolveResult.UnknownError;
+			IType type = parseInfo.ParsedFile.GetTopLevelTypeDefinition(location).Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 			if (propertyOrEvent is IEvent) {
-				var rr = new MemberLookup(type, type.ParentAssembly, false).Lookup(new ThisResolveResult(type), attribute.Value, EmptyList<IType>.Instance, false);
+				var memberLookup = new MemberLookup(type.GetDefinition(), compilation.MainAssembly);
+				var rr = memberLookup.Lookup(new ThisResolveResult(type), attribute.Value, EmptyList<IType>.Instance, false);
 				if (rr is MethodGroupResolveResult) {
-					Conversion conversion = Conversions.Get(type.Compilation).ImplicitConversion(rr, propertyOrEvent.ReturnType);
+					Conversion conversion = CSharpConversions.Get(compilation).ImplicitConversion(rr, propertyOrEvent.ReturnType);
 					IMethod method = conversion.Method;
 					if (method == null)
 						method = ((MethodGroupResolveResult)rr).Methods.FirstOrDefault();

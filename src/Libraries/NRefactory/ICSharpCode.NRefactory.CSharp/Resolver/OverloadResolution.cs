@@ -125,14 +125,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly ICompilation compilation;
 		readonly ResolveResult[] arguments;
 		readonly string[] argumentNames;
-		readonly Conversions conversions;
+		readonly CSharpConversions conversions;
 		//List<Candidate> candidates = new List<Candidate>();
 		Candidate bestCandidate;
 		Candidate bestCandidateAmbiguousWith;
 		IType[] explicitlyGivenTypeArguments;
 		
 		#region Constructor
-		public OverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, Conversions conversions = null)
+		public OverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, CSharpConversions conversions = null)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
@@ -150,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments != null && typeArguments.Length > 0)
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
-			this.conversions = conversions ?? Conversions.Get(compilation);
+			this.conversions = conversions ?? CSharpConversions.Get(compilation);
 			this.AllowExpandingParams = true;
 		}
 		#endregion
@@ -392,7 +392,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		sealed class ConstraintValidatingSubstitution : TypeParameterSubstitution
 		{
-			readonly Conversions conversions;
+			readonly CSharpConversions conversions;
 			public bool ConstraintsValid = true;
 			
 			public ConstraintValidatingSubstitution(IList<IType> classTypeArguments, IList<IType> methodTypeArguments, OverloadResolution overloadResolution)
@@ -441,10 +441,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("typeParameter.Owner");
 			if (typeArgument == null)
 				throw new ArgumentNullException("typeArgument");
-			return ValidateConstraints(typeParameter, typeArgument, substitution, Conversions.Get(typeParameter.Owner.Compilation));
+			return ValidateConstraints(typeParameter, typeArgument, substitution, CSharpConversions.Get(typeParameter.Owner.Compilation));
 		}
 		
-		internal static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution, Conversions conversions)
+		internal static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution, CSharpConversions conversions)
 		{
 			switch (typeArgument.Kind) { // void, null, and pointers cannot be used as type arguments
 				case TypeKind.Void:
@@ -510,7 +510,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Test whether argument passing mode matches the parameter passing mode
 			for (int i = 0; i < arguments.Length; i++) {
 				int parameterIndex = candidate.ArgumentToParameterMap[i];
-				if (parameterIndex < 0) continue;
+				if (parameterIndex < 0) {
+					candidate.ArgumentConversions[i] = Conversion.None;
+					continue;
+				}
 				
 				ByReferenceResolveResult brrr = arguments[i] as ByReferenceResolveResult;
 				if (brrr != null) {
@@ -528,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (!(c == Conversion.IdentityConversion || c == Conversion.ImplicitReferenceConversion || c == Conversion.BoxingConversion))
 						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 				} else {
-					if (!c.IsValid)
+					if (!c.IsValid && parameterType.Kind != TypeKind.Unknown)
 						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 				}
 			}
@@ -753,7 +756,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (bestCandidate != null && bestCandidate.ArgumentConversions != null)
 					return bestCandidate.ArgumentConversions;
 				else
-					return new Conversion[arguments.Length];
+					return Enumerable.Repeat(Conversion.None, arguments.Length).ToList();
 			}
 		}
 		
@@ -810,7 +813,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult)
+		/// <summary>
+		/// Creates a ResolveResult representing the result of overload resolution.
+		/// </summary>
+		/// <param name="targetResolveResult">
+		/// The target expression of the call. May be <c>null</c> for static methods/constructors.
+		/// </param>
+		/// <param name="initializerStatements">
+		/// Statements for Objects/Collections initializer.
+		/// <see cref="InvocationResolveResult.InitializerStatements"/>
+		/// </param>
+		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null)
 		{
 			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
 			if (member == null)
@@ -824,7 +837,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,
 				isDelegateInvocation: false,
-				argumentToParameterMap: this.GetArgumentToParameterMap());
+				argumentToParameterMap: this.GetArgumentToParameterMap(),
+				initializerStatements: initializerStatements);
 		}
 	}
 }

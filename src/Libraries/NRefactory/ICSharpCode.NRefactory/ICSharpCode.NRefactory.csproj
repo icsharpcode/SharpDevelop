@@ -95,6 +95,7 @@
     <Compile Include="Semantics\ErrorResolveResult.cs" />
     <Compile Include="Semantics\Conversion.cs" />
     <Compile Include="Semantics\ForEachResolveResult.cs" />
+    <Compile Include="Semantics\InitializedObjectResolveResult.cs" />
     <Compile Include="Semantics\InvocationResolveResult.cs" />
     <Compile Include="Semantics\LocalResolveResult.cs" />
     <Compile Include="Semantics\MemberResolveResult.cs" />

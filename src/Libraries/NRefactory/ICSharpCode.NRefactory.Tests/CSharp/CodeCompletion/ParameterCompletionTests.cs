@@ -271,6 +271,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
 			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
+			compilationUnit.Freeze ();
 			
 			var parsedFile = compilationUnit.ToTypeSystem ();
 			pctx = pctx.UpdateProjectContent (null, parsedFile);

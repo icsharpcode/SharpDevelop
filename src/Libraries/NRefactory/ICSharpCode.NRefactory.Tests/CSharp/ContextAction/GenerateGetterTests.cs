@@ -33,7 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 	[TestFixture]
 	public class GenerateGetterTests : ContextActionTestBase
 	{
-		[Ignore("Insert with cursor is not implemented.")]
 		[Test()]
 		public void Test ()
 		{

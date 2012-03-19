@@ -33,8 +33,11 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AstNode : AbstractAnnotatable, PatternMatching.INode
+	public abstract class AstNode : AbstractAnnotatable, ICSharpCode.NRefactory.TypeSystem.IFreezable, PatternMatching.INode
 	{
+		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class
+		internal static readonly Role<AstNode> RootRole = new Role<AstNode> ("Root");
+		
 		#region Null
 		public static readonly AstNode Null = new NullAstNode ();
 		
@@ -124,7 +127,42 @@ namespace ICSharpCode.NRefactory.CSharp
 		AstNode nextSibling;
 		AstNode firstChild;
 		AstNode lastChild;
-		Role role = RootRole;
+		
+		// Flags, from least significant to most significant bits:
+		// - Role.RoleIndexBits: role index
+		// - 1 bit: IsFrozen
+		protected uint flags = RootRole.Index;
+		// Derived classes may also use a few bits,
+		// for example Identifier uses 1 bit for IsVerbatim
+		
+		const uint roleIndexMask = (1u << Role.RoleIndexBits) - 1;
+		const uint frozenBit = 1u << Role.RoleIndexBits;
+		protected const int AstNodeFlagsUsedBits = Role.RoleIndexBits + 1;
+		
+		protected AstNode()
+		{
+			if (IsNull)
+				Freeze();
+		}
+		
+		public bool IsFrozen {
+			get { return (flags & frozenBit) != 0; }
+		}
+		
+		public void Freeze()
+		{
+			if (!IsFrozen) {
+				for (AstNode child = firstChild; child != null; child = child.nextSibling)
+					child.Freeze();
+				flags |= frozenBit;
+			}
+		}
+		
+		protected void ThrowIfFrozen()
+		{
+			if (IsFrozen)
+				throw new InvalidOperationException("Cannot mutate frozen " + GetType().Name);
+		}
 		
 		public abstract NodeType NodeType {
 			get;
@@ -171,14 +209,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public Role Role {
-			get { return role; }
+			get {
+				return Role.GetByIndex(flags & roleIndexMask);
+			}
 			set {
 				if (value == null)
 					throw new ArgumentNullException("value");
 				if (!value.IsValid(this))
 					throw new ArgumentException("This node is not valid in the new role.");
-				role = value;
+				ThrowIfFrozen();
+				SetRole(value);
 			}
+		}
+		
+		void SetRole(Role role)
+		{
+			flags = (flags & ~roleIndexMask) | role.Index;
 		}
 		
 		public AstNode NextSibling {
@@ -228,6 +274,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
+		/// Gets the ancestors of this node (including this node itself)
+		/// </summary>
+		public IEnumerable<AstNode> AncestorsAndSelf {
+			get {
+				for (AstNode cur = this; cur != null; cur = cur.parent) {
+					yield return cur;
+				}
+			}
+		}
+		
+		/// <summary>
 		/// Gets all descendants of this node (excluding this node itself).
 		/// </summary>
 		public IEnumerable<AstNode> Descendants {
@@ -253,8 +310,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (role == null)
 				throw new ArgumentNullException ("role");
+			uint roleIndex = role.Index;
 			for (var cur = firstChild; cur != null; cur = cur.nextSibling) {
-				if (cur.role == role)
+				if ((cur.flags & roleIndexMask) == roleIndex)
 					return (T)cur;
 			}
 			return role.NullObject;
@@ -280,10 +338,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new ArgumentNullException ("role");
 			if (child == null || child.IsNull)
 				return;
-			if (this.IsNull)
-				throw new InvalidOperationException ("Cannot add children to null nodes");
+			ThrowIfFrozen();
 			if (child.parent != null)
 				throw new ArgumentException ("Node is already used in another tree.", "child");
+			if (child.IsFrozen)
+				throw new ArgumentException ("Cannot add a frozen node.", "child");
 			AddChildUnsafe (child, role);
 		}
 		
@@ -293,7 +352,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void AddChildUnsafe (AstNode child, Role role)
 		{
 			child.parent = this;
-			child.role = role;
+			child.SetRole(role);
 			if (firstChild == null) {
 				lastChild = firstChild = child;
 			} else {
@@ -314,8 +373,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			if (child == null || child.IsNull)
 				return;
+			ThrowIfFrozen();
 			if (child.parent != null)
 				throw new ArgumentException ("Node is already used in another tree.", "child");
+			if (child.IsFrozen)
+				throw new ArgumentException ("Cannot add a frozen node.", "child");
 			if (nextSibling.parent != this)
 				throw new ArgumentException ("NextSibling is not a child of this node.", "nextSibling");
 			// No need to test for "Cannot add children to null nodes",
@@ -326,7 +388,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void InsertChildBeforeUnsafe (AstNode nextSibling, AstNode child, Role role)
 		{
 			child.parent = this;
-			child.role = role;
+			child.SetRole(role);
 			child.nextSibling = nextSibling;
 			child.prevSibling = nextSibling.prevSibling;
 			
@@ -351,6 +413,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void Remove ()
 		{
 			if (parent != null) {
+				ThrowIfFrozen();
 				if (prevSibling != null) {
 					Debug.Assert (prevSibling.nextSibling == this);
 					prevSibling.nextSibling = nextSibling;
@@ -385,10 +448,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (parent == null) {
 				throw new InvalidOperationException (this.IsNull ? "Cannot replace the null nodes" : "Cannot replace the root node");
 			}
+			ThrowIfFrozen();
 			// Because this method doesn't statically check the new node's type with the role,
 			// we perform a runtime test:
-			if (!role.IsValid (newNode)) {
-				throw new ArgumentException (string.Format ("The new node '{0}' is not valid in the role {1}", newNode.GetType ().Name, role.ToString ()), "newNode");
+			if (!this.Role.IsValid (newNode)) {
+				throw new ArgumentException (string.Format ("The new node '{0}' is not valid in the role {1}", newNode.GetType ().Name, this.Role.ToString ()), "newNode");
 			}
 			if (newNode.parent != null) {
 				// newNode is used within this tree?
@@ -400,9 +464,11 @@ namespace ICSharpCode.NRefactory.CSharp
 					throw new ArgumentException ("Node is already used in another tree.", "newNode");
 				}
 			}
+			if (newNode.IsFrozen)
+				throw new ArgumentException ("Cannot add a frozen node.", "newNode");
 			
 			newNode.parent = parent;
-			newNode.role = role;
+			newNode.SetRole(this.Role);
 			newNode.prevSibling = prevSibling;
 			newNode.nextSibling = nextSibling;
 			if (parent != null) {
@@ -435,7 +501,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			AstNode oldParent = parent;
 			AstNode oldSuccessor = nextSibling;
-			Role oldRole = role;
+			Role oldRole = this.Role;
 			Remove ();
 			AstNode replacement = replaceFunction (this);
 			if (oldSuccessor != null && oldSuccessor.parent != oldParent)
@@ -468,10 +534,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			copy.lastChild = null;
 			copy.prevSibling = null;
 			copy.nextSibling = null;
+			copy.flags &= ~frozenBit; // unfreeze the copy
 			
 			// Then perform a deep copy:
 			for (AstNode cur = firstChild; cur != null; cur = cur.nextSibling) {
-				copy.AddChildUnsafe (cur.Clone (), cur.role);
+				copy.AddChildUnsafe (cur.Clone (), cur.Role);
 			}
 			
 			// Finally, clone the annotation, if necessary
@@ -722,54 +789,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return text.Substring(0, 97) + "...";
 			else
 				return text;
-		}
-		
-		// the Root role must be available when creating the null nodes, so we can't put it in the Roles class
-		static readonly Role<AstNode> RootRole = new Role<AstNode> ("Root");
-		
-		public static class Roles
-		{
-			/// <summary>
-			/// Root of an abstract syntax tree.
-			/// </summary>
-			public static readonly Role<AstNode> Root = RootRole;
-			
-			// some pre defined constants for common roles
-			public static readonly Role<Identifier> Identifier = new Role<Identifier> ("Identifier", CSharp.Identifier.Null);
-			public static readonly Role<BlockStatement> Body = new Role<BlockStatement> ("Body", CSharp.BlockStatement.Null);
-			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration> ("Parameter");
-			public static readonly Role<Expression> Argument = new Role<Expression> ("Argument", CSharp.Expression.Null);
-			public static readonly Role<AstType> Type = new Role<AstType> ("Type", CSharp.AstType.Null);
-			public static readonly Role<Expression> Expression = new Role<Expression> ("Expression", CSharp.Expression.Null);
-			public static readonly Role<Expression> TargetExpression = new Role<Expression> ("Target", CSharp.Expression.Null);
-			public readonly static Role<Expression> Condition = new Role<Expression> ("Condition", CSharp.Expression.Null);
-			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration> ("TypeParameter");
-			public static readonly Role<AstType> TypeArgument = new Role<AstType> ("TypeArgument", CSharp.AstType.Null);
-			public readonly static Role<Constraint> Constraint = new Role<Constraint> ("Constraint");
-			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer> ("Variable", VariableInitializer.Null);
-			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement> ("EmbeddedStatement", CSharp.Statement.Null);
-//			public static readonly TokenRole Keyword = new TokenRole ("Keyword", CSharpTokenNode.Null);
-//			public static readonly TokenRole InKeyword = new TokenRole ("InKeyword", CSharpTokenNode.Null);
-			
-			// some pre defined constants for most used punctuation
-			public static readonly TokenRole LPar = new TokenRole ("(");
-			public static readonly TokenRole RPar = new TokenRole (")");
-			public static readonly TokenRole LBracket = new TokenRole ("[");
-			public static readonly TokenRole RBracket = new TokenRole ("]");
-			public static readonly TokenRole LBrace = new TokenRole ("{");
-			public static readonly TokenRole RBrace = new TokenRole ("}");
-			public static readonly TokenRole LChevron = new TokenRole ("<");
-			public static readonly TokenRole RChevron = new TokenRole (">");
-			public static readonly TokenRole Comma = new TokenRole (",");
-			public static readonly TokenRole Dot = new TokenRole (".");
-			public static readonly TokenRole Semicolon = new TokenRole (";");
-			public static readonly TokenRole Assign = new TokenRole ("=");
-			public static readonly TokenRole Colon = new TokenRole (":");
-			public static readonly TokenRole DoubleColon = new TokenRole ("::");
-			public static readonly Role<Comment> Comment = new Role<Comment> ("Comment");
-			public static readonly Role<PreProcessorDirective> PreProcessorDirective = new Role<PreProcessorDirective> ("PreProcessorDirective");
-			public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");
-			
 		}
 	}
 }

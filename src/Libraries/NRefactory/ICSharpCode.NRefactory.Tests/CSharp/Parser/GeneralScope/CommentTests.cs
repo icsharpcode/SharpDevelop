@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	// Comment
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.SingleLine, c.CommentType);
 			Assert.AreEqual(" Comment", c.Content);
 		}
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	/* Comment */
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.MultiLine, c.CommentType);
 			Assert.AreEqual(" Comment ", c.Content);
 		}
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	/// Comment
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.Documentation, c.CommentType);
 			Assert.AreEqual(" Comment", c.Content);
 		}
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	//// Comment
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.SingleLine, c.CommentType);
 			Assert.AreEqual("// Comment", c.Content);
 		}
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	/** Comment */
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.MultiLineDocumentation, c.CommentType);
 			Assert.AreEqual(" Comment ", c.Content);
 		}
@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	/**/
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.MultiLine, c.CommentType);
 			Assert.AreEqual("", c.Content);
 		}
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	/*** Comment */
 }";
 			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
-			var c = ns.GetChildrenByRole(AstNode.Roles.Comment).Single();
+			var c = ns.GetChildrenByRole(Roles.Comment).Single();
 			Assert.AreEqual(CommentType.MultiLine, c.CommentType);
 			Assert.AreEqual("** Comment ", c.Content);
 		}

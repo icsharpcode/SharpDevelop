@@ -32,7 +32,6 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 	[TestFixture]
 	public class RemoveBracesTests : ContextActionTestBase
 	{
-		[Ignore("Formatting not implemented in test context")]
 		[Test()]
 		public void TestSimpleBraces ()
 		{
@@ -42,8 +41,8 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		if (true) ${" + Environment.NewLine +
-				"			;" + Environment.NewLine +
+					"		if (true) ${" + Environment.NewLine +
+									"			;" + Environment.NewLine +
 				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}"
@@ -54,7 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		;" + Environment.NewLine +
+				"		if (true) " + Environment.NewLine +
+				"			;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}

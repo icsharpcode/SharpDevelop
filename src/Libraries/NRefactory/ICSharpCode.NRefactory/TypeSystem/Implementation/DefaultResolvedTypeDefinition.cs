@@ -61,9 +61,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<ITypeParameter> TypeParameters {
 			get {
-				var result = this.typeParameters;
+				var result = LazyInit.VolatileRead(ref this.typeParameters);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				}
 				ITypeResolveContext contextForTypeParameters = parts[0].CreateResolveContext(parentContext);
@@ -91,9 +90,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IAttribute> Attributes {
 			get {
-				var result = this.attributes;
+				var result = LazyInit.VolatileRead(ref this.attributes);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				}
 				result = new List<IAttribute>();
@@ -126,9 +124,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<ITypeDefinition> NestedTypes {
 			get {
-				IList<ITypeDefinition> result = this.nestedTypes;
+				IList<ITypeDefinition> result = LazyInit.VolatileRead(ref this.nestedTypes);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
 					result = (
@@ -149,17 +146,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			internal readonly ITypeResolveContext[] contextPerMember;
 			internal readonly IUnresolvedMember[] unresolvedMembers;
 			internal readonly IMember[] resolvedMembers;
+			internal readonly int NonPartialMemberCount;
 			
-			public MemberList(ITypeResolveContext[] contextPerMember, IUnresolvedMember[] unresolvedMembers, List<PartialMethodInfo> partialMethodInfos)
+			public MemberList(List<ITypeResolveContext> contextPerMember, List<IUnresolvedMember> unresolvedNonPartialMembers, List<PartialMethodInfo> partialMethodInfos)
 			{
-				this.contextPerMember = contextPerMember;
-				this.unresolvedMembers = unresolvedMembers;
-				this.resolvedMembers = new IMember[unresolvedMembers.Length];
-				if (partialMethodInfos != null) {
-					foreach (var info in partialMethodInfos) {
-						unresolvedMembers[info.MemberIndex] = info.Parts[0];
-						contextPerMember[info.MemberIndex] = info.PrimaryContext;
-						resolvedMembers[info.MemberIndex] = DefaultResolvedMethod.CreateFromMultipleParts(
+				this.NonPartialMemberCount = unresolvedNonPartialMembers.Count;
+				this.contextPerMember = contextPerMember.ToArray();
+				this.unresolvedMembers = unresolvedNonPartialMembers.ToArray();
+				if (partialMethodInfos == null) {
+					this.resolvedMembers = new IMember[unresolvedNonPartialMembers.Count];
+				} else {
+					this.resolvedMembers = new IMember[unresolvedNonPartialMembers.Count + partialMethodInfos.Count];
+					for (int i = 0; i < partialMethodInfos.Count; i++) {
+						var info = partialMethodInfos[i];
+						int memberIndex = NonPartialMemberCount + i;
+						resolvedMembers[memberIndex] = DefaultResolvedMethod.CreateFromMultipleParts(
 							info.Parts.ToArray(), info.PrimaryContext, false);
 					}
 				}
@@ -167,9 +168,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public IMember this[int index] {
 				get {
-					IMember output = resolvedMembers[index];
+					IMember output = LazyInit.VolatileRead(ref resolvedMembers[index]);
 					if (output != null) {
-						LazyInit.ReadBarrier();
 						return output;
 					}
 					return LazyInit.GetOrSet(ref resolvedMembers[index], unresolvedMembers[index].CreateResolved(contextPerMember[index]));
@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			
 			public int Count {
-				get { return unresolvedMembers.Length; }
+				get { return resolvedMembers.Length; }
 			}
 			
 			bool ICollection<IMember>.IsReadOnly {
@@ -249,16 +249,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			public readonly string Name;
 			public readonly int TypeParameterCount;
 			public readonly IList<IParameter> Parameters;
-			public readonly int MemberIndex;
 			public readonly List<IUnresolvedMethod> Parts = new List<IUnresolvedMethod>();
 			public ITypeResolveContext PrimaryContext;
 			
-			public PartialMethodInfo(IUnresolvedMethod method, ITypeResolveContext context, int memberIndex)
+			public PartialMethodInfo(IUnresolvedMethod method, ITypeResolveContext context)
 			{
 				this.Name = method.Name;
 				this.TypeParameterCount = method.TypeParameters.Count;
 				this.Parameters = method.Parameters.CreateResolvedParameters(context);
-				this.MemberIndex = memberIndex;
 				this.Parts.Add(method);
 				this.PrimaryContext = context;
 			}
@@ -286,9 +284,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		MemberList GetMemberList()
 		{
-			var result = this.memberList;
+			var result = LazyInit.VolatileRead(ref this.memberList);
 			if (result != null) {
-				LazyInit.ReadBarrier();
 				return result;
 			}
 			List<IUnresolvedMember> unresolvedMembers = new List<IUnresolvedMember>();
@@ -304,7 +301,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						// Merge partial method declaration and implementation
 						if (partialMethodInfos == null)
 							partialMethodInfos = new List<PartialMethodInfo>();
-						PartialMethodInfo newInfo = new PartialMethodInfo(method, contextForPart, unresolvedMembers.Count);
+						PartialMethodInfo newInfo = new PartialMethodInfo(method, contextForPart);
 						PartialMethodInfo existingInfo = null;
 						foreach (var info in partialMethodInfos) {
 							if (newInfo.IsSameSignature(info, Compilation.NameComparer)) {
@@ -315,14 +312,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						if (existingInfo != null) {
 							// Add the unresolved method to the PartialMethodInfo:
 							existingInfo.AddPart(method, contextForPart);
-							// We handled this unresolved method; do not add it to unresolvedMembers.
-							continue;
 						} else {
 							partialMethodInfos.Add(newInfo);
 						}
+					} else {
+						unresolvedMembers.Add(member);
+						contextPerMember.Add(contextForPart);
 					}
-					unresolvedMembers.Add(member);
-					contextPerMember.Add(contextForPart);
 				}
 				
 				DefaultUnresolvedTypeDefinition dutd = part as DefaultUnresolvedTypeDefinition;
@@ -339,7 +335,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					unresolvedMembers.Add(DefaultUnresolvedMethod.CreateDefaultConstructor(parts[0]));
 				}
 			}
-			result = new MemberList(contextPerMember.ToArray(), unresolvedMembers.ToArray(), partialMethodInfos);
+			result = new MemberList(contextPerMember, unresolvedMembers, partialMethodInfos);
 			return LazyInit.GetOrSet(ref this.memberList, result);
 		}
 		
@@ -350,7 +346,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IField> Fields {
 			get {
 				var members = GetMemberList();
-				for (int i = 0; i < members.Count; i++) {
+				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
 					if (members.unresolvedMembers[i].EntityType == EntityType.Field)
 						yield return (IField)members[i];
 				}
@@ -360,9 +356,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IMethod> Methods {
 			get {
 				var members = GetMemberList();
-				for (int i = 0; i < members.Count; i++) {
+				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
 					if (members.unresolvedMembers[i] is IUnresolvedMethod)
 						yield return (IMethod)members[i];
+				}
+				for (int i = members.unresolvedMembers.Length; i < members.Count; i++) {
+					yield return (IMethod)members[i];
 				}
 			}
 		}
@@ -370,7 +369,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IProperty> Properties {
 			get {
 				var members = GetMemberList();
-				for (int i = 0; i < members.Count; i++) {
+				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
 					switch (members.unresolvedMembers[i].EntityType) {
 						case EntityType.Property:
 						case EntityType.Indexer:
@@ -384,7 +383,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IEvent> Events {
 			get {
 				var members = GetMemberList();
-				for (int i = 0; i < members.Count; i++) {
+				for (int i = 0; i < members.unresolvedMembers.Length; i++) {
 					if (members.unresolvedMembers[i].EntityType == EntityType.Event)
 						yield return (IEvent)members[i];
 				}
@@ -502,9 +501,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> DirectBaseTypes {
 			get {
-				IList<IType> result = this.directBaseTypes;
+				IList<IType> result = LazyInit.VolatileRead(ref this.directBaseTypes);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
 					result = CalculateDirectBaseTypes();
@@ -710,17 +708,52 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IEnumerable<IMember> GetFilteredMembers(Predicate<IUnresolvedMember> filter)
 		{
 			var members = GetMemberList();
-			for (int i = 0; i < members.Count; i++) {
+			for (int i = 0; i < members.unresolvedMembers.Length; i++) {
 				if (filter == null || filter(members.unresolvedMembers[i])) {
 					yield return members[i];
 				}
 			}
+			for (int i = members.unresolvedMembers.Length; i < members.Count; i++) {
+				var method = (IMethod)members[i];
+				bool ok = false;
+				foreach (var part in method.Parts) {
+					if (filter == null || filter(part)) {
+						ok = true;
+						break;
+					}
+				}
+				if (ok)
+					yield return method;
+			}
 		}
 		
-		IEnumerable<TResolved> GetFilteredMembers<TUnresolved, TResolved>(Predicate<TUnresolved> filter) where TUnresolved : class, IUnresolvedMember where TResolved : class, IMember
+		IEnumerable<IMethod> GetFilteredMethods(Predicate<IUnresolvedMethod> filter)
 		{
 			var members = GetMemberList();
-			for (int i = 0; i < members.Count; i++) {
+			for (int i = 0; i < members.unresolvedMembers.Length; i++) {
+				IUnresolvedMethod unresolved = members.unresolvedMembers[i] as IUnresolvedMethod;
+				if (unresolved != null && (filter == null || filter(unresolved))) {
+					yield return (IMethod)members[i];
+				}
+			}
+			for (int i = members.unresolvedMembers.Length; i < members.Count; i++) {
+				var method = (IMethod)members[i];
+				bool ok = false;
+				foreach (var part in method.Parts) {
+					if (filter == null || filter(part)) {
+						ok = true;
+						break;
+					}
+				}
+				if (ok)
+					yield return method;
+			}
+		}
+		
+		IEnumerable<TResolved> GetFilteredNonMethods<TUnresolved, TResolved>(Predicate<TUnresolved> filter) where TUnresolved : class, IUnresolvedMember where TResolved : class, IMember
+		{
+			var members = GetMemberList();
+			for (int i = 0; i < members.unresolvedMembers.Length; i++) {
 				TUnresolved unresolved = members.unresolvedMembers[i] as TUnresolved;
 				if (unresolved != null && (filter == null || filter(unresolved))) {
 					yield return (TResolved)members[i];
@@ -731,7 +764,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IMethod> GetMethods(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedMethod, IMethod>(Utils.ExtensionMethods.And(m => !m.IsConstructor, filter));
+				return GetFilteredMethods(Utils.ExtensionMethods.And(m => !m.IsConstructor, filter));
 			} else {
 				return GetMembersHelper.GetMethods(this, filter, options);
 			}
@@ -754,7 +787,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return EmptyList<IMethod>.Instance;
 			}
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedMethod, IMethod>(Utils.ExtensionMethods.And(m => m.IsConstructor && !m.IsStatic, filter));
+				return GetFilteredMethods(Utils.ExtensionMethods.And(m => m.IsConstructor && !m.IsStatic, filter));
 			} else {
 				return GetMembersHelper.GetConstructors(this, filter, options);
 			}
@@ -763,7 +796,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IProperty> GetProperties(Predicate<IUnresolvedProperty> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedProperty, IProperty>(filter);
+				return GetFilteredNonMethods<IUnresolvedProperty, IProperty>(filter);
 			} else {
 				return GetMembersHelper.GetProperties(this, filter, options);
 			}
@@ -772,7 +805,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IField> GetFields(Predicate<IUnresolvedField> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedField, IField>(filter);
+				return GetFilteredNonMethods<IUnresolvedField, IField>(filter);
 			} else {
 				return GetMembersHelper.GetFields(this, filter, options);
 			}
@@ -781,7 +814,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual IEnumerable<IEvent> GetEvents(Predicate<IUnresolvedEvent> filter = null, GetMemberOptions options = GetMemberOptions.None)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
-				return GetFilteredMembers<IUnresolvedEvent, IEvent>(filter);
+				return GetFilteredNonMethods<IUnresolvedEvent, IEvent>(filter);
 			} else {
 				return GetMembersHelper.GetEvents(this, filter, options);
 			}

@@ -126,7 +126,6 @@
     <Compile Include="Ast\GeneralScope\UsingDeclaration.cs" />
     <Compile Include="Ast\IAstVisitor.cs" />
     <Compile Include="Ast\Identifier.cs" />
-    <Compile Include="Ast\IRelocatable.cs" />
     <Compile Include="Ast\MemberType.cs" />
     <Compile Include="Ast\Modifiers.cs" />
     <Compile Include="Ast\NodeType.cs" />
@@ -270,7 +269,7 @@
     <Compile Include="Refactoring\Script.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
-    <Compile Include="Resolver\Conversions.cs" />
+    <Compile Include="Resolver\CSharpConversions.cs" />
     <Compile Include="Resolver\CSharpAstResolver.cs" />
     <Compile Include="Resolver\CSharpInvocationResolveResult.cs" />
     <Compile Include="Resolver\CSharpOperators.cs" />
@@ -322,6 +321,7 @@
     <Compile Include="Ast\TokenRole.cs" />
     <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
     <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
+    <Compile Include="Ast\Roles.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -338,6 +338,8 @@
       <Properties>
         <Policies>
           <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
+          <TextStylePolicy FileWidth="120" TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
+          <CSharpFormattingPolicy inheritsSet="1TBS" inheritsScope="text/x-csharp" scope="text/x-csharp" />
         </Policies>
       </Properties>
     </MonoDevelop>

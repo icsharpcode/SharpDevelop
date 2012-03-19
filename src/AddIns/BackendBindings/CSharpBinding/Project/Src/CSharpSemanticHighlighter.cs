@@ -309,7 +309,7 @@ namespace CSharpBinding
 		
 		public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
 		{
-			Identifier ident = identifierExpression.GetChildByRole(IdentifierExpression.Roles.Identifier);
+			Identifier ident = identifierExpression.GetChildByRole(Roles.Identifier);
 			if (isInAccessor && identifierExpression.Identifier == "value") {
 				Colorize(ident, valueKeywordColor);
 			} else {
@@ -340,7 +340,7 @@ namespace CSharpBinding
 			var rr = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 			if (rr != null && !rr.IsDelegateInvocation) {
 				if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
-					Colorize(target.GetChildByRole(AstNode.Roles.Identifier),  methodCallColor);
+					Colorize(target.GetChildByRole(Roles.Identifier),  methodCallColor);
 				}
 			}
 			
@@ -395,7 +395,7 @@ namespace CSharpBinding
 			
 			bool isValueType = false;
 			if (typeParameterDeclaration.Parent != null) {
-				foreach (var constraint in typeParameterDeclaration.Parent.GetChildrenByRole(AstNode.Roles.Constraint)) {
+				foreach (var constraint in typeParameterDeclaration.Parent.GetChildrenByRole(Roles.Constraint)) {
 					if (constraint.TypeParameter.Identifier == typeParameterDeclaration.Name) {
 						isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
 					}
@@ -406,9 +406,9 @@ namespace CSharpBinding
 		
 		public override void VisitConstraint(Constraint constraint)
 		{
-			if (constraint.Parent != null && constraint.Parent.GetChildrenByRole(AstNode.Roles.TypeParameter).Any(tp => tp.Name == constraint.TypeParameter.Identifier)) {
+			if (constraint.Parent != null && constraint.Parent.GetChildrenByRole(Roles.TypeParameter).Any(tp => tp.Name == constraint.TypeParameter.Identifier)) {
 				bool isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
-				Colorize(constraint.GetChildByRole(AstNode.Roles.Identifier), isValueType ? valueTypeColor : referenceTypeColor);
+				Colorize(constraint.GetChildByRole(Roles.Identifier), isValueType ? valueTypeColor : referenceTypeColor);
 			}
 			foreach (var baseType in constraint.BaseTypes)
 				baseType.AcceptVisitor(this);

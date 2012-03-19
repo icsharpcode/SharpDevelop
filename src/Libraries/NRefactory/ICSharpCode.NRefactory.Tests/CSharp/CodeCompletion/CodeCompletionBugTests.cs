@@ -43,8 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	[TestFixture()]
 	public class CodeCompletionBugTests : TestBase
 	{
-		static int pcount = 0;
-		
+
 		public static CompletionDataList CreateProvider (string text)
 		{
 			return CreateProvider (text, false);
@@ -219,6 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
 			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
+			compilationUnit.Freeze ();
 			
 			var parsedFile = compilationUnit.ToTypeSystem ();
 			pctx = pctx.UpdateProjectContent (null, parsedFile);
@@ -349,7 +349,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 						}
 					}
 				} catch (Exception e) {
-					Console.WriteLine ("Exception in:" + file);
+					Console.WriteLine ("Exception in:" + file  + "/" + e);
 					exceptions++;
 				}
 			}
@@ -1672,6 +1672,37 @@ class A
 				Assert.IsNull (provider.Find ("Finalize"), "'Finalize' found.");
 			});
 		}
+		[Test()]
+		public void TestOverrideCompletion ()
+		{
+			CombinedProviderTest (
+@"using System;
+
+class Base
+{
+
+	public virtual int Property { get;}
+	public virtual int Method () { }
+	public virtual event EventHandler Event;
+	public virtual int this[int i] { get { } }
+}
+
+
+class A : Base
+{
+	$public override $
+}
+", provider => {
+				Assert.IsNotNull (provider.Find ("Property"), "'Property' not found.");
+				Assert.IsNotNull (provider.Find ("Method"), "'Method' not found.");
+				Assert.IsNotNull (provider.Find ("Event"), "'Event' not found.");
+				Assert.IsNotNull (provider.Find ("ToString"), "'Event' not found.");
+				Assert.IsNotNull (provider.Find ("GetHashCode"), "'GetHashCode' not found.");
+				Assert.IsNotNull (provider.Find ("Equals"), "'Equals' not found.");
+				Assert.AreEqual (7, provider.Count);
+			});
+		}
+		
 		
 		/// <summary>
 		/// Bug 3370 -MD ignores member hiding
@@ -4731,6 +4762,31 @@ class MainClass
 ");
 			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
 			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
+
+		/// <summary>
+		/// Bug 3957 - [New Resolver]Override completion doesn't work well for overloaded methods
+		/// </summary>
+		[Test()]
+		public void TestBug3957 ()
+		{
+			var provider = CreateProvider (
+@"class A
+{
+    public virtual void Method()
+    {}
+    public virtual void Method(int i)
+    {}
+}
+
+class B : A
+{
+	$override $
+}
+
+");
+			Assert.AreEqual (2, provider.Data.Where (d => d.DisplayText == "Method").Count ());
 		}
 
 	}

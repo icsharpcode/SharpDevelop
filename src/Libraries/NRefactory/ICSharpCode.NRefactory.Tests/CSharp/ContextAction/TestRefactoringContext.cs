@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
-using ICSharpCode.NRefactory.FormattingTests;
+using ICSharpCode.NRefactory.CSharp.FormattingTests;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
@@ -137,6 +137,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));
 			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
+			unit.Freeze();
 			var parsedFile = unit.ToTypeSystem();
 			
 			IProjectContent pc = new CSharpProjectContent();

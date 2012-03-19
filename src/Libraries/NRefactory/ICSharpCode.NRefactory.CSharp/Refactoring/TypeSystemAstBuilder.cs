@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		void AddTypeArguments(AstType result, IList<IType> typeArguments, int startIndex, int endIndex)
 		{
 			for (int i = startIndex; i < endIndex; i++) {
-				result.AddChild(ConvertType(typeArguments[i]), AstType.Roles.TypeArgument);
+				result.AddChild(ConvertType(typeArguments[i]), Roles.TypeArgument);
 			}
 		}
 		
@@ -466,18 +466,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					break;
 				case TypeKind.Delegate:
 					IMethod invoke = typeDefinition.GetDelegateInvokeMethod();
-					if (invoke != null)
+					if (invoke != null) {
 						return ConvertDelegate(invoke, modifiers);
-					else
+					} else {
 						goto default;
+					}
 				default:
 					classType = ClassType.Class;
 					break;
 			}
 			
-			TypeDeclaration decl = new TypeDeclaration();
-			decl.Modifiers = modifiers;
+			var decl = new TypeDeclaration();
 			decl.ClassType = classType;
+			decl.Modifiers = modifiers;
 			decl.Name = typeDefinition.Name;
 			
 			int outerTypeParameterCount = (typeDefinition.DeclaringTypeDefinition == null) ? 0 : typeDefinition.DeclaringTypeDefinition.TypeParameterCount;

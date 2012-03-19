@@ -17,38 +17,18 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
-using ICSharpCode.NRefactory.PatternMatching;
+using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
-	/// Matches identifier expressions that have the same identifier as the referenced variable/type definition/method definition.
+	/// Refers to the object that is currently being initialized.
+	/// Used within <see cref="InvocationResolveResult.InitializerStatements"/>.
 	/// </summary>
-	public class IdentifierExpressionBackreference : Pattern
+	public class InitializedObjectResolveResult : ResolveResult
 	{
-		readonly string referencedGroupName;
-		
-		public string ReferencedGroupName {
-			get { return referencedGroupName; }
-		}
-		
-		public IdentifierExpressionBackreference(string referencedGroupName)
+		public InitializedObjectResolveResult(IType type) : base(type)
 		{
-			if (referencedGroupName == null)
-				throw new ArgumentNullException("referencedGroupName");
-			this.referencedGroupName = referencedGroupName;
-		}
-		
-		public override bool DoMatch(INode other, Match match)
-		{
-			CSharp.IdentifierExpression ident = other as CSharp.IdentifierExpression;
-			if (ident == null || ident.TypeArguments.Any())
-				return false;
-			CSharp.AstNode referenced = (CSharp.AstNode)match.Get(referencedGroupName).Last();
-			if (referenced == null)
-				return false;
-			return ident.Identifier == referenced.GetChildByRole(CSharp.Roles.Identifier).Name;
 		}
 	}
 }

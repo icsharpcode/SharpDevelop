@@ -33,7 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 	[TestFixture]
 	public class InvertIfTestsTests : ContextActionTestBase
 	{
-		[Ignore("Formatting not implemented in test context")]
 		[Test()]
 		public void Test ()
 		{

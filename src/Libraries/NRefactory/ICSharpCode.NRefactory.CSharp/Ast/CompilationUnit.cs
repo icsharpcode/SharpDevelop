@@ -45,10 +45,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		string fileName;
+		
 		/// <summary>
 		/// Gets/Sets the file name of this compilation unit.
 		/// </summary>
-		public string FileName { get; set; }
+		public string FileName {
+			get { return fileName; }
+			set {
+				ThrowIfFrozen();
+				fileName = value;
+			}
+		}
+		
+		public AstNodeCollection<AstNode> Members {
+			get { return GetChildrenByRole(MemberRole); }
+		}
 		
 		List<Error> errors = new List<Error> ();
 		
@@ -72,17 +84,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public IEnumerable<TypeDeclaration> GetTypes (bool includeInnerTypes = false)
+		public IEnumerable<TypeDeclaration> GetTypes(bool includeInnerTypes = false)
 		{
 			Stack<AstNode> nodeStack = new Stack<AstNode> ();
-			nodeStack.Push (this);
+			nodeStack.Push(this);
 			while (nodeStack.Count > 0) {
-				var curNode = nodeStack.Pop ();
-				if (curNode is TypeDeclaration)
+				var curNode = nodeStack.Pop();
+				if (curNode is TypeDeclaration) {
 					yield return (TypeDeclaration)curNode;
+				}
 				foreach (var child in curNode.Children) {
 					if (!(child is Statement || child is Expression) &&
-					    (child.Role != TypeDeclaration.MemberRole || (child is TypeDeclaration && includeInnerTypes)))
+					    (child.Role != Roles.TypeMemberRole || (child is TypeDeclaration && includeInnerTypes)))
 						nodeStack.Push (child);
 				}
 			}
@@ -98,7 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitCompilationUnit (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitCompilationUnit (this);

@@ -43,15 +43,6 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeDeclaration : EntityDeclaration
 	{
-		public static readonly TokenRole EnumKeywordRole = new TokenRole ("enum");
-		public static readonly TokenRole InterfaceKeywordRole = new TokenRole ("interface");
-		public static readonly TokenRole StructKeywordRole = new TokenRole ("struct");
-		public static readonly TokenRole ClassKeywordRole = new TokenRole ("class");
-		
-		public readonly static TokenRole ColonRole = Roles.Colon;
-		public readonly static Role<AstType> BaseTypeRole = new Role<AstType>("BaseType", AstType.Null);
-		public readonly static Role<EntityDeclaration> MemberRole = new Role<EntityDeclaration>("Member");
-		
 		public override NodeType NodeType {
 			get { return NodeType.TypeDeclaration; }
 		}
@@ -60,21 +51,43 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return EntityType.TypeDefinition; }
 		}
 		
-		public ClassType ClassType {
-			get;
-			set;
+		ClassType classType;
+
+		public CSharpTokenNode TypeKeyword {
+			get {
+				switch (classType) {
+					case ClassType.Class:
+						return GetChildByRole(Roles.ClassKeyword);
+					case ClassType.Struct:
+						return GetChildByRole(Roles.StructKeyword);
+					case ClassType.Interface:
+						return GetChildByRole(Roles.InterfaceKeyword);
+					case ClassType.Enum:
+						return GetChildByRole(Roles.EnumKeyword);
+					default:
+						return CSharpTokenNode.Null;
+				}
+			}
 		}
 		
+		public ClassType ClassType {
+			get { return classType; }
+			set {
+				ThrowIfFrozen();
+				classType = value;
+			}
+		}
+
 		public AstNodeCollection<TypeParameterDeclaration> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
 		
 		public AstNodeCollection<AstType> BaseTypes {
-			get { return GetChildrenByRole (BaseTypeRole); }
+			get { return GetChildrenByRole(Roles.BaseType); }
 		}
 		
 		public AstNodeCollection<Constraint> Constraints {
-			get { return GetChildrenByRole (Roles.Constraint); }
+			get { return GetChildrenByRole(Roles.Constraint); }
 		}
 		
 		public CSharpTokenNode LBraceToken {
@@ -82,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public AstNodeCollection<EntityDeclaration> Members {
-			get { return GetChildrenByRole (MemberRole); }
+			get { return GetChildrenByRole (Roles.TypeMemberRole); }
 		}
 		
 		public CSharpTokenNode RBraceToken {
@@ -93,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			visitor.VisitTypeDeclaration (this);
 		}
-			
+		
 		public override T AcceptVisitor<T> (IAstVisitor<T> visitor)
 		{
 			return visitor.VisitTypeDeclaration (this);

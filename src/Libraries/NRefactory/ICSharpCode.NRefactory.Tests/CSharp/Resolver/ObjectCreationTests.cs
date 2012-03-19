@@ -17,6 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
@@ -232,6 +233,32 @@ class B : A { protected B(int y) {} }";
 			Assert.IsTrue(result.IsError);
 			Assert.AreEqual(OverloadResolutionErrors.Inaccessible, result.OverloadResolutionErrors);
 			Assert.AreEqual("B..ctor", result.Member.FullName); // should still find member even if it's not accessible
+		}
+		
+		[Test]
+		public void ComplexObjectInitializer()
+		{
+			string program = @"using System;
+using System.Collections.Generic;
+struct Point { public int X, Y; }
+class Test {
+	public Point Pos;
+	public List<string> List = new List<string>();
+	public Dictionary<string, int> Dict = new Dictionary<string, int>();
+	
+	static object M() {
+		return $new Test {
+			Pos = { X = 1, Y = 2 },
+			List = { ""Hello"", ""World"" },
+			Dict = { { ""A"", 1 } }
+		}$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("Test..ctor", rr.Member.FullName);
+			Assert.AreEqual("Test", rr.Type.ReflectionName);
+			Assert.AreEqual(5, rr.InitializerStatements.Count);
 		}
 	}
 }

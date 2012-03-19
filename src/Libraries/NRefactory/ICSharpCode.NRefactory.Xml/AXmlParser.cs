@@ -27,7 +27,7 @@ using ICSharpCode.NRefactory.Utils;
 namespace ICSharpCode.NRefactory.Xml
 {
 	/// <summary>
-	/// XML tag soup parser that .
+	/// XML parser that is error tolerant.
 	/// </summary>
 	public class AXmlParser
 	{

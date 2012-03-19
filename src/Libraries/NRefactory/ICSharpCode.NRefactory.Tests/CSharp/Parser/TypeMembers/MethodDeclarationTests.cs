@@ -210,9 +210,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		}
 		
 		[Test]
-		public void ShadowingMethodInInterface()
+		public void ShadowingMethodInInterface ()
 		{
-			ParseUtilCSharp.AssertGlobal(
+			ParseUtilCSharp.AssertGlobal (
 				@"interface MyInterface : IDisposable {
 	new void Dispose();
 }
