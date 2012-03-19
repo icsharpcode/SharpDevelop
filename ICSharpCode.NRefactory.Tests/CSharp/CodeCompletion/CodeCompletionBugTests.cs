@@ -43,8 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	[TestFixture()]
 	public class CodeCompletionBugTests : TestBase
 	{
-		static int pcount = 0;
-		
+
 		public static CompletionDataList CreateProvider (string text)
 		{
 			return CreateProvider (text, false);
@@ -350,7 +349,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 						}
 					}
 				} catch (Exception e) {
-					Console.WriteLine ("Exception in:" + file);
+					Console.WriteLine ("Exception in:" + file  + "/" + e);
 					exceptions++;
 				}
 			}
