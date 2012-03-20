@@ -4789,5 +4789,27 @@ class B : A
 			Assert.AreEqual (2, provider.Data.Where (d => d.DisplayText == "Method").Count ());
 		}
 
+		/// <summary>
+		/// Bug 3973 - code completion forgets context if text is deleted 
+		/// </summary>
+		[Test()]
+		public void TestBug3973 ()
+		{
+			var provider = CreateProvider (
+@"
+using System;
+
+class A
+{
+	public static void Main (string[] args)
+	{
+		Console.$W$
+	}
+}
+
+");
+			Assert.IsNotNull (provider.Find ("WriteLine"), "'WriteLine' not found.");
+		}
+
 	}
 }
