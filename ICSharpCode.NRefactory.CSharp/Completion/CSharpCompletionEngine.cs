@@ -511,6 +511,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return null;
 					}
 
+					if (identifierStart != null && identifierStart.Node is Identifier) {
+						// May happen in variable names
+						return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
+					}
+
 					if (identifierStart != null && identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 					}
@@ -2307,14 +2312,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		ExpressionResult GetExpressionAtCursor()
 		{
-//			TextLocation memberLocation;
-//			if (currentMember != null) {
-//				memberLocation = currentMember.Region.Begin;
-//			} else if (currentType != null) {
-//				memberLocation = currentType.Region.Begin;
-//			} else {
-//				memberLocation = location;
-//			}
+			//			TextLocation memberLocation;
+			//			if (currentMember != null) {
+			//				memberLocation = currentMember.Region.Begin;
+			//			} else if (currentType != null) {
+			//				memberLocation = currentType.Region.Begin;
+			//			} else {
+			//				memberLocation = location;
+			//			}
 			var baseUnit = ParseStub("a");
 			
 			var tmpUnit = baseUnit;
@@ -2322,7 +2327,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType>(location.Line, location.Column - 1);
 			}
-
+			if (expr == null)
+				expr = baseUnit.GetNodeAt<Identifier>(location.Line, location.Column - 1);
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement>(location.Line, location.Column) != null) {
 				tmpUnit = baseUnit = ParseStub("a();", false);

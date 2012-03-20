@@ -123,6 +123,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		}
 
 		[Test()]
+		public void TestForLoopLocalVariableName ()
+		{
+
+			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
+	void Test() 
+	{
+		$for (int f$
+	}
+}");
+			Assert.IsTrue (provider == null || provider.Count == 0, "provider should be empty.");
+		}
+
+		[Test()]
 		public void TestCatchExceptionName ()
 		{
 			var provider = CodeCompletionBugTests.CreateProvider (@"class MyClass {
