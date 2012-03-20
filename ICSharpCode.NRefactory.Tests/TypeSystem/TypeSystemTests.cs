@@ -182,12 +182,60 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod m = testClass.Methods.Single(me => me.Name == "GetIndex");
 			Assert.AreEqual("T", m.TypeParameters[0].Name);
 			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
+			Assert.AreSame(m, m.TypeParameters[0].Owner);
 			
 			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].DirectBaseTypes.First();
 			Assert.AreEqual("IEquatable", constraint.Name);
 			Assert.AreEqual(1, constraint.TypeParameterCount);
 			Assert.AreEqual(1, constraint.TypeArguments.Count);
 			Assert.AreSame(m.TypeParameters[0], constraint.TypeArguments[0]);
+		}
+		
+		[Test]
+		public void GetIndexSpecializedTypeParameter()
+		{
+			var testClass = GetTypeDefinition(typeof(GenericClass<,>));
+			var methodDef = testClass.Methods.Single(me => me.Name == "GetIndex");
+			var m = new SpecializedMethod(methodDef, new TypeParameterSubstitution(
+				new[] { compilation.FindType(KnownTypeCode.Int16), compilation.FindType(KnownTypeCode.Int32) },
+				null
+			));
+			
+			Assert.AreEqual("T", m.TypeParameters[0].Name);
+			Assert.AreEqual(EntityType.Method, m.TypeParameters[0].OwnerType);
+			Assert.AreSame(m, m.TypeParameters[0].Owner);
+			
+			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].DirectBaseTypes.First();
+			Assert.AreEqual("IEquatable", constraint.Name);
+			Assert.AreEqual(1, constraint.TypeParameterCount);
+			Assert.AreEqual(1, constraint.TypeArguments.Count);
+			Assert.AreSame(m.TypeParameters[0], constraint.TypeArguments[0]);
+		}
+		
+		[Test]
+		public void GetIndexDoubleSpecialization()
+		{
+			var testClass = GetTypeDefinition(typeof(GenericClass<,>));
+			// GenericClass<A, B>.GetIndex<T>
+			var methodDef = testClass.Methods.Single(me => me.Name == "GetIndex");
+			
+			// GenericClass<B, A>.GetIndex<A>
+			var m1 = new SpecializedMethod(methodDef, new TypeParameterSubstitution(
+				new[] { testClass.TypeParameters[1], testClass.TypeParameters[0] },
+				new[] { testClass.TypeParameters[0] }
+			));
+			// GenericClass<string, int>.GetIndex<int>
+			var m2 = new SpecializedMethod(m1, new TypeParameterSubstitution(
+				new[] { compilation.FindType(KnownTypeCode.Int32), compilation.FindType(KnownTypeCode.String) },
+				null
+			));
+			
+			// GenericClass<string, int>.GetIndex<int>
+			var m12 = new SpecializedMethod(methodDef, new TypeParameterSubstitution(
+				new[] { compilation.FindType(KnownTypeCode.String), compilation.FindType(KnownTypeCode.Int32) },
+				new[] { compilation.FindType(KnownTypeCode.Int32) }
+			));
+			Assert.AreEqual(m12, m2);
 		}
 		
 		[Test]
