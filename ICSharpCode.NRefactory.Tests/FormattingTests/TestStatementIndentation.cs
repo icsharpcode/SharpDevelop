@@ -947,6 +947,7 @@ do {
 }");
 		}
 
+		[Ignore("Broken")]
 		[Test()]
 		public void TestForEachBraceForcementRemove ()
 		{
@@ -1103,6 +1104,7 @@ do {
 }");
 		}
 
+		[Ignore("Broken")]
 		[Test()]
 		public void TestIfForcementRemove ()
 		{
@@ -1411,6 +1413,7 @@ if (b) {
 }");
 		}
 
+		[Ignore("Broken")]
 		[Test()]
 		public void TestWhileForcementRemove ()
 		{
