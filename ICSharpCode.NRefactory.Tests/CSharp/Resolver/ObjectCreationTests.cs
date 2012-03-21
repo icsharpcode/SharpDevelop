@@ -260,5 +260,18 @@ class Test {
 			Assert.AreEqual("Test", rr.Type.ReflectionName);
 			Assert.AreEqual(5, rr.InitializerStatements.Count);
 		}
+		
+		[Test]
+		public void CreateGeneric()
+		{
+			string program = @"using System;
+class Test<T> where T : new() {
+	object x = $new T()$;
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual(TypeKind.TypeParameter, rr.Type.Kind);
+			Assert.AreEqual(TypeKind.TypeParameter, rr.Member.DeclaringType.Kind);
+		}
 	}
 }

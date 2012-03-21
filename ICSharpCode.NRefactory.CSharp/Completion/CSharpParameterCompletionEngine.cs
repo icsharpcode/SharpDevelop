@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			baseUnit = ParseStub ("x] = a[1");
 			
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var mref = baseUnit.GetNodeAt (location, n => n is IndexerExpression); 
 			AstNode expr;
 			if (mref is IndexerExpression) {
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			baseUnit = ParseStub ("x> a");
 			
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var expr = baseUnit.GetNodeAt<AstType> (location.Line, location.Column + 1); // '>' position
 			return new ExpressionResult ((AstNode)expr, baseUnit);
 		}

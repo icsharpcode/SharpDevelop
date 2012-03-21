@@ -43,8 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	[TestFixture()]
 	public class CodeCompletionBugTests : TestBase
 	{
-		static int pcount = 0;
-		
+
 		public static CompletionDataList CreateProvider (string text)
 		{
 			return CreateProvider (text, false);
@@ -350,7 +349,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 						}
 					}
 				} catch (Exception e) {
-					Console.WriteLine ("Exception in:" + file);
+					Console.WriteLine ("Exception in:" + file  + "/" + e);
 					exceptions++;
 				}
 			}
@@ -4763,6 +4762,53 @@ class MainClass
 ");
 			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
 			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+		}
+
+
+		/// <summary>
+		/// Bug 3957 - [New Resolver]Override completion doesn't work well for overloaded methods
+		/// </summary>
+		[Test()]
+		public void TestBug3957 ()
+		{
+			var provider = CreateProvider (
+@"class A
+{
+    public virtual void Method()
+    {}
+    public virtual void Method(int i)
+    {}
+}
+
+class B : A
+{
+	$override $
+}
+
+");
+			Assert.AreEqual (2, provider.Data.Where (d => d.DisplayText == "Method").Count ());
+		}
+
+		/// <summary>
+		/// Bug 3973 - code completion forgets context if text is deleted 
+		/// </summary>
+		[Test()]
+		public void TestBug3973 ()
+		{
+			var provider = CreateProvider (
+@"
+using System;
+
+class A
+{
+	public static void Main (string[] args)
+	{
+		Console.$W$
+	}
+}
+
+");
+			Assert.IsNotNull (provider.Find ("WriteLine"), "'WriteLine' not found.");
 		}
 
 	}

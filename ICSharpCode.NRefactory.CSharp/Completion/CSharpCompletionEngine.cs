@@ -73,6 +73,34 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.IndentString = "\t";
 		}
 
+		public bool TryGetCompletionWord (int offset, out int startPos, out int wordLength)
+		{
+			startPos = wordLength = 0;
+			int pos = offset - 1;
+			while (pos >= 0) {
+				char c = document.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos--;
+			}
+			if (pos == -1)
+				return false;
+
+			pos++;
+			startPos = pos;
+
+			while (pos < document.TextLength) {
+				char c = document.GetCharAt (pos);
+				if (!char.IsLetterOrDigit (c) && c != '_')
+					break;
+				pos++;
+			}
+			wordLength = pos - startPos;
+			return true;
+		}
+
+
+
 		public IEnumerable<ICompletionData> GetCompletionData(int offset, bool controlSpace)
 		{
 			this.AutoCompleteEmptyMatch = true;
@@ -161,6 +189,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 
+		IEnumerable<ICompletionData> HandleMemberReferenceCompletion(ExpressionResult expr)
+		{
+			if (expr == null) 
+				return null;
+		
+			// do not complete <number>. (but <number>.<number>.)
+			if (expr.Node is PrimitiveExpression) {
+				var pexpr = (PrimitiveExpression)expr.Node;
+				if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains('.')) {
+					return null;
+				}
+			}
+			
+			var resolveResult = ResolveExpression (expr);
+			if (resolveResult == null) {
+				return null;
+			}
+			if (expr.Node is AstType) {
+				return CreateTypeAndNamespaceCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+			}
+			return CreateCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+		}
+
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
 			ExpressionResult expr;
@@ -173,26 +224,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (IsInsideCommentOrString()) {
 						return Enumerable.Empty<ICompletionData>();
 					}
-					expr = GetExpressionBeforeCursor();
-					if (expr == null) {
-						return null;
-					}
-				// do not complete <number>. (but <number>.<number>.)
-					if (expr.Node is PrimitiveExpression) {
-						var pexpr = (PrimitiveExpression)expr.Node;
-						if (!(pexpr.Value is string || pexpr.Value is char) && !pexpr.LiteralValue.Contains('.')) {
-							return null;
-						}
-					}
-
-					resolveResult = ResolveExpression(expr);
-					if (resolveResult == null) {
-						return null;
-					}
-					if (expr.Node is AstType) {
-						return CreateTypeAndNamespaceCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
-					}
-					return CreateCompletionData(location, resolveResult.Item1, expr.Node, resolveResult.Item2);
+					return HandleMemberReferenceCompletion(GetExpressionBeforeCursor());
 				case '#':
 					if (IsInsideCommentOrString()) {
 						return null;
@@ -478,19 +510,32 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 					var contextList = new CompletionDataWrapper (this);
 					var identifierStart = GetExpressionAtCursor();
-					if (identifierStart != null && identifierStart.Node is TypeParameterDeclaration) {
-						return null;
-					}
+					if (identifierStart != null) {
 
-					if (identifierStart != null && identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
-						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
-					}
-
-					if (identifierStart != null && identifierStart.Node is CatchClause) {
-						if (((CatchClause)identifierStart.Node).VariableNameToken.Contains(location)) {
+						
+						if (identifierStart.Node is TypeParameterDeclaration) {
 							return null;
 						}
-						identifierStart = null;
+
+						if (identifierStart.Node is MemberReferenceExpression) {
+							return HandleMemberReferenceCompletion(new ExpressionResult (((MemberReferenceExpression)identifierStart.Node).Target, identifierStart.Unit));
+						}
+
+						if (identifierStart.Node is Identifier) {
+							// May happen in variable names
+							return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
+						}
+	
+						if (identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
+							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
+						}
+	
+						if (identifierStart.Node is CatchClause) {
+							if (((CatchClause)identifierStart.Node).VariableNameToken.Contains(location)) {
+								return null;
+							}
+							identifierStart = null;
+						}
 					}
 					if (!(char.IsLetter(completionChar) || completionChar == '_') && (!controlSpace || identifierStart == null || !(identifierStart.Node.Parent is ArrayInitializerExpression))) {
 						return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
@@ -1415,7 +1460,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 
 					if (newParentNode is ReturnStatement) {
-						var varDecl = (ReturnStatement)newParentNode;
+						//var varDecl = (ReturnStatement)newParentNode;
 						if (ctx.CurrentMember != null) {
 							hintType = ctx.CurrentMember.ReturnType;
 						}
@@ -1561,8 +1606,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		IEnumerable<ICompletionData> GetOverrideCompletionData(IUnresolvedTypeDefinition type, string modifiers)
 		{
 			var wrapper = new CompletionDataWrapper (this);
-			var alreadyInserted = new Dictionary<string, bool> ();
-			bool addedVirtuals = false;
+			var alreadyInserted = new List<IMember> ();
+			//bool addedVirtuals = false;
 			
 			int declarationBegin = offset;
 			int j = declarationBegin;
@@ -1643,16 +1688,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return null;
 		}
 		
-		static string GetNameWithParamCount(IMember member)
-		{
-			var e = member as IMethod;
-			if (e == null || e.TypeParameters.Count == 0) {
-				return member.Name;
-			}
-			return e.Name + "`" + e.TypeParameters.Count;
-		}
-		
-		void AddVirtuals(Dictionary<string, bool> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+		void AddVirtuals(List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
 		{
 			if (curType == null) {
 				return;
@@ -1667,17 +1703,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				
 				var data = factory.CreateNewOverrideCompletionData(declarationBegin, currentType, m);
-				string text = GetNameWithParamCount(m);
-				
 				// check if the member is already implemented
-				bool foundMember = curType.GetMembers().Any(cm => GetNameWithParamCount(cm) == text && cm.DeclaringTypeDefinition == curType.GetDefinition());
+				bool foundMember = curType.GetMembers().Any(cm => SignatureComparer.Ordinal.Equals(cm, m) && cm.DeclaringTypeDefinition == curType.GetDefinition());
 				if (foundMember) {
 					continue;
 				}
-				if (alreadyInserted.ContainsKey(text)) {
+				if (alreadyInserted.Any(cm => SignatureComparer.Ordinal.Equals(cm, m)))
 					continue;
-				}
-				alreadyInserted [text] = true;
+				alreadyInserted.Add (m);
 				data.CompletionCategory = col.GetCompletionCategory(curType);
 				col.Add(data);
 			}
@@ -1742,7 +1775,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			IMethod delegateMethod = delegateType.GetDelegateInvokeMethod();
 			var thisLineIndent = GetLineIndent(location.Line);
 			string delegateEndString = EolMarker + thisLineIndent + "}" + (addSemicolon ? ";" : "");
-			bool containsDelegateData = completionList.Result.Any(d => d.DisplayText.StartsWith("delegate("));
+			//bool containsDelegateData = completionList.Result.Any(d => d.DisplayText.StartsWith("delegate("));
 			if (addDefault) {
 				completionList.AddCustom("delegate", "Creates anonymous delegate.", "delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString);
 			}
@@ -1800,8 +1833,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			if (member.IsInternal || member.IsProtectedAndInternal || member.IsProtectedOrInternal) {
-				var type1 = member is ITypeDefinition ? (ITypeDefinition)member : member.DeclaringTypeDefinition;
-				var type2 = currentMember is ITypeDefinition ? (ITypeDefinition)currentMember : currentMember.DeclaringTypeDefinition;
+				//var type1 = member is ITypeDefinition ? (ITypeDefinition)member : member.DeclaringTypeDefinition;
+				//var type2 = currentMember is ITypeDefinition ? (ITypeDefinition)currentMember : currentMember.DeclaringTypeDefinition;
 				bool result = true;
 				// easy case, projects are the same
 				/*//				if (type1.ProjectContent == type2.ProjectContent) {
@@ -2008,7 +2041,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			IType type = resolveResult.Type;
-			var typeDef = resolveResult.Type.GetDefinition();
+			//var typeDef = resolveResult.Type.GetDefinition();
 			var result = new CompletionDataWrapper (this);
 			bool includeStaticMembers = false;
 			
@@ -2240,7 +2273,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 				return null;
 			}
-			var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
+			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			if (mref == null) {
 				var invoke = baseUnit.GetNodeAt<InvocationExpression>(location); 
 				if (invoke != null) {
@@ -2290,14 +2323,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		ExpressionResult GetExpressionAtCursor()
 		{
-			TextLocation memberLocation;
-			if (currentMember != null) {
-				memberLocation = currentMember.Region.Begin;
-			} else if (currentType != null) {
-				memberLocation = currentType.Region.Begin;
-			} else {
-				memberLocation = location;
-			}
+			//			TextLocation memberLocation;
+			//			if (currentMember != null) {
+			//				memberLocation = currentMember.Region.Begin;
+			//			} else if (currentType != null) {
+			//				memberLocation = currentType.Region.Begin;
+			//			} else {
+			//				memberLocation = location;
+			//			}
 			var baseUnit = ParseStub("a");
 			
 			var tmpUnit = baseUnit;
@@ -2305,7 +2338,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (expr == null) {
 				expr = baseUnit.GetNodeAt<AstType>(location.Line, location.Column - 1);
 			}
-
+			if (expr == null)
+				expr = baseUnit.GetNodeAt<Identifier>(location.Line, location.Column - 1);
 			// try insertStatement
 			if (expr == null && baseUnit.GetNodeAt<EmptyStatement>(location.Line, location.Column) != null) {
 				tmpUnit = baseUnit = ParseStub("a();", false);

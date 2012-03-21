@@ -322,6 +322,11 @@
     <Compile Include="Refactoring\ContextAction\RemoveRegion.cs" />
     <Compile Include="Refactoring\ContextAction\GenerateProperty.cs" />
     <Compile Include="Ast\Roles.cs" />
+    <Compile Include="Refactoring\Inspector\ConditionalToNullCoalescingInspector.cs" />
+    <Compile Include="Refactoring\IInspector.cs" />
+    <Compile Include="Refactoring\InspectionIssue.cs" />
+    <Compile Include="Refactoring\BaseRefactoringContext.cs" />
+    <Compile Include="Refactoring\Inspector\GatherVisitorBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -332,6 +337,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Folder Include="Completion\" />
+    <Folder Include="Refactoring\Inspector\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

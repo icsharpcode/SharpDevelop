@@ -71,6 +71,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void ArrayToReadOnlyList()
+		{
+			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			IType stringType = compilation.FindType(KnownTypeCode.String);
+			ITypeDefinition readOnlyListType = compilation.FindType(KnownTypeCode.IReadOnlyListOfT).GetDefinition();
+			if (readOnlyListType == null)
+				Assert.Ignore(".NET 4.5 IReadOnlyList not available");
+			
+			bool success;
+			Assert.AreEqual(
+				new [] { stringType },
+				ti.InferTypeArguments(new [] { tp },
+				                      new [] { new ResolveResult(new ArrayType(compilation, stringType)) },
+				                      new [] { new ParameterizedType(readOnlyListType, new [] { tp }) },
+				                      out success));
+			Assert.IsTrue(success);
+		}
+		
+		[Test]
 		public void EnumerableToArrayInContravariantType()
 		{
 			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
