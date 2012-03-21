@@ -4236,6 +4236,16 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
     <value>The public key token</value>
     <comment>Assembly reference's public key token property description</comment>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly" xml:space="preserve">
+    <value>Reference assembly</value>
+    <comment>'Reference' is a verb in this case.
+This string appears in the property pad when a project reference is selected in the projects pad.
+It is a boolean option that defaults to true.
+If set to false, this reference specifies only a build-order dependency and does not cause the assembly to be referenced.</comment>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description" xml:space="preserve">
+    <value>If set to false, this reference specifies only a build-order dependency and does not cause the assembly to be referenced.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion" xml:space="preserve">
     <value>Specific Version</value>
     <comment>Reference property name indicating if the reference is to a specific version</comment>

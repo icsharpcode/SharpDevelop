@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -38,6 +39,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				SetEvaluatedMetadata("Name", value);
+			}
+		}
+		
+		[DefaultValue(true)]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly}",
+		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description}")]
+		public bool ReferenceOutputAssembly {
+			get {
+				return GetEvaluatedMetadata("ReferenceOutputAssembly", true);
+			}
+			set {
+				if (value)
+					RemoveMetadata("ReferenceOutputAssembly");
+				else
+					SetEvaluatedMetadata("ReferenceOutputAssembly", "false");
 			}
 		}
 		
