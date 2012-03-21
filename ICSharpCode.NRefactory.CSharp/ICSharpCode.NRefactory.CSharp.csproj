@@ -265,6 +265,8 @@
     <Compile Include="Refactoring\ContextAction\UseVarKeyword.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Refactoring\IContextAction.cs" />
+    <Compile Include="Refactoring\PatternHelper.cs" />
+    <Compile Include="Refactoring\RefactoringAstHelper.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />

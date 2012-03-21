@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ConvertForeachToForTests.cs
 //  
 // Author:
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 		}
 		
 		[Test()]
-		public void TestEnumeration ()
+		public void TestListOfT ()
 		{
 			string result = RunContextAction (
 				new ConvertForeachToFor (),
@@ -94,6 +94,25 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
+		}
+		
+		[Test()]
+		public void TestEnumerableOfT ()
+		{
+			TestWrongContext (
+				new ConvertForeachToFor (),
+				"using System;" + Environment.NewLine +
+				"using System.Collections.Generic;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	void Test (IEnumerable<string> args)" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		$foreach (var v in args) {" + Environment.NewLine +
+				"			Console.WriteLine (v);" + Environment.NewLine +
+				"		}" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}"
+			);
 		}
 	}
 }

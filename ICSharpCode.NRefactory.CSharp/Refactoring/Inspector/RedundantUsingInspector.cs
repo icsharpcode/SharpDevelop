@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantUsingInspector.cs
 //  
 // Author:
