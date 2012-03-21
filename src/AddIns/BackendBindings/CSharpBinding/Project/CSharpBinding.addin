@@ -116,6 +116,27 @@
 		                class                = "CSharpBinding.CSharpProjectBinding" />
 	</Path>
 	
+	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/Inspectors">
+		<Class id    = "ConditionalToNullCoalescingInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector" />
+		<Class id    = "NotImplementedExceptionInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.NotImplementedExceptionInspector" />
+		<Class id    = "RedundantInternalInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantInternalInspector" />
+		<Class id    = "RedundantNamespaceUsageInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantNamespaceUsageInspector" />
+		<Class id    = "RedundantPrivateInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantPrivateInspector" />
+		<Class id    = "RedundantThisInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantThisInspector" />
+		<Class id    = "RedundantUsingInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.RedundantUsingInspector" />
+		<Class id    = "StringIsNullOrEmptyInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.StringIsNullOrEmptyInspector" />
+		<Class id    = "UseVarKeywordInspector"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordInspector" />
+	</Path>
+	
 	<Path path = "/SharpDevelop/ViewContent/AvalonEdit/ContextActions">
 		<!-- TODO: translate -->
 		<CSharpContextAction id = "AddAnotherAccessor"

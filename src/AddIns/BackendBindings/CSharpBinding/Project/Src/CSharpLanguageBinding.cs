@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using CSharpBinding.FormattingStrategy;
+using CSharpBinding.Refactoring;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
@@ -29,6 +30,7 @@ namespace CSharpBinding
 		
 		ITextEditor editor;
 		CSharpSemanticHighlighter semanticHighlighter;
+		InspectionManager inspectionManager;
 		
 		public override void Attach(ITextEditor editor)
 		{
@@ -39,6 +41,7 @@ namespace CSharpBinding
 				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter);
 				highlighter.AddAdditionalHighlighter(semanticHighlighter);
 			}
+			inspectionManager = new InspectionManager(editor);
 			//codeManipulation = new CodeManipulation(editor);
 		}
 		
@@ -50,6 +53,10 @@ namespace CSharpBinding
 				highlighter.RemoveAdditionalHighlighter(semanticHighlighter);
 				semanticHighlighter.Dispose();
 				semanticHighlighter = null;
+			}
+			if (inspectionManager != null) {
+				inspectionManager.Dispose();
+				inspectionManager = null;
 			}
 			this.editor = null;
 			base.Detach();

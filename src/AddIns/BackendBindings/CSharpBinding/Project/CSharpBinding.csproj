@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Refactoring\InspectionManager.cs" />
     <Compile Include="Src\Refactoring\SDScript.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />

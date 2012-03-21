@@ -24,7 +24,6 @@ namespace CSharpBinding.Refactoring
 		readonly ITextSource textSource;
 		readonly TextLocation location;
 		volatile IDocument document;
-		readonly CSharpAstResolver resolver;
 		int selectionStart, selectionLength;
 		
 		public SDRefactoringContext(ITextSource textSource, CSharpAstResolver resolver, TextLocation location, int selectionStart, int selectionLength, CancellationToken cancellationToken)
@@ -32,7 +31,6 @@ namespace CSharpBinding.Refactoring
 		{
 			this.textSource = textSource;
 			this.document = textSource as IDocument;
-			this.resolver = resolver;
 			this.selectionStart = selectionStart;
 			this.selectionLength = selectionLength;
 			this.location = location;
@@ -44,7 +42,6 @@ namespace CSharpBinding.Refactoring
 			this.editor = editor;
 			this.textSource = editor.Document;
 			this.document = editor.Document;
-			this.resolver = resolver;
 			this.selectionStart = editor.SelectionStart;
 			this.selectionLength = editor.SelectionLength;
 			this.location = location;
