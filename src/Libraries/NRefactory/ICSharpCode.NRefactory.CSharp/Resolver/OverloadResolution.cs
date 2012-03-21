@@ -778,11 +778,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (bestCandidate == null)
 				return arguments;
+			else
+				return GetArgumentsWithConversions(null);
+		}
+		
+		IList<ResolveResult> GetArgumentsWithConversions(ResolveResult targetResolveResult)
+		{
 			var conversions = this.ArgumentConversions;
 			ResolveResult[] args = new ResolveResult[arguments.Length];
 			for (int i = 0; i < args.Length; i++) {
+				var argument = arguments[i];
+				if (this.IsExtensionMethodInvocation && i == 0 && targetResolveResult != null)
+					argument = targetResolveResult;
 				if (conversions[i] == Conversion.IdentityConversion) {
-					args[i] = arguments[i];
+					args[i] = argument;
 				} else {
 					int parameterIndex = bestCandidate.ArgumentToParameterMap[i];
 					IType parameterType;
@@ -792,9 +801,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						parameterType = SpecialType.UnknownType;
 					}
 					if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
-						args[i] = new CSharpResolver(compilation).ResolveCast(parameterType, arguments[i]);
+						args[i] = new CSharpResolver(compilation).ResolveCast(parameterType, argument);
 					} else {
-						args[i] = new ConversionResolveResult(parameterType, arguments[i], conversions[i]);
+						args[i] = new ConversionResolveResult(parameterType, argument, conversions[i]);
 					}
 				}
 			}
@@ -807,7 +816,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			IMethod method = bestCandidate.Member as IMethod;
 			if (method != null && method.TypeParameters.Count > 0) {
-				return new SpecializedMethod(method.DeclaringType, (IMethod)method.MemberDefinition, bestCandidate.InferredTypes);
+				SpecializedMethod sm = method as SpecializedMethod;
+				if (sm != null) {
+					// Do not compose the substitutions, but merge them.
+					// This is required for InvocationTests.SubstituteClassAndMethodTypeParametersAtOnce
+					return new SpecializedMethod(
+						(IMethod)method.MemberDefinition,
+						new TypeParameterSubstitution(sm.Substitution.ClassTypeArguments, bestCandidate.InferredTypes));
+				} else {
+					return new SpecializedMethod(method, new TypeParameterSubstitution(null, bestCandidate.InferredTypes));
+				}
 			} else {
 				return bestCandidate.Member;
 			}
@@ -830,9 +848,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new InvalidOperationException();
 			
 			return new CSharpInvocationResolveResult(
-				targetResolveResult,
+				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
-				GetArgumentsWithConversions(),
+				GetArgumentsWithConversions(targetResolveResult),
 				this.BestCandidateErrors,
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,
