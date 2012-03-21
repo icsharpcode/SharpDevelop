@@ -1857,7 +1857,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null) {
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
 				if (or.BestCandidate != null) {
-					if (or.BestCandidate.IsStatic && !(mgrr.TargetResult is TypeResolveResult))
+					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
 						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetResult.Type));
 					else
 						return or.CreateResolveResult(mgrr.TargetResult);

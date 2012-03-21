@@ -493,5 +493,33 @@ class Test : IVisitor<object, object> {
 			Assert.AreEqual("System.Object", typeArguments[0].ReflectionName);
 			Assert.AreEqual("System.Object", typeArguments[1].ReflectionName);
 		}
+		
+		[Test]
+		public void FirstParameterToExtensionMethod()
+		{
+			string program = @"
+public class X {}
+public static class Ex {
+	public static void F(this X x, int y, int z) {}
+}
+class C {
+	public void M() {
+		X a = null;
+		int b = 0, c = 0;
+		$a.F(b, c)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.That(rr.IsExtensionMethodInvocation, Is.True);
+			Assert.That(rr.Arguments[0], Is.InstanceOf<LocalResolveResult>());
+			Assert.That(((LocalResolveResult)rr.Arguments[0]).Variable.Name, Is.EqualTo("a"));
+			Assert.That(rr.Arguments[1], Is.InstanceOf<LocalResolveResult>());
+			Assert.That(((LocalResolveResult)rr.Arguments[1]).Variable.Name, Is.EqualTo("b"));
+			Assert.That(rr.Arguments[2], Is.InstanceOf<LocalResolveResult>());
+			Assert.That(((LocalResolveResult)rr.Arguments[2]).Variable.Name, Is.EqualTo("c"));
+			
+			Assert.That(rr.TargetResult, Is.InstanceOf<TypeResolveResult>());
+		}
 	}
 }
