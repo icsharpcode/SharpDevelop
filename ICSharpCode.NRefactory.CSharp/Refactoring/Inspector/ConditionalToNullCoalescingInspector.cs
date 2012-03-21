@@ -88,15 +88,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.inspector = inspector;
 			}
 
-			public override void VisitConditionalExpression (ConditionalExpression conditionalExpression)
+			public override void VisitConditionalExpression(ConditionalExpression conditionalExpression)
 			{
 				Match m = pattern.Match(conditionalExpression);
 				if (m.Success) {
 					var a = m.Get<Expression>("a").Single();
 					var other = m.Get<Expression>("other").Single();
-					AddIssue (conditionalExpression,
-					               inspector.Title,
-					               delegate {
+					AddIssue(conditionalExpression, inspector.Title, delegate {
 						using (var script = ctx.StartScript ()) {
 							var expr = new BinaryOperatorExpression (a.Clone (), BinaryOperatorType.NullCoalescing, other.Clone ());
 							script.Replace (conditionalExpression, expr);
