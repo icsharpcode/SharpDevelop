@@ -70,8 +70,16 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			{
 				this.eolMarker = context.EolMarker;
 			}
+			
+			public override void Link (params AstNode[] nodes)
+			{
+				// check that all links are valid.
+				foreach (var node in nodes) {
+					Assert.IsNotNull (GetSegment (node));
+				}
+			}
 		}
-		
+
 		#region Text stuff
 		public override string EolMarker { get { return Environment.NewLine; } }
 
