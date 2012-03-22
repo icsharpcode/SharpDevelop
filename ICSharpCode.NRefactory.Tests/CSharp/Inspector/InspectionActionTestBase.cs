@@ -34,11 +34,11 @@ namespace ICSharpCode.NRefactory.CSharp.Inspector
 {
 	public abstract class InspectionActionTestBase
 	{
-		protected static List<InspectionIssue> GetIssues (IInspector action, string input, out TestRefactoringContext context)
+		protected static List<CodeIssue> GetIssues (IInspector action, string input, out TestRefactoringContext context)
 		{
 			context = TestRefactoringContext.Create (input);
 			
-			return new List<InspectionIssue> (action.Run (context));
+			return new List<CodeIssue> (action.Run (context));
 		}
 	}
 	
