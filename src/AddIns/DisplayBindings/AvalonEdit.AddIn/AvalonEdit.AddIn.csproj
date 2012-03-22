@@ -47,6 +47,9 @@
     <Reference Include="PresentationFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="ReachFramework">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -69,6 +72,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\ContextActions\ContextActionsBulbControl.xaml.cs">
+      <DependentUpon>ContextActionsBulbControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsBulbPopup.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsBulbViewModel.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsControl.xaml.cs">
+      <DependentUpon>ContextActionsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsHeaderedControl.xaml.cs">
+      <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\ContextActions\ContextActionsPopup.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsPopupBase.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsRenderer.cs" />
+    <Compile Include="Src\ContextActions\EditorActionsProvider.cs" />
+    <Compile Include="Src\ContextActions\ContextActionsViewModel.cs" />
+    <Compile Include="Src\ContextActions\ContextActionViewModel.cs" />
+    <Compile Include="Src\ContextActions\FindBaseClasses.cs" />
+    <Compile Include="Src\ContextActions\FindDerivedClassesOrOverrides.cs" />
+    <Compile Include="Src\ContextActions\GoToEntityAction.cs" />
     <Compile Include="Src\DocumentSequence.cs" />
     <Compile Include="Src\Utils.cs" />
     <Compile Include="Src\XmlDoc\DocumentationUIBuilder.cs" />
@@ -95,7 +118,6 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
-    <Compile Include="Src\ContextActionsRenderer.cs" />
     <Compile Include="Src\DefaultChangeWatcher.cs" />
     <Compile Include="Src\DiffControl.xaml.cs">
       <DependentUpon>DiffControl.xaml</DependentUpon>
@@ -172,8 +194,14 @@
     <Compile Include="Src\TextMarkerService.cs" />
     <EmbeddedResource Include="Resources\IncrementalSearchCursor.cur" />
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
+    <Resource Include="Src\ContextActions\bulb.png" />
+    <None Include="Src\ContextActions\license.txt" />
+    <Resource Include="Src\ContextActions\pencil.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\ContextActions\ContextActionsBulbControl.xaml" />
+    <Page Include="Src\ContextActions\ContextActionsControl.xaml" />
+    <Page Include="Src\ContextActions\ContextActionsHeaderedControl.xaml" />
     <Page Include="Src\DiffControl.xaml" />
     <Page Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml" />
     <Page Include="Src\SharpDevelopCompletionWindow.xaml">
@@ -239,6 +267,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Src\ContextActions" />
     <Folder Include="Src\HiddenDefinition" />
     <Folder Include="Src\XmlDoc" />
   </ItemGroup>

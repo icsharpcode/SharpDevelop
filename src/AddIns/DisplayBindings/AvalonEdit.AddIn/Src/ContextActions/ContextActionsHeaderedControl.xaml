@@ -1,7 +1,7 @@
-﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Refactoring.ContextActionsHeaderedControl"
+﻿<UserControl x:Class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionsHeaderedControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Refactoring"
+             xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.ContextActions"
              xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
 	
 	<UserControl.Resources>

@@ -15,6 +15,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
+
+using ICSharpCode.AvalonEdit.AddIn.ContextActions;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Document;
@@ -80,6 +82,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			contextActionsRenderer.Dispose();
 			hiddenDefinitionRenderer.Dispose();
+		}
+		
+		public IList<IContextActionsProvider> ContextActionProviders {
+			get { return contextActionsRenderer.Providers; }
 		}
 		
 		protected override ICSharpCode.Core.FileName FileName {

@@ -217,9 +217,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		public virtual IInsightWindow ActiveInsightWindow {
-			get {
-				return null;
-			}
+			get { return null; }
 		}
 		
 		public virtual IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
@@ -228,9 +226,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		}
 		
 		public virtual ICompletionListWindow ActiveCompletionWindow {
-			get {
-				return null;
-			}
+			get { return null; }
 		}
 		
 		public virtual ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
@@ -243,10 +239,12 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			return Enumerable.Empty<ICompletionItem>();
 		}
 		
+		public virtual IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionsProvider> ContextActionProviders {
+			get { return EmptyList<ICSharpCode.SharpDevelop.Refactoring.IContextActionsProvider>.Instance; }
+		}
+		
 		public virtual ITextEditor PrimaryView {
-			get {
-				return this;
-			}
+			get { return this; }
 		}
 	}
 }

@@ -137,7 +137,7 @@
 		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeywordInspector" />
 	</Path>
 	
-	<Path path = "/SharpDevelop/ViewContent/AvalonEdit/ContextActions">
+	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">
 		<!-- TODO: translate -->
 		<CSharpContextAction id = "AddAnotherAccessor"
 			displayName = "Add another accessor"

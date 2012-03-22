@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
-	x:Class="ICSharpCode.SharpDevelop.Refactoring.ContextActionsControl"
+	x:Class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionsControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
-	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Refactoring"
-	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
+	xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.ContextActions">
 	
 	<!--The treeview with Context actions. Accepts IEnumerable<ContextActionViewModel> as its DataContext.-->
 	

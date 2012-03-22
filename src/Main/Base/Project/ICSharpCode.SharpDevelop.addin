@@ -1747,18 +1747,6 @@
 			          icon="Icons.16x16.SelectionArrow"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferencesCommand"/>
 			
-			<MenuItem id = "FindDerivedOrOverridesClasses"
-			          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
-			          shortcut = "F6"
-			          icon="Icons.16x16.Class"
-			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindDerivedClassesOrOverrides"/>
-			
-			<MenuItem id = "FindBaseClasses"
-			          label = "${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"
-			          shortcut = ""
-			          icon="Icons.16x16.Interface"
-			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindBaseClasses"/>
-			
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
 			          shortcut = "Control|B"

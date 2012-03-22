@@ -4,13 +4,11 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 
-namespace ICSharpCode.SharpDevelop.Refactoring
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// Description of ContextActionsHiddenViewModel.

@@ -4,10 +4,10 @@
 using System;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.SharpDevelop.Refactoring
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
-	/// Description of ContextActionsBulbPopup.
+	/// The popup for context actions.
 	/// </summary>
 	public class ContextActionsBulbPopup : ContextActionsPopupBase
 	{

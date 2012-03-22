@@ -54,7 +54,7 @@ namespace ICSharpCode.XamlBinding
 			return false;
 		}
 		
-		volatile ITextSourceVersion lastParsedVersion;
+//		volatile ITextSourceVersion lastParsedVersion;
 		
 		/// <summary>
 		/// Parse the given text and enter read lock.
@@ -151,14 +151,14 @@ namespace ICSharpCode.XamlBinding
 		
 		void AddTagComments(AXmlDocument xmlDocument, ParseInformation parseInfo, ITextSource fileContent)
 		{
-			ReadOnlyDocument document = null;
+			IDocument document = null;
 			foreach (var tag in TreeTraversal.PreOrder<AXmlObject>(xmlDocument, node => node.Children).OfType<AXmlTag>().Where(t => t.IsComment)) {
 				int matchLength;
 				AXmlText comment = tag.Children.OfType<AXmlText>().First();
 				int index = comment.Value.IndexOfAny(lexerTags, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
-						document = new ReadOnlyDocument(fileContent);
+						document = fileContent as IDocument ?? new ReadOnlyDocument(fileContent);
 					do {
 						TextLocation startLocation = document.GetLocation(comment.StartOffset + index);
 						int startOffset = index + comment.StartOffset;

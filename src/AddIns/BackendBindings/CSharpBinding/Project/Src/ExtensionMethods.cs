@@ -16,7 +16,7 @@ namespace CSharpBinding
 	/// </summary>
 	public static class ExtensionMethods
 	{
-		public static async Task<CompilationUnit> GetCompilationUnitAsync(this EditorContext editorContext)
+		public static async Task<CompilationUnit> GetCompilationUnitAsync(this EditorRefactoringContext editorContext)
 		{
 			var parseInfo = (await editorContext.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
 			if (parseInfo != null)
@@ -25,7 +25,7 @@ namespace CSharpBinding
 				return new CompilationUnit();
 		}
 		
-		public static Task<CSharpAstResolver> GetAstResolverAsync(this EditorContext editorContext)
+		public static Task<CSharpAstResolver> GetAstResolverAsync(this EditorRefactoringContext editorContext)
 		{
 			return editorContext.GetCachedAsync(
 				async ec => {

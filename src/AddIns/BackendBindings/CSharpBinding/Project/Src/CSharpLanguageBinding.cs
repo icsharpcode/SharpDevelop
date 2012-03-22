@@ -2,12 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using CSharpBinding.FormattingStrategy;
 using CSharpBinding.Refactoring;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding
 {
@@ -31,6 +34,7 @@ namespace CSharpBinding
 		ITextEditor editor;
 		CSharpSemanticHighlighter semanticHighlighter;
 		InspectionManager inspectionManager;
+		IList<IContextActionsProvider> contextActionProviders;
 		
 		public override void Attach(ITextEditor editor)
 		{
@@ -43,6 +47,11 @@ namespace CSharpBinding
 			}
 			inspectionManager = new InspectionManager(editor);
 			//codeManipulation = new CodeManipulation(editor);
+			
+			if (!editor.ContextActionProviders.IsReadOnly) {
+				contextActionProviders = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
+				editor.ContextActionProviders.AddRange(contextActionProviders);
+			}
 		}
 		
 		public override void Detach()
@@ -57,6 +66,9 @@ namespace CSharpBinding
 			if (inspectionManager != null) {
 				inspectionManager.Dispose();
 				inspectionManager = null;
+			}
+			if (contextActionProviders != null) {
+				editor.ContextActionProviders.RemoveWhere(contextActionProviders.Contains);
 			}
 			this.editor = null;
 			base.Detach();

@@ -2,21 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// Renders Popup with context actions on the left side of the current line in the editor.
@@ -24,28 +23,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public sealed class ContextActionsRenderer : IDisposable
 	{
 		readonly CodeEditorView editorView;
+		ObservableCollection<IContextActionsProvider> providers = new ObservableCollection<IContextActionsProvider>();
+		
 		ITextEditor Editor { get { return this.editorView.Adapter; } }
+		
 		/// <summary>
 		/// This popup is reused (closed and opened again).
 		/// </summary>
-		ContextActionsBulbPopup popup = new ContextActionsBulbPopup();
+		ContextActionsBulbPopup popup;
 		
 		/// <summary>
 		/// Delays the available actions resolution so that it does not get called too often when user holds an arrow.
 		/// </summary>
 		DispatcherTimer delayMoveTimer;
 		const int delayMoveMilliseconds = 500;
-		
-		public bool IsEnabled
-		{
-			get {
-				string fileName = this.Editor.FileName;
-				if (String.IsNullOrEmpty(fileName))
-					return false;
-				return fileName.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)
-					|| fileName.EndsWith(".vb", StringComparison.OrdinalIgnoreCase);
-			}
-		}
 		
 		public ContextActionsRenderer(CodeEditorView editor)
 		{
@@ -56,6 +47,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.editorView.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			
 			this.editorView.KeyDown += new KeyEventHandler(ContextActionsRenderer_KeyDown);
+			providers.CollectionChanged += providers_CollectionChanged;
 			
 			editor.TextArea.TextView.ScrollOffsetChanged += ScrollChanged;
 			this.delayMoveTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMoveMilliseconds) };
@@ -70,18 +62,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			ClosePopup();
 		}
 		
+		public IList<IContextActionsProvider> Providers {
+			get { return providers; }
+		}
+		
+		void providers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			StartTimer();
+		}
+		
 		async void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (this.popup == null)
-				return;
 			if (e.Key == Key.T && Keyboard.Modifiers == ModifierKeys.Control) {
+				if (popup == null)
+					popup = new ContextActionsBulbPopup();
 				if (popup.ViewModel != null && popup.ViewModel.Actions != null && popup.ViewModel.Actions.Count > 0) {
 					popup.IsDropdownOpen = true;
 					popup.Focus();
 				} else {
 					ClosePopup();
 					// Popup is not shown but user explicitely requests it
-					var popupVM = BuildPopupViewModel(this.Editor);
+					var popupVM = BuildPopupViewModel();
 					this.cancellationTokenSourceForPopupBeingOpened = new CancellationTokenSource();
 					var cancellationToken = cancellationTokenSourceForPopupBeingOpened.Token;
 					try {
@@ -117,10 +118,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (!delayMoveTimer.IsEnabled)
 				return;
 			ClosePopup();
-			if (!IsEnabled)
-				return;
 			
-			ContextActionsBulbViewModel popupVM = BuildPopupViewModel(this.Editor);
+			ContextActionsBulbViewModel popupVM = BuildPopupViewModel();
 			this.cancellationTokenSourceForPopupBeingOpened = new CancellationTokenSource();
 			var cancellationToken = cancellationTokenSourceForPopupBeingOpened.Token;
 			try {
@@ -134,13 +133,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.cancellationTokenSourceForPopupBeingOpened = null;
 			if (popupVM.Actions.Count == 0)
 				return;
+			if (popup == null)
+				popup = new ContextActionsBulbPopup();
 			this.popup.ViewModel = popupVM;
 			this.popup.OpenAtLineStart(this.Editor);
 		}
 		
-		ContextActionsBulbViewModel BuildPopupViewModel(ITextEditor editor)
+		ContextActionsBulbViewModel BuildPopupViewModel()
 		{
-			var actionsProvider = ContextActionsService.Instance.CreateActionsProvider(editor);
+			var actionsProvider = new EditorActionsProvider(new EditorRefactoringContext(this.Editor), providers.ToArray());
 			return new ContextActionsBulbViewModel(actionsProvider);
 		}
 
@@ -152,6 +153,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void StartTimer()
 		{
 			ClosePopup();
+			if (providers.Count == 0)
+				return;
 			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (activeViewContent != null && activeViewContent.PrimaryFileName == this.Editor.FileName)
 				delayMoveTimer.Start();
@@ -166,10 +169,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			this.delayMoveTimer.Stop();
-			this.popup.Close();
-			this.popup.IsDropdownOpen = false;
-			this.popup.IsHiddenActionsExpanded = false;
-			this.popup.ViewModel = null;
+			if (popup != null) {
+				this.popup.Close();
+				this.popup.IsDropdownOpen = false;
+				this.popup.IsHiddenActionsExpanded = false;
+				this.popup.ViewModel = null;
+			}
 		}
 		void WorkbenchSingleton_Workbench_ActiveViewContentChanged(object sender, EventArgs e)
 		{

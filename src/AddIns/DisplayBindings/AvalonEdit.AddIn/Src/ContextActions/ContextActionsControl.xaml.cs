@@ -2,18 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.Core.Presentation;
 
-namespace ICSharpCode.SharpDevelop.Refactoring
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// ContextActionsControl accepts IEnumerable&lt;ContextActionViewModel&gt; as its DataContext.

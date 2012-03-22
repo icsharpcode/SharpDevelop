@@ -8,7 +8,7 @@ using System.Windows;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// One editor Context action.
+	/// Context action.
 	/// </summary>
 	public interface IContextAction
 	{
@@ -16,9 +16,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// Name displayed in the context actions popup.
 		/// </summary>
 		string DisplayName { get; }
+		
 		/// <summary>
 		/// Executes this action. Called when this action is selected from the context actions popup.
 		/// </summary>
-		Task ExecuteAsync(EditorContext context);
+		void Execute(EditorRefactoringContext context);
 	}
 }

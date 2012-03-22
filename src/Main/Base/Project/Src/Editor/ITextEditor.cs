@@ -9,6 +9,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -118,6 +119,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Gets the list of available code snippets.
 		/// </summary>
 		IEnumerable<ICompletionItem> GetSnippets();
+		
+		/// <summary>
+		/// Gets the list of context action providers.
+		/// </summary>
+		IList<IContextActionsProvider> ContextActionProviders { get; }
 	}
 	
 	public interface ITextEditorOptions : INotifyPropertyChanged

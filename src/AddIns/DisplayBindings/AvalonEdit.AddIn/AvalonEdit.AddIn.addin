@@ -133,6 +133,20 @@
 		</MenuItem>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Search">
+		<MenuItem id = "FindDerivedOrOverridesClasses"
+		          insertafter = "FindReferences"
+		          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
+		          shortcut = "F6"
+		          icon="Icons.16x16.Class"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindDerivedClassesOrOverrides"/>
+		
+		<MenuItem id = "FindBaseClasses"
+		          label = "${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"
+		          icon="Icons.16x16.Interface"
+		          class = "ICSharpCode.AvalonEdit.AddIn.ContextActions.FindBaseClasses"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
@@ -165,7 +179,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ToolTips">
-		<Class id = "DefaultXmlDocToolTips" 
+		<Class id = "DefaultXmlDocToolTips"
 		       insertafter="DefaultDebuggerToolTips"
 		       class = "ICSharpCode.AvalonEdit.AddIn.XmlDoc.XmlDocTooltipProvider"/>
 	</Path>

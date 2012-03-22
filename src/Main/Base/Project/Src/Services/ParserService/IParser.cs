@@ -47,8 +47,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </param>
 		/// <returns>The parse information representing the parse results.</returns>
 		/// <remarks>
-		/// SharpDevelop may call IParser.Parse in parallel. This will be done on the same IParser instance
+		/// SharpDevelop may call IParser.Parse in parallel; even on the same IParser instance
 		/// if there are two parallel parse requests for the same file. Parser implementations must be thread-safe.
+		/// The SharpDevelop main thread is allowed to wait for a parse operation to finish; thus IParser
+		/// implementations must not invoke methods on the main thread and wait for their results,
+		/// as that would deadlock.
 		/// </remarks>
 		ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested);
 		

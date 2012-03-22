@@ -54,10 +54,8 @@ namespace CSharpBinding.Refactoring
 				get { return StringParser.Parse(displayName); }
 			}
 			
-			public override Task<bool> IsAvailableAsync(EditorContext context, CancellationToken cancellationToken)
+			public override Task<bool> IsAvailableAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
 			{
-				if (!string.Equals(Path.GetExtension(context.FileName), ".cs", StringComparison.OrdinalIgnoreCase))
-					return Task.FromResult(false);
 				ITextEditor editor = context.Editor;
 				// grab SelectionStart/SelectionLength while we're still on the main thread
 				int selectionStart = editor.SelectionStart;
@@ -83,9 +81,10 @@ namespace CSharpBinding.Refactoring
 				}
 			}
 			
-			public override async Task ExecuteAsync(EditorContext context)
+			public override void Execute(EditorRefactoringContext context)
 			{
-				var resolver = await context.GetAstResolverAsync();
+				AnalyticsMonitorService.TrackFeature(className);
+				var resolver = context.GetAstResolverAsync().Result;
 				var refactoringContext = new SDRefactoringContext(context.Editor, resolver, context.CaretLocation);
 				CreateContextAction();
 				contextAction.Run(refactoringContext);

@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.SharpDevelop.Refactoring
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// Description of ContextActionsViewModel.

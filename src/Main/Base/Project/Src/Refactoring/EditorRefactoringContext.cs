@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// Do not keep your own references to EditorContext.
 	/// It serves as one-time cache and does not get updated when editor text changes.
 	/// </summary>
-	public class EditorContext
+	public class EditorRefactoringContext
 	{
 		readonly object syncRoot = new object();
 		readonly ITextEditor editor;
@@ -72,7 +72,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets the ParseInformation for the file.
 		/// </summary>
-		/// <remarks><inheritdoc cref="ParserService.ParseAsync"/></remarks>
 		public Task<ParseInformation> GetParseInformationAsync()
 		{
 			lock (syncRoot) {
@@ -80,6 +79,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					parseInformation = ParserService.ParseAsync(this.FileName, this.TextSource);
 				return parseInformation;
 			}
+		}
+		
+		/// <summary>
+		/// Gets the ParseInformation for the file.
+		/// </summary>
+		public ParseInformation GetParseInformation()
+		{
+			return GetParseInformationAsync().Result;
 		}
 		
 		/// <summary>
@@ -95,14 +102,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		/// <summary>
+		/// Gets the ICompilation for the file.
+		/// </summary>
+		public ICompilation GetCompilation()
+		{
+			return GetCompilationAsync().Result;
+		}
+		
+		/// <summary>
 		/// Caches values shared by Context actions. Used in <see cref="GetCached"/>.
 		/// </summary>
 		readonly ConcurrentDictionary<Type, Task> cachedValues = new ConcurrentDictionary<Type, Task>();
 		
 		/// <summary>
-		/// Fully initializes the EditorContext.
+		/// Creates a new EditorContext.
 		/// </summary>
-		public EditorContext(ITextEditor editor)
+		public EditorRefactoringContext(ITextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
@@ -143,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets cached value shared by context actions. Initializes a new value if not present.
 		/// </summary>
-		public Task<T> GetCachedAsync<T>(Func<EditorContext, T> initializationFunc)
+		public Task<T> GetCachedAsync<T>(Func<EditorRefactoringContext, T> initializationFunc)
 		{
 			return (Task<T>)cachedValues.GetOrAdd(typeof(T), _ => Task.FromResult(initializationFunc(this)));
 		}
@@ -151,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets cached value shared by context actions. Initializes a new value if not present.
 		/// </summary>
-		public Task<T> GetCachedAsync<T>(Func<EditorContext, Task<T>> initializationFunc)
+		public Task<T> GetCachedAsync<T>(Func<EditorRefactoringContext, Task<T>> initializationFunc)
 		{
 			return (Task<T>)cachedValues.GetOrAdd(typeof(T), _ => initializationFunc(this));
 		}

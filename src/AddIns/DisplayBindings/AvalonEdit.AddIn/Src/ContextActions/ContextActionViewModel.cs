@@ -3,26 +3,27 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.SharpDevelop.Refactoring
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Refactoring;
+
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// Description of ContextActionViewModel.
 	/// </summary>
 	public class ContextActionViewModel
 	{
-		readonly EditorContext context;
+		readonly EditorRefactoringContext context;
 		
 		public ContextActionViewModel()
 		{
 			this.IsVisible = true;
 		}
 		
-		public ContextActionViewModel(IContextAction action, EditorContext context)
+		public ContextActionViewModel(IContextAction action, EditorRefactoringContext context)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");
@@ -67,9 +68,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public class ContextActionCommand : ICommand
 	{
 		readonly IContextAction action;
-		readonly EditorContext context;
+		readonly EditorRefactoringContext context;
 		
-		public ContextActionCommand(IContextAction action, EditorContext context)
+		public ContextActionCommand(IContextAction action, EditorRefactoringContext context)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");
@@ -86,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void Execute(object parameter)
 		{
-			this.action.ExecuteAsync(context).FireAndForget();
+			this.action.Execute(context);
 		}
 		
 		public bool CanExecute(object parameter)

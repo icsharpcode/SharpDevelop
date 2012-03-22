@@ -24,15 +24,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public bool IsVisible { get; set; }
 		
+		public virtual bool AllowHiding {
+			get { return true; }
+		}
+		
 		/// <summary>
 		/// Gets whether this context action is available in the given context.
 		/// </summary>
 		/// <remarks><inheritdoc cref="IContextActionsProvider.GetAvailableActionsAsync"/></remarks>
-		public abstract Task<bool> IsAvailableAsync(EditorContext context, CancellationToken cancellationToken);
+		public abstract Task<bool> IsAvailableAsync(EditorRefactoringContext context, CancellationToken cancellationToken);
 		
-		public abstract Task ExecuteAsync(EditorContext context);
+		public abstract void Execute(EditorRefactoringContext context);
 		
-		async Task<IContextAction[]> IContextActionsProvider.GetAvailableActionsAsync(EditorContext context, CancellationToken cancellationToken)
+		async Task<IContextAction[]> IContextActionsProvider.GetAvailableActionsAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (await IsAvailableAsync(context, cancellationToken).ConfigureAwait(false))

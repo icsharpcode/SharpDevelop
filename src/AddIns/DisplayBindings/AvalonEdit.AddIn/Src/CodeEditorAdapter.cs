@@ -85,5 +85,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return base.GetSnippets();
 			}
 		}
+		
+		public override IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionsProvider> ContextActionProviders {
+			get { return ((CodeEditorView)TextEditor).ContextActionProviders; }
+		}
 	}
 }

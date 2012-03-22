@@ -741,8 +741,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// an existing cached parse information (but only if it's still up-to-date).
 		/// </returns>
 		/// <remarks>
-		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
-		/// so using this method while holding a lock can lead to deadlocks.
+		/// This method is thread-safe.
+		/// If <paramref name="fileContent"/> is null, this method will block and wait for the main thread
+		/// to retrieve the latest file content. This can cause deadlocks if this method is called within a lock.
 		/// </remarks>
 		public static ParseInformation Parse(FileName fileName, ITextSource fileContent = null)
 		{
@@ -756,14 +757,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <param name="fileContent">Optional: Content of the file to parse.
 		/// The fileContent is taken as a hint - if a newer version than it is already available, that will be used instead.
 		/// </param>
-		/// <returns>
-		/// Returns the ParseInformation for the specified file, or null if the file cannot be parsed.
-		/// For files currently open in an editor, this method does not necessary reparse, but may return
-		/// an existing cached parse information (but only if it's still up-to-date).
-		/// </returns>
+		/// <returns><inheritdoc cref="Parse"/></returns>
 		/// <remarks>
-		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
-		/// so waiting for the task can cause deadlocks. (however, using C# 5 'await' is safe)
+		/// This method is thread-safe.
+		/// If <paramref name="fileContent"/> is null, the task may wait for the main thread.
+		/// This means that waiting for the task can cause deadlocks. (however, using C# 5 'await' is safe)
 		/// </remarks>
 		public static Task<ParseInformation> ParseAsync(FileName fileName, ITextSource fileContent = null)
 		{
@@ -772,7 +770,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		/// <summary>
 		/// Parses the specified file.
-		/// This method does not request full parse information
+		/// This method does not request full parse information.
 		/// </summary>
 		/// <param name="fileName">Name of the file to parse</param>
 		/// <param name="fileContent">Optional: Content of the file to parse.
@@ -780,21 +778,19 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </param>
 		/// <returns>
 		/// Returns the IParsedFile for the specified file, or null if the file cannot be parsed.
-		/// For files currently open in an editor, this method does not necessary reparse, but may return
+		/// For files currently open in an editor, this method does not necessarily reparse, but may return
 		/// the existing IParsedFile (but only if it's still up-to-date).
 		/// </returns>
-		/// <remarks>
-		/// This method is thread-safe. This parser being used may involve locking or waiting for the main thread,
-		/// so using this method while holding a lock can lead to deadlocks.
-		/// </remarks>
+		/// <remarks><inheritdoc cref="Parse"/></remarks>
 		public static IParsedFile ParseFile(FileName fileName, ITextSource fileContent = null)
 		{
 			return GetFileEntry(fileName, true).ParseFile(fileContent);
 		}
 		
 		/// <summary>
-		/// Async version of ParseFile().
+		/// Asynchronous version of <see cref="ParseFile"/>.
 		/// </summary>
+		/// <returns><inheritdoc cref="ParseFile"/></returns>
 		/// <remarks><inheritdoc cref="ParseAsync"/></remarks>
 		public static Task<IParsedFile> ParseFileAsync(FileName fileName, ITextSource fileContent = null)
 		{

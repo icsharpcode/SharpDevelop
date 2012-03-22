@@ -3,74 +3,46 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.SharpDevelop.Refactoring
+namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 {
 	/// <summary>
 	/// Provides context actions available for current line of the editor.
 	/// </summary>
-	public sealed class ContextActionsService
+	public class EditorActionsProvider
 	{
-		static readonly ContextActionsService instance = new ContextActionsService();
-		
 		/// <summary>
 		/// Key for storing the names of disabled providers in PropertyService.
 		/// </summary>
 		const string PropertyServiceKey = "DisabledContextActionProviders";
-		
-		public static ContextActionsService Instance {
-			get { return instance; }
-		}
-		
-		private ContextActionsService()
-		{
-		}
-		
-		public EditorActionsProvider CreateActionsProvider(ITextEditor editor)
-		{
-			var editorContext = new EditorContext(editor);
-			var providers = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/AvalonEdit/ContextActions", editorContext, false);
-			var disabledActions = new HashSet<string>(LoadProviderVisibilities());
-			foreach (var provider in providers) {
-				provider.IsVisible = !disabledActions.Contains(provider.ID);
-			}
-			return new EditorActionsProvider(editorContext, providers);
-		}
 		
 		static List<string> LoadProviderVisibilities()
 		{
 			return PropertyService.Get(PropertyServiceKey, new List<string>());
 		}
 		
-		public void SaveProviderVisibilities(IEnumerable<IContextActionsProvider> providers)
+		static void SaveProviderVisibilities(IEnumerable<IContextActionsProvider> providers)
 		{
 			List<string> disabledProviders = providers.Where(p => !p.IsVisible).Select(p => p.ID).ToList();
 			PropertyService.Set(PropertyServiceKey, disabledProviders);
 		}
-	}
-	
-	/// <summary>
-	/// Returned by <see cref="ContextActionsService.GetAvailableActions()"></see>.
-	/// </summary>
-	public class EditorActionsProvider
-	{
-		readonly IList<IContextActionsProvider> providers;
-		readonly EditorContext editorContext;
 		
-		public EditorContext EditorContext {
+		readonly IList<IContextActionsProvider> providers;
+		readonly EditorRefactoringContext editorContext;
+		
+		public EditorRefactoringContext EditorContext {
 			get { return editorContext; }
 		}
 		
-		public EditorActionsProvider(EditorContext editorContext, IList<IContextActionsProvider> providers)
+		public EditorActionsProvider(EditorRefactoringContext editorContext, IList<IContextActionsProvider> providers)
 		{
 			if (editorContext == null)
 				throw new ArgumentNullException("editorContext");
@@ -78,6 +50,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("providers");
 			this.providers = providers;
 			this.editorContext = editorContext;
+			
+			var disabledActions = new HashSet<string>(LoadProviderVisibilities());
+			foreach (var provider in providers) {
+				provider.IsVisible = !disabledActions.Contains(provider.ID);
+			}
 		}
 		
 		public Task<IEnumerable<IContextAction>> GetVisibleActionsAsync(CancellationToken cancellationToken)
@@ -96,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (providerForAction.TryGetValue(action, out provider)) {
 				provider.IsVisible = isVisible;
 			}
-			ContextActionsService.Instance.SaveProviderVisibilities(providers);
+			SaveProviderVisibilities(providers);
 		}
 		
 		/// <summary>
