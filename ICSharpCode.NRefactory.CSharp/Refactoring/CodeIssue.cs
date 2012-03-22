@@ -27,7 +27,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public class InspectionIssue
+	public class CodeIssue
 	{
 		public string Title {
 			get;
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			private set;
 		}
 
-		public InspectionIssue (string title, TextLocation start, TextLocation end, System.Action fix)
+		public CodeIssue (string title, TextLocation start, TextLocation end, System.Action fix)
 		{
 			this.Title = title;
 			this.Start = start;

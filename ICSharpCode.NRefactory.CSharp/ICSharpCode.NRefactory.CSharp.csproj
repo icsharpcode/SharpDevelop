@@ -326,7 +326,6 @@
     <Compile Include="Ast\Roles.cs" />
     <Compile Include="Refactoring\Inspector\ConditionalToNullCoalescingInspector.cs" />
     <Compile Include="Refactoring\IInspector.cs" />
-    <Compile Include="Refactoring\InspectionIssue.cs" />
     <Compile Include="Refactoring\BaseRefactoringContext.cs" />
     <Compile Include="Refactoring\Inspector\GatherVisitorBase.cs" />
     <Compile Include="Refactoring\Inspector\NotImplementedExceptionInspector.cs" />
@@ -337,6 +336,7 @@
     <Compile Include="Refactoring\Inspector\RedundantUsingInspector.cs" />
     <Compile Include="Refactoring\Inspector\StringIsNullOrEmptyInspector.cs" />
     <Compile Include="Refactoring\Inspector\UseVarKeywordInspector.cs" />
+    <Compile Include="Refactoring\CodeIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

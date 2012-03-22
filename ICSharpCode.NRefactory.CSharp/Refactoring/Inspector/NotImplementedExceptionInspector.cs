@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		public IEnumerable<InspectionIssue> Run (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
 			context.RootNode.AcceptVisitor (visitor);

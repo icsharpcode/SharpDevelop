@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		protected readonly BaseRefactoringContext ctx;
 
-		public readonly List<InspectionIssue> FoundIssues = new List<InspectionIssue> ();
+		public readonly List<CodeIssue> FoundIssues = new List<CodeIssue> ();
 
 		public GatherVisitorBase (BaseRefactoringContext ctx)
 		{
@@ -49,12 +49,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		protected void AddIssue (AstNode node, string title, System.Action fix = null)
 		{
-			FoundIssues.Add (new InspectionIssue (title, node.StartLocation, node.EndLocation, fix));
+			FoundIssues.Add (new CodeIssue (title, node.StartLocation, node.EndLocation, fix));
 		}
 
 		protected void AddIssue(TextLocation start, TextLocation end, string title, System.Action fix = null)
 		{
-			FoundIssues.Add (new InspectionIssue (title, start, end, fix));
+			FoundIssues.Add (new CodeIssue (title, start, end, fix));
 		}
 	}
 		

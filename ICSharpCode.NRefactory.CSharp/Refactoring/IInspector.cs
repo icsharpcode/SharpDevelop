@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public interface IInspector
 	{
-		IEnumerable<InspectionIssue> Run (BaseRefactoringContext context);
+		IEnumerable<CodeIssue> Run (BaseRefactoringContext context);
 	}
 }
 
