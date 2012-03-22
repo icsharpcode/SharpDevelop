@@ -1,10 +1,10 @@
-﻿// 
-// ContextActionTestBase.cs
+// 
+// InspectionActionTestBase.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,38 +24,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 using System;
-using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Threading;
-using System.Linq;
+using ICSharpCode.NRefactory.CSharp.ContextActions;
+using System.Collections.Generic;
+using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.ContextActions
+namespace ICSharpCode.NRefactory.CSharp.Inspector
 {
-	public abstract class ContextActionTestBase
+	public abstract class InspectionActionTestBase
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
+		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
-			}
-
-			return context.doc.Text;
+			context = TestRefactoringContext.Create (input);
+			
+			return new List<CodeIssue> (action.GetIssues (context));
 		}
-		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+
+		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
+			using (var script = ctx.StartScript ())
+				issue.Action.Run (script);
+			Assert.AreEqual (expectedOutput, ctx.Text);
 		}
 	}
+	
 }

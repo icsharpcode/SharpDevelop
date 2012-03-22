@@ -1,10 +1,10 @@
-﻿// 
-// ContextActionTestBase.cs
+// 
+// Severity.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,39 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Threading;
-using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.ContextActions
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class ContextActionTestBase
+	/// <summary>
+	/// The severity influences how the task bar reacts on found issues.
+	/// </summary>
+	public enum Severity
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
-		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
+		/// <summary>
+		/// None means that the task bar doesn't show the issue.
+		/// </summary>
+		None,
 
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
-			}
+		/// <summary>
+		/// Errors are shown in red and that the task bar is in error state if 1 error is found.
+		/// </summary>
+		Error,
 
-			return context.doc.Text;
-		}
-		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
-		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
-		}
+		/// <summary>
+		/// Warnings are shown in yellow and set the task bar to warning state (if no error is found).
+		/// </summary>
+		Warning,
+
+		/// <summary>
+		/// Suggestions are shown in green and doesn't influence the task bar state
+		/// </summary>
+		Suggestion,
+
+		/// <summary>
+		/// Hints are shown in blue and doesn't influence the task bar state
+		/// </summary>
+		Hint
 	}
 }
+

@@ -1,10 +1,10 @@
-﻿// 
-// ContextActionTestBase.cs
+// 
+// GatherVisitorBase.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,41 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Threading;
-using System.Linq;
+using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.CSharp.ContextActions
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class ContextActionTestBase
+	class GatherVisitorBase : DepthFirstAstVisitor
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
+		protected readonly BaseRefactoringContext ctx;
+
+		public readonly List<CodeIssue> FoundIssues = new List<CodeIssue> ();
+
+		public GatherVisitorBase (BaseRefactoringContext ctx)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
-			}
-
-			return context.doc.Text;
+			this.ctx = ctx;
 		}
 		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+		protected override void VisitChildren (AstNode node)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
+			if (ctx.CancellationToken.IsCancellationRequested)
+				return;
+			base.VisitChildren (node);
+		}
+		
+		protected void AddIssue(AstNode node, string title, System.Action<Script> fix = null)
+		{
+			FoundIssues.Add(new CodeIssue (title, node.StartLocation, node.EndLocation, fix != null ? new CodeAction (title, fix) : null));
+		}
+
+		protected void AddIssue(TextLocation start, TextLocation end, string title, System.Action<Script> fix = null)
+		{
+			FoundIssues.Add(new CodeIssue (title, start, end, fix != null ? new CodeAction (title, fix) : null));
 		}
 	}
+		
+	
 }
+

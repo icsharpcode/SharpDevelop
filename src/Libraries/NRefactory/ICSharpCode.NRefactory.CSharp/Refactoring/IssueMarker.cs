@@ -1,10 +1,10 @@
-﻿// 
-// ContextActionTestBase.cs
+// 
+// IssueMarker.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Threading;
-using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.ContextActions
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class ContextActionTestBase
+	/// <summary>
+	/// The issue marker is used to set how an issue should be marked inside the text editor.
+	/// </summary>
+	public enum IssueMarker
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
-		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
+		/// <summary>
+		/// The issue is not shown inside the text editor. (But in the task bar)
+		/// </summary>
+		None,
 
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
-			}
+		/// <summary>
+		/// The region is marked as underline in the severity color.
+		/// </summary>
+		Underline,
 
-			return context.doc.Text;
-		}
-		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
-		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
-		}
+		/// <summary>
+		/// The text is grayed out.
+		/// </summary>
+		GrayOut
 	}
+
 }
+

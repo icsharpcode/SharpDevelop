@@ -1,10 +1,10 @@
 ﻿// 
-// ContextActionTestBase.cs
+// RemoveBraces.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Threading;
 using System.Linq;
+using System.Threading;
+using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.CSharp.ContextActions
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class ContextActionTestBase
+	[ContextAction("Remove braces", Description = "Removes redundant braces around a statement.")]
+	public class RemoveBraces : ICodeActionProvider
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
+		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
+			var block = GetBlockStatement(context);
+			if (block == null) {
+				yield break;
 			}
 
-			return context.doc.Text;
+			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+				script.Remove(block.LBraceToken);
+				script.Remove(block.RBraceToken);
+				script.FormatText(block.Parent);
+			});
 		}
 		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+		static BlockStatement GetBlockStatement (RefactoringContext context)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
+			var block = context.GetNode<BlockStatement> ();
+			if (block == null || block.LBraceToken.IsNull || block.RBraceToken.IsNull)
+				return null;
+			if (!(block.Parent is Statement)) 
+				return null;
+			if (block.Statements.Count != 1)
+				return null;
+			return block;
 		}
 	}
 }

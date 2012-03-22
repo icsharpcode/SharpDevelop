@@ -1261,7 +1261,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 					var isAsWrapper = new CompletionDataWrapper (this);
-					AddTypesAndNamespaces(isAsWrapper, GetState(), null, t => isAsType == null || t.GetDefinition().IsDerivedFrom(isAsType.GetDefinition()), m => false);
+					var def = isAsType != null ? isAsType.GetDefinition() : null;
+					AddTypesAndNamespaces(isAsWrapper, GetState(), null, t => t.GetDefinition() == null || def == null || t.GetDefinition().IsDerivedFrom(def), m => false);
 					return isAsWrapper.Result;
 //					{
 //						CompletionDataList completionList = new ProjectDomCompletionDataList ();

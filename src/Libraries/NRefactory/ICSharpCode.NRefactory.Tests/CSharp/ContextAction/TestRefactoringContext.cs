@@ -39,7 +39,7 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
-	class TestRefactoringContext : RefactoringContext
+	public class TestRefactoringContext : RefactoringContext
 	{
 		internal readonly IDocument doc;
 		readonly TextLocation location;
@@ -70,8 +70,16 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			{
 				this.eolMarker = context.EolMarker;
 			}
+			
+			public override void Link (params AstNode[] nodes)
+			{
+				// check that all links are valid.
+				foreach (var node in nodes) {
+					Assert.IsNotNull (GetSegment (node));
+				}
+			}
 		}
-		
+
 		#region Text stuff
 		public override string EolMarker { get { return Environment.NewLine; } }
 
@@ -112,7 +120,11 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			return doc.GetLineByOffset (offset);
 		}
 		#endregion
-		
+		public string Text {
+			get {
+				return doc.Text;
+			}
+		}
 		public static TestRefactoringContext Create(string content)
 		{
 			int idx = content.IndexOf ("$");

@@ -1,10 +1,10 @@
-﻿// 
-// ContextActionTestBase.cs
+// 
+// CodeAction.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2011 Xamarin Inc.
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Threading;
-using System.Linq;
 
-namespace ICSharpCode.NRefactory.CSharp.ContextActions
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class ContextActionTestBase
+	public class CodeAction
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
-		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
-			}
-
-			return context.doc.Text;
+		public string Description {
+			get;
+			private set;
 		}
-		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+
+		public Action<Script> Run {
+			get;
+			private set;
+		}
+
+		public CodeAction (string description, Action<Script> action)
 		{
-			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.GetActions (context).Any ();
-			if (!isValid)
-				Console.WriteLine ("invalid node is:" + context.GetNode ());
-			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
+			if (action == null) {
+				throw new ArgumentNullException ("action");
+			}
+			if (description == null) {
+				throw new ArgumentNullException ("description");
+			}
+			Description = description;
+			Run = action;
 		}
 	}
 }
+
