@@ -33,6 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 	[TestFixture]
 	public class GenerateGetterTests : ContextActionTestBase
 	{
+		[Ignore("Implement missing feature")]
 		[Test()]
 		public void Test ()
 		{

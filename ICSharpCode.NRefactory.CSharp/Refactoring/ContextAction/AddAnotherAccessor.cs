@@ -44,10 +44,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return pdecl.Setter.IsNull || pdecl.Getter.IsNull;
 		}
 		
-		public void Run (RefactoringContext context)
+		public void Run(RefactoringContext context)
 		{
-			var pdecl = GetPropertyDeclaration (context);
-			var accessorStatement = BuildAccessorStatement (context, pdecl);
+			var pdecl = GetPropertyDeclaration(context);
+			var accessorStatement = BuildAccessorStatement(context, pdecl);
 			
 			Accessor accessor = new Accessor () {
 				Body = new BlockStatement { accessorStatement }
@@ -57,9 +57,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			using (var script = context.StartScript ()) {
 				if (pdecl.Setter.IsNull && !pdecl.Getter.IsNull) {
-					script.InsertBefore (pdecl.RBraceToken, accessor);
+					script.InsertBefore(pdecl.RBraceToken, accessor);
+				} else if (pdecl.Getter.IsNull && !pdecl.Setter.IsNull) {
+					script.InsertBefore(pdecl.Setter, accessor);
 				} else {
-					script.InsertBefore (pdecl.Getter, accessor);
+					script.InsertBefore(pdecl.Getter, accessor);
 				}
 				script.Select (accessorStatement);
 				script.FormatText (pdecl);
