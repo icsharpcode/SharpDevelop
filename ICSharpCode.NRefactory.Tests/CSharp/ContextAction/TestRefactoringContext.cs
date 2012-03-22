@@ -39,7 +39,7 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
-	class TestRefactoringContext : RefactoringContext
+	public class TestRefactoringContext : RefactoringContext
 	{
 		internal readonly IDocument doc;
 		readonly TextLocation location;
@@ -112,7 +112,11 @@ namespace ICSharpCode.NRefactory.CSharp.ContextActions
 			return doc.GetLineByOffset (offset);
 		}
 		#endregion
-		
+		public string Text {
+			get {
+				return doc.Text;
+			}
+		}
 		public static TestRefactoringContext Create(string content)
 		{
 			int idx = content.IndexOf ("$");

@@ -71,9 +71,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="nunit.framework, Version=2.6.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+    <Reference Include="nunit.framework">
       <HintPath>..\..\Mono.Cecil\Test\libs\nunit-2.5.10\nunit.framework.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +237,16 @@
     <Compile Include="CSharp\ContextAction\AddAnotherAccessorTests.cs" />
     <Compile Include="CSharp\ContextAction\RemoveRegionTests.cs" />
     <Compile Include="CSharp\ContextAction\GeneratePropertyTests.cs" />
+    <Compile Include="CSharp\Inspector\ConditionalToNullCoalescingInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\InspectionActionTestBase.cs" />
+    <Compile Include="CSharp\Inspector\NotImplementedExceptionInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\RedundantInternalInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\RedundantNamespaceUsageInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\RedundantPrivateInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\RedundantThisInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\RedundantUsingInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\StringIsNullOrEmptyInspectorTests.cs" />
+    <Compile Include="CSharp\Inspector\UseVarKeywordInspectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -264,6 +273,7 @@
     <Folder Include="CSharp\" />
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\ContextAction\" />
+    <Folder Include="CSharp\Inspector\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
