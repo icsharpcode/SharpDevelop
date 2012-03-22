@@ -47,17 +47,15 @@ namespace ICSharpCode.NRefactory.CSharp.Inspector
 			TestRefactoringContext context;
 			var issues = GetIssues (new ConditionalToNullCoalescingInspector (), input, out context);
 			Assert.AreEqual (1, issues.Count);
-			
-			issues [0].Fix ();
 
-			var output = @"class Foo
+			CheckFix (context, issues [0], @"class Foo
 {
 	void Bar (string str)
 	{
 		string c = str ?? ""default"";
 	}
-}";
-			Assert.AreEqual (output, context.Text);
+}");
+
 		}
 
 		[Test]
@@ -74,16 +72,14 @@ namespace ICSharpCode.NRefactory.CSharp.Inspector
 			var issues = GetIssues (new ConditionalToNullCoalescingInspector (), input, out context);
 			Assert.AreEqual (1, issues.Count);
 			
-			issues [0].Fix ();
-
-			var output = @"class Foo
+			CheckFix (context, issues [0], @"class Foo
 {
 	void Bar (string str)
 	{
 		string c = str ?? ""default"";
 	}
-}";
-			Assert.AreEqual (output, context.Text);
+}");
+
 		}
 
 		[Test]
@@ -100,16 +96,13 @@ namespace ICSharpCode.NRefactory.CSharp.Inspector
 			var issues = GetIssues (new ConditionalToNullCoalescingInspector (), input, out context);
 			Assert.AreEqual (1, issues.Count);
 			
-			issues [0].Fix ();
-
-			var output = @"class Foo
+			CheckFix (context, issues [0], @"class Foo
 {
 	void Bar (string str)
 	{
 		string c = str ?? ""default"";
 	}
-}";
-			Assert.AreEqual (output, context.Text);
+}");
 		}
 
 		[Test]
@@ -126,16 +119,13 @@ namespace ICSharpCode.NRefactory.CSharp.Inspector
 			var issues = GetIssues (new ConditionalToNullCoalescingInspector (), input, out context);
 			Assert.AreEqual (1, issues.Count);
 			
-			issues [0].Fix ();
-
-			var output = @"class Foo
+			CheckFix (context, issues [0], @"class Foo
 {
 	void Bar (string str)
 	{
 		string c = str ?? ""default"";
 	}
-}";
-			Assert.AreEqual (output, context.Text);
+}");
 		}
 
 	}

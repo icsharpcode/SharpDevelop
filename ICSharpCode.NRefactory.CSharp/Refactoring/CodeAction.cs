@@ -1,5 +1,5 @@
 // 
-// InspectionActionTestBase.cs
+// CodeAction.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,31 +23,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
-using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class InspectionActionTestBase
+	public class CodeAction
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
-		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
+		public string Description {
+			get;
+			private set;
 		}
 
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
+		public Action<Script> Run {
+			get;
+			private set;
+		}
+
+		public CodeAction (string description, Action<Script> action)
 		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
+			if (action == null) {
+				throw new ArgumentNullException ("action");
+			}
+			if (description == null) {
+				throw new ArgumentNullException ("description");
+			}
+			Description = description;
+			Run = action;
 		}
 	}
-	
 }
+

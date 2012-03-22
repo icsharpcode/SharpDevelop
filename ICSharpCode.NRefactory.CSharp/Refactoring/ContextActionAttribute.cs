@@ -1,5 +1,5 @@
 // 
-// InspectionActionTestBase.cs
+// ProviderDescriptionAttribute.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,31 +23,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
-using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class InspectionActionTestBase
+	public class ContextActionAttribute : System.Attribute
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
-		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
-		}
+		public string Title { get; private set;}
+		public string Description { get; set; }
+		public string Category { get; set; }
 
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
+		public ContextActionAttribute (string title)
 		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
+			Title = title;
 		}
 	}
-	
 }
+

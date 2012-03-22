@@ -1,5 +1,5 @@
 // 
-// InspectionActionTestBase.cs
+// IssueMarker.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,31 +23,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
-using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class InspectionActionTestBase
+	/// <summary>
+	/// The issue marker is used to set how an issue should be marked inside the text editor.
+	/// </summary>
+	public enum IssueMarker
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
-		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
-		}
+		/// <summary>
+		/// The issue is not shown inside the text editor. (But in the task bar)
+		/// </summary>
+		None,
 
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
-		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
-		}
+		/// <summary>
+		/// The region is marked as underline in the severity color.
+		/// </summary>
+		Underline,
+
+		/// <summary>
+		/// The text is grayed out.
+		/// </summary>
+		GrayOut
 	}
-	
+
 }
+

@@ -1,10 +1,10 @@
-// 
-// InspectionActionTestBase.cs
+﻿// 
+// RemoveBraces.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,40 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
+using System.Linq;
+using System.Threading;
 using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class InspectionActionTestBase
+	[ContextAction("Remove braces", Description = "Removes redundant braces around a statement.")]
+	public class RemoveBraces : ICodeActionProvider
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
+		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
-		}
+			var block = GetBlockStatement(context);
+			if (block == null) {
+				yield break;
+			}
 
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
+			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+				script.Remove(block.LBraceToken);
+				script.Remove(block.RBraceToken);
+				script.FormatText(block.Parent);
+			});
+		}
+		
+		static BlockStatement GetBlockStatement (RefactoringContext context)
 		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
+			var block = context.GetNode<BlockStatement> ();
+			if (block == null || block.LBraceToken.IsNull || block.RBraceToken.IsNull)
+				return null;
+			if (!(block.Parent is Statement)) 
+				return null;
+			if (block.Statements.Count != 1)
+				return null;
+			return block;
 		}
 	}
-	
 }

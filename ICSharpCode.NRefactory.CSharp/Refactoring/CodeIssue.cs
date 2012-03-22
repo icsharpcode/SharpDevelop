@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class CodeIssue
 	{
-		public string Title {
+		public string Desription {
 			get;
 			private set;
 		}
@@ -44,17 +44,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			private set;
 		}
 
-		public System.Action Fix {
+		public CodeAction Action {
 			get;
 			private set;
 		}
 
-		public CodeIssue (string title, TextLocation start, TextLocation end, System.Action fix)
+		public CodeIssue (string description, TextLocation start, TextLocation end, CodeAction action = null)
 		{
-			this.Title = title;
-			this.Start = start;
-			this.End = end;
-			this.Fix = fix;
+			Desription = description;
+			Start = start;
+			End = end;
+			Action = action;
 		}
 	}
 }

@@ -1,5 +1,5 @@
 // 
-// InspectionActionTestBase.cs
+// IssueCategories.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,31 +23,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
-using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class InspectionActionTestBase
+	public class IssueCategories
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
-		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
-		}
-
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
-		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
-		}
+		public const string Improvements      = "Code Improvements";
+		public const string CodeQualityIssues = "Code Quality Issues";
+		public const string ConstraintViolations = "Constraint Violations";
+		public const string Redundancies = "Redundancies";
+		public const string Opportunities = "Language Usage Opportunities";
+		public const string Notifications = "Code Notifications";
 	}
-	
 }
+
+

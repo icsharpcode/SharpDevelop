@@ -1,10 +1,10 @@
-// 
-// InspectionActionTestBase.cs
+﻿// 
+// ReplaceEmptyString.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
+using System.Threading;
 using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class InspectionActionTestBase
+	[ContextAction("Use string.Empty", Description = "Replaces \"\" with string.Empty")]
+	public class ReplaceEmptyString : ICodeActionProvider
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
+		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
+			var expr = GetEmptyString(context);
+			if (expr == null) {
+				yield break;
+			}
+			yield return new CodeAction (context.TranslateString("Remove braces"), script => {
+				script.Replace(expr, new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "Empty"));
+			});
 		}
-
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
+		
+		static PrimitiveExpression GetEmptyString (RefactoringContext context)
 		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
+			var node = context.GetNode<PrimitiveExpression> ();
+			if (node == null || !(node.Value is string) || node.Value.ToString () != "")
+				return null;
+			return  node;
 		}
 	}
-	
 }

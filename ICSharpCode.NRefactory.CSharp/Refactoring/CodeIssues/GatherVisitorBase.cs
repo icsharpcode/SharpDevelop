@@ -1,10 +1,10 @@
 // 
-// InspectionActionTestBase.cs
+// GatherVisitorBase.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2012 Xamarin <http://xamarin.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,41 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
 using System;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
 using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class InspectionActionTestBase
+	class GatherVisitorBase : DepthFirstAstVisitor
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
+		protected readonly BaseRefactoringContext ctx;
+
+		public readonly List<CodeIssue> FoundIssues = new List<CodeIssue> ();
+
+		public GatherVisitorBase (BaseRefactoringContext ctx)
 		{
-			context = TestRefactoringContext.Create (input);
-			
-			return new List<CodeIssue> (action.GetIssues (context));
+			this.ctx = ctx;
+		}
+		
+		protected override void VisitChildren (AstNode node)
+		{
+			if (ctx.CancellationToken.IsCancellationRequested)
+				return;
+			base.VisitChildren (node);
+		}
+		
+		protected void AddIssue(AstNode node, string title, System.Action<Script> fix = null)
+		{
+			FoundIssues.Add(new CodeIssue (title, node.StartLocation, node.EndLocation, fix != null ? new CodeAction (title, fix) : null));
 		}
 
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
+		protected void AddIssue(TextLocation start, TextLocation end, string title, System.Action<Script> fix = null)
 		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
+			FoundIssues.Add(new CodeIssue (title, start, end, fix != null ? new CodeAction (title, fix) : null));
 		}
 	}
+		
 	
 }
+

@@ -1,10 +1,10 @@
-// 
-// InspectionActionTestBase.cs
+﻿// 
+// ConvertHexToDec.cs
 //  
 // Author:
-//       Mike Krüger <mkrueger@xamarin.com>
+//       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+// Copyright (c) 2011 Mike Krüger <mkrueger@novell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-
-using System;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.CSharp.ContextActions;
+using System.Threading;
 using System.Collections.Generic;
-using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.CSharp.Inspector
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class InspectionActionTestBase
+	/// <summary>
+	/// Convert a hex numer to dec. For example: 0x10 -> 16
+	/// </summary>
+	[ContextAction("Convert hex to dec.", Description = "Convert hex to dec.")]
+	public class ConvertHexToDec: ICodeActionProvider
 	{
-		protected static List<CodeIssue> GetIssues (ICodeIssueProvider action, string input, out TestRefactoringContext context)
+		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			context = TestRefactoringContext.Create (input);
+			var pexpr = context.GetNode<PrimitiveExpression>();
+			if (pexpr == null || !pexpr.LiteralValue.StartsWith("0X", System.StringComparison.OrdinalIgnoreCase)) {
+				yield break;
+			}
+			if (!((pexpr.Value is int) || (pexpr.Value is long) || (pexpr.Value is short) || (pexpr.Value is sbyte) ||
+				(pexpr.Value is uint) || (pexpr.Value is ulong) || (pexpr.Value is ushort) || (pexpr.Value is byte))) {
+				yield break;
+			}
 			
-			return new List<CodeIssue> (action.GetIssues (context));
-		}
-
-		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
-		{
-			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
-			Assert.AreEqual (expectedOutput, ctx.Text);
+			yield return new CodeAction (context.TranslateString("Add null check for parameter"), script => {
+				script.Replace(pexpr, new PrimitiveExpression (pexpr.Value));
+			});
 		}
 	}
-	
 }

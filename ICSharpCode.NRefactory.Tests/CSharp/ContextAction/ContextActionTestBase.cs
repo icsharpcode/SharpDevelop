@@ -28,28 +28,31 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Threading;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.ContextActions
 {
 	public abstract class ContextActionTestBase
 	{
-		protected static string RunContextAction (IContextAction action, string input)
+		protected static string RunContextAction (ICodeActionProvider action, string input)
 		{
 			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.IsValid (context);
+			bool isValid = action.GetActions (context).Any ();
+
 			if (!isValid)
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
 			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
-			
-			action.Run (context);
-			
+			using (var script = context.StartScript ()) {
+				action.GetActions (context).First ().Run (script);
+			}
+
 			return context.doc.Text;
 		}
 		
-		protected static void TestWrongContext (IContextAction action, string input)
+		protected static void TestWrongContext (ICodeActionProvider action, string input)
 		{
 			var context = TestRefactoringContext.Create (input);
-			bool isValid = action.IsValid (context);
+			bool isValid = action.GetActions (context).Any ();
 			if (!isValid)
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
 			Assert.IsTrue (!isValid, action.GetType () + " shouldn't be valid there.");
