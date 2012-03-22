@@ -33,8 +33,8 @@ namespace CSharpBinding
 		
 		ITextEditor editor;
 		CSharpSemanticHighlighter semanticHighlighter;
-		InspectionManager inspectionManager;
-		IList<IContextActionsProvider> contextActionProviders;
+		//InspectionManager inspectionManager;
+		IList<IContextActionProvider> contextActionProviders;
 		
 		public override void Attach(ITextEditor editor)
 		{
@@ -45,11 +45,11 @@ namespace CSharpBinding
 				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter);
 				highlighter.AddAdditionalHighlighter(semanticHighlighter);
 			}
-			inspectionManager = new InspectionManager(editor);
+			//inspectionManager = new InspectionManager(editor);
 			//codeManipulation = new CodeManipulation(editor);
 			
 			if (!editor.ContextActionProviders.IsReadOnly) {
-				contextActionProviders = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
+				contextActionProviders = AddInTree.BuildItems<IContextActionProvider>("/SharpDevelop/ViewContent/TextEditor/C#/ContextActions", null);
 				editor.ContextActionProviders.AddRange(contextActionProviders);
 			}
 		}
@@ -63,10 +63,10 @@ namespace CSharpBinding
 				semanticHighlighter.Dispose();
 				semanticHighlighter = null;
 			}
-			if (inspectionManager != null) {
-				inspectionManager.Dispose();
-				inspectionManager = null;
-			}
+//			if (inspectionManager != null) {
+//				inspectionManager.Dispose();
+//				inspectionManager = null;
+//			}
 			if (contextActionProviders != null) {
 				editor.ContextActionProviders.RemoveWhere(contextActionProviders.Contains);
 			}

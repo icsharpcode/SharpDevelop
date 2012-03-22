@@ -29,20 +29,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			return PropertyService.Get(PropertyServiceKey, new List<string>());
 		}
 		
-		static void SaveProviderVisibilities(IEnumerable<IContextActionsProvider> providers)
+		static void SaveProviderVisibilities(IEnumerable<IContextActionProvider> providers)
 		{
 			List<string> disabledProviders = providers.Where(p => !p.IsVisible).Select(p => p.ID).ToList();
 			PropertyService.Set(PropertyServiceKey, disabledProviders);
 		}
 		
-		readonly IList<IContextActionsProvider> providers;
+		readonly IList<IContextActionProvider> providers;
 		readonly EditorRefactoringContext editorContext;
 		
 		public EditorRefactoringContext EditorContext {
 			get { return editorContext; }
 		}
 		
-		public EditorActionsProvider(EditorRefactoringContext editorContext, IList<IContextActionsProvider> providers)
+		public EditorActionsProvider(EditorRefactoringContext editorContext, IList<IContextActionProvider> providers)
 		{
 			if (editorContext == null)
 				throw new ArgumentNullException("editorContext");
@@ -69,7 +69,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		public void SetVisible(IContextAction action, bool isVisible)
 		{
-			IContextActionsProvider provider;
+			IContextActionProvider provider;
 			if (providerForAction.TryGetValue(action, out provider)) {
 				provider.IsVisible = isVisible;
 			}
@@ -79,12 +79,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		/// <summary>
 		/// For every returned action remembers its provider for so that SetVisible can work.
 		/// </summary>
-		Dictionary<IContextAction, IContextActionsProvider> providerForAction = new Dictionary<IContextAction, IContextActionsProvider>();
+		Dictionary<IContextAction, IContextActionProvider> providerForAction = new Dictionary<IContextAction, IContextActionProvider>();
 
 		/// <summary>
 		/// Gets actions available for current caret position in the editor.
 		/// </summary>
-		async Task<IEnumerable<IContextAction>> GetActionsAsync(IEnumerable<IContextActionsProvider> providers, CancellationToken cancellationToken)
+		async Task<IEnumerable<IContextAction>> GetActionsAsync(IEnumerable<IContextActionProvider> providers, CancellationToken cancellationToken)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
 				return EmptyList<IContextAction>.Instance;

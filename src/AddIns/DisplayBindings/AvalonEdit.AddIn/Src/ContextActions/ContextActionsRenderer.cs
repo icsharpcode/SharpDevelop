@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 	public sealed class ContextActionsRenderer : IDisposable
 	{
 		readonly CodeEditorView editorView;
-		ObservableCollection<IContextActionsProvider> providers = new ObservableCollection<IContextActionsProvider>();
+		ObservableCollection<IContextActionProvider> providers = new ObservableCollection<IContextActionProvider>();
 		
 		ITextEditor Editor { get { return this.editorView.Adapter; } }
 		
@@ -62,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 			ClosePopup();
 		}
 		
-		public IList<IContextActionsProvider> Providers {
+		public IList<IContextActionProvider> Providers {
 			get { return providers; }
 		}
 		

@@ -239,8 +239,8 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			return Enumerable.Empty<ICompletionItem>();
 		}
 		
-		public virtual IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionsProvider> ContextActionProviders {
-			get { return EmptyList<ICSharpCode.SharpDevelop.Refactoring.IContextActionsProvider>.Instance; }
+		public virtual IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionProvider> ContextActionProviders {
+			get { return EmptyList<ICSharpCode.SharpDevelop.Refactoring.IContextActionProvider>.Instance; }
 		}
 		
 		public virtual ITextEditor PrimaryView {

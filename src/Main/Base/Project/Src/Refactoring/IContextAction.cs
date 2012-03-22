@@ -13,6 +13,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public interface IContextAction
 	{
 		/// <summary>
+		/// Gets the provider that was used to create this action.
+		/// </summary>
+		IContextActionProvider Provider { get; }
+		
+		/// <summary>
 		/// Name displayed in the context actions popup.
 		/// </summary>
 		string DisplayName { get; }

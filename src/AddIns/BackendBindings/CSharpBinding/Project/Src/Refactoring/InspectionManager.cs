@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop.Parser;
 
 namespace CSharpBinding.Refactoring
 {
+	/*
 	/// <summary>
 	/// Performs code analysis in the background and creates text markers to show warnings.
 	/// </summary>
@@ -153,4 +154,5 @@ namespace CSharpBinding.Refactoring
 			cancellationTokenSource = null;
 		}
 	}
+	*/
 }

@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// <summary>
 	/// Provides a set of refactoring <see cref="ContextAction" />s.
 	/// </summary>
-	public interface IContextActionsProvider
+	public interface IContextActionProvider
 	{
 		/// <summary>
 		/// Unique identifier for the context actions provider; used to hide context actions

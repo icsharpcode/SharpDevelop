@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// Base class for implementing one context action.
 	/// Useful for implementing <see cref="IContextActionsProvider" /> that provides just one action - common scenario.
 	/// </summary>
-	public abstract class ContextAction : IContextActionsProvider, IContextAction
+	public abstract class ContextAction : IContextActionProvider, IContextAction
 	{
 		public virtual string ID {
 			get { return GetType().FullName; }
@@ -36,13 +36,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public abstract void Execute(EditorRefactoringContext context);
 		
-		async Task<IContextAction[]> IContextActionsProvider.GetAvailableActionsAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
+		async Task<IContextAction[]> IContextActionProvider.GetAvailableActionsAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (await IsAvailableAsync(context, cancellationToken).ConfigureAwait(false))
 				return new IContextAction[] { this };
 			else
 				return new IContextAction[0];
+		}
+		
+		IContextActionProvider IContextAction.Provider {
+			get { return this; }
 		}
 	}
 }

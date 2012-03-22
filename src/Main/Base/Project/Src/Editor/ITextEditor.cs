@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Gets the list of context action providers.
 		/// </summary>
-		IList<IContextActionsProvider> ContextActionProviders { get; }
+		IList<IContextActionProvider> ContextActionProviders { get; }
 	}
 	
 	public interface ITextEditorOptions : INotifyPropertyChanged

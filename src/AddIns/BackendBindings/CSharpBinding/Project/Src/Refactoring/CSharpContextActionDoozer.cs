@@ -3,18 +3,19 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpBinding.Parser;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding.Refactoring
 {
-	using NR5ContextAction = ICSharpCode.NRefactory.CSharp.Refactoring.IContextAction;
-	
 	/// <summary>
 	/// Doozer for C# context actions.
 	/// Expects a 'class' referencing an NR5 context action and provides an SD IContextActionsProvider.
@@ -27,34 +28,55 @@ namespace CSharpBinding.Refactoring
 		
 		public object BuildItem(BuildItemArgs args)
 		{
-			return new CSharpContextActionWrapper(args.AddIn, args.Codon.Properties);
+			Type providerType = args.AddIn.FindType(args.Codon.Properties["class"]);
+			if (providerType == null)
+				return null;
+			var attributes = providerType.GetCustomAttributes(typeof(ContextActionAttribute), true);
+			if (attributes.Length == 0) {
+				LoggingService.Error("[ContextAction] attribute is missing on " + providerType.FullName);
+				return null;
+			}
+			if (!typeof(ICodeActionProvider).IsAssignableFrom(providerType)) {
+				LoggingService.Error(providerType.FullName + " does nto implement ICodeActionProvider");
+				return null;
+			}
+			return new CSharpContextActionProviderWrapper((ContextActionAttribute)attributes[0], providerType);
 		}
 		
-		sealed class CSharpContextActionWrapper : ContextAction
+		sealed class CSharpContextActionProviderWrapper : IContextActionProvider
 		{
-			readonly AddIn addIn;
-			readonly string className;
-			readonly string displayName;
+			readonly ContextActionAttribute attribute;
+			readonly Type type;
 			
-			public CSharpContextActionWrapper(AddIn addIn, Properties properties)
+			public CSharpContextActionProviderWrapper(ContextActionAttribute attribute, Type type)
 			{
-				this.addIn = addIn;
-				this.className = properties["class"];
-				this.displayName = properties["displayName"];
+				this.attribute = attribute;
+				this.type = type;
 			}
 			
-			bool contextActionCreated;
-			NR5ContextAction contextAction;
+			ICodeActionProvider codeActionProvider;
 			
-			public override string ID {
-				get { return className; }
+			bool CreateCodeActionProvider()
+			{
+				lock (this) {
+					if (codeActionProvider == null) {
+						codeActionProvider = (ICodeActionProvider)Activator.CreateInstance(type);
+					}
+					return true;
+				}
 			}
 			
-			public override string DisplayName {
-				get { return StringParser.Parse(displayName); }
+			public string ID {
+				get { return type.FullName; }
 			}
 			
-			public override Task<bool> IsAvailableAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
+			public bool AllowHiding {
+				get { return true; }
+			}
+			
+			public bool IsVisible { get; set; }
+			
+			public Task<IContextAction[]> GetAvailableActionsAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
 			{
 				ITextEditor editor = context.Editor;
 				// grab SelectionStart/SelectionLength while we're still on the main thread
@@ -62,32 +84,66 @@ namespace CSharpBinding.Refactoring
 				int selectionLength = editor.SelectionLength;
 				return Task.Run(
 					async delegate {
-						CreateContextAction();
-						if (contextAction == null)
-							return false;
+						if (!CreateCodeActionProvider())
+							return new IContextAction[0];
 						CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
 						var refactoringContext = new SDRefactoringContext(context.TextSource, resolver, context.CaretLocation, selectionStart, selectionLength, cancellationToken);
-						return contextAction.IsValid(refactoringContext);
+						return codeActionProvider.GetActions(refactoringContext)
+							.Select((action, index) => new CSharpContextActionWrapper(this, action, index)).ToArray();
 					}, cancellationToken);
 			}
 			
-			void CreateContextAction()
+			internal CodeAction GetCodeAction(RefactoringContext refactoringContext, int index, string description)
 			{
-				lock (this) {
-					if (!contextActionCreated) {
-						contextActionCreated = true;
-						contextAction = (NR5ContextAction)addIn.CreateObject(className);
-					}
+				if (!CreateCodeActionProvider())
+					return null;
+				var actions = codeActionProvider.GetActions(refactoringContext).ToList();
+				if (index < actions.Count) {
+					var action = actions[index];
+					if (action.Description == description)
+						return action;
 				}
+				return null;
+			}
+		}
+		
+		sealed class CSharpContextActionWrapper : IContextAction
+		{
+			readonly CSharpContextActionProviderWrapper provider;
+			readonly int index;
+			readonly string description;
+			
+			public CSharpContextActionWrapper(CSharpContextActionProviderWrapper provider, CodeAction codeAction, int index)
+			{
+				if (provider == null)
+					throw new ArgumentNullException("provider");
+				if (codeAction == null)
+					throw new ArgumentNullException("codeAction");
+				this.provider = provider;
+				this.description = codeAction.Description;
+				this.index = index;
+				// Don't maintain a reference to 'action', it indirectly references the compilation etc.
 			}
 			
-			public override void Execute(EditorRefactoringContext context)
+			public IContextActionProvider Provider {
+				get { return provider; }
+			}
+			
+			public string DisplayName {
+				get { return description; }
+			}
+			
+			public void Execute(EditorRefactoringContext context)
 			{
-				AnalyticsMonitorService.TrackFeature(className);
+				AnalyticsMonitorService.TrackFeature(provider.ID);
 				var resolver = context.GetAstResolverAsync().Result;
 				var refactoringContext = new SDRefactoringContext(context.Editor, resolver, context.CaretLocation);
-				CreateContextAction();
-				contextAction.Run(refactoringContext);
+				var action = provider.GetCodeAction(refactoringContext, index, description);
+				if (action != null) {
+					using (var script = refactoringContext.StartScript()) {
+						action.Run(script);
+					}
+				}
 			}
 		}
 	}

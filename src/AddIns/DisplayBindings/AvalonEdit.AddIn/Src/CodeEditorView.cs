@@ -84,7 +84,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			hiddenDefinitionRenderer.Dispose();
 		}
 		
-		public IList<IContextActionsProvider> ContextActionProviders {
+		public IList<IContextActionProvider> ContextActionProviders {
 			get { return contextActionsRenderer.Providers; }
 		}
 		

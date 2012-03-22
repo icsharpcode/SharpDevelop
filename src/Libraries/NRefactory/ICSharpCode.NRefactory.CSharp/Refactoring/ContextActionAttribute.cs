@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ProviderDescriptionAttribute.cs
 //  
 // Author:

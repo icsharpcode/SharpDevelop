@@ -43,5 +43,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		{
 			NavigationService.NavigateTo(this.Entity);
 		}
+		
+		IContextActionProvider IContextAction.Provider {
+			get { return null; }
+		}
 	}
 }
