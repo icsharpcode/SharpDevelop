@@ -186,9 +186,7 @@ namespace CSharpBinding
 		
 		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
 		{
-			// TODO implement CompositeSymbolSearch to allow multiple instances to be returned, e.g., XamlSymbolSearch, etc.
-			// return CompositeSymbolSearch.Create(new XamlSymbolSearch(...), base.PrepareSymbolSearch(...))
-			return new CSharpSymbolSearch(Project, entity);
+			return CompositeSymbolSearch.Create(new CSharpSymbolSearch(Project, entity), base.PrepareSymbolSearch(entity));
 		}
 	}
 }

@@ -32,7 +32,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public override ISymbolSearch PrepareSymbolSearch(IEntity entity)
 		{
-			return new XamlSymbolSearch(entity);
+			return CompositeSymbolSearch.Create(new XamlSymbolSearch(Project, entity), base.PrepareSymbolSearch(entity));
 		}
 	}
 	

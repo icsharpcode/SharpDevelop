@@ -232,4 +232,32 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback);
 	}
+	
+	public sealed class CompositeSymbolSearch : ISymbolSearch
+	{
+		IEnumerable<ISymbolSearch> symbolSearches;
+		
+		CompositeSymbolSearch(params ISymbolSearch[] symbolSearches)
+		{
+			this.symbolSearches = symbolSearches;
+		}
+		
+		public static ISymbolSearch Create(ISymbolSearch symbolSearch1, ISymbolSearch symbolSearch2)
+		{
+			if (symbolSearch1 == null)
+				return symbolSearch2;
+			if (symbolSearch2 == null)
+				return symbolSearch1;
+			return new CompositeSymbolSearch(symbolSearch1, symbolSearch2);
+		}
+		
+		public double WorkAmount {
+			get { return symbolSearches.Sum(s => s.WorkAmount); }
+		}
+		
+		public Task FindReferencesAsync(SymbolSearchArgs searchArguments, Action<SearchedFile> callback)
+		{
+			return Task.WhenAll(symbolSearches.Select(s => s.FindReferencesAsync(searchArguments, callback)));
+		}
+	}
 }
