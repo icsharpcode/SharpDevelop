@@ -39,17 +39,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class RedundantUsingInspector : IInspector
 	{
-		string title = "Remove redundant usings";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -71,11 +60,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				usingStack.Push (new List<UsingDeclaration> ());
 			}
 
-			public void Collect ()
+			public void Collect()
 			{
 				foreach (var u in usingDeclarations.Where (u => !u.Value)) {
 					var decl = u.Key;
-					AddIssue (decl, inspector.Title, delegate {
+					AddIssue(decl, ctx.TranslateString("Remove redundant usings"), delegate {
 						using (var script = ctx.StartScript ()) {
 							foreach (var u2 in usingDeclarations.Where (a => !a.Value)) {
 								script.Remove (u2.Key);

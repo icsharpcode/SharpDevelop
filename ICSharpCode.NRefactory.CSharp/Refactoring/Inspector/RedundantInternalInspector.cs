@@ -36,17 +36,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class RedundantInternalInspector : IInspector
 	{
-		string title = "Remove redundant 'internal' modifier";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -68,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				foreach (var token_ in typeDeclaration.ModifierTokens) {
 					var token = token_;
 					if (token.Modifier == Modifiers.Internal) {
-						AddIssue(token, inspector.Title, delegate {
+						AddIssue(token, ctx.TranslateString ("Remove redundant 'internal' modifier"), delegate {
 							using (var script = ctx.StartScript ()) {
 								script.Remove(token);
 							}

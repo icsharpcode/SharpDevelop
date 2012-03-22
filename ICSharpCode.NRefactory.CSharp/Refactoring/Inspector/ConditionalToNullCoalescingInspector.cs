@@ -51,17 +51,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			),
 		};
 		
-		string title = "Convert to '??' expression";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -84,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (m.Success) {
 					var a = m.Get<Expression>("a").Single();
 					var other = m.Get<Expression>("other").Single();
-					AddIssue(conditionalExpression, inspector.Title, delegate {
+					AddIssue(conditionalExpression, ctx.TranslateString("Convert to '??' expression"), delegate {
 						using (var script = ctx.StartScript ()) {
 							var expr = new BinaryOperatorExpression (a.Clone (), BinaryOperatorType.NullCoalescing, other.Clone ());
 							script.Replace (conditionalExpression, expr);

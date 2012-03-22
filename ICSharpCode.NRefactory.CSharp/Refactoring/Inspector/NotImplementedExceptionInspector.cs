@@ -36,17 +36,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class NotImplementedExceptionInspector : IInspector
 	{
-		string title = "NotImplemented exception thrown";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -65,9 +54,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitThrowStatement(ThrowStatement throwStatement)
 			{
-				var result = ctx.Resolve (throwStatement.Expression);
-				if (result.Type.Equals (ctx.Compilation.FindType (typeof(System.NotImplementedException))))
-					AddIssue (throwStatement, inspector.Title);
+				var result = ctx.Resolve(throwStatement.Expression);
+				if (result.Type.Equals(ctx.Compilation.FindType(typeof(System.NotImplementedException)))) {
+					AddIssue(throwStatement, ctx.TranslateString("NotImplemented exception thrown"));
+				}
 
 				base.VisitThrowStatement(throwStatement);
 			}

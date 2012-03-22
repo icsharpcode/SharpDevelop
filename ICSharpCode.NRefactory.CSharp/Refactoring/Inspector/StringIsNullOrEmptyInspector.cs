@@ -65,17 +65,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				PatternHelper.CommutativeOperator(new AnyNode ("str"), BinaryOperatorType.InEquality, new NullReferenceExpression ())
 			),
 		};
-		
-		string title = "Use string.IsNullOrEmpty";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
 
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
@@ -104,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				if (m.Success) {
 					var str = m.Get<Expression>("str").Single();
-					AddIssue(binaryOperatorExpression, inspector.Title, delegate {
+					AddIssue(binaryOperatorExpression, ctx.TranslateString("Use string.IsNullOrEmpty"), delegate {
 						using (var script = ctx.StartScript ()) {
 							Expression expr = new PrimitiveType ("string").Invoke("IsNullOrEmpty", str.Clone());
 							if (isNegated)

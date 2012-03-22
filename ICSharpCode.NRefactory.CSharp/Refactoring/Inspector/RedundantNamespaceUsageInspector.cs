@@ -38,17 +38,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class RedundantNamespaceUsageInspector : IInspector
 	{
-		string title = "Remove redundant namespace usage";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -82,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var lookupName = state.LookupSimpleNameOrTypeName(memberReferenceExpression.MemberName, new List<IType> (), SimpleNameLookupMode.Expression);
 				
 				if (lookupName is TypeResolveResult && !lookupName.IsError && wholeResult.Type.Equals(lookupName.Type)) {
-					AddIssue(memberReferenceExpression.StartLocation, memberReferenceExpression.MemberNameToken.StartLocation, inspector.Title, delegate {
+					AddIssue(memberReferenceExpression.StartLocation, memberReferenceExpression.MemberNameToken.StartLocation, ctx.TranslateString ("Remove redundant namespace usage"), delegate {
 						using (var script = ctx.StartScript ()) {
 							script.Replace(memberReferenceExpression, RefactoringAstHelper.RemoveTarget(memberReferenceExpression));
 						}

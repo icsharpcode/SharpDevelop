@@ -38,17 +38,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class UseVarKeywordInspector : IInspector
 	{
-		string title = "Use 'var' keyword";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -106,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			void AddIssue(VariableDeclarationStatement variableDeclarationStatement)
 			{
-				AddIssue(variableDeclarationStatement.Type, inspector.Title);
+				AddIssue(variableDeclarationStatement.Type, ctx.TranslateString("Use 'var' keyword"));
 			}
 		}
 	}

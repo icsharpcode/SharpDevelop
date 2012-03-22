@@ -40,17 +40,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// </summary>
 	public class RedundantThisInspector : IInspector
 	{
-		string title = "Remove redundant 'this.'";
-
-		public string Title {
-			get {
-				return title;
-			}
-			set {
-				title = value;
-			}
-		}
-
 		public IEnumerable<CodeIssue> Run (BaseRefactoringContext context)
 		{
 			var visitor = new GatherVisitor (context, this);
@@ -78,23 +67,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			}
 
-			public override void VisitThisReferenceExpression (ThisReferenceExpression thisReferenceExpression)
+			public override void VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression)
 			{
-				base.VisitThisReferenceExpression (thisReferenceExpression);
+				base.VisitThisReferenceExpression(thisReferenceExpression);
 				var memberReference = thisReferenceExpression.Parent as MemberReferenceExpression;
 				if (memberReference == null) {
 					return;
 				}
 
-				var state = ctx.GetResolverStateAfter (thisReferenceExpression);
-				var wholeResult = ctx.Resolve (memberReference);
+				var state = ctx.GetResolverStateAfter(thisReferenceExpression);
+				var wholeResult = ctx.Resolve(memberReference);
 			
-				IMember member = GetMember (wholeResult);
+				IMember member = GetMember(wholeResult);
 				if (member == null) { 
 					return;
 				}
 
-				var result = state.LookupSimpleNameOrTypeName (memberReference.MemberName, EmptyList<IType>.Instance, SimpleNameLookupMode.Expression);
+				var result = state.LookupSimpleNameOrTypeName(memberReference.MemberName, EmptyList<IType>.Instance, SimpleNameLookupMode.Expression);
 			
 				bool isRedundant;
 				if (result is MemberResolveResult) {
@@ -106,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 
 				if (isRedundant) {
-					AddIssue(thisReferenceExpression.StartLocation, memberReference.MemberNameToken.StartLocation, inspector.Title, delegate {
+					AddIssue(thisReferenceExpression.StartLocation, memberReference.MemberNameToken.StartLocation, ctx.TranslateString("Remove redundant 'this.'"), delegate {
 						using (var script = ctx.StartScript ()) {
 							script.Replace(memberReference, RefactoringAstHelper.RemoveTarget(memberReference));
 						}
