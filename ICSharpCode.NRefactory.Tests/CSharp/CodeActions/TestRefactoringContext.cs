@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			get { return location; }
 		}
 		
-		public override Script StartScript ()
+		public Script StartScript ()
 		{
 			return new TestScript (this);
 		}

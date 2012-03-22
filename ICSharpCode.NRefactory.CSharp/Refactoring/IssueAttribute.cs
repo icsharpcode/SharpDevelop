@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IssueAttribute.cs
 //  
 // Author:
@@ -27,6 +27,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	[AttributeUsage(AttributeTargets.Class)]
 	public class IssueDescriptionAttribute : System.Attribute
 	{
 		public string Title { get; private set;}
