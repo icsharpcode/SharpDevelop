@@ -355,7 +355,7 @@
     <Compile Include="Src\Refactoring\ContextAction.cs" />
     <Compile Include="Src\Refactoring\EditorRefactoringContext.cs" />
     <Compile Include="Src\Refactoring\IContextAction.cs" />
-    <Compile Include="Src\Refactoring\IContextActionsProvider.cs" />
+    <Compile Include="Src\Refactoring\IContextActionProvider.cs" />
     <Compile Include="Src\Services\AmbienceService\DefaultAmbience.cs" />
     <Compile Include="Src\Services\ClassBrowserIcons\ImageSourceImage.cs" />
     <Compile Include="Src\Services\Debugger\BreakpointBookmark.cs" />

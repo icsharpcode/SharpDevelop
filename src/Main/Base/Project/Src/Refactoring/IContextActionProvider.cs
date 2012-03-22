@@ -20,6 +20,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		string ID { get; }
 		
 		/// <summary>
+		/// Gets the title for this context action provider - should be similar to the DisplayName
+		/// of the generated context actions. Displayed in the options dialog for disabling providers.
+		/// </summary>
+		string DisplayName { get; }
+		
+		/// <summary>
+		/// Gets a category for this context action provider - used to group context actions
+		/// in the options dialog.
+		/// </summary>
+		string Category { get; }
+		
+		/// <summary>
 		/// Gets actions available for current line of the editor.
 		/// </summary>
 		/// <remarks>

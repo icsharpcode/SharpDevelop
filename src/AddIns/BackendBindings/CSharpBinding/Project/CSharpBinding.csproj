@@ -66,7 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Refactoring\InspectionManager.cs" />
+    <Compile Include="Src\Refactoring\CSharpContextActionWrapper.cs" />
+    <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\SDScript.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />
@@ -78,7 +79,7 @@
     <Compile Include="Src\CSharpBracketSearcher.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\CSharpProjectBinding.cs" />
-    <Compile Include="Src\Refactoring\CSharpContextActionDoozer.cs" />
+    <Compile Include="Src\Refactoring\CSharpCodeActionProviderDoozer.cs" />
     <Compile Include="Src\Refactoring\SDRefactoringContext.cs" />
     <Compile Include="Src\CSharpSemanticHighlighter.cs" />
     <Compile Include="Src\ExtensionMethods.cs" />

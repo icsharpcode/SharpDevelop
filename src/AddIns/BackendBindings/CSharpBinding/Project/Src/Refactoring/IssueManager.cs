@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -15,29 +16,31 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace CSharpBinding.Refactoring
 {
-	/*
 	/// <summary>
 	/// Performs code analysis in the background and creates text markers to show warnings.
 	/// </summary>
-	public class InspectionManager : IDisposable
+	public class IssueManager : IDisposable, IContextActionProvider
 	{
-		static readonly Lazy<IList<IInspector>> inspectors = new Lazy<IList<IInspector>>(
-			() => AddInTree.BuildItems<IInspector>("/SharpDevelop/ViewContent/TextEditor/C#/Inspectors", null, false));
+		static readonly Lazy<IList<ICodeIssueProvider>> issueProviders = new Lazy<IList<ICodeIssueProvider>>(
+			() => AddInTree.BuildItems<ICodeIssueProvider>("/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders", null, false));
 		readonly ITextEditor editor;
 		readonly ITextMarkerService markerService;
 		
-		public InspectionManager(ITextEditor editor)
+		public IssueManager(ITextEditor editor)
 		{
 			this.editor = editor;
 			this.markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
+			editor.ContextActionProviders.Add(this);
 		}
 		
 		public void Dispose()
 		{
+			editor.ContextActionProviders.Remove(this);
 			ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
 			if (cancellationTokenSource != null)
 				cancellationTokenSource.Cancel();
@@ -46,31 +49,62 @@ namespace CSharpBinding.Refactoring
 		
 		sealed class InspectionTag
 		{
-			public readonly IInspector Inspector;
-			public readonly string Title;
+			readonly IssueManager manager;
+			public readonly ICodeIssueProvider Provider;
+			public readonly ITextSourceVersion InspectedVersion;
+			public readonly string Description;
 			public readonly int StartOffset;
 			public readonly int EndOffset;
-			public readonly bool CanFix;
+			public readonly IReadOnlyList<IContextAction> Actions;
 			
-			public InspectionTag(IInspector inspector, string title, int startOffset, int endOffset, bool canFix)
+			public InspectionTag(IssueManager manager, ICodeIssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, IEnumerable<CodeAction> actions)
 			{
-				this.Inspector = inspector;
-				this.Title = title;
+				this.manager = manager;
+				this.Provider = provider;
+				this.InspectedVersion = inspectedVersion;
+				this.Description = description;
 				this.StartOffset = startOffset;
 				this.EndOffset = endOffset;
-				this.CanFix = canFix;
+				
+				this.Actions = actions.Select(Wrap).ToList();
+			}
+			
+			IContextAction Wrap(CodeAction actionToWrap, int index)
+			{
+				// Take care not to capture 'actionToWrap' in the lambda
+				string actionDescription = actionToWrap.Description;
+				return new CSharpContextActionWrapper(
+					manager, actionToWrap,
+					context => {
+						// Look up the new issue position
+						int newStart = InspectedVersion.MoveOffsetTo(context.Version, StartOffset, AnchorMovementType.Default);
+						int newEnd = InspectedVersion.MoveOffsetTo(context.Version, EndOffset, AnchorMovementType.Default);
+						// If the length changed, don't bother looking up the issue again
+						if (newEnd - newStart != EndOffset - StartOffset)
+							return null;
+						// Now rediscover this issue in the new context
+						var issue = this.Provider.GetIssues(context).FirstOrDefault(
+							i => context.GetOffset(i.Start) == newStart && context.GetOffset(i.End) == newEnd && i.Desription == this.Description);
+						if (issue == null)
+							return null;
+						// Now look up the action within that issue:
+						if (issue.Action != null && issue.Action.Description == actionDescription)
+							return issue.Action;
+						else
+							return null;
+					});
 			}
 			
 			ITextMarker marker;
 			
-			public void CreateMarker(ITextSourceVersion inspectedVersion, IDocument document, ITextMarkerService markerService)
+			public void CreateMarker(IDocument document, ITextMarkerService markerService)
 			{
-				int startOffset = inspectedVersion.MoveOffsetTo(document.Version, this.StartOffset, AnchorMovementType.Default);
-				int endOffset = inspectedVersion.MoveOffsetTo(document.Version, this.EndOffset, AnchorMovementType.Default);
+				int startOffset = InspectedVersion.MoveOffsetTo(document.Version, this.StartOffset, AnchorMovementType.Default);
+				int endOffset = InspectedVersion.MoveOffsetTo(document.Version, this.EndOffset, AnchorMovementType.Default);
 				if (startOffset >= endOffset)
 					return;
 				marker = markerService.Create(startOffset, endOffset - startOffset);
-				marker.ToolTip = this.Title;
+				marker.ToolTip = this.Description;
 				marker.MarkerType = TextMarkerType.SquigglyUnderline;
 				marker.MarkerColor = Colors.Blue;
 				marker.Tag = this;
@@ -129,14 +163,16 @@ namespace CSharpBinding.Refactoring
 						var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
 						var resolver = parseInfo.GetResolver(compilation);
 						var context = new SDRefactoringContext(textSource, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
-						foreach (var inspector in inspectors.Value) {
-							foreach (var issue in inspector.Run(context)) {
+						foreach (var issueProvider in issueProviders.Value) {
+							foreach (var issue in issueProvider.GetIssues(context)) {
 								results.Add(new InspectionTag(
-									inspector,
-									issue.Title,
+									this,
+									issueProvider,
+									textSource.Version,
+									issue.Desription,
 									context.GetOffset(issue.Start),
 									context.GetOffset(issue.End),
-									issue.Fix != null));
+									issue.Action != null ? new [] { issue.Action } : new CodeAction[0]));
 							}
 						}
 					}, cancellationToken);
@@ -146,13 +182,47 @@ namespace CSharpBinding.Refactoring
 				analyzedVersion = textSource.Version;
 				Clear();
 				foreach (var newResult in results) {
-					newResult.CreateMarker(textSource.Version, editor.Document, markerService);
+					newResult.CreateMarker(editor.Document, markerService);
 				}
 				existingResults = results;
 			}
 			cancellationTokenSource.Dispose();
 			cancellationTokenSource = null;
 		}
+		
+		#region IContextActionProvider implementation
+		string IContextActionProvider.ID {
+			get { return "C# IssueManager"; }
+		}
+		
+		string IContextActionProvider.DisplayName {
+			get { return "C# IssueManager"; }
+		}
+		
+		string IContextActionProvider.Category {
+			get { return string.Empty; }
+		}
+		
+		bool IContextActionProvider.AllowHiding {
+			get { return false; }
+		}
+		
+		bool IContextActionProvider.IsVisible {
+			get { return true; }
+			set { }
+		}
+		
+		Task<IContextAction[]> IContextActionProvider.GetAvailableActionsAsync(EditorRefactoringContext context, CancellationToken cancellationToken)
+		{
+			List<IContextAction> result = new List<IContextAction>();
+			if (existingResults != null) {
+				var markers = markerService.GetMarkersAtOffset(context.CaretOffset);
+				foreach (var tag in markers.Select(m => m.Tag).OfType<InspectionTag>()) {
+					result.AddRange(tag.Actions);
+				}
+			}
+			return Task.FromResult(result.ToArray());
+		}
+		#endregion
 	}
-	*/
 }

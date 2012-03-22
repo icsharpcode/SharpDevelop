@@ -33,7 +33,7 @@ namespace CSharpBinding
 		
 		ITextEditor editor;
 		CSharpSemanticHighlighter semanticHighlighter;
-		//InspectionManager inspectionManager;
+		IssueManager inspectionManager;
 		IList<IContextActionProvider> contextActionProviders;
 		
 		public override void Attach(ITextEditor editor)
@@ -45,7 +45,7 @@ namespace CSharpBinding
 				semanticHighlighter = new CSharpSemanticHighlighter(editor, highlighter);
 				highlighter.AddAdditionalHighlighter(semanticHighlighter);
 			}
-			//inspectionManager = new InspectionManager(editor);
+			inspectionManager = new IssueManager(editor);
 			//codeManipulation = new CodeManipulation(editor);
 			
 			if (!editor.ContextActionProviders.IsReadOnly) {
@@ -63,10 +63,10 @@ namespace CSharpBinding
 				semanticHighlighter.Dispose();
 				semanticHighlighter = null;
 			}
-//			if (inspectionManager != null) {
-//				inspectionManager.Dispose();
-//				inspectionManager = null;
-//			}
+			if (inspectionManager != null) {
+				inspectionManager.Dispose();
+				inspectionManager = null;
+			}
 			if (contextActionProviders != null) {
 				editor.ContextActionProviders.RemoveWhere(contextActionProviders.Contains);
 			}

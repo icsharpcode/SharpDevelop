@@ -10,7 +10,7 @@
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll">
-			<Doozer name="CSharpContextAction" class="CSharpBinding.Refactoring.CSharpContextActionDoozer"/>
+			<Doozer name="CSharpCodeActionProvider" class="CSharpBinding.Refactoring.CSharpCodeActionProviderDoozer"/>
 		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = ":ICSharpCode.NRefactory.CSharp"/>
@@ -116,7 +116,7 @@
 		                class                = "CSharpBinding.CSharpProjectBinding" />
 	</Path>
 	
-	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/Inspectors">
+	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">
 		<Class id    = "ConditionalToNullCoalescingInspector"
 		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingInspector" />
 		<Class id    = "NotImplementedExceptionInspector"
@@ -138,56 +138,57 @@
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">
-		<!-- TODO: translate -->
-		<CSharpContextAction id = "AddAnotherAccessor"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.AddAnotherAccessor" />
-		<CSharpContextAction id = "CheckIfParameterIsNull"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CheckIfParameterIsNull" />
-		<CSharpContextAction id = "ConvertDecToHex"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertDecToHex" />
-		<CSharpContextAction id = "ConvertHexToDec"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertHexToDec" />
-		<CSharpContextAction id = "ConvertForeachToFor"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertForeachToFor" />
-		<CSharpContextAction id = "CreateBackingStore"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateBackingStore" />
-		<CSharpContextAction id = "CreateEventInvocator"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocator" />
-		<CSharpContextAction id = "CreateField"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateField" />
-		<CSharpContextAction id = "CreateLocalVariable"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariable" />
-		<CSharpContextAction id = "CreateProperty"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateProperty" />
-		<CSharpContextAction id = "FlipOperatorArguments"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.FlipOperatorArguments" />
-		<CSharpContextAction id = "GenerateGetter"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter" />
-		<CSharpContextAction id = "GenerateProperty"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />
-		<CSharpContextAction id = "GenerateSwitchLabels"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateSwitchLabels" />
-		<CSharpContextAction id = "InsertAnonymousMethodSignature"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.InsertAnonymousMethodSignature" />
-		<CSharpContextAction id = "IntroduceFormatItem"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceFormatItem" />
-		<CSharpContextAction id = "InvertIf"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.InvertIf" />
-		<CSharpContextAction id = "RemoveBackingStore"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBackingStore" />
-		<CSharpContextAction id = "RemoveBraces"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBraces" />
-		<CSharpContextAction id = "RemoveRegion"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />
-		<CSharpContextAction id = "ReplaceEmptyString"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.ReplaceEmptyString" />
-		<CSharpContextAction id = "SplitDeclarationAndAssignment"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitDeclarationAndAssignment" />
-		<CSharpContextAction id = "SplitString"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitString" />
-		<CSharpContextAction id = "UseExplicitType"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseExplicitType" />
-		<CSharpContextAction id = "UseVarKeyword"
-			class       = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeyword" />
+		<!-- In this path, you can add SD context action providers using <Class>,
+		     or you can add NR5 code action providers using <CSharpCodeActionProvider> -->
+		<CSharpCodeActionProvider id = "AddAnotherAccessor"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddAnotherAccessor" />
+		<CSharpCodeActionProvider id = "CheckIfParameterIsNull"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CheckIfParameterIsNull" />
+		<CSharpCodeActionProvider id = "ConvertDecToHex"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertDecToHex" />
+		<CSharpCodeActionProvider id = "ConvertHexToDec"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertHexToDec" />
+		<CSharpCodeActionProvider id = "ConvertForeachToFor"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConvertForeachToFor" />
+		<CSharpCodeActionProvider id = "CreateBackingStore"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateBackingStore" />
+		<CSharpCodeActionProvider id = "CreateEventInvocator"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocator" />
+		<CSharpCodeActionProvider id = "CreateField"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateField" />
+		<CSharpCodeActionProvider id = "CreateLocalVariable"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariable" />
+		<CSharpCodeActionProvider id = "CreateProperty"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateProperty" />
+		<CSharpCodeActionProvider id = "FlipOperatorArguments"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.FlipOperatorArguments" />
+		<CSharpCodeActionProvider id = "GenerateGetter"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateGetter" />
+		<CSharpCodeActionProvider id = "GenerateProperty"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateProperty" />
+		<CSharpCodeActionProvider id = "GenerateSwitchLabels"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateSwitchLabels" />
+		<CSharpCodeActionProvider id = "InsertAnonymousMethodSignature"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.InsertAnonymousMethodSignature" />
+		<CSharpCodeActionProvider id = "IntroduceFormatItem"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceFormatItem" />
+		<CSharpCodeActionProvider id = "InvertIf"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.InvertIf" />
+		<CSharpCodeActionProvider id = "RemoveBackingStore"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBackingStore" />
+		<CSharpCodeActionProvider id = "RemoveBraces"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveBraces" />
+		<CSharpCodeActionProvider id = "RemoveRegion"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.RemoveRegion" />
+		<CSharpCodeActionProvider id = "ReplaceEmptyString"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.ReplaceEmptyString" />
+		<CSharpCodeActionProvider id = "SplitDeclarationAndAssignment"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitDeclarationAndAssignment" />
+		<CSharpCodeActionProvider id = "SplitString"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.SplitString" />
+		<CSharpCodeActionProvider id = "UseExplicitType"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseExplicitType" />
+		<CSharpCodeActionProvider id = "UseVarKeyword"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.UseVarKeyword" />
 	</Path>
 </AddIn>

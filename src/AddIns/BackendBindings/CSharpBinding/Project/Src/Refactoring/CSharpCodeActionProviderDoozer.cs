@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace CSharpBinding.Refactoring
 	/// Doozer for C# context actions.
 	/// Expects a 'class' referencing an NR5 context action and provides an SD IContextActionsProvider.
 	/// </summary>
-	public class CSharpContextActionDoozer : IDoozer
+	public class CSharpCodeActionProviderDoozer : IDoozer
 	{
 		public bool HandleConditions {
 			get { return false; }
@@ -70,6 +71,14 @@ namespace CSharpBinding.Refactoring
 				get { return type.FullName; }
 			}
 			
+			public string DisplayName {
+				get { return attribute.Title; }
+			}
+			
+			public string Category {
+				get { return attribute.Category; }
+			}
+			
 			public bool AllowHiding {
 				get { return true; }
 			}
@@ -88,62 +97,25 @@ namespace CSharpBinding.Refactoring
 							return new IContextAction[0];
 						CSharpAstResolver resolver = await context.GetAstResolverAsync().ConfigureAwait(false);
 						var refactoringContext = new SDRefactoringContext(context.TextSource, resolver, context.CaretLocation, selectionStart, selectionLength, cancellationToken);
-						return codeActionProvider.GetActions(refactoringContext)
-							.Select((action, index) => new CSharpContextActionWrapper(this, action, index)).ToArray();
+						return codeActionProvider.GetActions(refactoringContext).Select(Wrap).ToArray();
 					}, cancellationToken);
 			}
 			
-			internal CodeAction GetCodeAction(RefactoringContext refactoringContext, int index, string description)
+			IContextAction Wrap(CodeAction actionToWrap, int index)
 			{
-				if (!CreateCodeActionProvider())
-					return null;
-				var actions = codeActionProvider.GetActions(refactoringContext).ToList();
-				if (index < actions.Count) {
-					var action = actions[index];
-					if (action.Description == description)
-						return action;
-				}
-				return null;
-			}
-		}
-		
-		sealed class CSharpContextActionWrapper : IContextAction
-		{
-			readonly CSharpContextActionProviderWrapper provider;
-			readonly int index;
-			readonly string description;
-			
-			public CSharpContextActionWrapper(CSharpContextActionProviderWrapper provider, CodeAction codeAction, int index)
-			{
-				if (provider == null)
-					throw new ArgumentNullException("provider");
-				if (codeAction == null)
-					throw new ArgumentNullException("codeAction");
-				this.provider = provider;
-				this.description = codeAction.Description;
-				this.index = index;
-				// Don't maintain a reference to 'action', it indirectly references the compilation etc.
-			}
-			
-			public IContextActionProvider Provider {
-				get { return provider; }
-			}
-			
-			public string DisplayName {
-				get { return description; }
-			}
-			
-			public void Execute(EditorRefactoringContext context)
-			{
-				AnalyticsMonitorService.TrackFeature(provider.ID);
-				var resolver = context.GetAstResolverAsync().Result;
-				var refactoringContext = new SDRefactoringContext(context.Editor, resolver, context.CaretLocation);
-				var action = provider.GetCodeAction(refactoringContext, index, description);
-				if (action != null) {
-					using (var script = refactoringContext.StartScript()) {
-						action.Run(script);
-					}
-				}
+				// Take care not to capture 'actionToWrap' in the lambda
+				string description = actionToWrap.Description;
+				return new CSharpContextActionWrapper(
+					this, actionToWrap,
+					context => {
+						var actions = codeActionProvider.GetActions(context).ToList();
+						if (index < actions.Count) {
+							var action = actions[index];
+							if (action.Description == description)
+								return action;
+						}
+						return null;
+					});
 			}
 		}
 	}

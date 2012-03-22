@@ -102,6 +102,10 @@ namespace CSharpBinding.Refactoring
 			return textSource.GetText(segment);
 		}
 		
+		public ITextSourceVersion Version {
+			get { return textSource.Version; }
+		}
+		
 		public override IDocumentLine GetLineByOffset(int offset)
 		{
 			if (document == null)

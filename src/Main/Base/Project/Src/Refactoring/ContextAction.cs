@@ -22,6 +22,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public abstract string DisplayName { get; }
 		
+		public virtual string Category {
+			get { return string.Empty; }
+		}
+		
 		public bool IsVisible { get; set; }
 		
 		public virtual bool AllowHiding {

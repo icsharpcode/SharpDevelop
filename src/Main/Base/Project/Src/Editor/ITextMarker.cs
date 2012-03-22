@@ -107,5 +107,10 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Removes all text markers that match the condition.
 		/// </summary>
 		void RemoveAll(Predicate<ITextMarker> predicate);
+		
+		/// <summary>
+		/// Finds all text markers at the specified offset.
+		/// </summary>
+		IEnumerable<ITextMarker> GetMarkersAtOffset(int offset);
 	}
 }
