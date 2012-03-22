@@ -774,6 +774,9 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SettingsGroupBox" xml:space="preserve">
     <value>Configurări</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Limbajul UI curent:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Selectaţi pictograma corespunzătoare limbajului.</value>
   </data>

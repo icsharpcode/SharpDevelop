@@ -1082,6 +1082,9 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox" xml:space="preserve">
     <value>Mutassa a hibalistát ha a szerkesztés hibával ér véget</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Pillanatnyi UI nyelv:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>A nyelv kiválasztásához kattintson egy ikonon.</value>
   </data>

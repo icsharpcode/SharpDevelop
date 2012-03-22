@@ -1982,6 +1982,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Construire tous les projets</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Langue en cours:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Cliquer sur une icône pour sélectionner la langue.</value>
   </data>

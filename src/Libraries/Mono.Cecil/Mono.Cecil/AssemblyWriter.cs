@@ -109,8 +109,8 @@ namespace Mono.Cecil {
 
 			BuildMetadata (module, metadata);
 
-			if (module.SymbolReader != null)
-				module.SymbolReader.Dispose ();
+			if (module.symbol_reader != null)
+				module.symbol_reader.Dispose ();
 
 			var writer = ImageWriter.CreateWriter (module, metadata, stream);
 
@@ -1458,7 +1458,7 @@ namespace Mono.Cecil {
 		{
 			var pinvoke = method.PInvokeInfo;
 			if (pinvoke == null)
-				throw new ArgumentException ();
+				return;
 
 			var table = GetTable<ImplMapTable> (Table.ImplMap);
 			table.AddRow (new ImplMapRow (

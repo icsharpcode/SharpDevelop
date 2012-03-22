@@ -50,9 +50,11 @@
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Dynamic">
       <HintPath>..\..\IronRuby\bin\Microsoft.Dynamic.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>

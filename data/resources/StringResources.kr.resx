@@ -1457,6 +1457,9 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>모든 프로젝트를 빌드</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>현재 사용자 인터페이스 언어:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>언어를 선택하려면 아이콘을 클릭하십시오.</value>
   </data>

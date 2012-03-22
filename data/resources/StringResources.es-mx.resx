@@ -1986,6 +1986,9 @@ Ejemplo: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Generar todos los proyectos</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Idioma Actual de la Interfaz:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Haga clic en un icono para seleccionar el idioma.</value>
   </data>

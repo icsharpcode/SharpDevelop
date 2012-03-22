@@ -208,4 +208,62 @@
 			      Data            = "M 5,5 L 10,10 L 15,5 L 5,5"/>
 		</StackPanel>
 	</DataTemplate>
+	
+	<Style x:Key="{x:Static local:GlobalStyles.ListBoxItemFocusHighlightStyleKey}" TargetType="{x:Type ListBoxItem}">
+		<!-- This style replaces the default ListBoxItem template with one that highlights the focused item instead of the selected item -->
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ListBoxItem}">
+					<Border Name="Bd"
+					        Background="{TemplateBinding Background}"
+					        BorderBrush="{TemplateBinding BorderBrush}"
+					        BorderThickness="{TemplateBinding BorderThickness}"
+					        Padding="{TemplateBinding Padding}"
+					        SnapsToDevicePixels="true">
+						<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+							VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+							SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsKeyboardFocusWithin"
+						         Value="true">
+							<Setter TargetName="Bd"
+							        Property="Background"
+							        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+							<Setter Property="Foreground"
+							        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
+	<Style x:Key="{x:Static local:GlobalStyles.ListViewItemFocusHighlightStyleKey}" TargetType="{x:Type ListViewItem}">
+		<!-- This style replaces the default ListViewItem template with one that highlights the focused item instead of the selected items -->
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ListViewItem}">
+					<Border Name="Bd"
+					        Background="{TemplateBinding Background}"
+					        BorderBrush="{TemplateBinding BorderBrush}"
+					        BorderThickness="{TemplateBinding BorderThickness}"
+					        Padding="{TemplateBinding Padding}"
+					        SnapsToDevicePixels="true">
+						<GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsKeyboardFocusWithin"
+						         Value="true">
+							<Setter TargetName="Bd"
+							        Property="Background"
+							        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+							<Setter Property="Foreground"
+							        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>

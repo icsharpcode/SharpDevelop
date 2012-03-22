@@ -58,13 +58,16 @@ namespace ICSharpCode.AvalonEdit.Folding
 		void OnDocumentChanged(DocumentChangeEventArgs e)
 		{
 			foldings.UpdateOffsets(e);
-			FoldingSection s = foldings.FindFirstSegmentWithStartAfter(e.Offset);
-			while (s != null && s.StartOffset == e.Offset) {
-				FoldingSection next = foldings.GetNextSegment(s);
-				if (s.Length == 0) {
-					RemoveFolding(s);
+			int newEndOffset = e.Offset + e.InsertionLength;
+			// extend end offset to the end of the line (including delimiter)
+			var endLine = document.GetLineByOffset(newEndOffset);
+			newEndOffset = endLine.Offset + endLine.TotalLength;
+			foreach (var affectedFolding in foldings.FindOverlappingSegments(e.Offset, newEndOffset - e.Offset)) {
+				if (affectedFolding.Length == 0) {
+					RemoveFolding(affectedFolding);
+				} else {
+					affectedFolding.ValidateCollapsedLineSections();
 				}
-				s = next;
 			}
 		}
 		#endregion
@@ -90,21 +93,12 @@ namespace ICSharpCode.AvalonEdit.Folding
 				throw new ArgumentException();
 			foreach (FoldingSection fs in foldings) {
 				if (fs.collapsedSections != null) {
-					CollapsedLineSection[] c = new CollapsedLineSection[textViews.Count];
+					var c = new CollapsedLineSection[textViews.Count];
 					Array.Copy(fs.collapsedSections, 0, c, 0, pos);
 					Array.Copy(fs.collapsedSections, pos + 1, c, pos, c.Length - pos);
 					fs.collapsedSections = c;
 				}
 			}
-		}
-		
-		internal CollapsedLineSection[] CollapseLines(DocumentLine start, DocumentLine end)
-		{
-			CollapsedLineSection[] c = new CollapsedLineSection[textViews.Count];
-			for (int i = 0; i < c.Length; i++) {
-				c[i] = textViews[i].CollapseLines(start, end);
-			}
-			return c;
 		}
 		
 		internal void Redraw()

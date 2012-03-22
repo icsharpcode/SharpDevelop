@@ -1447,6 +1447,9 @@ Exemplos:"120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox" xml:space="preserve">
     <value>Mostrar pad de lista de erros no caso da compilação terminar com erros</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Língua da interface actual:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Clique no ícone para escolher a língua</value>
   </data>

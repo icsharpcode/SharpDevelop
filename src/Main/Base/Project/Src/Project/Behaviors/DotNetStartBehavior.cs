@@ -336,11 +336,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public StartAction StartAction {
 			get {
-				try {
-					return (StartAction)Enum.Parse(typeof(StartAction), ((MSBuildBasedProject)Project).GetEvaluatedProperty("StartAction") ?? "Project");
-				} catch (ArgumentException ex) {
+				string propertyValue = ((MSBuildBasedProject)Project).GetEvaluatedProperty("StartAction") ?? "Project";
+				StartAction action;
+				if (Enum.TryParse(propertyValue, out action))
+					return action;
+				else
 					return StartAction.Project;
-				}
 			}
 			set {
 				((MSBuildBasedProject)Project).SetProperty("StartAction", value.ToString());
