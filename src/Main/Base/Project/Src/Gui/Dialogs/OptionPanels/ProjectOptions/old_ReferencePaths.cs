@@ -7,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class ReferencePaths : AbstractXmlFormsProjectOptionPanel
+	public class old_ReferencePaths : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
