@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.ContextActions;
 using System.Collections.Generic;
 using NUnit.Framework;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Inspector
 {
@@ -45,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp.Inspector
 		protected static void CheckFix (TestRefactoringContext ctx, CodeIssue issue, string expectedOutput)
 		{
 			using (var script = ctx.StartScript ())
-				issue.Action.Run (script);
+				issue.Actions.First ().Run (script);
 			Assert.AreEqual (expectedOutput, ctx.Text);
 		}
 	}
