@@ -6,6 +6,8 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.CSharpBinding"/>
+		<!-- The AvalonEdit dependency is necessary for the context action option page -->
+		<Dependency addin = "ICSharpCode.AvalonEdit" />
 	</Manifest>
 	
 	<Runtime>
@@ -114,6 +116,14 @@
 		                supportedextensions  = ".cs"
 		                projectfileextension = ".csproj"
 		                class                = "CSharpBinding.CSharpProjectBinding" />
+	</Path>
+	
+	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<OptionPanel id    = "C#"
+		             insertafter = "Highlighting"
+		             label = "C#">
+			<ContextActionOptionPanel id="ContextActions" path="/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"/>
+		</OptionPanel>
 	</Path>
 	
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">

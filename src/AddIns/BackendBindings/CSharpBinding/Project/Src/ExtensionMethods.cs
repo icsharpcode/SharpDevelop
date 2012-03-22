@@ -32,7 +32,7 @@ namespace CSharpBinding
 					var parseInfo = (await ec.GetParseInformationAsync().ConfigureAwait(false)) as CSharpFullParseInformation;
 					var compilation = await ec.GetCompilationAsync().ConfigureAwait(false);
 					if (parseInfo != null)
-						return new CSharpAstResolver(compilation, parseInfo.CompilationUnit, parseInfo.ParsedFile);
+						return parseInfo.GetResolver(compilation);
 					else
 						return new CSharpAstResolver(compilation, new CompilationUnit(), new CSharpParsedFile(ec.FileName));
 				});

@@ -24,12 +24,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		/// </summary>
 		const string PropertyServiceKey = "DisabledContextActionProviders";
 		
-		static List<string> LoadProviderVisibilities()
+		internal static void LoadProviderVisibilities(IEnumerable<IContextActionProvider> providers)
 		{
-			return PropertyService.Get(PropertyServiceKey, new List<string>());
+			var list = PropertyService.Get(PropertyServiceKey, new List<string>());
+			var disabledActions = new HashSet<string>(list);
+			foreach (var provider in providers) {
+				provider.IsVisible = !(provider.AllowHiding && disabledActions.Contains(provider.ID));
+			}
 		}
 		
-		static void SaveProviderVisibilities(IEnumerable<IContextActionProvider> providers)
+		internal static void SaveProviderVisibilities(IEnumerable<IContextActionProvider> providers)
 		{
 			List<string> disabledProviders = providers.Where(p => !p.IsVisible).Select(p => p.ID).ToList();
 			PropertyService.Set(PropertyServiceKey, disabledProviders);
@@ -50,11 +54,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 				throw new ArgumentNullException("providers");
 			this.providers = providers;
 			this.editorContext = editorContext;
-			
-			var disabledActions = new HashSet<string>(LoadProviderVisibilities());
-			foreach (var provider in providers) {
-				provider.IsVisible = !disabledActions.Contains(provider.ID);
-			}
 		}
 		
 		public Task<IEnumerable<IContextAction>> GetVisibleActionsAsync(CancellationToken cancellationToken)

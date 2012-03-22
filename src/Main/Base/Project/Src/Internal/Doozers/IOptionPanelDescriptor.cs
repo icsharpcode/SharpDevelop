@@ -18,10 +18,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <value>
 		/// Returns the label of the dialog panel
 		/// </value>
-		string Label {
-			get;
-			set;
-		}
+		string Label { get; }
 		
 		/// <summary>
 		/// The child dialog panels (e.g. for treeviews)

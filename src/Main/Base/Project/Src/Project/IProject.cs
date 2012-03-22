@@ -213,12 +213,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		bool IsStartable { get; }
 		
-		/*
 		/// <summary>
 		/// Gets project specific properties.
 		/// </summary>
 		Properties ProjectSpecificProperties { get; }
-		 */
 		
 		/// <summary>
 		/// Starts the project.

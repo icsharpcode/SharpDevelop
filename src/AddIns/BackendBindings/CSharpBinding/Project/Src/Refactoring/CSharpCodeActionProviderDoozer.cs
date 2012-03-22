@@ -76,7 +76,8 @@ namespace CSharpBinding.Refactoring
 			}
 			
 			public string Category {
-				get { return attribute.Category; }
+				get { return string.IsNullOrEmpty(attribute.Category) ? attribute.Title[0].ToString() : attribute.Category; }
+				// get { return attribute.Category ?? string.Empty; }
 			}
 			
 			public bool AllowHiding {
