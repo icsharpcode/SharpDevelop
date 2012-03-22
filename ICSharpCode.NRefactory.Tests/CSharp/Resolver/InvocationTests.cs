@@ -521,5 +521,23 @@ class C {
 			
 			Assert.That(rr.TargetResult, Is.InstanceOf<TypeResolveResult>());
 		}
+		
+		[Test]
+		public void BaseInvocation()
+		{
+			string program = @"
+class B {
+	public virtual void F(int x, int y) {}
+}
+class D : B {
+	public override void F(int x, int y) {}
+	public void M() {
+		$base.F(0, 1)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsFalse(rr.IsVirtualCall);
+		}
 	}
 }

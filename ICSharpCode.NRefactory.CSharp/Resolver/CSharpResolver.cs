@@ -2133,7 +2133,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (t != null) {
 				foreach (IType baseType in t.DirectBaseTypes) {
 					if (baseType.Kind != TypeKind.Unknown && baseType.Kind != TypeKind.Interface) {
-						return new ThisResolveResult(baseType);
+						return new ThisResolveResult(baseType, causesNonVirtualInvocation: true);
 					}
 				}
 			}
