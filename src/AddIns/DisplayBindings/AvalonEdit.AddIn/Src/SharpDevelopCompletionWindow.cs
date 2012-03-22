@@ -123,6 +123,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						case CompletionItemListKeyResult.InsertionKey:
 							this.CompletionList.RequestInsertion(e);
 							return;
+						case CompletionItemListKeyResult.Cancel:
+							Close();
+							return;
 					}
 				}
 			}

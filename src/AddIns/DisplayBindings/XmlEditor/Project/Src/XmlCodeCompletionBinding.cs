@@ -27,7 +27,7 @@ namespace ICSharpCode.XmlEditor
 			this.schemas = schemaFileAssociations.Schemas;
 		}
 		
-		char[] ignoredChars = new[] { '\\', '/', '"', '\'', '=', '>' };
+		char[] ignoredChars = new[] { '\\', '/', '"', '\'', '=', '>', '!', '?' };
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
@@ -70,6 +70,14 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool CtrlSpace(ITextEditor editor)
 		{
+			int elementStartIndex = XmlParser.GetActiveElementStartIndex(editor.Document.Text, editor.Caret.Offset);
+			if (elementStartIndex <= -1)
+				return false;
+			if (editor.Document.GetText(elementStartIndex, editor.Document.TextLength >= elementStartIndex + "<!".Length ? "<!".Length : editor.Document.TextLength - elementStartIndex).Equals("<!", StringComparison.OrdinalIgnoreCase))
+				return false;
+			if (editor.Document.GetText(elementStartIndex, editor.Document.TextLength >= elementStartIndex + "<?".Length ? "<?".Length : editor.Document.TextLength - elementStartIndex).Equals("<?", StringComparison.OrdinalIgnoreCase))
+				return false;
+			
 			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
 			
 			XmlCompletionItemCollection completionItems = GetCompletionItems(editor, defaultSchema);
