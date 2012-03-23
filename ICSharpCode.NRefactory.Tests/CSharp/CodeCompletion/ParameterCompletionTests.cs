@@ -897,5 +897,28 @@ namespace Test
 			Assert.IsNotNull (provider, "provider was not created.");
 			Assert.AreEqual (1, provider.Count);
 		}
+
+		/// <summary>
+		/// Bug 3991 - constructor argument completion not working for attributes applied to methods or parameters
+		/// </summary>
+		[Test()]
+		public void TestBug3991 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"using System;
+namespace Test
+{
+	class TestClass
+	{
+		[Obsolete$($]
+		TestClass()
+		{
+		}
+	}
+}
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.Greater (provider.Count, 0);
+		}
 	}
 }
