@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -59,6 +60,14 @@ namespace CSharpBinding.Refactoring
 			}
 			IssueManager.SetIssueSeveritySettings(dict);
 			return base.SaveOptions();
+		}
+		
+		void ComboBox_GotFocus(object sender, RoutedEventArgs e)
+		{
+			var item = WpfTreeNavigation.TryFindParent<ListBoxItem>((ComboBox)sender);
+			if (item != null) {
+				item.IsSelected = true;
+			}
 		}
 	}
 }

@@ -25,11 +25,11 @@ namespace CSharpBinding.Refactoring
 		}
 		
 		// TODO: Translate
-		public string DisplayName {
+		public string Title {
 			get { return attribute.Title; }
 		}
 		
-		public string ToolTip {
+		public string Description {
 			get { return attribute.Description; }
 		}
 		

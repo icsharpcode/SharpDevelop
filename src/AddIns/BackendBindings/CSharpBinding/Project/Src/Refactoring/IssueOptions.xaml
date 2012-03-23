@@ -9,6 +9,9 @@
 		<CheckBox Name="featureEnabledCheckBox" DockPanel.Dock="Top"
 		          IsEnabled="False"
 		          IsChecked="True" Content="Enable code inspection" />
+		<TextBlock DockPanel.Dock="Bottom" TextWrapping="WrapWithOverflow" MaxHeight="75"
+		           Text="{Binding SelectedValue.Description, ElementName=listBox}" />
+		<TextBlock FontWeight="Bold" DockPanel.Dock="Bottom" Text="{Binding SelectedValue.Title, ElementName=listBox}" />
 		<sd:RestrictDesiredSize Margin="0, 4, 0, 0">
 			<ListBox Name="listBox"
 			         HorizontalContentAlignment="Stretch"
@@ -17,12 +20,13 @@
 					<DataTemplate>
 						<DockPanel>
 							<ComboBox DockPanel.Dock="Right"
+							          GotFocus="ComboBox_GotFocus"
 							          MinWidth="85"
 							          VerticalAlignment="Center"
 							          gui:EnumBinding.EnumType="{x:Type nr:Severity}"
 							          SelectedValue="{Binding Severity}"/>
 							<sd:RestrictDesiredSize RestrictHeight="False" MinWidth="150">
-								<TextBlock Text="{Binding DisplayName}" ToolTip="{Binding ToolTip}" TextWrapping="WrapWithOverflow" />
+								<TextBlock Text="{Binding Title}" TextWrapping="WrapWithOverflow" VerticalAlignment="Center" />
 							</sd:RestrictDesiredSize>
 						</DockPanel>
 					</DataTemplate>
