@@ -168,7 +168,12 @@ namespace ICSharpCode.Core
 			lock (syncRoot) {
 				object val;
 				if (dict.TryGetValue(key, out val)) {
-					return (T)Deserialize(val, typeof(T));
+					try {
+						return (T)Deserialize(val, typeof(T));
+					} catch (SerializationException ex) {
+						LoggingService.Warn(ex);
+						return defaultValue;
+					}
 				} else {
 					return defaultValue;
 				}
@@ -221,11 +226,15 @@ namespace ICSharpCode.Core
 				if (dict.TryGetValue(key, out val)) {
 					object[] serializedArray = val as object[];
 					if (serializedArray != null) {
-						T[] array = new T[serializedArray.Length];
-						for (int i = 0; i < array.Length; i++) {
-							array[i] = (T)Deserialize(serializedArray[i], typeof(T));
+						try {
+							T[] array = new T[serializedArray.Length];
+							for (int i = 0; i < array.Length; i++) {
+								array[i] = (T)Deserialize(serializedArray[i], typeof(T));
+							}
+							return array;
+						} catch (SerializationException ex) {
+							LoggingService.Warn(ex);
 						}
-						return array;
 					} else {
 						LoggingService.Warn("Properties.GetList(" + key + ") - this entry is not a list");
 					}

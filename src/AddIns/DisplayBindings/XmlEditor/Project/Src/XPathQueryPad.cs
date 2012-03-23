@@ -42,7 +42,7 @@ namespace ICSharpCode.XmlEditor
 				disposed = true;
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 				Properties properties = xpathQueryControl.CreateMemento();
-				PropertyService.PropertiesContainer.SetNestedProperties(XPathQueryControlProperties, properties);
+				PropertyService.SetNestedProperties(XPathQueryControlProperties, properties);
 				xpathQueryControl.Dispose();
 			}
 		}

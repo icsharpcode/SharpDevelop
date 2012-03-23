@@ -150,7 +150,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void LoadNamespaces(Properties properties)
 		{
-			string[] namespaces = properties.GetList<string>(NamespacesProperty);
+			var namespaces = properties.GetList<string>(NamespacesProperty);
 			foreach (string ns in namespaces) {
 				XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
 				AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
@@ -171,7 +171,7 @@ namespace ICSharpCode.XmlEditor
 		void LoadXPathQueryHistory(Properties properties)
 		{
 			XPathComboBox.Text = properties.Get(XPathComboBoxTextProperty, string.Empty);
-			string[] xpaths = properties.GetList<string>(XPathComboBoxItemsProperty);
+			var xpaths = properties.GetList<string>(XPathComboBoxItemsProperty);
 			foreach (string xpath in xpaths) {
 				xpathComboBox.Items.Add(xpath);
 			}
