@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -73,9 +76,9 @@ namespace ICSharpCode.XmlEditor
 			int elementStartIndex = XmlParser.GetActiveElementStartIndex(editor.Document.Text, editor.Caret.Offset);
 			if (elementStartIndex <= -1)
 				return false;
-			if (editor.Document.GetText(elementStartIndex, editor.Document.TextLength >= elementStartIndex + "<!".Length ? "<!".Length : editor.Document.TextLength - elementStartIndex).Equals("<!", StringComparison.OrdinalIgnoreCase))
+			if (ElementStartsWith("<!", elementStartIndex, editor.Document))
 				return false;
-			if (editor.Document.GetText(elementStartIndex, editor.Document.TextLength >= elementStartIndex + "<?".Length ? "<?".Length : editor.Document.TextLength - elementStartIndex).Equals("<?", StringComparison.OrdinalIgnoreCase))
+			if (ElementStartsWith("<?", elementStartIndex, editor.Document))
 				return false;
 			
 			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
@@ -92,6 +95,12 @@ namespace ICSharpCode.XmlEditor
 				return true;
 			}
 			return false;
+		}
+		
+		bool ElementStartsWith(string text, int elementStartIndex, ITextBuffer document)
+		{
+			int textLength = Math.Min(text.Length, document.TextLength - elementStartIndex);
+			return document.GetText(elementStartIndex, textLength).Equals(text, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }
