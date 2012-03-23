@@ -114,7 +114,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			AffectedEntity = affectedEntity;
 			VisibilityMask = Modifiers.VisibilityMask;
-
 		}
 
 		static bool NoUnderscoreWithoutNumber(string id)

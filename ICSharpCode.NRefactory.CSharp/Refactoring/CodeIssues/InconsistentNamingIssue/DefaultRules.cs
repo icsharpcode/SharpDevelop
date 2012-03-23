@@ -45,10 +45,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			};
 			
 			// PascalCasing for types
-			yield return new NamingRule(AffectedEntity.Type) {
+
+			yield return new NamingRule(AffectedEntity.Class | AffectedEntity.Struct | AffectedEntity.Enum | AffectedEntity.Delegate) {
 				NamingStyle = NamingStyle.PascalCase
 			};
-			
+
 			yield return new NamingRule(AffectedEntity.Interface) {
 				NamingStyle = NamingStyle.PascalCase,
 				RequiredPrefixes = new [] { "I" }
@@ -73,10 +74,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			yield return new NamingRule(AffectedEntity.Method) {
 				NamingStyle = NamingStyle.PascalCase
 			};
-			
+
+			// public fields Pascal Case
 			yield return new NamingRule(AffectedEntity.Field) {
 				NamingStyle = NamingStyle.PascalCase,
 				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal
+			};
+
+			// private fields Camel Case
+			yield return new NamingRule(AffectedEntity.Field) {
+				NamingStyle = NamingStyle.CamelCase,
+				VisibilityMask = Modifiers.Private
 			};
 			
 			yield return new NamingRule(AffectedEntity.Property) {
