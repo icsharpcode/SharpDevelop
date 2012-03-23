@@ -113,6 +113,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			ITextMarker marker = markerService.Create(line.Offset, line.Length);
 			marker.BackgroundColor = Color.FromRgb(180, 38, 38);
 			marker.ForegroundColor = Colors.White;
+			marker.MarkerColor = Color.FromRgb(180, 38, 38);
+			marker.MarkerTypes = TextMarkerTypes.CircleInScrollBar;
 			return marker;
 		}
 		

@@ -98,6 +98,7 @@
     <Compile Include="Src\ContextActions\FindDerivedClassesOrOverrides.cs" />
     <Compile Include="Src\ContextActions\GoToEntityAction.cs" />
     <Compile Include="Src\DocumentSequence.cs" />
+    <Compile Include="Src\EnhancedScrollBar.cs" />
     <Compile Include="Src\Utils.cs" />
     <Compile Include="Src\XmlDoc\DocumentationUIBuilder.cs" />
     <Compile Include="Src\XmlDoc\XmlDocTooltipProvider.cs" />

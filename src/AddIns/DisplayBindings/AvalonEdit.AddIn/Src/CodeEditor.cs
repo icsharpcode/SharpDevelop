@@ -213,6 +213,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (changeWatcher != null) {
 				codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin(changeWatcher));
 			}
+			textView.Services.AddService(typeof(EnhancedScrollBar), new EnhancedScrollBar(codeEditorView, textMarkerService, changeWatcher));
 			
 			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
 			codeEditorView.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
@@ -234,6 +235,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			foreach (var d in textEditor.TextArea.LeftMargins.OfType<IDisposable>())
 				d.Dispose();
+			((EnhancedScrollBar)textEditor.TextArea.GetService(typeof(EnhancedScrollBar))).Dispose();
 			textEditor.Dispose();
 		}
 		

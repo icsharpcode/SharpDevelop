@@ -166,12 +166,14 @@ namespace CSharpBinding.Refactoring
 					return;
 				marker = markerService.Create(startOffset, endOffset - startOffset);
 				marker.ToolTip = this.Description;
+				
+				Color color = GetColor(this.Severity);
+				color.A = 186;
+				marker.MarkerColor = color;
+				marker.MarkerTypes = TextMarkerTypes.ScrollBarRightTriangle;
 				switch (Provider.DefaultMarker) {
 					case IssueMarker.Underline:
-						Color underlineColor = GetColor(this.Severity);
-						underlineColor.A = 186;
-						marker.MarkerType = TextMarkerType.SquigglyUnderline;
-						marker.MarkerColor = underlineColor;
+						marker.MarkerTypes |= TextMarkerTypes.SquigglyUnderline;
 						break;
 					case IssueMarker.GrayOut:
 						marker.ForegroundColor = SystemColors.GrayTextColor;

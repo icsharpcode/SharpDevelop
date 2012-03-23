@@ -160,7 +160,7 @@ namespace ICSharpCode.SharpDevelop
 				}
 				
 				marker.MarkerColor = markerColor;
-				marker.MarkerType = TextMarkerType.SquigglyUnderline;
+				marker.MarkerTypes = TextMarkerTypes.SquigglyUnderline | TextMarkerTypes.LineInScrollBar;
 				
 				marker.ToolTip = task.Description;
 				

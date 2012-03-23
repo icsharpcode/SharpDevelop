@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// <summary>
 		/// Gets/Sets the type of the marker. Use TextMarkerType.None for normal markers.
 		/// </summary>
-		TextMarkerType MarkerType { get; set; }
+		TextMarkerTypes MarkerTypes { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the color of the marker.
@@ -73,16 +73,38 @@ namespace ICSharpCode.SharpDevelop.Editor
 		object ToolTip { get; set; }
 	}
 	
-	public enum TextMarkerType
+	[Flags]
+	public enum TextMarkerTypes
 	{
 		/// <summary>
 		/// Use no marker
 		/// </summary>
-		None,
+		None = 0x0000,
 		/// <summary>
 		/// Use squiggly underline marker
 		/// </summary>
-		SquigglyUnderline
+		SquigglyUnderline = 0x001,
+		/// <summary>
+		/// Normal underline.
+		/// </summary>
+		NormalUnderline = 0x002,
+		
+		/// <summary>
+		/// Horizontal line in the scroll bar.
+		/// </summary>
+		LineInScrollBar = 0x0100,
+		/// <summary>
+		/// Small triangle in the scroll bar, pointing to the right.
+		/// </summary>
+		ScrollBarRightTriangle = 0x0400,
+		/// <summary>
+		/// Small triangle in the scroll bar, pointing to the left.
+		/// </summary>
+		ScrollBarLeftTriangle = 0x0800,
+		/// <summary>
+		/// Small circle in the scroll bar.
+		/// </summary>
+		CircleInScrollBar = 0x1000
 	}
 	
 	public interface ITextMarkerService
