@@ -247,6 +247,7 @@
     <Compile Include="CSharp\CodeActions\AddAnotherAccessorTests.cs" />
     <Compile Include="CSharp\CodeActions\RemoveRegionTests.cs" />
     <Compile Include="CSharp\CodeActions\GeneratePropertyTests.cs" />
+    <Compile Include="CSharp\Inspector\InconsistentNamingIssueTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
