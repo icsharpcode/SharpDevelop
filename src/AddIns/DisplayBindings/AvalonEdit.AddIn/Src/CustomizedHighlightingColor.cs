@@ -29,11 +29,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public bool Bold, Italic;
 		public Color? Foreground, Background;
 		
-		public static List<CustomizedHighlightingColor> LoadColors()
+		public static IReadOnlyList<CustomizedHighlightingColor> LoadColors()
 		{
-			var list = PropertyService.Get("CustomizedHighlightingRules", new List<CustomizedHighlightingColor>());
-			// Always make a copy of the list so that the original list cannot be modified without using SaveColors().
-			return new List<CustomizedHighlightingColor>(list);
+			return PropertyService.GetList<CustomizedHighlightingColor>("CustomizedHighlightingRules");
 		}
 		
 		/// <summary>
@@ -43,21 +41,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			lock (staticLockObj) {
 				activeColors = null;
-				PropertyService.Set("CustomizedHighlightingRules", colors.ToList());
+				PropertyService.SetList("CustomizedHighlightingRules", colors);
 			}
 			EventHandler e = ActiveColorsChanged;
 			if (e != null)
 				e(null, EventArgs.Empty);
 		}
 		
-		static ReadOnlyCollection<CustomizedHighlightingColor> activeColors;
+		static IReadOnlyList<CustomizedHighlightingColor> activeColors;
 		static readonly object staticLockObj = new object();
 		
-		public static ReadOnlyCollection<CustomizedHighlightingColor> ActiveColors {
+		public static IReadOnlyList<CustomizedHighlightingColor> ActiveColors {
 			get {
 				lock (staticLockObj) {
 					if (activeColors == null)
-						activeColors = LoadColors().AsReadOnly();
+						activeColors = LoadColors();
 					return activeColors;
 				}
 			}

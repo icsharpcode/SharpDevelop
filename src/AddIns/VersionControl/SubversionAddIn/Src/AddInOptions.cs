@@ -14,7 +14,7 @@ namespace ICSharpCode.Svn
 		
 		static AddInOptions()
 		{
-			properties = PropertyService.Get(OptionsProperty, new Properties());
+			properties = PropertyService.NestedProperties(OptionsProperty);
 		}
 		
 		#region Properties

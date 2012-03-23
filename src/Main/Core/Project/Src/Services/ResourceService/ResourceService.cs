@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Resources;
@@ -164,8 +165,8 @@ namespace ICSharpCode.Core
 		
 		static void OnPropertyChange(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.Key == uiLanguageProperty && e.NewValue != e.OldValue) {
-				LoadLanguageResources((string)e.NewValue);
+			if (e.PropertyName == uiLanguageProperty) {
+				LoadLanguageResources(Language);
 				EventHandler handler = LanguageChanged;
 				if (handler != null)
 					handler(null, e);

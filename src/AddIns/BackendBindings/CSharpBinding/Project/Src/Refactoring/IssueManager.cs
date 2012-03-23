@@ -70,7 +70,7 @@ namespace CSharpBinding.Refactoring
 		{
 			// TODO: cache the result
 			var dict = new Dictionary<Type, Severity>();
-			var prop = PropertyService.Get("CSharpIssueSeveritySettings", new Properties());
+			var prop = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
 			foreach (var provider in issueProviders.Value) {
 				dict[provider.ProviderType] = prop.Get(provider.ProviderType.FullName, provider.DefaultSeverity);
 			}
@@ -79,11 +79,10 @@ namespace CSharpBinding.Refactoring
 		
 		public static void SetIssueSeveritySettings(IReadOnlyDictionary<Type, Severity> dict)
 		{
-			var prop = new Properties();
+			var prop = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
 			foreach (var pair in dict) {
 				prop.Set(pair.Key.FullName, pair.Value);
 			}
-			PropertyService.Set("CSharpIssueSeveritySettings", prop);
 		}
 		
 		readonly ITextEditor editor;

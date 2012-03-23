@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			// save the workbench memento in the ide properties
 			try {
-				PropertyService.Set(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());
+				PropertyService.SetNestedProperties(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());
 			} catch (Exception e) {
 				MessageService.ShowException(e, "Exception while saving workbench state.");
 			}

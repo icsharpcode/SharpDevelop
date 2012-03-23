@@ -155,7 +155,6 @@
     <Compile Include="NavigationServiceTests\INavigationPointTextFixture.cs" />
     <Compile Include="NavigationServiceTests\TestNavigationPoint.cs" />
     <Compile Include="NavigationServiceTests\NavigationServiceTestFixture.cs" />
-    <Compile Include="SharpDevelopColorDialogTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

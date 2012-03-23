@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void SetMemento(Properties memento)
 		{
 			// other project data
-			this.ProjectSpecificProperties = memento.Get("projectSavedData", new Properties());
+			this.ProjectSpecificProperties = memento.NestedProperties("projectSavedData");
 			GetOrCreateBehavior().SetMemento(memento);
 		}
 		#endregion

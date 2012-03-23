@@ -110,6 +110,15 @@ namespace ICSharpCode.SharpDevelop
 				list.Add(o);
 		}
 		
+		/// <summary>
+		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
+		/// </summary>
+		public static void AddRange(this WinForms.ComboBox.ObjectCollection list, IEnumerable elements)
+		{
+			foreach (var o in elements)
+				list.Add(o);
+		}
+		
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> arr)
 		{
 			return new ReadOnlyCollection<T>(arr);
@@ -462,6 +471,20 @@ namespace ICSharpCode.SharpDevelop
 		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
 		/// </summary>
 		public static int FindIndex<T>(this IList<T> list, Func<T, bool> predicate)
+		{
+			for (int i = 0; i < list.Count; i++) {
+				if (predicate(list[i]))
+					return i;
+			}
+			
+			return -1;
+		}
+		
+		/// <summary>
+		/// Returns the index of the first element for which <paramref name="predicate"/> returns true.
+		/// If none of the items in the list fits the <paramref name="predicate"/>, -1 is returned.
+		/// </summary>
+		public static int FindIndex<T>(this IReadOnlyList<T> list, Func<T, bool> predicate)
 		{
 			for (int i = 0; i < list.Count; i++) {
 				if (predicate(list[i]))

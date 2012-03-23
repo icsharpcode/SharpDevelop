@@ -200,7 +200,6 @@ namespace ICSharpCode.Core
 			PropertyService.InitializeService(configDirectory,
 			                                  dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
 			                                  propertiesName);
-			PropertyService.Load();
 			ResourceService.InitializeService(Path.Combine(PropertyService.DataDirectory, "resources"));
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}

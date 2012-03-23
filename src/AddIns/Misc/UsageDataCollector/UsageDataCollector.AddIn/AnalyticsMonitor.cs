@@ -28,7 +28,7 @@ namespace ICSharpCode.UsageDataCollector
 		
 		public static bool EnabledIsUndecided {
 			get {
-				return string.IsNullOrEmpty(PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled"));
+				return PropertyService.Contains("ICSharpCode.UsageDataCollector.Enabled");
 			}
 		}
 		
@@ -37,10 +37,10 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		public static bool Enabled {
 			get {
-				return string.Equals(PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled"), bool.TrueString, StringComparison.OrdinalIgnoreCase);
+				return PropertyService.Get("ICSharpCode.UsageDataCollector.Enabled", false);
 			}
 			set {
-				PropertyService.Set("ICSharpCode.UsageDataCollector.Enabled", value.ToString());
+				PropertyService.Set("ICSharpCode.UsageDataCollector.Enabled", value);
 				// Initially opening the session takes some time; which is bad for the startpage
 				// because the animation would start with a delay. We solve this by calling Open/CloseSession
 				// on a background thread.

@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.OutputWindowOptionsPanel.xfrm"));
 			
-			Properties properties = (Properties)PropertyService.Get(OutputWindowsProperty, new Properties());
+			Properties properties = PropertyService.NestedProperties(OutputWindowsProperty);
 			fontSelectionPanel = new FontSelectionPanel();
 			fontSelectionPanel.Dock = DockStyle.Fill;
 			ControlDictionary["FontGroupBox"].Controls.Add(fontSelectionPanel);
@@ -35,13 +35,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override bool StorePanelContents()
 		{
-			Properties properties = (Properties)PropertyService.Get(OutputWindowsProperty, new Properties());
+			Properties properties = PropertyService.NestedProperties(OutputWindowsProperty);
 			properties.Set("WordWrap", ((CheckBox)ControlDictionary["wordWrapCheckBox"]).Checked);
 			string currentFontString = fontSelectionPanel.CurrentFontString;
 			if (currentFontString != null)
 				properties.Set("DefaultFont", currentFontString);
 			
-			PropertyService.Set(OutputWindowsProperty, properties);
 			return true;
 		}
 	}

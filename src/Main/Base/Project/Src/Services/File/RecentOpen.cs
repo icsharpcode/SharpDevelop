@@ -48,14 +48,8 @@ namespace ICSharpCode.SharpDevelop
 			// don't check whether files exist because that might be slow (e.g. if file is on network
 			// drive that's unavailable)
 			
-			// if one of these entries is a string, then it's from a previous SharpDevelop version - don't try loading it
-			if (p.Contains("Files") && !(p.Get("Files") is string)) {
-				lastfile.AddRange(p.Get("Files", new string[0]));
-			}
-			
-			if (p.Contains("Projects") && !(p.Get("Files") is string)) {
-				lastproject.AddRange(p.Get("Projects", new string[0]));
-			}
+			lastfile.AddRange(p.GetList<string>("Files"));
+			lastproject.AddRange(p.GetList<string>("Projects"));
 		}
 		
 		public void AddLastFile(string name)
@@ -107,8 +101,8 @@ namespace ICSharpCode.SharpDevelop
 		public Properties ToProperties()
 		{
 			Properties p = new Properties();
-			p.Set("Files", lastfile.ToArray());
-			p.Set("Projects", lastproject.ToArray());
+			p.SetList("Files", lastfile);
+			p.SetList("Projects", lastproject);
 			return p;
 		}
 		

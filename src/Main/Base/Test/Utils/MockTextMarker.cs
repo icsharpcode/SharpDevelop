@@ -49,7 +49,7 @@ namespace ICSharpCode.SharpDevelop.Tests.Utils
 		
 		public Nullable<Color> BackgroundColor { get; set; }
 		public Nullable<Color> ForegroundColor { get; set; }
-		public TextMarkerType MarkerType { get; set; }
+		public TextMarkerTypes MarkerTypes { get; set; }
 		public Color MarkerColor { get; set; }
 		public object Tag { get; set; }
 		public object ToolTip { get; set; }

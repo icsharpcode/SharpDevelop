@@ -517,7 +517,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				Properties memento = mementoCapable.CreateMemento();
 				Properties p = this.LoadOrCreateViewContentMementos();
-				p.Set(key, memento);
+				p.SetNestedProperties(key, memento);
 				FileUtility.ObservedSave(new NamedFileOperationDelegate(p.Save), this.ViewContentMementosFileName, FileErrorPolicy.Inform);
 			}
 		}
@@ -533,10 +533,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					string key = GetMementoKeyName(viewContent);
 					LoggingService.Debug("Trying to restore memento of '" + viewContent.ToString() + "' from key '" + key + "'");
 					
-					Properties memento = this.LoadOrCreateViewContentMementos().Get<Properties>(key, null);
-					if (memento != null) {
-						mementoCapable.SetMemento(memento);
-					}
+					mementoCapable.SetMemento(this.LoadOrCreateViewContentMementos().NestedProperties(key));
 				} catch (Exception e) {
 					MessageService.ShowException(e, "Can't get/set memento");
 				}

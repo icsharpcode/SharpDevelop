@@ -37,7 +37,7 @@ namespace ICSharpCode.XmlEditor
 		
 		static void CreateXmlEditorProperties()
 		{
-			xmlEditorProperties = PropertyService.Get(XmlEditorOptions.OptionsProperty, new Properties());
+			xmlEditorProperties = PropertyService.NestedProperties(XmlEditorOptions.OptionsProperty);
 		}
 		
 		public static bool ShowAttributesWhenFolded {

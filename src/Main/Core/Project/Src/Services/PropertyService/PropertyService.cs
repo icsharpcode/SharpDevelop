@@ -2,6 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -12,7 +15,6 @@ namespace ICSharpCode.Core
 	public static class PropertyService
 	{
 		static string propertyFileName;
-		static string propertyXmlRootNodeName;
 		
 		static string configDirectory;
 		static string dataDirectory;
@@ -26,19 +28,20 @@ namespace ICSharpCode.Core
 		public static void InitializeServiceForUnitTests()
 		{
 			properties = null;
-			InitializeService(null, null, null);
+			configDirectory = null;
+			dataDirectory = null;
+			propertyFileName = null;
+			properties = new Properties();
 		}
 
 		public static void InitializeService(string configDirectory, string dataDirectory, string propertiesName)
 		{
 			if (properties != null)
 				throw new InvalidOperationException("Service is already initialized.");
-			properties = new Properties();
 			PropertyService.configDirectory = configDirectory;
 			PropertyService.dataDirectory = dataDirectory;
-			propertyXmlRootNodeName = propertiesName;
 			propertyFileName = propertiesName + ".xml";
-			properties.PropertyChanged += new PropertyChangedEventHandler(PropertiesPropertyChanged);
+			LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName));
 		}
 		
 		public static string ConfigDirectory {
@@ -53,79 +56,135 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static string Get(string property)
+		/// <inheritdoc cref="Properties.Get{T}(string, T)"/>
+		public static T Get<T>(string key, T defaultValue)
 		{
-			return properties[property];
+			return properties.Get(key, defaultValue);
 		}
 		
-		public static T Get<T>(string property, T defaultValue)
+		[Obsolete("Use the NestedProperties method instead", true)]
+		public static Properties Get(string key, Properties defaultValue)
 		{
-			return properties.Get(property, defaultValue);
+			return properties.Get(key, defaultValue);
 		}
 		
-		public static void Set<T>(string property, T value)
+		/// <inheritdoc cref="Properties.NestedProperties"/>
+		public static Properties NestedProperties(string key)
 		{
-			properties.Set(property, value);
+			return properties.NestedProperties(key);
 		}
 		
-		public static void Load()
+		/// <inheritdoc cref="Properties.SetNestedProperties"/>
+		public static void SetNestedProperties(string key, Properties nestedProperties)
 		{
-			if (properties == null)
-				throw new InvalidOperationException("Service is not initialized.");
-			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyXmlRootNodeName))
-				throw new InvalidOperationException("No file name was specified on service creation");
-			if (!Directory.Exists(configDirectory)) {
-				Directory.CreateDirectory(configDirectory);
-			}
-			
-			if (!LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName))) {
-				LoadPropertiesFromStream(Path.Combine(DataDirectory, "options", propertyFileName));
-			}
+			properties.SetNestedProperties(key, nestedProperties);
 		}
 		
-		public static bool LoadPropertiesFromStream(string fileName)
+		/// <inheritdoc cref="Properties.Contains"/>
+		public static bool Contains(string key)
+		{
+			return properties.Contains(key);
+		}
+		
+		/// <summary>
+		/// Gets the main property container.
+		/// </summary>
+		internal static Properties PropertiesContainer {
+			get { return properties; }
+		}
+		
+		/// <inheritdoc cref="Properties.Set{T}(string, T)"/>
+		public static void Set<T>(string key, T value)
+		{
+			properties.Set(key, value);
+		}
+		
+		[Obsolete("Use the SetNestedProperties method instead", true)]
+		public static void Set(string key, Properties value)
+		{
+			properties.Set(key, value);
+		}
+		
+		/// <inheritdoc cref="Properties.GetList"/>
+		public static IReadOnlyList<T> GetList<T>(string key)
+		{
+			return properties.GetList<T>(key);
+		}
+		
+		/// <inheritdoc cref="Properties.SetList"/>
+		public static void SetList<T>(string key, IEnumerable<T> value)
+		{
+			properties.SetList(key, value);
+		}
+		
+		[Obsolete("Use the GetList method instead", true)]
+		public static T[] Get<T>(string key, T[] defaultValue)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the SetList method instead", true)]
+		public static void Set<T>(string key, T[] value)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the GetList method instead", true)]
+		public static List<T> Get<T>(string key, List<T> defaultValue)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the SetList method instead", true)]
+		public static void Set<T>(string key, List<T> value)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the GetList method instead", true)]
+		public static ArrayList Get<T>(string key, ArrayList defaultValue)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		[Obsolete("Use the SetList method instead", true)]
+		public static void Set<T>(string key, ArrayList value)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		/// <inheritdoc cref="Properties.Remove"/>
+		public static void Remove(string key)
+		{
+			properties.Remove(key);
+		}
+		
+		static bool LoadPropertiesFromStream(string fileName)
 		{
 			if (!File.Exists(fileName)) {
+				properties = new Properties();
 				return false;
 			}
 			try {
 				using (LockPropertyFile()) {
-					using (XmlTextReader reader = new XmlTextReader(fileName)) {
-						while (reader.Read()){
-							if (reader.IsStartElement()) {
-								if (reader.LocalName == propertyXmlRootNodeName) {
-									properties.ReadProperties(reader, propertyXmlRootNodeName);
-									return true;
-								}
-							}
-						}
-					}
+					properties = Properties.Load(fileName);
+					return true;
 				}
 			} catch (XmlException ex) {
 				MessageService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
 			}
+			properties = new Properties();
 			return false;
 		}
 		
 		public static void Save()
 		{
-			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyXmlRootNodeName))
+			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyFileName))
 				throw new InvalidOperationException("No file name was specified on service creation");
-			using (MemoryStream ms = new MemoryStream()) {
-				XmlTextWriter writer = new XmlTextWriter(ms, Encoding.UTF8);
-				writer.Formatting = Formatting.Indented;
-				writer.WriteStartElement(propertyXmlRootNodeName);
-				properties.WriteProperties(writer);
-				writer.WriteEndElement();
-				writer.Flush();
-				
-				ms.Position = 0;
-				string fileName = Path.Combine(configDirectory, propertyFileName);
-				using (LockPropertyFile()) {
-					using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
-						ms.WriteTo(fs);
-					}
-				}
+			
+			string fileName = Path.Combine(configDirectory, propertyFileName);
+			using (LockPropertyFile()) {
+				properties.Save(fileName);
 			}
 		}
 		
@@ -143,13 +202,9 @@ namespace ICSharpCode.Core
 				});
 		}
 		
-		static void PropertiesPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(null, e);
-			}
+		public static event PropertyChangedEventHandler PropertyChanged {
+			add { properties.PropertyChanged += value; }
+			remove { properties.PropertyChanged -= value; }
 		}
-		
-		public static event PropertyChangedEventHandler PropertyChanged;
 	}
 }

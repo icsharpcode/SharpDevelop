@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
@@ -244,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			SetUrlBox(comboBox);
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
 			comboBox.Items.Clear();
-			comboBox.Items.AddRange(PropertyService.Get("Browser.URLBoxHistory", new string[0]));
+			comboBox.Items.AddRange(PropertyService.GetList<string>("Browser.URLBoxHistory"));
 			comboBox.AutoCompleteMode      = AutoCompleteMode.Suggest;
 			comboBox.AutoCompleteSource    = AutoCompleteSource.HistoryList;
 		}
@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				comboBox.Items.Remove(text);
 				comboBox.Items.Insert(0, text);
 				// Add to URLBoxHistory:
-				string[] history = PropertyService.Get("Browser.URLBoxHistory", new string[0]);
+				string[] history = PropertyService.GetList<string>("Browser.URLBoxHistory").ToArray();
 				int pos = Array.IndexOf(history, text);
 				if (pos < 0 && history.Length >= 20) {
 					pos = history.Length - 1; // remove last entry and insert new at the beginning
@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 					}
 				}
 				history[0] = text;
-				PropertyService.Set("Browser.URLBoxHistory", history);
+				PropertyService.SetList("Browser.URLBoxHistory", history);
 			}
 		}
 		

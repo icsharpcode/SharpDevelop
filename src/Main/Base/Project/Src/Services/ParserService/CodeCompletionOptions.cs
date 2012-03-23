@@ -6,14 +6,12 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
 {
-	// TODO: what is this class doing in the ParserService ??
-	
 	/// <summary>
 	/// Class containing static properties for the code completion options.
 	/// </summary>
 	public static class CodeCompletionOptions
 	{
-		static Properties properties = PropertyService.Get("CodeCompletionOptions", new Properties());
+		static Properties properties = PropertyService.NestedProperties("CodeCompletionOptions");
 		
 		public static Properties Properties {
 			get {

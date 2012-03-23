@@ -170,8 +170,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// This property is thread-safe.
 		/// </summary>
 		public static string[] TaskListTokens {
-			get { return PropertyService.Get("SharpDevelop.TaskListTokens", DefaultTaskListTokens); }
-			set { PropertyService.Set("SharpDevelop.TaskListTokens", value); }
+			get {
+				if (PropertyService.Contains("SharpDevelop.TaskListTokens"))
+					return PropertyService.GetList<string>("SharpDevelop.TaskListTokens").ToArray();
+				else
+					return DefaultTaskListTokens;
+			}
+			set { PropertyService.SetList("SharpDevelop.TaskListTokens", value); }
 		}
 		
 		/// <summary>

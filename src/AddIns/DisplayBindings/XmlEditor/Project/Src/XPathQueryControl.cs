@@ -111,7 +111,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void SaveNamespaces(Properties properties)
 		{
-			properties.Set(NamespacesProperty, GetNamespaceStringArray());
+			properties.SetList(NamespacesProperty, GetNamespaceStringArray());
 		}
 		
 		void SaveNamespaceDataGridColumnWidths(Properties properties)
@@ -128,7 +128,7 @@ namespace ICSharpCode.XmlEditor
 		void SaveXPathQueryHistory(Properties properties)
 		{
 			properties.Set(XPathComboBoxTextProperty, XPathComboBox.Text);
-			properties.Set(XPathComboBoxItemsProperty, GetXPathHistory());
+			properties.SetList(XPathComboBoxItemsProperty, GetXPathHistory());
 		}
 		
 		/// <summary>
@@ -150,7 +150,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void LoadNamespaces(Properties properties)
 		{
-			string[] namespaces = properties.Get(NamespacesProperty, new string[0]);
+			string[] namespaces = properties.GetList<string>(NamespacesProperty);
 			foreach (string ns in namespaces) {
 				XmlNamespace xmlNamespace = XmlNamespace.FromString(ns);
 				AddNamespace(xmlNamespace.Prefix, xmlNamespace.Name);
@@ -171,7 +171,7 @@ namespace ICSharpCode.XmlEditor
 		void LoadXPathQueryHistory(Properties properties)
 		{
 			XPathComboBox.Text = properties.Get(XPathComboBoxTextProperty, string.Empty);
-			string[] xpaths = properties.Get(XPathComboBoxItemsProperty, new string[0]);
+			string[] xpaths = properties.GetList<string>(XPathComboBoxItemsProperty);
 			foreach (string xpath in xpaths) {
 				xpathComboBox.Items.Add(xpath);
 			}

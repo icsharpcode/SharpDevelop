@@ -26,8 +26,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		internal static void LoadProviderVisibilities(IEnumerable<IContextActionProvider> providers)
 		{
-			var list = PropertyService.Get(PropertyServiceKey, new List<string>());
-			var disabledActions = new HashSet<string>(list);
+			var disabledActions = new HashSet<string>(PropertyService.GetList<string>(PropertyServiceKey));
 			foreach (var provider in providers) {
 				provider.IsVisible = !(provider.AllowHiding && disabledActions.Contains(provider.ID));
 			}
@@ -35,8 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		
 		internal static void SaveProviderVisibilities(IEnumerable<IContextActionProvider> providers)
 		{
-			List<string> disabledProviders = providers.Where(p => !p.IsVisible).Select(p => p.ID).ToList();
-			PropertyService.Set(PropertyServiceKey, disabledProviders);
+			PropertyService.SetList(PropertyServiceKey, providers.Where(p => !p.IsVisible).Select(p => p.ID));
 		}
 		
 		readonly IList<IContextActionProvider> providers;

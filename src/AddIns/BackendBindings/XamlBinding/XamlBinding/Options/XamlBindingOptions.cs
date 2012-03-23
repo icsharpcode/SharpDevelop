@@ -16,7 +16,7 @@ namespace ICSharpCode.XamlBinding
 
 		static XamlBindingOptions()
 		{
-			properties = PropertyService.Get("XamlBinding.Options", new Properties());
+			properties = PropertyService.NestedProperties("XamlBinding.Options");
 		}
 
 		static Properties Properties {

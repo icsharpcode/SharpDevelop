@@ -312,7 +312,7 @@ End Property${Caret}",
 		/// </summary>
 		public List<CodeSnippetGroup> LoadGroups()
 		{
-			var savedSnippets = PropertyService.Get("CodeSnippets", new List<CodeSnippetGroup>());
+			var savedSnippets = new List<CodeSnippetGroup>(PropertyService.GetList<CodeSnippetGroup>("CodeSnippets"));
 			
 			foreach (var group in savedSnippets) {
 				var defaultGroup = defaultSnippets.FirstOrDefault(i => i.Extensions == group.Extensions);
@@ -382,7 +382,7 @@ End Property${Caret}",
 					modifiedGroups.Add(copy);
 				}
 				
-				PropertyService.Set("CodeSnippets", modifiedGroups);
+				PropertyService.SetList("CodeSnippets", modifiedGroups);
 			}
 		}
 		

@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			workbench.Initialize();
-			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
+			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
 			workbench.WorkbenchLayout = layout;
 			
 			ApplicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });

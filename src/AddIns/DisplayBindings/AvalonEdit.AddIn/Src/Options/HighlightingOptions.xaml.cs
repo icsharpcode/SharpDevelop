@@ -128,7 +128,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					.OrderBy(def => def.Name)
 					.ToList();
 			}
-			customizationList = CustomizedHighlightingColor.LoadColors();
+			customizationList = new List<CustomizedHighlightingColor>(CustomizedHighlightingColor.LoadColors());
 			
 			languageComboBox.Items.Clear();
 			languageComboBox.Items.Add(new XshdSyntaxDefinition { Name = "All languages" });

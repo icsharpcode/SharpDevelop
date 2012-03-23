@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 
@@ -29,11 +31,9 @@ namespace SearchAndReplace
 			set {
 				if (value != FindPattern) {
 					findPattern = value;
-					string[] oldPatterns = FindPatterns;
-					string[] newPatterns = new string[oldPatterns.Length + 1];
-					oldPatterns.CopyTo(newPatterns, 1);
-					newPatterns[0] = value;
-					FindPatterns = newPatterns;
+					List<string> patterns = FindPatterns.ToList();
+					patterns.Insert(0, value);
+					FindPatterns = patterns;
 				}
 			}
 		}
@@ -47,12 +47,12 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public static string[] FindPatterns {
+		public static IReadOnlyList<string> FindPatterns {
 			get {
-				return properties.Get("FindPatterns", new string[0]);
+				return properties.GetList<string>("FindPatterns");
 			}
 			set {
-				properties.Set("FindPatterns", value);
+				properties.SetList("FindPatterns", value);
 			}
 		}
 		
@@ -65,22 +65,20 @@ namespace SearchAndReplace
 			}
 			set {
 				if (value != ReplacePattern) {
-					string[] oldPatterns = ReplacePatterns;
-					string[] newPatterns = new string[oldPatterns.Length + 1];
-					oldPatterns.CopyTo(newPatterns, 1);
-					newPatterns[0] = value;
-					ReplacePatterns = newPatterns;
+					List<string> patterns = ReplacePatterns.ToList();
+					patterns.Insert(0, value);
+					ReplacePatterns = patterns;
 					replacePattern = value;
 				}
 			}
 		}
 		
-		public static string[] ReplacePatterns {
+		public static IReadOnlyList<string> ReplacePatterns {
 			get {
-				return properties.Get("ReplacePatterns", new string[0]);
+				return properties.GetList<string>("ReplacePatterns");
 			}
 			set {
-				properties.Set("ReplacePatterns", value);
+				properties.SetList("ReplacePatterns", value);
 			}
 		}
 		
@@ -150,7 +148,7 @@ namespace SearchAndReplace
 		
 		static SearchOptions()
 		{
-			properties = PropertyService.Get(searchPropertyKey, new Properties());
+			properties = PropertyService.NestedProperties(searchPropertyKey);
 		}
 	}
 }

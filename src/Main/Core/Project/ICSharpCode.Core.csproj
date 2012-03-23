@@ -22,7 +22,8 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SourceAnalysisOverrideSettingsFile>C:\Users\daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,7 +57,13 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
@@ -107,7 +114,6 @@
     <Compile Include="Src\Services\MessageService\IMessageService.cs" />
     <Compile Include="Src\Services\MessageService\MessageService.cs" />
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
-    <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
     <Compile Include="Src\Services\RegistryService\RegistryService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />

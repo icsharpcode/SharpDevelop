@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static Properties CodeGenerationProperties {
 			get {
-				return PropertyService.Get(codeGenerationProperty, new Properties());
+				return PropertyService.NestedProperties(codeGenerationProperty);
 			}
 		}
 		

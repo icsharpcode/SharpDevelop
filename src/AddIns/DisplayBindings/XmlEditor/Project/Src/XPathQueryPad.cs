@@ -20,7 +20,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			xpathQueryControl = new XPathQueryControl();
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
-			Properties properties = PropertyService.Get(XPathQueryControlProperties, new Properties());
+			Properties properties = PropertyService.NestedProperties(XPathQueryControlProperties);
 			xpathQueryControl.SetMemento(properties);
 			instance = this;
 		}
@@ -42,7 +42,7 @@ namespace ICSharpCode.XmlEditor
 				disposed = true;
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged -= ActiveViewContentChanged;
 				Properties properties = xpathQueryControl.CreateMemento();
-				PropertyService.Set(XPathQueryControlProperties, properties);
+				PropertyService.PropertiesContainer.SetNestedProperties(XPathQueryControlProperties, properties);
 				xpathQueryControl.Dispose();
 			}
 		}

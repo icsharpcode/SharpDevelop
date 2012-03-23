@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop
 		public static RecentOpen RecentOpen {
 			get {
 				if (recentOpen == null) {
-					recentOpen = RecentOpen.FromXmlElement(PropertyService.Get("RecentOpen", new Properties()));
+					recentOpen = RecentOpen.FromXmlElement(PropertyService.NestedProperties("RecentOpen"));
 				}
 				return recentOpen;
 			}
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop
 		internal static void Unload()
 		{
 			if (recentOpen != null) {
-				PropertyService.Set("RecentOpen", recentOpen.ToProperties());
+				PropertyService.SetNestedProperties("RecentOpen", recentOpen.ToProperties());
 			}
 			ProjectService.SolutionLoaded -= ProjectServiceSolutionLoaded;
 			ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;

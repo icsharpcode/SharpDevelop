@@ -25,8 +25,8 @@ namespace ICSharpCode.SharpDevelop
 		internal static void InitializeService()
 		{
 			bindings = AddInTree.BuildItems<DisplayBindingDescriptor>(displayBindingPath, null, true);
-			displayBindingServiceProperties = PropertyService.Get("DisplayBindingService", new Properties());
-			foreach (ExternalProcessDisplayBinding binding in displayBindingServiceProperties.Get("ExternalProcesses", new ExternalProcessDisplayBinding[0])) {
+			displayBindingServiceProperties = PropertyService.NestedProperties("DisplayBindingService");
+			foreach (var binding in displayBindingServiceProperties.GetList<ExternalProcessDisplayBinding>("ExternalProcesses")) {
 				if (binding != null) {
 					AddExternalProcessDisplayBindingInternal(binding);
 				}
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void SaveExternalProcessDisplayBindings()
 		{
-			displayBindingServiceProperties.Set("ExternalProcesses", externalProcessDisplayBindings.ToArray());
+			displayBindingServiceProperties.SetList("ExternalProcesses", externalProcessDisplayBindings);
 		}
 		
 		static DisplayBindingDescriptor AddExternalProcessDisplayBindingInternal(ExternalProcessDisplayBinding binding)
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
-			string defaultCommandID = displayBindingServiceProperties.Get("Default" + Path.GetExtension(filename).ToLowerInvariant()) as string;
+			string defaultCommandID = displayBindingServiceProperties.Get("Default" + Path.GetExtension(filename).ToLowerInvariant(), string.Empty);
 			if (!string.IsNullOrEmpty(defaultCommandID)) {
 				foreach (DisplayBindingDescriptor binding in bindings) {
 					if (binding.Id == defaultCommandID) {

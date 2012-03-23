@@ -286,7 +286,7 @@ namespace SearchAndReplace
 				var editor = GetActiveTextEditor();
 				if (editor == null)
 					return -1;
-				return files.FindIndex(file => editor.FileName.Equals(file));
+				return Array.IndexOf(files, editor.FileName);
 			}
 			
 			public static SearchRegion CreateSearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)

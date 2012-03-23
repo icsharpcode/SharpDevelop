@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CodeGenerationOptionsPanel.xfrm"));
 			
-			Properties p = (Properties)PropertyService.Get(codeGenerationProperty, new Properties());
+			Properties p = PropertyService.NestedProperties(codeGenerationProperty);
 			
 			((CheckBox)ControlDictionary["generateAdditonalCommentsCheckBox"]).Checked = p.Get("GenerateAdditionalComments", true);
 			((CheckBox)ControlDictionary["generateDocCommentsCheckBox"]).Checked       = p.Get("GenerateDocumentComments", true);
@@ -28,14 +28,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		public override bool StorePanelContents()
 		{
-			Properties p = (Properties)PropertyService.Get(codeGenerationProperty, new Properties());
+			Properties p = PropertyService.NestedProperties(codeGenerationProperty);
 			p.Set("GenerateAdditionalComments", ((CheckBox)ControlDictionary["generateAdditonalCommentsCheckBox"]).Checked);
 			p.Set("GenerateDocumentComments",   ((CheckBox)ControlDictionary["generateDocCommentsCheckBox"]).Checked);
 			p.Set("UseFullyQualifiedNames",     ((CheckBox)ControlDictionary["useFullTypeNamesCheckBox"]).Checked);
 			p.Set("BlankLinesBetweenMembers",   ((CheckBox)ControlDictionary["blankLinesBetweenMemberCheckBox"]).Checked);
 			p.Set("ElseOnClosing",              ((CheckBox)ControlDictionary["elseOnClosingCheckbox"]).Checked);
 			p.Set("StartBlockOnSameLine",       ((CheckBox)ControlDictionary["startBlockOnTheSameLineCheckBox"]).Checked);
-			PropertyService.Set(codeGenerationProperty, p);
 			return true;
 		}
 	}

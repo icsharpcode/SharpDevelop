@@ -241,19 +241,14 @@ namespace ICSharpCode.Core
 				defaultValue = propertyName.Substring(pos + 2);
 				propertyName = propertyName.Substring(0, pos);
 			}
+			Properties properties = PropertyService.PropertiesContainer;
 			pos = propertyName.IndexOf('/');
-			if (pos >= 0) {
-				Properties properties = PropertyService.Get(propertyName.Substring(0, pos), new Properties());
+			while (pos >= 0) {
+				properties = properties.NestedProperties(propertyName.Substring(0, pos));
 				propertyName = propertyName.Substring(pos + 1);
 				pos = propertyName.IndexOf('/');
-				while (pos >= 0) {
-					properties = properties.Get(propertyName.Substring(0, pos), new Properties());
-					propertyName = propertyName.Substring(pos + 1);
-				}
-				return properties.Get(propertyName, defaultValue);
-			} else {
-				return PropertyService.Get(propertyName, defaultValue);
 			}
+			return properties.Get(propertyName, defaultValue);
 		}
 	}
 	

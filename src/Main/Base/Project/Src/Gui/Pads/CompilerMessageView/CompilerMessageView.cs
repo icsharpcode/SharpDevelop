@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -204,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			textEditor.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
-			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
+			properties = PropertyService.NestedProperties(OutputWindowOptionsPanel.OutputWindowsProperty);
 			
 			var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
 			
@@ -396,11 +397,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.Key == "WordWrap") {
+			if (e.PropertyName == "WordWrap") {
 				SetWordWrap();
 				ToolBarService.UpdateStatus(toolStrip.Items);
 			}
-			if (e.Key == "DefaultFont") {
+			if (e.PropertyName == "DefaultFont") {
 				var font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", Core.WinForms.WinFormsResourceService.DefaultMonospacedFont.ToString()).ToString());
 				
 				textEditor.FontFamily = new FontFamily(font.FontFamily.Name);

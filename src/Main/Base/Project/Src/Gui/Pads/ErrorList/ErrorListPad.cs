@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ErrorListPad()
 		{
 			instance = this;
-			properties = PropertyService.Get("ErrorListPad", new Properties());
+			properties = PropertyService.NestedProperties("ErrorListPad");
 			
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };

@@ -93,17 +93,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// breakpoints and files
 			Properties properties = new Properties();
-			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(Project).ToArray());
+			properties.SetList("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(Project));
 			List<string> files = new List<string>();
 			foreach (string fileName in FileService.GetOpenFiles()) {
 				if (fileName != null && Project.IsFileInProject(fileName)) {
 					files.Add(fileName);
 				}
 			}
-			properties.Set("files", files.ToArray());
+			properties.SetList("files", files);
 			
 			// other project data
-			properties.Set("projectSavedData", Project.ProjectSpecificProperties ?? new Properties());
+			properties.SetNestedProperties("projectSavedData", Project.ProjectSpecificProperties.Clone());
 			
 			return properties;
 		}
@@ -112,11 +112,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			WorkbenchSingleton.AssertMainThread();
 			
-			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in memento.Get("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
+			foreach (var mark in memento.GetList<ICSharpCode.SharpDevelop.Bookmarks.SDBookmark>("bookmarks")) {
 				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
 			}
 			List<string> filesToOpen = new List<string>();
-			foreach (string fileName in memento.Get("files", new string[0])) {
+			foreach (string fileName in memento.GetList<string>("files")) {
 				if (File.Exists(fileName)) {
 					filesToOpen.Add(fileName);
 				}
