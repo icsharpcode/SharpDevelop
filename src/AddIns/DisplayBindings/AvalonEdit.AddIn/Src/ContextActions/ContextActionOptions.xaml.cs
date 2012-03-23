@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -27,7 +28,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		{
 			InitializeComponent();
 			this.providers = providers.ToArray();
-			listBox.ItemsSource = this.providers;
+			ICollectionView view = CollectionViewSource.GetDefaultView(this.providers);
+			if (this.providers.Any(p => !string.IsNullOrEmpty(p.Category)))
+				view.GroupDescriptions.Add(new PropertyGroupDescription("Category"));
+			listBox.ItemsSource = view;
 		}
 		
 		public override void LoadOptions()

@@ -1,22 +1,30 @@
-﻿<gui:OptionPanel x:Class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionOptions"
+﻿<gui:OptionPanel x:Class="CSharpBinding.Refactoring.IssueOptions"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:nr="clr-namespace:ICSharpCode.NRefactory.CSharp;assembly=ICSharpCode.NRefactory.CSharp"
                  xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop">
 	<DockPanel>
 		<!-- TODO: Translate -->
 		<CheckBox Name="featureEnabledCheckBox" DockPanel.Dock="Top"
 		          IsEnabled="False"
-		          IsChecked="True" Content="Enable context actions" />
+		          IsChecked="True" Content="Enable code inspection" />
 		<sd:RestrictDesiredSize Margin="0, 4, 0, 0">
-			<ListBox Name="listBox" SelectionMode="Multiple"
-			         IsEnabled="{Binding IsChecked, ElementName=featureEnabledCheckBox}"
-			         ItemContainerStyle="{x:Static sd:GlobalStyles.ListBoxItemFocusHighlightStyle}">
+			<ListBox Name="listBox"
+			         HorizontalContentAlignment="Stretch"
+			         IsEnabled="{Binding IsChecked, ElementName=featureEnabledCheckBox}">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-						<!-- The checkbox is toggling the actual IsSelected property on the container (ListBoxItem), so it'll update ListBox.SelectedItems -->
-						<CheckBox Content="{Binding DisplayName}"
-						          IsChecked="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}},Path=IsSelected}" />
+						<DockPanel>
+							<ComboBox DockPanel.Dock="Right"
+							          MinWidth="85"
+							          VerticalAlignment="Center"
+							          gui:EnumBinding.EnumType="{x:Type nr:Severity}"
+							          SelectedValue="{Binding Severity}"/>
+							<sd:RestrictDesiredSize RestrictHeight="False" MinWidth="150">
+								<TextBlock Text="{Binding DisplayName}" ToolTip="{Binding ToolTip}" TextWrapping="WrapWithOverflow" />
+							</sd:RestrictDesiredSize>
+						</DockPanel>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 				<ListBox.GroupStyle>

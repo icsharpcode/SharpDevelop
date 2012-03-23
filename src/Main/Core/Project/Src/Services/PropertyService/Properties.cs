@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
@@ -72,10 +73,7 @@ namespace ICSharpCode.Core
 		{
 			get {
 				lock (properties) {
-					List<string> ret = new List<string>();
-					foreach (KeyValuePair<string, object> property in properties)
-						ret.Add(property.Key);
-					return ret.ToArray();
+					return properties.Keys.ToArray();
 				}
 			}
 		}

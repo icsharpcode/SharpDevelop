@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				get {
 					if (IsActive)
 						return PresentationResourceService.GetBitmapSource("Icons.16x16.SelectionArrow");
-					if (OptionPanelDescriptor.ChildOptionPanelDescriptors != null) {
+					if (OptionPanelDescriptor.ChildOptionPanelDescriptors.Any()) {
 						if (IsExpanded)
 							return PresentationResourceService.GetBitmapSource("Icons.16x16.OpenFolderBitmap");
 						else
@@ -152,12 +152,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public List<OptionPanelNode> Children {
 				get {
 					if (children == null) {
-						if (OptionPanelDescriptor.ChildOptionPanelDescriptors != null) {
-							children = OptionPanelDescriptor.ChildOptionPanelDescriptors
-								.Select(op => new OptionPanelNode(op, this)).ToList();
-						} else {
-							children = new List<OptionPanelNode>();
-						}
+						children = OptionPanelDescriptor.ChildOptionPanelDescriptors
+							.Select(op => new OptionPanelNode(op, this)).ToList();
 					}
 					return children;
 				}

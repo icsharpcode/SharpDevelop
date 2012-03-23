@@ -28,9 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (descriptor.HasOptionPanel) {
 						this.Items.Add(new OptionTabPage(this, descriptor));
 					}
-					if (descriptor.ChildOptionPanelDescriptors != null) {
-						AddOptionPanels(descriptor.ChildOptionPanelDescriptors);
-					}
+					AddOptionPanels(descriptor.ChildOptionPanelDescriptors);
 				}
 			}
 			OnIsDirtyChanged(null, null);

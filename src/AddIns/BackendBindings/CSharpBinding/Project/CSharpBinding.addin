@@ -118,10 +118,13 @@
 		                class                = "CSharpBinding.CSharpProjectBinding" />
 	</Path>
 	
-	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<OptionPanel id    = "C#"
 		             insertafter = "Highlighting"
 		             label = "C#">
+			<OptionPanel id="Issues"
+			             label="Code inspection"
+			             class="CSharpBinding.Refactoring.IssueOptions"/>
 			<ContextActionOptionPanel id="ContextActions" path="/SharpDevelop/ViewContent/TextEditor/C#/ContextActions"/>
 		</OptionPanel>
 	</Path>

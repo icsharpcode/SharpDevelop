@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return selectedModifier; }
 			set {
 				selectedModifier = value;
-				base.RaisePropertyChanged(() => SelectedModifier);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return generateAsyncOperations; }
 			set {
 				generateAsyncOperations = value;
-				base.RaisePropertyChanged(() => GenerateAsyncOperations);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return generateMessageContract; }
 			set {
 				generateMessageContract = value;
-				base.RaisePropertyChanged(() => GenerateMessageContract);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return collectionType; }
 			set {
 				collectionType = value;
-				base.RaisePropertyChanged(() => CollectionType);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return dictionaryCollectionType; }
 			set {
 				dictionaryCollectionType = value;
-				base.RaisePropertyChanged(() => DictionaryCollectionType);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { 
 				useReferencedAssemblies = value;
 				ReuseTypes = useReferencedAssemblies;
-				base.RaisePropertyChanged(() => UseReferencedAssemblies);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -146,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return reuseTypes; }
 			set {
 				reuseTypes = value;
-				base.RaisePropertyChanged(() => ReuseTypes);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -157,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { 
 				reuseReferencedTypes = value;
 				ListViewEnable = value;
-				base.RaisePropertyChanged(() => ReuseReferencedTypes);
+				OnPropertyChanged();
 			}
 		}
 		
@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return listViewEnable; }
 			set {
 				listViewEnable = value;
-				base.RaisePropertyChanged(() => ListViewEnable);
+				OnPropertyChanged();
 			}
 		}
 		

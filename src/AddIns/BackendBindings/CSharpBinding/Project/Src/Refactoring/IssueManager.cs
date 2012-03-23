@@ -7,10 +7,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using CSharpBinding.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
@@ -25,8 +27,65 @@ namespace CSharpBinding.Refactoring
 	/// </summary>
 	public class IssueManager : IDisposable, IContextActionProvider
 	{
-		static readonly Lazy<IList<ICodeIssueProvider>> issueProviders = new Lazy<IList<ICodeIssueProvider>>(
-			() => AddInTree.BuildItems<ICodeIssueProvider>("/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders", null, false));
+		static readonly Lazy<IReadOnlyList<IssueProvider>> issueProviders = new Lazy<IReadOnlyList<IssueProvider>>(
+			() => AddInTree.BuildItems<ICodeIssueProvider>("/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders", null, false)
+			.Select(p => new IssueProvider(p)).ToList());
+		
+		internal static IReadOnlyList<IssueProvider> IssueProviders {
+			get { return issueProviders.Value; }
+		}
+		
+		internal class IssueProvider
+		{
+			readonly ICodeIssueProvider provider;
+			public readonly Type ProviderType;
+			public readonly IssueDescriptionAttribute Attribute;
+			
+			public IssueProvider(ICodeIssueProvider provider)
+			{
+				if (provider == null)
+					throw new ArgumentNullException("provider");
+				this.provider = provider;
+				this.ProviderType = provider.GetType();
+				var attributes = ProviderType.GetCustomAttributes(typeof(IssueDescriptionAttribute), true);
+				if (attributes.Length == 1)
+					this.Attribute = (IssueDescriptionAttribute)attributes[0];
+			}
+			
+			public Severity DefaultSeverity {
+				get { return Attribute != null ? Attribute.Severity : Severity.Hint; }
+			}
+			
+			public IssueMarker DefaultMarker {
+				get { return Attribute != null ? Attribute.IssueMarker : IssueMarker.Underline; }
+			}
+			
+			public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
+			{
+				return provider.GetIssues(context);
+			}
+		}
+		
+		public static IReadOnlyDictionary<Type, Severity> GetIssueSeveritySettings()
+		{
+			// TODO: cache the result
+			var dict = new Dictionary<Type, Severity>();
+			var prop = PropertyService.Get("CSharpIssueSeveritySettings", new Properties());
+			foreach (var provider in issueProviders.Value) {
+				dict[provider.ProviderType] = prop.Get(provider.ProviderType.FullName, provider.DefaultSeverity);
+			}
+			return dict;
+		}
+		
+		public static void SetIssueSeveritySettings(IReadOnlyDictionary<Type, Severity> dict)
+		{
+			var prop = new Properties();
+			foreach (var pair in dict) {
+				prop.Set(pair.Key.FullName, pair.Value);
+			}
+			PropertyService.Set("CSharpIssueSeveritySettings", prop);
+		}
+		
 		readonly ITextEditor editor;
 		readonly ITextMarkerService markerService;
 		
@@ -50,14 +109,15 @@ namespace CSharpBinding.Refactoring
 		sealed class InspectionTag
 		{
 			readonly IssueManager manager;
-			public readonly ICodeIssueProvider Provider;
+			public readonly IssueProvider Provider;
 			public readonly ITextSourceVersion InspectedVersion;
 			public readonly string Description;
 			public readonly int StartOffset;
 			public readonly int EndOffset;
 			public readonly IReadOnlyList<IContextAction> Actions;
+			public readonly Severity Severity;
 			
-			public InspectionTag(IssueManager manager, ICodeIssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, IEnumerable<CodeAction> actions)
+			public InspectionTag(IssueManager manager, IssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, Severity severity, IEnumerable<CodeAction> actions)
 			{
 				this.manager = manager;
 				this.Provider = provider;
@@ -65,6 +125,7 @@ namespace CSharpBinding.Refactoring
 				this.Description = description;
 				this.StartOffset = startOffset;
 				this.EndOffset = endOffset;
+				this.Severity = severity;
 				
 				this.Actions = actions.Select(Wrap).ToList();
 			}
@@ -105,9 +166,32 @@ namespace CSharpBinding.Refactoring
 					return;
 				marker = markerService.Create(startOffset, endOffset - startOffset);
 				marker.ToolTip = this.Description;
-				marker.MarkerType = TextMarkerType.SquigglyUnderline;
-				marker.MarkerColor = Colors.Blue;
+				switch (Provider.DefaultMarker) {
+					case IssueMarker.Underline:
+						Color underlineColor = GetColor(this.Severity);
+						underlineColor.A = 186;
+						marker.MarkerType = TextMarkerType.SquigglyUnderline;
+						marker.MarkerColor = underlineColor;
+						break;
+					case IssueMarker.GrayOut:
+						marker.ForegroundColor = SystemColors.GrayTextColor;
+						break;
+				}
 				marker.Tag = this;
+			}
+			
+			static Color GetColor(Severity severity)
+			{
+				switch (severity) {
+					case Severity.Error:
+						return Colors.Red;
+					case Severity.Warning:
+						return Colors.Orange;
+					case Severity.Suggestion:
+						return Colors.Green;
+					default:
+						return Colors.Blue;
+				}
 			}
 			
 			public void RemoveMarker()
@@ -163,7 +247,14 @@ namespace CSharpBinding.Refactoring
 						var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
 						var resolver = parseInfo.GetResolver(compilation);
 						var context = new SDRefactoringContext(textSource, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
+						var settings = GetIssueSeveritySettings();
 						foreach (var issueProvider in issueProviders.Value) {
+							Severity severity;
+							if (!settings.TryGetValue(issueProvider.ProviderType, out severity))
+								severity = Severity.Hint;
+							if (severity == Severity.None)
+								continue;
+							
 							foreach (var issue in issueProvider.GetIssues(context)) {
 								results.Add(new InspectionTag(
 									this,
@@ -172,6 +263,7 @@ namespace CSharpBinding.Refactoring
 									issue.Desription,
 									context.GetOffset(issue.Start),
 									context.GetOffset(issue.End),
+									severity,
 									issue.Action != null ? new [] { issue.Action } : new CodeAction[0]));
 							}
 						}
