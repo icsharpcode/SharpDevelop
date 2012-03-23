@@ -4811,5 +4811,25 @@ class A
 			Assert.IsNotNull (provider.Find ("WriteLine"), "'WriteLine' not found.");
 		}
 
+		/// <summary>
+		/// Bug 4017 - code completion in foreach does not work for local variables declared in the same block
+		/// </summary>
+		[Test()]
+		public void TestBug4017 ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+    void Foo()
+    {
+        string[] args = null;
+        $foreach(string arg in a$
+    }
+}
+");
+			Assert.IsNotNull (provider.Find ("args"), "'args' not found.");
+		}
+
 	}
 }
