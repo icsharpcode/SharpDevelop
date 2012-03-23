@@ -4831,5 +4831,33 @@ class TestClass
 			Assert.IsNotNull (provider.Find ("args"), "'args' not found.");
 		}
 
+		/// <summary>
+		/// Bug 4020 - code completion handles explicit interface implementations improperly
+		/// </summary>
+		[Test()]
+		public void TestBug4020 ()
+		{
+			// todo: maybe a better solution would be 
+			//       having an item to insert the proper cast on 'Dispose' ?
+			var provider = CreateProvider (
+@"
+using System;
+namespace Test
+{
+    class TestClass : IDisposable
+    {
+        void IDisposable.Dispose ()
+        {
+        }
+        public void Foo()
+        {
+            $D$
+        }
+    }
+}
+");
+			Assert.IsNull (provider.Find ("Dispose"), "'Dispose' found.");
+		}
+
 	}
 }
