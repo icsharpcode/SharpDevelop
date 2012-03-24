@@ -33,7 +33,7 @@ namespace CSharpBinding.Refactoring
 			viewModels = new ObservableCollection<IssueOptionsViewModel>(
 				from p in IssueManager.IssueProviders
 				where p.Attribute != null
-				select new IssueOptionsViewModel(p.ProviderType, p.Attribute)
+				select new IssueOptionsViewModel(p)
 			);
 			ICollectionView view = CollectionViewSource.GetDefaultView(viewModels);
 			if (viewModels.Any(p => !string.IsNullOrEmpty(p.Category)))
@@ -44,21 +44,17 @@ namespace CSharpBinding.Refactoring
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
-			var settings = IssueManager.GetIssueSeveritySettings();
 			foreach (var m in viewModels) {
-				Severity severity;
-				if (settings.TryGetValue(m.ProviderType, out severity))
-					m.Severity = severity;
+				m.Severity = m.Provider.CurrentSeverity;
 			}
 		}
 		
 		public override bool SaveOptions()
 		{
-			Dictionary<Type, Severity> dict = new Dictionary<Type, Severity>();
 			foreach (var m in viewModels) {
-				dict[m.ProviderType] = m.Severity;
+				m.Provider.CurrentSeverity = m.Severity;
 			}
-			IssueManager.SetIssueSeveritySettings(dict);
+			IssueManager.SaveIssueSeveritySettings();
 			return base.SaveOptions();
 		}
 		

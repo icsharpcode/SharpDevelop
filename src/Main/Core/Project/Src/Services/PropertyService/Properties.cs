@@ -326,10 +326,7 @@ namespace ICSharpCode.Core
 				return null;
 			XElement element = serializedVal as XElement;
 			if (element != null) {
-				using (var xmlReader = element.CreateReader()) {
-					xmlReader.MoveToContent();
-					xmlReader.Read(); // skip <SerializedObject>
-					xmlReader.MoveToContent();
+				using (var xmlReader = element.Elements().Single().CreateReader()) {
 					return XamlServices.Load(xmlReader);
 				}
 			} else {
@@ -355,6 +352,7 @@ namespace ICSharpCode.Core
 					removed = true;
 					HandleOldValue(oldValue);
 					MakeDirty();
+					dict.Remove(key);
 				}
 			}
 			if (removed)

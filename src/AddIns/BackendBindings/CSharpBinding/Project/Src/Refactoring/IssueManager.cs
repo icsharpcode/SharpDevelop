@@ -48,15 +48,19 @@ namespace CSharpBinding.Refactoring
 				this.provider = provider;
 				this.ProviderType = provider.GetType();
 				var attributes = ProviderType.GetCustomAttributes(typeof(IssueDescriptionAttribute), true);
-				if (attributes.Length == 1)
+				
+				Severity defaultSeverity = Severity.Hint;
+				if (attributes.Length == 1) {
 					this.Attribute = (IssueDescriptionAttribute)attributes[0];
+					defaultSeverity = this.Attribute.Severity;
+				}
+				var properties = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
+				this.CurrentSeverity = properties.Get(ProviderType.FullName, defaultSeverity);
 			}
 			
-			public Severity DefaultSeverity {
-				get { return Attribute != null ? Attribute.Severity : Severity.Hint; }
-			}
+			public Severity CurrentSeverity { get; set; }
 			
-			public IssueMarker DefaultMarker {
+			public IssueMarker MarkerType {
 				get { return Attribute != null ? Attribute.IssueMarker : IssueMarker.Underline; }
 			}
 			
@@ -66,22 +70,16 @@ namespace CSharpBinding.Refactoring
 			}
 		}
 		
-		public static IReadOnlyDictionary<Type, Severity> GetIssueSeveritySettings()
+		internal static void SaveIssueSeveritySettings()
 		{
-			// TODO: cache the result
-			var dict = new Dictionary<Type, Severity>();
-			var prop = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
+			var properties = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
 			foreach (var provider in issueProviders.Value) {
-				dict[provider.ProviderType] = prop.Get(provider.ProviderType.FullName, provider.DefaultSeverity);
-			}
-			return dict;
-		}
-		
-		public static void SetIssueSeveritySettings(IReadOnlyDictionary<Type, Severity> dict)
-		{
-			var prop = PropertyService.NestedProperties("CSharpIssueSeveritySettings");
-			foreach (var pair in dict) {
-				prop.Set(pair.Key.FullName, pair.Value);
+				if (provider.Attribute != null) {
+					if (provider.CurrentSeverity == provider.Attribute.Severity)
+						properties.Remove(provider.ProviderType.FullName);
+					else
+						properties.Set(provider.ProviderType.FullName, provider.CurrentSeverity);
+				}
 			}
 		}
 		
@@ -116,7 +114,7 @@ namespace CSharpBinding.Refactoring
 			public readonly IReadOnlyList<IContextAction> Actions;
 			public readonly Severity Severity;
 			
-			public InspectionTag(IssueManager manager, IssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, Severity severity, IEnumerable<CodeAction> actions)
+			public InspectionTag(IssueManager manager, IssueProvider provider, ITextSourceVersion inspectedVersion, string description, int startOffset, int endOffset, IEnumerable<CodeAction> actions)
 			{
 				this.manager = manager;
 				this.Provider = provider;
@@ -124,7 +122,7 @@ namespace CSharpBinding.Refactoring
 				this.Description = description;
 				this.StartOffset = startOffset;
 				this.EndOffset = endOffset;
-				this.Severity = severity;
+				this.Severity = provider.CurrentSeverity;
 				
 				this.Actions = actions.Select(Wrap).ToList();
 			}
@@ -170,7 +168,7 @@ namespace CSharpBinding.Refactoring
 				color.A = 186;
 				marker.MarkerColor = color;
 				marker.MarkerTypes = TextMarkerTypes.ScrollBarRightTriangle;
-				switch (Provider.DefaultMarker) {
+				switch (Provider.MarkerType) {
 					case IssueMarker.Underline:
 						marker.MarkerTypes |= TextMarkerTypes.SquigglyUnderline;
 						break;
@@ -248,12 +246,8 @@ namespace CSharpBinding.Refactoring
 						var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
 						var resolver = parseInfo.GetResolver(compilation);
 						var context = new SDRefactoringContext(textSource, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
-						var settings = GetIssueSeveritySettings();
 						foreach (var issueProvider in issueProviders.Value) {
-							Severity severity;
-							if (!settings.TryGetValue(issueProvider.ProviderType, out severity))
-								severity = Severity.Hint;
-							if (severity == Severity.None)
+							if (issueProvider.CurrentSeverity == Severity.None)
 								continue;
 							
 							foreach (var issue in issueProvider.GetIssues(context)) {
@@ -264,7 +258,6 @@ namespace CSharpBinding.Refactoring
 									issue.Desription,
 									context.GetOffset(issue.Start),
 									context.GetOffset(issue.End),
-									severity,
 									issue.Action != null ? new [] { issue.Action } : new CodeAction[0]));
 							}
 						}

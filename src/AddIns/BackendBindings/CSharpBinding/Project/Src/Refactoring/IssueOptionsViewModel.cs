@@ -8,20 +8,16 @@ using ICSharpCode.SharpDevelop.Widgets;
 
 namespace CSharpBinding.Refactoring
 {
-	public class IssueOptionsViewModel : ViewModelBase
+	sealed class IssueOptionsViewModel : ViewModelBase
 	{
-		readonly Type providerType;
+		internal readonly IssueManager.IssueProvider Provider;
 		readonly IssueDescriptionAttribute attribute;
 		
-		public IssueOptionsViewModel(Type providerType, IssueDescriptionAttribute attribute)
+		internal IssueOptionsViewModel(IssueManager.IssueProvider provider)
 		{
-			this.providerType = providerType;
-			this.attribute = attribute;
+			this.Provider = provider;
+			this.attribute = provider.Attribute;
 			this.Severity = attribute.Severity;
-		}
-		
-		public Type ProviderType {
-			get { return providerType; }
 		}
 		
 		// TODO: Translate
