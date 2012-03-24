@@ -50,12 +50,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public GatherVisitor (BaseRefactoringContext ctx, InconsistentNamingIssue inspector) : base (ctx)
 			{
 				this.inspector = inspector;
-				rules = new List<NamingRule> (DefaultRules.Rules);
+				
+				rules = new List<NamingRule> (ctx.RequestData<IEnumerable<NamingRule>> () ?? Enumerable.Empty<NamingRule> ());
 			}
 
 			void CheckName(AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
-				Console.WriteLine(entity);
 				foreach (var rule in rules) {
 					if (!rule.AffectedEntity.HasFlag(entity)) {
 						continue;

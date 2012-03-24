@@ -79,6 +79,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				}
 			}
 		}
+		
+		public override T RequestData<T> ()
+		{
+			if (typeof(T).Equals (typeof(IEnumerable<NamingRule>)))
+				return (T)DefaultRules.GetFdgRules ();
+			return default (T);
+		}
 
 		#region Text stuff
 		public override string EolMarker { get { return Environment.NewLine; } }
