@@ -4,21 +4,22 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
+using ICSharpCode.Core.Implementation;
 
-namespace ICSharpCode.Core.Services
+namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Maintains a list of services that can be shutdown in the reverse order of their initialization.
-	/// Maintains references to the core service implementations.
+	/// The singleton holding the main service provider for SharpDevelop.
 	/// </summary>
-	public abstract class ServiceManager : IServiceProvider
+	public static class ServiceSingleton
 	{
-		volatile static ServiceManager instance = new DefaultServiceManager();
+		volatile static IServiceProvider instance = CreateDefaultServiceContainer();
 		
 		/// <summary>
 		/// Gets the static ServiceManager instance.
 		/// </summary>
-		public static ServiceManager Instance {
+		public static IServiceProvider ServiceProvider {
 			get { return instance; }
 			set {
 				if (value == null)
@@ -27,66 +28,25 @@ namespace ICSharpCode.Core.Services
 			}
 		}
 		
-		/// <summary>
-		/// Gets a service. Returns null if service is not found.
-		/// </summary>
-		public abstract object GetService(Type serviceType);
-		
-		/// <summary>
-		/// Gets a service. Returns null if service is not found.
-		/// </summary>
-		public T GetService<T>() where T : class
+		static IServiceProvider CreateDefaultServiceContainer()
 		{
-			return GetService(typeof(T)) as T;
+			ServiceContainer container = new ServiceContainer();
+			container.AddService(typeof(ILoggingService), new TextWriterLoggingService(new TraceTextWriter()));
+			container.AddService(typeof(IMessageService), new TextWriterMessageService(Console.Out));
+			return container;
 		}
 		
-		/// <summary>
-		/// Gets a service. Throws an exception if service is not found.
-		/// </summary>
-		public object GetRequiredService(Type serviceType)
+		public static T GetService<T>(this IServiceProvider provider) where T : class
 		{
-			object service = GetService(serviceType);
+			return (T)provider.GetService(typeof(T));
+		}
+		
+		public static T GetRequiredService<T>(this IServiceProvider provider) where T : class
+		{
+			object service = provider.GetService(typeof(T));
 			if (service == null)
-				throw new ServiceNotFoundException(serviceType != null ? serviceType.FullName : "null");
-			return service;
-		}
-		
-		/// <summary>
-		/// Gets a service. Throws an exception if service is not found.
-		/// </summary>
-		public T GetRequiredService<T>() where T : class
-		{
-			return (T)GetRequiredService(typeof(T));
-		}
-		
-		/// <summary>
-		/// Gets the logging service.
-		/// </summary>
-		public ILoggingService LoggingService {
-			get { return (ILoggingService)GetRequiredService(typeof(ILoggingService)); }
-		}
-		
-		/// <summary>
-		/// Gets the message service.
-		/// </summary>
-		public IMessageService MessageService {
-			get { return (IMessageService)GetRequiredService(typeof(IMessageService)); }
-		}
-	}
-	
-	sealed class DefaultServiceManager : ServiceManager
-	{
-		readonly ILoggingService loggingService = new TextWriterLoggingService(new DebugTextWriter());
-		readonly IMessageService messageService = new TextWriterMessageService(Console.Out);
-		
-		public override object GetService(Type serviceType)
-		{
-			if (serviceType == typeof(ILoggingService))
-				return loggingService;
-			else if (serviceType == typeof(IMessageService))
-				return messageService;
-			else
-				return null;
+				throw new ServiceNotFoundException(typeof(T));
+			return (T)service;
 		}
 	}
 }

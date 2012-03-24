@@ -556,12 +556,13 @@ namespace ICSharpCode.Core
 		
 		static FileOperationResult ObservedSaveHandleException(Exception e, FileOperationDelegate saveFile, string fileName, string message, FileErrorPolicy policy)
 		{
+			var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
-					ServiceManager.Instance.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
+					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 					break;
 				case FileErrorPolicy.ProvideAlternative:
-					ChooseSaveErrorResult r = ServiceManager.Instance.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
+					ChooseSaveErrorResult r = messageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, false);
 					if (r.IsRetry) {
 						return ObservedSave(saveFile, fileName, message, policy);
 					} else if (r.IsIgnore) {
@@ -600,12 +601,13 @@ namespace ICSharpCode.Core
 
 		static FileOperationResult ObservedSaveHandleError(Exception e, NamedFileOperationDelegate saveFileAs, string fileName, string message, FileErrorPolicy policy)
 		{
+			var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
-					ServiceManager.Instance.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
+					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e);
 					break;
 				case FileErrorPolicy.ProvideAlternative:
-					ChooseSaveErrorResult r = ServiceManager.Instance.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
+					ChooseSaveErrorResult r = messageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileSaving}", e, true);
 					if (r.IsRetry) {
 						return ObservedSave(saveFileAs, fileName, message, policy);
 					} else if (r.IsIgnore) {
@@ -642,12 +644,13 @@ namespace ICSharpCode.Core
 
 		static FileOperationResult ObservedLoadHandleException(Exception e, FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
 		{
+			var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
 			switch (policy) {
 				case FileErrorPolicy.Inform:
-					ServiceManager.Instance.MessageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);
+					messageService.InformSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e);
 					break;
 				case FileErrorPolicy.ProvideAlternative:
-					ChooseSaveErrorResult r = ServiceManager.Instance.MessageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false);
+					ChooseSaveErrorResult r = messageService.ChooseSaveError(fileName, message, "${res:FileUtilityService.ErrorWhileLoading}", e, false);
 					if (r.IsRetry)
 						return ObservedLoad(loadFile, fileName, message, policy);
 					else if (r.IsIgnore)

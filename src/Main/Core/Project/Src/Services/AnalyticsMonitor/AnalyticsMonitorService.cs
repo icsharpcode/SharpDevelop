@@ -28,7 +28,7 @@ namespace ICSharpCode.Core
 		{
 			if (exception == null)
 				throw new ArgumentNullException("exception");
-			IAnalyticsMonitor monitor = ServiceManager.Instance.GetService<IAnalyticsMonitor>();
+			IAnalyticsMonitor monitor = ServiceSingleton.ServiceProvider.GetService<IAnalyticsMonitor>();
 			if (monitor != null) {
 				monitor.TrackException(exception);
 			}
@@ -60,7 +60,7 @@ namespace ICSharpCode.Core
 			else
 				LoggingService.Debug("Activated feature '" + featureName + "'");
 			
-			IAnalyticsMonitor monitor = ServiceManager.Instance.GetService<IAnalyticsMonitor>();
+			IAnalyticsMonitor monitor = ServiceSingleton.ServiceProvider.GetService<IAnalyticsMonitor>();
 			if (monitor != null) {
 				return monitor.TrackFeature(featureName, activationMethod) ?? DummyFeature.Instance;
 			} else {

@@ -64,8 +64,7 @@ namespace ICSharpCode.UsageDataCollector
 		
 		private AnalyticsMonitor()
 		{
-			var container = ServiceManager.Instance.GetRequiredService<ThreadSafeServiceContainer>();
-			container.TryAddService(typeof(IAnalyticsMonitor), this);
+			SD.Services.AddService(typeof(IAnalyticsMonitor), this);
 			dbFileName = Path.Combine(PropertyService.ConfigDirectory, "usageData.dat");
 			
 			SharpDevelop.Gui.WorkbenchSingleton.WorkbenchUnloaded += delegate { CloseSession(); };

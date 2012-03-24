@@ -7,22 +7,6 @@ using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Logging
 {
-	sealed class SDServiceManager : ServiceManager
-	{
-		readonly ThreadSafeServiceContainer container = new ThreadSafeServiceContainer();
-		
-		public SDServiceManager()
-		{
-			container.AddService(typeof(IMessageService), new SDMessageService());
-			container.AddService(typeof(ILoggingService), new log4netLoggingService());
-		}
-		
-		public override object GetService(Type serviceType)
-		{
-			return container.GetService(serviceType);
-		}
-	}
-	
 	sealed class SDMessageService : WinFormsMessageService
 	{
 		public override void ShowException(Exception ex, string message)

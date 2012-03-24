@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace ICSharpCode.Core.Services
+namespace ICSharpCode.Core.Implementation
 {
 	/// <summary>
 	/// IMessageService implementation that writes messages to a text writer.

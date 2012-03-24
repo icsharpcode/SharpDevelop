@@ -25,6 +25,10 @@ namespace ICSharpCode.Core
 			get { return properties != null; }
 		}
 		
+		/// <summary>
+		/// Initializes the service for unit-testing (reset properties to an empty property container).
+		/// Use <see cref="SD.InitializeForUnitTests"/> instead, that initializes the property service and more.
+		/// </summary>
 		public static void InitializeServiceForUnitTests()
 		{
 			properties = null;

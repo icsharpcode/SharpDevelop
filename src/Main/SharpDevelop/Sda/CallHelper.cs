@@ -37,8 +37,11 @@ namespace ICSharpCode.SharpDevelop.Sda
 		#region Initialize Core
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
-			// creating the service manager initializes the logging service etc.
-			ICSharpCode.Core.Services.ServiceManager.Instance = new SDServiceManager();
+			// Initialize the most important services:
+			var container = new ThreadSafeServiceContainer();
+			container.AddService(typeof(IMessageService), new SDMessageService());
+			container.AddService(typeof(ILoggingService), new log4netLoggingService());
+			ServiceSingleton.ServiceProvider = container;
 			
 			LoggingService.Info("InitSharpDevelop...");
 			this.callback = callback;
@@ -95,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 			Project.ProjectService.SolutionConfigurationChanged += delegate { this.callback.SolutionConfigurationChanged(); };
 			FileUtility.FileLoaded += delegate(object sender, FileNameEventArgs e) { this.callback.FileLoaded(e.FileName); };
 			FileUtility.FileSaved  += delegate(object sender, FileNameEventArgs e) { this.callback.FileSaved(e.FileName); };
-		
+			
 			LoggingService.Info("InitSharpDevelop finished");
 		}
 		

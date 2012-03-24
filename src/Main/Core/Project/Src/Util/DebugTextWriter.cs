@@ -6,12 +6,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace ICSharpCode.Core
+namespace ICSharpCode.Core.Implementation
 {
 	/// <summary>
-	/// TextWriter that writes into System.Diagnostics.Debug
+	/// TextWriter that writes into System.Diagnostics.Trace
 	/// </summary>
-	public class DebugTextWriter : TextWriter
+	public class TraceTextWriter : TextWriter
 	{
 		public override Encoding Encoding {
 			get {
@@ -21,27 +21,27 @@ namespace ICSharpCode.Core
 		
 		public override void Write(char value)
 		{
-			Debug.Write(value.ToString());
+			Trace.Write(value.ToString());
 		}
 		
 		public override void Write(char[] buffer, int index, int count)
 		{
-			Debug.Write(new string(buffer, index, count));
+			Trace.Write(new string(buffer, index, count));
 		}
 		
 		public override void Write(string value)
 		{
-			Debug.Write(value);
+			Trace.Write(value);
 		}
 		
 		public override void WriteLine()
 		{
-			Debug.WriteLine(string.Empty);
+			Trace.WriteLine(string.Empty);
 		}
 		
 		public override void WriteLine(string value)
 		{
-			Debug.WriteLine(value);
+			Trace.WriteLine(value);
 		}
 	}
 }

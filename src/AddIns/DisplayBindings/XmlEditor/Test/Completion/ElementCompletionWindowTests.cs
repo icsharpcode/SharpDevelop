@@ -13,6 +13,7 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Completion
 {
 	[TestFixture]
+	[Ignore("Test needs to be adjusted to SD5")]
 	public class ElementCompletionWindowTests
 	{
 		MockTextEditor textEditor;

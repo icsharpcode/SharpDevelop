@@ -64,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;
+			SD.Services.AddService(typeof(IWorkbench), workbench);
 			
 			LanguageService.ValidateLanguage();
 			
@@ -75,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
-			var messageService = Core.Services.ServiceManager.Instance.MessageService as IDialogMessageService;
+			var messageService = SD.MessageService as IDialogMessageService;
 			if (messageService != null) {
 				messageService.DialogOwner = workbench.MainWin32Window;
 				Debug.Assert(messageService.DialogOwner != null);

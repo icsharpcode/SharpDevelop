@@ -401,7 +401,7 @@ namespace SearchAndReplace
 		
 		public static ITextEditor GetActiveTextEditor()
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			ITextEditorProvider provider = SD.Workbench.ActiveViewContent as ITextEditorProvider;
 			if (provider != null) {
 				return provider.TextEditor;
 			} else {

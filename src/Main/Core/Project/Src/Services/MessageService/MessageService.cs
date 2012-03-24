@@ -14,6 +14,10 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class MessageService
 	{
+		static IMessageService Service {
+			get { return ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>(); }
+		}
+		
 		/// <summary>
 		/// Shows an exception error.
 		/// </summary>
@@ -28,7 +32,7 @@ namespace ICSharpCode.Core
 		public static void ShowError(string message)
 		{
 			LoggingService.Error(message);
-			ServiceManager.Instance.MessageService.ShowError(message);
+			Service.ShowError(message);
 		}
 		
 		/// <summary>
@@ -49,7 +53,7 @@ namespace ICSharpCode.Core
 		{
 			LoggingService.Error(message, ex);
 			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
-			ServiceManager.Instance.MessageService.ShowException(ex, message);
+			Service.ShowException(ex, message);
 		}
 		
 		/// <summary>
@@ -68,7 +72,7 @@ namespace ICSharpCode.Core
 			LoggingService.Error(message, ex);
 			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
 			message = GetMessage(message, ex);
-			ServiceManager.Instance.MessageService.ShowError(message);
+			Service.ShowError(message);
 		}
 		
 		static string GetMessage(string message, Exception ex)
@@ -85,7 +89,7 @@ namespace ICSharpCode.Core
 		public static void ShowWarning(string message)
 		{
 			LoggingService.Warn(message);
-			ServiceManager.Instance.MessageService.ShowWarning(message);
+			Service.ShowWarning(message);
 		}
 		
 		/// <summary>
@@ -105,7 +109,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static bool AskQuestion(string question, string caption)
 		{
-			return ServiceManager.Instance.MessageService.AskQuestion(question, caption);
+			return Service.AskQuestion(question, caption);
 		}
 		
 		public static bool AskQuestionFormatted(string caption, string formatstring, params object[] formatitems)
@@ -144,7 +148,7 @@ namespace ICSharpCode.Core
 		/// <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
 		public static int ShowCustomDialog(string caption, string dialogText, int acceptButtonIndex, int cancelButtonIndex, params string[] buttontexts)
 		{
-			return ServiceManager.Instance.MessageService.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);
+			return Service.ShowCustomDialog(caption, dialogText, acceptButtonIndex, cancelButtonIndex, buttontexts);
 		}
 		
 		/// <summary>
@@ -161,7 +165,7 @@ namespace ICSharpCode.Core
 		
 		public static string ShowInputBox(string caption, string dialogText, string defaultValue)
 		{
-			return ServiceManager.Instance.MessageService.ShowInputBox(caption, dialogText, defaultValue);
+			return Service.ShowInputBox(caption, dialogText, defaultValue);
 		}
 		
 		static string defaultMessageBoxTitle = "MessageBox";
@@ -203,7 +207,7 @@ namespace ICSharpCode.Core
 		public static void ShowMessage(string message, string caption)
 		{
 			LoggingService.Info(message);
-			ServiceManager.Instance.MessageService.ShowMessage(message, caption);
+			Service.ShowMessage(message, caption);
 		}
 		
 		static string Format(string formatstring, object[] formatitems)

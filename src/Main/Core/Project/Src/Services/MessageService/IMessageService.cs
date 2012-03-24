@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.Core.Services
+namespace ICSharpCode.Core
 {
 	/// <summary>
 	/// Interface for the MessageService.
