@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\DocumentSequence.cs" />
+    <Compile Include="Src\Snippets\CodeSnippetComparer.cs" />
     <Compile Include="Src\Utils.cs" />
     <None Include="AvalonEdit.AddIn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

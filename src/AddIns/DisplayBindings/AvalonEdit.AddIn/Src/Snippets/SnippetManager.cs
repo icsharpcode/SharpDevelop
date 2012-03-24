@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	public sealed class SnippetManager
 	{
 		readonly object lockObj = new object();
-		internal static readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
+		internal readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
 			new CodeSnippetGroup {
 				Extensions = ".cs",
 				Snippets = {
@@ -304,6 +304,8 @@ End Property${Caret}",
 		
 		private SnippetManager()
 		{
+			foreach (var g in defaultSnippets)
+				g.Freeze();
 			snippetElementProviders = AddInTree.BuildItems<ISnippetElementProvider>("/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders", null, false);
 		}
 		
@@ -313,6 +315,10 @@ End Property${Caret}",
 		public List<CodeSnippetGroup> LoadGroups()
 		{
 			var savedSnippets = PropertyService.Get("CodeSnippets", new List<CodeSnippetGroup>());
+			
+			// HACK: clone all groups to ensure we use instances independent from the PropertyService
+			// this can be removed in SD5 where PropertyService.Get deserializes a new instance on every call.
+			savedSnippets = savedSnippets.Select(g => new CodeSnippetGroup(g)).ToList();
 			
 			foreach (var group in savedSnippets) {
 				var defaultGroup = defaultSnippets.FirstOrDefault(i => i.Extensions == group.Extensions);
@@ -329,7 +335,7 @@ End Property${Caret}",
 			}
 			
 			foreach (var group in defaultSnippets.Except(savedSnippets, new ByMemberComparer<CodeSnippetGroup, string>(g => g.Extensions))) {
-				savedSnippets.Add(group);
+				savedSnippets.Add(new CodeSnippetGroup(group));
 			}
 			
 			return savedSnippets;
@@ -371,7 +377,7 @@ End Property${Caret}",
 					IEnumerable<CodeSnippet> saveSnippets = group.Snippets;
 					
 					if (defaultGroup != null) {
-						saveSnippets = group.Snippets.Except(defaultGroup.Snippets);
+						saveSnippets = group.Snippets.Except(defaultGroup.Snippets, CodeSnippetComparer.Instance);
 					}
 					
 					// save all groups, even if they're empty
@@ -391,8 +397,11 @@ End Property${Caret}",
 		public ReadOnlyCollection<CodeSnippetGroup> ActiveGroups {
 			get {
 				lock (lockObj) {
-					if (activeGroups == null)
+					if (activeGroups == null) {
 						activeGroups = LoadGroups().AsReadOnly();
+						foreach (var g in activeGroups)
+							g.Freeze();
+					}
 					return activeGroups;
 				}
 			}
