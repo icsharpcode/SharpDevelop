@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Search
 				int resultEndOffset = result.Length + result.Index;
 				if (offset > result.Index || endOffset < resultEndOffset)
 					continue;
-				if (matchWholeWords && (!IsWordBorder(document, offset) || !IsWordBorder(document, resultEndOffset)))
+				if (matchWholeWords && (!IsWordBorder(document, result.Index) || !IsWordBorder(document, resultEndOffset)))
 					continue;
 				yield return new SearchResult { StartOffset = result.Index, Length = result.Length, Data = result };
 			}
