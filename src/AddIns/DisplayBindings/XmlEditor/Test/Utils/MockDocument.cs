@@ -18,10 +18,12 @@ namespace XmlEditor.Tests.Utils
 		
 		public List<int> PositionToOffsetReturnValues = new List<int>();
 		
-		public MockDocument()
-		{
-		}
+		MockTextEditor editor;
 		
+		public MockDocument(MockTextEditor editor = null)
+		{
+			this.editor = editor;
+		}
 		public event EventHandler TextChanged;
 		
 		protected virtual void OnTextChanged(EventArgs e)
@@ -77,6 +79,8 @@ namespace XmlEditor.Tests.Utils
 		public void Insert(int offset, string text)
 		{
 			this.text = this.text.Insert(offset, text);
+			if (editor != null && editor.Caret.Offset == offset)
+				editor.Caret.Offset += text.Length;
 		}
 		
 		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)

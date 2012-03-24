@@ -16,7 +16,7 @@ namespace XmlEditor.Tests.Utils
 		MockCompletionListWindow completionWindowDisplayed;
 		ICompletionItemList completionItemsDisplayed;
 		MockCaret caret = new MockCaret();
-		IDocument document = new MockDocument();
+		IDocument document;
 		ITextEditorOptions options = new MockTextEditorOptions();
 		FileName fileName;
 		bool showCompletionWindowReturnsNull;
@@ -26,6 +26,7 @@ namespace XmlEditor.Tests.Utils
 						
 		public MockTextEditor()
 		{
+			document = new MockDocument(this);
 		}
 		
 		public event EventHandler SelectionChanged;
