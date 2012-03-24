@@ -44,12 +44,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			RequiresAppConfigEntry = true,
 			IsAvailable = DotnetDetection.IsDotnet45Installed
 		};
-		public readonly static TargetFramework Net45Client = new ClientProfileTargetFramework(Net45) {
-			BasedOn = Net40Client
-		};
+//		public readonly static TargetFramework Net45Client = new ClientProfileTargetFramework(Net45) {
+//			BasedOn = Net40Client
+//		};
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
-			Net45, Net45Client, Net40, Net40Client, Net35, Net35Client, Net30, Net20
+			Net45, Net40, Net40Client, Net35, Net35Client, Net30, Net20
 		};
 		
 		public readonly static TargetFramework DefaultTargetFramework = Net40Client;
