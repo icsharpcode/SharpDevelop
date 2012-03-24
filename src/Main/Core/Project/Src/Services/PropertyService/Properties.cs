@@ -6,15 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading;
+using System.Xaml;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 
 namespace ICSharpCode.Core
 {
@@ -232,7 +229,7 @@ namespace ICSharpCode.Core
 								array[i] = (T)Deserialize(serializedArray[i], typeof(T));
 							}
 							return array;
-						} catch (SerializationException ex) {
+						} catch (XamlObjectWriterException ex) {
 							LoggingService.Warn(ex);
 						}
 					} else {
@@ -317,9 +314,8 @@ namespace ICSharpCode.Core
 			if (key != null) {
 				element.Add(new XAttribute("key", key));
 			}
-			var s = new DataContractSerializer(sourceType);
 			using (var xmlWriter = element.CreateWriter()) {
-				s.WriteObject(xmlWriter, value);
+				XamlServices.Save(xmlWriter, value);
 			}
 			return element;
 		}
@@ -330,12 +326,11 @@ namespace ICSharpCode.Core
 				return null;
 			XElement element = serializedVal as XElement;
 			if (element != null) {
-				var s = new DataContractSerializer(targetType);
 				using (var xmlReader = element.CreateReader()) {
 					xmlReader.MoveToContent();
 					xmlReader.Read(); // skip <SerializedObject>
 					xmlReader.MoveToContent();
-					return s.ReadObject(xmlReader);
+					return XamlServices.Load(xmlReader);
 				}
 			} else {
 				string text = serializedVal as string;
