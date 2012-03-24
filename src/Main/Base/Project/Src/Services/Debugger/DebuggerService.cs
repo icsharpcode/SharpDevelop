@@ -24,7 +24,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		static IDebugger   currentDebugger;
 		static DebuggerDescriptor[] debuggers;
-		static string      oldLayoutConfiguration = "Default";
 
 		static DebuggerService()
 		{
@@ -112,8 +111,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static void OnDebugStarting(object sender, EventArgs e)
 		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
-			LayoutConfiguration.CurrentLayoutName = "Debug";
+			WorkbenchSingleton.Workbench.WorkbenchLayout.SwitchLayout("Debug");
 			
 			debugFeature = AnalyticsMonitorService.TrackFeature("Debugger");
 			
@@ -137,8 +135,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				debugFeature.EndTracking();
 			
 			RemoveCurrentLineMarker();
-			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
-			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
+			WorkbenchSingleton.Workbench.WorkbenchLayout.SwitchLayout("Default");
 			if (DebugStopped != null)
 				DebugStopped(null, e);
 		}

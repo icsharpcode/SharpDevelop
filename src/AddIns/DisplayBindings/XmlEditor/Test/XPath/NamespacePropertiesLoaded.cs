@@ -30,7 +30,7 @@ namespace XmlEditor.Tests.XPath
 				foreach (XmlNamespace xmlNamespace in expectedNamespaces) {
 					namespaces.Add(xmlNamespace.ToString());
 				}
-				p.Set("Namespaces", namespaces.ToArray());
+				p.SetList("Namespaces", namespaces);
 				queryControl.SetMemento(p);
 				actualNamespaces = queryControl.GetNamespaces();
 			}

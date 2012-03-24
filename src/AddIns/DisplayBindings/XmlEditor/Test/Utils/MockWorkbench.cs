@@ -42,7 +42,7 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public event ViewContentEventHandler ViewOpened;
+		public event EventHandler<ViewContentEventArgs> ViewOpened;
 		
 		protected virtual void OnViewOpened(ViewContentEventArgs e)
 		{
@@ -51,7 +51,7 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public event ViewContentEventHandler ViewClosed;
+		public event EventHandler<ViewContentEventArgs> ViewClosed;
 		
 		protected virtual void OnViewClosed(ViewContentEventArgs e)
 		{

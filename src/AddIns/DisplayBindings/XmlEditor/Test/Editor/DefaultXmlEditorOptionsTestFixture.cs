@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -104,7 +106,7 @@ namespace XmlEditor.Tests.Editor
 		{
 			options.PropertyChanged += OptionsPropertyChanged;
 			properties.Set(XmlEditorOptions.ShowAttributesWhenFoldedPropertyName, true);
-			Assert.AreEqual(XmlEditorOptions.ShowAttributesWhenFoldedPropertyName, propertyChangedEventArgs.Key);
+			Assert.AreEqual(XmlEditorOptions.ShowAttributesWhenFoldedPropertyName, propertyChangedEventArgs.PropertyName);
 		}
 		
 		void OptionsPropertyChanged(object source, PropertyChangedEventArgs e)

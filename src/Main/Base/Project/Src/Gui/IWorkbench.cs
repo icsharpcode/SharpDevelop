@@ -32,11 +32,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Window MainWindow { get; }
 		
 		/// <summary>
-		/// Gets the status bar.
-		/// </summary>
-		IStatusBarService StatusBar { get; }
-		
-		/// <summary>
 		/// Gets/Sets whether the window is displayed in full-screen mode.
 		/// </summary>
 		bool FullScreen { get; set; }
@@ -179,11 +174,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// 	WorkbenchSingleton.Workbench.ViewOpened += ...;
 		/// };
 		/// </example>
-		event ViewContentEventHandler ViewOpened;
+		event EventHandler<ViewContentEventArgs> ViewOpened;
 		
 		/// <summary>
 		/// Is called, when a workbench view was closed
 		/// </summary>
-		event ViewContentEventHandler ViewClosed;
+		event EventHandler<ViewContentEventArgs> ViewClosed;
+	}
+	
+	public class ViewContentEventArgs : EventArgs
+	{
+		IViewContent content;
+		
+		public IViewContent Content {
+			get {
+				return content;
+			}
+		}
+		
+		public ViewContentEventArgs(IViewContent content)
+		{
+			if (content == null)
+				throw new ArgumentNullException("content");
+			this.content = content;
+		}
 	}
 }

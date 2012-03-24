@@ -62,14 +62,14 @@ namespace ICSharpCode.Core.Services
 		/// <summary>
 		/// Gets the logging service.
 		/// </summary>
-		public virtual ILoggingService LoggingService {
+		public ILoggingService LoggingService {
 			get { return (ILoggingService)GetRequiredService(typeof(ILoggingService)); }
 		}
 		
 		/// <summary>
 		/// Gets the message service.
 		/// </summary>
-		public virtual IMessageService MessageService {
+		public IMessageService MessageService {
 			get { return (IMessageService)GetRequiredService(typeof(IMessageService)); }
 		}
 	}
@@ -78,14 +78,6 @@ namespace ICSharpCode.Core.Services
 	{
 		readonly ILoggingService loggingService = new TextWriterLoggingService(new DebugTextWriter());
 		readonly IMessageService messageService = new TextWriterMessageService(Console.Out);
-		
-		public override ILoggingService LoggingService {
-			get { return loggingService; }
-		}
-		
-		public override IMessageService MessageService {
-			get { return messageService; }
-		}
 		
 		public override object GetService(Type serviceType)
 		{

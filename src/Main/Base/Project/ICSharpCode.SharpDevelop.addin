@@ -49,6 +49,7 @@
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 			<Doozer name="TaskBoundLoggerFilter" class="ICSharpCode.SharpDevelop.Project.TaskBoundLoggerFilterDoozer"/>
 		</Import>
+		<Import assembly=":SharpDevelop"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -1065,7 +1066,7 @@
 		
 		<ToolbarItem id    = "ChooseLayout"
 		             type  = "ComboBox"
-		             class = "ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand" />
+		             class = "ICSharpCode.SharpDevelop.Gui.Workbench.ChooseLayoutCommand" />
 		
 		<ToolbarItem id="NavigationSeparator" type="Separator"/>
 		<Condition name="CanNavigateBack" action="Disable">

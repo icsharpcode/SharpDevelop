@@ -53,7 +53,7 @@ namespace ICSharpCode.SharpDevelop
 		/// Gets the status bar.
 		/// </summary>
 		public static IStatusBarService StatusBar {
-			get { return Workbench.StatusBar; }
+			get { return GetRequiredService<IStatusBarService>(); }
 		}
 		
 		public static ILoggingService LoggingService {
@@ -62,10 +62,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IMessageService MessageService {
 			get { return GetRequiredService<IMessageService>(); }
-		}
-		
-		public static IAnalyticsMonitor AnalyticsMonitor {
-			get { return GetRequiredService<IAnalyticsMonitor>(); }
 		}
 	}
 }

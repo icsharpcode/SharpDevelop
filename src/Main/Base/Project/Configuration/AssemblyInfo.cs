@@ -10,16 +10,9 @@ using System.Windows;
 [assembly: CLSCompliant(false)]
 [assembly: StringFreezing()]
 
-// Use hard-binding for ICSharpCode.SharpDevelop:
-[assembly: Dependency("ICSharpCode.Core", LoadHint.Always)]
-[assembly: Dependency("ICSharpCode.Core.WinForms", LoadHint.Always)]
-[assembly: Dependency("ICSharpCode.Core.Presentation", LoadHint.Always)]
-[assembly: Dependency("ICSharpCode.AvalonEdit", LoadHint.Always)]
-[assembly: Dependency("ICSharpCode.NRefactory", LoadHint.Always)]
-
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.SourceAssembly, //where theme specific resource dictionaries are located
-    ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
+	ResourceDictionaryLocation.SourceAssembly, //where theme specific resource dictionaries are located
+	ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
 )]
 
 [assembly: AssemblyTitle("SharpDevelopBase")]
@@ -27,3 +20,5 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
+[assembly: InternalsVisibleTo("SharpDevelop,PublicKey=002400000480000094000000060200000024000052534131000400000100010063d5db5957250f41969c79e88cbd8806165ca7d96d468a9d60f11704a8b0698684b5acc16fc82e6cede459e1d6ed7384b044c47a67d68bae1e08182473168e2ad92c6fabe32b9217ea59d05bb9a101318aeec9f767991d2ae8d987b60c591b6020d2816c395db7f3045a1c77c2b074c508c2b4f25dcd969688da94ebc83f5f9b")]

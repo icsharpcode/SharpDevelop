@@ -30,6 +30,7 @@ namespace ICSharpCode.Core
 			doozers.TryAdd("MenuItem", new MenuItemDoozer());
 			doozers.TryAdd("ToolbarItem", new ToolbarItemDoozer());
 			doozers.TryAdd("Include", new IncludeDoozer());
+			doozers.TryAdd("Service", new ServiceDoozer());
 			
 			conditionEvaluators.TryAdd("Compare", new CompareConditionEvaluator());
 			conditionEvaluators.TryAdd("Ownerstate", new OwnerStateConditionEvaluator());

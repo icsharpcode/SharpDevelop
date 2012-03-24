@@ -175,10 +175,6 @@
     <Compile Include="Src\Gui\AbstractSecondaryViewContent.cs" />
     <Compile Include="Src\Gui\AbstractViewContentHandlingLoadErrors.cs" />
     <Compile Include="Src\Gui\AbstractViewContentWithoutFile.cs" />
-    <Compile Include="Src\Gui\App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\Components\ColorPickerButton.xaml.cs">
       <DependentUpon>ColorPickerButton.xaml</DependentUpon>
@@ -301,12 +297,6 @@
     <Compile Include="Src\Gui\Pads\ToolsPad.cs" />
     <Compile Include="Src\Gui\ProgressCollector.cs" />
     <Compile Include="Src\Gui\SimpleViewContent.cs" />
-    <Compile Include="Src\Gui\Workbench\FullScreenEnabledWindow.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\AvalonDockLayout.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\AvalonPadContent.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\AvalonWorkbenchWindow.cs" />
-    <Compile Include="Src\Gui\Workbench\SingleInstanceHelper.cs" />
-    <Compile Include="Src\Gui\Workbench\WpfWorkbench.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ViewInBrowserConditionEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableProjectEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\WriteableSolutionEvaluator.cs" />
@@ -435,7 +425,6 @@
     <Compile Include="Src\Gui\ContentInterfaces\IEditable.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPositionable.cs" />
     <Compile Include="Src\Gui\WorkbenchSingleton.cs" />
-    <Compile Include="Src\Commands\AutostartCommands.cs" />
     <Compile Include="Src\Commands\EditCommands.cs" />
     <Compile Include="Src\Commands\FileCommands.cs" />
     <Compile Include="Src\Commands\FileTabStripCommands.cs" />
@@ -457,9 +446,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideTabItem.cs" />
-    <Compile Include="Src\Gui\Components\StatusBar\SdStatusBar.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Src\Gui\ContentInterfaces\IPrintable.cs" />
     <Compile Include="Src\Gui\Dialogs\AbstractOptionPanel.cs">
       <SubType>UserControl</SubType>
@@ -545,14 +531,11 @@
     <Compile Include="Src\Internal\Doozers\PadDoozer.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\MessageViewCategory.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveContentExtensionEvaluator.cs" />
-    <Compile Include="Src\Gui\Workbench\ViewContentEventHandler.cs" />
     <Compile Include="Src\Services\Debugger\IDebugger.cs" />
     <Compile Include="Src\Services\Debugger\DefaultDebugger.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveWindowStateEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\OpenWindowStateEvaluator.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\DebuggerSupportsEvaluator.cs" />
-    <Compile Include="Src\Commands\ChooseLayoutCommand.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\LayoutConfiguration.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -825,11 +808,6 @@
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="themes\generic.xaml" />
-    <ProjectReference Include="..\..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
-      <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
-      <Name>AvalonDock</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
@@ -878,7 +856,6 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Page Include="Src\Gui\App.xaml" />
     <Page Include="Src\Gui\Components\ColorPickerButton.xaml" />
     <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
       <DependentUpon>GotoDialog.cs</DependentUpon>
@@ -888,7 +865,6 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectCulturePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\TreeViewOptionsDialog.xaml" />
-    <Page Include="Src\Gui\Workbench\WpfWorkbench.xaml" />
     <Page Include="Src\Project\Converter\UpgradeView.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

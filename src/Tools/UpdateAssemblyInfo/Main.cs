@@ -29,12 +29,8 @@ namespace UpdateAssemblyInfo
 				Output = "src/Main/GlobalAssemblyInfo.cs"
 			},
 			new TemplateFile {
-				Input = "src/Main/StartUp/Project/app.template.config",
-				Output = "src/Main/StartUp/Project/SharpDevelop.exe.config"
-			},
-			new TemplateFile {
-				Input = "src/Main/StartUp/Project/app.template.config",
-				Output = "src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config"
+				Input = "src/Main/SharpDevelop/app.template.config",
+				Output = "src/Main/SharpDevelop/SharpDevelop.exe.config"
 			},
 			new TemplateFile {
 				Input = "src/Setup/SharpDevelop.Setup.wixproj.user.template",

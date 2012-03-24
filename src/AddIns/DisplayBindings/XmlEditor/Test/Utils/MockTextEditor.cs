@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using Rhino.Mocks;
 
 namespace XmlEditor.Tests.Utils
 {
@@ -15,7 +17,7 @@ namespace XmlEditor.Tests.Utils
 	{
 		MockCompletionListWindow completionWindowDisplayed;
 		ICompletionItemList completionItemsDisplayed;
-		MockCaret caret = new MockCaret();
+		ITextEditorCaret caret = MockRepository.GenerateStub<ITextEditorCaret>();
 		IDocument document = new MockDocument();
 		ITextEditorOptions options = new MockTextEditorOptions();
 		FileName fileName;
@@ -177,6 +179,12 @@ namespace XmlEditor.Tests.Utils
 		public object GetService(Type serviceType)
 		{
 			throw new NotImplementedException();
+		}
+		
+		public IList<ICSharpCode.SharpDevelop.Refactoring.IContextActionProvider> ContextActionProviders {
+			get {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

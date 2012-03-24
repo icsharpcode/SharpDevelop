@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Xml.XPath;
-
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
@@ -33,7 +33,7 @@ namespace XmlEditor.Tests.XPath
 			container.AddService(typeof(ITextMarkerService), markerService);
 			
 			// Add xpath marker to document.
-			AvalonEditDocumentAdapter doc = new AvalonEditDocumentAdapter(new ICSharpCode.AvalonEdit.Document.TextDocument(), container);
+			IDocument doc = new ICSharpCode.AvalonEdit.Document.TextDocument() { ServiceProvider = container };
 			doc.Text = "<Test/>";
 			XPathNodeTextMarker xpathNodeMarker = new XPathNodeTextMarker(doc);
 			XPathNodeMatch nodeMatch = new XPathNodeMatch("Test", "<Test/>", 0, 1, XPathNodeType.Element);

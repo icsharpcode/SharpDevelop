@@ -26,6 +26,9 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugSymbols>true</DebugSymbols>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -168,6 +171,10 @@
     <ProjectReference Include="..\..\Core\Test\ICSharpCode.Core.Tests.csproj">
       <Project>{AD6FAA08-D6F5-4DBA-AF85-F4DA9F40C3B5}</Project>
       <Name>ICSharpCode.Core.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SharpDevelop\SharpDevelop.csproj">
+      <Project>{1152B71B-3C05-4598-B20D-823B5D40559E}</Project>
+      <Name>SharpDevelop</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>

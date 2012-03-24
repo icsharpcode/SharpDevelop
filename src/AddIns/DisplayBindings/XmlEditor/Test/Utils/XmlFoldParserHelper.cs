@@ -4,7 +4,8 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.XmlEditor;
 
 namespace XmlEditor.Tests.Utils
@@ -21,14 +22,14 @@ namespace XmlEditor.Tests.Utils
 			return Parser;
 		}
 		
-		public MockTextBuffer CreateTextBuffer(string xml)
+		public ITextSource CreateTextBuffer(string xml)
 		{
-			return new MockTextBuffer(xml);
+			return new StringTextSource(xml);
 		}
 		
 		public IList<FoldingRegion> GetFolds(string xml)
 		{
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
+			ITextSource textBuffer = new StringTextSource(xml);
 			Folds = Parser.GetFolds(textBuffer);
 			return Folds;
 		}

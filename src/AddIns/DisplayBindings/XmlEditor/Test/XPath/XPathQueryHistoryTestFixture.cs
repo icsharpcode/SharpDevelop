@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
@@ -31,7 +32,7 @@ namespace XmlEditor.Tests.XPath
 				Properties p = new Properties();
 				p.Set("XPathQuery.LastQuery", "//w:Wix");
 				expectedXPathsAfterLoad = new string[] {"//w:Fragment", "//w:Dialog"};
-				p.Set("XPathQuery.History", expectedXPathsAfterLoad);
+				p.SetList("XPathQuery.History", expectedXPathsAfterLoad);
 				queryControl.SetMemento(p);
 
 				comboBoxTextAfterLoad = queryControl.XPathComboBox.Text;
@@ -45,7 +46,7 @@ namespace XmlEditor.Tests.XPath
 				p = queryControl.CreateMemento();
 				
 				xpathQueryAfterSave = p.Get("XPathQuery.LastQuery", String.Empty);
-				xpathsAfterSave = p.Get("XPathQuery.History", new string[0]);
+				xpathsAfterSave = p.GetList<string>("XPathQuery.History").ToArray();
 			}
 		}
 		

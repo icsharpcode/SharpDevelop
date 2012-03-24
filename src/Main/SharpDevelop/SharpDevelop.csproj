@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1152B71B-3C05-4598-B20D-823B5D40559E}</ProjectGuid>
+    <AssemblyName>SharpDevelop</AssemblyName>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+    <BaseAddress>4194304</BaseAddress>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <RootNamespace>ICSharpCode.SharpDevelop</RootNamespace>
+    <NoWarn>436</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG</DefineConstants>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputType>Exe</OutputType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputType>WinExe</OutputType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\Libraries\log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsFormsIntegration">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Gui\App.xaml.cs" />
+    <Compile Include="Gui\SplashScreen.cs" />
+    <Compile Include="Gui\Workbench\AvalonDockLayout.cs" />
+    <Compile Include="Gui\Workbench\AvalonPadContent.cs" />
+    <Compile Include="Gui\Workbench\AvalonWorkbenchWindow.cs" />
+    <Compile Include="Gui\Workbench\ChooseLayoutCommand.cs" />
+    <Compile Include="Gui\Workbench\FullScreenEnabledWindow.cs" />
+    <Compile Include="Gui\Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Gui\Workbench\SDStatusBar.cs" />
+    <Compile Include="Gui\Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Gui\Workbench\StatusBarService.cs" />
+    <Compile Include="Gui\Workbench\WorkbenchStartup.cs" />
+    <Compile Include="Gui\Workbench\WpfWorkbench.cs" />
+    <Compile Include="Logging\ExceptionBox.cs" />
+    <Compile Include="Logging\log4netLoggingService.cs" />
+    <Compile Include="Logging\LogMessageRecorder.cs" />
+    <Compile Include="Logging\SDMessageService.cs" />
+    <Compile Include="Sda\CallHelper.cs" />
+    <Compile Include="Sda\Document.cs" />
+    <Compile Include="Sda\EventArgs.cs" />
+    <Compile Include="Sda\RunWorkbenchException.cs" />
+    <Compile Include="Sda\SharpDevelopHost.cs" />
+    <Compile Include="Sda\StartupSettings.cs" />
+    <Compile Include="Sda\WorkbenchSettings.cs" />
+    <Compile Include="SharpDevelopMain.cs" />
+    <EmbeddedResource Include="..\..\..\data\resources\StringResources.resx">
+      <Link>Resources\StringResources.resx</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\BitmapResources.resources" />
+    <None Include="app.manifest">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Resources\SplashScreen.jpg">
+      <LogicalName>Resources.SplashScreen.jpg</LogicalName>
+    </EmbeddedResource>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <None Include="SharpDevelop.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+      <DependentUpon>GlobalAssemblyInfo.template</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
+      <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
+      <Name>AvalonDock</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
+      <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
+      <Name>ICSharpCode.NRefactory.Xml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
+      <Package>{00000000-0000-0000-0000-000000000000}</Package>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Content Include="..\GlobalAssemblyInfo.template">
+      <Link>Configuration\GlobalAssemblyInfo.template</Link>
+    </Content>
+    <Content Include="app.template.config" />
+    <ProjectReference Include="..\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui" />
+    <Folder Include="Gui\Workbench" />
+    <Folder Include="Logging" />
+    <Folder Include="Sda" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Gui\App.xaml" />
+    <Page Include="Gui\Workbench\WpfWorkbench.xaml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

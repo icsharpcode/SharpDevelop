@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		[Obsolete("Use SD.StatusBar instead")]
 		public static IStatusBarService StatusBar {
 			get {
-				return workbench != null ? workbench.StatusBar : null;
+				return SD.StatusBar;
 			}
 		}
 		
@@ -68,7 +68,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LanguageService.ValidateLanguage();
 			
 			DisplayBindingService.InitializeService();
-			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();
 			ParserService.InitializeParserService();
 			TaskService.Initialize();
