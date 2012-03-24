@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Core.Services;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -19,7 +20,7 @@ namespace ICSharpCode.UnitTesting
 		MessageViewCategory unitTestCategory = TestService.UnitTestMessageView;
 		UnitTestMessageService messageService = new UnitTestMessageService();
 		UnitTestSaveAllFilesCommand saveAllFilesCommand = new UnitTestSaveAllFilesCommand();
-		IStatusBarService statusBarService = WorkbenchSingleton.StatusBar;
+		IStatusBarService statusBarService = SD.StatusBar;
 		
 		public IRegisteredTestFrameworks RegisteredTestFrameworks {
 			get { return testFrameworks; }

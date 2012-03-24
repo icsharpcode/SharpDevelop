@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using ICSharpCode.SharpDevelop;
-using SD = ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using System;
@@ -13,6 +12,8 @@ using System.Web.Services.Discovery;
 
 namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 {
+	using SD = ICSharpCode.SharpDevelop.Gui;
+	
 	/// <summary>
 	/// Tests the generated project items for a web reference.
 	/// </summary>

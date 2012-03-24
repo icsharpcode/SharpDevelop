@@ -401,6 +401,7 @@
     <Compile Include="Src\Services\RefactoringService\FindReferenceService.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeGraphNode.cs" />
     <Compile Include="Src\Services\RefactoringService\TypeName.cs" />
+    <Compile Include="Src\Services\SD.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\TagComment.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
@@ -796,7 +797,7 @@
     <Compile Include="Src\Project\BuildTarget.cs" />
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
-    <Compile Include="Src\Util\ThreadSafeServiceProvider.cs" />
+    <Compile Include="Src\Util\ThreadSafeServiceContainer.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <Compile Include="Src\Util\WeakCollection.cs" />
     <Compile Include="Src\Util\WindowsFormsPrinting.cs" />

@@ -47,7 +47,7 @@ namespace ICSharpCode.Core.Services
 		{
 			object service = GetService(serviceType);
 			if (service == null)
-				throw new ServiceNotFoundException();
+				throw new ServiceNotFoundException(serviceType != null ? serviceType.FullName : "null");
 			return service;
 		}
 		
@@ -76,8 +76,8 @@ namespace ICSharpCode.Core.Services
 	
 	sealed class DefaultServiceManager : ServiceManager
 	{
-		static ILoggingService loggingService = new TextWriterLoggingService(new DebugTextWriter());
-		static IMessageService messageService = new TextWriterMessageService(Console.Out);
+		readonly ILoggingService loggingService = new TextWriterLoggingService(new DebugTextWriter());
+		readonly IMessageService messageService = new TextWriterMessageService(Console.Out);
 		
 		public override ILoggingService LoggingService {
 			get { return loggingService; }

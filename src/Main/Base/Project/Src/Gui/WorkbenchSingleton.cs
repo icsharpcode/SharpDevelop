@@ -54,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		[Obsolete("Use SD.StatusBar instead")]
 		public static IStatusBarService StatusBar {
 			get {
 				return workbench != null ? workbench.StatusBar : null;
