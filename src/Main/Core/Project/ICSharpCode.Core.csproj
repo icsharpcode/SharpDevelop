@@ -107,6 +107,7 @@
     <Compile Include="Src\Services\AnalyticsMonitor\AnalyticsMonitorService.cs" />
     <Compile Include="Src\Services\AnalyticsMonitor\IAnalyticsMonitor.cs" />
     <Compile Include="Src\Services\ApplicationStateInfoService.cs" />
+    <Compile Include="Src\Services\FallbackServiceAttribute.cs" />
     <Compile Include="Src\Services\FileUtility\FileName.cs" />
     <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
     <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
@@ -121,7 +122,7 @@
     <Compile Include="Src\Services\RegistryService\RegistryService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
-    <Compile Include="Src\Services\ServiceManager.cs" />
+    <Compile Include="Src\Services\ServiceSingleton.cs" />
     <Compile Include="Src\Services\ServiceNotFoundException.cs" />
     <Compile Include="Src\Services\StringParser\IStringTagProvider.cs" />
     <Compile Include="Src\Services\StringParser\PropertyObjectTagProvider.cs" />

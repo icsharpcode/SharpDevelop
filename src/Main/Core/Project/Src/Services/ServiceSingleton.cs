@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using ICSharpCode.Core.Implementation;
+using ICSharpCode.Core.Services;
 
 namespace ICSharpCode.Core
 {
@@ -14,7 +15,15 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class ServiceSingleton
 	{
-		volatile static IServiceProvider instance = CreateDefaultServiceContainer();
+		static readonly IServiceProvider fallbackServiceProvider = new FallbackServiceProvider();
+		volatile static IServiceProvider instance = new ServiceContainer(fallbackServiceProvider);
+		
+		/// <summary>
+		/// Gets the service provider that provides the fallback services.
+		/// </summary>
+		public static IServiceProvider FallbackServiceProvider {
+			get { return fallbackServiceProvider; }
+		}
 		
 		/// <summary>
 		/// Gets the static ServiceManager instance.
@@ -26,14 +35,6 @@ namespace ICSharpCode.Core
 					throw new ArgumentNullException();
 				instance = value;
 			}
-		}
-		
-		static IServiceProvider CreateDefaultServiceContainer()
-		{
-			ServiceContainer container = new ServiceContainer();
-			container.AddService(typeof(ILoggingService), new TextWriterLoggingService(new TraceTextWriter()));
-			container.AddService(typeof(IMessageService), new TextWriterMessageService(Console.Out));
-			return container;
 		}
 		
 		public static T GetService<T>(this IServiceProvider provider) where T : class

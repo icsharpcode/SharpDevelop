@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 
 namespace ICSharpCode.Core
@@ -175,6 +176,11 @@ namespace ICSharpCode.Core
 		public void RunInitialization()
 		{
 			AddInTree.Load(addInFiles, disabledAddIns);
+			
+			// perform service registration
+			var container = ServiceSingleton.ServiceProvider.GetService<IServiceContainer>();
+			if (container != null)
+				AddInTree.BuildItems<object>("/SharpDevelop/Services", container, false);
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");

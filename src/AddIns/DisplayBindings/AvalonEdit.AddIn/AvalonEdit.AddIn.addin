@@ -9,6 +9,7 @@
 	
 	<Runtime>
 		<Import assembly = ":ICSharpCode.AvalonEdit"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = "ICSharpCode.AvalonEdit.AddIn.dll">
 			<Doozer name="SyntaxMode" class="ICSharpCode.AvalonEdit.AddIn.SyntaxModeDoozer"/>
 			<Doozer name="ContextActionOptionPanel" class="ICSharpCode.AvalonEdit.AddIn.ContextActions.ContextActionOptionPanelDoozer"/>
@@ -29,8 +30,9 @@
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/TextEditor/EditorControlService">
-		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
+	<Path name = "/SharpDevelop/Services">
+		<Service id="ICSharpCode.SharpDevelop.Editor.IEditorControlService"
+		         class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
 	</Path>
 	
 	<!--

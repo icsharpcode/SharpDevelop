@@ -596,7 +596,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				options.BlankLinesBetweenMembers = AmbienceService.CodeGenerationProperties.Get("BlankLinesBetweenMembers", true);
 				options.BracingStyle             = AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true) ? "Block" : "C";
 				options.ElseOnClosing            = AmbienceService.CodeGenerationProperties.Get("ElseOnClosing", true);
-				options.IndentString = ICSharpCode.SharpDevelop.Editor.EditorControlService.GlobalOptions.IndentationString;
+				options.IndentString = SD.EditorControlService.GlobalOptions.IndentationString;
 				provider.GenerateCodeFromCompileUnit(compileUnit, writer, options);
 			} else {
 				writer.WriteLine("No CodeDom provider was found for this language.");

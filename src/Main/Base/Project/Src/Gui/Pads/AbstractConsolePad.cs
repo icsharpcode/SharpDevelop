@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			object tmp;
 			
-			this.editorAdapter = EditorControlService.CreateEditor(out tmp);
+			this.editorAdapter = SD.EditorControlService.CreateEditor(out tmp);
 			
 			this.editor = (AvalonEdit.TextEditor)tmp;
 			this.editor.SetValue(Grid.ColumnProperty, 0);

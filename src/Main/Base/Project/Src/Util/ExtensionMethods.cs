@@ -519,9 +519,9 @@ namespace ICSharpCode.SharpDevelop
 		{
 			StringWriter sw = new StringWriter();
 			using (XmlTextWriter xmlW = new XmlTextWriter(sw)) {
-				if (EditorControlService.GlobalOptions.ConvertTabsToSpaces) {
+				if (SD.EditorControlService.GlobalOptions.ConvertTabsToSpaces) {
 					xmlW.IndentChar = ' ';
-					xmlW.Indentation = EditorControlService.GlobalOptions.IndentationSize;
+					xmlW.Indentation = SD.EditorControlService.GlobalOptions.IndentationSize;
 				} else {
 					xmlW.Indentation = 1;
 					xmlW.IndentChar = '\t';
@@ -538,7 +538,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			StringBuilder indentation = new StringBuilder();
 			for (int i = 0; i < level; i++) {
-				indentation.Append(EditorControlService.GlobalOptions.IndentationString);
+				indentation.Append(SD.EditorControlService.GlobalOptions.IndentationString);
 			}
 			return indentation.ToString();
 		}
@@ -573,7 +573,7 @@ namespace ICSharpCode.SharpDevelop
 			while (tmp != null) {
 				tmp = tmp.Parent;
 				indentationLevel++;
-				indentation.Append(EditorControlService.GlobalOptions.IndentationString);
+				indentation.Append(SD.EditorControlService.GlobalOptions.IndentationString);
 			}
 			if (!element.Nodes().Any()) {
 				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel - 1)));

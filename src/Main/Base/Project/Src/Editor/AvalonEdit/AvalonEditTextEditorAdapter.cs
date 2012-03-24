@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		public static TextEditor CreateAvalonEditInstance()
 		{
 			object editor;
-			EditorControlService.CreateEditor(out editor);
+			SD.EditorControlService.CreateEditor(out editor);
 			if (!(editor is TextEditor))
 				throw new NotSupportedException("Expected text editor to be AvalonEdit");
 			return (TextEditor)editor;

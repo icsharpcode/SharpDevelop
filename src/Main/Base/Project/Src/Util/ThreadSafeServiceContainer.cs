@@ -13,7 +13,8 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public class ThreadSafeServiceContainer : IServiceProvider, IServiceContainer, IDisposable
 	{
-		Dictionary<Type, object> services = new Dictionary<Type, object>();
+		readonly IServiceProvider parentProvider;
+		readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
 		
 		public ThreadSafeServiceContainer()
 		{
@@ -21,33 +22,20 @@ namespace ICSharpCode.SharpDevelop
 			services.Add(typeof(IServiceContainer), this);
 		}
 		
-		public object GetOrCreateService(Type type, Func<object> serviceCreator)
+		public ThreadSafeServiceContainer(IServiceProvider parentProvider) : this()
 		{
-			lock (services) {
-				object instance;
-				if (!services.TryGetValue(type, out instance)) {
-					instance = serviceCreator();
-					services.Add(type, instance);
-				}
-				return instance;
-			}
-		}
-		
-		public void TryAddService(Type type, object instance)
-		{
-			lock (services) {
-				if (!services.ContainsKey(type))
-					services.Add(type, instance);
-			}
+			this.parentProvider = parentProvider;
 		}
 		
 		public object GetService(Type serviceType)
 		{
+			bool foundService;
 			object instance;
 			lock (services) {
-				if (!services.TryGetValue(serviceType, out instance))
-					return null;
+				foundService = services.TryGetValue(serviceType, out instance);
 			}
+			if (!foundService)
+				return parentProvider != null ? parentProvider.GetService(serviceType) : null;
 			ServiceCreatorCallback callback = instance as ServiceCreatorCallback;
 			if (callback == null)
 				return instance;

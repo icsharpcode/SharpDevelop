@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.Core.Services;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
@@ -32,9 +33,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void InitializeForUnitTests()
 		{
-			var container = new ThreadSafeServiceContainer();
-			container.AddService(typeof(ILoggingService), new TextWriterLoggingService(new TraceTextWriter()));
-			container.AddService(typeof(IMessageService), new TextWriterMessageService(Console.Out));
+			var container = new ThreadSafeServiceContainer(ServiceSingleton.FallbackServiceProvider);
 			PropertyService.InitializeServiceForUnitTests();
 			ServiceSingleton.ServiceProvider = container;
 		}
@@ -75,6 +74,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IMessageService MessageService {
 			get { return GetRequiredService<IMessageService>(); }
+		}
+		
+		public static IEditorControlService EditorControlService {
+			get { return GetRequiredService<IEditorControlService>(); }
 		}
 	}
 }

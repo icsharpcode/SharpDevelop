@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						defaultManifest = r.ReadToEnd();
 					}
 				}
-				defaultManifest = defaultManifest.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
+				defaultManifest = defaultManifest.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
 				File.WriteAllText(manifestFile, defaultManifest, System.Text.Encoding.UTF8);
 				FileService.FireFileCreated(manifestFile, false);
 			}

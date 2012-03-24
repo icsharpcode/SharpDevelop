@@ -2,12 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core.Implementation;
 
 namespace ICSharpCode.Core
 {
 	/// <summary>
 	/// Interface for the MessageService.
 	/// </summary>
+	[FallbackService(typeof(FallbackMessageService))]
 	public interface IMessageService
 	{
 		/// <summary>
@@ -60,6 +62,11 @@ namespace ICSharpCode.Core
 		/// and allow him to retry/save under alternative name.
 		/// </summary>
 		ChooseSaveErrorResult ChooseSaveError(string fileName, string message, string dialogName, Exception exceptionGot, bool chooseLocationEnabled);
+	}
+	
+	sealed class FallbackMessageService : TextWriterMessageService
+	{
+		public FallbackMessageService() : base(Console.Out) {}
 	}
 	
 	public sealed class ChooseSaveErrorResult

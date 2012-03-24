@@ -86,9 +86,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Task<ResolveResult> ResolveAtCaretAsync(ParserUpdateStepEventArgs e)
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if (window == null) return null;
+			if (window == null) return Task.FromResult<ResolveResult>(null);
 			ITextEditorProvider provider = window.ActiveViewContent as ITextEditorProvider;
-			if (provider == null) return null;
+			if (provider == null) return Task.FromResult<ResolveResult>(null);
 			ITextEditor editor = provider.TextEditor;
 			
 			// e might be null when this is a manually triggered update

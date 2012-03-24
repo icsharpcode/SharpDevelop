@@ -374,8 +374,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
 			
 			if (parsedContent != null) {
-				if (EditorControlService.GlobalOptions.IndentationString != "\t") {
-					parsedContent = parsedContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
+				if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {
+					parsedContent = parsedContent.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
 				}
 			}
 			

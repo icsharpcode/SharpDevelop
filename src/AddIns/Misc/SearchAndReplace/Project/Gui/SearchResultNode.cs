@@ -56,7 +56,7 @@ namespace SearchAndReplace
 			LoggingService.Debug("Creating text for search result (" + location.Line + ", " + location.Column + ") ");
 			
 			TextBlock textBlock = new TextBlock();
-			textBlock.FontFamily = new FontFamily(EditorControlService.GlobalOptions.FontFamily);
+			textBlock.FontFamily = new FontFamily(SD.EditorControlService.GlobalOptions.FontFamily);
 
 			textBlock.Inlines.Add("(" + location.Line + ", " + location.Column + ")\t");
 			

@@ -375,8 +375,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
 							string fileContent = StringParser.Parse(file.Content, new StringTagPair("ProjectName", projectCreateInformation.ProjectName), new StringTagPair("FileName", fileName));
 							fileContent = StringParser.Parse(fileContent);
-							if (EditorControlService.GlobalOptions.IndentationString != "\t") {
-								fileContent = fileContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
+							if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {
+								fileContent = fileContent.Replace("\t", SD.EditorControlService.GlobalOptions.IndentationString);
 							}
 							sr.Write(fileContent);
 							sr.Close();

@@ -2,9 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core.Implementation;
 
 namespace ICSharpCode.Core
 {
+	[FallbackService(typeof(FallbackLoggingService))]
 	public interface ILoggingService
 	{
 		void Debug(object message);
@@ -25,5 +27,10 @@ namespace ICSharpCode.Core
 		bool IsWarnEnabled { get; }
 		bool IsErrorEnabled { get; }
 		bool IsFatalEnabled { get; }
+	}
+	
+	sealed class FallbackLoggingService : TextWriterLoggingService
+	{
+		public FallbackLoggingService() : base(new TraceTextWriter()) {}
 	}
 }

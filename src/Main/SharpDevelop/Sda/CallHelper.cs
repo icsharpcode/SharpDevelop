@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
 			// Initialize the most important services:
-			var container = new ThreadSafeServiceContainer();
+			var container = new ThreadSafeServiceContainer(ServiceSingleton.FallbackServiceProvider);
 			container.AddService(typeof(IMessageService), new SDMessageService());
 			container.AddService(typeof(ILoggingService), new log4netLoggingService());
 			ServiceSingleton.ServiceProvider = container;

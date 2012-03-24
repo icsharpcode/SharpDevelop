@@ -3,6 +3,8 @@
 
 using System;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.Core;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor
@@ -10,86 +12,56 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Allows creating new text editor instances and accessing the default text editor options.
 	/// </summary>
+	[FallbackService(typeof(EditorControlServiceFallback))]
 	public interface IEditorControlService
 	{
 		ITextEditor CreateEditor(out object control);
 		ITextEditorOptions GlobalOptions { get; }
 	}
 	
-	/// <summary>
-	/// Allows creating new text editor instances and accessing the default text editor options.
-	/// </summary>
-	public static class EditorControlService
+	// Fallback if AvalonEdit.AddIn is not available (e.g. some unit tests)
+	sealed class EditorControlServiceFallback : IEditorControlService, ITextEditorOptions
 	{
-		static readonly Lazy<IEditorControlService> instance = new Lazy<IEditorControlService>(
-			delegate {
-				// fetch IEditorControlService that's normally implemented in AvalonEdit.AddIn
-				var node = Core.AddInTree.GetTreeNode("/SharpDevelop/ViewContent/TextEditor/EditorControlService", false);
-				IEditorControlService ecs = null;
-				if (node != null && node.Codons.Count > 0) {
-					ecs = (IEditorControlService)node.BuildChildItem(node.Codons[0], null);
-				}
-				return ecs ?? new DummyService();
-			}
-		);
-		
-		public static IEditorControlService Instance {
-			get { return instance.Value; }
+		public ITextEditorOptions GlobalOptions {
+			get { return this; }
 		}
 		
-		public static ITextEditor CreateEditor(out object control)
+		public ITextEditor CreateEditor(out object control)
 		{
-			return Instance.CreateEditor(out control);
+			TextEditor avalonedit = new TextEditor();
+			control = avalonedit;
+			return new AvalonEditTextEditorAdapter(avalonedit);
 		}
 		
-		public static ITextEditorOptions GlobalOptions {
-			get { return Instance.GlobalOptions; }
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add {} remove {} }
+		
+		public string IndentationString {
+			get { return "\t"; }
 		}
 		
-		// Fallback if AvalonEdit.AddIn is not available (e.g. some unit tests)
-		sealed class DummyService : IEditorControlService, ITextEditorOptions
-		{
-			public ITextEditorOptions GlobalOptions {
-				get { return this; }
-			}
-			
-			public ITextEditor CreateEditor(out object control)
-			{
-				TextEditor avalonedit = new TextEditor();
-				control = avalonedit;
-				return new AvalonEditTextEditorAdapter(avalonedit);
-			}
-			
-			public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged { add {} remove {} }
-			
-			public string IndentationString {
-				get { return "\t"; }
-			}
-			
-			public bool AutoInsertBlockEnd {
-				get { return true; }
-			}
-			
-			public bool ConvertTabsToSpaces {
-				get { return false; }
-			}
-			
-			public int IndentationSize {
-				get { return 4; }
-			}
-			
-			public int VerticalRulerColumn {
-				get { return 120; }
-			}
-			
-			public bool UnderlineErrors {
-				get { return true; }
-			}
-			
-			public string FontFamily {
-				get {
-					return "Consolas";
-				}
+		public bool AutoInsertBlockEnd {
+			get { return true; }
+		}
+		
+		public bool ConvertTabsToSpaces {
+			get { return false; }
+		}
+		
+		public int IndentationSize {
+			get { return 4; }
+		}
+		
+		public int VerticalRulerColumn {
+			get { return 120; }
+		}
+		
+		public bool UnderlineErrors {
+			get { return true; }
+		}
+		
+		public string FontFamily {
+			get {
+				return "Consolas";
 			}
 		}
 	}
