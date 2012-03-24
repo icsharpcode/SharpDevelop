@@ -34,6 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			// PascalCasing for namespace
 			yield return new NamingRule(AffectedEntity.Namespace) {
+				Name = "Namespaces",
 				NamingStyle = NamingStyle.PascalCase
 			};
 			
