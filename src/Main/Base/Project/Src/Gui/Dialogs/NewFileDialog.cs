@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;

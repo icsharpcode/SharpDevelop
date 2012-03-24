@@ -735,6 +735,7 @@
     <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
+    <Compile Include="Src\Util\SharpDevelopServiceContainer.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />
@@ -780,7 +781,6 @@
     <Compile Include="Src\Project\BuildTarget.cs" />
     <Compile Include="Src\Util\GenericConverter.cs" />
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
-    <Compile Include="Src\Util\ThreadSafeServiceContainer.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <Compile Include="Src\Util\WeakCollection.cs" />
     <Compile Include="Src\Util\WindowsFormsPrinting.cs" />

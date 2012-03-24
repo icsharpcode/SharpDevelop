@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left) {
-				var f = AnalyticsMonitorService.TrackFeature("ICSharpCode.SharpDevelop.Bookmarks.EntityBookmark.ShowContextMenu");
+				var f = SD.AnalyticsMonitor.TrackFeature("ICSharpCode.SharpDevelop.Bookmarks.EntityBookmark.ShowContextMenu");
 				var ctx = MenuService.ShowContextMenu(e.Source as UIElement, entity, ContextMenuPath);
 				ctx.Closed += delegate { f.EndTracking(); };
 				e.Handled = true;

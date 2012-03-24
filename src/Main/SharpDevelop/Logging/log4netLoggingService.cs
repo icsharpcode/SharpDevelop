@@ -6,7 +6,6 @@ using System.Globalization;
 using System.IO;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using log4net;
 using log4net.Config;
 

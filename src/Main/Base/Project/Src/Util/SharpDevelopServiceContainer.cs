@@ -11,62 +11,74 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// A thread-safe service container class.
 	/// </summary>
-	public class ThreadSafeServiceContainer : IServiceProvider, IServiceContainer, IDisposable
+	public class SharpDevelopServiceContainer : IServiceProvider, IServiceContainer, IDisposable
 	{
 		readonly IServiceProvider parentProvider;
 		readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
+		readonly List<IDisposable> servicesToDispose = new List<IDisposable>();
 		
-		public ThreadSafeServiceContainer()
+		public SharpDevelopServiceContainer()
 		{
-			services.Add(typeof(ThreadSafeServiceContainer), this);
+			services.Add(typeof(SharpDevelopServiceContainer), this);
 			services.Add(typeof(IServiceContainer), this);
 		}
 		
-		public ThreadSafeServiceContainer(IServiceProvider parentProvider) : this()
+		public SharpDevelopServiceContainer(IServiceProvider parentProvider) : this()
 		{
 			this.parentProvider = parentProvider;
 		}
 		
 		public object GetService(Type serviceType)
 		{
-			bool foundService;
 			object instance;
 			lock (services) {
-				foundService = services.TryGetValue(serviceType, out instance);
-			}
-			if (!foundService)
-				return parentProvider != null ? parentProvider.GetService(serviceType) : null;
-			ServiceCreatorCallback callback = instance as ServiceCreatorCallback;
-			if (callback == null)
-				return instance;
-			object newInstance = callback(this, serviceType);
-			lock (services) {
-				if (services.TryGetValue(serviceType, out instance) && ReferenceEquals(instance, callback)) {
-					services[serviceType] = newInstance;
-					return newInstance;
+				if (services.TryGetValue(serviceType, out instance)) {
+					ServiceCreatorCallback callback = instance as ServiceCreatorCallback;
+					if (callback != null) {
+						SD.LoggingService.Debug("Service startup: " + serviceType);
+						instance = callback(this, serviceType);
+						if (instance != null) {
+							servicesToDispose.Add(instance as IDisposable);
+							services[serviceType] = instance;
+						} else {
+							services.Remove(serviceType);
+						}
+					}
 				}
 			}
-			// concurrent modification while running the callback (most likely another thread ran the callback first):
-			IDisposable disposable = newInstance as IDisposable;
-			if (disposable != null)
-				disposable.Dispose();
-			return GetService(serviceType); // retry
+			if (instance != null)
+				return instance;
+			else
+				return parentProvider != null ? parentProvider.GetService(serviceType) : null;
 		}
 		
 		public void Dispose()
 		{
+			var loggingService = SD.LoggingService;
 			IDisposable[] disposables;
 			lock (services) {
-				disposables = services.Values.OfType<IDisposable>().ToArray();
+				disposables = servicesToDispose.ToArray();
 				services.Clear();
+				servicesToDispose.Clear();
 			}
-			foreach (IDisposable disposable in disposables)
-				disposable.Dispose();
+			// dispose services in reverse order of their creation
+			foreach (IDisposable disposable in disposables.Reverse()) {
+				if (disposable != null) {
+					loggingService.Debug("Service shutdown: " + disposable.GetType());
+					disposable.Dispose();
+				}
+			}
+			var eh = Disposed;
+			if (eh != null)
+				eh(this, EventArgs.Empty);
 		}
+		
+		public event EventHandler Disposed;
 		
 		public void AddService(Type serviceType, object serviceInstance)
 		{
 			lock (services) {
+				servicesToDispose.Add(serviceInstance as IDisposable);
 				services.Add(serviceType, serviceInstance);
 			}
 		}

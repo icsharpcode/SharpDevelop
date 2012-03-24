@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 		public void InitSharpDevelopCore(SharpDevelopHost.CallbackHelper callback, StartupSettings properties)
 		{
 			// Initialize the most important services:
-			var container = new ThreadSafeServiceContainer(ServiceSingleton.FallbackServiceProvider);
+			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
 			container.AddService(typeof(IMessageService), new SDMessageService());
 			container.AddService(typeof(ILoggingService), new log4netLoggingService());
 			ServiceSingleton.ServiceProvider = container;
@@ -180,6 +180,7 @@ namespace ICSharpCode.SharpDevelop.Sda
 				LoggingService.Info("Unloading services...");
 				try {
 					WorkbenchSingleton.OnWorkbenchUnloaded();
+					((IDisposable)SD.Services).Dispose(); // dispose all services
 					PropertyService.Save();
 				} catch (Exception ex) {
 					LoggingService.Warn("Exception during unloading", ex);

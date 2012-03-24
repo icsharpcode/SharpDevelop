@@ -3,7 +3,6 @@
 
 using System;
 using System.Text;
-using ICSharpCode.Core.Services;
 
 namespace ICSharpCode.Core
 {

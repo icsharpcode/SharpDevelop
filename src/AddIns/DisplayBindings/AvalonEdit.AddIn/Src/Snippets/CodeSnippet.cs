@@ -264,7 +264,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		internal void TrackUsage(string activationMethod)
 		{
 			bool isUserModified = !SnippetManager.defaultSnippets.Any(g => g.Snippets.Contains(this));
-			Core.AnalyticsMonitorService.TrackFeature(typeof(CodeSnippet), isUserModified ? "usersnippet" : Name, activationMethod);
+			SD.AnalyticsMonitor.TrackFeature(typeof(CodeSnippet), isUserModified ? "usersnippet" : Name, activationMethod);
 		}
 	}
 }

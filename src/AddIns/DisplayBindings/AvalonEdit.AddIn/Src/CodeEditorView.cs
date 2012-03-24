@@ -487,7 +487,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position == null)
 					return;
-				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
+				SD.AnalyticsMonitor.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
 				var goToDefinitionCommand = new GoToDefinition();
 				goToDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value.Location));
 				e.Handled = true;

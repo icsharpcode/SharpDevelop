@@ -5,8 +5,6 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.Services;
-
 namespace ICSharpCode.Core.WinForms
 {
 	/// <summary>

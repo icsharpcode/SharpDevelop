@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Logging
 			showingBox = true;
 			try {
 				try {
-					AnalyticsMonitorService.TrackException(exception);
+					SD.AnalyticsMonitor.TrackException(exception);
 				} catch (Exception ex) {
 					LoggingService.Warn("Error tracking exception", ex);
 				}

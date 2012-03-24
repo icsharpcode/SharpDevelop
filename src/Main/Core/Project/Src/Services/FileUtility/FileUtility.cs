@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using ICSharpCode.Core.Services;
 using Microsoft.Win32;
 
 namespace ICSharpCode.Core

@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			WorkbenchSingleton.Workbench.WorkbenchLayout.SwitchLayout("Debug");
 			
-			debugFeature = AnalyticsMonitorService.TrackFeature("Debugger");
+			debugFeature = SD.AnalyticsMonitor.TrackFeature("Debugger");
 			
 			ClearDebugMessages();
 			

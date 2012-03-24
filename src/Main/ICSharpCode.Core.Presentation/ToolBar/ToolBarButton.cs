@@ -59,7 +59,7 @@ namespace ICSharpCode.Core.Presentation
 		{
 			string feature = GetFeatureName();
 			if (!string.IsNullOrEmpty(feature)) {
-				AnalyticsMonitorService.TrackFeature(feature, "Toolbar");
+				ServiceSingleton.ServiceProvider.GetRequiredService<IAnalyticsMonitor>().TrackFeature(feature, "Toolbar");
 			}
 			base.OnClick();
 		}

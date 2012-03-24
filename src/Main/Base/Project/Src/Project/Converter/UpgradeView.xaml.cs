@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		void convertButton_Click(object sender, RoutedEventArgs e)
 		{
-			Core.AnalyticsMonitorService.TrackFeature(GetType(), "convertButton_Click");
+			SD.AnalyticsMonitor.TrackFeature(GetType(), "convertButton_Click");
 			
 			CompilerVersion selectedCompiler = newVersionComboBox.SelectedValue as CompilerVersion;
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;

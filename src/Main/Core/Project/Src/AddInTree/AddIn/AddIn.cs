@@ -35,8 +35,12 @@ namespace ICSharpCode.Core
 		
 		public Type FindType(string className)
 		{
-			LoadDependencies();
 			foreach (Runtime runtime in runtimes) {
+				if (!runtime.IsHostApplicationAssembly) {
+					// Load dependencies only when a plugin library is first loaded.
+					// This allows looking in host assemblies for service IDs.
+					LoadDependencies();
+				}
 				Type t = runtime.FindType(className);
 				if (t != null) {
 					return t;

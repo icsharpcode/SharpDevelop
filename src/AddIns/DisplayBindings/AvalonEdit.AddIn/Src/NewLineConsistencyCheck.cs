@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -115,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			};
 			editor.Children.Add(groupBox);
 			
-			var featureUse = AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck));
+			var featureUse = SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck));
 			
 			EventHandler removeWarning = null;
 			removeWarning = delegate {
@@ -128,11 +129,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			editor.LoadedFileContent += removeWarning;
 			cancelButton.Click += delegate {
-				AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck), "cancelButton");
+				SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck), "cancelButton");
 				removeWarning(null, null);
 			};
 			normalizeButton.Click += delegate {
-				AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck), "normalizeButton");
+				SD.AnalyticsMonitor.TrackFeature(typeof(NewLineConsistencyCheck), "normalizeButton");
 				removeWarning(null, null);
 				
 				TextDocument document = editor.Document;

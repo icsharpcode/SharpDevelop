@@ -255,7 +255,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 					memberItems.Sort();
 					if (jumpOnSelectionChange) {
-						AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
+						SD.AnalyticsMonitor.TrackFeature(GetType(), "JumpToClass");
 						JumpTo(item, selectedClass.Region);
 					}
 				}
@@ -269,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (item != null) {
 				IMember member = item.Entity as IMember;
 				if (member != null && jumpOnSelectionChange) {
-					AnalyticsMonitorService.TrackFeature(GetType(), "JumpToMember");
+					SD.AnalyticsMonitor.TrackFeature(GetType(), "JumpToMember");
 					JumpTo(item, member.Region);
 				}
 			}

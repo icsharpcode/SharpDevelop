@@ -53,6 +53,13 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// Gets whether the assembly belongs to the host application (':' prefix).
+		/// </summary>
+		public bool IsHostApplicationAssembly {
+			get { return !string.IsNullOrEmpty(assembly) && assembly[0] == ':'; }
+		}
+		
+		/// <summary>
 		/// Force loading the runtime assembly now.
 		/// </summary>
 		public void Load()

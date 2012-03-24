@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
 using ICSharpCode.Core.Implementation;
-using ICSharpCode.Core.Services;
 
 namespace ICSharpCode.Core
 {

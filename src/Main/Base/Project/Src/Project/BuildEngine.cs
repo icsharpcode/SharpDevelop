@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			if (guiBuildCancellation != null) {
 				BuildResults results = new BuildResults();
-				WorkbenchSingleton.StatusBar.SetMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
+				SD.StatusBar.SetMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				BuildError error = new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				results.Add(error);
 				TaskService.Add(new SDTask(error));
@@ -51,12 +51,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else {
 				guiBuildCancellation = new CancellationTokenSource();
-				IProgressMonitor progressMonitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor(guiBuildCancellation.Token);
-				guiBuildTrackedFeature = AnalyticsMonitorService.TrackFeature("ICSharpCode.SharpDevelop.Project.BuildEngine.Build");
-				WorkbenchSingleton.StatusBar.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
+				IProgressMonitor progressMonitor = SD.StatusBar.CreateProgressMonitor(guiBuildCancellation.Token);
+				guiBuildTrackedFeature = SD.AnalyticsMonitor.TrackFeature("ICSharpCode.SharpDevelop.Project.BuildEngine.Build");
+				SD.StatusBar.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
 				ProjectService.RaiseEventBuildStarted(new BuildEventArgs(project, options));
 				StartBuild(project, options,
-				           new MessageViewSink(TaskService.BuildMessageViewCategory, progressMonitor, WorkbenchSingleton.StatusBar));
+				           new MessageViewSink(TaskService.BuildMessageViewCategory, progressMonitor, SD.StatusBar));
 			}
 		}
 		

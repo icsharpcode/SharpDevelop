@@ -23,7 +23,7 @@ namespace HexEditor.View
 			
 			file.ForceInitializeView(this);
 			
-			AnalyticsMonitorService.TrackFeature(typeof(HexEditView));
+			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView));
 		}
 
 		public override object Control {
@@ -32,7 +32,7 @@ namespace HexEditor.View
 		
 		public override void Save(OpenedFile file, Stream stream)
 		{
-			AnalyticsMonitorService.TrackFeature(typeof(HexEditView), "Save");
+			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView), "Save");
 			this.hexEditContainer.SaveFile(file, stream);
 			this.TitleName = Path.GetFileName(file.FileName);
 			this.TabPageText = this.TitleName;
@@ -40,7 +40,7 @@ namespace HexEditor.View
 		
 		public override void Load(OpenedFile file, Stream stream)
 		{
-			AnalyticsMonitorService.TrackFeature(typeof(HexEditView), "Load");
+			SD.AnalyticsMonitor.TrackFeature(typeof(HexEditView), "Load");
 			this.hexEditContainer.LoadFile(file, stream);
 		}
 		

@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Media;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.UsageDataCollector.Contracts;
 
@@ -18,7 +17,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// <summary>
 	/// Main singleton class of the analytics. This class is thread-safe.
 	/// </summary>
-	public sealed partial class AnalyticsMonitor : IAnalyticsMonitor
+	public sealed partial class AnalyticsMonitor : IAnalyticsMonitor, IDisposable
 	{
 		const string UploadUrl = "http://usagedatacollector.sharpdevelop.net/upload/UploadUsageData.svc";
 		const string ProductName = "sharpdevelop";
@@ -28,7 +27,7 @@ namespace ICSharpCode.UsageDataCollector
 		
 		public static bool EnabledIsUndecided {
 			get {
-				return PropertyService.Contains("ICSharpCode.UsageDataCollector.Enabled");
+				return !PropertyService.Contains("ICSharpCode.UsageDataCollector.Enabled");
 			}
 		}
 		
@@ -66,8 +65,11 @@ namespace ICSharpCode.UsageDataCollector
 		{
 			SD.Services.AddService(typeof(IAnalyticsMonitor), this);
 			dbFileName = Path.Combine(PropertyService.ConfigDirectory, "usageData.dat");
-			
-			SharpDevelop.Gui.WorkbenchSingleton.WorkbenchUnloaded += delegate { CloseSession(); };
+		}
+		
+		void IDisposable.Dispose()
+		{
+			CloseSession();
 		}
 		
 		static Guid FindUserId()
@@ -212,6 +214,16 @@ namespace ICSharpCode.UsageDataCollector
 					session.AddException(exception);
 				}
 			}
+		}
+		
+		public IAnalyticsMonitorTrackedFeature TrackFeature(Type featureClass, string featureName = null, string activationMethod = null)
+		{
+			if (featureClass == null)
+				throw new ArgumentNullException("featureClass");
+			if (featureName != null)
+				return TrackFeature(featureClass.FullName + "/" + featureName, activationMethod);
+			else
+				return TrackFeature(featureClass.FullName, activationMethod);
 		}
 		
 		public IAnalyticsMonitorTrackedFeature TrackFeature(string featureName, string activationMethod)

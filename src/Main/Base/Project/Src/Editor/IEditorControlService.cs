@@ -4,7 +4,6 @@
 using System;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor

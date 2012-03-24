@@ -44,7 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				string filetype = Path.GetExtension(file.FileName);
 				if (!ProjectService.GetFileFilters().Any(f => f.ContainsExtension(filetype)))
 					filetype = ".?";
-				trackedFeature = AnalyticsMonitorService.TrackFeature(typeof(AvalonEditViewContent), "open" + filetype.ToLowerInvariant());
+				trackedFeature = SD.AnalyticsMonitor.TrackFeature(typeof(AvalonEditViewContent), "open" + filetype.ToLowerInvariant());
 			}
 			
 			this.Files.Add(file);

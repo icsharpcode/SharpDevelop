@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 			if (pads.TryGetValue(padDescriptor, out pad)) {
 				pad.Show(dockingManager);
 			} else {
-				LoggingService.Debug("Add pad " + padDescriptor.Class + " at " + padDescriptor.DefaultPosition);
+				//LoggingService.Debug("Add pad " + padDescriptor.Class + " at " + padDescriptor.DefaultPosition);
 				
 				pad = new AvalonPadContent(this, padDescriptor);
 				pads.Add(padDescriptor, pad);

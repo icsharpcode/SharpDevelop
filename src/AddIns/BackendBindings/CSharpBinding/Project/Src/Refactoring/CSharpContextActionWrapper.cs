@@ -12,6 +12,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -48,7 +49,7 @@ namespace CSharpBinding.Refactoring
 		
 		public void Execute(EditorRefactoringContext context)
 		{
-			AnalyticsMonitorService.TrackFeature(provider.ID);
+			SD.AnalyticsMonitor.TrackFeature(provider.ID);
 			var resolver = context.GetAstResolverAsync().Result;
 			var refactoringContext = new SDRefactoringContext(context.Editor, resolver, context.CaretLocation);
 			var action = getUpdatedCodeAction(refactoringContext);

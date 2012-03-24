@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
 			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
-				Core.AnalyticsMonitorService.TrackFeature(typeof(UpgradeView), "opened automatically");
+				SD.AnalyticsMonitor.TrackFeature(typeof(UpgradeView), "opened automatically");
 				Show(solution).upgradeView.UpgradeViewOpenedAutomatically = true;
 			}
 		}
