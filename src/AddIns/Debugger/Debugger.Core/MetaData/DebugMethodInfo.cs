@@ -187,12 +187,12 @@ namespace Debugger.MetaData
 		
 		/// <inheritdoc/>
 		public override bool IsGenericMethod {
-			get { return methodDefSig.GenericParameterCount > 0; }
+			get { return this.MethodDefSig.GenericParameterCount > 0; }
 		}
 		
 		/// <inheritdoc/>
 		public override bool IsGenericMethodDefinition {
-			get { return methodDefSig.GenericParameterCount > 0; }
+			get { return this.MethodDefSig.GenericParameterCount > 0; }
 		}
 		
 		/// <inheritdoc/>
