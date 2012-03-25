@@ -90,6 +90,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (!rule.AffectedEntity.HasFlag(entity)) {
 						continue;
 					}
+					if (!rule.VisibilityMask.HasFlag(accessibilty)) {
+						continue;
+					}
 					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
 						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
@@ -106,7 +109,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								}
 							}
 						)));
-
 
 						if (resolveResult is MemberResolveResult || resolveResult is TypeResolveResult || resolveResult is LocalResolveResult) {
 							actions.Add(new CodeAction(string.Format(ctx.TranslateString("Rename '{0}'..."), identifier.Name), (Script script) => {
@@ -164,7 +166,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					default:
 						throw new System.ArgumentOutOfRangeException();
 				}
-
 				CheckName(typeDeclaration, entity, typeDeclaration.NameToken, GetAccessibiltiy(typeDeclaration, typeDeclaration.Parent is TypeDeclaration ? Modifiers.Private : Modifiers.Internal));
 			}
 
