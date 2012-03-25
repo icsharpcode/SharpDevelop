@@ -16,16 +16,18 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition
 				Width="40"></ColumnDefinition>
-			<ColumnDefinition
-				Width="300"></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			
 		</Grid.ColumnDefinitions>
 		
 		<optionpanels:StorageLocationPicker Margin="5,40,0,0"
 			x:Name="location" Location="{Binding ReferencePath.Location}" />
-		
+		<!--
 		<WindowsFormsHost Grid.Column="1" Grid.RowSpan="2"> 
 			<gui:StringListEditor x:Name="editor"/>
-		</WindowsFormsHost>
+		</WindowsFormsHost>-->
+		
+	<gui:StringListEditorXaml x:Name="editor" Grid.Column="1" Grid.RowSpan="2"></gui:StringListEditorXaml>
 	
 	</Grid>
 </optionpanels:ProjectOptionPanel>

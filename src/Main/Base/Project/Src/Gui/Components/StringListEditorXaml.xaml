@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.SharpDevelop.Gui.StringListEditorXaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="30"></RowDefinition>
+			<RowDefinition
+				Height="30"></RowDefinition>
+			<RowDefinition
+				Height="30"></RowDefinition>
+			<RowDefinition
+				Height="30"></RowDefinition>
+			<RowDefinition Height="150"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition
+				Width="300"></ColumnDefinition>
+			<ColumnDefinition
+				Width="40"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Label
+			x:Name="title"
+			Content="Title"></Label>
+		<TextBox
+			x:Name="editTextBox"
+			Margin="5,3,5,3"
+			TextChanged="EditTextBox_TextChanged"
+			Grid.Row="1"></TextBox>
+		<Button
+			x:Name="browseButton"
+			Content="..."
+			Visibility="Hidden"
+			Margin="0,3,5,0"
+			Grid.Column="1"
+			Grid.Row="1"
+			Click="BrowseButtonClick"
+			 />
+		<widgets:StackPanelWithSpacing
+			Orientation="Horizontal"
+			Margin="5,3,5,3"
+			SpaceBetweenItems="5"
+			Grid.Row="2">
+			<Button
+				x:Name="addButton"
+				IsEnabled="False"
+			
+				Click="AddButton_Click"
+				Content="{core:Localize Global.AddButtonText}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
+			<Button
+				x:Name="updateButton"
+				IsEnabled="False"
+				
+				Click="UpdateButton_Click"
+				Content="{core:Localize Global.UpdateButtonText}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
+			<Button
+				x:Name="removeButton"
+				Visibility="Hidden"
+			
+				Content="{core:Localize Global.DeleteButtonText}"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"></Button>
+		</widgets:StackPanelWithSpacing>
+		<Label
+			x:Name="listlabel"
+			Grid.Row="3"
+			Content="List"></Label>
+		<ListBox
+			x:Name="listBox"
+			Margin="5,3,5,3"
+			SelectionChanged="ListBox_SelectionChanged"
+			Grid.Row="4"></ListBox>
+	</Grid>
+</UserControl>

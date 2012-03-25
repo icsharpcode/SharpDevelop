@@ -20,11 +20,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public ReferencePaths()
 		{
 			InitializeComponent();
+			/*
+			editor.ListChanged += delegate { IsDirty = true; };*/
+			
 			editor.BrowseForDirectory = true;
-			editor.ListCaption = StringParser.Parse("&${res:Dialog.ProjectOptions.ReferencePaths}:");
-			editor.TitleText = StringParser.Parse("&${res:Global.Folder}:");
+			editor.TitleText = StringParser.Parse("${res:Global.Folder}:");
 			editor.AddButtonText = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths.AddPath}");
-			editor.ListChanged += delegate { IsDirty = true; };
+			editor.ListCaption = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths}:");
 		}
 		
 		
@@ -34,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		
+		/*
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
@@ -54,5 +56,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ReferencePath.Value = String.Join(";", editor.GetList());
 			return base.Save(project, configuration, platform);
 		}
+		*/
 	}
 }
