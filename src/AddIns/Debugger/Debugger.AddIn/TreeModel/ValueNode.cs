@@ -38,7 +38,7 @@ namespace Debugger.AddIn.TreeModel
 		
 		Value cachedValue;
 		Debugger.Process cachedValueProcess;
-		object cachedValueDebuggeeState;
+		long cachedValueDebuggeeState;
 		
 		string fullValue;
 		GetValueException error;

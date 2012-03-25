@@ -55,10 +55,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_MainThreadExit.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_MainThreadExit.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_MainThreadExit.cs:20,4-20,40</DebuggingPaused>
+    <Paused>ControlFlow_MainThreadExit.cs:20,4-20,40</Paused>
     <ThreadsBeforeExit
       Capacity="4"
       Count="2">
@@ -84,7 +84,7 @@ namespace Debugger.Tests {
           RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
-    <DebuggingPaused>ForcedBreak ControlFlow_MainThreadExit.cs:25,4-25,26</DebuggingPaused>
+    <Paused>ControlFlow_MainThreadExit.cs:25,4-25,26</Paused>
     <ThreadsAfterExit
       Capacity="4"
       Count="2">
@@ -106,7 +106,7 @@ namespace Debugger.Tests {
           SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime()" />
       </Item>
     </ThreadsAfterExit>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

@@ -67,12 +67,9 @@
     <Compile Include="ArrayDimension.cs" />
     <Compile Include="ArrayDimensions.cs" />
     <Compile Include="Breakpoint.cs" />
-    <Compile Include="DebuggeeState.cs" />
     <Compile Include="DebuggerException.cs" />
-    <Compile Include="DebuggerObject.cs" />
     <Compile Include="Eval.cs" />
     <Compile Include="Exception.cs" />
-    <Compile Include="ExceptionType.cs" />
     <Compile Include="GetValueException.cs" />
     <Compile Include="Interop\Common.cs" />
     <Compile Include="Interop\CorDebug.cs" />
@@ -140,8 +137,6 @@
     <Compile Include="Mono.Cecil\Mono.Cecil\ReflectionException.cs" />
     <Compile Include="NDebugger.cs" />
     <Compile Include="Options.cs" />
-    <Compile Include="PausedReason.cs" />
-    <Compile Include="PauseSession.cs" />
     <Compile Include="Process.cs" />
     <Compile Include="SourcecodeSegment.cs" />
     <Compile Include="StackFrame.cs" />
@@ -151,7 +146,6 @@
     <Compile Include="Tests\IgnoreOnExceptionAttribute.cs" />
     <Compile Include="Thread.cs" />
     <Compile Include="Value.cs" />
-    <None Include="Stepping.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

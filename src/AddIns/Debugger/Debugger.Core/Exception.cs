@@ -4,7 +4,15 @@
 using System.Text;
 
 namespace Debugger
-{	
+{
+	enum ExceptionType
+	{
+		FirstChance = 1,
+		UserFirstChance = 2,
+		CatchHandlerFound = 3,
+		Unhandled = 4,
+	}
+	
 	/// <summary> This convenience class provides access to an exception within the debugee. </summary>
 	/// <seealso cref="System.Exception" />
 	public class Exception: DebuggerObject

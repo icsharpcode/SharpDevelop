@@ -63,10 +63,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="StackFrame_Lifetime.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Lifetime.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackFrame_Lifetime.cs:18,4-18,40</DebuggingPaused>
+    <Paused>StackFrame_Lifetime.cs:18,4-18,40</Paused>
     <SelectedStackFrame>
       <StackFrame
         ArgumentCount="1"
@@ -77,7 +77,7 @@ namespace Debugger.Tests {
         NextStatement="StackFrame_Lifetime.cs:18,4-18,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <DebuggingPaused>Break StackFrame_Lifetime.cs:25,4-25,40</DebuggingPaused>
+    <Paused>StackFrame_Lifetime.cs:25,4-25,40</Paused>
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="1"
@@ -97,7 +97,7 @@ namespace Debugger.Tests {
         NextStatement="StackFrame_Lifetime.cs:25,4-25,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <DebuggingPaused>Break StackFrame_Lifetime.cs:20,4-20,40</DebuggingPaused>
+    <Paused>StackFrame_Lifetime.cs:20,4-20,40</Paused>
     <Old_StackFrame>
       <StackFrame
         ArgumentCount="1"
@@ -118,7 +118,7 @@ namespace Debugger.Tests {
         NextStatement="StackFrame_Lifetime.cs:20,4-20,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <DebuggingPaused>Break StackFrame_Lifetime.cs:13,4-13,40</DebuggingPaused>
+    <Paused>StackFrame_Lifetime.cs:13,4-13,40</Paused>
     <Main>
       <StackFrame
         ChainIndex="1"
@@ -146,7 +146,7 @@ namespace Debugger.Tests {
         NextStatement="StackFrame_Lifetime.cs:13,4-13,40"
         Thread="Thread Name =  Suspended = False" />
     </SelectedStackFrame>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

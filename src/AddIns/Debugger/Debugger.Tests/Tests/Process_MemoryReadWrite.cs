@@ -65,17 +65,17 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Process_MemoryReadWrite.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Process_MemoryReadWrite.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Process_MemoryReadWrite.cs:14,4-14,40</DebuggingPaused>
+    <Paused>Process_MemoryReadWrite.cs:14,4-14,40</Paused>
     <hello>5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
     <world>6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

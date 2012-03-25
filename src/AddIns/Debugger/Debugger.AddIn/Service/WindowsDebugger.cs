@@ -502,20 +502,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public bool CanSetInstructionPointer(string filename, int line, int column)
+		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			if (debuggedProcess != null && debuggedProcess.IsPaused && debuggedProcess.SelectedStackFrame != null) {
-				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.CanSetIP(filename, line, column);
-				return seg != null;
-			} else {
-				return false;
-			}
-		}
-		
-		public bool SetInstructionPointer(string filename, int line, int column)
-		{
-			if (CanSetInstructionPointer(filename, line, column)) {
-				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.SetIP(filename, line, column);
+				SourcecodeSegment seg = debuggedProcess.SelectedStackFrame.SetIP(filename, line, column, dryRun);
+				WindowsDebugger.RefreshPads();
+				JumpToCurrentLine();
 				return seg != null;
 			} else {
 				return false;
@@ -767,22 +759,22 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			WorkbenchSingleton.MainWindow.Activate();
 			
-			if (debuggedProcess.IsSelectedFrameForced()) {
+			// if (debuggedProcess.IsSelectedFrameForced()) {
 				if (debuggedProcess.SelectedStackFrame != null && debuggedProcess.SelectedStackFrame.HasSymbols) {
 					JumpToSourceCode();
 				} else {
 					JumpToDecompiledCode(debuggedProcess.SelectedStackFrame);
 				}
-			} else {
-				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-				// other pause reasons
-				if (frame != null && frame.HasSymbols) {
-					JumpToSourceCode();
-				} else {
-					// use most recent stack frame because we don't have the symbols
-					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
-				}
-			}
+//			} else {
+//				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
+//				// other pause reasons
+//				if (frame != null && frame.HasSymbols) {
+//					JumpToSourceCode();
+//				} else {
+//					// use most recent stack frame because we don't have the symbols
+//					JumpToDecompiledCode(debuggedProcess.SelectedThread.MostRecentStackFrame);
+//				}
+//			}
 		}
 
 		void JumpToSourceCode()

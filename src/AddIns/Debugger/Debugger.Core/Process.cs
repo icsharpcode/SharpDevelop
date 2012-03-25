@@ -325,30 +325,32 @@ namespace Debugger
 		
 		#region PauseSession & DebugeeState
 		
-		PauseSession pauseSession;
-		DebuggeeState debuggeeState;
+		long pauseSession;
+		long nextPauseSession = 1;
+		long debuggeeState;
+		long nextDebuggeeState = 1;
 		
 		/// <summary>
 		/// Indentification of the current debugger session. This value changes whenever debugger is continued
 		/// </summary>
-		public PauseSession PauseSession {
+		public long PauseSession {
 			get { return pauseSession; }
 		}
 		
 		/// <summary>
 		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
 		/// </summary>
-		public DebuggeeState DebuggeeState {
+		public long DebuggeeState {
 			get { return debuggeeState; }
 		}
 		
 		/// <summary> Puts the process into a paused state </summary>
-		internal void NotifyPaused(PausedReason pauseReason)
+		internal void NotifyPaused()
 		{
 			AssertRunning();
-			pauseSession = new PauseSession(this, pauseReason);
-			if (debuggeeState == null) {
-				debuggeeState = new DebuggeeState(this);
+			pauseSession = nextPauseSession++;
+			if (debuggeeState == 0) {
+				debuggeeState = nextDebuggeeState++;
 			}
 		}
 		
@@ -356,10 +358,10 @@ namespace Debugger
 		internal void NotifyResumed(DebuggeeStateAction action)
 		{
 			AssertPaused();
-			pauseSession = null;
+			pauseSession = 0;
 			if (action == DebuggeeStateAction.Clear) {
-				if (debuggeeState == null) throw new DebuggerException("Debugee state already cleared");
-				debuggeeState = null;
+				if (debuggeeState == 0) throw new DebuggerException("Debugee state already cleared");
+				debuggeeState = 0;
 			}
 		}
 		
@@ -380,7 +382,7 @@ namespace Debugger
 		}
 		
 		public bool IsRunning {
-			get { return pauseSession == null; }
+			get { return pauseSession == 0; }
 		}
 		
 		public uint Id {
@@ -425,7 +427,7 @@ namespace Debugger
 			
 			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
-			NotifyPaused(PausedReason.ForcedBreak);
+			NotifyPaused();
 			OnPaused(new DebuggerEventArgs(this));
 		}
 		
@@ -433,7 +435,7 @@ namespace Debugger
 		{
 			if (IsRunning) {
 				corProcess.Stop(uint.MaxValue);
-				NotifyPaused(PausedReason.ForcedBreak);
+				NotifyPaused();
 			}
 			
 			// Deactivate breakpoints
@@ -730,10 +732,6 @@ namespace Debugger
 			if (IsRunning || SelectedThread == null)
 				return null;
 			
-			if (IsSelectedFrameForced()) {
-				return SelectedStackFrame; // selected from callstack or threads pads
-			}
-			
 			if (SelectedStackFrame != null) {
 				if (SelectedThread.MostRecentStackFrame != null) {
 					if (SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols)
@@ -746,13 +744,6 @@ namespace Debugger
 			} else {
 				return SelectedThread.MostRecentStackFrame;
 			}
-		}
-		
-		public bool IsSelectedFrameForced()
-		{
-			return pauseSession.PausedReason == PausedReason.CurrentFunctionChanged ||
-				pauseSession.PausedReason == PausedReason.CurrentThreadChanged ||
-				pauseSession.PausedReason == PausedReason.EvalComplete;
 		}
 	}
 }

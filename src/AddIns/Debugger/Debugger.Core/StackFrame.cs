@@ -22,7 +22,7 @@ namespace Debugger
 		Process process;
 		
 		ICorDebugILFrame  corILFrame;
-		object            corILFramePauseSession;
+		long              corILFramePauseSession;
 		ICorDebugFunction corFunction;
 		
 		DebugMethodInfo methodInfo;
@@ -241,25 +241,7 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Determine whether the instrustion pointer can be set to given location
-		/// </summary>
-		/// <returns> Best possible location. Null is not possible. </returns>
-		public SourcecodeSegment CanSetIP(string filename, int line, int column)
-		{
-			return SetIP(true, filename, line, column);
-		}
-		
-		/// <summary>
-		/// Set the instrustion pointer to given location
-		/// </summary>
-		/// <returns> Best possible location. Null is not possible. </returns>
-		public SourcecodeSegment SetIP(string filename, int line, int column)
-		{
-			return SetIP(false, filename, line, column);
-		}
-		
-		SourcecodeSegment SetIP(bool simulate, string filename, int line, int column)
+		public SourcecodeSegment SetIP(string filename, int line, int column, bool dryRun)
 		{
 			process.AssertPaused();
 			
@@ -267,14 +249,13 @@ namespace Debugger
 			
 			if (segment != null && segment.CorFunction.GetToken() == this.MethodInfo.MetadataToken) {
 				try {
-					if (simulate) {
+					if (dryRun) {
 						CorILFrame.CanSetIP((uint)segment.ILStart);
 					} else {
-						// Invalidates all frames and chains for the current thread
 						CorILFrame.SetIP((uint)segment.ILStart);
+						// Invalidates all frames and chains for the current thread
 						process.NotifyResumed(DebuggeeStateAction.Keep);
-						process.NotifyPaused(PausedReason.SetIP);
-						process.OnPaused(new DebuggerEventArgs(process));
+						process.NotifyPaused();
 					}
 				} catch {
 					return null;

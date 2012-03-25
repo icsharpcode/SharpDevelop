@@ -42,10 +42,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Thread_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Thread_Tests.cs:12,4-12,40</DebuggingPaused>
+    <Paused>Thread_Tests.cs:12,4-12,40</Paused>
     <Thread>
       <Thread
         Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
@@ -57,7 +57,7 @@ namespace Debugger.Tests {
         RuntimeValue="{System.Threading.Thread}"
         SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
-    <DebuggingPaused>Break Thread_Tests.cs:14,4-14,40</DebuggingPaused>
+    <Paused>Thread_Tests.cs:14,4-14,40</Paused>
     <Thread>
       <Thread
         Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
@@ -69,7 +69,7 @@ namespace Debugger.Tests {
         RuntimeValue="{System.Threading.Thread}"
         SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
-    <DebuggingPaused>Break Thread_Tests.cs:16,4-16,40</DebuggingPaused>
+    <Paused>Thread_Tests.cs:16,4-16,40</Paused>
     <Thread>
       <Thread
         Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
@@ -81,7 +81,7 @@ namespace Debugger.Tests {
         RuntimeValue="{System.Threading.Thread}"
         SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

@@ -218,7 +218,6 @@ namespace Debugger.Tests {
 		}
 		
 		[NUnit.Framework.Test]
-		[NUnit.Framework.Ignore("Broken after Siegfried added the IsGeneric implementation; can't adjust test easily as I'm on .NET 4.5")]
 		public void DebugType_Tests()
 		{
 			if (IsDotnet45Installed())
@@ -251,10 +250,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="DebugType_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_Tests.cs:167,4-167,40</DebuggingPaused>
+    <Paused>DebugType_Tests.cs:167,4-167,40</Paused>
     <DefinedTypes
       Capacity="16"
       Count="15">
@@ -688,6 +687,8 @@ namespace Debugger.Tests {
           FullName="Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(Debugger.Tests.DebugType_Tests+MyClass a, Debugger.Tests.DebugType_Tests+MyStruct b, System.Object m)"
           FullNameWithoutParameterNames="Int32 Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun(Debugger.Tests.DebugType_Tests+MyClass, Debugger.Tests.DebugType_Tests+MyStruct, System.Object)"
           GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
+          IsGenericMethod="True"
+          IsGenericMethodDefinition="True"
           Name="Fun"
           ReturnType="System.Int32" />
       </Item>
@@ -698,6 +699,8 @@ namespace Debugger.Tests {
           FullName="Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(System.Int32** iPtrPtr, System.Object[,] mdArray, System.Collections.Generic.List`1+Enumerator[System.Object] listEnum)"
           FullNameWithoutParameterNames="Object[] Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32].Fun2(System.Int32**, System.Object[,], System.Collections.Generic.List`1+Enumerator[System.Object])"
           GetLocalVariables="{Debugger.Tests.DebugType_Tests+MyInterfaceImpl`1[System.Int32] this}"
+          IsGenericMethod="True"
+          IsGenericMethodDefinition="True"
           Name="Fun2"
           ReturnType="System.Object[]" />
       </Item>
@@ -1679,7 +1682,7 @@ namespace Debugger.Tests {
         </LocalVariable>
       </Item>
     </LocalVariables>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

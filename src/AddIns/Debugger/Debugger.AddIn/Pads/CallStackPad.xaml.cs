@@ -107,7 +107,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						return;
 					}
 					debuggedProcess.SelectedThread.SelectedStackFrame = item.Frame;
-					debuggedProcess.PauseSession.PausedReason = PausedReason.CurrentFunctionChanged;
 					WindowsDebugger.RefreshPads();
 				}
 			} else {

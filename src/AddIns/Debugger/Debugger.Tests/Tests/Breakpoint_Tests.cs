@@ -57,11 +57,11 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Breakpoint_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Breakpoint_Tests.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Breakpoint_Tests.cs:12,4-12,40</DebuggingPaused>
+    <Paused>Breakpoint_Tests.cs:12,4-12,40</Paused>
     <Breakpoint1>
       <Breakpoint
         FileName="Breakpoint_Tests.cs"
@@ -81,12 +81,12 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Main 1\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint Breakpoint_Tests.cs:14,4-14,49</DebuggingPaused>
+    <Paused>Breakpoint_Tests.cs:14,4-14,49</Paused>
     <LogMessage>Main 2\r\n</LogMessage>
-    <DebuggingPaused>Breakpoint Breakpoint_Tests.cs:16,4-16,49</DebuggingPaused>
+    <Paused>Breakpoint_Tests.cs:16,4-16,49</Paused>
     <LogMessage>Main 3\r\n</LogMessage>
-    <DebuggingPaused>Break Breakpoint_Tests.cs:17,4-17,40</DebuggingPaused>
-    <ProcessExited />
+    <Paused>Breakpoint_Tests.cs:17,4-17,40</Paused>
+    <Exited />
     <Breakpoint1>
       <Breakpoint
         FileName="Breakpoint_Tests.cs"

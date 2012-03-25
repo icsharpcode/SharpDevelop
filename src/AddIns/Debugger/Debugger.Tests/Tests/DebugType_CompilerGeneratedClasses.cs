@@ -88,10 +88,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="DebugType_CompilerGeneratedClasses.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_CompilerGeneratedClasses.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:34,5-34,41</DebuggingPaused>
+    <Paused>DebugType_CompilerGeneratedClasses.cs:34,5-34,41</Paused>
     <YieldLocalVariables>
       <Item>
         <LocalVariable
@@ -142,7 +142,7 @@ namespace Debugger.Tests {
           Value="103" />
       </Item>
     </YieldLocalVariables>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:53,6-53,42</DebuggingPaused>
+    <Paused>DebugType_CompilerGeneratedClasses.cs:53,6-53,42</Paused>
     <OutterDelegateLocalVariables>
       <Item>
         <LocalVariable
@@ -199,7 +199,7 @@ namespace Debugger.Tests {
           Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:50,7-50,43</DebuggingPaused>
+    <Paused>DebugType_CompilerGeneratedClasses.cs:50,7-50,43</Paused>
     <InnterDelegateLocalVariables>
       <Item>
         <LocalVariable
@@ -253,7 +253,7 @@ namespace Debugger.Tests {
     <Eval> nestedDelegArg = 402 </Eval>
     <Eval> instanceField = "instance field value" </Eval>
     <Eval> staticField = "static field value" </Eval>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

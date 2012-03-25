@@ -124,7 +124,7 @@ namespace Debugger.Tests {
 			foreach (bool jmcEnabled in new bool[] {true, true, false}) {
 				ObjectDump("Log", "Starting run with JMC=" + jmcEnabled.ToString());
 				
-				process.SelectedStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn);
+				process.SelectedStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn, false);
 				
 				process.Options.EnableJustMyCode = jmcEnabled;
 				process.Options.StepOverSingleLineProperties = true;
@@ -198,79 +198,76 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_Stepping.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_Stepping.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_Stepping.cs:98,4-98,40</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:98,4-98,40</Paused>
     <Log>Starting run with JMC=True</Log>
-    <DebuggingPaused>SetIP ControlFlow_Stepping.cs:99,4-99,37</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:23,27-23,28</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:26,25-26,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:102,4-102,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:103,4-103,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:104,4-104,21</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:23,27-23,28</Paused>
+    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:59,4-59,46</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:59,4-59,46</Paused>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:60,4-60,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:60,4-60,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:87,50-87,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:90,50-90,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:107,3-107,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:87,50-87,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:90,50-90,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:107,3-107,4</Paused>
     <Log>Starting run with JMC=True</Log>
-    <DebuggingPaused>SetIP ControlFlow_Stepping.cs:99,4-99,37</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:23,27-23,28</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:26,25-26,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:102,4-102,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:103,4-103,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:104,4-104,21</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:59,4-59,46</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:23,27-23,28</Paused>
+    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
+    <Paused>ControlFlow_Stepping.cs:59,4-59,46</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:60,4-60,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:58,3-58,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:60,4-60,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:58,3-58,4</Paused>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:87,50-87,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:90,50-90,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:107,3-107,4</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
+    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:87,50-87,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:90,50-90,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:107,3-107,4</Paused>
     <Log>Starting run with JMC=False</Log>
-    <DebuggingPaused>SetIP ControlFlow_Stepping.cs:99,4-99,37</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:100,4-100,15</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:26,25-26,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:101,4-101,36</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:102,4-102,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:103,4-103,26</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:104,4-104,21</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:105,4-105,14</DebuggingPaused>
+    <Paused>ControlFlow_Stepping.cs:100,4-100,15</Paused>
+    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
     <LogMessage>ZigZag2</LogMessage>
     <LogMessage>ZigZag2</LogMessage>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:87,50-87,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:90,50-90,51</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:106,4-106,35</DebuggingPaused>
-    <DebuggingPaused>StepComplete ControlFlow_Stepping.cs:107,3-107,4</DebuggingPaused>
-    <ProcessExited />
+    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:87,50-87,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:90,50-90,51</Paused>
+    <Paused>ControlFlow_Stepping.cs:106,4-106,35</Paused>
+    <Paused>ControlFlow_Stepping.cs:107,3-107,4</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

@@ -217,13 +217,13 @@ namespace Debugger.Tests
 					}
 					LogEvent("ExceptionThrown", msg.ToString());	
 				}
-				LogEvent("DebuggingPaused", e.Process.PauseSession.PausedReason.ToString() + " " + e.Process.SelectedStackFrame.NextStatement.ToString());
+				LogEvent("Paused", e.Process.SelectedStackFrame.NextStatement.ToString());
 			};
 			process.Exited += delegate(object sender, DebuggerEventArgs e) {
-				LogEvent("ProcessExited", null);
+				LogEvent("Exited", null);
 			};
 			
-			LogEvent("ProcessStarted", null);
+			LogEvent("Started", null);
 			
 			if (wait) {
 				process.WaitForPause();

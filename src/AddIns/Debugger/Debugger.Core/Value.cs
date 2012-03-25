@@ -23,7 +23,7 @@ namespace Debugger
 	{
 		AppDomain      appDomain;
 		ICorDebugValue corValue;
-		PauseSession   corValue_pauseSession;
+		long           corValue_pauseSession;
 		DebugType      type;
 		
 		// Permanently stored as convinience so that it survives Continue

@@ -50,10 +50,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="StackFrame_Callstack.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_Callstack.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackFrame_Callstack.cs:22,4-22,40</DebuggingPaused>
+    <Paused>StackFrame_Callstack.cs:22,4-22,40</Paused>
     <Callstack>
       <Item>
         <StackFrame
@@ -82,7 +82,7 @@ namespace Debugger.Tests {
           Thread="Thread Name =  Suspended = False" />
       </Item>
     </Callstack>
-    <DebuggingPaused>StepComplete StackFrame_Callstack.cs:17,4-17,11</DebuggingPaused>
+    <Paused>StackFrame_Callstack.cs:17,4-17,11</Paused>
     <Callstack>
       <Item>
         <StackFrame
@@ -102,7 +102,7 @@ namespace Debugger.Tests {
           Thread="Thread Name =  Suspended = False" />
       </Item>
     </Callstack>
-    <DebuggingPaused>StepComplete StackFrame_Callstack.cs:12,4-12,11</DebuggingPaused>
+    <Paused>StackFrame_Callstack.cs:12,4-12,11</Paused>
     <Callstack>
       <Item>
         <StackFrame
@@ -113,7 +113,7 @@ namespace Debugger.Tests {
           Thread="Thread Name =  Suspended = False" />
       </Item>
     </Callstack>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

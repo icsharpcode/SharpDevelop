@@ -19,7 +19,7 @@ namespace Debugger.AddIn.TreeModel
 	{
 		public static void EnqueueWork(this Process process, Dispatcher dispatcher, Action work)
 		{
-			var debuggeeStateWhenEnqueued = process.DebuggeeState;
+			long debuggeeStateWhenEnqueued = process.DebuggeeState;
 			// Always ask the scheduler to do only one piece of work at a time
 			// - this might actually be completely ok as we are not waiting anywhere between thread
 			dispatcher.BeginInvoke(
@@ -44,7 +44,7 @@ namespace Debugger.AddIn.TreeModel
 
 		public static void EnqueueForEach<T>(this Process process, Dispatcher dispatcher, IList<T> items, Action<T> work)
 		{
-			DebuggeeState debuggeeStateWhenEnqueued = process.DebuggeeState;
+			long debuggeeStateWhenEnqueued = process.DebuggeeState;
 			
 			dispatcher.BeginInvoke(
 				DispatcherPriority.Normal,
@@ -52,7 +52,7 @@ namespace Debugger.AddIn.TreeModel
 			);
 		}
 		
-		static void ProcessItems<T>(Process process, Dispatcher dispatcher, int startIndex, IList<T> items, Action<T> work, DebuggeeState debuggeeStateWhenEnqueued)
+		static void ProcessItems<T>(Process process, Dispatcher dispatcher, int startIndex, IList<T> items, Action<T> work, long debuggeeStateWhenEnqueued)
 		{
 			var watch = new System.Diagnostics.Stopwatch();
 			watch.Start();

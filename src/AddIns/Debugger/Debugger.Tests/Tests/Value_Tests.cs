@@ -59,10 +59,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Value_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Value_Tests.cs:27,4-27,40</DebuggingPaused>
+    <Paused>Value_Tests.cs:27,4-27,40</Paused>
     <LocalVariables>
       <Item>
         <LocalVariable
@@ -131,7 +131,7 @@ namespace Debugger.Tests {
         PrimitiveValue="a"
         Type="System.Char" />
     </lbArray-10-20>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT
