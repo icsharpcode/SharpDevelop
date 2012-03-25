@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.CSharp.CodeActions;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
+	[Ignore("Implement Rename in TestContext")]
 	[TestFixture]
 	public class InconsistentNamingTests : InspectionActionTestBase
 	{
