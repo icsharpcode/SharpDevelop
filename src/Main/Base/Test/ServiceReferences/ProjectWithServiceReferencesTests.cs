@@ -63,6 +63,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			return msbuildProject.GetItemsOfType(ItemType.ServiceReferences).SingleOrDefault() as ServiceReferencesProjectItem;
 		}
 		
+		ProjectItem GetFileProjectItemInMSBuildProject(string fileName)
+		{
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
+		}
+		
 		ServiceReferenceProjectItem GetFirstWCFMetadataStorageItemInMSBuildProject()
 		{
 			return msbuildProject.GetItemsOfType(ItemType.ServiceReference).SingleOrDefault() as ServiceReferenceProjectItem;
@@ -84,6 +89,12 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		{
 			var item = new ReferenceProjectItem(msbuildProject, name);
 			ProjectService.AddProjectItem(msbuildProject, item);
+		}
+		
+		void AddFileToMSBuildProject(string include)
+		{
+			var fileItem = new FileProjectItem(msbuildProject, ItemType.None, include);
+			ProjectService.AddProjectItem(msbuildProject, fileItem);
 		}
 		
 		int CountAssemblyReferencesInMSBuildProject()
@@ -279,6 +290,84 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateProjectWithVisualBasicMSBuildProject();
 			
 			Assert.AreEqual("VBNet", project.Language);
+		}
+		
+		[Test]
+		public void AddAppConfigFile_ProjectHasNoAppConfig_ProjectItemAddedToProjectForAppConfig()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			
+			project.AddAppConfigFile();
+			
+			ProjectItem item = GetFileFromMSBuildProject(@"d:\projects\MyProject\app.config");
+			
+			Assert.IsNotNull(item);
+			Assert.AreEqual(ItemType.None, item.ItemType);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasNoAppConfig_ReturnsFalse()
+		{
+			CreateProjectWithMSBuildProject();
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasAppConfig_ReturnsTrue()
+		{
+			CreateProjectWithMSBuildProject();
+			project.AddAppConfigFile();
+			
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasAppConfigInSubFolder_ReturnsTrue()
+		{
+			CreateProjectWithMSBuildProject();
+			AddFileToMSBuildProject(@"SubFolder\app.config");
+			
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasAppConfigInUpperCase_ReturnsTrue()
+		{
+			CreateProjectWithMSBuildProject();
+			AddFileToMSBuildProject(@"APP.CONFIG");
+			
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void GetAppConfigFileName_ProjectHasNoAppConfig_DefaultAppConfigFileNameReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			
+			string fileName = project.GetAppConfigFileName();
+			
+			Assert.AreEqual(@"d:\projects\MyProject\app.config", fileName);
+		}
+		
+		[Test]
+		public void GetAppConfigFileName_ProjectHasAppConfigInSubFolder_AppConfigFileNameReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			AddFileToMSBuildProject(@"SubFolder\app.config");
+			string fileName = project.GetAppConfigFileName();
+			
+			Assert.AreEqual(@"d:\projects\MyProject\SubFolder\app.config", fileName);
 		}
 	}
 }

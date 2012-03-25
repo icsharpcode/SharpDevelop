@@ -9,6 +9,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	{
 		public ServiceReferenceGeneratorOptions()
 		{
+			this.AppConfigFileName = String.Empty;
+			this.MergeAppConfig = false;
 			this.OutputFileName = String.Empty;
 			this.Namespace = String.Empty;
 			this.Language = "CS";
@@ -19,7 +21,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public string OutputFileName { get; set; }
 		public string Url { get; set; }
 		public string Language { get; set; }
+		public string AppConfigFileName { get; set; }
 		public bool NoAppConfig { get; set; }
+		public bool MergeAppConfig { get; set; }
 		
 		public void MapProjectLanguage(string language)
 		{

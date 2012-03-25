@@ -119,5 +119,42 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 		}
+		
+		public bool HasAppConfigFile()
+		{
+			return GetAppConfigFile() != null;
+		}
+		
+		ProjectItem GetAppConfigFile()
+		{
+			return project.Items.SingleOrDefault(item => IsAppConfigFile(item));
+		}
+		
+		bool IsAppConfigFile(ProjectItem item)
+		{
+			string fileNameWithoutPath = Path.GetFileName(item.FileName);
+			return String.Equals(fileNameWithoutPath, "app.config", StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public string GetAppConfigFileName()
+		{
+			ProjectItem item = GetAppConfigFile();
+			if (item != null) {
+				return item.FileName;
+			}
+			return GetDefaultAppConfigFileName();
+		}
+		
+		public void AddAppConfigFile()
+		{
+			var item = new FileProjectItem(project, ItemType.None);
+			item.FileName = GetDefaultAppConfigFileName();
+			AddProjectItemToProject(item);
+		}
+		
+		string GetDefaultAppConfigFileName()
+		{
+			return Path.Combine(project.Directory, "app.config");
+		}
 	}
 }

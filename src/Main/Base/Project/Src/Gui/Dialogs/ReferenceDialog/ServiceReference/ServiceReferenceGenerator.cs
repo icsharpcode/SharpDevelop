@@ -51,19 +51,36 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void GenerateServiceReferenceProxy()
 		{
+			ServiceReferenceFileName referenceFileName = GenerateProxyFile();
+			ServiceReferenceMapFileName mapFileName = CreateServiceReferenceMapFile();
+			project.AddServiceReferenceProxyFile(referenceFileName);
+			project.AddServiceReferenceMapFile(mapFileName);
+			if (!project.HasAppConfigFile()) {
+				project.AddAppConfigFile();
+			}
+		}
+		
+		ServiceReferenceFileName GenerateProxyFile()
+		{
 			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.Namespace);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
 			Options.OutputFileName = referenceFileName.Path;
+			Options.AppConfigFileName = project.GetAppConfigFileName();
+			Options.NoAppConfig = false;
+			Options.MergeAppConfig = project.HasAppConfigFile();
 			Options.MapProjectLanguage(project.Language);
 			fileGenerator.GenerateProxyFile();
 			
+			return referenceFileName;
+		}
+		
+		ServiceReferenceMapFileName CreateServiceReferenceMapFile()
+		{
 			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(fileGenerator.Options.Namespace);
 			var mapFile = new ServiceReferenceMapFile(mapFileName);
 			fileGenerator.GenerateServiceReferenceMapFile(mapFile);
-			
-			project.AddServiceReferenceProxyFile(referenceFileName);
-			project.AddServiceReferenceMapFile(mapFileName);
+			return mapFileName;
 		}
 		
 		void CreateFolderForFileIfFolderMissing(string fileName)

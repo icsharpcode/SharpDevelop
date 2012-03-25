@@ -20,10 +20,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void GenerateCommandLine(SvcUtilOptions options)
 		{
-			AppendIfTrue("/noconfig", options.NoAppConfig);
 			AppendIfNotEmpty("/out:", options.OutputFileName);
 			AppendIfNotEmpty("/namespace:", options.GetNamespaceMapping());
 			AppendIfNotEmpty("/language:", options.Language);
+			AppendIfTrue("/noConfig", options.NoAppConfig);
+			AppendIfTrue("/mergeConfig", options.MergeAppConfig);
+			AppendIfNotEmpty("/config:", options.AppConfigFileName);
 			AppendIfNotEmpty(options.Url);
 			
 			this.Arguments = argumentBuilder.ToString();

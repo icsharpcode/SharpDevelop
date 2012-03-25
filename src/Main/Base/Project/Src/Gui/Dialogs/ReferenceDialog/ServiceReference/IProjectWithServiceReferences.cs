@@ -16,5 +16,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void AddServiceReferenceMapFile(ServiceReferenceMapFileName fileName);
 		void Save();
 		void AddAssemblyReference(string referenceName);
+		bool HasAppConfigFile();
+		string GetAppConfigFileName();
+		void AddAppConfigFile();
 	}
 }

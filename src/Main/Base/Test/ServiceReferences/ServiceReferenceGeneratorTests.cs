@@ -90,6 +90,26 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			fakeProject.Stub(p => p.Language).Return(language);
 		}
 		
+		void SetProjectAppConfigFileName(string fileName)
+		{
+			fakeProject.Stub(p => p.GetAppConfigFileName()).Return(fileName);
+		}
+		
+		void ProjectDoesNotHaveAppConfigFile()
+		{
+			ProjectHasAppConfigFile(false);
+		}
+		
+		void ProjectHasAppConfigFile()
+		{
+			ProjectHasAppConfigFile(true);
+		}
+		
+		void ProjectHasAppConfigFile(bool hasAppConfigFile)
+		{
+			fakeProject.Stub(p => p.HasAppConfigFile()).Return(hasAppConfigFile);
+		}
+		
 		[Test]
 		public void AddServiceReference_GeneratesServiceReference_ProxyFileIsGenerated()
 		{
@@ -259,6 +279,46 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			generator.AddServiceReference();
 			
 			Assert.AreEqual("VB", fakeProxyGenerator.Options.Language);
+		}
+		
+		[Test]
+		public void AddServiceReference_ProjectHasNoAppConfig_AppConfigFileNamePassedToGeneratorButNoFileMergeRequested()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.Namespace = "MyService";
+			UseVisualBasicProject();
+			string expectedAppConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(expectedAppConfigFileName);
+			ProjectDoesNotHaveAppConfigFile();
+			
+			generator.AddServiceReference();
+			
+			Assert.AreEqual(expectedAppConfigFileName, fakeProxyGenerator.Options.AppConfigFileName);
+			Assert.IsFalse(fakeProxyGenerator.Options.NoAppConfig);
+			Assert.IsFalse(fakeProxyGenerator.Options.MergeAppConfig);
+			fakeProject.AssertWasCalled(p => p.AddAppConfigFile());
+		}
+		
+		[Test]
+		public void AddServiceReference_ProjectHasAppConfig_MergeAppConfigFileRequested()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.Namespace = "MyService";
+			UseVisualBasicProject();
+			string expectedAppConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(expectedAppConfigFileName);
+			ProjectHasAppConfigFile();
+			
+			generator.AddServiceReference();
+			
+			Assert.AreEqual(expectedAppConfigFileName, fakeProxyGenerator.Options.AppConfigFileName);
+			Assert.IsFalse(fakeProxyGenerator.Options.NoAppConfig);
+			Assert.IsTrue(fakeProxyGenerator.Options.MergeAppConfig);
+			fakeProject.AssertWasNotCalled(p => p.AddAppConfigFile());
 		}
 	}
 }
