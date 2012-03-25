@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public ServiceReferenceGenerator(IProjectWithServiceReferences project)
 			: this(
 				project,
-				new ServiceReferenceFileGenerator(project.CodeDomProvider),
+				new ServiceReferenceFileGenerator(),
 				new ServiceReferenceFileSystem())
 		{
 		}
@@ -38,24 +38,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.fileSystem = fileSystem;
 		}
 		
-		public string Namespace { get; set; }
+		public ServiceReferenceGeneratorOptions Options {
+			get { return fileGenerator.Options; }
+		}
 		
-		public void AddServiceReference(MetadataSet metadata)
+		public void AddServiceReference()
 		{
-			GenerateServiceReferenceProxy(metadata);
+			GenerateServiceReferenceProxy();
 			project.AddAssemblyReference("System.ServiceModel");
 			project.Save();
 		}
 		
-		void GenerateServiceReferenceProxy(MetadataSet metadata)
+		void GenerateServiceReferenceProxy()
 		{
-			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(Namespace);
+			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.Namespace);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
-			fileGenerator.ServiceReferenceNamespace = Namespace;
-			fileGenerator.GenerateProxyFile(metadata, referenceFileName.Path);
+			Options.OutputFileName = referenceFileName.Path;
+			Options.MapProjectLanguage(project.Language);
+			fileGenerator.GenerateProxyFile();
 			
-			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(Namespace);
+			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(fileGenerator.Options.Namespace);
 			var mapFile = new ServiceReferenceMapFile(mapFileName);
 			fileGenerator.GenerateServiceReferenceMapFile(mapFile);
 			

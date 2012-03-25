@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	public interface IProjectWithServiceReferences
 	{
 		string ServiceReferencesFolder { get; }
-		ICodeDomProvider CodeDomProvider { get; }
+		string Language { get; }
 		
 		ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName);
 		ServiceReferenceMapFileName GetServiceReferenceMapFileName(string serviceReferenceName);

@@ -9,37 +9,17 @@ using System.ServiceModel.Description;
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class ServiceReferenceProxyGenerator : IServiceReferenceProxyGenerator
-	{		
-		IServiceReferenceCodeDomBuilder codeDomBuilder;
-		ICodeDomProvider codeDomProvider;
+	{
+		SvcUtilOptions options = new SvcUtilOptions();
 		
-		public ServiceReferenceProxyGenerator(ICodeDomProvider codeDomProvider)
-			: this(codeDomProvider, new ServiceReferenceCodeDomBuilder())
-		{
+		public ServiceReferenceGeneratorOptions Options {
+			get { return options; }
 		}
 		
-		public ServiceReferenceProxyGenerator(
-			ICodeDomProvider codeDomProvider,
-			IServiceReferenceCodeDomBuilder codeDomBuilder)
+		public void GenerateProxyFile()
 		{
-			this.codeDomProvider = codeDomProvider;
-			this.codeDomBuilder = codeDomBuilder;
-		}
-		
-		public string ServiceReferenceNamespace {
-			get { return codeDomBuilder.Namespace; }
-			set { codeDomBuilder.Namespace = value; }
-		}
-		
-		public void GenerateProxyFile(MetadataSet metadata, string proxyFileName)
-		{
-			CodeCompileUnit compileUnit = codeDomBuilder.GenerateCompileUnit(metadata);
-			GenerateProxy(compileUnit, proxyFileName);
-		}
-		
-		void GenerateProxy(CodeCompileUnit compileUnit, string fileName)
-		{
-			codeDomProvider.GenerateCodeFromCompileUnit(compileUnit, fileName);
+			var runner = new SvcUtilRunner(options);
+			runner.Run();
 		}
 	}
 }

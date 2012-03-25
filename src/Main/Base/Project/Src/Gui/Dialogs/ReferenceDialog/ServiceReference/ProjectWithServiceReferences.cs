@@ -18,14 +18,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public static readonly string DefaultServiceReferencesFolderName = "Service References";
 		
 		public ProjectWithServiceReferences(IProject project)
-			: this(project, new ServiceReferenceCodeDomProvider(project))
-		{
-		}
-		
-		public ProjectWithServiceReferences(IProject project, ICodeDomProvider codeDomProvider)
 		{
 			this.project = project;
-			this.CodeDomProvider = codeDomProvider;
 		}
 		
 		public string ServiceReferencesFolder {
@@ -42,7 +36,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			serviceReferencesFolder = Path.Combine(project.Directory, DefaultServiceReferencesFolderName);
 		}
 		
-		public ICodeDomProvider CodeDomProvider { get; private set; }
+		public string Language {
+			get { return project.Language; }
+		}
 		
 		public ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName)
 		{

@@ -19,14 +19,16 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		ServiceReferenceGenerator generator;
 		ServiceReferenceFileGenerator fileGenerator;
 		IFileSystem fakeFileSystem;
-		MetadataSet metadata;
+		ServiceReferenceGeneratorOptions options;
 		
 		void CreateGenerator()
 		{
-			metadata = new MetadataSet();
-			
+			options = new ServiceReferenceGeneratorOptions();
 			fakeProject = MockRepository.GenerateStub<IProjectWithServiceReferences>();
 			fakeProxyGenerator = MockRepository.GenerateStub<IServiceReferenceProxyGenerator>();
+			fakeProxyGenerator
+				.Stub(p => p.Options)
+				.Return(options);
 			fakeReferenceMapGenerator = MockRepository.GenerateStub<IServiceReferenceMapGenerator>();
 			fileGenerator = new ServiceReferenceFileGenerator(fakeProxyGenerator, fakeReferenceMapGenerator);
 			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
@@ -73,18 +75,46 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			fakeProject.Stub(p => p.GetServiceReferenceMapFileName(serviceName)).Return(fileName);
 		}
 		
+		void UseCSharpProject()
+		{
+			SetProjectLanguage("C#");
+		}
+		
+		void UseVisualBasicProject()
+		{
+			SetProjectLanguage("VBNet");
+		}
+		
+		void SetProjectLanguage(string language)
+		{
+			fakeProject.Stub(p => p.Language).Return(language);
+		}
+		
 		[Test]
-		public void AddServiceReference_GeneratesServiceReference_MetadataPassedToProxyGenerator()
+		public void AddServiceReference_GeneratesServiceReference_ProxyFileIsGenerated()
 		{
 			CreateGenerator();
 			AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
 			AddMapFileNameForServiceName("MyServiceRef");
-			generator.Namespace = "MyServiceRef";
+			generator.Options.Namespace = "MyServiceRef";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
+			
+			fakeProxyGenerator.AssertWasCalled(p => p.GenerateProxyFile());
+		}
+		
+		[Test]
+		public void AddServiceReference_GeneratesServiceReference_ProxyFileNameTakenFromProject()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
+			AddMapFileNameForServiceName("MyServiceRef");
+			generator.Options.Namespace = "MyServiceRef";
+			
+			generator.AddServiceReference();
 			string expectedProxyFileName = @"d:\projects\MyProject\Service References\MyServiceRef\Reference.cs";
 			
-			fakeProxyGenerator.AssertWasCalled(p => p.GenerateProxyFile(metadata, expectedProxyFileName));
+			Assert.AreEqual(expectedProxyFileName, fakeProxyGenerator.Options.OutputFileName);
 		}
 		
 		[Test]
@@ -93,9 +123,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateGenerator();
 			AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyService1");
 			AddMapFileNameForServiceName("MyService1");
-			generator.Namespace = "MyService1";
+			generator.Options.Namespace = "MyService1";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
 			string expectedDirectory = @"d:\projects\MyProject\Service References\MyService1";
 			
@@ -109,9 +139,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferenceFileName expectedProxyFileName = 
 				AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
 			AddMapFileNameForServiceName("MyServiceRef");
-			generator.Namespace = "MyServiceRef";
+			generator.Options.Namespace = "MyServiceRef";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
 			fakeProject.AssertWasCalled(p => p.AddServiceReferenceProxyFile(expectedProxyFileName));
 		}
@@ -122,9 +152,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateGenerator();
 			AddProxyFileNameForServiceName("MyServiceRef");
 			AddMapFileNameForServiceName("MyServiceRef");
-			generator.Namespace = "MyServiceRef";
+			generator.Options.Namespace = "MyServiceRef";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
 			fakeProject.AssertWasCalled(p => p.Save());
 		}
@@ -135,9 +165,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateGenerator();
 			AddProxyFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
 			AddMapFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
-			generator.Namespace = "MyServiceRef";
+			generator.Options.Namespace = "MyServiceRef";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
 			var expectedMapFile = new ServiceReferenceMapFile() {
 				FileName = @"d:\projects\MyProject\Service References\MyServiceRef\Reference.svcmap"
@@ -153,9 +183,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			AddProxyFileNameForServiceName("MyServiceRef");
 			ServiceReferenceMapFileName expectedMapFileName = 
 				AddMapFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
-			generator.Namespace = "MyServiceRef";
+			generator.Options.Namespace = "MyServiceRef";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
 			fakeProject.AssertWasCalled(p => p.AddServiceReferenceMapFile(expectedMapFileName));
 		}
@@ -166,9 +196,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateGenerator();
 			AddProxyFileNameForServiceName("MyService");
 			AddMapFileNameForServiceName("MyService");
-			generator.Namespace = "MyService";
+			generator.Options.Namespace = "MyService";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
 			fakeProject.AssertWasCalled(p => p.AddAssemblyReference("System.ServiceModel"));
 		}
@@ -179,14 +209,14 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			CreateGenerator();
 			AddProxyFileNameForServiceName("MyService");
 			AddMapFileNameForServiceName("MyService");
-			generator.Namespace = "MyService";
+			generator.Options.Namespace = "MyService";
 			
 			fakeProject
 				.Stub(p => p.Save())
 				.WhenCalled(new Action<MethodInvocation>(
 					mi => fakeProject.AssertWasCalled(p => p.AddAssemblyReference("System.ServiceModel"))));
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 		}
 		
 		[Test]
@@ -196,11 +226,39 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			AddProxyFileNameForServiceName("MyServiceRef");
 			ServiceReferenceMapFileName expectedMapFileName = 
 				AddMapFileNameForServiceName(@"d:\projects\MyProject\Service References", "MyServiceRef");
-			generator.Namespace = "MyServiceRef";
+			generator.Options.Namespace = "MyServiceRef";
 			
-			generator.AddServiceReference(metadata);
+			generator.AddServiceReference();
 			
-			Assert.AreEqual("MyServiceRef", fakeProxyGenerator.ServiceReferenceNamespace);
+			Assert.AreEqual("MyServiceRef", fakeProxyGenerator.Options.Namespace);
+		}
+		
+		[Test]
+		public void AddServiceReference_CSharpProject_CSharpProxyGenerated()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.Namespace = "MyService";
+			UseCSharpProject();
+			
+			generator.AddServiceReference();
+			
+			Assert.AreEqual("CS", fakeProxyGenerator.Options.Language);
+		}
+		
+		[Test]
+		public void AddServiceReference_VisualBasicProject_VisualBasicProxyGenerated()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.Namespace = "MyService";
+			UseVisualBasicProject();
+			
+			generator.AddServiceReference();
+			
+			Assert.AreEqual("VB", fakeProxyGenerator.Options.Language);
 		}
 	}
 }

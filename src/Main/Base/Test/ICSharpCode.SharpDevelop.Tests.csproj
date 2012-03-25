@@ -105,10 +105,8 @@
     <Compile Include="ServiceReferences\ServiceReferenceMapFileTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceMapFileGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
-    <Compile Include="ServiceReferences\ServiceReferenceProxyGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
-    <Compile Include="ServiceReferences\WebServiceMetadataSetTests.cs" />
     <Compile Include="SolutionTests.cs" />
     <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />

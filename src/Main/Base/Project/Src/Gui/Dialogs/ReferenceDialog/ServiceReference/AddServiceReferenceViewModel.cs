@@ -45,7 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
 		CredentialCache credentialCache = new CredentialCache();
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
-		WebServiceMetadataSet serviceMetadata;
 		
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
@@ -225,11 +224,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			if (protocol != null) {
 				serviceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
-				serviceMetadata = new WebServiceMetadataSet(protocol);
-				
-				ServiceDescriptionMessage = String.Format("{0} service(s) found at address {1}",
-				                                          serviceDescriptionCollection.Count,
-				                                          discoveryUri);
+				ServiceDescriptionMessage = String.Format(
+					"{0} service(s) found at address {1}",
+				    serviceDescriptionCollection.Count,
+				    discoveryUri);
 				DefaultNameSpace = GetDefaultNamespace();
 				FillItems(serviceDescriptionCollection);
 				string referenceName = ServiceReferenceHelper.GetReferenceName(discoveryUri);
@@ -379,8 +377,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public void AddServiceReference()
 		{
 			var serviceGenerator = new ServiceReferenceGenerator(project);
-			serviceGenerator.Namespace = defaultNameSpace;
-			serviceGenerator.AddServiceReference(serviceMetadata);
+			serviceGenerator.Options.Namespace = defaultNameSpace;
+			serviceGenerator.Options.Url = discoveryUri.ToString();
+			serviceGenerator.AddServiceReference();
 			new RefreshProjectBrowser().Run();
 		}
 	}

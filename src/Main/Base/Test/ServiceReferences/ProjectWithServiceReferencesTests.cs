@@ -37,6 +37,12 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			project = new ProjectWithServiceReferences(msbuildProject);
 		}
 		
+		void CreateProjectWithVisualBasicMSBuildProject()
+		{
+			msbuildProject = WebReferenceTestHelper.CreateTestProject("VBNet");
+			project = new ProjectWithServiceReferences(msbuildProject);			
+		}
+		
 		void SetProjectDirectory(string directory)
 		{
 			fakeProject.Stub(p => p.Directory).Return(directory);			
@@ -95,18 +101,6 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			string expectedFolder = @"d:\projects\MyProject\Service References";
 			
 			Assert.AreEqual(expectedFolder, folder);
-		}
-		
-		[Test]
-		public void CodeDomProvider_UnderlyingProjectUsesCSharpCodeDomProvider_ProjectUsesCSharpCodeDomProvider()
-		{
-			CreateProject();
-			SetProjectCodeDomProvider(LanguageProperties.CSharp);
-			
-			ICodeDomProvider codeDomProvider = project.CodeDomProvider;
-			string fileExtension = codeDomProvider.FileExtension;
-			
-			Assert.AreEqual("cs", fileExtension);
 		}
 		
 		[Test]
@@ -259,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		}
 		
 		[Test]
-		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReferenceUsingFullAssemblyNa_AssemblyReferenceIsNotAdded()
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReferenceUsingFullAssemblyName_AssemblyReferenceIsNotAdded()
 		{
 			CreateProjectWithMSBuildProject();
 			AddAssemblyReferenceToMSBuildProject("System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
@@ -269,6 +263,22 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			int count = CountAssemblyReferencesInMSBuildProject();
 			
 			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void Language_CSharpProject_CSharpLanguageReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			
+			Assert.AreEqual("C#", project.Language);
+		}
+		
+		[Test]
+		public void Language_VisualBasicProject_VisualBasicLanguageReturned()
+		{
+			CreateProjectWithVisualBasicMSBuildProject();
+			
+			Assert.AreEqual("VBNet", project.Language);
 		}
 	}
 }

@@ -11,9 +11,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		IServiceReferenceProxyGenerator proxyGenerator;
 		IServiceReferenceMapGenerator mapGenerator;
 		
-		public ServiceReferenceFileGenerator(ICodeDomProvider codeDomProvider)
+		public ServiceReferenceFileGenerator()
 			: this(
-				new ServiceReferenceProxyGenerator(codeDomProvider),
+				new ServiceReferenceProxyGenerator(),
 				new ServiceReferenceMapGenerator())
 		{
 		}
@@ -26,14 +26,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.mapGenerator = mapGenerator;
 		}
 		
-		public string ServiceReferenceNamespace {
-			get { return proxyGenerator.ServiceReferenceNamespace; }
-			set { proxyGenerator.ServiceReferenceNamespace = value; }
+		public ServiceReferenceGeneratorOptions Options {
+			get { return proxyGenerator.Options; }
 		}
 		
-		public void GenerateProxyFile(MetadataSet metadata, string proxyFileName)
+		public void GenerateProxyFile()
 		{
-			proxyGenerator.GenerateProxyFile(metadata, proxyFileName);
+			proxyGenerator.GenerateProxyFile();
 		}
 		
 		public void GenerateServiceReferenceMapFile(ServiceReferenceMapFile mapFile)

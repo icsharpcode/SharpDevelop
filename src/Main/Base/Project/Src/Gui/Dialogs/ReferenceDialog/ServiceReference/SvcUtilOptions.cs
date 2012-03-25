@@ -2,14 +2,21 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.CodeDom;
-using System.ServiceModel.Description;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	public interface IServiceReferenceCodeDomBuilder
+	public class SvcUtilOptions : ServiceReferenceGeneratorOptions
 	{
-		string Namespace { get; set; }
-		CodeCompileUnit GenerateCompileUnit(MetadataSet metadata);
+		public SvcUtilOptions()
+		{
+		}
+		
+		public string GetNamespaceMapping()
+		{
+			if (Namespace != null) {
+				return "*," + Namespace;
+			}
+			return null;
+		}
 	}
 }
