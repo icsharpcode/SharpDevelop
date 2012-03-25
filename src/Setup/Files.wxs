@@ -161,13 +161,13 @@
 							<Component Id="ICSharpCodeCoreDll" Guid="DFD67330-0F6D-4069-9B03-90E2BB7B9273" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.Core.dll" Id="ICSharpCode.Core.dll" Name="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ICSharpCode.Core.dll" AssemblyManifest="ICSharpCode.Core.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="ICSharpCodeNRefactoryDll" Guid="53FE6482-01C2-45DE-9929-A84510CDF39C" DiskId="1">
+							<Component Id="ICSharpCodeNRefactoryDll" Guid="D12F8C70-8D9F-43E5-BEA9-AEA170B1DD4F" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.NRefactory.dll" Id="ICSharpCode.NRefactory.dll" Name="ICSharpCode.NRefactory.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.dll" AssemblyManifest="ICSharpCode.NRefactory.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="ICSharpCodeNRefactoryCSharpDll" Guid="9A932E76-9FA7-47A3-B650-278B291A7946" DiskId="1">
+							<Component Id="ICSharpCodeNRefactoryCSharpDll" Guid="66F957E3-6C7A-4243-9C58-257C1D9D3360" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.NRefactory.CSharp.dll" Id="ICSharpCode.NRefactory.CSharp.dll" Name="ICSharpCode.NRefactory.CSharp.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.CSharp.dll" AssemblyManifest="ICSharpCode.NRefactory.CSharp.dll" KeyPath="yes" />
 							</Component>
-							<Component Id="ICSharpCodeNRefactoryXmlDll" Guid="9A932E76-9FA7-47A3-B650-278B291A7946" DiskId="1">
+							<Component Id="ICSharpCodeNRefactoryXmlDll" Guid="F0D2E678-84E1-43A6-BE3E-86232763F6D8" DiskId="1">
 								<File Source="..\..\bin\ICSharpCode.NRefactory.Xml.dll" Id="ICSharpCode.NRefactory.Xml.dll" Name="ICSharpCode.NRefactory.Xml.dll" Assembly=".net" AssemblyApplication="ICSharpCode.NRefactory.Xml.dll" AssemblyManifest="ICSharpCode.NRefactory.Xml.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="ICSharpCodeSharpDevelopDll" Guid="CC2E4AAB-58C0-40B7-B440-1D7F65EED379" DiskId="1">
