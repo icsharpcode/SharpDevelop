@@ -46,21 +46,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		string Evaluate(string code)
 		{
 			Process process = WindowsDebugger.CurrentProcess;
-			if (process == null) {
+			StackFrame frame = WindowsDebugger.CurrentStackFrame;
+			
+			if (process == null)
 				return "No process is being debugged";
-			}
-			if (process.IsRunning) {
+			if (process.IsRunning)
 				return "The process is running";
-			}
+			if (frame == null)
+				return "No current execution frame";
+			
 			try {
-				StackFrame frame = process.GetCurrentExecutingFrame();
-				if (frame == null) return "No current execution frame";
-				
 				object data = ((WindowsDebugger)DebuggerService.CurrentDebugger).debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
 				                                                                       frame.MethodInfo.MetadataToken,
 				                                                                       code);
 				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, frame, data);
-				return ExpressionEvaluator.FormatValue(val);
+				return ExpressionEvaluator.FormatValue(WindowsDebugger.EvalThread, val);
 			} catch (GetValueException e) {
 				return e.Message;
 			}
@@ -99,27 +99,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
 		{
-			Process process = WindowsDebugger.CurrentProcess;
-			if (process == null || process.IsRunning)
-				return;
-			
-			StackFrame frame = process.GetCurrentExecutingFrame();
-			if (frame == null)
-				return;
-			
-			foreach (char ch in e.Text) {
-				if (ch == '.') {
-					ShowDotCompletion(process, console.CommandText);
-				}
-			}
+			StackFrame frame = WindowsDebugger.CurrentStackFrame;
+			if (e.Text == "." && frame != null)
+				ShowDotCompletion(frame, console.CommandText);
 		}
 		
-		void ShowDotCompletion(Process process, string currentText)
+		void ShowDotCompletion(StackFrame frame, string currentText)
 		{
-			StackFrame frame = process.GetCurrentExecutingFrame();
-			if (frame == null)
-				return;
-			
 			var seg = frame.NextStatement;
 			if (seg == null)
 				return;

@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			panel.Children.Add(localVarList);
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
-			WindowsDebugger.RefreshPads();
+			RefreshPad();
 		}
 		
 		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
@@ -42,32 +42,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return instance; }
 		}
 		
-		void RefreshPad(object sender, DebuggerEventArgs dbg)
+		void RefreshPad()
 		{
-			Process debuggedProcess = dbg.Process;
+			StackFrame frame = WindowsDebugger.CurrentStackFrame;
 			
-			if (debuggedProcess == null || debuggedProcess.IsRunning) {
+			if (frame == null) {
 				localVarList.WatchItems.Clear();
-				return;
-			}
-			
-			LoggingService.Info("Local Variables refresh");
-			try {
-				StackFrame frame = debuggedProcess.GetCurrentExecutingFrame();
+			} else {
 				localVarList.WatchItems.Clear();
-				if (frame == null) return;
-				
-				debuggedProcess.EnqueueForEach(
+				frame.Process.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
 					ValueNode.GetLocalVariables().ToList(),
 					n => localVarList.WatchItems.Add(n.ToSharpTreeNode())
 				);
-			} catch (Exception ex) {
-				if (debuggedProcess == null || debuggedProcess.HasExited) {
-					// Process unexpectedly exited
-				} else {
-					MessageService.ShowException(ex);
-				}
 			}
 		}
 	}

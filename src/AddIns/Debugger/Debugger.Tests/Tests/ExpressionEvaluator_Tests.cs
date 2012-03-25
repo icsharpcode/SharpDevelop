@@ -205,15 +205,15 @@ namespace Debugger.Tests {
 		public void ExpressionEvaluator_Tests()
 		{
 			StartTest();
-			process.SelectedStackFrame.StepOver();
-			process.SelectedStackFrame.StepOver(); // Start worker thread
+			this.CurrentStackFrame.StepOver();
+			this.CurrentStackFrame.StepOver(); // Start worker thread
 			
 			EvalAll(expressionsInput);
 			
 			// Test member hiding / overloading
 			
-			Value myClass = SelectedStackFrame.GetLocalVariableValue("myClass").GetPermanentReference();
-			Expression myClassExpr = SelectedStackFrame.MethodInfo.GetLocalVariable(SelectedStackFrame.IP, "myClass").GetExpression();
+			Value myClass = this.CurrentStackFrame.GetLocalVariableValue("myClass").GetPermanentReference(this.EvalThread);
+			Expression myClassExpr = this.CurrentStackFrame.MethodInfo.GetLocalVariable(this.CurrentStackFrame.IP, "myClass").GetExpression();
 			
 			List<Expression> expressions = new List<Expression>();
 			foreach(MemberInfo memberInfo in myClass.Type.GetFieldsAndNonIndexedProperties(DebugType.BindingFlagsAll)) {
@@ -245,12 +245,12 @@ namespace Debugger.Tests {
 			
 			// Test type round tripping
 			
-			foreach(DebugLocalVariableInfo locVar in process.SelectedStackFrame.MethodInfo.GetLocalVariables()) {
+			foreach(DebugLocalVariableInfo locVar in this.CurrentStackFrame.MethodInfo.GetLocalVariables()) {
 				if (locVar.Name.StartsWith("complexType")) {
 					TypeReference complexTypeRef = locVar.LocalType.GetTypeReference();
 					string code = "typeof(" + complexTypeRef.PrettyPrint() + ")";
 					TypeOfExpression complexTypeRefRT = (TypeOfExpression)ExpressionEvaluator.Parse(code, SupportedLanguage.CSharp);
-					DebugType type = complexTypeRefRT.TypeReference.ResolveType(process.SelectedStackFrame.AppDomain);
+					DebugType type = complexTypeRefRT.TypeReference.ResolveType(this.CurrentStackFrame.AppDomain);
 					string status = locVar.LocalType.FullName == type.FullName ? "ok" : "fail";
 					ObjectDumpToString("TypeResulution", string.Format(" {0} = {1} ({2})", code, type.FullName, status));
 				}
@@ -258,15 +258,15 @@ namespace Debugger.Tests {
 			
 			// Type equality
 			
-			DebugLocalVariableInfo loc = SelectedStackFrame.MethodInfo.GetLocalVariable(SelectedStackFrame.IP, "list");
+			DebugLocalVariableInfo loc = this.CurrentStackFrame.MethodInfo.GetLocalVariable(this.CurrentStackFrame.IP, "list");
 			Type locType = loc.LocalType;
-			Type valType = loc.GetValue(SelectedStackFrame).Type;
+			Type valType = loc.GetValue(this.CurrentStackFrame).Type;
 			ObjectDump("TypesIdentitcal", object.ReferenceEquals(locType, valType));
 			ObjectDump("TypesEqual", locType == valType);
 			
-			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString());
+			ObjectDump("WorkerThreadMoved", this.CurrentStackFrame.GetThisValue().GetMemberValue(this.EvalThread, "WorkerThreadMoved").AsString());
 			process.Continue();
-			ObjectDump("WorkerThreadMoved", process.SelectedStackFrame.GetThisValue().GetMemberValue("WorkerThreadMoved").AsString());
+			ObjectDump("WorkerThreadMoved", this.CurrentStackFrame.GetThisValue().GetMemberValue(this.EvalThread, "WorkerThreadMoved").AsString());
 			
 			EndTest();
 		}
@@ -286,8 +286,8 @@ namespace Debugger.Tests {
 				restultFmted = null;
 			} else {
 				try {
-					Value result = ICSharpCode.NRefactory.Visitors.ExpressionEvaluator.Evaluate(expr, SupportedLanguage.CSharp, process.SelectedStackFrame);
-					restultFmted = ICSharpCode.NRefactory.Visitors.ExpressionEvaluator.FormatValue(result);
+					Value result = ICSharpCode.NRefactory.Visitors.ExpressionEvaluator.Evaluate(expr, SupportedLanguage.CSharp, this.CurrentStackFrame);
+					restultFmted = ICSharpCode.NRefactory.Visitors.ExpressionEvaluator.FormatValue(this.EvalThread, result);
 				} catch (GetValueException e) {
 					restultFmted = e.Message;
 				}

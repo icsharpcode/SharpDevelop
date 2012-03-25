@@ -119,69 +119,69 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			SourcecodeSegment start = process.SelectedStackFrame.NextStatement;
+			SourcecodeSegment start = this.CurrentStackFrame.NextStatement;
 			
 			foreach (bool jmcEnabled in new bool[] {true, true, false}) {
 				ObjectDump("Log", "Starting run with JMC=" + jmcEnabled.ToString());
 				
-				process.SelectedStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn, false);
+				this.CurrentStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn, false);
 				
 				process.Options.EnableJustMyCode = jmcEnabled;
 				process.Options.StepOverSingleLineProperties = true;
 				process.Options.StepOverFieldAccessProperties = true;
 				
-				process.SelectedStackFrame.StepInto(); // 42.ToString()
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // 42.ToString()
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
 				if (jmcEnabled) {
-					process.SelectedStackFrame.StepInto(); // StepRoot
-					Assert.AreEqual("StepRight", process.SelectedStackFrame.MethodInfo.Name);
-					process.SelectedStackFrame.StepOut();
-					process.SelectedStackFrame.StepOver(); // Finish the step out
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // StepRoot
+					Assert.AreEqual("StepRight", this.CurrentStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepOut();
+					this.CurrentStackFrame.StepOver(); // Finish the step out
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				} else {
-					process.SelectedStackFrame.StepInto(); // StepRoot
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // StepRoot
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				}
 				
-				process.SelectedStackFrame.StepInto(); // Generated default constructor
-				Assert.AreEqual("Target", process.SelectedStackFrame.MethodInfo.Name);
-				process.SelectedStackFrame.StepOut();
-				process.SelectedStackFrame.StepOver(); // Finish the step out
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // Generated default constructor
+				Assert.AreEqual("Target", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				this.CurrentStackFrame.StepOver(); // Finish the step out
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				process.SelectedStackFrame.StepInto(); // ShortProperty
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // ShortProperty
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				process.SelectedStackFrame.StepInto(); // FieldProperty
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // FieldProperty
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				process.SelectedStackFrame.StepInto(); // CatchExcpetion
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // CatchExcpetion
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
 				if (jmcEnabled) {
-					process.SelectedStackFrame.StepInto(); // ZigZag1
-					process.SelectedStackFrame.StepOver();
-					process.SelectedStackFrame.StepOver();
-					Assert.AreEqual("ZigZag2", process.SelectedStackFrame.MethodInfo.Name);
-					process.SelectedStackFrame.StepInto();
-					Assert.AreEqual("ZigZag2", process.SelectedStackFrame.MethodInfo.Name);
-					Assert.AreEqual(3, process.SelectedStackFrame.NextStatement.StartColumn);
-					process.SelectedStackFrame.StepOut();
-					process.SelectedStackFrame.StepOver(); // Finish the step out
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // ZigZag1
+					this.CurrentStackFrame.StepOver();
+					this.CurrentStackFrame.StepOver();
+					Assert.AreEqual("ZigZag2", this.CurrentStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto();
+					Assert.AreEqual("ZigZag2", this.CurrentStackFrame.MethodInfo.Name);
+					Assert.AreEqual(3, this.CurrentStackFrame.NextStatement.StartColumn);
+					this.CurrentStackFrame.StepOut();
+					this.CurrentStackFrame.StepOver(); // Finish the step out
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				} else {
-					process.SelectedStackFrame.StepInto(); // ZigZag1
-					Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+					this.CurrentStackFrame.StepInto(); // ZigZag1
+					Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				}
 				
-				process.SelectedStackFrame.StepInto(); // MyEvent
-				Assert.AreEqual("Event2", process.SelectedStackFrame.MethodInfo.Name);
-				process.SelectedStackFrame.StepOut();
-				Assert.AreEqual("Event4", process.SelectedStackFrame.MethodInfo.Name);
-				process.SelectedStackFrame.StepOut();
-				process.SelectedStackFrame.StepOver(); // Finish the step out
-				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepInto(); // MyEvent
+				Assert.AreEqual("Event2", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				Assert.AreEqual("Event4", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				this.CurrentStackFrame.StepOver(); // Finish the step out
+				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 			}
 			
 			// Restore default state

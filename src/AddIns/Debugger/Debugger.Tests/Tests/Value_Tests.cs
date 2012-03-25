@@ -40,11 +40,11 @@ namespace Debugger.Tests {
 			
 			DumpLocalVariables();
 			
-			Value array = process.SelectedStackFrame.GetLocalVariableValue("array").GetPermanentReference();
-			ObjectDump("array.Length", array.GetMemberValue("Length"));
+			Value array = this.CurrentStackFrame.GetLocalVariableValue("array").GetPermanentReference(this.EvalThread);
+			ObjectDump("array.Length", array.GetMemberValue(this.EvalThread, "Length"));
 			ObjectDump("array", array);
 			
-			Value lbArray = process.SelectedStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference();
+			Value lbArray = this.CurrentStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference(this.EvalThread);
 			ObjectDump("lbArray", lbArray);
 			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new int[] {10, 20}));
 			

@@ -26,6 +26,7 @@ namespace Debugger
 		bool raiseEventsOnNextExit;
 		bool isInCallback;
 		
+		Thread threadToReport;
 		List<Breakpoint> breakpointsHit = new List<Breakpoint>();
 		Exception exceptionThrown;
 		
@@ -76,7 +77,7 @@ namespace Debugger
 		void EnterCallback(string name, ICorDebugThread pThread)
 		{
 			EnterCallback(name, pThread.GetProcess());
-			process.SelectedThread = process.GetThread(pThread);
+			threadToReport = process.GetThread(pThread);
 		}
 		
 		void ExitCallback()
@@ -96,11 +97,13 @@ namespace Debugger
 					process.TraceMessage("Callback exit: Paused");
 
 				process.DisableAllSteppers();
-				process.CheckSelectedStackFrames();
 				if (raiseEventsOnNextExit) {
-					DebuggerEventArgs e = new DebuggerEventArgs(process);
+					DebuggerEventArgs e = new DebuggerEventArgs();
+					e.Process = process;
+					e.Thread = threadToReport;
 					e.BreakpointsHit = breakpointsHit.ToArray();
 					e.ExceptionThrown = exceptionThrown;
+					threadToReport = null;
 					breakpointsHit.Clear();
 					exceptionThrown = null;
 					
@@ -127,7 +130,7 @@ namespace Debugger
 			Thread thread = process.GetThread(pThread);
 			Stepper stepper = process.GetStepper(pStepper);
 			
-			StackFrame currentStackFrame = process.SelectedThread.MostRecentStackFrame;
+			StackFrame currentStackFrame = thread.MostRecentStackFrame;
 			process.TraceMessage(" - stopped at {0} because of {1}", currentStackFrame.MethodInfo.FullName, stepper.ToString());
 			
 			process.Steppers.Remove(stepper);
@@ -524,7 +527,7 @@ namespace Debugger
 				// sanity check: we can only handle one exception after another
 				// TODO : create Exception queue if CLR throws multiple exceptions
 				Debug.Assert(exceptionThrown == null);
-				Value value = new Value(process.GetAppDomain(pAppDomain), process.SelectedThread.CorThread.GetCurrentException()).GetPermanentReference();
+				Value value = new Value(process.GetAppDomain(pAppDomain), pThread.GetCurrentException()).GetPermanentReferenceOfHeapValue();
 				exceptionThrown = new Exception(value, exceptionType);
 				
 				pauseOnNextExit = true;

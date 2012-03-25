@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			panel.Children.Add(objectGraphControl);
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
-			WindowsDebugger.RefreshPads();
+			RefreshPad();
 		}
 		
 		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
@@ -43,21 +43,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return instance; }
 		}
 		
-		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
+		void RefreshPad()
 		{
-			Process debuggedProcess = dbg.Process;
-			
 			// BUG: if pad window is undocked and floats standalone, IsVisible == false (so pad won't refresh)
 			// REQUEST: need to refresh when pad becomes visible -> VisibleChanged event?
-			if (!objectGraphControl.IsVisible)
-			{
+			if (!objectGraphControl.IsVisible) {
 				return;
 			}
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
+			if (WindowsDebugger.CurrentStackFrame == null) {
 				this.objectGraphControl.Clear();
-				return;
+			} else {
+				this.objectGraphControl.RefreshView();
 			}
-			this.objectGraphControl.RefreshView();
 		}
 	}
 }

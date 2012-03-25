@@ -19,6 +19,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Services;
@@ -71,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ProjectService.SolutionLoaded += delegate { LoadSavedNodes(); };
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
-			WindowsDebugger.RefreshPads();
+			RefreshPad();
 		}
 
 		#region Saved nodes
@@ -176,8 +177,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			try {
 				LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(node.Node.Name) ? "is null or empty!" : node.Node.Name));
 				
-				//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
-				ValueNode valNode = new ValueNode(null, node.Node.Name, () => ((WindowsDebugger)DebuggerService.CurrentDebugger).GetExpression(node.Node.Name).Evaluate(process));
+				ValueNode valNode = new ValueNode(null, node.Node.Name, () => ExpressionEvaluator.Evaluate(node.Node.Name, SupportedLanguage.CSharp, WindowsDebugger.CurrentStackFrame));
 				return valNode.ToSharpTreeNode();
 			} catch (GetValueException) {
 				string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), node.Node.Name);
@@ -186,9 +186,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
+		protected void RefreshPad()
 		{
-			Process debuggedProcess = dbg.Process;
+			Process debuggedProcess = WindowsDebugger.CurrentProcess;
 			
 			ResetPad(null, null);
 			

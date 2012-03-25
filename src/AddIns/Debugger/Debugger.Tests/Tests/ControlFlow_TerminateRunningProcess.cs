@@ -30,11 +30,11 @@ namespace Debugger.Tests {
 		{
 			for(int i = 0; i < 2; i++) {
 				StartTest();
-				process.SelectedStackFrame.StepOver();
+				this.CurrentStackFrame.StepOver();
 				process.Paused += delegate {
 					Assert.Fail("Should not have received any callbacks after Terminate");
 				};
-				process.SelectedStackFrame.AsyncStepOver();
+				this.CurrentStackFrame.AsyncStepOver();
 				ObjectDump("Log", "Calling terminate");
 				process.Terminate();
 			}

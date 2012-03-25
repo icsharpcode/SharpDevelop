@@ -36,21 +36,21 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			StackFrame stackFrame = process.SelectedStackFrame;
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			StackFrame stackFrame = this.CurrentStackFrame;
+			ObjectDump("SelectedStackFrame", this.CurrentStackFrame);
 			
 			process.Continue(); // Go to the SubFunction
 			ObjectDump("Old StackFrame", stackFrame);
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDump("SelectedStackFrame", this.CurrentStackFrame);
 			
 			process.Continue(); // Go back to Function
 			ObjectDump("Old StackFrame", stackFrame);
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDump("SelectedStackFrame", this.CurrentStackFrame);
 			
 			process.Continue(); // Setp out of function
-			ObjectDump("Main", process.SelectedStackFrame);
+			ObjectDump("Main", this.CurrentStackFrame);
 			ObjectDump("Old StackFrame", stackFrame);
-			ObjectDump("SelectedStackFrame", process.SelectedStackFrame);
+			ObjectDump("SelectedStackFrame", this.CurrentStackFrame);
 			
 			EndTest();
 		}

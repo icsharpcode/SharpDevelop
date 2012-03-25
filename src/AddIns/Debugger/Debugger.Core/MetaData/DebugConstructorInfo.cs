@@ -19,6 +19,10 @@ namespace Debugger.MetaData
 	{
 		DebugMethodInfo methodInfo;
 		
+		public DebugMethodInfo MethodInfo {
+			get { return methodInfo; }
+		}
+		
 		internal DebugConstructorInfo(DebugMethodInfo methodInfo)
 		{
 			this.methodInfo = methodInfo;
@@ -109,13 +113,13 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
 		{
-			return methodInfo.Invoke(null, invokeAttr, binder, parameters, culture);
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>
 		public override object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
 		{
-			return methodInfo.Invoke(null, invokeAttr, binder, parameters, culture);
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>

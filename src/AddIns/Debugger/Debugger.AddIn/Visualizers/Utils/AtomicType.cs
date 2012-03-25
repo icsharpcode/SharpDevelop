@@ -30,7 +30,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <returns>True if expression's type is atomic, False otherwise.</returns>
 		public static bool IsOfAtomicType(this Expression expr)
 		{
-			DebugType typeOfValue = expr.Evaluate(WindowsDebugger.CurrentProcess).Type;
+			DebugType typeOfValue = expr.Evaluate().Type;
 			return AtomicType.IsAtomic(typeOfValue);
 		}
 	}

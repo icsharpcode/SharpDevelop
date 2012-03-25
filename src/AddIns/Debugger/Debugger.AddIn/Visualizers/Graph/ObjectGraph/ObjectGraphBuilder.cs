@@ -85,17 +85,16 @@ namespace Debugger.AddIn.Visualizers.Graph
 				throw new DebuggerVisualizerException("Please specify an expression.");
 			}
 
-			var debuggedProcess = this.debuggerService.DebuggedProcess;
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
+			if (WindowsDebugger.CurrentStackFrame == null) {
 				throw new DebuggerVisualizerException("Please use the visualizer when debugging.");
 			}
 			
 			var rootExpression = ExpressionEvaluator.ParseExpression(expression, SupportedLanguage.CSharp);
-			Value rootValue = rootExpression.Evaluate(debuggedProcess);
+			Value rootValue = rootExpression.Evaluate();
 			if (rootValue.IsNull)	{
 				throw new DebuggerVisualizerException(expression + " is null.");
 			}
-			return buildGraphForValue(rootValue.GetPermanentReference(), rootExpression, expandedNodes);
+			return buildGraphForValue(rootValue.GetPermanentReference(WindowsDebugger.EvalThread), rootExpression, expandedNodes);
 		}
 		
 		private ObjectGraph buildGraphForValue(Value rootValue, Expression rootExpression, ExpandedExpressions expandedNodes)
@@ -261,7 +260,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (expandedNodes.IsExpanded(complexProperty.Expression))
 				{
 					// if expanded, evaluate this property
-					Value memberValue = complexProperty.Expression.Evaluate(this.debuggerService.DebuggedProcess);
+					Value memberValue = complexProperty.Expression.Evaluate();
 					if (memberValue.IsNull)
 					{
 						continue;
@@ -269,7 +268,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 					else
 					{
 						// if property value is not null, create neighbor
-						memberValue = memberValue.GetPermanentReference();
+						memberValue = memberValue.GetPermanentReference(WindowsDebugger.EvalThread);
 						
 						bool createdNew;
 						// get existing node (loop) or create new
@@ -362,7 +361,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <param name="expr">Expression to be checked.</param>
 		private void checkIsOfSupportedType(Expression expr)
 		{
-			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
+			DebugType typeOfValue = expr.Evaluate().Type;
 			if (typeOfValue.IsArray)
 			{
 				throw new DebuggerVisualizerException("Arrays are not supported yet");

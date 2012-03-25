@@ -60,14 +60,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			panel.Children.Add(surface);
 
 			WindowsDebugger.RefreshingPads += RefreshPad;
-			WindowsDebugger.RefreshPads();
+			RefreshPad();
 			DebuggerService.DebugStarted += OnReset;
 			DebuggerService.DebugStopped += OnReset;			
 		}
 		
-		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
+		protected void RefreshPad()
 		{
-			Process debuggedProcess = dbg.Process;
+			Process debuggedProcess = WindowsDebugger.CurrentProcess;
 			
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				return;
@@ -304,7 +304,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					commonParent.Process = debuggedProcess;
 					commonParent.StackSelected += OnThreadStackSelected;
 					commonParent.FrameSelected += OnFrameSelected;
-					commonParent.IsSelected = commonParent.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
+					commonParent.IsSelected = commonParent.ThreadIds.Contains(WindowsDebugger.CurrentThread.ID);
 					// add new children
 					foreach (var stack in listOfCurrentStacks) {
 						if (stack.ItemCollection.Count == 0)
@@ -433,6 +433,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void CreateThreadStack(Thread thread)
 		{
 			Process debuggedProcess = thread.Process;
+			Thread currentThread = WindowsDebugger.CurrentThread;
 			
 			var items = CreateItems(thread);
 			if (items == null || items.Count == 0)
@@ -445,10 +446,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			threadStack.ItemCollection = items;
 			threadStack.UpdateThreadIds(parallelStacksView == ParallelStacksView.Tasks, thread.ID);
 			
-			if (debuggedProcess.SelectedThread != null) {
-				threadStack.IsSelected = threadStack.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
+			if (currentThread != null) {
+				threadStack.IsSelected = threadStack.ThreadIds.Contains(currentThread.ID);
 				if (selectedFrame == null)
-					selectedFrame = debuggedProcess.SelectedStackFrame;
+					selectedFrame = WindowsDebugger.CurrentStackFrame;
 			}
 			
 			currentThreadStacks.Add(threadStack);
@@ -488,10 +489,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 							threadStack.ItemCollection = result.Clone();
 							threadStack.UpdateThreadIds(true, frame.Thread.ID);
 							
-							if (debuggedProcess.SelectedThread != null) {
-								threadStack.IsSelected = threadStack.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
+							if (WindowsDebugger.CurrentThread != null) {
+								threadStack.IsSelected = threadStack.ThreadIds.Contains(WindowsDebugger.CurrentThread.ID);
 								if (selectedFrame == null)
-									selectedFrame = debuggedProcess.SelectedStackFrame;
+									selectedFrame = WindowsDebugger.CurrentStackFrame;
 							}
 							
 							currentThreadStacks.Add(threadStack);
@@ -531,10 +532,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				lastItemIsExternalMethod = true;
 			}
 			
-			if (frame.Thread.SelectedStackFrame != null &&
-			    frame.Thread.ID == WindowsDebugger.CurrentProcess.SelectedThread.ID &&
-			    frame.Thread.SelectedStackFrame.IP == frame.IP &&
-			    frame.Thread.SelectedStackFrame.GetMethodName() == frame.GetMethodName()) {
+			if (frame.Thread.MostRecentStackFrame != null &&
+			    frame.Thread.ID == WindowsDebugger.CurrentThread.ID &&
+			    frame.Thread.MostRecentStackFrame.IP == frame.IP &&
+			    frame.Thread.MostRecentStackFrame.GetMethodName() == frame.GetMethodName()) {
 				model.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
 				model.IsRunningStackFrame = true;
 			} else {

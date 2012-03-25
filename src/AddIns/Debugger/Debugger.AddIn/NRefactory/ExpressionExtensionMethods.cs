@@ -4,20 +4,20 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using Debugger;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.NRefactory.Ast
 {
 	public static class ExpressionExtensionMethods
 	{
-		public static Value Evaluate(this Expression expression, Process process)
+		public static Value Evaluate(this Expression expression)
 		{
-			return ExpressionEvaluator.Evaluate(expression, process);
+			return ExpressionEvaluator.Evaluate(expression, WindowsDebugger.CurrentStackFrame);
 		}
 		
 		static M SetStaticType<M>(this M expr, DebugType type) where M: INode

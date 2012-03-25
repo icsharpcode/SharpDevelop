@@ -160,17 +160,7 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
 		{
-			List<Value> args = new List<Value>();
-			foreach(object arg in parameters) {
-				args.Add((Value)arg);
-			}
-			if (this.IsSpecialName && this.Name == ".ctor") {
-				if (obj != null)
-					throw new GetValueException("'obj' must be null for constructor call");
-				return Eval.NewObject(this, args.ToArray());
-			} else {
-				return Eval.InvokeMethod(this, (Value)obj, args.ToArray());
-			}
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>
@@ -568,7 +558,8 @@ namespace Debugger.MetaData
 							localVariables,
 							0, int.MaxValue,
 							delegate(StackFrame context) {
-								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
+								// TODO: Use eval thread
+								return context.GetThisValue().GetFieldValue(context.Thread, fieldInfoCopy);
 							},
 							(DebugType)fieldInfo.FieldType
 						);
@@ -608,7 +599,8 @@ namespace Debugger.MetaData
 						scopeEndOffset,
 						(DebugType)fieldInfo.FieldType,
 						delegate(StackFrame context) {
-							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
+							// TODO: Use eval thread
+							return getCaptureClass(context).GetFieldValue(context.Thread, fieldInfoCopy);
 						}
 					);
 					locVar.IsCaptured = true;

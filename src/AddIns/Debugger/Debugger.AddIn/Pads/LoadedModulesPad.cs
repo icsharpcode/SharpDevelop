@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
-			WindowsDebugger.RefreshPads();
+			RefreshPad();
 		}
 		
 		public void RedrawContent()
@@ -55,13 +55,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			                            new Binding { Path = new PropertyPath("Symbols") }, 130);
 		}
 		
-		void RefreshPad(object sender, DebuggerEventArgs dbg)
+		void RefreshPad()
 		{
-			Process debuggedProcess = dbg.Process;
-			
+			Process process = WindowsDebugger.CurrentProcess;
 			loadedModules.Clear();
-			if (debuggedProcess != null) {
-				foreach(Module module in debuggedProcess.Modules) {
+			if (process != null) {
+				foreach(Module module in process.Modules) {
 					loadedModules.Add(new ModuleModel(module));
 				}
 			}

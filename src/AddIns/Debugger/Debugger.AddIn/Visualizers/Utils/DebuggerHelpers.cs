@@ -41,12 +41,12 @@ namespace Debugger.AddIn.Visualizers.Utils
 				throw new GetValueException("Value is not IEnumeralbe");
 			    	
 			DebugType listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
-			ConstructorInfo ctor = listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
+			DebugConstructorInfo ctor = (DebugConstructorInfo)listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
 			if (ctor == null)
 				throw new DebuggerException("List<T> constructor not found");
 			
 			// Keep reference since we do not want to keep reenumerating it
-			return ((Value)ctor.Invoke(new object[] { iEnumerableValue })).GetPermanentReference();
+			return Value.InvokeMethod(WindowsDebugger.EvalThread, null, ctor.MethodInfo, new Value[] { iEnumerableValue }).GetPermanentReferenceOfHeapValue();
 		}
 		
 		/// <summary>
@@ -80,7 +80,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// </summary>
 		public static ulong GetObjectAddress(this Expression expr)
 		{
-			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetObjectAddress();
+			return expr.Evaluate().GetObjectAddress();
 		}
 		
 		/// <summary>
@@ -102,7 +102,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");
 				}
 			}
-			Value defaultHashCode = Eval.InvokeMethod(DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
+			Value defaultHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
 			
 			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 			//string hashCode = value.InvokeMethod(method, null).AsString;
@@ -124,7 +124,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 		
 		public static Value EvalPermanentReference(this Expression expr)
 		{
-			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
+			return expr.Evaluate().GetPermanentReference(WindowsDebugger.EvalThread);
 		}
 		
 		/// <summary>
@@ -133,12 +133,12 @@ namespace Debugger.AddIn.Visualizers.Utils
 		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
 		public static int GetIListCount(this Expression targetObject)
 		{
-			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
+			Value list = targetObject.Evaluate();
 			var iCollectionType = list.Type.GetInterface(typeof(System.Collections.ICollection).FullName);
 			if (iCollectionType == null)
 				throw new GetValueException("Object does not implement System.Collections.ICollection");
 			// Do not get string representation since it can be printed in hex
-			return (int)list.GetPropertyValue(iCollectionType.GetProperty("Count")).PrimitiveValue;
+			return (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iCollectionType.GetProperty("Count")).PrimitiveValue;
 		}
 		
 		/// <summary>

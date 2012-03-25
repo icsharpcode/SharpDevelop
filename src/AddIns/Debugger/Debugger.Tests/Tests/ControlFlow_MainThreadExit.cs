@@ -70,8 +70,7 @@ namespace Debugger.Tests {
           MostRecentStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()"
           Name=""
           Priority="Normal"
-          RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.Main()" />
+          RuntimeValue="{System.Threading.Thread}" />
       </Item>
       <Item>
         <Thread
@@ -84,7 +83,7 @@ namespace Debugger.Tests {
           RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
-    <Paused>ControlFlow_MainThreadExit.cs:25,4-25,26</Paused>
+    <Paused></Paused>
     <ThreadsAfterExit
       Capacity="4"
       Count="2">
@@ -102,8 +101,7 @@ namespace Debugger.Tests {
           MostRecentStackFrame="static Boolean System.Threading.WaitHandle.InternalWaitOne(System.Runtime.InteropServices.SafeHandle waitableSafeHandle, System.Int64 millisecondsTimeout, System.Boolean hasThreadAffinity, System.Boolean exitContext)"
           Name="Worker thread"
           Priority="Normal"
-          RuntimeValue="{System.Threading.Thread}"
-          SelectedStackFrame="static System.Void Debugger.Tests.ControlFlow_MainThreadExit.WaitForALongTime()" />
+          RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsAfterExit>
     <Exited />

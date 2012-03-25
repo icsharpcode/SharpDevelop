@@ -56,9 +56,9 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			process.SelectedStackFrame.StepOver();
-			process.SelectedStackFrame.StepInto();
-			Assert.AreEqual("Source.txt", process.SelectedStackFrame.NextStatement.Filename);
+			this.CurrentStackFrame.StepOver();
+			this.CurrentStackFrame.StepInto();
+			Assert.AreEqual("Source.txt", this.CurrentStackFrame.NextStatement.Filename);
 						
 			EndTest();
 		}

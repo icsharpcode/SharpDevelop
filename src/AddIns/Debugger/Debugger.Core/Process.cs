@@ -90,28 +90,6 @@ namespace Debugger
 			get { return this.threads; }
 		}
 		
-		public Thread SelectedThread { get; set; }
-		
-		public StackFrame SelectedStackFrame {
-			get {
-				if (SelectedThread == null) {
-					return null;
-				} else {
-					return SelectedThread.SelectedStackFrame;
-				}
-			}
-		}
-		
-		public SourcecodeSegment NextStatement {
-			get {
-				if (SelectedStackFrame == null || IsRunning) {
-					return null;
-				} else {
-					return SelectedStackFrame.NextStatement;
-				}
-			}
-		}
-		
 		internal bool BreakInMain { get; set; }
 		
 		public IEnumerable<AppDomain> AppDomains {
@@ -206,7 +184,7 @@ namespace Debugger
 		internal Eval GetActiveEval(ICorDebugEval corEval)
 		{
 			foreach(Eval eval in this.activeEvals) {
-				if (eval.IsCorEval(corEval)) {
+				if (eval.CorEval == corEval) {
 					return eval;
 				}
 			}
@@ -284,8 +262,6 @@ namespace Debugger
 		{
 			AssertPaused();
 			DisableAllSteppers();
-			CheckSelectedStackFrames();
-			SelectMostRecentStackFrameWithLoadedSymbols();
 			
 			foreach (var corBreakpoint in tempBreakpoints) {
 				corBreakpoint.Activate(0);
@@ -317,7 +293,7 @@ namespace Debugger
 				throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnResumed()");
 			if (Resumed != null) {
-				Resumed(this, new DebuggerEventArgs(this));
+				Resumed(this, new DebuggerEventArgs() { Process = this });
 			}
 		}
 		
@@ -406,7 +382,7 @@ namespace Debugger
 			if(!hasExited) {
 				hasExited = true;
 				if (Exited != null) {
-					Exited(this, new DebuggerEventArgs(this));
+					Exited(this, new DebuggerEventArgs() { Process = this });
 				}
 				// Expire pause seesion first
 				if (IsPaused) {
@@ -428,7 +404,7 @@ namespace Debugger
 			corProcess.Stop(uint.MaxValue); // Infinite; ignored anyway
 			
 			NotifyPaused();
-			OnPaused(new DebuggerEventArgs(this));
+			OnPaused(new DebuggerEventArgs() { Process = this });
 		}
 		
 		public void Detach()
@@ -580,50 +556,6 @@ namespace Debugger
 			// This is done once ExitProcess callback is received
 		}
 		
-		void SelectSomeThread()
-		{
-			if (this.SelectedThread != null && !this.SelectedThread.IsInValidState) {
-				this.SelectedThread = null;
-			}
-			if (this.SelectedThread == null) {
-				foreach(Thread thread in this.Threads) {
-					if (thread.IsInValidState) {
-						this.SelectedThread = thread;
-						break;
-					}
-				}
-			}
-		}
-		
-		internal void CheckSelectedStackFrames()
-		{
-			foreach(Thread thread in this.Threads) {
-				if (thread.IsInValidState) {
-					if (thread.SelectedStackFrame != null && thread.SelectedStackFrame.IsInvalid) {
-						thread.SelectedStackFrame = null;
-					}
-				} else {
-					thread.SelectedStackFrame = null;
-				}
-			}
-		}
-		
-		internal void SelectMostRecentStackFrameWithLoadedSymbols()
-		{
-			SelectSomeThread();
-			if (this.SelectedThread != null) {
-				this.SelectedThread.SelectedStackFrame = null;
-				foreach (StackFrame stackFrame in this.SelectedThread.Callstack) {
-					if (stackFrame.HasSymbols) {
-						if (this.Options.StepOverDebuggerAttributes && stackFrame.MethodInfo.IsNonUserCode)
-							continue;
-						this.SelectedThread.SelectedStackFrame = stackFrame;
-						break;
-					}
-				}
-			}
-		}
-		
 		internal Stepper GetStepper(ICorDebugStepper corStepper)
 		{
 			foreach(Stepper stepper in this.Steppers) {
@@ -726,24 +658,5 @@ namespace Debugger
 		}
 		
 		#endregion
-		
-		public StackFrame GetCurrentExecutingFrame()
-		{
-			if (IsRunning || SelectedThread == null)
-				return null;
-			
-			if (SelectedStackFrame != null) {
-				if (SelectedThread.MostRecentStackFrame != null) {
-					if (SelectedStackFrame.HasSymbols && SelectedThread.MostRecentStackFrame.HasSymbols)
-						return SelectedStackFrame;
-					else
-						return SelectedThread.MostRecentStackFrame;
-				} else {
-					return SelectedThread.MostRecentStackFrame;
-				}
-			} else {
-				return SelectedThread.MostRecentStackFrame;
-			}
-		}
 	}
 }

@@ -62,7 +62,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		
 		public void RefreshView()
 		{
-			debuggerService.DebuggedProcess.EnqueueWork(Dispatcher, () => Refresh());
+			WindowsDebugger.CurrentProcess.EnqueueWork(Dispatcher, () => Refresh());
 		}
 		
 		void Refresh()

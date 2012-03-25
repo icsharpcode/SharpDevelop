@@ -17,36 +17,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class BreakPointsPad : BookmarkPadBase
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-		
 		public BreakPointsPad()
 		{
-			InitializeComponents();
-			
 			myPanel.Children.Add(CreateToolBar());
 			
 			CreateColumns();
 		}
 
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
-		}
-
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-		}
-		
 		protected override ToolBar CreateToolBar()
 		{
 			ToolBar toolbar = ToolBarService.CreateToolBar(myPanel, this, "/SharpDevelop/Pads/BreakpointPad/Toolbar");

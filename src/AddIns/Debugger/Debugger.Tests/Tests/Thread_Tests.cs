@@ -26,11 +26,11 @@ namespace Debugger.Tests {
 		public void Thread_Tests()
 		{
 			StartTest();
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
 			process.Continue();
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
 			process.Continue();
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
 			EndTest();
 		}
 	}
@@ -54,8 +54,7 @@ namespace Debugger.Tests {
         MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
         Name=""
         Priority="Normal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
     <Paused>Thread_Tests.cs:14,4-14,40</Paused>
     <Thread>
@@ -66,8 +65,7 @@ namespace Debugger.Tests {
         MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
         Name=""
         Priority="AboveNormal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
     <Paused>Thread_Tests.cs:16,4-16,40</Paused>
     <Thread>
@@ -78,8 +76,7 @@ namespace Debugger.Tests {
         MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
         Name="ThreadName"
         Priority="AboveNormal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
     <Exited />
   </Test>

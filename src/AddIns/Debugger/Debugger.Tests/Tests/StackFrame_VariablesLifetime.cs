@@ -46,15 +46,15 @@ namespace Debugger.Tests {
 			
 			StartTest(); // 1 - Enter program
 			
-			argument = process.SelectedStackFrame.GetArgumentValue(0);
-			local = process.SelectedStackFrame.GetLocalVariableValue("local");
-			@class = process.SelectedStackFrame.GetThisValue().GetMemberValue("class");
+			argument = this.CurrentStackFrame.GetArgumentValue(0);
+			local = this.CurrentStackFrame.GetLocalVariableValue("local");
+			@class = this.CurrentStackFrame.GetThisValue().GetMemberValue(this.EvalThread, "class");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			
 			process.Continue(); // 2 - Go to the SubFunction
-			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
+			localInSubFunction = this.CurrentStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
@@ -71,7 +71,7 @@ namespace Debugger.Tests {
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);
 			ObjectDump("localInSubFunction", @localInSubFunction);
-			localInSubFunction = process.SelectedStackFrame.GetLocalVariableValue("localInSubFunction");
+			localInSubFunction = this.CurrentStackFrame.GetLocalVariableValue("localInSubFunction");
 			ObjectDump("localInSubFunction(new)", @localInSubFunction);
 			
 			process.Continue(); // 5 - Setp out of both functions

@@ -6,12 +6,12 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-
 using Debugger.AddIn.Visualizers.PresentationBindings;
 using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Visualizers.GridVisualizer
 {
@@ -54,11 +54,11 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 						return;
 					}
 				}
-				shownValue = shownValue.GetPermanentReference();
+				shownValue = shownValue.GetPermanentReference(WindowsDebugger.EvalThread);
 				
 				MemberInfo[] members = itemType.GetFieldsAndNonIndexedProperties(BindingFlags.Public | BindingFlags.Instance);
 				PropertyInfo itemGetter = iListType.GetProperty("Item");
-				int rowCount = (int)shownValue.GetPropertyValue(iListType.GetProperty("Count")).PrimitiveValue;
+				int rowCount = (int)shownValue.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperty("Count")).PrimitiveValue;
 				int columnCount = members.Length + 1;
 				
 				var rowCollection = new VirtualizingCollection<VirtualizingCollection<string>>(
@@ -69,8 +69,8 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 							if (columnIndex == members.Length)
 								return "[" + rowIndex + "]";
 							try {
-								var rowValue = shownValue.GetPropertyValue(itemGetter, Eval.CreateValue(shownValue.AppDomain, rowIndex));
-								return rowValue.GetMemberValue(members[columnIndex]).InvokeToString();
+								var rowValue = shownValue.GetPropertyValue(WindowsDebugger.EvalThread, itemGetter, Eval.CreateValue(WindowsDebugger.EvalThread, rowIndex));
+								return rowValue.GetMemberValue(WindowsDebugger.EvalThread, members[columnIndex]).InvokeToString(WindowsDebugger.EvalThread);
 							} catch (GetValueException e) {
 								return "Exception: " + e.Message;
 							}

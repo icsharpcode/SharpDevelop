@@ -297,14 +297,12 @@ namespace Debugger
 	[Serializable]
 	public class DebuggerEventArgs: EventArgs
 	{
-		public Process Process { get; internal set; }
-		public Breakpoint[] BreakpointsHit { get; internal set; }
-		public Exception ExceptionThrown { get; internal set; }
-		
-		public DebuggerEventArgs(Process process)
-		{
-			this.Process = process;
-		}
+		/// <summary> The process on which the event occured.  Can be null. </summary>
+		public Process Process { get; set; }
+		/// <summary> The thread on which the event occured.  Can be null if the event was not thread specific. </summary>
+		public Thread Thread { get; set; }
+		public Breakpoint[] BreakpointsHit { get; set; }
+		public Exception ExceptionThrown { get; set; }
 	}
 	
 	[Serializable]
@@ -312,8 +310,9 @@ namespace Debugger
 	{
 		public Module Module { get; private set; }
 		
-		public ModuleEventArgs(Module module) : base(module.Process)
+		public ModuleEventArgs(Module module)
 		{
+			this.Process = module.Process;
 			this.Module = module;
 		}
 	}

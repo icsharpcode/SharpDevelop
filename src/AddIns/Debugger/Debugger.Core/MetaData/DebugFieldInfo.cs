@@ -109,13 +109,13 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override object GetValue(object obj)
 		{
-			return Value.GetFieldValue((Value)obj, this);
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>
 		public override void SetValue(object obj, object value, System.Reflection.BindingFlags invokeAttr, Binder binder, CultureInfo culture)
 		{
-			Value.SetFieldValue((Value)obj, this, (Value)value);
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>

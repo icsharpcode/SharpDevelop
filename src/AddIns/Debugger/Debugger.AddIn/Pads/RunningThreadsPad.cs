@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
-			WindowsDebugger.RefreshPads();
+			RefreshPad();
 		}
 		
 		public void RedrawContent()
@@ -68,52 +68,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			                             80);
 		}
 
-		protected void RefreshPad(object sender, DebuggerEventArgs dbg)
+		protected void RefreshPad()
 		{
-			Process debuggedProcess = dbg.Process;
+			Process process = WindowsDebugger.CurrentProcess;
 			
-			if (debuggedProcess == null || debuggedProcess.IsRunning) {
+			if (process == null || process.IsRunning) {
 				runningThreads.Clear();
-				return;
+			} else {
+				process.EnqueueForEach(
+					Dispatcher.CurrentDispatcher,
+					process.Threads.ToList(),
+					t => AddThread(t)
+				);
 			}
-			
-			LoggingService.Info("Threads refresh");
-			
-			debuggedProcess.EnqueueForEach(
-				Dispatcher.CurrentDispatcher,
-				debuggedProcess.Threads.ToList(),
-				t => AddThread(t)
-			);
 		}
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
 			ThreadModel obj = runningThreadsList.SelectedItems[0] as ThreadModel;
-			Thread thread = obj.Thread;
-			Process debuggedProcess = thread.Process;
 			
-			if (debuggedProcess != null) {
-				if (debuggedProcess.IsPaused) {
-					
-					// check for options - if these options are enabled, selecting the frame should not continue
-					if ((thread.MostRecentStackFrame == null || !thread.MostRecentStackFrame.HasSymbols) &&
-					    !DebuggingOptions.Instance.DecompileCodeWithoutSymbols) {
-						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWithoutDecompiledCodeOptions}",
-						                           "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
-						return;
-					}
-					
-					debuggedProcess.SelectedThread = thread;
-					debuggedProcess.SelectedThread.SelectedStackFrame = debuggedProcess.SelectedThread.MostRecentStackFrame;
-					if (debuggedProcess.SelectedThread.SelectedStackFrame != null) {
-						WindowsDebugger.RefreshPads();
-					} else {
-						MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchOnNAFrame}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
-					}
-			} else {
-				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
+			if (WindowsDebugger.CurrentProcess != null) {
+				if (WindowsDebugger.CurrentProcess.IsPaused) {
+					WindowsDebugger.CurrentThread = obj.Thread;
+					WindowsDebugger.RefreshPads();
+					// TODO: Jump to current line
+				} else {
+					MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
+				}
 			}
-		}
 		}
 		
 		void AddThread(Thread thread)

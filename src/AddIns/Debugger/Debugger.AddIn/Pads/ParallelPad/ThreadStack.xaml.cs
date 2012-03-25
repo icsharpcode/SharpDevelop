@@ -14,6 +14,7 @@ using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Pads.ParallelPad
 {
@@ -233,7 +234,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			foreach (var id in ThreadIds) {
 				MenuItem m = new MenuItem();
 				m.IsCheckable = true;
-				m.IsChecked = id == Process.SelectedThread.ID;
+				m.IsChecked = id == WindowsDebugger.CurrentThread.ID;
 				m.Click += delegate(object sender, RoutedEventArgs e) {
 					var menuItem = e.OriginalSource as MenuItem;
 					SelectFrame((uint)menuItem.Tag, item);

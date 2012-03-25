@@ -47,7 +47,7 @@ namespace Debugger
 		/// <seealso cref="System.Exception" />
 		public string Message {
 			get {
-				Value message = exception.GetMemberValue("_message");
+				Value message = exception.GetFieldValue("_message");
 				return message.IsNull ? string.Empty : message.AsString();
 			}
 		}
@@ -56,14 +56,14 @@ namespace Debugger
 		/// <seealso cref="System.Exception" />
 		public Exception InnerException {
 			get {
-				Value innerException = exception.GetMemberValue("_innerException");
+				Value innerException = exception.GetFieldValue("_innerException");
 				return innerException.IsNull ? null : new Exception(innerException, this.ExceptionType);
 			}
 		}
 		
 		public void MakeValuePermanent()
 		{
-			exception = exception.GetPermanentReference();
+			exception = exception.GetPermanentReferenceOfHeapValue();
 		}
 		
 		public override string ToString()
@@ -81,25 +81,25 @@ namespace Debugger
 			return sb.ToString();
 		}
 		
-		public string GetStackTrace()
+		public string GetStackTrace(Thread evalThread)
 		{
-			return GetStackTrace("--- End of inner exception stack trace ---");
+			return GetStackTrace(evalThread, "--- End of inner exception stack trace ---");
 		}
 		
 		/// <summary> Returs formated stacktrace for the exception </summary>
 		/// <exception cref="GetValueException"> Getting the stacktrace involves property
 		/// evaluation so GetValueException can be thrown in some cicumstances. </exception>
-		public string GetStackTrace(string endOfInnerExceptionFormat)
+		public string GetStackTrace(Thread evalThread, string endOfInnerExceptionFormat)
 		{
 			StringBuilder sb = new StringBuilder();
 			if (this.InnerException != null) {
-				sb.Append(this.InnerException.GetStackTrace(endOfInnerExceptionFormat));
+				sb.Append(this.InnerException.GetStackTrace(evalThread, endOfInnerExceptionFormat));
 				sb.Append("   ");
 				sb.Append(endOfInnerExceptionFormat);
 				sb.AppendLine();
 			}
 			// Note that evaluation is not possible after a stackoverflow exception
-			Value stackTrace = exception.GetMemberValue("StackTrace");
+			Value stackTrace = exception.GetMemberValue(evalThread, "StackTrace");
 			if (!stackTrace.IsNull) {
 				sb.Append(stackTrace.AsString());
 				sb.AppendLine();

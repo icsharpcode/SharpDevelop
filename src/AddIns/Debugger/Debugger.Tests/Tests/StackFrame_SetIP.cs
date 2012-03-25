@@ -26,9 +26,9 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			Assert.IsNotNull(process.SelectedStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0, true));
-			Assert.IsNull(process.SelectedStackFrame.SetIP("StackFrame_SetIP.cs", 100, 0, true));
-			process.SelectedStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0, false);
+			Assert.IsNotNull(this.CurrentStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0, true));
+			Assert.IsNull(this.CurrentStackFrame.SetIP("StackFrame_SetIP.cs", 100, 0, true));
+			this.CurrentStackFrame.SetIP("StackFrame_SetIP.cs", 12, 0, false);
 			process.Continue();
 			Assert.AreEqual("1\r\n1\r\n", log);
 			

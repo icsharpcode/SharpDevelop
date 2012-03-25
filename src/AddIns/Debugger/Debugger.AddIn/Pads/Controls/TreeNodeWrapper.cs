@@ -42,7 +42,7 @@ namespace Debugger.AddIn.Pads.Controls
 		protected override void LoadChildren()
 		{
 			if (this.Node.GetChildren != null) {
-				var process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
+				var process = WindowsDebugger.CurrentProcess;
 				process.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(this.Node.GetChildren().Select(node => node.ToSharpTreeNode())));
 			}
 		}

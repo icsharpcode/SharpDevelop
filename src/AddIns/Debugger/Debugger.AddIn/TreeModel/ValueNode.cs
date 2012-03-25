@@ -70,7 +70,7 @@ namespace Debugger.AddIn.TreeModel
 			{
 				Stopwatch watch = new Stopwatch();
 				watch.Start();
-				cachedValue = this.getValue().GetPermanentReference();
+				cachedValue = this.getValue().GetPermanentReference(WindowsDebugger.EvalThread);
 				cachedValueProcess = cachedValue.Process;
 				cachedValueDebuggeeState = cachedValue.Process.DebuggeeState;
 				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms (result cached for future use)", this.Name, watch.ElapsedMilliseconds);
@@ -101,7 +101,7 @@ namespace Debugger.AddIn.TreeModel
 			try {
 				Stopwatch watch = new Stopwatch();
 				watch.Start();
-								
+				
 				// Do not keep permanent reference
 				Value val = this.getValue();
 				
@@ -117,7 +117,7 @@ namespace Debugger.AddIn.TreeModel
 					}
 				} else if (val.Type.IsClass || val.Type.IsValueType) {
 					if (val.Type.FullNameWithoutGenericArguments == typeof(List<>).FullName) {
-						if ((int)val.GetMemberValue("_size").PrimitiveValue > 0)
+						if ((int)val.GetFieldValue("_size").PrimitiveValue > 0)
 							this.GetChildren = () => GetIListChildren(this.GetValue);
 					} else {
 						this.GetChildren = () => GetObjectChildren(val.Type);
@@ -148,11 +148,11 @@ namespace Debugger.AddIn.TreeModel
 				} else if (val.Type.IsPointer) {
 					fullValue = String.Format("0x{0:X}", val.PointerAddress);
 				} else if (val.Type.FullName == typeof(string).FullName) {
-					fullValue = '"' + val.InvokeToString().Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + '"';
+					fullValue = '"' + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + '"';
 				} else if (val.Type.FullName == typeof(char).FullName) {
-					fullValue = "'" + val.InvokeToString().Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + "'";
+					fullValue = "'" + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + "'";
 				} else if ((val.Type.IsClass || val.Type.IsValueType)) {
-					fullValue = val.InvokeToString();
+					fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
 				} else {
 					fullValue = val.AsString();
 				}
@@ -259,16 +259,14 @@ namespace Debugger.AddIn.TreeModel
 		/// </summary>
 		static StackFrame GetCurrentStackFrame()
 		{
-			var debugger = DebuggerService.CurrentDebugger as WindowsDebugger;
-			
-			if (debugger == null || debugger.DebuggedProcess == null)
+			if (WindowsDebugger.CurrentProcess == null)
 				throw new GetValueException("Debugger is not running");
-			if (debugger.DebuggedProcess.IsRunning)
+			if (WindowsDebugger.CurrentProcess.IsRunning)
 				throw new GetValueException("Process is not paused");
-			if (debugger.DebuggedProcess.SelectedStackFrame == null)
+			if (WindowsDebugger.CurrentStackFrame == null)
 				throw new GetValueException("No stack frame selected");
 			
-			return debugger.DebuggedProcess.SelectedStackFrame;
+			return WindowsDebugger.CurrentStackFrame;
 		}
 		
 		public static IEnumerable<TreeNode> GetLocalVariables()
@@ -371,7 +369,7 @@ namespace Debugger.AddIn.TreeModel
 			foreach(MemberInfo memberInfo in members.OrderBy(m => m.Name)) {
 				var memberInfoCopy = memberInfo;
 				string imageName = GetImageForMember((IDebugMemberInfo)memberInfo);
-				yield return new ValueNode(imageName, memberInfo.Name, () => GetValue().GetMemberValue(memberInfoCopy));
+				yield return new ValueNode(imageName, memberInfo.Name, () => GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberInfoCopy));
 			}
 		}
 		
@@ -383,18 +381,18 @@ namespace Debugger.AddIn.TreeModel
 			try {
 				// TODO: We want new list on reeval
 				// We need the list to survive generation of index via Eval
-				list = getValue().GetPermanentReference();
+				list = getValue().GetPermanentReference(WindowsDebugger.EvalThread);
 				DebugType iListType = (DebugType)list.Type.GetInterface(typeof(IList).FullName);
 				itemProp = iListType.GetProperty("Item");
 				// Do not get string representation since it can be printed in hex
-				count = (int)list.GetPropertyValue(iListType.GetProperty("Count")).PrimitiveValue;
+				count = (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperty("Count")).PrimitiveValue;
 			} catch (GetValueException e) {
 				return new [] { new TreeNode(null, "(error)", e.Message, string.Empty, null) };
 			}
 			if (count == 0) {
 				return new [] { new TreeNode("(empty)", null) };
 			} else {
-				return Enumerable.Range(0, count).Select(i => new ValueNode("Icons.16x16.Field", "[" + i + "]", () => list.GetPropertyValue(itemProp, Eval.CreateValue(list.AppDomain, i))));
+				return Enumerable.Range(0, count).Select(i => new ValueNode("Icons.16x16.Field", "[" + i + "]", () => list.GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
 			}
 		}
 		

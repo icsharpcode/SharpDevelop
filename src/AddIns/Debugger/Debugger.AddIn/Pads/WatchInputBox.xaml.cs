@@ -50,31 +50,18 @@ namespace Debugger.AddIn.Pads
 				language = "C#";
 				console.SetHighlighting("C#");
 			}
-			
-			// get process
-			this.Process = ((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess;
 		}
-		
-		private Process Process { get; set; }
 		
 		protected override void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
 		{
-			if (this.Process == null || this.Process.IsRunning)
-				return;
-			
-			if (this.Process.SelectedStackFrame == null || this.Process.SelectedStackFrame.NextStatement == null)
-				return;
-			
-			foreach (char ch in e.Text) {
-				if (ch == '.') {
-					ShowDotCompletion(console.CommandText);
-				}
-			}
+			StackFrame frame = WindowsDebugger.CurrentStackFrame;
+			if (e.Text == "." && frame != null)
+				ShowDotCompletion(frame, console.CommandText);
 		}
 		
-		private void ShowDotCompletion(string currentText)
+		private void ShowDotCompletion(StackFrame frame, string currentText)
 		{
-			var seg = Process.SelectedStackFrame.NextStatement;
+			var seg = frame.NextStatement;
 			
 			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 			var info = ParserService.GetParseInformation(seg.Filename);

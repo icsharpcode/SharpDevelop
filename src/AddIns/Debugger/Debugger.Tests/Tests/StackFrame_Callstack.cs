@@ -33,11 +33,11 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
-			process.SelectedStackFrame.StepOut();
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
-			process.SelectedStackFrame.StepOut();
-			ObjectDump("Callstack", process.SelectedThread.GetCallstack());
+			ObjectDump("Callstack", this.CurrentThread.GetCallstack());
+			this.CurrentStackFrame.StepOut();
+			ObjectDump("Callstack", this.CurrentThread.GetCallstack());
+			this.CurrentStackFrame.StepOut();
+			ObjectDump("Callstack", this.CurrentThread.GetCallstack());
 			
 			EndTest();
 		}

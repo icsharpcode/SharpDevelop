@@ -46,11 +46,11 @@ namespace Debugger
 			get { return description; }
 		}
 		
-		public ICorDebugEval CorEval {
+		internal ICorDebugEval CorEval {
 			get { return corEval; }
 		}
 		
-		public ICorDebugEval2 CorEval2 {
+		internal ICorDebugEval2 CorEval2 {
 			get { return (ICorDebugEval2)corEval; }
 		}
 
@@ -81,14 +81,25 @@ namespace Debugger
 			}
 		}
 		
-		Eval(AppDomain appDomain, string description, EvalStarter evalStarter)
+		Eval(Thread evalThread, string description, EvalStarter evalStarter)
 		{
-			this.appDomain = appDomain;
+			if (evalThread == null)
+				throw new DebuggerException("No evaluation thread was provided");
+			
+			this.appDomain = evalThread.AppDomain;
 			this.process = appDomain.Process;
 			this.description = description;
 			this.state = EvalState.Evaluating;
-			this.thread = GetEvaluationThread(appDomain);
-			this.corEval = thread.CorThread.CreateEval();
+			this.thread = evalThread;
+			
+			if (evalThread.Suspended)
+				throw new GetValueException("Can not evaluate because thread is suspended");
+			if (evalThread.IsInNativeCode)
+				throw new GetValueException("Can not evaluate because thread is in native code");
+			if (!evalThread.IsAtSafePoint)
+				throw new GetValueException("Can not evaluate because thread is not at safe point");
+			
+			this.corEval = evalThread.CorThread.CreateEval();
 			
 			try {
 				evalStarter(this);
@@ -123,33 +134,10 @@ namespace Debugger
 			appDomain.Process.activeEvals.Add(this);
 			
 			if (appDomain.Process.Options.SuspendOtherThreads) {
-				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { thread }, CorDebugThreadState.THREAD_SUSPEND);
+				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, new Thread[] { evalThread }, CorDebugThreadState.THREAD_SUSPEND);
 			} else {
 				appDomain.Process.AsyncContinue(DebuggeeStateAction.Keep, this.Process.UnsuspendedThreads, CorDebugThreadState.THREAD_RUN);
 			}
-		}
-		
-		static Thread GetEvaluationThread(AppDomain appDomain)
-		{
-			appDomain.Process.AssertPaused();
-			
-			Thread st = appDomain.Process.SelectedThread;
-			if (st != null && !st.Suspended && !st.IsInNativeCode && st.IsAtSafePoint && st.CorThread.GetAppDomain().GetID() == appDomain.ID) {
-				return st;
-			}
-			
-			foreach(Thread t in appDomain.Process.Threads) {
-				if (!t.Suspended && !t.IsInNativeCode && t.IsAtSafePoint && t.CorThread.GetAppDomain().GetID() == appDomain.ID) {
-					return t;
-				}
-			}
-			
-			throw new GetValueException("No suitable thread for evaluation");
-		}
-
-		internal bool IsCorEval(ICorDebugEval corEval)
-		{
-			return this.corEval == corEval;
 		}
 
 	    /// <exception cref="DebuggerException">Evaluation can not be stopped</exception>
@@ -200,19 +188,19 @@ namespace Debugger
 		}
 		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
-		public static Value InvokeMethod(DebugMethodInfo method, Value thisValue, Value[] args)
+		public static Value InvokeMethod(Thread evalThread, DebugMethodInfo method, Value thisValue, Value[] args)
 		{
 			if (method.BackingField != null) {
 				method.Process.TraceMessage("Using backing field for " + method.FullName);
-				return Value.GetMemberValue(thisValue, method.BackingField, args);
+				return Value.GetMemberValue(evalThread, thisValue, method.BackingField, args);
 			}
-			return AsyncInvokeMethod(method, thisValue, args).WaitForResult();
+			return AsyncInvokeMethod(evalThread, method, thisValue, args).WaitForResult();
 		}
 		
-		public static Eval AsyncInvokeMethod(DebugMethodInfo method, Value thisValue, Value[] args)
+		public static Eval AsyncInvokeMethod(Thread evalThread, DebugMethodInfo method, Value thisValue, Value[] args)
 		{
 			return new Eval(
-				method.AppDomain,
+				evalThread,
 				"Function call: " + method.FullName,
 				delegate(Eval eval) {
 					MethodInvokeStarter(eval, method, thisValue, args);
@@ -251,14 +239,16 @@ namespace Debugger
 				if (paramType.IsPrimitive && args[i].Type != paramType) {
 					object oldPrimVal = arg.PrimitiveValue;
 					object newPrimVal = Convert.ChangeType(oldPrimVal, paramType.PrimitiveType);
-					arg = CreateValue(method.AppDomain, newPrimVal);
+					// Eval - TODO: Is this dangerous?
+					arg = CreateValue(eval.thread, newPrimVal);
 				}
 				// It is importatnt to pass the parameted in the correct form (boxed/unboxed)
 				if (paramType.IsValueType) {
 					corArgs.Add(arg.CorGenericValue);
 				} else {
 					if (args[i].Type.IsValueType) {
-						corArgs.Add(arg.Box().CorValue);
+						// Eval - TODO: Is this dangerous?
+						corArgs.Add(arg.Box(eval.thread).CorValue);
 					} else {
 						corArgs.Add(arg.CorValue);
 					}
@@ -272,22 +262,21 @@ namespace Debugger
 				(uint)corArgs.Count, corArgs.ToArray()
 			);
 		}
-	    
-		public static Value CreateValue(AppDomain appDomain, object value)
+		
+		public static Value CreateValue(Thread evalThread, object value)
 		{
 			if (value == null) {
-				ICorDebugClass corClass = appDomain.ObjectType.CorType.GetClass();
-				Thread thread = GetEvaluationThread(appDomain);
-				ICorDebugEval corEval = thread.CorThread.CreateEval();
+				ICorDebugClass corClass = evalThread.AppDomain.ObjectType.CorType.GetClass();
+				ICorDebugEval corEval = evalThread.CorThread.CreateEval();
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
-				return new Value(appDomain, corValue);
+				return new Value(evalThread.AppDomain, corValue);
 			} else if (value is string) {
-				return Eval.NewString(appDomain, (string)value);
+				return Eval.NewString(evalThread, (string)value);
 			} else {
 				if (!value.GetType().IsPrimitive)
 					throw new DebuggerException("Value must be primitve type.  Seen " + value.GetType());
-				Value val = Eval.NewObjectNoConstructor(DebugType.CreateFromType(appDomain.Mscorlib, value.GetType()));
-				val.PrimitiveValue = value;
+				Value val = Eval.NewObjectNoConstructor(evalThread, DebugType.CreateFromType(evalThread.AppDomain.Mscorlib, value.GetType()));
+				val.SetPrimitiveValue(evalThread, value);
 				return val;
 			}
 		}
@@ -318,19 +307,15 @@ namespace Debugger
 		}
 		*/
 		
-		#region Convenience methods
-		
-		public static Value NewString(AppDomain appDomain, string textToCreate)
+		public static Value NewString(Thread evalThread, string textToCreate)
 		{
-			return AsyncNewString(appDomain, textToCreate).WaitForResult();
+			return AsyncNewString(evalThread, textToCreate).WaitForResult();
 		}
 		
-		#endregion
-		
-		public static Eval AsyncNewString(AppDomain appDomain, string textToCreate)
+		public static Eval AsyncNewString(Thread evalThread, string textToCreate)
 		{
 			return new Eval(
-				appDomain,
+				evalThread,
 				"New string: " + textToCreate,
 				delegate(Eval eval) {
 					eval.CorEval2.NewStringWithLength(textToCreate, (uint)textToCreate.Length);
@@ -338,20 +323,16 @@ namespace Debugger
 			);
 		}
 		
-		#region Convenience methods
-		
-		public static Value NewArray(DebugType type, uint length, uint? lowerBound)
+		public static Value NewArray(Thread evalThread, DebugType type, uint length, uint? lowerBound)
 		{
-			return AsyncNewArray(type, length, lowerBound).WaitForResult();
+			return AsyncNewArray(evalThread, type, length, lowerBound).WaitForResult();
 		}
 		
-		#endregion
-		
-		public static Eval AsyncNewArray(DebugType type, uint length, uint? lowerBound)
+		public static Eval AsyncNewArray(Thread evalThread, DebugType type, uint length, uint? lowerBound)
 		{
 			lowerBound = lowerBound ?? 0;
 			return new Eval(
-				type.AppDomain,
+				evalThread,
 				"New array: " + type + "[" + length + "]",
 				delegate(Eval eval) {
 					// Multi-dimensional arrays not supported in .NET 2.0
@@ -360,43 +341,37 @@ namespace Debugger
 			);
 		}
 		
-		#region Convenience methods
-		
-		public static Value NewObject(DebugMethodInfo constructor, Value[] constructorArguments)
+		public static Value NewObject(Thread evalThread, DebugMethodInfo constructor, Value[] constructorArguments)
 		{
-			return AsyncNewObject(constructor, constructorArguments).WaitForResult();
+			return AsyncNewObject(evalThread, constructor, constructorArguments).WaitForResult();
 		}
 		
-		#endregion
-		
-		public static Eval AsyncNewObject(DebugMethodInfo constructor, Value[] constructorArguments)
+		public static Eval AsyncNewObject(Thread evalThread, DebugMethodInfo constructor, Value[] constructorArguments)
 		{
 			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
 			return new Eval(
-				constructor.AppDomain,
+				evalThread,
 				"New object: " + constructor.FullName,
 				delegate(Eval eval) {
 					eval.CorEval2.NewParameterizedObject(
 						constructor.CorFunction,
-						(uint)constructor.DeclaringType.GetGenericArguments().Length, ((DebugType)constructor.DeclaringType).GenericArgumentsAsCorDebugType,
-						(uint)constructorArgsCorDebug.Length, constructorArgsCorDebug);
+						(uint)constructor.DeclaringType.GetGenericArguments().Length,
+						((DebugType)constructor.DeclaringType).GenericArgumentsAsCorDebugType,
+						(uint)constructorArgsCorDebug.Length,
+						constructorArgsCorDebug);
 				}
 			);
 		}
 		
-		#region Convenience methods
-		
-		public static Value NewObjectNoConstructor(DebugType debugType)
+		public static Value NewObjectNoConstructor(Thread evalThread, DebugType debugType)
 		{
-			return AsyncNewObjectNoConstructor(debugType).WaitForResult();
+			return AsyncNewObjectNoConstructor(evalThread, debugType).WaitForResult();
 		}
 		
-		#endregion
-		
-		public static Eval AsyncNewObjectNoConstructor(DebugType debugType)
+		public static Eval AsyncNewObjectNoConstructor(Thread evalThread, DebugType debugType)
 		{
 			return new Eval(
-				debugType.AppDomain,
+				evalThread,
 				"New object: " + debugType.FullName,
 				delegate(Eval eval) {
 					eval.CorEval2.NewParameterizedObjectNoConstructor(debugType.CorType.GetClass(), (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);

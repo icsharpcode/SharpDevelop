@@ -31,11 +31,9 @@ namespace Debugger.Tests
 		protected XmlElement  snapshotNode;
 		protected int         shapshotID;
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				return process.SelectedStackFrame;
-			}
-		}
+		public Thread CurrentThread { get; private set; }
+		public StackFrame CurrentStackFrame { get; private set; }
+		public Thread EvalThread { get { return this.CurrentThread; } }
 		
 		public void Continue()
 		{
@@ -206,9 +204,15 @@ namespace Debugger.Tests
 				LogEvent("ModuleLoaded", e.Module.Name + (e.Module.HasSymbols ? " (Has symbols)" : " (No symbols)"));
 			};
 			process.Paused += delegate(object sender, DebuggerEventArgs e) {
+				this.CurrentThread = e.Thread;
+				if (e.Thread != null && e.Thread.IsInValidState) {
+					this.CurrentStackFrame = e.Thread.MostRecentStackFrame;
+				} else {
+					this.CurrentStackFrame = null;
+				}
 				if (e.ExceptionThrown != null) {
 					StringBuilder msg = new StringBuilder();
-					if (process.SelectedThread.InterceptException(e.ExceptionThrown)) {
+					if (CurrentThread.InterceptException(e.ExceptionThrown)) {
 						msg.Append(e.ExceptionThrown.ToString());
 					} else {
 						// For example, happens on stack overflow
@@ -217,7 +221,7 @@ namespace Debugger.Tests
 					}
 					LogEvent("ExceptionThrown", msg.ToString());	
 				}
-				LogEvent("Paused", e.Process.SelectedStackFrame.NextStatement.ToString());
+				LogEvent("Paused", CurrentStackFrame != null ? CurrentStackFrame.NextStatement.ToString() : string.Empty);
 			};
 			process.Exited += delegate(object sender, DebuggerEventArgs e) {
 				LogEvent("Exited", null);

@@ -39,12 +39,12 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			DebugType type1 = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
-			DebugType type1b = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
+			DebugType type1 = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
+			DebugType type1b = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
 			ObjectDump("SameDomainEqual", type1 == type1b);
 			process.Continue();
-			ObjectDump("AppDomainName", process.SelectedStackFrame.GetLocalVariableValue("appDomainName").AsString());
-			DebugType type2 = process.SelectedStackFrame.GetLocalVariableValue("two").Type;
+			ObjectDump("AppDomainName", this.CurrentStackFrame.GetLocalVariableValue("appDomainName").AsString());
+			DebugType type2 = this.CurrentStackFrame.GetLocalVariableValue("two").Type;
 			ObjectDump("OtherDomainEqual", type1 == type2);
 			ObjectDump("AppDomainsEqual", type1.AppDomain == type2.AppDomain);
 			ObjectDump("AppDomainIDsEqual", type1.AppDomain.ID == type2.AppDomain.ID);

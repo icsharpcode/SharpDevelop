@@ -26,8 +26,8 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			ulong addrHello = process.SelectedStackFrame.GetLocalVariableValue("hello").Address;
-			ulong addrWorld = process.SelectedStackFrame.GetLocalVariableValue("world").Address;
+			ulong addrHello = this.CurrentStackFrame.GetLocalVariableValue("hello").Address;
+			ulong addrWorld = this.CurrentStackFrame.GetLocalVariableValue("world").Address;
 			
 			addrHello = DeRef(process.ReadMemory(addrHello, 4));
 			addrWorld = DeRef(process.ReadMemory(addrWorld, 4));

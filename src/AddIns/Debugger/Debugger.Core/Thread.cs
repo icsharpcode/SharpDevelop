@@ -22,10 +22,12 @@ namespace Debugger
 		
 		Stepper currentStepIn;
 		
-		StackFrame selectedStackFrame;
-		
 		public Process Process {
 			get { return process; }
+		}
+		
+		public AppDomain AppDomain {
+			get { return process.GetAppDomain(this.corThread.GetAppDomain()); }
 		}
 
 		[Debugger.Tests.Ignore]
@@ -81,9 +83,6 @@ namespace Debugger
 			if (this.HasExited) throw new DebuggerException("Already exited");
 			
 			process.TraceMessage("Thread " + this.ID + " exited");
-			if (process.SelectedThread == this) {
-				process.SelectedThread = null;
-			}
 			
 			this.HasExited = true;
 			process.threads.Remove(this);
@@ -113,7 +112,7 @@ namespace Debugger
 
 				Value runTimeValue = RuntimeValue;
 				if (runTimeValue.IsNull) return ThreadPriority.Normal;
-				return (ThreadPriority)(int)runTimeValue.GetMemberValue("m_Priority").PrimitiveValue;
+				return (ThreadPriority)(int)runTimeValue.GetFieldValue("m_Priority").PrimitiveValue;
 			}
 		}
 		
@@ -138,7 +137,7 @@ namespace Debugger
 				if (!IsInValidState) return string.Empty;
 				Value runtimeValue = RuntimeValue;
 				if (runtimeValue.IsNull) return string.Empty;
-				Value runtimeName = runtimeValue.GetMemberValue("m_Name");
+				Value runtimeName = runtimeValue.GetFieldValue("m_Name");
 				if (runtimeName.IsNull) return string.Empty;
 				return runtimeName.AsString(100);
 			}
@@ -288,25 +287,26 @@ namespace Debugger
 			return stackTrace.ToString();
 		}
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				if (selectedStackFrame != null && selectedStackFrame.IsInvalid) return null;
-				if (process.IsRunning) return null;
-				return selectedStackFrame;
-			}
-			set {
-				selectedStackFrame = value;
-			}
-		}
-		
 		/// <summary>
 		/// Returns the most recent stack frame (the one that is currently executing).
 		/// Returns null if callstack is empty.
 		/// </summary>
 		public StackFrame MostRecentStackFrame {
 			get {
-				foreach(StackFrame stackFrame in Callstack) {
+				foreach(StackFrame stackFrame in this.Callstack) {
 					return stackFrame;
+				}
+				return null;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
+		public StackFrame MostRecentUserStackFrame {
+			get {
+				foreach (StackFrame stackFrame in this.Callstack) {
+					if (!stackFrame.MethodInfo.StepOver) {
+						return stackFrame;
+					}
 				}
 				return null;
 			}
