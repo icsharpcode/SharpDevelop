@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class CreateMethodDeclarationTests : ContextActionTestBase
 	{
-		static string HomogenizeEol (string str)
+		internal static string HomogenizeEol (string str)
 		{
 			var sb = new StringBuilder ();
 			for (int i = 0; i < str.Length; i++) {
@@ -268,7 +268,6 @@ public delegate string MyDelegate (int a, object b);
 }");
 		}
 		
-		[Ignore("TODO")]
 		[Test()]
 		public void TestExternMethod ()
 		{
@@ -292,7 +291,7 @@ class FooBar
 	public void NonExistantMethod ()
 	{
 		throw new System.NotImplementedException ();
-	}	
+	}
 }
 
 class TestClass
@@ -306,7 +305,6 @@ class TestClass
 ");
 		}
 		
-		[Ignore("TODO")]
 		[Test()]
 		public void TestCreateInterfaceMethod ()
 		{
@@ -341,7 +339,6 @@ class TestClass
 ");
 		}
 		
-		[Ignore("TODO")]
 		[Test()]
 		public void TestCreateInStaticClassMethod ()
 		{

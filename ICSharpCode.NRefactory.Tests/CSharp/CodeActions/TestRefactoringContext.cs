@@ -96,6 +96,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				var entity = context.GetNode<EntityDeclaration> ();
 				InsertBefore (entity, node);
 			}
+
+			public override void InsertWithCursor (string operation, AstNode node, ITypeDefinition parentType)
+			{
+				var unit = context.RootNode;
+				var insertType = unit.GetNodeAt<TypeDeclaration> (parentType.Region.Begin);
+
+				var startOffset = GetCurrentOffset (insertType.LBraceToken.EndLocation);
+				var output = OutputNode (1, node, true);
+				InsertText (startOffset, output.Text);
+				output.RegisterTrackedSegments (this, startOffset);
+			}
 		}
 
 		#region Text stuff

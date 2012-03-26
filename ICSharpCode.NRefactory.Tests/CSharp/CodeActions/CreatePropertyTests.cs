@@ -153,6 +153,56 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 
+		public void TestCreateProperty (string input, string output)
+		{
+			string result = RunContextAction (new CreatePropertyAction (), CreateMethodDeclarationTests.HomogenizeEol (input));
+			bool passed = result == output;
+			if (!passed) {
+				Console.WriteLine ("-----------Expected:");
+				Console.WriteLine (output);
+				Console.WriteLine ("-----------Got:");
+				Console.WriteLine (result);
+			}
+			Assert.AreEqual (CreateMethodDeclarationTests.HomogenizeEol (output), result);
+		}
+
+		[Test()]
+		public void TestExternProperty ()
+		{
+			TestCreateProperty (
+@"
+interface FooBar
+{
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar fb;
+		fb.$NonExistantProperty = 5;
+	}
+}
+", @"
+interface FooBar
+{
+	int NonExistantProperty {
+		get;
+		set;
+	}
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar fb;
+		fb.NonExistantProperty = 5;
+	}
+}
+");
+		}
+
 		[Test()]
 		public void TestWrongContext1 ()
 		{
