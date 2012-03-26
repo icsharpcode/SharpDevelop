@@ -146,7 +146,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				foreach (var parameter in GenerateParameters (context, invocation)) {
+				foreach (var parameter in GenerateParameters (context, invocation.Arguments)) {
 					decl.Parameters.Add(parameter);
 				}
 				if (isStatic) {
@@ -170,10 +170,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
-		public IEnumerable<ParameterDeclaration> GenerateParameters(RefactoringContext context, InvocationExpression invocation)
+		public static IEnumerable<ParameterDeclaration> GenerateParameters(RefactoringContext context, IEnumerable<Expression> arguments)
 		{
 			Dictionary<string, int> nameCounter = new Dictionary<string, int>();
-			foreach (var argument in invocation.Arguments) {
+			foreach (var argument in arguments) {
 				ParameterModifier direction = ParameterModifier.None;
 				AstNode node;
 				if (argument is DirectionExpression) {

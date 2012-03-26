@@ -253,6 +253,7 @@
     <Compile Include="CSharp\CodeActions\CreateFieldTests.cs" />
     <Compile Include="CSharp\CodeActions\CreatePropertyTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateMethodDeclarationTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateIndexerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
