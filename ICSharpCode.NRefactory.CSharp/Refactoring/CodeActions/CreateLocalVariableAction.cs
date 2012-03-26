@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CreateLocalVariable.cs
 //  
 // Author:
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!(context.Resolve(identifier).IsError)) {
 				yield break;
 			}
-			var guessedType = CreateFieldAction.GuessType(context, identifier);
+			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
 			if (guessedType == null) {
 				yield break;
 			}

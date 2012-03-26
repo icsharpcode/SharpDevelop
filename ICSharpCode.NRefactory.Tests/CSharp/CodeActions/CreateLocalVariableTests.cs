@@ -113,5 +113,62 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+
+		[Test()]
+		public void TestReturn ()
+		{
+			string result = RunContextAction (
+				new CreateLocalVariableAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	int Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		return $foo;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+			
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	int Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		int foo;" + Environment.NewLine +
+				"		return foo;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+
+		[Test()]
+		public void TestYieldReturn ()
+		{
+			string result = RunContextAction (
+				new CreateLocalVariableAction (),
+					"using System;" + Environment.NewLine +
+					"using System.Collections.Generic;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	IEnumerable<TestClass> Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		yield return $foo;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+			
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"using System.Collections.Generic;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	IEnumerable<TestClass> Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		TestClass foo;" + Environment.NewLine +
+				"		yield return foo;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
 	}
 }
