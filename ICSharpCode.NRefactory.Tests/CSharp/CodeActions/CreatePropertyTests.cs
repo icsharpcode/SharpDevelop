@@ -122,5 +122,36 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test()]
+		public void TestStaticProperty ()
+		{
+			string result = RunContextAction (
+				new CreatePropertyAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	static void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$Foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	static int Foo {" + Environment.NewLine +
+				"		get;" + Environment.NewLine +
+				"		set;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"	static void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		Foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+
 	}
 }

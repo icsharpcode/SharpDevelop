@@ -149,5 +149,33 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test()]
+		public void TestStaticField ()
+		{
+			string result = RunContextAction (
+				new CreateFieldAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	static void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	static int foo;" + Environment.NewLine +
+				"" + Environment.NewLine +
+				"	static void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
 	}
 }

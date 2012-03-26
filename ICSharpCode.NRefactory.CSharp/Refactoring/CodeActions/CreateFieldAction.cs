@@ -56,15 +56,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (guessedType == null) {
 				yield break;
 			}
+			var state = context.GetResolverStateBefore(identifier);
+			bool isStatic = state.CurrentMember.IsStatic;
+
 			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field)) 
+			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field, Modifiers.Private, isStatic)) { 
 				yield break;
+			}
 
 			yield return new CodeAction(context.TranslateString("Create field"), script => {
 				var decl = new FieldDeclaration() {
-						ReturnType = guessedType,
-						Variables = { new VariableInitializer(identifier.Identifier) }
-					};
+					ReturnType = guessedType,
+					Variables = { new VariableInitializer(identifier.Identifier) }
+				};
+				if (isStatic) {
+					decl.Modifiers |= Modifiers.Static;
+				}
 				script.InsertWithCursor(context.TranslateString("Create field"), decl, Script.InsertPosition.Before);
 			});
 
