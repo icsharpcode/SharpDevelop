@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BaseRefactoringContext.cs
 //  
 // Author:
@@ -64,6 +64,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.cancellationToken = cancellationToken;
 		}
 
+		/// <summary>
+		/// Requests data that can be provided by the IDE
+		/// </summary>
+		public abstract T RequestData<T>();
+
 		#region Resolving
 		public ResolveResult Resolve (AstNode node)
 		{
@@ -96,8 +101,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		#endregion
 		
-		public abstract Script StartScript();
-
+		/// <summary>
+		/// Translates the english input string to the context language.
+		/// </summary>
+		/// <returns>
+		/// The translated string.
+		/// </returns>
+		public virtual string TranslateString(string str)
+		{
+			return str;
+		}
 	}
 	
 }

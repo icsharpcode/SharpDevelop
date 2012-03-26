@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TestStatementIndentation.cs
 //  
 // Author:
@@ -949,6 +949,7 @@ do {
 
 		[Ignore("Broken")]
 		[Test()]
+		[Ignore("Crashes due to overlapping changes")]
 		public void TestForEachBraceForcementRemove ()
 		{
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
@@ -1106,6 +1107,7 @@ do {
 
 		[Ignore("Broken")]
 		[Test()]
+		[Ignore("Crashes due to overlapping changes")]
 		public void TestIfForcementRemove ()
 		{
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
@@ -1415,6 +1417,7 @@ if (b) {
 
 		[Ignore("Broken")]
 		[Test()]
+		[Ignore("Crashes due to overlapping changes")]
 		public void TestWhileForcementRemove ()
 		{
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
