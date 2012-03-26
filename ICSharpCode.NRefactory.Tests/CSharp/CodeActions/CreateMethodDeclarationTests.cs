@@ -546,6 +546,29 @@ namespace Test {
 }
 ");
 		}
+
+		[Test()]
+		public void TestStringParameterNameGuessing ()
+		{
+			TestCreateMethod (@"class TestClass
+{
+	static void TestMethod ()
+	{
+		$NonExistantMethod (""Hello World!"");
+	}
+}", @"class TestClass
+{
+	static void NonExistantMethod (string helloWorld)
+	{
+		throw new System.NotImplementedException ();
+	}
+	static void TestMethod ()
+	{
+		NonExistantMethod (""Hello World!"");
+	}
+}");
+		}
+
 	}
 }
 

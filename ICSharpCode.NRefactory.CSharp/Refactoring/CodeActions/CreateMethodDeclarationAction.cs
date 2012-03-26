@@ -234,7 +234,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (node is DirectionExpression) {
 				node = ((DirectionExpression)node).Expression;
 			}
-
 			if (node is IdentifierExpression) {
 				name = ((IdentifierExpression)node).Identifier;
 			} else if (node is MemberReferenceExpression) {
@@ -243,8 +242,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var pe = (PrimitiveExpression)node;
 				if (pe.Value is string) {
 					name = CreateBaseNameFromString(pe.Value.ToString());
+				} else {
+					name = char.ToLower(type.Name [0]).ToString();
 				}
-				name = char.ToLower(type.Name [0]).ToString();
 			} else {
 				name = type.Kind == TypeKind.Unknown ? "par" : type.Name;
 			}
