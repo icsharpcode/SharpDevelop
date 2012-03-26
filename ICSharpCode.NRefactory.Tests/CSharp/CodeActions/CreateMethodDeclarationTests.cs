@@ -33,24 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class CreateMethodDeclarationTests : ContextActionTestBase
 	{
-		internal static string HomogenizeEol (string str)
-		{
-			var sb = new StringBuilder ();
-			for (int i = 0; i < str.Length; i++) {
-				var ch = str [i];
-				if (ch == '\n') {
-					sb.AppendLine ();
-				} else if (ch == '\r') {
-					sb.AppendLine ();
-					if (i + 1 < str.Length && str [i + 1] == '\n')
-						i++;
-				} else {
-					sb.Append (ch);
-				}
-			}
-			return sb.ToString ();
-		}
-
 		public void TestCreateMethod (string input, string output)
 		{
 			string result = RunContextAction (new CreateMethodDeclarationAction (), HomogenizeEol (input));

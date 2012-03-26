@@ -29,11 +29,44 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Threading;
 using System.Linq;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	public abstract class ContextActionTestBase
 	{
+		internal static string HomogenizeEol (string str)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < str.Length; i++) {
+				var ch = str [i];
+				if (ch == '\n') {
+					sb.AppendLine ();
+				} else if (ch == '\r') {
+					sb.AppendLine ();
+					if (i + 1 < str.Length && str [i + 1] == '\n')
+						i++;
+				} else {
+					sb.Append (ch);
+				}
+			}
+			return sb.ToString ();
+		}
+
+		public void Test<T> (string input, string output) where T : ICodeActionProvider, new ()
+		{
+			string result = RunContextAction (new T (), HomogenizeEol (input));
+			bool passed = result == output;
+			if (!passed) {
+				Console.WriteLine ("-----------Expected:");
+				Console.WriteLine (output);
+				Console.WriteLine ("-----------Got:");
+				Console.WriteLine (result);
+			}
+			Assert.AreEqual (HomogenizeEol (output), result);
+		}	
+	
+
 		protected static string RunContextAction (ICodeActionProvider action, string input)
 		{
 			var context = TestRefactoringContext.Create (input);
