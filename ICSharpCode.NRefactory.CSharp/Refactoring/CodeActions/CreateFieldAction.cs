@@ -30,6 +30,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -38,43 +39,117 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var identifier = GetIdentifier(context);
+			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier == null) {
 				yield break;
 			}
-			
-			if (!(context.Resolve(identifier).IsError && GuessType(context, identifier) != null)) {
+			var statement = context.GetNode<Statement>();
+			if (statement == null) {
 				yield break;
 			}
-			
-			yield return new CodeAction (context.TranslateString("Create field"), script => {
-				script.InsertWithCursor(context.TranslateString("Create field"), GenerateFieldDeclaration(context, identifier), Script.InsertPosition.Before);
+
+			if (!(context.Resolve(identifier).IsError)) {
+				yield break;
+			}
+			var guessedType = CreateFieldAction.GuessType(context, identifier);
+			if (guessedType == null) {
+				yield break;
+			}
+
+			yield return new CodeAction(context.TranslateString("Create field"), script => {
+				var decl = new FieldDeclaration() {
+					ReturnType = guessedType,
+					Variables = { new VariableInitializer(identifier.Identifier) }
+				};
+				script.InsertWithCursor(context.TranslateString("Create field"), decl, Script.InsertPosition.Before);
 			});
 		}
-		
 
-		static AstNode GenerateFieldDeclaration (RefactoringContext context, IdentifierExpression identifier)
+		#region Type guessing
+		static int GetArgumentIndex(InvocationExpression invoke, AstNode parameter)
 		{
-			return new FieldDeclaration () {
-				ReturnType = GuessType (context, identifier),
-				Variables = { new VariableInitializer (identifier.Identifier) }
-			};
-		}
-		
-		internal static AstType GuessType (RefactoringContext context, IdentifierExpression identifier)
-		{
-			if (identifier.Parent is AssignmentExpression) {
-				var assign = (AssignmentExpression)identifier.Parent;
-				var other = assign.Left == identifier ? assign.Right : assign.Left;
-				return context.CreateShortType (context.Resolve (other).Type);
+			int argumentNumber = 0;
+			foreach (var arg in invoke.Arguments) {
+				if (arg == parameter) {
+					return argumentNumber;
+				}
+				argumentNumber++;
 			}
-			return null;
+			return -1;
 		}
-		
-		public static IdentifierExpression GetIdentifier (RefactoringContext context)
+
+		static IEnumerable<IType> GetAllValidTypesFromInvokation(RefactoringContext context, InvocationExpression invoke, AstNode parameter)
 		{
-			return context.GetNode<IdentifierExpression> ();
+			int index = GetArgumentIndex(invoke, parameter);
+			if (index < 0) {
+				yield break;
+			}
+					
+			var targetResult = context.Resolve(invoke.Target);
+			if (targetResult is MethodGroupResolveResult) {
+				foreach (var method in ((MethodGroupResolveResult)targetResult).Methods) {
+					if (index < method.Parameters.Count) {
+						yield return method.Parameters [index].Type;
+					}
+				}
+			}
 		}
+
+		internal static IEnumerable<IType> GetValidTypes(RefactoringContext context, Expression expr)
+		{
+			if (expr.Parent is DirectionExpression) {
+				var parent = expr.Parent.Parent;
+				if (parent is InvocationExpression) {
+					var invoke = (InvocationExpression)parent;
+					return GetAllValidTypesFromInvokation(context, invoke, expr.Parent);
+				}
+			}
+
+			if (expr.Parent is InvocationExpression) {
+				var parent = expr.Parent;
+				if (parent is InvocationExpression) {
+					var invoke = (InvocationExpression)parent;
+					return GetAllValidTypesFromInvokation(context, invoke, expr);
+				}
+			}
+
+			if (expr.Parent is AssignmentExpression) {
+				var assign = (AssignmentExpression)expr.Parent;
+				var other = assign.Left == expr ? assign.Right : assign.Left;
+				return new [] { context.Resolve(other).Type };
+			}
+
+			if (expr.Parent is BinaryOperatorExpression) {
+				var assign = (BinaryOperatorExpression)expr.Parent;
+				var other = assign.Left == expr ? assign.Right : assign.Left;
+				return new [] { context.Resolve(other).Type };
+			}
+
+			return Enumerable.Empty<IType>();
+		}
+
+		internal static AstType GuessType(RefactoringContext context, IdentifierExpression identifier)
+		{
+			IType type = null;
+			foreach (var t in GetValidTypes(context, identifier)) {
+				if (type == null || type.GetAllBaseTypes().Contains(t)) {
+					type = t;
+					continue;
+				}
+
+				if (!t.GetAllBaseTypes().Contains(type)) {
+					type = null;
+					break;
+				}
+			}
+
+			if (type == null) {
+				return new PrimitiveType("object");
+			}
+
+			return context.CreateShortType (type);
+		}
+		#endregion
 	}
 }
 

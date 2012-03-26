@@ -66,8 +66,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		
 		sealed class TestScript : DocumentScript
 		{
+			readonly TestRefactoringContext context;
 			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions())
 			{
+				this.context = context;
 				this.eolMarker = context.EolMarker;
 			}
 			
@@ -77,6 +79,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				foreach (var node in nodes) {
 					Assert.IsNotNull (GetSegment (node));
 				}
+			}
+			
+			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+			{
+				var entity = context.GetNode<EntityDeclaration> ();
+				InsertBefore (entity, node);
 			}
 		}
 		
@@ -132,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				return doc.Text;
 			}
 		}
-		public static TestRefactoringContext Create(string content)
+		public static TestRefactoringContext Create (string content)
 		{
 			int idx = content.IndexOf ("$");
 			if (idx >= 0)
@@ -156,18 +164,19 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			if (parser.HasErrors)
 				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));
 			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
-			unit.Freeze();
-			var parsedFile = unit.ToTypeSystem();
+			unit.Freeze ();
+			var parsedFile = unit.ToTypeSystem ();
 			
-			IProjectContent pc = new CSharpProjectContent();
-			pc = pc.UpdateProjectContent(null, parsedFile);
-			pc = pc.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			IProjectContent pc = new CSharpProjectContent ();
+			pc = pc.UpdateProjectContent (null, parsedFile);
+			pc = pc.AddAssemblyReferences (new[] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilation = pc.CreateCompilation();
-			var resolver = new CSharpAstResolver(compilation, unit, parsedFile);
+			var compilation = pc.CreateCompilation ();
+			var resolver = new CSharpAstResolver (compilation, unit, parsedFile);
 			TextLocation location = TextLocation.Empty;
 			if (idx >= 0)
 				location = doc.GetLocation (idx);
+			Console.WriteLine ("idx:" + location);
 			return new TestRefactoringContext(doc, location, resolver) {
 				selectionStart = selectionStart,
 				selectionEnd = selectionEnd
