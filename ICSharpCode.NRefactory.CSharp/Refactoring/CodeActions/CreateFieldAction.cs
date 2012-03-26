@@ -163,7 +163,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		internal static AstType GuessAstType(RefactoringContext context, Expression expr)
 		{
 			var type = GetValidTypes(context, expr).ToArray();
-			var inferedType = new TypeInference(context.Compilation).FindTypeInBounds(type, emptyTypes);
+			var typeInference = new TypeInference(context.Compilation);
+			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
+			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
 			if (inferedType.Kind == TypeKind.Unknown) {
 				return new PrimitiveType("object");
 			}
@@ -173,7 +175,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		internal static IType GuessType(RefactoringContext context, Expression expr)
 		{
 			var type = GetValidTypes(context, expr).ToArray();
-			var inferedType = new TypeInference(context.Compilation).FindTypeInBounds(type, emptyTypes);
+			var typeInference = new TypeInference(context.Compilation);
+			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
+			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
 			return inferedType;
 
 		}
