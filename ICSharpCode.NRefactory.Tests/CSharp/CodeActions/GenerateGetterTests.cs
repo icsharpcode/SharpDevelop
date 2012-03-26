@@ -33,29 +33,27 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class GenerateGetterTests : ContextActionTestBase
 	{
-		[Ignore("Implement missing feature")]
 		[Test()]
 		public void Test ()
 		{
 			string result = RunContextAction (
 				new GenerateGetterAction (),
 				"using System;" + Environment.NewLine +
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	int $myField;" + Environment.NewLine +
-				"}"
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	int $myField;" + Environment.NewLine +
+					"}"
 			);
-			
 			Assert.AreEqual (
 				"using System;" + Environment.NewLine +
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
-				"	int myField;" + Environment.NewLine +
 				"	public int MyField {" + Environment.NewLine +
 				"		get {" + Environment.NewLine +
-				"			return myFileld;" + Environment.NewLine +
+				"			return myField;" + Environment.NewLine +
 				"		}" + Environment.NewLine +
 				"	}" + Environment.NewLine +
+				"	int myField;" + Environment.NewLine +
 				"}", result);
 		}
 	}
