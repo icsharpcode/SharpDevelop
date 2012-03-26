@@ -153,5 +153,23 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"}", result);
 		}
 
+		[Test()]
+		public void TestWrongContext1 ()
+		{
+			// May be syntactically possible, but very unlikely.
+			TestWrongContext (
+				new CreatePropertyAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$Foo();" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+		}
+
+
 	}
 }

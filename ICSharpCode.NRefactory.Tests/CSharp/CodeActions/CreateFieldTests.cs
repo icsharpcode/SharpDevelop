@@ -65,6 +65,23 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 		[Test()]
+		public void TestWrongContext3 ()
+		{
+			// May be syntactically possible, but very unlikely.
+			TestWrongContext (
+				new CreateFieldAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$foo();" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+		}
+
+		[Test()]
 		public void TestSimpleMethodCall ()
 		{
 			string result = RunContextAction (

@@ -37,10 +37,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction("Create field", Description = "Creates a field for a undefined variable.")]
 	public class CreateFieldAction : ICodeActionProvider
 	{
+		internal static bool IsInvocationTarget(AstNode node)
+		{
+			var invoke = node.Parent as InvocationExpression;
+			return invoke != null && invoke.Target == node;
+		}
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var identifier = context.GetNode<IdentifierExpression>();
 			if (identifier == null) {
+				yield break;
+			}
+			if (IsInvocationTarget(identifier)) {
 				yield break;
 			}
 			var statement = context.GetNode<Statement>();
