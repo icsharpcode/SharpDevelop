@@ -53,9 +53,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			return sb.ToString ();
 		}
 
-		public void Test<T> (string input, string output) where T : ICodeActionProvider, new ()
+		public void Test<T> (string input, string output, int action = 0) where T : ICodeActionProvider, new ()
 		{
-			string result = RunContextAction (new T (), HomogenizeEol (input));
+			string result = RunContextAction (new T (), HomogenizeEol (input), action);
 			bool passed = result == output;
 			if (!passed) {
 				Console.WriteLine ("-----------Expected:");
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}	
 	
 
-		protected static string RunContextAction (ICodeActionProvider action, string input)
+		protected static string RunContextAction (ICodeActionProvider action, string input, int actionIndex = 0)
 		{
 			var context = TestRefactoringContext.Create (input);
 			bool isValid = action.GetActions (context).Any ();
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
 			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
 			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
+				action.GetActions (context).Skip (actionIndex).First ().Run (script);
 			}
 
 			return context.doc.Text;

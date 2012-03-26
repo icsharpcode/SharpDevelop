@@ -255,6 +255,7 @@
     <Compile Include="CSharp\CodeActions\CreateMethodDeclarationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateIndexerTests.cs" />
     <Compile Include="CSharp\CodeActions\InlineLocalVariableTests.cs" />
+    <Compile Include="CSharp\CodeActions\DeclareLocalVariableTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

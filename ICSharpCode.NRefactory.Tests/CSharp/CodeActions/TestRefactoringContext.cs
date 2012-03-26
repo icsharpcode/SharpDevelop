@@ -112,17 +112,15 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		#region Text stuff
 		public override string EolMarker { get { return Environment.NewLine; } }
 
-		public override bool IsSomethingSelected { get { return SelectionStart > 0; }  }
+		public override bool IsSomethingSelected { get { return selectionStart > 0; }  }
 
-		public override string SelectedText { get { return IsSomethingSelected ? doc.GetText (SelectionStart, SelectionLength) : ""; } }
+		public override string SelectedText { get { return IsSomethingSelected ? doc.GetText (selectionStart, selectionEnd - selectionStart) : ""; } }
 		
 		int selectionStart;
-		public override int SelectionStart { get { return selectionStart; } }
+		public override TextLocation SelectionStart { get { return doc.GetLocation (selectionStart); } }
 		
 		int selectionEnd;
-		public override int SelectionEnd { get { return selectionEnd; } }
-
-		public override int SelectionLength { get { return IsSomethingSelected ? SelectionEnd - SelectionStart : 0; } }
+		public override TextLocation SelectionEnd { get { return doc.GetLocation (selectionEnd); } }
 
 		public override int GetOffset (TextLocation location)
 		{
@@ -190,7 +188,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			TextLocation location = TextLocation.Empty;
 			if (idx >= 0)
 				location = doc.GetLocation (idx);
-			Console.WriteLine ("idx:" + location);
 			return new TestRefactoringContext(doc, location, resolver) {
 				selectionStart = selectionStart,
 				selectionEnd = selectionEnd

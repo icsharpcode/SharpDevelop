@@ -38,6 +38,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static FindReferences refFinder = new FindReferences();
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
+			if (context.IsSomethingSelected) {
+				yield break;
+			}
 			var node = context.GetNode<VariableDeclarationStatement>();
 			if (node == null || node.Variables.Count != 1) {
 				yield break;
