@@ -159,11 +159,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			return Enumerable.Empty<IType>();
 		}
-
+		static readonly IType[] emptyTypes = new IType[0];
 		internal static AstType GuessAstType(RefactoringContext context, Expression expr)
 		{
 			var type = GetValidTypes(context, expr).ToArray();
-			var inferedType = new TypeInference(context.Compilation).FindTypeInBounds(type, type);
+			var inferedType = new TypeInference(context.Compilation).FindTypeInBounds(type, emptyTypes);
 			if (inferedType.Kind == TypeKind.Unknown) {
 				return new PrimitiveType("object");
 			}
@@ -173,7 +173,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		internal static IType GuessType(RefactoringContext context, Expression expr)
 		{
 			var type = GetValidTypes(context, expr).ToArray();
-			var inferedType = new TypeInference(context.Compilation).FindTypeInBounds(type, type);
+			var inferedType = new TypeInference(context.Compilation).FindTypeInBounds(type, emptyTypes);
 			return inferedType;
 
 		}
