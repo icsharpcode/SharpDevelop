@@ -51,18 +51,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!(context.Resolve(identifier).IsError)) {
 				yield break;
 			}
+			
 			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
 			if (guessedType == null) {
 				yield break;
 			}
+			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field)) 
+				yield break;
 
 			yield return new CodeAction(context.TranslateString("Create field"), script => {
 				var decl = new FieldDeclaration() {
-					ReturnType = guessedType,
-					Variables = { new VariableInitializer(identifier.Identifier) }
-				};
+						ReturnType = guessedType,
+						Variables = { new VariableInitializer(identifier.Identifier) }
+					};
 				script.InsertWithCursor(context.TranslateString("Create field"), decl, Script.InsertPosition.Before);
 			});
+
 		}
 
 		#region Type guessing

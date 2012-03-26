@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -32,6 +33,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public abstract IEnumerable<NamingRule> Rules {
 			get;
+		}
+
+		public bool IsValidName(string name, AffectedEntity entity, Modifiers accessibilty = Modifiers.Private, bool isStatic = false)
+		{
+			foreach (var rule in Rules) {
+				if (!rule.AffectedEntity.HasFlag(entity)) {
+					continue;
+				}
+				if (!rule.VisibilityMask.HasFlag(accessibilty)) {
+					continue;
+				}
+				if (isStatic && !rule.IncludeStaticEntities || !isStatic && !rule.IncludeInstanceMembers) {
+					continue;
+				}
+				if (!rule.IsValid(name)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }
