@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					"{" + Environment.NewLine +
 					"	void Test ()" + Environment.NewLine +
 					"	{" + Environment.NewLine +
-					"		Console.WriteLine ($foo);" + Environment.NewLine +
+					"		Console.WriteLine ($Foo);" + Environment.NewLine +
 					"	}" + Environment.NewLine +
 					"}"
 			);
@@ -50,13 +50,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"using System;" + Environment.NewLine +
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
-				"	object foo {" + Environment.NewLine +
+				"	object Foo {" + Environment.NewLine +
 				"		get;" + Environment.NewLine +
 				"		set;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		Console.WriteLine (foo);" + Environment.NewLine +
+				"		Console.WriteLine (Foo);" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					"{" + Environment.NewLine +
 					"	void Test ()" + Environment.NewLine +
 					"	{" + Environment.NewLine +
-					"		$foo = 0x10;" + Environment.NewLine +
+					"		$Foo = 0x10;" + Environment.NewLine +
 					"	}" + Environment.NewLine +
 					"}"
 			);
@@ -80,13 +80,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"using System;" + Environment.NewLine +
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
-				"	int foo {" + Environment.NewLine +
+				"	int Foo {" + Environment.NewLine +
 				"		get;" + Environment.NewLine +
 				"		set;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		foo = 0x10;" + Environment.NewLine +
+				"		Foo = 0x10;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					"	void FooBar(out string par) {}" + Environment.NewLine +
 					"	void Test ()" + Environment.NewLine +
 					"	{" + Environment.NewLine +
-					"		FooBar(out $foo);" + Environment.NewLine +
+					"		FooBar(out $Foo);" + Environment.NewLine +
 					"	}" + Environment.NewLine +
 					"}"
 			);
@@ -112,13 +112,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	void FooBar(out string par) {}" + Environment.NewLine +
-				"	string foo {" + Environment.NewLine +
+				"	string Foo {" + Environment.NewLine +
 				"		get;" + Environment.NewLine +
 				"		set;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		FooBar(out foo);" + Environment.NewLine +
+				"		FooBar(out Foo);" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}

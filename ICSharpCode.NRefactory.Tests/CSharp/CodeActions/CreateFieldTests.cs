@@ -33,6 +33,38 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	public class CreateFieldTests : ContextActionTestBase
 	{
 		[Test()]
+		public void TestWrongContext1 ()
+		{
+			TestWrongContext (
+				new CreateFieldAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		Console.WriteLine ($Foo);" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+		}
+		
+		[Test()]
+		public void TestWrongContext2 ()
+		{
+			TestWrongContext (
+				new CreateFieldAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		Console.WriteLine ($Foo());" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+		}
+
+		[Test()]
 		public void TestSimpleMethodCall ()
 		{
 			string result = RunContextAction (

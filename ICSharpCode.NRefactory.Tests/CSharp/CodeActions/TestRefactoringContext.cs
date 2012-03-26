@@ -44,10 +44,20 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		internal readonly IDocument doc;
 		readonly TextLocation location;
 		
-		public TestRefactoringContext(IDocument document, TextLocation location, CSharpAstResolver resolver) : base(resolver, CancellationToken.None)
+		public TestRefactoringContext (IDocument document, TextLocation location, CSharpAstResolver resolver) : base(resolver, CancellationToken.None)
 		{
 			this.doc = document;
 			this.location = location;
+			Services.AddService (typeof(NamingConventionService), new TestNameService ());
+		}
+		
+		class TestNameService : NamingConventionService
+		{
+			public override IEnumerable<NamingRule> Rules {
+				get {
+					return DefaultRules.GetFdgRules ();
+				}
+			}
 		}
 		
 		public override bool Supports(Version version)
@@ -86,13 +96,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				var entity = context.GetNode<EntityDeclaration> ();
 				InsertBefore (entity, node);
 			}
-		}
-		
-		public override T RequestData<T> ()
-		{
-			if (typeof(T).Equals (typeof(IEnumerable<NamingRule>)))
-				return (T)DefaultRules.GetFdgRules ();
-			return default (T);
 		}
 
 		#region Text stuff
