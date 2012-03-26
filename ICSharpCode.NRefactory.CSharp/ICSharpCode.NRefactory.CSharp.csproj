@@ -349,6 +349,7 @@
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\DefaultRules.cs" />
     <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\InconsistentNamingIssue.cs" />
     <Compile Include="Refactoring\CodeActions\CreateMethodDeclarationAction.cs" />
+    <Compile Include="Refactoring\CodeIssues\InconsistentNamingIssue\NamingConventionService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
