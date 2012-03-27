@@ -150,7 +150,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								if (resolveResult is MemberResolveResult) {
 									script.Rename(((MemberResolveResult)resolveResult).Member);
 								} else if (resolveResult is TypeResolveResult) {
-									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition());
+									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+									if (def != null) {
+										script.Rename(def);
+									} else {
+										script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type);
+									}
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable);
 								}
