@@ -56,6 +56,30 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var output = @"class AnIssue {}";
 			CheckNaming (input, output);
 		}
+
+		[Test]
+		public void TestAttributeName ()
+		{
+			var input = @"class test : System.Attribute {}";
+			var output = @"class TestAttribute : System.Attribute {}";
+			CheckNaming (input, output);
+		}
+		
+		[Test]
+		public void TestEventArgsName ()
+		{
+			var input = @"class test : System.EventArgs {}";
+			var output = @"class TestEventArgs : System.EventArgs {}";
+			CheckNaming (input, output);
+		}
+
+		[Test]
+		public void TestException ()
+		{
+			var input = @"class test : System.Exception {}";
+			var output = @"class TestException : System.Exception {}";
+			CheckNaming (input, output);
+		}
 		
 		[Test]
 		public void TestStructName ()

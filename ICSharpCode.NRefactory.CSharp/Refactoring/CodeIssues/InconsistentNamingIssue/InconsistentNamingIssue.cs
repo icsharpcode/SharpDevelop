@@ -62,31 +62,42 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (node != null) {
 					resolveResult = ctx.Resolve(node);
 				}
-				CheckNamedResolveResult(resolveResult, entity, identifier, accessibilty);
 				if (resolveResult is TypeResolveResult) {
 					var type = ((TypeResolveResult)resolveResult).Type;
 					if (type.DirectBaseTypes.Any(t => t.FullName == "System.Attribute")) {
-						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomAttributes, identifier, accessibilty);
+						if (CheckNamedResolveResult(resolveResult, AffectedEntity.CustomAttributes, identifier, accessibilty)) {
+							return;
+						}
 					} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.EventArgs")) {
-						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomEventArgs, identifier, accessibilty);
+						if (CheckNamedResolveResult(resolveResult, AffectedEntity.CustomEventArgs, identifier, accessibilty)) {
+							return;
+						}
 					} else if (type.DirectBaseTypes.Any(t => t.FullName == "System.Exception")) {
-						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomExceptions, identifier, accessibilty);
+						if (CheckNamedResolveResult(resolveResult, AffectedEntity.CustomExceptions, identifier, accessibilty)) {
+							return;
+						}
 					}
 
 					var typeDef = type.GetDefinition();
 					if (typeDef != null && typeDef.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute")) {
-						CheckNamedResolveResult(resolveResult, AffectedEntity.TestType, identifier, accessibilty);
+						if (CheckNamedResolveResult(resolveResult, AffectedEntity.TestType, identifier, accessibilty)) {
+							return;
+						}
 					}
 				} else if (resolveResult is MemberResolveResult) {
 					var member = ((MemberResolveResult)resolveResult).Member;
 					if (member.EntityType == EntityType.Method && member.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestAttribute")) {
-						CheckNamedResolveResult(resolveResult, AffectedEntity.TestMethod, identifier, accessibilty);
+						if (CheckNamedResolveResult(resolveResult, AffectedEntity.TestMethod, identifier, accessibilty)) {
+							return;
+						}
 					}
 				}
+				CheckNamedResolveResult(resolveResult, entity, identifier, accessibilty);
 			}
 
-			void CheckNamedResolveResult(ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
+			bool CheckNamedResolveResult(ResolveResult resolveResult, AffectedEntity entity, Identifier identifier, Modifiers accessibilty)
 			{
+				bool wasHandled = false;
 				foreach (var rule in service.Rules) {
 					if (!rule.AffectedEntity.HasFlag(entity)) {
 						continue;
@@ -112,6 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							}
 						}
 					}
+					wasHandled = true;
 					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
 						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
@@ -139,7 +151,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								if (resolveResult is MemberResolveResult) {
 									script.Rename(((MemberResolveResult)resolveResult).Member);
 								} else if (resolveResult is TypeResolveResult) {
-									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition ());
+									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition());
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable);
 								}
@@ -147,9 +159,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 
 						AddIssue(identifier, msg, actions);
-
 					}
 				}
+				return wasHandled;
 			}
 
 			public override void VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
