@@ -36,6 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestSimpleInline ()
 		{
+			TestRefactoringContext.UseExplict = true;
 			Test<DeclareLocalVariableAction> (@"class TestClass
 {
 	int Foo() {}
@@ -52,10 +53,30 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	}
 }");
 		}
+		[Test()]
+		public void TestSimpleInlineImplicit ()
+		{
+			Test<DeclareLocalVariableAction> (@"class TestClass
+{
+	int Foo() {}
+	void Test ()
+	{
+		<-Foo()->;
+	}
+}", @"class TestClass
+{
+	int Foo() {}
+	void Test ()
+	{
+		var i = Foo ();
+	}
+}");
+		}
 
 		[Test()]
 		public void TestReplaceAll ()
 		{
+			TestRefactoringContext.UseExplict = true;
 			Test<DeclareLocalVariableAction> (@"class TestClass
 {
 	void Test ()
@@ -77,8 +98,32 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 		[Test()]
+		public void TestReplaceAllImplicit ()
+		{
+			Test<DeclareLocalVariableAction> (@"class TestClass
+{
+	void Test ()
+	{
+		Console.WriteLine (<-5 + 3->);
+		Console.WriteLine (5 + 3);
+		Console.WriteLine (5 + 3);
+	}
+}", @"class TestClass
+{
+	void Test ()
+	{
+		var i = 5 + 3;
+		Console.WriteLine (i);
+		Console.WriteLine (i);
+		Console.WriteLine (i);
+	}
+}", 1);
+		}
+
+		[Test()]
 		public void DeclareLocalExpressionTest ()
 		{
+			TestRefactoringContext.UseExplict = true;
 			Test<DeclareLocalVariableAction> (@"class TestClass
 {
 	void Test ()
@@ -103,6 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestBug693855 ()
 		{
+			TestRefactoringContext.UseExplict = true;
 			Test<DeclareLocalVariableAction> (@"class TestClass
 {
 	void Test ()
@@ -141,6 +187,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestBug693875 ()
 		{
+			TestRefactoringContext.UseExplict = true;
 			Test<DeclareLocalVariableAction> (@"class TestClass
 {
 	void DoStuff() 

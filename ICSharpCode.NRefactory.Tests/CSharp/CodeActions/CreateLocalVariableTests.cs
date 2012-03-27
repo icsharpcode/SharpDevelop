@@ -80,6 +80,33 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
+				"		var foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+
+		[Test()]
+		public void ExplicitTestAssignment ()
+		{
+			TestRefactoringContext.UseExplict = true;
+			string result = RunContextAction (
+				new CreateLocalVariableAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
 				"		int foo = 0x10;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);

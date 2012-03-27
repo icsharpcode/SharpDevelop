@@ -41,6 +41,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	public class TestRefactoringContext : RefactoringContext
 	{
+		public static bool UseExplict {
+			get;
+			set;
+		}
+
 		internal readonly IDocument doc;
 		readonly TextLocation location;
 		
@@ -48,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		{
 			this.doc = document;
 			this.location = location;
+			this.UseExplicitTypes = UseExplict;
+			UseExplict = false;
 			Services.AddService (typeof(NamingConventionService), new TestNameService ());
 		}
 		
