@@ -73,7 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						CheckNamedResolveResult(resolveResult, AffectedEntity.CustomExceptions, identifier, accessibilty);
 					}
 
-					if (type.GetDefinition().Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute")) {
+					var typeDef = type.GetDefinition();
+					if (typeDef != null && typeDef.Attributes.Any(attr => attr.AttributeType.FullName == "NUnit.Framework.TestFixtureAttribute")) {
 						CheckNamedResolveResult(resolveResult, AffectedEntity.TestType, identifier, accessibilty);
 					}
 				} else if (resolveResult is MemberResolveResult) {
@@ -114,12 +115,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
 						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);
-
 						var actions = new List<CodeAction>(suggestedNames.Select(n => new CodeAction(string.Format(ctx.TranslateString("Rename to '{0}'"), n), (Script script) => {
 								if (resolveResult is MemberResolveResult) {
 									script.Rename(((MemberResolveResult)resolveResult).Member, n);
 								} else if (resolveResult is TypeResolveResult) {
-									script.Rename(((TypeResolveResult)resolveResult).Type.GetDefinition(), n);
+									var def = ((TypeResolveResult)resolveResult).Type.GetDefinition();
+									if (def != null) {
+										script.Rename(def, n);
+									} else {
+										// TODO: Rename of type parameters
+										script.Replace(identifier, Identifier.Create(n));
+									}
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable, n);
 								} else { 

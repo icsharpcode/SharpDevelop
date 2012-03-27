@@ -121,7 +121,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return new NamingRule(AffectedEntity.TypeParameter) {
 				Name = "Type Parameters",
-				NamingStyle = NamingStyle.PascalCase
+				NamingStyle = NamingStyle.PascalCase,
+				RequiredPrefixes = new [] { "T" }
 			};
 		}
 	}

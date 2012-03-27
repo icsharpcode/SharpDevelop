@@ -176,6 +176,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var output = @"class AClass { int Method (int param) {} }";
 			CheckNaming (input, output);
 		}
+
+		[Test]
+		public void TestTypeParameterName ()
+		{
+			var input = @"struct Str<K> {}";
+			var output = @"struct Str<TK> {}";
+			CheckNaming (input, output);
+		}
 	}
 
 	[TestFixture]
