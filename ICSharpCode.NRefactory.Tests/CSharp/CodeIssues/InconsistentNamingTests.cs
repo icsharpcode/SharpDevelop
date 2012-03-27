@@ -122,6 +122,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		}
 		
 		[Test]
+		public void TestUnderscoreFieldName ()
+		{
+			var input = @"class AClass { int _Field; }";
+			var output = @"class AClass { int _field; }";
+			CheckNaming (input, output);
+		}
+		
+		[Test]
 		public void TestPublicFieldName ()
 		{
 			var input = @"class AClass { public int field; }";
