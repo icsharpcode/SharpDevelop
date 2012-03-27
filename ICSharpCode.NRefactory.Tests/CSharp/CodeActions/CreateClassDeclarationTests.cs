@@ -118,5 +118,111 @@ class TestClass
 ");
 		}
 
+		[Test()]
+		public void TestCreatePublicEventArgs ()
+		{
+			Test<CreateClassDeclarationAction> (
+@"
+class TestClass
+{
+	public event EventHandler<$MyEventArgs> evt;
+}
+", @"
+public class MyEventArgs : System.EventArgs
+{
+}
+class TestClass
+{
+	public event EventHandler<MyEventArgs> evt;
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateInternalEventArgs ()
+		{
+			Test<CreateClassDeclarationAction> (
+@"
+class TestClass
+{
+	internal event EventHandler<$MyEventArgs> evt;
+}
+", @"
+class MyEventArgs : System.EventArgs
+{
+}
+class TestClass
+{
+	internal event EventHandler<MyEventArgs> evt;
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateAttribute ()
+		{
+			Test<CreateClassDeclarationAction> (
+@"
+[$MyAttribute]
+class TestClass
+{
+}
+", @"
+class MyAttribute : System.Attribute
+{
+}
+[MyAttribute]
+class TestClass
+{
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateAttributeCase2 ()
+		{
+			Test<CreateClassDeclarationAction> (
+@"
+[$My]
+class TestClass
+{
+}
+", @"
+class MyAttribute : System.Attribute
+{
+}
+[My]
+class TestClass
+{
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateException ()
+		{
+			Test<CreateClassDeclarationAction> (
+@"
+class TestClass
+{
+	void TestMethod ()
+	{
+		throw $new MyException ();
+	}
+}
+", @"
+class MyException : System.Exception
+{
+}
+class TestClass
+{
+	void TestMethod ()
+	{
+		throw new MyException ();
+	}
+}
+");
+		}
+
 	}
 }
