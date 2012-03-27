@@ -155,6 +155,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
+			
+			public override void RenameTypeParameter (IType type, string name = null)
+			{
+				FindReferences refFinder = new FindReferences ();
+				refFinder.FindTypeParameterReferences (type, 
+				                               context.ParsedFile, 
+				                               context.RootNode as CompilationUnit, 
+				                               context.Compilation, (n, r) => Rename (n, name), 
+				                               context.CancellationToken);
+			}
+		
 		}
 
 		#region Text stuff

@@ -135,8 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 									if (def != null) {
 										script.Rename(def, n);
 									} else {
-										// TODO: Rename of type parameters
-										script.Replace(identifier, Identifier.Create(n));
+										script.RenameTypeParameter(((TypeResolveResult)resolveResult).Type, n);
 									}
 								} else if (resolveResult is LocalResolveResult) {
 									script.Rename(((LocalResolveResult)resolveResult).Variable, n);

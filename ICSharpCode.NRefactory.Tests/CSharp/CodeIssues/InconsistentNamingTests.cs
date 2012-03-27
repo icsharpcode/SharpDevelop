@@ -204,8 +204,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		[Test]
 		public void TestTypeParameterName ()
 		{
-			var input = @"struct Str<K> {}";
-			var output = @"struct Str<TK> {}";
+			var input = @"struct Str<K> { K k;}";
+			var output = @"struct Str<TK> { TK k;}";
 			CheckNaming (input, output);
 		}
 	}
