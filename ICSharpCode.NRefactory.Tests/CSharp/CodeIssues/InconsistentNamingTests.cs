@@ -154,6 +154,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		}
 
 		[Test]
+		public void TestPrivateStaticFieldName ()
+		{
+			var input = @"class AClass { static int Field; }";
+			var output = @"class AClass { static int field; }";
+			CheckNaming (input, output);
+		}
+
+		[Test]
 		public void TestPublicStaticReadOnlyFieldName ()
 		{
 			var input = @"class AClass { public static readonly int field = 5; }";
