@@ -93,7 +93,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (!rule.VisibilityMask.HasFlag(accessibilty)) {
 						continue;
 					}
-
 					if (!rule.IncludeInstanceMembers || !rule.IncludeStaticEntities) {
 						IEntity typeSystemEntity = null;
 						if (resolveResult is MemberResolveResult) {
@@ -102,17 +101,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							typeSystemEntity = ((TypeResolveResult)resolveResult).Type.GetDefinition();
 						}
 						if (!rule.IncludeInstanceMembers) {
-							if (typeSystemEntity == null || typeSystemEntity.IsStatic) {
+							if (typeSystemEntity == null || !typeSystemEntity.IsStatic) {
 								continue;
 							}
 						}
 						if (!rule.IncludeStaticEntities) {
-							if (typeSystemEntity != null && !typeSystemEntity.IsStatic) {
+							if (typeSystemEntity == null || typeSystemEntity.IsStatic) {
 								continue;
 							}
 						}
 					}
-
 					if (!rule.IsValid(identifier.Name)) {
 						IList<string> suggestedNames;
 						var msg = rule.GetErrorMessage(ctx, identifier.Name, out suggestedNames);

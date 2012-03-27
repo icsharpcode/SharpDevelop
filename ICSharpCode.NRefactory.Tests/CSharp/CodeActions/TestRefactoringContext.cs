@@ -131,6 +131,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					node = ((ConstructorDeclaration)node).NameToken;
 				if (node is DestructorDeclaration)
 					node = ((DestructorDeclaration)node).NameToken;
+				if (node is VariableInitializer)
+					node = ((VariableInitializer)node).NameToken;
 				Replace (node, new IdentifierExpression (newName));
 			}
 
