@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.NRefactory.Xml
@@ -38,21 +39,23 @@ namespace ICSharpCode.NRefactory.Xml
 				elementNameStack = new Stack<string>();
 		}
 		
-		public List<InternalObject> ReadAllObjects()
+		public List<InternalObject> ReadAllObjects(CancellationToken cancellationToken)
 		{
 			while (HasMoreData()) {
+				cancellationToken.ThrowIfCancellationRequested();
 				ReadObject();
 			}
 			return objects;
 		}
 		
-		public List<InternalObject> ReadAllObjectsIncremental(InternalObject[] oldObjects, List<UnchangedSegment> reuseMap)
+		public List<InternalObject> ReadAllObjectsIncremental(InternalObject[] oldObjects, List<UnchangedSegment> reuseMap, CancellationToken cancellationToken)
 		{
 			ObjectIterator oldObjectIterator = new ObjectIterator(oldObjects);
 			int reuseMapIndex = 0;
 			while (reuseMapIndex < reuseMap.Count) {
 				var reuseEntry = reuseMap[reuseMapIndex];
 				while (this.CurrentLocation < reuseEntry.NewOffset) {
+					cancellationToken.ThrowIfCancellationRequested();
 					ReadObject();
 				}
 				if (this.CurrentLocation >= reuseEntry.NewOffset + reuseEntry.Length) {
@@ -80,6 +83,7 @@ namespace ICSharpCode.NRefactory.Xml
 				}
 			}
 			while (HasMoreData()) {
+				cancellationToken.ThrowIfCancellationRequested();
 				ReadObject();
 			}
 			return objects;
