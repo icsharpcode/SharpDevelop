@@ -107,6 +107,52 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				InsertText (startOffset, output.Text);
 				output.RegisterTrackedSegments (this, startOffset);
 			}
+
+			void Rename (AstNode node, string newName)
+			{
+				if (node is ObjectCreateExpression)
+					node = ((ObjectCreateExpression)node).Type;
+
+				if (node is InvocationExpression)
+					node = ((InvocationExpression)node).Target;
+			
+				if (node is MemberReferenceExpression)
+					node = ((MemberReferenceExpression)node).MemberNameToken;
+			
+				if (node is MemberType)
+					node = ((MemberType)node).MemberNameToken;
+			
+				if (node is EntityDeclaration) 
+					node = ((EntityDeclaration)node).NameToken;
+			
+				if (node is ParameterDeclaration) 
+					node = ((ParameterDeclaration)node).NameToken;
+				if (node is ConstructorDeclaration)
+					node = ((ConstructorDeclaration)node).NameToken;
+				if (node is DestructorDeclaration)
+					node = ((DestructorDeclaration)node).NameToken;
+				Replace (node, new IdentifierExpression (newName));
+			}
+
+			public override void Rename (IEntity entity, string name)
+			{
+				FindReferences refFinder = new FindReferences ();
+				refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), 
+				                               context.ParsedFile, 
+				                               context.RootNode as CompilationUnit, 
+				                               context.Compilation, (n, r) => Rename (n, name), 
+				                               context.CancellationToken);
+			}
+
+			public override void Rename (IVariable variable, string name)
+			{
+				FindReferences refFinder = new FindReferences ();
+				refFinder.FindLocalReferences (variable, 
+				                               context.ParsedFile, 
+				                               context.RootNode as CompilationUnit, 
+				                               context.Compilation, (n, r) => Rename (n, name), 
+				                               context.CancellationToken);
+			}
 		}
 
 		#region Text stuff
