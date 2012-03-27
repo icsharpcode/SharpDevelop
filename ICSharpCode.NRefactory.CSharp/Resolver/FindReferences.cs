@@ -1237,7 +1237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("typeParameter");
 			if (typeParameter.Kind != TypeKind.TypeParameter)
 				throw new ArgumentOutOfRangeException("typeParameter", "Only type parameters are allowed");
-			var searchScope = new SearchScope(c => new FindTypeParameterReferencesNavigator(typeParameter));
+			var searchScope = new SearchScope(c => new FindTypeParameterReferencesNavigator((ITypeParameter)typeParameter));
 			searchScope.declarationCompilation = compilation;
 			searchScope.accessibility = Accessibility.Private;
 			FindReferencesInFile(searchScope, parsedFile, compilationUnit, compilation, callback, cancellationToken);
@@ -1245,9 +1245,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		class FindTypeParameterReferencesNavigator : FindReferenceNavigator
 		{
-			readonly IType typeParameter;
+			readonly ITypeParameter typeParameter;
 			
-			public FindTypeParameterReferencesNavigator(IType typeParameter)
+			public FindTypeParameterReferencesNavigator(ITypeParameter typeParameter)
 			{
 				this.typeParameter = typeParameter;
 			}
@@ -1266,7 +1266,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal override bool IsMatch(ResolveResult rr)
 			{
 				var lrr = rr as TypeResolveResult;
-				return lrr != null && lrr.Type.Equals (typeParameter);
+				return lrr != null && lrr.Type.Kind == TypeKind.TypeParameter && ((ITypeParameter)lrr.Type).Region == typeParameter.Region;
 			}
 		}
 		#endregion
