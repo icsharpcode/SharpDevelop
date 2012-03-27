@@ -177,7 +177,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					"{" + Environment.NewLine +
 					"	static void Test ()" + Environment.NewLine +
 					"	{" + Environment.NewLine +
-					"		$foo = 0x10;" + Environment.NewLine +
+					"		$Foo = 0x10;" + Environment.NewLine +
 					"	}" + Environment.NewLine +
 					"}"
 			);
@@ -186,11 +186,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"using System;" + Environment.NewLine +
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
-				"	static int foo;" + Environment.NewLine +
+				"	static int Foo;" + Environment.NewLine +
 				"" + Environment.NewLine +
 				"	static void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
-				"		foo = 0x10;" + Environment.NewLine +
+				"		Foo = 0x10;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
