@@ -82,8 +82,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			return context.doc.Text;
 		}
 		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+		protected static void TestWrongContext<T> (string input) where T : ICodeActionProvider, new ()
 		{
+			ICodeActionProvider action = new T ();
 			var context = TestRefactoringContext.Create (input);
 			bool isValid = action.GetActions (context).Any ();
 			if (!isValid)

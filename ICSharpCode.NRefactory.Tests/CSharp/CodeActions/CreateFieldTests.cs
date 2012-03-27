@@ -35,8 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestWrongContext1 ()
 		{
-			TestWrongContext (
-				new CreateFieldAction (),
+			TestWrongContext<CreateFieldAction> (
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +
@@ -51,8 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestWrongContext2 ()
 		{
-			TestWrongContext (
-				new CreateFieldAction (),
+			TestWrongContext<CreateFieldAction> (
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +
@@ -68,8 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		public void TestWrongContext3 ()
 		{
 			// May be syntactically possible, but very unlikely.
-			TestWrongContext (
-				new CreateFieldAction (),
+			TestWrongContext<CreateFieldAction> (
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +

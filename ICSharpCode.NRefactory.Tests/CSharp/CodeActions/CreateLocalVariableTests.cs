@@ -176,8 +176,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		public void TestWrongContext1 ()
 		{
 			// May be syntactically possible, but very unlikely.
-			TestWrongContext (
-				new CreateLocalVariableAction (),
+			TestWrongContext<CreateLocalVariableAction> (
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +

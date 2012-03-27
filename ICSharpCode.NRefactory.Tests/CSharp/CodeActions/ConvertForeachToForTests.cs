@@ -99,8 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestEnumerableOfT ()
 		{
-			TestWrongContext (
-				new ConvertForeachToForAction (),
+			TestWrongContext<ConvertForeachToForAction> (
 				"using System;" + Environment.NewLine +
 				"using System.Collections.Generic;" + Environment.NewLine +
 				"class TestClass" + Environment.NewLine +

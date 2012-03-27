@@ -1,5 +1,5 @@
 // 
-// CreateIndexerTests.cs
+// CreateClassActionTests.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
@@ -30,58 +31,82 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	[TestFixture]
-	public class CreateIndexerTests : ContextActionTestBase
+	public class CreateConstructorDeclarationActionTests : ContextActionTestBase
 	{
-		public void TestCreateIndexer (string input, string output)
+		[Test()]
+		public void TestCreateConstructor ()
 		{
-			string result = RunContextAction (new CreateIndexerAction (), CreateMethodDeclarationTests.HomogenizeEol (input));
-			bool passed = result == output;
-			if (!passed) {
-				Console.WriteLine ("-----------Expected:");
-				Console.WriteLine (output);
-				Console.WriteLine ("-----------Got:");
-				Console.WriteLine (result);
-			}
-			Assert.AreEqual (CreateMethodDeclarationTests.HomogenizeEol (output), result);
-		}	
-	
+			Test<CreateConstructorDeclarationAction> (
+@"
+class Foo
+{
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		$new Foo (0, ""Hello"");
+	}
+}
+", @"
+class Foo
+{
+	public Foo (int i, string hello)
+	{
+		throw new System.NotImplementedException ();
+	}
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		new Foo (0, ""Hello"");
+	}
+}
+");
+		}
 
 		[Test()]
-		public void TestIndexer ()
+		public void TestCreateConstructorInnerClass ()
 		{
-			TestCreateIndexer (
+			Test<CreateConstructorDeclarationAction> (
 @"
 class TestClass
 {
 	void TestMethod ()
 	{
-		$this[0] = 2;
+		$new Foo (0, ""Hello"");
+	}
+	class Foo
+	{
 	}
 }
 ", @"
 class TestClass
 {
-	int this [int i] {
-		get {
-			throw new System.NotImplementedException ();
-		}
-		set {
-			throw new System.NotImplementedException ();
-		}
-	}
 	void TestMethod ()
 	{
-		this[0] = 2;
+		new Foo (0, ""Hello"");
+	}
+	class Foo
+	{
+	public Foo (int i, string hello)
+	{
+		throw new System.NotImplementedException ();
+	}
 	}
 }
 ");
 		}
+
 		[Test()]
-		public void TestInterfaceIndexer ()
+		public void TestCreateConstructorInStaticClass ()
 		{
-			TestCreateIndexer (
+			TestWrongContext<CreateConstructorDeclarationAction> (
 @"
-interface FooBar
+static class Foo
 {
 }
 
@@ -89,36 +114,18 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		FooBar fb;
-		$fb[0] = 2;
-	}
-}
-", @"
-interface FooBar
-{
-	int this [int i] {
-		get;
-		set;
-	}
-}
-
-class TestClass
-{
-	void TestMethod ()
-	{
-		FooBar fb;
-		fb[0] = 2;
+		$new Foo (0, ""Hello"");
 	}
 }
 ");
 		}
 
 		[Test()]
-		public void TestExternIndexer ()
+		public void TestCreateConstructorInSealedClass ()
 		{
-			TestCreateIndexer (
+			TestWrongContext<CreateConstructorDeclarationAction> (
 @"
-class FooBar
+sealed class Foo
 {
 }
 
@@ -126,48 +133,26 @@ class TestClass
 {
 	void TestMethod ()
 	{
-		FooBar fb;
-		$fb[0] = 2;
-	}
-}
-", @"
-class FooBar
-{
-	public int this [int i] {
-		get {
-			throw new System.NotImplementedException ();
-		}
-		set {
-			throw new System.NotImplementedException ();
-		}
-	}
-}
-
-class TestClass
-{
-	void TestMethod ()
-	{
-		FooBar fb;
-		fb[0] = 2;
+		$new Foo (0, ""Hello"");
 	}
 }
 ");
 		}
 
 		[Test()]
-		public void TestindexerInFrameworkClass ()
+		public void TestCreateConstructorInFramework ()
 		{
-			TestWrongContext<CreateIndexerAction> (
-@"class TestClass
+
+			TestWrongContext<CreateConstructorDeclarationAction> (
+@"
+class TestClass
 {
 	void TestMethod ()
 	{
-		$new System.Buffer ()[0] = 2;
+		$new System.NotImplementedException (0, ""Hello"", new TestClass ());
 	}
 }
 ");
 		}
-	
 	}
 }
-

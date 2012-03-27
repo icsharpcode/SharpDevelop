@@ -551,6 +551,20 @@ namespace Test {
 }");
 		}
 
+		[Test()]
+		public void TestMethodInFrameworkClass ()
+		{
+			TestWrongContext<CreateMethodDeclarationAction> (
+@"class TestClass
+{
+	void TestMethod ()
+	{
+		$System.Console.ImprovedWriteLine (""Think of it"");
+	}
+}
+");
+		}
+
 	}
 }
 

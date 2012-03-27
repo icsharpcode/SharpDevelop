@@ -207,8 +207,7 @@ class TestClass
 		public void TestWrongContext1 ()
 		{
 			// May be syntactically possible, but very unlikely.
-			TestWrongContext (
-				new CreatePropertyAction (),
+			TestWrongContext<CreatePropertyAction> (
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +

@@ -63,8 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestBug3292 ()
 		{
-			TestWrongContext (
-				new RemoveBackingStoreAction (),
+			TestWrongContext<RemoveBackingStoreAction> (
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	int field;" + Environment.NewLine +
@@ -81,8 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestBug3292Case2 ()
 		{
-			TestWrongContext (
-				new RemoveBackingStoreAction (),
+			TestWrongContext<RemoveBackingStoreAction> (
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	int field;" + Environment.NewLine +
