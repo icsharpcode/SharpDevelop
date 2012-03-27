@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	[TestFixture]
-	public class CreateConstructorDeclarationActionTests : ContextActionTestBase
+	public class CreateConstructorDeclarationTests : ContextActionTestBase
 	{
 		[Test()]
 		public void TestCreateConstructor ()

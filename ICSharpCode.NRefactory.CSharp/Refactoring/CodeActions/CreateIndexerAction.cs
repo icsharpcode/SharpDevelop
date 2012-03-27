@@ -75,9 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					},
 				};
-				foreach (var parameter in CreateMethodDeclarationAction.GenerateParameters (context, indexer.Arguments)) {
-					decl.Parameters.Add(parameter);
-				}
+				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters (context, indexer.Arguments));
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
 				

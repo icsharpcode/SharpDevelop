@@ -35,14 +35,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var createExpression = context.GetNode<ObjectCreateExpression>();
-			if (createExpression == null) { 
+			if (createExpression == null) 
 				yield break;
-			}
 			
 			var resolveResult = context.Resolve(createExpression) as CSharpInvocationResolveResult;
-			if (resolveResult == null || !resolveResult.IsError || resolveResult.Member.DeclaringTypeDefinition == null || resolveResult.Member.DeclaringTypeDefinition.IsSealed || resolveResult.Member.DeclaringTypeDefinition.Region.IsEmpty) {
+			if (resolveResult == null || !resolveResult.IsError || resolveResult.Member.DeclaringTypeDefinition == null || resolveResult.Member.DeclaringTypeDefinition.IsSealed || resolveResult.Member.DeclaringTypeDefinition.Region.IsEmpty)
 				yield break;
-			}
 
 			yield return new CodeAction(context.TranslateString("Create constructor"), script => {
 				var decl = new ConstructorDeclaration() {
@@ -52,10 +50,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				foreach (var parameter in CreateMethodDeclarationAction.GenerateParameters (context, createExpression.Arguments)) {
-					decl.Parameters.Add(parameter);
-				}
-				
+				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters (context, createExpression.Arguments));
+
 				script.InsertWithCursor(context.TranslateString("Create constructor"), decl, resolveResult.Member.DeclaringTypeDefinition);
 			});
 		}

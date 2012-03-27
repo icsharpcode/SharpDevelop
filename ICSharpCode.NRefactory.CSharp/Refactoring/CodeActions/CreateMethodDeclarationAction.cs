@@ -145,9 +145,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				foreach (var parameter in GenerateParameters (context, invocation.Arguments)) {
-					decl.Parameters.Add(parameter);
-				}
+				decl.Parameters.AddRange(GenerateParameters (context, invocation.Arguments));
 				if (isStatic) {
 					decl.Modifiers |= Modifiers.Static;
 				}

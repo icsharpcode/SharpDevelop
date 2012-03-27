@@ -166,6 +166,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				                               context.CancellationToken);
 			}
 		
+			public override void CreateNewType (TypeDeclaration newType, NewTypeContext context)
+			{
+				var output = OutputNode (0, newType, true);
+				InsertText (0, output.Text);
+			}
 		}
 
 		#region Text stuff
