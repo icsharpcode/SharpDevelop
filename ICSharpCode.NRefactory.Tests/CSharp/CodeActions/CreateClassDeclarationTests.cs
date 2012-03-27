@@ -224,5 +224,17 @@ class TestClass
 ");
 		}
 
+		[Test()]
+		public void TestNotShowInEventTypes ()
+		{
+			TestWrongContext<CreateClassDeclarationAction> (
+@"
+class TestClass
+{
+	event $MyEventHandler evt;
+}
+");
+		}
+
 	}
 }
