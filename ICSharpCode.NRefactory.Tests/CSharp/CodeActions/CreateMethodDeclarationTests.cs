@@ -33,23 +33,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class CreateMethodDeclarationTests : ContextActionTestBase
 	{
-		public void TestCreateMethod (string input, string output)
-		{
-			string result = RunContextAction (new CreateMethodDeclarationAction (), HomogenizeEol (input));
-			bool passed = result == output;
-			if (!passed) {
-				Console.WriteLine ("-----------Expected:");
-				Console.WriteLine (output);
-				Console.WriteLine ("-----------Got:");
-				Console.WriteLine (result);
-			}
-			Assert.AreEqual (HomogenizeEol (output), result);
-		}
-
 		[Test()]
 		public void TestPrivateSimpleCreateMethod ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	int member = 5;
 	string Test { get; set; }
@@ -77,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestStaticSimpleCreateMethod ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	public static void TestMethod ()
 	{
@@ -101,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessAssignmentReturnType ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -123,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessAssignmentReturnTypeCase2 ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -147,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessAssignmentReturnTypeCase3 ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -170,7 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessParameterType ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	void TestMethod ()
 	{
@@ -197,7 +184,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestCreateDelegateDeclaration ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	public event MyDelegate MyEvent;
 
@@ -229,7 +216,7 @@ public delegate string MyDelegate (int a, object b);
 		[Test()]
 		public void TestRefOutCreateMethod ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	void TestMethod ()
 	{
@@ -253,7 +240,7 @@ public delegate string MyDelegate (int a, object b);
 		[Test()]
 		public void TestExternMethod ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"
 class FooBar
 {
@@ -290,7 +277,7 @@ class TestClass
 		[Test()]
 		public void TestCreateInterfaceMethod ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"
 interface FooBar
 {
@@ -324,7 +311,7 @@ class TestClass
 		[Test()]
 		public void TestCreateInStaticClassMethod ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"
 static class FooBar
 {
@@ -364,7 +351,7 @@ class TestClass
 		[Test()]
 		public void TestBug677522 ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"namespace Test {
 	class TestClass
 	{
@@ -396,7 +383,7 @@ class TestClass
 		[Test()]
 		public void TestBug677527 ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"using System.Text;
 
 namespace Test {
@@ -437,7 +424,7 @@ namespace Test {
 		public void TestBug693949 ()
 		{
 			// the c# code isn't 100% correct since test isn't accessible in Main (can't call non static method from static member)
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"using System.Text;
 
 namespace Test {
@@ -482,7 +469,7 @@ namespace Test {
 		[Test()]
 		public void TestBug469 ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"class Test
 {
 	public override string ToString ()
@@ -507,7 +494,7 @@ namespace Test {
 		[Test()]
 		public void TestTestGuessReturnReturnType ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"class Test
 {
 	public override string ToString ()
@@ -532,7 +519,7 @@ namespace Test {
 		[Test()]
 		public void TestStringParameterNameGuessing ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -565,6 +552,33 @@ namespace Test {
 ");
 		}
 
+		[Test()]
+		public void TestCreateMethodOutOfDelegateCreation ()
+		{
+			Test<CreateMethodDeclarationAction> (
+@"using System;
+class Test
+{
+	public void ATest ()
+	{
+		new System.EventHandler<System.EventArgs>($BeginDownloadingImage);
+	}
+}
+", @"using System;
+class Test
+{
+	void BeginDownloadingImage (object sender, EventArgs e)
+	{
+		throw new NotImplementedException ();
+	}
+	public void ATest ()
+	{
+		new System.EventHandler<System.EventArgs>(BeginDownloadingImage);
+	}
+}
+");
+		}
+		
 	}
 }
 
