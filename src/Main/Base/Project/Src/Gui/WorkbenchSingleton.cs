@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -70,7 +71,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			DisplayBindingService.InitializeService();
 			FileService.InitializeService();
-			ParserService.InitializeParserService();
 			TaskService.Initialize();
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (messageService != null) {
 				messageService.DialogOwner = workbench.MainWin32Window;
 				Debug.Assert(messageService.DialogOwner != null);
-				messageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
+				messageService.DialogSynchronizeInvoke = SD.MainThread.SynchronizingObject;
 			}
 			
 			workbench.Initialize();
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (workbench == null)
 					return false; // unit test mode, don't crash
 				else
-					return workbench.SynchronizingObject.InvokeRequired;
+					return SD.MainThread.InvokeRequired;
 			}
 		}
 		
@@ -166,13 +166,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static R SafeThreadFunction<R>(Func<R> method)
 		{
-			// InvokeRequired test is necessary so that we don't run other actions in the message queue
-			// when we're already running on the main thread (unexpected reentrancy)
-			ISynchronizeInvoke si = workbench.SynchronizingObject;
-			if (si.InvokeRequired)
-				return (R)workbench.SynchronizingObject.Invoke(method, emptyObjectArray);
-			else
-				return method();
+			return SD.MainThread.InvokeIfRequired(method);
 		}
 		
 		/// <summary>
@@ -182,11 +176,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static R SafeThreadFunction<A, R>(Func<A, R> method, A arg1)
 		{
-			ISynchronizeInvoke si = workbench.SynchronizingObject;
-			if (si.InvokeRequired)
-				return (R)si.Invoke(method, new object[] { arg1 });
-			else
-				return method(arg1);
+			return SD.MainThread.InvokeIfRequired(() => method(arg1));
 		}
 		
 		/// <summary>
@@ -196,11 +186,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall(Action method)
 		{
-			ISynchronizeInvoke si = workbench.SynchronizingObject;
-			if (si.InvokeRequired)
-				si.Invoke(method, emptyObjectArray);
-			else
-				method();
+			SD.MainThread.InvokeIfRequired(method);
 		}
 		
 		/// <summary>
@@ -210,11 +196,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall<A>(Action<A> method, A arg1)
 		{
-			ISynchronizeInvoke si = workbench.SynchronizingObject;
-			if (si.InvokeRequired)
-				si.Invoke(method, new object[] { arg1 });
-			else
-				method(arg1);
+			SD.MainThread.InvokeIfRequired(() => method(arg1));
 		}
 		
 		/// <summary>
@@ -224,11 +206,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
-			ISynchronizeInvoke si = workbench.SynchronizingObject;
-			if (si.InvokeRequired)
-				si.Invoke(method, new object[] { arg1, arg2 });
-			else
-				method(arg1, arg2);
+			SD.MainThread.InvokeIfRequired(() => method(arg1, arg2));
 		}
 		
 		/// <summary>
@@ -238,11 +216,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
-			ISynchronizeInvoke si = workbench.SynchronizingObject;
-			if (si.InvokeRequired)
-				si.Invoke(method, new object[] { arg1, arg2, arg3 });
-			else
-				method(arg1, arg2, arg3);
+			SD.MainThread.InvokeIfRequired(() => method(arg1, arg2, arg3));
 		}
 		
 		/// <summary>
@@ -250,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall(Action method)
 		{
-			workbench.SynchronizingObject.BeginInvoke(method, emptyObjectArray);
+			SD.MainThread.InvokeAsync(method).FireAndForget();
 		}
 		
 		/// <summary>
@@ -258,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall<A>(Action<A> method, A arg1)
 		{
-			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1 });
+			SD.MainThread.InvokeAsync(() => method(arg1)).FireAndForget();
 		}
 		
 		/// <summary>
@@ -266,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall<A, B>(Action<A, B> method, A arg1, B arg2)
 		{
-			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1, arg2 });
+			SD.MainThread.InvokeAsync(() => method(arg1, arg2)).FireAndForget();
 		}
 		
 		/// <summary>
@@ -274,30 +248,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public static void SafeThreadAsyncCall<A, B, C>(Action<A, B, C> method, A arg1, B arg2, C arg3)
 		{
-			workbench.SynchronizingObject.BeginInvoke(method, new object[] { arg1, arg2, arg3 });
+			SD.MainThread.InvokeAsync(() => method(arg1, arg2, arg3)).FireAndForget();
 		}
 		
 		/// <summary>
 		/// Calls a method on the GUI thread, but delays the call a bit.
 		/// </summary>
-		public static void CallLater(TimeSpan delay, Action method)
+		public static async void CallLater(TimeSpan delay, Action method)
 		{
-			int delayMilliseconds = (int)delay.TotalMilliseconds;
-			if (delayMilliseconds < 0)
-				throw new ArgumentOutOfRangeException("delay", delay, "Value must be positive");
-			if (method == null)
-				throw new ArgumentNullException("method");
-			SafeThreadAsyncCall(
-				delegate {
-					Timer t = new Timer();
-					t.Interval = Math.Max(1, delayMilliseconds);
-					t.Tick += delegate {
-						t.Stop();
-						t.Dispose();
-						method();
-					};
-					t.Start();
-				});
+			await Task.Delay(delay).ConfigureAwait(false);
+			SD.MainThread.InvokeAsync(method).FireAndForget();
 		}
 		#endregion
 		

@@ -9,6 +9,7 @@ using ICSharpCode.AvalonEdit.Indentation.CSharp;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -180,7 +181,7 @@ namespace CSharpBinding.FormattingStrategy
 			FileName fileName = editor.FileName;
 			IUnresolvedEntity nextElement = null;
 			if (fileName != null) {
-				IParsedFile parsedFile = ParserService.ParseFile(fileName, editor.Document.CreateSnapshot());
+				IParsedFile parsedFile = SD.ParserService.ParseFile(fileName, editor.Document);
 				if (parsedFile != null) {
 					var currentClass = parsedFile.GetInnermostTypeDefinition(caretLine, 0);
 					int nextElementLine = int.MaxValue;

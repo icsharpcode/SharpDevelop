@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -19,6 +18,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Utils;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -44,7 +44,7 @@ namespace CSharpBinding
 		{
 			this.project = project;
 			searchScopes = fr.GetSearchScopes(entity);
-			compilation = ParserService.GetCompilation(project);
+			compilation = SD.ParserService.GetCompilation(project);
 			interestingFileNames = new IList<string>[searchScopes.Count];
 			for (int i = 0; i < searchScopes.Count; i++) {
 				interestingFileNames[i] = fr.GetInterestingFiles(searchScopes[i], compilation).Select(f => f.FileName).ToList();
@@ -93,7 +93,7 @@ namespace CSharpBinding
 					return;
 			}
 			
-			var parseInfo = ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
+			var parseInfo = SD.ParserService.Parse(fileName, textSource) as CSharpFullParseInformation;
 			if (parseInfo == null)
 				return;
 			ReadOnlyDocument document = null;

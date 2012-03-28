@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <returns>
 	/// An ParserDescriptor object that wraps the IParser object.
 	/// </returns>
-	public sealed class ParserDoozer : IDoozer
+	sealed class ParserDoozer : IDoozer
 	{
 		/// <summary>
 		/// Gets if the doozer handles codon conditions on its own.

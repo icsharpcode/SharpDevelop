@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Threading;
 using ICSharpCode.AvalonEdit.Highlighting;
 using System;
 using System.Collections.Generic;
@@ -27,18 +28,16 @@ namespace CSharpBinding.Tests
 		public MockTextEditor()
 			: base(new TextEditor())
 		{
-			PropertyService.InitializeServiceForUnitTests();
 		}
 		
 		public override FileName FileName {
 			get { return new FileName("mockFileName.cs"); }
 		}
 		
-		public void CreateParseInformation()
+		public ParseInformation CreateParseInformation()
 		{
 			var parser = new CSharpBinding.Parser.TParser();
-			var parseInfo = parser.Parse(this.FileName, this.Document, true);
-			ParserService.RegisterParseInformation(parseInfo.FileName, parseInfo, parser);
+			return parser.Parse(this.FileName, this.Document, true, null, CancellationToken.None);
 		}
 		
 		ICompletionItemList lastCompletionItemList;

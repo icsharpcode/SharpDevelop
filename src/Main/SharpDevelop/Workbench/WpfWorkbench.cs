@@ -16,12 +16,15 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Navigation;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Startup;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Workbench implementation using WPF and AvalonDock.
@@ -53,7 +56,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 		}
 		
 		public System.Windows.Forms.IWin32Window MainWin32Window { get { return this; } }
-		public ISynchronizeInvoke SynchronizingObject { get; private set; }
 		public Window MainWindow { get { return this; } }
 		
 		IntPtr System.Windows.Forms.IWin32Window.Handle {
@@ -72,7 +74,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 		
 		public WpfWorkbench()
 		{
-			this.SynchronizingObject = new WpfSynchronizeInvoke(this.Dispatcher);
 			SD.Services.AddService(typeof(IStatusBarService), new StatusBarService(statusBar));
 			InitializeComponent();
 			InitFocusTrackingEvents();
@@ -123,12 +124,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 			AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
 			Project.ProjectService.CurrentProjectChanged += SetProjectTitle;
 			
-			FileService.FileRemoved += CheckRemovedOrReplacedFile;
-			FileService.FileReplaced += CheckRemovedOrReplacedFile;
-			FileService.FileRenamed += CheckRenamedFile;
+			SharpDevelop.FileService.FileRemoved += CheckRemovedOrReplacedFile;
+			SharpDevelop.FileService.FileReplaced += CheckRemovedOrReplacedFile;
+			SharpDevelop.FileService.FileRenamed += CheckRenamedFile;
 			
-			FileService.FileRemoved += FileService.RecentOpen.FileRemoved;
-			FileService.FileRenamed += FileService.RecentOpen.FileRenamed;
+			SharpDevelop.FileService.FileRemoved += SharpDevelop.FileService.RecentOpen.FileRemoved;
+			SharpDevelop.FileService.FileRenamed += SharpDevelop.FileService.RecentOpen.FileRenamed;
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
@@ -156,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 					// catch exceptions - e.g. incorrectly installed mail client
 				}
 			} else {
-				FileService.OpenFile(e.Uri.ToString());
+				SharpDevelop.FileService.OpenFile(e.Uri.ToString());
 			}
 		}
 		
@@ -171,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 		
 		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
-			foreach (OpenedFile file in FileService.OpenedFiles) {
+			foreach (OpenedFile file in SharpDevelop.FileService.OpenedFiles) {
 				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
 					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
 						// content.WorkbenchWindow can be null if multiple view contents
@@ -189,13 +190,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 		void CheckRenamedFile(object sender, FileRenameEventArgs e)
 		{
 			if (e.IsDirectory) {
-				foreach (OpenedFile file in FileService.OpenedFiles) {
+				foreach (OpenedFile file in SharpDevelop.FileService.OpenedFiles) {
 					if (file.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, file.FileName)) {
 						file.FileName = new FileName(FileUtility.RenameBaseDirectory(file.FileName, e.SourceFile, e.TargetFile));
 					}
 				}
 			} else {
-				OpenedFile file = FileService.GetOpenedFile(e.SourceFile);
+				OpenedFile file = SharpDevelop.FileService.GetOpenedFile(e.SourceFile);
 				if (file != null) {
 					file.FileName = new FileName(e.TargetFile);
 				}
@@ -593,7 +594,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 					}
 					
 					Project.ProjectService.CloseSolution();
-					ParserService.StopParserThread();
+					((ParserService)SD.ParserService).StopParserThread();
 					
 					restoreBoundsBeforeClosing = this.RestoreBounds;
 					
@@ -668,7 +669,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 							if (loader != null) {
 								FileUtility.ObservedLoad(new NamedFileOperationDelegate(loader.Load), file);
 							} else {
-								FileService.OpenFile(file);
+								SharpDevelop.FileService.OpenFile(file);
 							}
 						}
 					}

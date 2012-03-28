@@ -4,7 +4,7 @@
 using System;
 using System.Windows;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Startup
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

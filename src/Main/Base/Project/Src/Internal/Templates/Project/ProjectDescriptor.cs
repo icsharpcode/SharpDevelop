@@ -372,7 +372,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							File.Copy(file.BinaryFileName,fileName);
 						} else {
 							// Textual content
-							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
+							StreamWriter sr = new StreamWriter(File.Create(fileName), SD.FileService.DefaultFileEncoding);
 							string fileContent = StringParser.Parse(file.Content, new StringTagPair("ProjectName", projectCreateInformation.ProjectName), new StringTagPair("FileName", fileName));
 							fileContent = StringParser.Parse(fileContent);
 							if (SD.EditorControlService.GlobalOptions.IndentationString != "\t") {

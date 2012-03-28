@@ -1,25 +1,21 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-// Based on the MIT-licensed GacInterop.cs from ILSpy.
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	/// <summary>
-	/// Interop with the .NET GAC.
-	/// </summary>
-	public static class GacInterop
+	sealed class GlobalAssemblyCacheService : IGlobalAssemblyCacheService
 	{
-		/// <summary>
-		/// Gets the names of all assemblies in the GAC.
-		/// </summary>
-		public static IEnumerable<DomAssemblyName> GetGacAssemblyFullNames()
+		public bool IsGACAssembly(string fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public IEnumerable<DomAssemblyName> GetGacAssemblyFullNames()
 		{
 			IApplicationContext applicationContext = null;
 			IAssemblyEnum assemblyEnum = null;
@@ -37,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		#region FindAssemblyInGac
+		#region FindAssemblyInNetGac
 		// This region is based on code from Mono.Cecil:
 		
 		// Author:
@@ -65,14 +61,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 		// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		//
 
-		static readonly string[] gac_paths = { Fusion.GetGacPath(false), Fusion.GetGacPath(true) };
-		static readonly string[] gacs = { "GAC_MSIL", "GAC_32", "GAC" };
-		static readonly string[] prefixes = { string.Empty, "v4.0_" };
+		readonly string[] gac_paths = { Fusion.GetGacPath(false), Fusion.GetGacPath(true) };
+		readonly string[] gacs = { "GAC_MSIL", "GAC_32", "GAC" };
+		readonly string[] prefixes = { string.Empty, "v4.0_" };
 		
 		/// <summary>
 		/// Gets the file name for an assembly stored in the GAC.
 		/// </summary>
-		public static string FindAssemblyInNetGac (DomAssemblyName reference)
+		public string FindAssemblyInNetGac (DomAssemblyName reference)
 		{
 			// without public key, it can't be in the GAC
 			if (reference.PublicKeyToken == null)

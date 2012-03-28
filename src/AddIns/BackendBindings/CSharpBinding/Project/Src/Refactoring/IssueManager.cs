@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -90,14 +91,14 @@ namespace CSharpBinding.Refactoring
 		{
 			this.editor = editor;
 			this.markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-			ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
+			//SD.ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
 			editor.ContextActionProviders.Add(this);
 		}
 		
 		public void Dispose()
 		{
 			editor.ContextActionProviders.Remove(this);
-			ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
+			//SD.ParserService.ParserUpdateStepFinished -= ParserService_ParserUpdateStepFinished;
 			if (cancellationTokenSource != null)
 				cancellationTokenSource.Cancel();
 			Clear();
@@ -243,7 +244,7 @@ namespace CSharpBinding.Refactoring
 			try {
 				await Task.Run(
 					delegate {
-						var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
+						var compilation = SD.ParserService.GetCompilationForFile(parseInfo.FileName);
 						var resolver = parseInfo.GetResolver(compilation);
 						var context = new SDRefactoringContext(textSource, resolver, new TextLocation(0, 0), 0, 0, cancellationToken);
 						foreach (var issueProvider in issueProviders.Value) {

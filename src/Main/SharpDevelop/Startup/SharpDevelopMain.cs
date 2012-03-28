@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Workbench;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.SharpDevelop.Logging;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Sda;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Startup
 {
 	/// <summary>
 	/// This Class is the Core main class, it starts the program.

@@ -71,7 +71,6 @@
     <Compile Include="CppFormattingStrategy.cs" />
     <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="Project\DependencyRelation.cs" />
-    <Compile Include="Project\MultiDictionary.cs" />
     <Compile Include="Project\ApplicationOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>

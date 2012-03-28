@@ -413,7 +413,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (gridItem != null) {
 				Type component = gridItem.PropertyDescriptor.ComponentType;
 				if (component != null) {
-					ICompilation compilation = ParserService.GetCompilation(ProjectService.CurrentProject);
+					ICompilation compilation = SD.ParserService.GetCompilation(ProjectService.CurrentProject);
 					IType componentType = compilation.FindType(component);
 					IProperty property = componentType.GetProperties(p => p.Name == gridItem.PropertyDescriptor.Name).FirstOrDefault();
 					if (property != null)

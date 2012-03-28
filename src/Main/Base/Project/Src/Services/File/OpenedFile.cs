@@ -461,9 +461,9 @@ namespace ICSharpCode.SharpDevelop
 					// We discarded some information when closing the file,
 					// so we need to re-parse it.
 					if (File.Exists(this.FileName))
-						ParserService.ParseAsync(this.FileName).FireAndForget();
+						SD.ParserService.ParseAsync(this.FileName).FireAndForget();
 					else
-						ParserService.ClearParseInformation(this.FileName);
+						SD.ParserService.ClearParseInformation(this.FileName);
 				}
 			}
 		}

@@ -14,6 +14,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -60,15 +61,15 @@ namespace CSharpBinding
 			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
 			this.parameterModifierColor = highlightingDefinition.GetNamedColor("ParameterModifiers");
 			
-			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
-			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
+			SD.ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
 			syntaxHighlighter.VisibleDocumentLinesChanged += syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		
 		public void Dispose()
 		{
-			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
-			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
+			SD.ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
 			syntaxHighlighter.VisibleDocumentLinesChanged -= syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		#endregion
@@ -202,7 +203,7 @@ namespace CSharpBinding
 				return cachedLine.HighlightedLine;
 			}
 			
-			var parseInfo = ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version) as CSharpFullParseInformation;
+			var parseInfo = SD.ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version) as CSharpFullParseInformation;
 			if (parseInfo == null) {
 				if (!invalidLines.Contains(documentLine))
 					invalidLines.Add(documentLine);
@@ -218,7 +219,7 @@ namespace CSharpBinding
 				}
 			}
 			
-			var compilation = ParserService.GetCompilationForFile(parseInfo.FileName);
+			var compilation = SD.ParserService.GetCompilationForFile(parseInfo.FileName);
 			this.resolver = parseInfo.GetResolver(compilation);
 			
 			HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);

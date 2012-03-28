@@ -41,7 +41,6 @@
 			<Doozer name="Pad" class="ICSharpCode.SharpDevelop.PadDoozer"/>
 			<Doozer name="ProjectBinding" class="ICSharpCode.SharpDevelop.ProjectBindingDoozer"/>
 			<Doozer name="LanguageBinding" class="ICSharpCode.SharpDevelop.LanguageBindingDoozer"/>
-			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.Parser.ParserDoozer"/>
 			<Doozer name="BrowserSchemeExtension" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer"/>
 			<Doozer name="CodeCompletionBinding" class="ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionBindingDoozer"/>
 			<Doozer name="Debugger" class="ICSharpCode.SharpDevelop.Debugging.DebuggerDoozer"/>
@@ -49,8 +48,19 @@
 			<Doozer name="TaskBoundAdditionalLogger" class="ICSharpCode.SharpDevelop.Project.TaskBoundAdditionalLoggerDoozer"/>
 			<Doozer name="TaskBoundLoggerFilter" class="ICSharpCode.SharpDevelop.Project.TaskBoundLoggerFilterDoozer"/>
 		</Import>
-		<Import assembly=":SharpDevelop"/>
+		<Import assembly=":SharpDevelop">
+			<Doozer name="Parser" class="ICSharpCode.SharpDevelop.Parser.ParserDoozer"/>
+		</Import>
 	</Runtime>
+	
+	<Path name="/SharpDevelop/Services">
+		<Service id="ICSharpCode.SharpDevelop.Parser.IGlobalAssemblyCacheService"
+		         class="ICSharpCode.SharpDevelop.Parser.GlobalAssemblyCacheService"/>
+		<Service id="ICSharpCode.SharpDevelop.Parser.IParserService"
+		         class="ICSharpCode.SharpDevelop.Parser.ParserService"/>
+		<Service id="ICSharpCode.SharpDevelop.IFileService"
+		         class="ICSharpCode.SharpDevelop.Workbench.FileService"/>
+	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = ".NET"
@@ -1066,7 +1076,7 @@
 		
 		<ToolbarItem id    = "ChooseLayout"
 		             type  = "ComboBox"
-		             class = "ICSharpCode.SharpDevelop.Gui.Workbench.ChooseLayoutCommand" />
+		             class = "ICSharpCode.SharpDevelop.Workbench.ChooseLayoutCommand" />
 		
 		<ToolbarItem id="NavigationSeparator" type="Separator"/>
 		<Condition name="CanNavigateBack" action="Disable">
@@ -2243,18 +2253,6 @@
 		             class   = "ICSharpCode.SharpDevelop.Gui.ToggleConsoleWordWrapCommand"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">
-		<String id = "System" text = "System"/>
-		<String id = "System.Core" text = "System.Core"/>
-		<String id = "System.Data" text = "System.Data"/>
-		<String id = "System.Data.DataSetExtensions" text = "System.Data.DataSetExtensions"/>
-		<String id = "System.Drawing" text = "System.Drawing"/>
-		<String id = "System.Web" text = "System.Web"/>
-		<String id = "System.Windows.Forms" text = "System.Windows.Forms"/>
-		<String id = "System.Xml" text = "System.Xml"/>
-		<String id = "System.Xml.Linq" text = "System.Xml.Linq"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
 		<Class id="AddDotNet35ReferencesIfTargetFrameworkIs35"
 		       class="ICSharpCode.SharpDevelop.Project.Commands.AddDotNet35ReferencesIfTargetFrameworkIs35Command"/>
@@ -2286,6 +2284,6 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ProjectBehaviors">
-
+	
 	</Path>
 </AddIn>

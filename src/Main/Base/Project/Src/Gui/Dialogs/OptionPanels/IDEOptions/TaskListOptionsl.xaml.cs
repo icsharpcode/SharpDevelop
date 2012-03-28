@@ -23,8 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public TaskListXaml()
 		{
 			InitializeComponent();
-			string[] tokens = ParserService.TaskListTokens;
-			foreach (var token in tokens) {
+			foreach (var token in SD.ParserService.TaskListTokens) {
 				listView.Items.Add(token);
 			};
 		}
@@ -80,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					tokens.Add(text);
 				}
 			}
-			ParserService.TaskListTokens = tokens.ToArray();
+			SD.ParserService.TaskListTokens = tokens.ToArray();
 			return true;
 		}
 	}

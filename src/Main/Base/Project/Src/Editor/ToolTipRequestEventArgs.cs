@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get {
 				if (!resolveResultInitialized) {
 					if (InDocument)
-						resolveResult = ParserService.Resolve(this.Editor.FileName, this.LogicalPosition, this.Editor.Document);
+						resolveResult = SD.ParserService.Resolve(this.Editor, this.LogicalPosition);
 					resolveResultInitialized = true;
 				}
 				return resolveResult;

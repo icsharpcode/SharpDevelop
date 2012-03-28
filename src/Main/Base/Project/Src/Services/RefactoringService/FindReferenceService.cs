@@ -67,7 +67,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("progressMonitor");
 			if (callback == null)
 				throw new ArgumentNullException("callback");
-			if (ParserService.LoadSolutionProjectsThreadRunning) {
+			SD.MainThread.VerifyAccess();
+			if (SD.ParserService.LoadSolutionProjectsThreadRunning) {
 				progressMonitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
 				progressMonitor.ShowingDialog = false;
@@ -90,26 +91,34 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static IObservable<SearchedFile> FindReferences(IEntity entity, IProgressMonitor progressMonitor)
 		{
-			return ReactiveExtensions.CreateObservable<SearchedFile>((monitor, callback) => FindReferencesAsync(entity, monitor, callback), progressMonitor);
+			return ReactiveExtensions.CreateObservable<SearchedFile>(
+				(monitor, callback) => FindReferencesAsync(entity, monitor, callback),
+				progressMonitor);
 		}
 		
 		/// <summary>
 		/// Finds references to a local variable.
 		/// </summary>
-		public static void FindReferences(IVariable variable, Action<Reference> callback)
+		public static async Task<SearchedFile> FindLocalReferencesAsync(IVariable variable, IProgressMonitor progressMonitor)
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
-			if (callback == null)
-				throw new ArgumentNullException("callback");
+			if (progressMonitor == null)
+				throw new ArgumentNullException("progressMonitor");
 			var fileName = FileName.Create(variable.Region.FileName);
-			IParser parser = ParserService.GetParser(fileName);
-			var fileContent = ParserService.GetParseableFileContent(fileName);
-			ParseInformation pi = ParserService.Parse(fileName, fileContent);
-			if (pi == null || parser == null)
-				return;
-			var compilation = ParserService.GetCompilationForFile(fileName);
-			parser.FindLocalReferences(pi, fileContent, variable, compilation, callback, CancellationToken.None);
+			List<Reference> references = new List<Reference>();
+			await SD.ParserService.FindLocalReferencesAsync(
+				fileName, variable, 
+				r => { lock (references) references.Add(r); },
+				cancellationToken: progressMonitor.CancellationToken);
+			return new SearchedFile(fileName, references);
+		}
+		
+		public static IObservable<SearchedFile> FindLocalReferences(IVariable variable, IProgressMonitor progressMonitor)
+		{
+			return ReactiveExtensions.CreateObservable<SearchedFile>(
+				(monitor, callback) => FindLocalReferencesAsync(variable, monitor).ContinueWith(t => callback(t.Result)),
+				progressMonitor);
 		}
 		#endregion
 		
@@ -148,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		static SharpDevelopSolutionSnapshot GetSolutionSnapshot(ICompilation compilation)
 		{
 			var snapshot = compilation.SolutionSnapshot as SharpDevelopSolutionSnapshot;
-			return snapshot ?? ParserService.GetCurrentSolutionSnapshot();
+			return snapshot ?? SD.ParserService.GetCurrentSolutionSnapshot();
 		}
 		
 		

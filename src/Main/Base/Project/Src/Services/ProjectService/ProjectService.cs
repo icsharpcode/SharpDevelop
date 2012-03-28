@@ -300,8 +300,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}
-			// Create project contents for solution
-			ParserService.OnSolutionLoaded();
+			SD.ParserService.InvalidateCurrentSolutionSnapshot();
 			
 			Project.Converter.UpgradeViewContent.ShowIfRequired(openSolution);
 			
@@ -549,7 +548,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				openSolution.Dispose();
 				openSolution = null;
-				ParserService.OnSolutionClosed();
 				
 				OnSolutionClosed(EventArgs.Empty);
 				CommandManager.InvalidateRequerySuggested();

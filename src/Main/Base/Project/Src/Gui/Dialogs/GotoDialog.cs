@@ -38,14 +38,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			InitializeComponent();
 			FormLocationHelper.ApplyWindow(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
-			ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
 			textBox.Focus();
 		}
 		
 		protected override void OnClosed(EventArgs e)
 		{
 			Instance = null;
-			ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
 			base.OnClosed(e);
 		}
 		
@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ITextEditor editor = GetEditor();
 			if (editor != null) {
-				IParsedFile parseInfo = ParserService.GetExistingParsedFile(editor.FileName);
+				IParsedFile parseInfo = SD.ParserService.GetExistingParsedFile(editor.FileName);
 				if (parseInfo != null) {
 					foreach (IUnresolvedTypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
 						AddAllMembersMatchingText(c, text);

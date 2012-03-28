@@ -4,15 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+using System.Threading;
 using System.Windows.Interop;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Startup;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Runs workbench initialization.
@@ -30,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 			ComponentDispatcher.ThreadIdle -= ComponentDispatcher_ThreadIdle; // ensure we don't register twice
 			ComponentDispatcher.ThreadIdle += ComponentDispatcher_ThreadIdle;
 			LayoutConfiguration.LoadLayoutConfiguration();
+			SD.Services.AddService(typeof(IMessageLoop), new DispatcherMessageLoop(app.Dispatcher, SynchronizationContext.Current));
 			WorkbenchSingleton.InitializeWorkbench(new WpfWorkbench(), new AvalonDockLayout());
 		}
 		
@@ -54,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 					if (loader != null) {
 						loader.Load(fullFileName);
 					} else {
-						FileService.OpenFile(fullFileName);
+						SharpDevelop.FileService.OpenFile(fullFileName);
 					}
 				} catch (Exception e) {
 					MessageService.ShowException(e, "unable to open file " + file);
@@ -63,8 +65,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 			
 			// load previous solution
 			if (!didLoadSolutionOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
-				if (FileService.RecentOpen.RecentProject.Count > 0) {
-					ProjectService.LoadSolution(FileService.RecentOpen.RecentProject[0]);
+				if (SharpDevelop.FileService.RecentOpen.RecentProject.Count > 0) {
+					ProjectService.LoadSolution(SharpDevelop.FileService.RecentOpen.RecentProject[0]);
 					didLoadSolutionOrFile = true;
 				}
 			}
@@ -81,14 +83,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 			
 			NavigationService.ResumeLogging();
 			
-			Parser.ParserService.StartParserThread();
+			((ParserService)SD.ParserService).StartParserThread();
 			
 			// finally run the workbench window ...
-			app.Run(WorkbenchSingleton.MainWindow);
+			app.Run(SD.Workbench.MainWindow);
 			
 			// save the workbench memento in the ide properties
 			try {
-				PropertyService.SetNestedProperties(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());
+				PropertyService.SetNestedProperties(workbenchMemento, SD.Workbench.CreateMemento());
 			} catch (Exception e) {
 				MessageService.ShowException(e, "Exception while saving workbench state.");
 			}

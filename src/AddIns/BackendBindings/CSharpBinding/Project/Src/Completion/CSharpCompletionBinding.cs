@@ -4,11 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using CSharpBinding.Parser;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Parser;
@@ -38,13 +38,13 @@ namespace CSharpBinding.Completion
 		bool ShowCompletion(ITextEditor editor, char completionChar, bool ctrlSpace)
 		{
 			// Don't require the very latest parse information, an older cached version is OK.
-			var parseInfo = ParserService.GetCachedParseInformation(editor.FileName) as CSharpFullParseInformation;
+			var parseInfo = SD.ParserService.GetCachedParseInformation(editor.FileName) as CSharpFullParseInformation;
 			if (parseInfo == null) {
-				parseInfo = ParserService.Parse(editor.FileName, editor.Document) as CSharpFullParseInformation;
+				parseInfo = SD.ParserService.Parse(editor.FileName, editor.Document) as CSharpFullParseInformation;
 				if (parseInfo == null)
 					return false;
 			}
-			ICompilation compilation = ParserService.GetCompilationForFile(editor.FileName);
+			ICompilation compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
 			var pc = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
 			if (pc == null)
 				return false;

@@ -234,6 +234,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		 */
 		
 		#region Common helper functions
+		[Obsolete]
 		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
 		{
 			OpenedFile file = FileService.GetOpenedFile(fileName);
@@ -246,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			ITextSource fileContent = ParserService.GetParseableFileContent(fileName);
+			ITextSource fileContent = SD.FileService.GetFileContent(fileName);
 			return new ProvidedDocumentInformation(fileContent, fileName, 0);
 		}
 		
@@ -352,6 +353,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		 */
 		
+		[Obsolete]
 		public static void ShowAsSearchResults(string title, List<Reference> list)
 		{
 			if (list == null) return;
@@ -361,7 +363,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			IHighlighter highlighter = null;
 			foreach (Reference r in list) {
 				if (document == null || fileName != r.FileName) {
-					document = new TextDocument(ParserService.GetParseableFileContent(r.FileName));
+					document = new TextDocument(SD.FileService.GetFileContent(r.FileName));
 					fileName = r.FileName;
 					var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(r.FileName));
 					if (def != null)
@@ -530,7 +532,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void RunFindReferences(IEntity entity)
 		{
 			string entityName = (entity.DeclaringTypeDefinition != null ? entity.DeclaringTypeDefinition.Name + "." + entity.Name : entity.Name);
-			var monitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor();
+			var monitor = SD.StatusBar.CreateProgressMonitor();
 			var results = FindReferenceService.FindReferences(entity, monitor);
 			SearchResultsPad.Instance.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", entityName)), results);
 			SearchResultsPad.Instance.BringToFront();
@@ -538,13 +540,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RunFindReferences(LocalResolveResult local)
 		{
-			var references = new List<Reference>();
-			FindReferenceService.FindReferences(local.Variable, r => { lock (references) references.Add(r); });
-			FindReferencesAndRenameHelper.ShowAsSearchResults(
-				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                   new StringTagPair("Name", local.Variable.Name)),
-				references
-			);
+			var monitor = SD.StatusBar.CreateProgressMonitor();
+			var results = FindReferenceService.FindLocalReferences(local.Variable, monitor);
+			SearchResultsPad.Instance.ShowSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}", new StringTagPair("Name", local.Variable.Name)), results);
+			SearchResultsPad.Instance.BringToFront();
 		}
 		
 //		public static ICSharpCode.Core.WinForms.MenuCommand MakeFindReferencesMenuCommand(EventHandler handler)

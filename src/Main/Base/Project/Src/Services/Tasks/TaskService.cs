@@ -77,15 +77,15 @@ namespace ICSharpCode.SharpDevelop
 		internal static void Initialize()
 		{
 			// avoid trouble with double initialization
-			ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
-			ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
+			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
+			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
 			ProjectService.SolutionClosed -= ProjectServiceSolutionClosed;
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 		}
 		
 		static void ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.NewParsedFile == ParserService.GetExistingParsedFile(e.FileName)) {
+			if (e.NewParsedFile == SD.ParserService.GetExistingParsedFile(e.FileName)) {
 				// Call UpdateCommentTags only for the main parse information (if a file is in multiple projects),
 				// and only if the results haven't already been replaced with a more recent ParseInformation.
 				if (e.NewParseInformation != null) {

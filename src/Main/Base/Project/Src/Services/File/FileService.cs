@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop
 				PropertyService.SetNestedProperties("RecentOpen", recentOpen.ToProperties());
 			}
 			ProjectService.SolutionLoaded -= ProjectServiceSolutionLoaded;
-			ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
 			serviceInitialized = false;
 		}
 		
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (!serviceInitialized) {
 				ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
-				ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
+				SD.ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
 				serviceInitialized = true;
 			}
 		}
@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <param name="content">Content of the file to create</param>
 		public static IViewContent NewFile(string defaultName, string content)
 		{
-			return NewFile(defaultName, ParserService.DefaultFileEncoding.GetBytesWithPreamble(content));
+			return NewFile(defaultName, SD.FileService.DefaultFileEncoding.GetBytesWithPreamble(content));
 		}
 		
 		/// <summary>

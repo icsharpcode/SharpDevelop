@@ -171,7 +171,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				FileName newFileName = file.FileName;
 				
 				if (!string.IsNullOrEmpty(oldFileName))
-					ParserService.ClearParseInformation(oldFileName);
+					SD.ParserService.ClearParseInformation(oldFileName);
 				
 				
 				BookmarksNotifyNameChange(oldFileName, newFileName);
@@ -182,7 +182,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.FileName = newFileName;
 				UpdateSyntaxHighlighting(newFileName);
 				
-				ParserService.ParseAsync(file.FileName, codeEditor.Document).FireAndForget();
+				SD.ParserService.ParseAsync(file.FileName, codeEditor.Document).FireAndForget();
 			}
 		}
 		

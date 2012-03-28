@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -407,6 +408,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				return null;
 			}
+		}
+		
+		public virtual event EventHandler<ParseInformationEventArgs> ParseInformationUpdated {
+			add {}
+			remove {}
+		}
+		
+		public virtual void OnParseInformationUpdated(ParseInformationEventArgs args)
+		{
+			throw new NotSupportedException();
 		}
 		
 		/// <summary>

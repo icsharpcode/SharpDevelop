@@ -360,8 +360,10 @@
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
     <Compile Include="Src\Services\File\FileChangeWatcher.cs" />
+    <Compile Include="Src\Services\File\IFileService.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\File\RecentOpen.cs" />
+    <Compile Include="Src\Services\IMessageLoop.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\ILanguageBinding.cs" />
@@ -377,13 +379,11 @@
     <Compile Include="Src\Services\MimeTypeDetection.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
-    <Compile Include="Src\Services\ParserService\Fusion.cs" />
-    <Compile Include="Src\Services\ParserService\GacInterop.cs" />
-    <Compile Include="Src\Services\ParserService\ParsedFileListener.cs" />
+    <Compile Include="Src\Services\ParserService\IGlobalAssemblyCacheService.cs" />
+    <Compile Include="Src\Services\ParserService\IParserService.cs" />
     <Compile Include="Src\Services\ParserService\IParser.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
-    <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ParserService\SharpDevelopSolutionSnapshot.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
@@ -578,8 +578,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingDescriptor.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDescriptor.cs" />
-    <Compile Include="Src\Services\ParserService\Doozer\ParserDoozer.cs" />
-    <Compile Include="Src\Services\ParserService\Doozer\ParserDescriptor.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IStringValueFilter.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\StringWrapper.cs" />
@@ -734,6 +732,7 @@
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
     <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
+    <Compile Include="Src\Util\MultiDictionary.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\SharpDevelopServiceContainer.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
@@ -784,8 +783,6 @@
     <Compile Include="Src\Util\UnclosableStream.cs" />
     <Compile Include="Src\Util\WeakCollection.cs" />
     <Compile Include="Src\Util\WindowsFormsPrinting.cs" />
-    <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
-    <Compile Include="Src\Util\WorkerThread.cs" />
     <EmbeddedResource Include="Resources\DefaultManifest.manifest" />
     <EmbeddedResource Include="Src\Gui\Dialogs\ExtractInterfaceDialog.resx">
       <DependentUpon>ExtractInterfaceDialog.cs</DependentUpon>

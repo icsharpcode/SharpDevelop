@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
+
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
@@ -91,15 +91,17 @@ namespace ICSharpCode.SharpDevelop
 			return source.Subscribe(new AnonymousObserver<T>(onNext, onError, onCompleted));
 		}
 		
-		public static List<T> ToList<T>(this IObservable<T> source, CancellationToken cancellation)
+		public static List<T> ToList<T>(this IObservable<T> source, CancellationToken cancellationToken)
 		{
 			List<T> results = new List<T>();
 			ManualResetEventSlim ev = new ManualResetEventSlim();
-			Exception error = null;
-			using (source.Subscribe(item => results.Add(item), exception => { error = exception; ev.Set(); }, () => ev.Set()))
-				ev.Wait(cancellation);
+			ExceptionDispatchInfo error = null;
+			using (source.Subscribe(item => results.Add(item),
+			                        exception => { error = ExceptionDispatchInfo.Capture(exception); ev.Set(); },
+			                        () => ev.Set()))
+				ev.Wait(cancellationToken);
 			if (error != null)
-				throw new TargetInvocationException(error);
+				error.Throw();
 			return results;
 		}
 		

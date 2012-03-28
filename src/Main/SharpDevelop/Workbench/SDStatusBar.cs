@@ -11,8 +11,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	class SDStatusBar : StatusBar
 	{

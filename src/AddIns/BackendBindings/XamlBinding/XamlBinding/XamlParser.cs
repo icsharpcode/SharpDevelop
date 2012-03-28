@@ -27,13 +27,7 @@ namespace ICSharpCode.XamlBinding
 	/// </summary>
 	public class XamlParser : IParser
 	{
-		string[] lexerTags;
-		
-		public string[] LexerTags
-		{
-			get { return lexerTags; }
-			set { lexerTags = value; }
-		}
+		public IReadOnlyList<string> TaskListTokens { get; set; }
 
 //		public LanguageProperties Language
 //		{
@@ -132,7 +126,8 @@ namespace ICSharpCode.XamlBinding
 		
 		volatile IncrementalParserState parserState;
 		
-		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested)
+		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested, 
+		                              IProject parentProject, CancellationToken cancellationToken)
 		{
 			AXmlParser parser = new AXmlParser();
 			AXmlDocument document;
@@ -155,7 +150,7 @@ namespace ICSharpCode.XamlBinding
 			foreach (var tag in TreeTraversal.PreOrder<AXmlObject>(xmlDocument, node => node.Children).OfType<AXmlTag>().Where(t => t.IsComment)) {
 				int matchLength;
 				AXmlText comment = tag.Children.OfType<AXmlText>().First();
-				int index = comment.Value.IndexOfAny(lexerTags, 0, out matchLength);
+				int index = comment.Value.IndexOfAny(TaskListTokens, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
 						document = fileContent as IDocument ?? new ReadOnlyDocument(fileContent);
@@ -165,7 +160,7 @@ namespace ICSharpCode.XamlBinding
 						int endOffset = Math.Min(document.GetLineByOffset(startOffset).EndOffset, comment.EndOffset);
 						string content = document.GetText(startOffset, endOffset - startOffset);
 						parseInfo.TagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(parseInfo.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = comment.Value.IndexOfAny(lexerTags, endOffset - comment.StartOffset, out matchLength);
+						index = comment.Value.IndexOfAny(TaskListTokens, endOffset - comment.StartOffset, out matchLength);
 					} while (index > -1);
 				}
 			}

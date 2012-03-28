@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui
+namespace ICSharpCode.SharpDevelop.Startup
 {
 	sealed class SplashScreenForm : Form
 	{

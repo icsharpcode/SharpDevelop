@@ -10,6 +10,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Parser;
 
@@ -41,7 +42,7 @@ namespace CSharpBinding.Refactoring
 		
 		public override void FormatText(AstNode node)
 		{
-			var parseInfo = ParserService.Parse(editor.FileName, editor.Document) as CSharpFullParseInformation;
+			var parseInfo = SD.ParserService.Parse(editor.FileName, editor.Document) as CSharpFullParseInformation;
 			if (parseInfo != null) {
 				//var startLocation = editor.Document.GetLocation(offset);
 				//var endLocation = editor.Document.GetLocation(offset + length);

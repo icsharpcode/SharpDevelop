@@ -72,8 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			try {
 				if (watcher == null) {
 					watcher = new FileSystemWatcher();
-					if (WorkbenchSingleton.Workbench != null)
-						watcher.SynchronizingObject = WorkbenchSingleton.Workbench.SynchronizingObject;
+					watcher.SynchronizingObject = SD.MainThread.SynchronizingObject;
 					watcher.Changed += OnFileChangedEvent;
 					watcher.Created += OnFileChangedEvent;
 					watcher.Renamed += OnFileChangedEvent;

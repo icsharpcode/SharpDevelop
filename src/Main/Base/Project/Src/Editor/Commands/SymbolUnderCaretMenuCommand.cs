@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		public void Run(ITextEditor editor, int caretOffset)
 		{
 			var location = editor.Document.GetLocation(caretOffset);
-			var resolveResult = ParserService.Resolve(editor.FileName, location, editor.Document);
+			var resolveResult = SD.ParserService.Resolve(editor, location);
 			RunImpl(editor, editor.Caret.Offset, resolveResult);
 		}
 		

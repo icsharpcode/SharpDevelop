@@ -6,11 +6,13 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
 	public class ParseInformationEventArgs : EventArgs
 	{
+		IProject parentProject;
 		IParsedFile oldParsedFile;
 		ParseInformation newParseInformation;
 		
@@ -21,6 +23,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 				else
 					return FileName.Create(oldParsedFile.FileName);
 			}
+		}
+		
+		/// <summary>
+		/// Gets the parent project for this parse information.
+		/// Returns null if the parse information is not associated with any project.
+		/// </summary>
+		public IProject ParentProject {
+			get { return parentProject; }
 		}
 		
 		/// <summary>
@@ -57,13 +67,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 			get { return this.NewParsedFile; }
 		}
 		
-		public ParseInformationEventArgs(IParsedFile oldParsedFile, ParseInformation newParseInformation)
+		public ParseInformationEventArgs(IProject parentProject, IParsedFile oldParsedFile, ParseInformation newParseInformation)
 		{
 			if (oldParsedFile == null && newParseInformation == null)
 				throw new ArgumentNullException();
 			if (oldParsedFile != null && newParseInformation != null) {
 				Debug.Assert(FileUtility.IsEqualFileName(oldParsedFile.FileName, newParseInformation.FileName));
 			}
+			this.parentProject = parentProject;
 			this.oldParsedFile = oldParsedFile;
 			this.newParseInformation = newParseInformation;
 		}

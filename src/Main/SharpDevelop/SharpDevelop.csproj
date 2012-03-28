@@ -77,23 +77,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\App.xaml.cs" />
-    <Compile Include="Gui\SplashScreen.cs" />
-    <Compile Include="Gui\Workbench\AvalonDockLayout.cs" />
-    <Compile Include="Gui\Workbench\AvalonPadContent.cs" />
-    <Compile Include="Gui\Workbench\AvalonWorkbenchWindow.cs" />
-    <Compile Include="Gui\Workbench\ChooseLayoutCommand.cs" />
-    <Compile Include="Gui\Workbench\FullScreenEnabledWindow.cs" />
-    <Compile Include="Gui\Workbench\LayoutConfiguration.cs" />
-    <Compile Include="Gui\Workbench\SDStatusBar.cs" />
-    <Compile Include="Gui\Workbench\SingleInstanceHelper.cs" />
-    <Compile Include="Gui\Workbench\StatusBarService.cs" />
-    <Compile Include="Gui\Workbench\WorkbenchStartup.cs" />
-    <Compile Include="Gui\Workbench\WpfWorkbench.cs" />
+    <Compile Include="Startup\App.xaml.cs" />
+    <Compile Include="Startup\SharpDevelopMain.cs" />
+    <Compile Include="Startup\SplashScreen.cs" />
+    <Compile Include="Workbench\AvalonDockLayout.cs" />
+    <Compile Include="Workbench\AvalonPadContent.cs" />
+    <Compile Include="Workbench\AvalonWorkbenchWindow.cs" />
+    <Compile Include="Workbench\ChooseLayoutCommand.cs" />
+    <Compile Include="Workbench\DispatcherMessageLoop.cs" />
+    <Compile Include="Workbench\FileService.cs" />
+    <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
+    <Compile Include="Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Workbench\SDStatusBar.cs" />
+    <Compile Include="Workbench\SingleInstanceHelper.cs" />
+    <Compile Include="Workbench\StatusBarService.cs" />
+    <Compile Include="Workbench\WorkbenchStartup.cs" />
+    <Compile Include="Workbench\WpfWorkbench.cs" />
     <Compile Include="Logging\ExceptionBox.cs" />
     <Compile Include="Logging\log4netLoggingService.cs" />
     <Compile Include="Logging\LogMessageRecorder.cs" />
     <Compile Include="Logging\SDMessageService.cs" />
+    <Compile Include="Parser\Fusion.cs" />
+    <Compile Include="Parser\GlobalAssemblyCacheService.cs" />
+    <Compile Include="Parser\ParserDescriptor.cs" />
+    <Compile Include="Parser\ParserDoozer.cs" />
+    <Compile Include="Parser\ParserService.cs" />
+    <Compile Include="Parser\ParserServiceEntry.cs" />
     <Compile Include="Sda\CallHelper.cs" />
     <Compile Include="Sda\Document.cs" />
     <Compile Include="Sda\EventArgs.cs" />
@@ -101,7 +110,6 @@
     <Compile Include="Sda\SharpDevelopHost.cs" />
     <Compile Include="Sda\StartupSettings.cs" />
     <Compile Include="Sda\WorkbenchSettings.cs" />
-    <Compile Include="SharpDevelopMain.cs" />
     <EmbeddedResource Include="..\..\..\data\resources\StringResources.resx">
       <Link>Resources\StringResources.resx</Link>
     </EmbeddedResource>
@@ -174,14 +182,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Gui" />
-    <Folder Include="Gui\Workbench" />
+    <Folder Include="Startup" />
+    <Folder Include="Workbench" />
     <Folder Include="Logging" />
+    <Folder Include="Parser" />
     <Folder Include="Sda" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Gui\App.xaml" />
-    <Page Include="Gui\Workbench\WpfWorkbench.xaml" />
+    <Page Include="Startup\App.xaml" />
+    <Page Include="Workbench\WpfWorkbench.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

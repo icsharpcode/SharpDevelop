@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	using WindowState = System.Windows.WindowState;
 

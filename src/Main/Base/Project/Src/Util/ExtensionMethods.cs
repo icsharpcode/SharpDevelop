@@ -583,7 +583,7 @@ namespace ICSharpCode.SharpDevelop
 			return newContent;
 		}
 		
-		public static int IndexOfAny(this string haystack, string[] needles, int startIndex, out int matchLength)
+		public static int IndexOfAny(this string haystack, IEnumerable<string> needles, int startIndex, out int matchLength)
 		{
 			if (haystack == null)
 				throw new ArgumentNullException("haystack");

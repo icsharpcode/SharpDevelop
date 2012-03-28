@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
-using ICSharpCode.Core;
 using System.Windows.Forms;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Command for layout combobox in toolbar.
@@ -45,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 			}
 			
 			if (oldItem != editIndex && oldItem != resetIndex) {
-				WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
+				SD.Workbench.WorkbenchLayout.StoreConfiguration();
 			}
 			
 			if (comboBox.SelectedIndex == editIndex) {

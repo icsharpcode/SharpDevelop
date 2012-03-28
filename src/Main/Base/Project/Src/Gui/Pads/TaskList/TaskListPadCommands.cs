@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -76,9 +77,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class TaskListTokensBuilder
 	{
-		public static ShowTaskListTokenButton[] BuildItems(string[] tokens)
+		public static ShowTaskListTokenButton[] BuildItems(IReadOnlyList<string> tokens)
 		{
-			ShowTaskListTokenButton[] buttons = new ShowTaskListTokenButton[tokens.Length];
+			ShowTaskListTokenButton[] buttons = new ShowTaskListTokenButton[tokens.Count];
 			
 			for (int i = 0; i < buttons.Length; i++)
 			{

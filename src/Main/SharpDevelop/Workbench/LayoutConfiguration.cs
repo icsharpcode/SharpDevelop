@@ -8,7 +8,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	class LayoutConfiguration
 	{
@@ -122,11 +122,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 				return currentLayoutName;
 			}
 			set {
-				if (WorkbenchSingleton.InvokeRequired)
-					throw new InvalidOperationException("Invoke required");
+				SD.MainThread.VerifyAccess();
 				if (value != CurrentLayoutName) {
 					currentLayoutName = value;
-					WorkbenchSingleton.Workbench.WorkbenchLayout.LoadConfiguration();
+					SD.Workbench.WorkbenchLayout.LoadConfiguration();
 					OnLayoutChanged(EventArgs.Empty);
 				}
 			}
@@ -135,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 		public static void ReloadDefaultLayout()
 		{
 			currentLayoutName = DefaultLayoutName;
-			WorkbenchSingleton.Workbench.WorkbenchLayout.LoadConfiguration();
+			SD.Workbench.WorkbenchLayout.LoadConfiguration();
 			OnLayoutChanged(EventArgs.Empty);
 		}
 		

@@ -17,7 +17,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Workbench;
+using ICSharpCode.SharpDevelop.Workbench;
 using ICSharpCode.SharpDevelop.Logging;
 using ICSharpCode.SharpDevelop.Parser;
 

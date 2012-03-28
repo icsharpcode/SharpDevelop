@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	static class SingleInstanceHelper
 	{
@@ -68,15 +68,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 				return new IntPtr(RESULT_PROJECT_IS_OPEN);
 			} else {
 				try {
-					WorkbenchSingleton.SafeThreadAsyncCall(
-						delegate { NativeMethods.SetForegroundWindow(WorkbenchSingleton.MainWin32Window.Handle) ; }
-					);
+					SD.MainThread.InvokeAsync(
+						delegate { NativeMethods.SetForegroundWindow(SD.Workbench.MainWin32Window.Handle); }
+					).FireAndForget();
 					string tempFileName = Path.Combine(Path.GetTempPath(), "sd" + fileNumber + ".tmp");
 					foreach (string file in File.ReadAllLines(tempFileName)) {
-						WorkbenchSingleton.SafeThreadAsyncCall(
-							delegate(string openFileName) { FileService.OpenFile(openFileName); }
-							, file
-						);
+						SD.MainThread.InvokeAsync(
+							delegate { SharpDevelop.FileService.OpenFile(file); }
+						).FireAndForget();
 					}
 				} catch (Exception ex) {
 					LoggingService.Warn(ex);

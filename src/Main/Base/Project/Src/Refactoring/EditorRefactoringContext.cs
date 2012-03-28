@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			lock (syncRoot) {
 				if (parseInformation == null)
-					parseInformation = ParserService.ParseAsync(this.FileName, this.TextSource);
+					parseInformation = SD.ParserService.ParseAsync(this.FileName, this.TextSource);
 				return parseInformation;
 			}
 		}
@@ -86,6 +86,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public ParseInformation GetParseInformation()
 		{
+			// waiting for the task is safe because we specified the text source in the ParseAsync call
 			return GetParseInformationAsync().Result;
 		}
 		
@@ -96,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			lock (syncRoot) {
 				if (compilation == null)
-					compilation = Task.FromResult(ParserService.GetCompilationForFile(this.FileName));
+					compilation = Task.FromResult(SD.ParserService.GetCompilationForFile(this.FileName));
 				return compilation;
 			}
 		}
@@ -145,14 +146,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		async Task<ResolveResult> ResolveCurrentSymbolAsync()
 		{
-			var parser = ParserService.GetParser(this.FileName);
-			if (parser == null)
-				return null;
 			var parseInfo = await GetParseInformationAsync().ConfigureAwait(false);
 			if (parseInfo == null)
 				return null;
 			var compilation = await GetCompilationAsync().ConfigureAwait(false);
-			return await Task.Run(() => ParserService.ResolveAsync(this.FileName, caretLocation, this.TextSource, CancellationToken.None)).ConfigureAwait(false);
+			return await Task.Run(() => SD.ParserService.ResolveAsync(this.FileName, caretLocation, this.TextSource, compilation)).ConfigureAwait(false);
 		}
 		
 		/// <summary>

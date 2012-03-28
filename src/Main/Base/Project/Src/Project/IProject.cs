@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -304,6 +305,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// An object that can be used to perform the search; or null if this project does not support symbol searches.
 		/// </returns>
 		Refactoring.ISymbolSearch PrepareSymbolSearch(IEntity entity);
+		
+		/// <summary>
+		/// Occurs whenever parse information for this project was updated. This event is raised on the main thread.
+		/// </summary>
+		event EventHandler<ParseInformationEventArgs> ParseInformationUpdated;
+		
+		/// <summary>
+		/// Notifies the project that the parse information was updated.
+		/// This method is called by the parser service <b>within a per-file lock</b>.
+		/// </summary>
+		void OnParseInformationUpdated(ParseInformationEventArgs args);
 	}
 	
 	/// <summary>

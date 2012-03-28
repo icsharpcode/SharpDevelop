@@ -9,8 +9,9 @@ using System.Windows.Threading;
 
 using AvalonDock;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	sealed class AvalonPadContent : DockableContent, IDisposable
 	{

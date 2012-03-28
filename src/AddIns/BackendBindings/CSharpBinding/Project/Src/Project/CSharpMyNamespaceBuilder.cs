@@ -63,7 +63,7 @@ namespace CSharpBinding
 						continue;
 					}
 					if (trimmedLine == "/*LIST OF FORMS*/") {
-						var compilation = ParserService.GetCompilation(vbProject);
+						var compilation = SD.ParserService.GetCompilation(vbProject);
 						ITypeDefinition myFormsClass = FindMyFormsClass(compilation.MainAssembly, ns);
 						if (myFormsClass != null) {
 							string indentation = line.Substring(0, line.Length - trimmedLine.Length);

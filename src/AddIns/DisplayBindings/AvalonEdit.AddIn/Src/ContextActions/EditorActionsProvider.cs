@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -83,7 +83,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		/// </summary>
 		async Task<IEnumerable<IContextAction>> GetActionsAsync(IEnumerable<IContextActionProvider> providers, CancellationToken cancellationToken)
 		{
-			if (ParserService.LoadSolutionProjectsThreadRunning)
+			if (SD.ParserService.LoadSolutionProjectsThreadRunning)
 				return EmptyList<IContextAction>.Instance;
 			var providerList = providers.ToList();
 			var actions = await Task.WhenAll(providerList.Select(p => p.GetAvailableActionsAsync(this.EditorContext, cancellationToken)));

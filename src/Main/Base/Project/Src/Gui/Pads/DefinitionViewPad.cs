@@ -40,7 +40,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ctl = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
 			ctl.IsReadOnly = true;
 			ctl.MouseDoubleClick += OnDoubleClick;
-			ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
+			throw new NotImplementedException();
+			//ParserService.ParserUpdateStepFinished += OnParserUpdateStep;
 			ctl.IsVisibleChanged += delegate { UpdateTick(null); };
 		}
 		
@@ -49,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public override void Dispose()
 		{
-			ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
+			//ParserService.ParserUpdateStepFinished -= OnParserUpdateStep;
 			ctl.Document = null;
 			base.Dispose();
 		}
@@ -95,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// don't resolve when an unrelated file was changed
 			if (e != null && editor.FileName != e.FileName) return null;
 			
-			return ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document);
+			return SD.ParserService.ResolveAsync(editor.FileName, editor.Caret.Location, editor.Document);
 		}
 		
 		DomRegion oldPosition;

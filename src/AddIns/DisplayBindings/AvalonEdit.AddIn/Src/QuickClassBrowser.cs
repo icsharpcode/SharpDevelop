@@ -242,7 +242,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			IUnresolvedTypeDefinition selectedClass = item != null ? item.Entity as IUnresolvedTypeDefinition : null;
 			memberItems = new List<EntityItem>();
 			if (selectedClass != null) {
-				ICompilation compilation = ParserService.GetCompilationForFile(FileName.Create(selectedClass.ParsedFile.FileName));
+				ICompilation compilation = SD.ParserService.GetCompilationForFile(FileName.Create(selectedClass.ParsedFile.FileName));
 				var context = new SimpleTypeResolveContext(compilation.MainAssembly);
 				ITypeDefinition compoundClass = selectedClass.Resolve(context).GetDefinition();
 				if (compoundClass != null) {

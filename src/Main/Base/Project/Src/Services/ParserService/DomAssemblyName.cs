@@ -9,6 +9,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// Similar to System.Reflection.AssemblyName, but does not raise an exception
 	/// on invalid assembly names. (See SD-1307)
 	/// </summary>
+	[Serializable]
 	public sealed class DomAssemblyName : IEquatable<DomAssemblyName>
 	{
 		readonly string fullAssemblyName;
@@ -78,16 +79,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public bool Equals(DomAssemblyName other)
 		{
 			return other != null && fullAssemblyName == other.fullAssemblyName;
-		}
-		
-		internal static DomAssemblyName[] Convert(System.Reflection.AssemblyName[] names)
-		{
-			if (names == null) return null;
-			DomAssemblyName[] n = new DomAssemblyName[names.Length];
-			for (int i = 0; i < names.Length; i++) {
-				n[i] = new DomAssemblyName(names[i].FullName);
-			}
-			return n;
 		}
 	}
 }

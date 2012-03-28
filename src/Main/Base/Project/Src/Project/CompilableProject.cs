@@ -379,6 +379,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				return GetParseProjectContentContainer().ProjectContent;
 			}
 		}
+		
+		public override void OnParseInformationUpdated(ParseInformationEventArgs args)
+		{
+			GetParseProjectContentContainer().ParseInformationUpdated(args.OldParsedFile, args.NewParsedFile);
+			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
+			// To ensure events are raised in the same order, we always invoke on the main thread.
+			SD.MainThread.InvokeAsync(
+				delegate {
+					ParseInformationUpdated(null, args);
+				});
+		}
+		
+		public override event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
 		#endregion
 	}
 }

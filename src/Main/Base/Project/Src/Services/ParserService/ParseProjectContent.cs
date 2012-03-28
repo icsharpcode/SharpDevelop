@@ -26,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		readonly object lockObj = new object();
 		
-		readonly ParsedFileListener myListener;
 		IProjectContent projectContent;
 		IAssemblyReference[] references = { MinimalCorlib.Instance };
 		bool initializing;
@@ -38,19 +37,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 				throw new ArgumentNullException("project");
 			this.project = project;
 			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName);
-			this.myListener = new ParsedFileListener(OnParsedFileUpdated);
 			
 			this.initializing = true;
 			LoadSolutionProjects.AddJob(Initialize, "Loading " + project.Name + "...", GetInitializationWorkAmount());
 		}
-
-		void OnParsedFileUpdated(IParsedFile oldFile, IParsedFile newFile)
+		
+		public void ParseInformationUpdated(IParsedFile oldFile, IParsedFile newFile)
 		{
 			// This method is called by the parser service within the parser service lock.
 			lock (lockObj) {
 				if (!disposed)
 					projectContent = projectContent.UpdateProjectContent(oldFile, newFile);
-				ParserService.InvalidateCurrentSolutionSnapshot();
+				SD.ParserService.InvalidateCurrentSolutionSnapshot();
 			}
 		}
 		
@@ -64,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				disposed = true;
 			}
 			foreach (var fileName in GetFilesToParse(project.Items)) {
-				ParserService.RemoveParsedFileListener(fileName, myListener);
+				SD.ParserService.RemoveOwnerProject(fileName.Item1, project);
 			}
 			initializing = false;
 		}
@@ -107,12 +105,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 			initializing = false;
 		}
 		
-		IEnumerable<FileName> GetFilesToParse(IEnumerable<ProjectItem> projectItems)
+		static readonly ItemType[] compilableItemTypes = { ItemType.Compile, ItemType.Page };
+		
+		IEnumerable<Tuple<FileName, bool>> GetFilesToParse(IEnumerable<ProjectItem> projectItems)
 		{
-			return (
-				from p in projectItems
-				where (p.ItemType == ItemType.Compile || p.ItemType == ItemType.Page) && !String.IsNullOrEmpty(p.FileName)
-				select FileName.Create(p.FileName));
+			return
+				from p in projectItems.OfType<FileProjectItem>()
+				where compilableItemTypes.Contains(p.ItemType) && !String.IsNullOrEmpty(p.FileName)
+				select Tuple.Create(FileName.Create(p.FileName), p.IsLink);
 		}
 		
 		void ParseFiles(ICollection<ProjectItem> projectItems, IProgressMonitor progressMonitor)
@@ -128,16 +128,17 @@ namespace ICSharpCode.SharpDevelop.Parser
 					MaxDegreeOfParallelism = Environment.ProcessorCount,
 					CancellationToken = progressMonitor.CancellationToken
 				},
-				fileName => {
+				tuple => {
+					var fileName = tuple.Item1;
 					// Don't read files we don't have a parser for.
 					// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
-					if (ParserService.HasParser(fileName)) {
-						ParserService.AddParsedFileListener(fileName, myListener, startAsyncParse: false);
+					if (SD.ParserService.HasParser(fileName)) {
+						// We don't start an asynchronous parse operation since we want to
+						// parse on this thread.
+						SD.ParserService.AddOwnerProject(fileName, project, startAsyncParse: false, isLinkedFile: tuple.Item2);
 						ITextSource content = finder.Create(fileName);
 						if (content != null) {
-							// Parse the file on this thread so that AddParsedFileListener() does not
-							// start an asynchronous parse operation.
-							ParserService.ParseFile(fileName, content);
+							SD.ParserService.ParseFile(fileName, content, project);
 						}
 					}
 					lock (progressLock) {
@@ -181,7 +182,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 					lock (lockObj) {
 						projectContent = projectContent.RemoveAssemblyReferences(this.references).AddAssemblyReferences(newReferences);
 						this.references = newReferences.ToArray();
-						ParserService.InvalidateCurrentSolutionSnapshot();
+						SD.ParserService.InvalidateCurrentSolutionSnapshot();
 					}
 				}, progressMonitor.CancellationToken);
 		}
@@ -230,9 +231,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 					ReparseReferences();
 				}
 			}
-			if (e.ProjectItem.ItemType == ItemType.Compile) {
+			FileProjectItem fileProjectItem = e.ProjectItem as FileProjectItem;
+			if (fileProjectItem != null && compilableItemTypes.Contains(fileProjectItem.ItemType)) {
 				var fileName = FileName.Create(e.ProjectItem.FileName);
-				ParserService.AddParsedFileListener(fileName, myListener, startAsyncParse: true);
+				SD.ParserService.AddOwnerProject(fileName, project, startAsyncParse: true, isLinkedFile: fileProjectItem.IsLink);
 			}
 		}
 		
@@ -255,7 +257,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 			
 			if (e.ProjectItem.ItemType == ItemType.Compile) {
-				ParserService.RemoveParsedFileListener(FileName.Create(e.ProjectItem.FileName), myListener);
+				SD.ParserService.RemoveOwnerProject(FileName.Create(e.ProjectItem.FileName), project);
 			}
 		}
 	}

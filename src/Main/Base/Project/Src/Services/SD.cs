@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -60,6 +62,10 @@ namespace ICSharpCode.SharpDevelop
 			get { return GetRequiredService<IWorkbench>(); }
 		}
 		
+		public static IMessageLoop MainThread {
+			get { return GetRequiredService<IMessageLoop>(); }
+		}
+		
 		/// <summary>
 		/// Gets the status bar.
 		/// </summary>
@@ -81,6 +87,18 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IAnalyticsMonitor AnalyticsMonitor {
 			get { return GetRequiredService<IAnalyticsMonitor>(); }
+		}
+		
+		public static IParserService ParserService {
+			get { return GetRequiredService<IParserService>(); }
+		}
+		
+		public static IFileService FileService {
+			get { return GetRequiredService<IFileService>(); }
+		}
+		
+		public static IGlobalAssemblyCacheService GlobalAssemblyCache {
+			get { return GetRequiredService<IGlobalAssemblyCacheService>(); }
 		}
 	}
 }

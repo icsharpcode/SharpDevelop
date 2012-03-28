@@ -12,8 +12,9 @@ using System.Windows.Media.Imaging;
 
 using AvalonDock;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	/// <summary>
 	/// Workbench layout using the AvalonDock library.

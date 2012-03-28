@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ParseableFileContentFinder
 	{
-		FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+		FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
 		
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.
@@ -26,10 +26,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			foreach (FileName name in viewContentFileNamesCollection) {
 				if (FileUtility.IsEqualFileName(name, fileName))
-					return WorkbenchSingleton.SafeThreadFunction(ParserService.GetParseableFileContent, fileName.ToString());
+					return SD.FileService.GetFileContent(fileName);
 			}
 			try {
-				return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, ParserService.DefaultFileEncoding));
+				return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, SD.FileService.DefaultFileEncoding));
 			} catch (IOException) {
 				return null;
 			} catch (UnauthorizedAccessException) {

@@ -13,6 +13,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
@@ -35,7 +36,7 @@ namespace ICSharpCode.XamlBinding
 		public XamlSymbolSearch(IProject project, IEntity entity)
 		{
 			this.entity = entity;
-			compilation = ParserService.GetCompilation(project);
+			compilation = SD.ParserService.GetCompilation(project);
 			interestingFileNames = new List<FileName>();
 			foreach (var item in project.ParentSolution.SolutionFolderContainers.Select(f => f.SolutionItems).SelectMany(si => si.Items).Where(i => ".xaml".Equals(Path.GetExtension(i.Location), StringComparison.OrdinalIgnoreCase)))
 				interestingFileNames.Add(new FileName(Path.Combine(project.ParentSolution.Directory, item.Location)));
@@ -81,7 +82,7 @@ namespace ICSharpCode.XamlBinding
 			if (offset < 0)
 				return;
 			
-			var parseInfo = ParserService.Parse(fileName, textSource) as XamlFullParseInformation;
+			var parseInfo = SD.ParserService.Parse(fileName, textSource) as XamlFullParseInformation;
 			if (parseInfo == null)
 				return;
 			ReadOnlyDocument document = null;

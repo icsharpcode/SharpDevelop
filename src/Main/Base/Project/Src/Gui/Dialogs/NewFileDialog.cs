@@ -393,8 +393,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (!String.IsNullOrEmpty(binaryFileName))
 					File.Copy(binaryFileName, parsedFileName);
 				else
-					File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
-				ParserService.ParseFileAsync(FileName.Create(parsedFileName), new StringTextSource(parsedContent)).FireAndForget();
+					File.WriteAllText(parsedFileName, parsedContent, SD.FileService.DefaultFileEncoding);
 			} else {
 				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");

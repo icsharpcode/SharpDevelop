@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			contentPanel.Controls.Add(taskView);
 			
-			string[] tokens = ParserService.TaskListTokens;
+			IReadOnlyList<string> tokens = SD.ParserService.TaskListTokens;
 			
 			foreach (string token in tokens)
 			{
@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (WorkbenchSingleton.Workbench.ActiveViewContent == null)
 				return null;
 			
-			IParsedFile parseInfo = ParserService.GetExistingParsedFile(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
+			IParsedFile parseInfo = SD.ParserService.GetExistingParsedFile(WorkbenchSingleton.Workbench.ActiveViewContent.PrimaryFileName);
 			if (parseInfo != null) {
 				IPositionable positionable = WorkbenchSingleton.Workbench.ActiveViewContent as IPositionable;
 				if (positionable != null) {
@@ -236,7 +236,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// Tasks are created by parsing, so the parse information for item.FileName should already be present.
 			// If they aren't, that's because the file might have been deleted/renamed in the meantime.
 			// We use GetExistingParseInformation to avoid trying to parse a file that might have been deleted/renamed.
-			IParsedFile parseInfo = ParserService.GetExistingParsedFile(item.FileName);
+			IParsedFile parseInfo = SD.ParserService.GetExistingParsedFile(item.FileName);
 			if (parseInfo != null) {
 				var c = parseInfo.GetInnermostTypeDefinition(item.Line, item.Column);
 				if (c != null) return c;

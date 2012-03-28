@@ -8,8 +8,9 @@ using System.Threading;
 using System.Windows;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Gui.Workbench
+namespace ICSharpCode.SharpDevelop.Workbench
 {
 	sealed class StatusBarService : IStatusBarService
 	{
@@ -57,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Workbench
 		
 		public IProgressMonitor CreateProgressMonitor(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			ProgressCollector progress = new ProgressCollector(WorkbenchSingleton.Workbench.SynchronizingObject, cancellationToken);
+			ProgressCollector progress = new ProgressCollector(SD.MainThread.SynchronizingObject, cancellationToken);
 			AddProgress(progress);
 			return progress.ProgressMonitor;
 		}

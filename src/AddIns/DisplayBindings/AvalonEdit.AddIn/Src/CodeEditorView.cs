@@ -550,7 +550,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				parseInfo = null;
 			} else {
 				if (parseInfo == null || !parseInfo.IsFullParseInformation)
-					parseInfo = ParserService.Parse(this.FileName, this.Document);
+					parseInfo = SD.ParserService.Parse(this.FileName, this.Document);
 			}
 			
 			IServiceContainer container = this.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;

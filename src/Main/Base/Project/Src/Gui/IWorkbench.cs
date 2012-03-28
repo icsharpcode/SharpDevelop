@@ -22,11 +22,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		IWin32Window MainWin32Window { get; }
 		
 		/// <summary>
-		/// Object for executing methods on the main thread.
-		/// </summary>
-		ISynchronizeInvoke SynchronizingObject { get; }
-		
-		/// <summary>
 		/// The main window.
 		/// </summary>
 		Window MainWindow { get; }

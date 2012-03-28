@@ -49,8 +49,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			this.watcher = new FileSystemWatcher(repositoryRoot);
 			
-			if (WorkbenchSingleton.Workbench != null)
-				watcher.SynchronizingObject = WorkbenchSingleton.Workbench.SynchronizingObject;
+			watcher.SynchronizingObject = SD.MainThread.SynchronizingObject;
 			
 			WorkbenchSingleton.MainWindow.Activated += MainWindowActivated;
 			

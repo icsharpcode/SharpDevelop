@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
-	public sealed class ParserDescriptor
+	sealed class ParserDescriptor
 	{
 		Codon codon;
 		Type parserType;

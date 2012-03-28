@@ -27,7 +27,7 @@ namespace ICSharpCode.XamlBinding
 			
 			InitializeComponent();
 			
-			ParserService.ParseInformationUpdated += ParseInfoUpdated;
+			SD.ParserService.ParseInformationUpdated += ParseInfoUpdated;
 		}
 
 		void ParseInfoUpdated(object sender, ParseInformationEventArgs e)
@@ -35,6 +35,7 @@ namespace ICSharpCode.XamlBinding
 			if (this.editor == null || !FileUtility.IsEqualFileName(this.editor.FileName, e.FileName))
 				return;
 			
+			#warning Reimplement XAML outline
 //			var cu = e.NewCompilationUnit as XamlCompilationUnit;
 //			
 //			if (cu != null && cu.TreeRootNode != null)
@@ -103,7 +104,7 @@ namespace ICSharpCode.XamlBinding
 		
 		public void Dispose()
 		{
-			ParserService.ParseInformationUpdated -= ParseInfoUpdated;
+			SD.ParserService.ParseInformationUpdated -= ParseInfoUpdated;
 		}
 	}
 }

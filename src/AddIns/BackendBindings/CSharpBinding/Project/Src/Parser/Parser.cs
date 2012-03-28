@@ -28,17 +28,7 @@ namespace CSharpBinding.Parser
 {
 	public class TParser : IParser
 	{
-		///<summary>IParser Interface</summary>
-		string[] lexerTags;
-		
-		public string[] LexerTags {
-			get {
-				return lexerTags;
-			}
-			set {
-				lexerTags = value;
-			}
-		}
+		public IReadOnlyList<string> TaskListTokens { get; set; }
 		
 		public bool CanParse(string fileName)
 		{
@@ -77,7 +67,8 @@ namespace CSharpBinding.Parser
 		}
 		 */
 		
-		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested)
+		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested,
+		                              IProject parentProject, CancellationToken cancellationToken)
 		{
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
@@ -102,7 +93,7 @@ namespace CSharpBinding.Parser
 			ReadOnlyDocument document = null;
 			foreach (var comment in cu.Descendants.OfType<Comment>().Where(c => c.CommentType != CommentType.InactiveCode)) {
 				int matchLength;
-				int index = comment.Content.IndexOfAny(lexerTags, 0, out matchLength);
+				int index = comment.Content.IndexOfAny(TaskListTokens, 0, out matchLength);
 				if (index > -1) {
 					if (document == null)
 						document = new ReadOnlyDocument(fileContent);
@@ -115,7 +106,7 @@ namespace CSharpBinding.Parser
 						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, document.GetOffset(comment.EndLocation) - commentEndSignLength);
 						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
 						tagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = comment.Content.IndexOfAny(lexerTags, endOffset - startOffset - commentSignLength, out matchLength);
+						index = comment.Content.IndexOfAny(TaskListTokens, endOffset - startOffset - commentSignLength, out matchLength);
 					} while (index > -1);
 				}
 			}
