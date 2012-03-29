@@ -80,7 +80,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		CSharpFormattingOptions policy;
 		IDocument document;
 		List<TextReplaceAction> changes = new List<TextReplaceAction> ();
-		Indent curIndent = new Indent ();
+		Indent curIndent;
+		readonly TextEditorOptions options;
 
 		public int IndentLevel {
 			get {
@@ -106,21 +107,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public string EolMarker { get; set; }
-
-		public AstFormattingVisitor (CSharpFormattingOptions policy, IDocument document, bool tabsToSpaces = false, int indentationSize = 4)
+		public AstFormattingVisitor(CSharpFormattingOptions policy, IDocument document, TextEditorOptions options = null)
 		{
 			if (policy == null) {
-				throw new ArgumentNullException ("policy");
+				throw new ArgumentNullException("policy");
 			}
 			if (document == null) {
-				throw new ArgumentNullException ("document");
+				throw new ArgumentNullException("document");
 			}
 			this.policy = policy;
 			this.document = document;
-			this.curIndent.TabsToSpaces = tabsToSpaces;
-			this.curIndent.TabSize = indentationSize;
-			this.EolMarker = Environment.NewLine;
+			this.options = options ?? TextEditorOptions.Default;
+			curIndent = new Indent(this.options);
 			CorrectBlankLines = true;
 		}
 		
@@ -209,9 +207,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			int foundBlankLines = line - loc.Line - 1;
 			
-			StringBuilder sb = new StringBuilder ();
+			StringBuilder sb = new StringBuilder();
 			for (int i = 0; i < blankLines - foundBlankLines; i++) {
-				sb.Append(this.EolMarker);
+				sb.Append(this.options.EolMarker);
 			}
 			
 			int ws = start;
@@ -240,7 +238,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			int start = document.GetOffset(line + 1, 1);
 			StringBuilder sb = new StringBuilder ();
 			for (int i = 0; i < blankLines; i++) {
-				sb.Append(this.EolMarker);
+				sb.Append(this.options.EolMarker);
 			}
 			AddChange(start, end - start, sb.ToString());
 		}
@@ -508,7 +506,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						int offset = this.document.GetOffset(propertyDeclaration.Getter.StartLocation);
 						int start = SearchWhitespaceStart(offset);
 						string indentString = this.curIndent.IndentString;
-						AddChange(start, offset - start, this.EolMarker + indentString);
+						AddChange(start, offset - start, this.options.EolMarker + indentString);
 					} else {
 						FixIndentation(propertyDeclaration.Getter.StartLocation);
 					}
@@ -536,7 +534,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						int offset = this.document.GetOffset(propertyDeclaration.Setter.StartLocation);
 						int start = SearchWhitespaceStart(offset);
 						string indentString = this.curIndent.IndentString;
-						AddChange(start, offset - start, this.EolMarker + indentString);
+						AddChange(start, offset - start, this.options.EolMarker + indentString);
 					} else {
 						FixIndentation(propertyDeclaration.Setter.StartLocation);
 					}
@@ -974,11 +972,11 @@ namespace ICSharpCode.NRefactory.CSharp
 								startBrace = " {";
 								break;
 							case BraceStyle.NextLine:
-								startBrace = this.EolMarker + curIndent.IndentString + "{";
+								startBrace = this.options.EolMarker + curIndent.IndentString + "{";
 								break;
 							case BraceStyle.NextLineShifted2:
 							case BraceStyle.NextLineShifted:
-								startBrace = this.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "{";
+								startBrace = this.options.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "{";
 								break;
 						}
 						beginBraceAction = AddChange(start, 0, startBrace);
@@ -1050,18 +1048,18 @@ namespace ICSharpCode.NRefactory.CSharp
 								startBrace = null;
 								break;
 							case BraceStyle.EndOfLineWithoutSpace:
-								startBrace = this.EolMarker + curIndent.IndentString + "}";
+								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
 								break;
 							case BraceStyle.EndOfLine:
-								startBrace = this.EolMarker + curIndent.IndentString + "}";
+								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
 								break;
 							case BraceStyle.NextLine:
-								startBrace = this.EolMarker + curIndent.IndentString + "}";
+								startBrace = this.options.EolMarker + curIndent.IndentString + "}";
 								break;
 							case BraceStyle.BannerStyle:
 							case BraceStyle.NextLineShifted2:
 							case BraceStyle.NextLineShifted:
-								startBrace = this.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "}";
+								startBrace = this.options.EolMarker + curIndent.IndentString + curIndent.SingleIndent + "}";
 								break;
 						}
 						if (startBrace != null) {
@@ -1097,7 +1095,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					break;
 				case BraceStyle.EndOfLineWithoutSpace:
 					startIndent = "";
-					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString : this.EolMarker + curIndent.IndentString;
+					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString : this.options.EolMarker + curIndent.IndentString;
 					break;
 				case BraceStyle.BannerStyle:
 					var prevNode = lbrace.GetPrevNode();
@@ -1114,7 +1112,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						startIndent = " ";
 					}
-					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString + curIndent.SingleIndent : this.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
+					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString + curIndent.SingleIndent : this.options.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
 					break;
 				case BraceStyle.EndOfLine:
 					prevNode = lbrace.GetPrevNode();
@@ -1131,16 +1129,16 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else {
 						startIndent = " ";
 					}
-					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString : this.EolMarker + curIndent.IndentString;
+					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString : this.options.EolMarker + curIndent.IndentString;
 					break;
 				case BraceStyle.NextLine:
-					startIndent = this.EolMarker + curIndent.IndentString;
-					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString : this.EolMarker + curIndent.IndentString;
+					startIndent = this.options.EolMarker + curIndent.IndentString;
+					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString : this.options.EolMarker + curIndent.IndentString;
 					break;
 				case BraceStyle.NextLineShifted2:
 				case BraceStyle.NextLineShifted:
-					startIndent = this.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
-					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString + curIndent.SingleIndent : this.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
+					startIndent = this.options.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
+					endIndent = IsLineIsEmptyUpToEol(rbraceOffset) ? curIndent.IndentString + curIndent.SingleIndent : this.options.EolMarker + curIndent.IndentString + curIndent.SingleIndent;
 					break;
 			}
 			
@@ -1771,7 +1769,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			int offset = document.GetOffset(keywordNode.StartLocation);
 			
 			int whitespaceStart = SearchWhitespaceStart(offset);
-			string indentString = newLine ? this.EolMarker + this.curIndent.IndentString : " ";
+			string indentString = newLine ? this.options.EolMarker + this.curIndent.IndentString : " ";
 			AddChange(whitespaceStart, offset - whitespaceStart, indentString);
 		}
 
@@ -1787,7 +1785,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			bool isEmpty = IsLineIsEmptyUpToEol(offset);
 			int lineStart = SearchWhitespaceLineStart(offset);
-			string indentString = nextStatementIndent == null ? (isEmpty ? "" : this.EolMarker) + this.curIndent.IndentString : nextStatementIndent;
+			string indentString = nextStatementIndent == null ? (isEmpty ? "" : this.options.EolMarker) + this.curIndent.IndentString : nextStatementIndent;
 			nextStatementIndent = null;
 			AddChange(lineStart, offset - lineStart, indentString);
 		}
@@ -1831,7 +1829,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					} else if (ch == '\r') {
 						start--;
 					}
-					AddChange(start, offset - start, this.EolMarker + indentString);
+					AddChange(start, offset - start, this.options.EolMarker + indentString);
 				}
 			}
 		}

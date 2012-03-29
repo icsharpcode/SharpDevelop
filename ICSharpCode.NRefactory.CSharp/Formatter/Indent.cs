@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Indent.cs
 //  
 // Author:
@@ -29,6 +29,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class Indent
 	{
+		readonly TextEditorOptions options;
+
 		public int Level {
 			get;
 			set;
@@ -39,45 +41,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool TabsToSpaces {
-			get;
-			set;
-		}
-
-		public int TabSize {
-			get;
-			set;
-		}
-
-		public Indent ()
+		public Indent(TextEditorOptions options)
 		{
+			this.options = options;
 		}
 
-		public Indent (int level, int extraSpaces)
+		public Indent(TextEditorOptions options, int level, int extraSpaces)
 		{
-			this.Level = level;
-			this.ExtraSpaces = extraSpaces;
-		}
-
-		public static Indent operator+ (Indent left, Indent right)
-		{
-			return new Indent (left.Level + right.Level, left.ExtraSpaces + right.ExtraSpaces);
-		}
-
-		public static Indent operator- (Indent left, Indent right)
-		{
-			return new Indent (left.Level - right.Level, left.ExtraSpaces - right.ExtraSpaces);
+			Level = level;
+			ExtraSpaces = extraSpaces;
 		}
 
 		public string IndentString {
 			get {
-				return (TabsToSpaces ? new string (' ', Level * TabSize) : new string ('\t', Level)) + new string (' ', ExtraSpaces);
+				return (options.TabsToSpaces ? new string(' ', Level * options.TabSize) : new string ('\t', Level)) + new string (' ', ExtraSpaces);
 			}
 		}
 
 		public string SingleIndent {
 			get {
-				return TabsToSpaces ? new string (' ', TabSize) : "\t";
+				return options.TabsToSpaces ? new string(' ', options.TabSize) : "\t";
 			}
 		}
 
