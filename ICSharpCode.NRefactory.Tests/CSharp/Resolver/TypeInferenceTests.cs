@@ -126,6 +126,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				                      out success));
 			Assert.IsTrue(success);
 		}
+		
+		[Test]
+		public void ArrayToListWithArrayCovariance()
+		{
+			ITypeParameter tp = new DefaultTypeParameter(compilation, EntityType.Method, 0, "T");
+			IType objectType = compilation.FindType(KnownTypeCode.Object);
+			IType stringType = compilation.FindType(KnownTypeCode.String);
+			ITypeDefinition listType = compilation.FindType(KnownTypeCode.IListOfT).GetDefinition();
+			
+			// void M<T>(IList<T> a, T b);
+			// M(new string[0], new object());
+			
+			bool success;
+			Assert.AreEqual(
+				new [] { objectType },
+				ti.InferTypeArguments(
+					new [] { tp },
+					new [] { new ResolveResult(new ArrayType(compilation, stringType)), new ResolveResult(objectType) },
+					new [] { new ParameterizedType(listType, new [] { tp }), (IType)tp },
+					out success));
+			Assert.IsTrue(success);
+		}
 		#endregion
 		
 		#region Inference with Method Groups
