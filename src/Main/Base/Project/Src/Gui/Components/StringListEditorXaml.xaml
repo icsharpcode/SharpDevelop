@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <UserControl
 	x:Class="ICSharpCode.SharpDevelop.Gui.StringListEditorXaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 	<Grid>
@@ -71,5 +71,12 @@
 			Margin="5,3,5,3"
 			SelectionChanged="ListBox_SelectionChanged"
 			Grid.Row="4"></ListBox>
+	<widgets:StackPanelWithSpacing Orientation="Vertical" SpaceBetweenItems="5"
+Grid.Row="4" Grid.Column="1">
+		
+		<Button Content="b1" x:Name="moveUpButton" Click="MoveUpButtonClick"></Button>
+		<Button Content="b2" x:Name="moveDownButton" Click="MoveDownButtonClick"></Button>
+		<Button Content="b3" x:Name="deleteButton" Click="RemoveButtonClick"></Button>
+		</widgets:StackPanelWithSpacing>
 	</Grid>
 </UserControl>

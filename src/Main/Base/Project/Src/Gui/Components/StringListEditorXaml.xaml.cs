@@ -15,6 +15,8 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using ICSharpCode.Core.Presentation;
 using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -75,7 +77,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 				listBox.SelectedIndex = index;
 			}
 		}
-			
+		
+		#region Load/Save List
+		
+		
+		public void LoadList(IEnumerable<string> list)
+		{
+			listBox.Items.Clear();
+			foreach (string str in list) {
+				listBox.Items.Add(str);
+			}
+		}
+		
+		
+		public string[] GetList()
+		{
+			string[] list = new string[listBox.Items.Count];
+			for (int i = 0; i < list.Length; i++) {
+				list[i] = listBox.Items[i].ToString();
+			}
+			return list;
+		}
+		
+		
+		#endregion		
 		
 		void UpdateButton_Click(object sender, RoutedEventArgs e)
 		{
@@ -115,7 +140,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual void OnListChanged(EventArgs e)
 		{
-	
 			if (ListChanged != null) {
 				ListChanged(this, e);
 			}
@@ -127,21 +151,52 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (listBox.SelectedIndex >= 0) {
 				editTextBox.Text = listBox.Items[listBox.SelectedIndex].ToString();
 			}
-		//	moveUpButton.Enabled = listBox.SelectedIndex > 0;
-		//	moveDownButton.Enabled = listBox.SelectedIndex >= 0 && listBox.SelectedIndex < listBox.Items.Count - 1;
-		//	removeButton.IsEnabled = deleteButton.Enabled = listBox.SelectedIndex >= 0;
+			moveUpButton.IsEnabled = listBox.SelectedIndex > 0;
+			moveDownButton.IsEnabled = listBox.SelectedIndex >= 0 && listBox.SelectedIndex < listBox.Items.Count - 1;
+			removeButton.IsEnabled = deleteButton.IsEnabled = listBox.SelectedIndex >= 0;
 			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
+			Console.WriteLine("{0} - {1} - {2} - {3}",moveUpButton.IsEnabled,moveDownButton.IsEnabled,removeButton.IsEnabled,updateButton.IsEnabled);
 		}
 		
+		#region MoveUp-MoveDow-DeleteButton
+		
+		void MoveUpButtonClick(object sender, RoutedEventArgs e)
+		{
+			int index = listBox.SelectedIndex;
+			object tmp = listBox.Items[index];
+			listBox.Items[index] = listBox.Items[index - 1];
+			listBox.Items[index - 1] = tmp;
+			listBox.SelectedIndex = index - 1;
+			OnListChanged(EventArgs.Empty);
+		}
+		
+		void MoveDownButtonClick(object sender, RoutedEventArgs e)
+		{
+			int index = listBox.SelectedIndex;
+			object tmp = listBox.Items[index];
+			listBox.Items[index] = listBox.Items[index + 1];
+			listBox.Items[index + 1] = tmp;
+			listBox.SelectedIndex = index + 1;
+			OnListChanged(EventArgs.Empty);
+		}
+		
+		
+		void RemoveButtonClick(object sender, RoutedEventArgs e)
+		{
+			if (listBox.SelectedIndex >= 0) {
+				listBox.Items.RemoveAt(listBox.SelectedIndex);
+				OnListChanged(EventArgs.Empty);
+			}
+		}
+		
+		#endregion
 		
 		public StringListEditorXaml()
 		{
 			InitializeComponent();
+			moveUpButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowUp") };
+			moveDownButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.ArrowDown")};
+			deleteButton.Content = new Image { Height = 16, Source = PresentationResourceService.GetBitmapSource("Icons.16x16.DeleteIcon")};
 		}
-		
-		
-		
-		
-	
 	}
 }

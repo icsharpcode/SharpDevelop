@@ -22,10 +22,6 @@
 		
 		<optionpanels:StorageLocationPicker Margin="5,40,0,0"
 			x:Name="location" Location="{Binding ReferencePath.Location}" />
-		<!--
-		<WindowsFormsHost Grid.Column="1" Grid.RowSpan="2"> 
-			<gui:StringListEditor x:Name="editor"/>
-		</WindowsFormsHost>-->
 		
 	<gui:StringListEditorXaml x:Name="editor" Grid.Column="1" Grid.RowSpan="2"></gui:StringListEditorXaml>
 	
