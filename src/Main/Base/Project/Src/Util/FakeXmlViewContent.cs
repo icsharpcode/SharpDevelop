@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Util
 	{
 		public FakeXmlViewContent(string fileName)
 		{
-			this.PrimaryFile = FileService.GetOrCreateOpenedFile(fileName);
+			this.PrimaryFile = SD.FileService.GetOrCreateOpenedFile(fileName);
 			this.oldView = this.PrimaryFile.CurrentView;
 			this.PrimaryFile.RegisterView(this);
 			this.PrimaryFile.SwitchedToView(this);

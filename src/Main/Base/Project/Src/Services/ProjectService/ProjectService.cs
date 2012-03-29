@@ -301,6 +301,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowException(ex);
 			}
 			SD.ParserService.InvalidateCurrentSolutionSnapshot();
+			SD.FileService.RecentOpen.AddRecentProject(openSolution.FileName);
 			
 			Project.Converter.UpgradeViewContent.ShowIfRequired(openSolution);
 			

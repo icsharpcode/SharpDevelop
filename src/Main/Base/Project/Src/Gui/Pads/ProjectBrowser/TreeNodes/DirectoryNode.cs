@@ -674,7 +674,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					RecreateSubNodes();
 			}
 			if (performMove) {
-				foreach (OpenedFile file in FileService.OpenedFiles) {
+				foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 					if (file.FileName != null &&
 					    FileUtility.IsEqualFileName(file.FileName, fileName))
 					{

@@ -128,8 +128,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			SharpDevelop.FileService.FileReplaced += CheckRemovedOrReplacedFile;
 			SharpDevelop.FileService.FileRenamed += CheckRenamedFile;
 			
-			SharpDevelop.FileService.FileRemoved += SharpDevelop.FileService.RecentOpen.FileRemoved;
-			SharpDevelop.FileService.FileRenamed += SharpDevelop.FileService.RecentOpen.FileRenamed;
+			SharpDevelop.FileService.FileRemoved += ((RecentOpen)SD.FileService.RecentOpen).FileRemoved;
+			SharpDevelop.FileService.FileRenamed += ((RecentOpen)SD.FileService.RecentOpen).FileRenamed;
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void CheckRemovedOrReplacedFile(object sender, FileEventArgs e)
 		{
-			foreach (OpenedFile file in SharpDevelop.FileService.OpenedFiles) {
+			foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 				if (FileUtility.IsBaseDirectory(e.FileName, file.FileName)) {
 					foreach (IViewContent content in file.RegisteredViewContents.ToArray()) {
 						// content.WorkbenchWindow can be null if multiple view contents
@@ -190,13 +190,13 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		void CheckRenamedFile(object sender, FileRenameEventArgs e)
 		{
 			if (e.IsDirectory) {
-				foreach (OpenedFile file in SharpDevelop.FileService.OpenedFiles) {
+				foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 					if (file.FileName != null && FileUtility.IsBaseDirectory(e.SourceFile, file.FileName)) {
 						file.FileName = new FileName(FileUtility.RenameBaseDirectory(file.FileName, e.SourceFile, e.TargetFile));
 					}
 				}
 			} else {
-				OpenedFile file = SharpDevelop.FileService.GetOpenedFile(e.SourceFile);
+				OpenedFile file = SD.FileService.GetOpenedFile(e.SourceFile);
 				if (file != null) {
 					file.FileName = new FileName(e.TargetFile);
 				}

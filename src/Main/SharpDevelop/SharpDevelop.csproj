@@ -77,6 +77,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OptionPanels\LoadSaveOptions.xaml.cs">
+      <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Startup\App.xaml.cs" />
     <Compile Include="Startup\SharpDevelopMain.cs" />
     <Compile Include="Startup\SplashScreen.cs" />
@@ -86,8 +90,10 @@
     <Compile Include="Workbench\ChooseLayoutCommand.cs" />
     <Compile Include="Workbench\DispatcherMessageLoop.cs" />
     <Compile Include="Workbench\FileService.cs" />
+    <Compile Include="Workbench\FileServiceOpenedFile.cs" />
     <Compile Include="Workbench\FullScreenEnabledWindow.cs" />
     <Compile Include="Workbench\LayoutConfiguration.cs" />
+    <Compile Include="Workbench\RecentOpen.cs" />
     <Compile Include="Workbench\SDStatusBar.cs" />
     <Compile Include="Workbench\SingleInstanceHelper.cs" />
     <Compile Include="Workbench\StatusBarService.cs" />
@@ -182,6 +188,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="OptionPanels" />
     <Folder Include="Startup" />
     <Folder Include="Workbench" />
     <Folder Include="Logging" />
@@ -189,6 +196,7 @@
     <Folder Include="Sda" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="OptionPanels\LoadSaveOptions.xaml" />
     <Page Include="Startup\App.xaml" />
     <Page Include="Workbench\WpfWorkbench.xaml" />
   </ItemGroup>

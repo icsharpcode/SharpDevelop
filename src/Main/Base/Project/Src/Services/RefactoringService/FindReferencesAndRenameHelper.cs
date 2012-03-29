@@ -237,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		[Obsolete]
 		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
 		{
-			OpenedFile file = FileService.GetOpenedFile(fileName);
+			OpenedFile file = SD.FileService.GetOpenedFile(fileName);
 			if (file != null) {
 				IFileDocumentProvider documentProvider = file.CurrentView as IFileDocumentProvider;
 				if (documentProvider != null) {

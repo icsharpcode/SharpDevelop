@@ -293,7 +293,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			} else {
 				// do encoding auto-detection
-				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? FileService.DefaultFileEncoding.GetEncoding())) {
+				using (StreamReader reader = FileReader.OpenStream(stream, this.Encoding ?? SD.FileService.DefaultFileEncoding)) {
 					ReloadDocument(primaryTextEditor.Document, reader.ReadToEnd());
 					this.Encoding = reader.CurrentEncoding;
 				}

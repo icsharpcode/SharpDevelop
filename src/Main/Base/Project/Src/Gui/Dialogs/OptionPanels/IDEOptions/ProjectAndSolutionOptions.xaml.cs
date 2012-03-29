@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			FillComboBoxWithEnumValues(typeof(Project.BuildOnExecuteSetting), onExecuteComboBox);
 			FillComboBoxWithEnumValues(typeof(Project.BuildOutputVerbosity), verbosityComboBox);
 		}
-	
+		
 		void FillComboBoxWithEnumValues(Type type, ComboBox comboBox)
 		{
 			foreach (Project.BuildOnExecuteSetting element in Enum.GetValues(type)) {
@@ -37,11 +37,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void defaultProjectLocationButtonClick(object sender, RoutedEventArgs e)
 		{
-			using (var fdiag = FileService.CreateFolderBrowserDialog("${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}", defaultProjectLocationTextBox.Text)) {
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-					defaultProjectLocationTextBox.Text = fdiag.SelectedPath;
-				}
-			}
+			string path = SD.FileService.BrowseForFolder(
+				"${res:Dialog.Options.IDEOptions.ProjectAndSolutionOptions.SelectDefaultProjectLocationDialog.Title}",
+				defaultProjectLocationTextBox.Text);
+			if (path != null)
+				defaultProjectLocationTextBox.Text = path;
 		}
 		
 		public override void LoadOptions()

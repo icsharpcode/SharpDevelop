@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class ParseableFileContentFinder
 	{
-		FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+		FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => SD.FileService.OpenedFiles.Select(f => f.FileName).ToArray());
 		
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.

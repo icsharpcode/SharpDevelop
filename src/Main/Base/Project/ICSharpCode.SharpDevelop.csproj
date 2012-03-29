@@ -211,10 +211,6 @@
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\LoadSaveOptions.xaml.cs">
-      <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndSolutionOptions.xaml.cs">
       <DependentUpon>ProjectAndSolutionOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -362,7 +358,6 @@
     <Compile Include="Src\Services\File\FileChangeWatcher.cs" />
     <Compile Include="Src\Services\File\IFileService.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
-    <Compile Include="Src\Services\File\RecentOpen.cs" />
     <Compile Include="Src\Services\IMessageLoop.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />
     <Compile Include="Src\Services\LanguageBinding\DefaultLanguageBinding.cs" />
@@ -857,7 +852,6 @@
     <Page Include="Src\Gui\Dialogs\GotoDialog.xaml">
       <DependentUpon>GotoDialog.cs</DependentUpon>
     </Page>
-    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\LoadSaveOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndSolutionOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectCulturePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\TabbedOptionsDialog.xaml" />

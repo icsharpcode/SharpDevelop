@@ -56,7 +56,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public static XmlView ForFileName(string fileName)
 		{
-			return ForFile(FileService.GetOpenedFile(fileName));
+			return ForFile(SD.FileService.GetOpenedFile(fileName));
 		}
 		
 		public OpenedFile File { get; set; }

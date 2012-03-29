@@ -136,14 +136,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public ICollection BuildItems(Codon codon, object owner)
 		{
-			RecentOpen recentOpen = FileService.RecentOpen;
+			IRecentOpen recentOpen = SD.FileService.RecentOpen;
 			
-			if (recentOpen.RecentFile.Count > 0) {
-				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFile.Count];
+			if (recentOpen.RecentFiles.Count > 0) {
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentFiles.Count];
 				
-				for (int i = 0; i < recentOpen.RecentFile.Count; ++i) {
+				for (int i = 0; i < recentOpen.RecentFiles.Count; ++i) {
 					// variable inside loop, so that anonymous method refers to correct recent file
-					string recentFile = recentOpen.RecentFile[i];
+					string recentFile = recentOpen.RecentFiles[i];
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
 					items[i] = new System.Windows.Controls.MenuItem() {
 						Header = accelaratorKeyPrefix + recentFile
@@ -166,14 +166,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public ICollection BuildItems(Codon codon, object owner)
 		{
-			RecentOpen recentOpen = FileService.RecentOpen;
+			IRecentOpen recentOpen = SD.FileService.RecentOpen;
 			
-			if (recentOpen.RecentProject.Count > 0) {
-				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentProject.Count];
+			if (recentOpen.RecentProjects.Count > 0) {
+				var items = new System.Windows.Controls.MenuItem[recentOpen.RecentProjects.Count];
 				
-				for (int i = 0; i < recentOpen.RecentProject.Count; ++i) {
+				for (int i = 0; i < recentOpen.RecentProjects.Count; ++i) {
 					// variable inside loop, so that anonymous method refers to correct recent file
-					string recentProject = recentOpen.RecentProject[i];
+					string recentProject = recentOpen.RecentProjects[i];
 					string accelaratorKeyPrefix = i < 10 ? "_" + ((i + 1) % 10) + " " : "";
 					items[i] = new System.Windows.Controls.MenuItem() {
 						Header = accelaratorKeyPrefix + recentProject

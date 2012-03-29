@@ -15,7 +15,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public partial class LoadSaveOptions : OptionPanel
+	partial class LoadSaveOptions : OptionPanel
 	{
 		public LoadSaveOptions()
 		{

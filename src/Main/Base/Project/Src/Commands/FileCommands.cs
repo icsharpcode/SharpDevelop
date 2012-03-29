@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return;
 					}
 					if (FileUtility.ObservedSave(new NamedFileOperationDelegate(file.SaveToDisk), fileName) == FileOperationResult.OK) {
-						FileService.RecentOpen.AddLastFile(fileName);
+						SD.FileService.RecentOpen.AddRecentFile(fileName);
 						MessageService.ShowMessage(fileName, "${res:ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved}");
 					}
 				}
@@ -198,7 +198,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					((ICustomizedCommands)content).SaveCommand();
 				}
 			}
-			foreach (OpenedFile file in FileService.OpenedFiles) {
+			foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 				if (file.IsDirty) {
 					SaveFile.Save(file);
 				}
@@ -308,7 +308,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			FileService.RecentOpen.ClearRecentFiles();
+			SD.FileService.RecentOpen.ClearRecentFiles();
 		}
 	}
 
@@ -316,7 +316,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			FileService.RecentOpen.ClearRecentProjects();
+			SD.FileService.RecentOpen.ClearRecentProjects();
 		}
 	}
 }

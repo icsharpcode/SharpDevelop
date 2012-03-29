@@ -362,11 +362,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		
 		void BrowseDirectories(object sender, EventArgs e)
 		{
-			using (FolderBrowserDialog fd = FileService.CreateFolderBrowserDialog("${res:Dialog.NewProject.SelectDirectoryForProject}", locationTextBox.Text)) {
-				if (fd.ShowDialog() == DialogResult.OK) {
-					locationTextBox.Text = fd.SelectedPath;
-				}
-			}
+			string path = SD.FileService.BrowseForFolder("${res:Dialog.NewProject.SelectDirectoryForProject}", locationTextBox.Text);
+			if (path != null)
+				locationTextBox.Text = path;
 		}
 		
 		// list view event handlers

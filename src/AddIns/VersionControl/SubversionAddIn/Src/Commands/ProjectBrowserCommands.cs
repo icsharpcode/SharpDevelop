@@ -29,7 +29,7 @@ namespace ICSharpCode.Svn.Commands
 				}
 				if (nodeFileName != null) {
 					List<OpenedFile> unsavedFiles = new List<OpenedFile>();
-					foreach (OpenedFile file in FileService.OpenedFiles) {
+					foreach (OpenedFile file in SD.FileService.OpenedFiles) {
 						if (file.IsDirty && !file.IsUntitled) {
 							if (string.IsNullOrEmpty(file.FileName)) continue;
 							if (FileUtility.IsUrl(file.FileName)) continue;

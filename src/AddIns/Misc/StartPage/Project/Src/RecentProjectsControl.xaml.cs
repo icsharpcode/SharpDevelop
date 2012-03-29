@@ -45,7 +45,7 @@ namespace ICSharpCode.StartPage
 			// When building the project list we access the .sln files (to see if they still exist).
 			// Because those might be stored on a slow network drive, we do this on a background thread so that
 			// SharpDevelop startup doesn't have to wait.
-			ThreadPool.QueueUserWorkItem(AsyncBuildRecentProjectList, FileService.RecentOpen.RecentProject.ToArray());
+			ThreadPool.QueueUserWorkItem(AsyncBuildRecentProjectList, SD.FileService.RecentOpen.RecentProjects.ToArray());
 		}
 		
 		void AsyncBuildRecentProjectList(object state)
