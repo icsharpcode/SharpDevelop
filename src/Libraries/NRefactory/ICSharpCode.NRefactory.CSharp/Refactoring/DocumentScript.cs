@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -38,11 +38,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return originalDocument; }
 		}
 		readonly IDisposable undoGroup;
+
+		readonly TextEditorOptions options;
 		
-		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions) : base(formattingOptions)
+		public DocumentScript(IDocument document, CSharpFormattingOptions formattingOptions, TextEditorOptions options) : base(formattingOptions)
 		{
 			this.originalDocument = document.CreateDocumentSnapshot();
 			this.currentDocument = document;
+			this.options = options;
+			this.eolMarker = options.EolMarker;
 			Debug.Assert(currentDocument.Version.CompareAge(originalDocument.Version) == 0);
 			this.undoGroup = document.OpenUndoGroup();
 		}
@@ -91,14 +95,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		public override int GetCurrentOffset(int originalDocumentOffset)
 		{
-			return originalDocument.Version.MoveOffsetTo(currentDocument.Version, originalDocumentOffset, AnchorMovementType.Default);
+			return originalDocument.Version.MoveOffsetTo(currentDocument.Version, originalDocumentOffset);
 		}
 		
 		public override void FormatText(AstNode node)
 		{
 			var segment = GetSegment(node);
 			var cu = CompilationUnit.Parse(currentDocument, "dummy.cs");
-			var formatter = new AstFormattingVisitor(this.FormattingOptions, currentDocument);
+			var formatter = new AstFormattingVisitor(FormattingOptions, currentDocument, options);
 			cu.AcceptVisitor(formatter);
 			formatter.ApplyChanges(segment.Offset, segment.Length);
 		}
@@ -147,7 +151,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			public int Offset {
-				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalStart, AnchorMovementType.Default); }
+				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalStart); }
 			}
 			
 			public int Length {
@@ -155,7 +159,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			public int EndOffset {
-				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalEnd, AnchorMovementType.Default); }
+				get { return originalVersion.MoveOffsetTo(script.currentDocument.Version, originalEnd); }
 			}
 		}
 	}

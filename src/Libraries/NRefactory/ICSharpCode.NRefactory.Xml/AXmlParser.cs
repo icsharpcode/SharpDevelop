@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Utils;
@@ -51,12 +52,13 @@ namespace ICSharpCode.NRefactory.Xml
 		/// Parses a document into a flat list of tags.
 		/// </summary>
 		/// <returns>Parsed tag soup.</returns>
-		public IList<AXmlObject> ParseTagSoup(ITextSource textSource)
+		public IList<AXmlObject> ParseTagSoup(ITextSource textSource,
+		                                      CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
 			var reader = new TagReader(this, textSource, false);
-			var internalObjects = reader.ReadAllObjects();
+			var internalObjects = reader.ReadAllObjects(cancellationToken);
 			return CreatePublic(internalObjects);
 		}
 		
@@ -66,16 +68,21 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <param name="oldParserState">The parser state from a previous call to ParseIncremental(). Use null for the first call.</param>
 		/// <param name="newTextSource">The text source for the new document version.</param>
 		/// <param name="newParserState">Out: the new parser state, pass this to the next ParseIncremental() call.</param>
+		/// <param name="cancellationToken">Optional: cancellation token.</param>
 		/// <returns>Parsed tag soup.</returns>
-		public IList<AXmlObject> ParseTagSoupIncremental(IncrementalParserState oldParserState, ITextSource newTextSource, out IncrementalParserState newParserState)
+		public IList<AXmlObject> ParseTagSoupIncremental(
+			IncrementalParserState oldParserState, ITextSource newTextSource, out IncrementalParserState newParserState,
+			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (newTextSource == null)
 				throw new ArgumentNullException("newTextSource");
-			var internalObjects = InternalParseIncremental(oldParserState, newTextSource, out newParserState, false);
+			var internalObjects = InternalParseIncremental(oldParserState, newTextSource, out newParserState, false, cancellationToken);
 			return CreatePublic(internalObjects);
 		}
 		
-		List<InternalObject> InternalParseIncremental(IncrementalParserState oldParserState, ITextSource newTextSource, out IncrementalParserState newParserState, bool collapseProperlyNestedElements)
+		List<InternalObject> InternalParseIncremental(
+			IncrementalParserState oldParserState, ITextSource newTextSource, out IncrementalParserState newParserState,
+			bool collapseProperlyNestedElements, CancellationToken cancellationToken)
 		{
 			var reader = new TagReader(this, newTextSource, collapseProperlyNestedElements);
 			ITextSourceVersion newVersion = newTextSource.Version;
@@ -83,9 +90,9 @@ namespace ICSharpCode.NRefactory.Xml
 			
 			List<InternalObject> internalObjects;
 			if (reuseMap != null)
-				internalObjects = reader.ReadAllObjectsIncremental(oldParserState.Objects, reuseMap);
+				internalObjects = reader.ReadAllObjectsIncremental(oldParserState.Objects, reuseMap, cancellationToken);
 			else
-				internalObjects = reader.ReadAllObjects();
+				internalObjects = reader.ReadAllObjects(cancellationToken);
 			
 			if (newVersion != null)
 				newParserState = new IncrementalParserState(newTextSource.TextLength, newVersion, internalObjects.ToArray());
@@ -98,14 +105,14 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <summary>
 		/// Parses a document.
 		/// </summary>
-		public AXmlDocument Parse(ITextSource textSource)
+		public AXmlDocument Parse(ITextSource textSource, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (textSource == null)
 				throw new ArgumentNullException("textSource");
 			var reader = new TagReader(this, textSource, true);
-			var internalObjects = reader.ReadAllObjects();
+			var internalObjects = reader.ReadAllObjects(cancellationToken);
 			var heuristic = new TagMatchingHeuristics(textSource);
-			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects));
+			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects, cancellationToken));
 		}
 		
 		/// <summary>
@@ -114,14 +121,17 @@ namespace ICSharpCode.NRefactory.Xml
 		/// <param name="oldParserState">The parser state from a previous call to ParseIncremental(). Use null for the first call.</param>
 		/// <param name="newTextSource">The text source for the new document version.</param>
 		/// <param name="newParserState">Out: the new parser state, pass this to the next ParseIncremental() call.</param>
+		/// <param name="cancellationToken">Optional: cancellation token.</param>
 		/// <returns>Parsed tag soup.</returns>
-		public AXmlDocument ParseIncremental(IncrementalParserState oldParserState, ITextSource newTextSource, out IncrementalParserState newParserState)
+		public AXmlDocument ParseIncremental(
+			IncrementalParserState oldParserState, ITextSource newTextSource, out IncrementalParserState newParserState,
+			CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (newTextSource == null)
 				throw new ArgumentNullException("newTextSource");
-			var internalObjects = InternalParseIncremental(oldParserState, newTextSource, out newParserState, true);
+			var internalObjects = InternalParseIncremental(oldParserState, newTextSource, out newParserState, true, cancellationToken);
 			var heuristic = new TagMatchingHeuristics(newTextSource);
-			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects));
+			return new AXmlDocument(null, 0, heuristic.CreateDocument(internalObjects, cancellationToken));
 		}
 	}
 }

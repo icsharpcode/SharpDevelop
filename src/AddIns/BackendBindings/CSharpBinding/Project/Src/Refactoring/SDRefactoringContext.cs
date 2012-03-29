@@ -55,28 +55,24 @@ namespace CSharpBinding.Refactoring
 			return project.LanguageVersion >= version;
 		}
 		
-		public override Script StartScript()
+		public Script StartScript()
 		{
 			if (editor == null)
 				throw new InvalidOperationException("Cannot start a script in IsAvailable().");
-			return new SDScript(editor, this.EolMarker);
+			return new SDScript(editor, this.TextEditorOptions);
 		}
 		
 		public override TextLocation Location {
 			get { return location; }
 		}
 		
-		public override int SelectionStart {
-			get { return selectionStart; }
+		public override TextLocation SelectionStart {
+			get { return GetLocation(selectionStart); }
 		}
 		
-		public override int SelectionLength {
-			get { return selectionLength; }
-		}
-		
-		public override int SelectionEnd {
+		public override TextLocation SelectionEnd {
 			get {
-				return selectionStart + selectionLength;
+				return GetLocation(selectionStart + selectionLength);
 			}
 		}
 		
@@ -125,14 +121,6 @@ namespace CSharpBinding.Refactoring
 			if (document == null)
 				document = new ReadOnlyDocument(textSource);
 			return document.GetLocation(offset);
-		}
-		
-		public override string EolMarker {
-			get {
-				if (document == null)
-					document = new ReadOnlyDocument(textSource);
-				return DocumentUtilitites.GetLineTerminator(document, location.Line);
-			}
 		}
 		
 		public override AstType CreateShortType(IType fullType)

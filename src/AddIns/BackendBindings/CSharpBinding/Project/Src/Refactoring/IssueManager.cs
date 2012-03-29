@@ -147,8 +147,8 @@ namespace CSharpBinding.Refactoring
 						if (issue == null)
 							return null;
 						// Now look up the action within that issue:
-						if (issue.Action != null && issue.Action.Description == actionDescription)
-							return issue.Action;
+						if (index < issue.Actions.Count && issue.Actions[index].Description == actionDescription)
+							return issue.Actions[index];
 						else
 							return null;
 					});
@@ -259,7 +259,7 @@ namespace CSharpBinding.Refactoring
 									issue.Desription,
 									context.GetOffset(issue.Start),
 									context.GetOffset(issue.End),
-									issue.Action != null ? new [] { issue.Action } : new CodeAction[0]));
+									issue.Actions));
 							}
 						}
 					}, cancellationToken);

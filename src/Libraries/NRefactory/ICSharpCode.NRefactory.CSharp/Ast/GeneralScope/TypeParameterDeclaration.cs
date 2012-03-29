@@ -79,7 +79,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				SetChildByRole (Roles.Identifier, value);
 			}
 		}
-		
+
+		public TypeParameterDeclaration ()
+		{
+		}
+
+		public TypeParameterDeclaration (string name)
+		{
+			Name = name;
+		}
+
 		public override void AcceptVisitor (IAstVisitor visitor)
 		{
 			visitor.VisitTypeParameterDeclaration (this);

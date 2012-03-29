@@ -4811,5 +4811,78 @@ class A
 			Assert.IsNotNull (provider.Find ("WriteLine"), "'WriteLine' not found.");
 		}
 
+		/// <summary>
+		/// Bug 4017 - code completion in foreach does not work for local variables declared in the same block
+		/// </summary>
+		[Test()]
+		public void TestBug4017 ()
+		{
+			var provider = CreateProvider (
+@"
+class TestClass
+{
+    void Foo()
+    {
+        string[] args = null;
+        $foreach(string arg in a$
+    }
+}
+");
+			Assert.IsNotNull (provider.Find ("args"), "'args' not found.");
+		}
+
+		/// <summary>
+		/// Bug 4020 - code completion handles explicit interface implementations improperly
+		/// </summary>
+		[Test()]
+		public void TestBug4020 ()
+		{
+			// todo: maybe a better solution would be 
+			//       having an item to insert the proper cast on 'Dispose' ?
+			var provider = CreateProvider (
+@"
+using System;
+namespace Test
+{
+    class TestClass : IDisposable
+    {
+        void IDisposable.Dispose ()
+        {
+        }
+        public void Foo()
+        {
+            $D$
+        }
+    }
+}
+");
+			Assert.IsNull (provider.Find ("Dispose"), "'Dispose' found.");
+		}
+
+
+		/// <summary>
+		/// Bug 4085 - code completion problem with generic dictionary
+		/// </summary>
+		[Test()]
+		public void TestBug4085 ()
+		{
+			// Name proposal feature breaks here
+			var provider = CreateCtrlSpaceProvider (
+@"using System.Collections.Generic;
+namespace Test
+{
+	class TestClass
+	{
+		static void Main()
+		{
+			$IDictionary<string, TestClass> foo = new Dictionary<string, $
+		}
+	}
+}
+
+");
+			Assert.IsNotNull (provider.Find ("TestClass"), "'TestClass' not found.");
+		}
+
 	}
 }

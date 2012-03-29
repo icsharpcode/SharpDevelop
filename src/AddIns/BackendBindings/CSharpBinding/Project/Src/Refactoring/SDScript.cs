@@ -24,10 +24,9 @@ namespace CSharpBinding.Refactoring
 		readonly ITextEditor editor;
 		readonly TextSegmentCollection<TextSegment> textSegmentCollection;
 		
-		public SDScript(ITextEditor editor, string eolMarker) : base(editor.Document, new CSharpFormattingOptions())
+		public SDScript(ITextEditor editor, TextEditorOptions options) : base(editor.Document, new CSharpFormattingOptions(), options)
 		{
 			this.editor = editor;
-			this.eolMarker = eolMarker;
 			this.textSegmentCollection = new TextSegmentCollection<TextSegment>((TextDocument)editor.Document);
 		}
 		
@@ -47,7 +46,8 @@ namespace CSharpBinding.Refactoring
 				//var startLocation = editor.Document.GetLocation(offset);
 				//var endLocation = editor.Document.GetLocation(offset + length);
 				//var node = parseInfo.CompilationUnit.GetNodeContaining(startLocation, endLocation);
-				var formatter = new AstFormattingVisitor(new CSharpFormattingOptions(), editor.Document, false, 4);
+				// TODO: pass TextEditorOptions
+				var formatter = new AstFormattingVisitor(new CSharpFormattingOptions(), editor.Document);
 				parseInfo.CompilationUnit.AcceptVisitor(formatter);
 				var segment = GetSegment(node);
 				formatter.ApplyChanges(segment.Offset, segment.Length);

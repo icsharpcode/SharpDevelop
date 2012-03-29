@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BaseRefactoringContext.cs
 //  
 // Author:
@@ -33,10 +33,11 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
+using System.ComponentModel.Design;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	public abstract class BaseRefactoringContext
+	public abstract class BaseRefactoringContext : IServiceProvider
 	{
 		protected readonly CSharpAstResolver resolver;
 		readonly CancellationToken cancellationToken;
@@ -45,13 +46,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return true;
 		}
+
+		/// <summary>
+		/// Gets a value indicating if 'var' keyword should be used or explicit types.
+		/// </summary>
+		public virtual bool UseExplicitTypes {
+			get;
+			set;
+		}
 		
 		public CancellationToken CancellationToken {
 			get { return cancellationToken; }
 		}
 		
 		public virtual AstNode RootNode {
-			get { return resolver.RootNode; }
+			get {
+				return resolver.RootNode;
+			}
+		}
+
+		public virtual CSharpParsedFile ParsedFile {
+			get {
+				return resolver.ParsedFile;
+			}
 		}
 
 		public ICompilation Compilation {
@@ -63,6 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			this.resolver = resolver;
 			this.cancellationToken = cancellationToken;
 		}
+
 
 		#region Resolving
 		public ResolveResult Resolve (AstNode node)
@@ -96,8 +114,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		#endregion
 		
-		public abstract Script StartScript();
-
 		/// <summary>
 		/// Translates the english input string to the context language.
 		/// </summary>
@@ -108,6 +124,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return str;
 		}
+
+		#region IServiceProvider implementation
+		readonly ServiceContainer services = new ServiceContainer();
+		
+		/// <summary>
+		/// Gets a service container used to associate services with this context.
+		/// </summary>
+		public ServiceContainer Services {
+			get { return services; }
+		}
+		
+		/// <summary>
+		/// Retrieves a service from the refactoring context.
+		/// If the service is not found in the <see cref="Services"/> container.
+		/// </summary>
+		public object GetService(Type serviceType)
+		{
+			return services.GetService(serviceType);
+		}
+		#endregion
 	}
 	
 }

@@ -1,6 +1,6 @@
-// 
+﻿// 
 // InspectionIssue.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -44,17 +46,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			private set;
 		}
 
-		public CodeAction Action {
+		public IList<CodeAction> Actions {
 			get;
 			private set;
 		}
 
-		public CodeIssue (string description, TextLocation start, TextLocation end, CodeAction action = null)
+		public CodeIssue(string description, TextLocation start, TextLocation end, IEnumerable<CodeAction> actions = null)
 		{
 			Desription = description;
 			Start = start;
 			End = end;
-			Action = action;
+			if (actions != null)
+				Actions = actions.ToArray();
+			else
+				Actions = EmptyList<CodeAction>.Instance;
+		}
+		
+		public CodeIssue(string description, TextLocation start, TextLocation end, CodeAction action) : this (description, start, end, action != null ? new [] { action } : null)
+		{
 		}
 	}
 }
