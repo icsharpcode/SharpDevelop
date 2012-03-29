@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				// ignore files opened as part of loading a solution.
 				ProjectService.SolutionLoading += ProjectService_SolutionLoading;
-				SD.ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEnded;
+				SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadEnded;
 				
 				FileService.FileRenamed += FileService_FileRenamed;
 				ProjectService.SolutionClosed += ProjectService_SolutionClosed;

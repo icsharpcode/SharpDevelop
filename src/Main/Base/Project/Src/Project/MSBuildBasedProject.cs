@@ -1210,6 +1210,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.projectCollection = loadInformation.ParentSolution.MSBuildProjectCollection;
 			this.FileName = loadInformation.FileName;
+			this.ActiveConfiguration = loadInformation.Configuration;
 			this.ActivePlatform = loadInformation.Platform;
 			
 			projectFile = ProjectRootElement.Open(loadInformation.FileName, projectCollection);

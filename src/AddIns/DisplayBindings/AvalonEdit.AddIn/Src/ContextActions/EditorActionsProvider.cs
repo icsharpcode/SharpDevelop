@@ -83,7 +83,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 		/// </summary>
 		async Task<IEnumerable<IContextAction>> GetActionsAsync(IEnumerable<IContextActionProvider> providers, CancellationToken cancellationToken)
 		{
-			if (SD.ParserService.LoadSolutionProjectsThreadRunning)
+			if (SD.ParserService.LoadSolutionProjectsThread.IsRunning)
 				return EmptyList<IContextAction>.Instance;
 			var providerList = providers.ToList();
 			var actions = await Task.WhenAll(providerList.Select(p => p.GetAvailableActionsAsync(this.EditorContext, cancellationToken)));

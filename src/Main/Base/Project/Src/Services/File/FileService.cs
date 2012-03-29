@@ -22,14 +22,14 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal static void Unload()
 		{
-			SD.ParserService.LoadSolutionProjectsThreadEnded -= ParserServiceLoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserServiceLoadSolutionProjectsThreadEnded;
 			serviceInitialized = false;
 		}
 		
 		internal static void InitializeService()
 		{
 			if (!serviceInitialized) {
-				SD.ParserService.LoadSolutionProjectsThreadEnded += ParserServiceLoadSolutionProjectsThreadEnded;
+				SD.ParserService.LoadSolutionProjectsThread.Finished += ParserServiceLoadSolutionProjectsThreadEnded;
 				serviceInitialized = true;
 			}
 		}

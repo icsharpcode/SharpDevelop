@@ -55,7 +55,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			if (properties.PropertiesName != null) {
 				startup.PropertiesName = properties.PropertiesName;
 			}
-			AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
 			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;
@@ -89,6 +88,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			
 			LoggingService.Info("Loading AddInTree...");
 			startup.RunInitialization();
+			
+			((AssemblyParserService)SD.AssemblyParserService).DomPersistencePath = properties.DomPersistencePath;
 			
 			// Register events to marshal back
 			Project.ProjectService.BuildStarted   += delegate { this.callback.StartBuild(); };

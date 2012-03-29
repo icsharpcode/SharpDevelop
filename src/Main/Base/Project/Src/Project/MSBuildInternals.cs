@@ -234,7 +234,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			List<ReferenceProjectItem> resolvedAssemblies = new List<ReferenceProjectItem>();
 			List<ReferenceProjectItem> handledReferenceItems = new List<ReferenceProjectItem>();
 			foreach (var assembly in query) {
-				LoggingService.Debug("Got information about " + assembly.OriginalInclude + "; fullpath=" + assembly.FullPath);
+				//LoggingService.Debug("Got information about " + assembly.OriginalInclude + "; fullpath=" + assembly.FullPath);
 				foreach (var referenceItem in assembly.ReferenceItems) {
 					referenceItem.AssemblyName = assembly.AssemblyName;
 					referenceItem.FileName = assembly.FullPath;

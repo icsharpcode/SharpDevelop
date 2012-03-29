@@ -22,6 +22,7 @@ Stuff that was renamed/moved:
 	IReturnType -> ITypeReference (unresolved) or IType (resolved)
 	Location -> TextLocation in ICSharpCode.NRefactory
 	TextLocation -> moved to ICSharpCode.NRefactory
+	ParserService -> SD.ParserService
 
 Functionality changes:
 	The result of a parser run (ParseInformation) now may contain a fully parsed AST.

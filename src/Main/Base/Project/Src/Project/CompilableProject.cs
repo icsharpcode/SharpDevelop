@@ -360,29 +360,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Type System
 		volatile ParseProjectContentContainer parseProjectContentContainer;
 		
-		protected abstract IProjectContent CreateProjectContent();
-		
-		ParseProjectContentContainer GetParseProjectContentContainer()
+		protected void InitializeProjectContent(IProjectContent initialProjectContent)
 		{
-			if (parseProjectContentContainer == null) {
-				lock (SyncRoot) {
-					if (parseProjectContentContainer == null) {
-						parseProjectContentContainer = new ParseProjectContentContainer(this, CreateProjectContent());
-					}
-				}
+			lock (SyncRoot) {
+				if (parseProjectContentContainer != null)
+					throw new InvalidOperationException("Already initialized.");
+				parseProjectContentContainer = new ParseProjectContentContainer(this, initialProjectContent);
 			}
-			return parseProjectContentContainer;
 		}
 		
 		public override IProjectContent ProjectContent {
 			get {
-				return GetParseProjectContentContainer().ProjectContent;
+				var c = parseProjectContentContainer;
+				return c != null ? c.ProjectContent : null;
 			}
 		}
 		
 		public override void OnParseInformationUpdated(ParseInformationEventArgs args)
 		{
-			GetParseProjectContentContainer().ParseInformationUpdated(args.OldParsedFile, args.NewParsedFile);
+			var c = parseProjectContentContainer;
+			if (c != null)
+				c.ParseInformationUpdated(args.OldParsedFile, args.NewParsedFile);
 			// OnParseInformationUpdated is called inside a lock, but we don't want to raise the event inside that lock.
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			SD.MainThread.InvokeAsync(

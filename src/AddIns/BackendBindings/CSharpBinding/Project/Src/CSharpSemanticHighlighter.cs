@@ -62,14 +62,14 @@ namespace CSharpBinding
 			this.parameterModifierColor = highlightingDefinition.GetNamedColor("ParameterModifiers");
 			
 			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
-			SD.ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
 			syntaxHighlighter.VisibleDocumentLinesChanged += syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		
 		public void Dispose()
 		{
 			SD.ParserService.ParseInformationUpdated -= ParserService_ParseInformationUpdated;
-			SD.ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
 			syntaxHighlighter.VisibleDocumentLinesChanged -= syntaxHighlighter_VisibleDocumentLinesChanged;
 		}
 		#endregion

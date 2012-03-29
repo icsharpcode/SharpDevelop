@@ -372,13 +372,12 @@
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\MimeTypeDetection.cs" />
-    <Compile Include="Src\Services\ParserService\AssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\DomAssemblyName.cs" />
+    <Compile Include="Src\Services\ParserService\IAssemblyParserService.cs" />
     <Compile Include="Src\Services\ParserService\IGlobalAssemblyCacheService.cs" />
     <Compile Include="Src\Services\ParserService\IParserService.cs" />
     <Compile Include="Src\Services\ParserService\IParser.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
-    <Compile Include="Src\Services\ParserService\LoadSolutionProjects.cs" />
     <Compile Include="Src\Services\ParserService\SharpDevelopSolutionSnapshot.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />

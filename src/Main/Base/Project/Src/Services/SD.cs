@@ -93,6 +93,10 @@ namespace ICSharpCode.SharpDevelop
 			get { return GetRequiredService<IParserService>(); }
 		}
 		
+		public static IAssemblyParserService AssemblyParserService {
+			get { return GetRequiredService<IAssemblyParserService>(); }
+		}
+		
 		public static IFileService FileService {
 			get { return GetRequiredService<IFileService>(); }
 		}

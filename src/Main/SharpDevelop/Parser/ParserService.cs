@@ -31,7 +31,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		public ParserService()
 		{
 			parserDescriptors = AddInTree.BuildItems<ParserDescriptor>("/Workspace/Parser", null, false);
+			this.LoadSolutionProjectsThread = new LoadSolutionProjects();
 		}
+		
+		public ILoadSolutionProjectsThread LoadSolutionProjectsThread { get; private set; }
 		
 		#region ParseInformationUpdated
 		public event EventHandler<ParseInformationEventArgs> ParseInformationUpdated = delegate {};
@@ -42,14 +45,16 @@ namespace ICSharpCode.SharpDevelop.Parser
 			// To ensure events are raised in the same order, we always invoke on the main thread.
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					string addition;
-					if (e.OldParsedFile == null)
-						addition = " (new)";
-					else if (e.NewParsedFile == null)
-						addition = " (removed)";
-					else
-						addition = " (updated)";
-					LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
+					if (!LoadSolutionProjectsThread.IsRunning) {
+						string addition;
+						if (e.OldParsedFile == null)
+							addition = " (new)";
+						else if (e.NewParsedFile == null)
+							addition = " (removed)";
+						else
+							addition = " (updated)";
+						LoggingService.Debug("ParseInformationUpdated " + e.FileName + addition);
+					}
 					ParseInformationUpdated(null, e);
 				});
 		}

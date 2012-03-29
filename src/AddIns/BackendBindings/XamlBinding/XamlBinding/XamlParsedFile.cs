@@ -148,7 +148,7 @@ namespace ICSharpCode.XamlBinding
 					element.GetAttributeValue("Name");
 				string modifier = element.GetAttributeValue(XamlBehavior.XamlNamespace, "FieldModifier");
 				
-				if (name != null) {
+				if (name != null && TypeDefinition != null) {
 					var field = new DefaultUnresolvedField(TypeDefinition, name);
 					field.Accessibility = Accessibility.Internal;
 					field.Region = new DomRegion(file.FileName, textDocument.GetLocation(element.StartOffset), textDocument.GetLocation(element.EndOffset));

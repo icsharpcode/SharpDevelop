@@ -81,6 +81,8 @@
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Parser\AssemblyParserService.cs" />
+    <Compile Include="Parser\LoadSolutionProjects.cs" />
     <Compile Include="Startup\App.xaml.cs" />
     <Compile Include="Startup\SharpDevelopMain.cs" />
     <Compile Include="Startup\SplashScreen.cs" />
@@ -143,6 +145,10 @@
     <ProjectReference Include="..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{D68133BD-1E63-496E-9EDE-4FBDBF77B486}</Project>
+      <Name>Mono.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>

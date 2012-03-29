@@ -38,14 +38,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			InitializeComponent();
 			FormLocationHelper.ApplyWindow(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
-			SD.ParserService.LoadSolutionProjectsThreadEnded += ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
 			textBox.Focus();
 		}
 		
 		protected override void OnClosed(EventArgs e)
 		{
 			Instance = null;
-			SD.ParserService.LoadSolutionProjectsThreadEnded -= ParserService_LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserService_LoadSolutionProjectsThreadEnded;
 			base.OnClosed(e);
 		}
 		

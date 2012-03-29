@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Gui;
@@ -16,35 +17,45 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <summary>
 	/// The background task that initializes the projects in the solution.
 	/// </summary>
-	static class LoadSolutionProjects
+	sealed class LoadSolutionProjects : ILoadSolutionProjectsThread
 	{
-		static JobQueue jobs = new JobQueue();
+		readonly JobQueue jobs;
 		
-		/// <summary>
-		/// Gets whether the LoadSolutionProjects thread is currently running.
-		/// </summary>
-		public static bool IsThreadRunning {
-			get {
-				return jobs.IsThreadRunningOrWaitingToStart;
-			}
+		public LoadSolutionProjects()
+		{
+			jobs = new JobQueue(this);
 		}
 		
-		/// <summary>
-		/// Occurs when the 'load solution projects' thread has finished.
-		/// This event is not raised when the 'load solution projects' is aborted because the solution was closed.
-		/// This event is raised on the main thread.
-		/// </summary>
-		public static event EventHandler ThreadEnded = delegate {};
+		/// <inheritdoc/>
+		public bool IsRunning { get; private set; }
 		
-		static void RaiseThreadEnded()
+		/// <inheritdoc/>
+		public event EventHandler Started = delegate {};
+		
+		/// <inheritdoc/>
+		public event EventHandler Finished = delegate {};
+		
+		Stopwatch threadRunningTime;
+		
+		void RaiseThreadStarted()
 		{
-			Gui.WorkbenchSingleton.SafeThreadAsyncCall(
+			threadRunningTime = Stopwatch.StartNew();
+			SD.MainThread.InvokeAsync(
 				delegate {
-					// only raise the event if the thread wasn't re-started
-					if (!IsThreadRunning) {
-						ThreadEnded(null, EventArgs.Empty);
-					}
-				});
+					IsRunning = true;
+					Started(this, EventArgs.Empty);
+				}).FireAndForget();
+		}
+		
+		void RaiseThreadEnded()
+		{
+			if (threadRunningTime != null)
+				LoggingService.Debug("LoadSolutionProjectsThread finished after " + threadRunningTime.Elapsed);
+			SD.MainThread.InvokeAsync(
+				delegate {
+					IsRunning = false;
+					Finished(this, EventArgs.Empty);
+				}).FireAndForget();
 		}
 		
 		static string GetLoadReferenceTaskTitle(string projectName)
@@ -63,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <param name="action">The action to run. Parameter: a nested progress monitor for the action.</param>
 		/// <param name="name">Name of the action - shown in the status bar</param>
 		/// <param name="cost">Cost of the action</param>
-		public static void AddJob(Action<IProgressMonitor> action, string name, double cost)
+		public void AddJob(Action<IProgressMonitor> action, string name, double cost)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");
@@ -73,18 +84,17 @@ namespace ICSharpCode.SharpDevelop.Parser
 			jobs.AddJob(new JobTask(action, name, cost));
 			// Start the thread with a bit delay so that the SD UI gets responsive first,
 			// and so that the total cost is known for showing the progress bar.
-			System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(
-				System.Windows.Threading.DispatcherPriority.Background,
-				new Action(jobs.StartRunningIfRequired));
+			SD.MainThread.InvokeAsync(jobs.StartRunningIfRequired, DispatcherPriority.Background).FireAndForget();
 		}
 		
-		public static void CancelAllJobs()
+		public void CancelAllJobs()
 		{
 			jobs.Clear();
 		}
 		
 		sealed class JobQueue
 		{
+			readonly LoadSolutionProjects loadSolutionProjects;
 			readonly object lockObj = new object();
 			readonly Queue<JobTask> actions = new Queue<JobTask>();
 			CancellationTokenSource cancellationSource = new CancellationTokenSource();
@@ -93,13 +103,21 @@ namespace ICSharpCode.SharpDevelop.Parser
 			double totalWork;
 			double workDone;
 			
+			public JobQueue(LoadSolutionProjects loadSolutionProjects)
+			{
+				this.loadSolutionProjects = loadSolutionProjects;
+			}
+			
 			public void AddJob(JobTask task)
 			{
 				if (task == null)
 					throw new ArgumentNullException("task");
 				lock (lockObj) {
+					bool wasRunning = this.threadIsRunning || this.actions.Count > 0;
 					this.totalWork += task.cost;
 					this.actions.Enqueue(task);
+					if (!wasRunning)
+						loadSolutionProjects.RaiseThreadStarted();
 				}
 			}
 			
@@ -117,12 +135,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 					if (!this.threadIsRunning && this.actions.Count > 0) {
 						this.threadIsRunning = true;
 						
-						progressMonitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor(cancellationSource.Token);
+						progressMonitor = SD.StatusBar.CreateProgressMonitor(cancellationSource.Token);
 						progressMonitor.TaskName = this.actions.Peek().name;
 						
 						Thread thread = new Thread(new ThreadStart(RunThread));
 						thread.Name = "LoadSolutionProjects";
-						thread.Priority = ThreadPriority.BelowNormal;
 						thread.IsBackground = true;
 						thread.Start();
 					}
@@ -146,9 +163,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 							// restart if necessary:
 							if (actions.Count > 0) {
 								actions.Dequeue(); // dequeue the null
-								WorkbenchSingleton.SafeThreadAsyncCall(StartRunningIfRequired);
+								if (actions.Count > 0)
+									WorkbenchSingleton.SafeThreadAsyncCall(StartRunningIfRequired);
+								else
+									loadSolutionProjects.RaiseThreadEnded();
+							} else {
+								loadSolutionProjects.RaiseThreadEnded();
 							}
-							RaiseThreadEnded();
 							return;
 						}
 						task = this.actions.Dequeue();

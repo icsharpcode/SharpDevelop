@@ -44,11 +44,6 @@ namespace ICSharpCode.SharpDevelop.Tests.WebReferences
 				get { return readOnly; }
 			}
 			
-			protected override IProjectContent CreateProjectContent()
-			{
-				throw new NotImplementedException();
-			}
-			
 			protected override ProjectBehavior CreateDefaultBehavior()
 			{
 				return new DotNetStartBehavior(this, null);

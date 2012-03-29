@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			createdProjects.AddRange(projects);
 		}		
 		
-		public ReadOnlyCollection<IProject> CreatedProjects {
+		public IReadOnlyList<IProject> CreatedProjects {
 			get { return createdProjects.AsReadOnly(); }
 		}
 		
@@ -44,5 +44,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string ProjectBasePath { get; set; }
 		public TargetFramework TargetFramework { get; set; }
 		public Solution Solution { get; set; }
+		
+		/// <summary>
+		/// Whether to initialize the type system for the newly created project.
+		/// The default is <c>false</c> because SharpDevelop saves and re-loads newly created projects,
+		/// so we don't need a type system if we're going to re-load it anyways.
+		/// </summary>
+		public bool InitializeTypeSystem { get; set; }
 	}
 }

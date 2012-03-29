@@ -587,7 +587,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				// set the target platform
 				SolutionItem projectConfig = newSolution.GetProjectConfiguration(loadInfo.Guid);
-				loadInfo.Platform = AbstractProject.GetPlatformNameFromKey(projectConfig.Location);
+				loadInfo.Configuration = AbstractProject.GetConfigurationNameFromKey(projectConfig.Location);
+				loadInfo.Platform = FixPlatformNameForProject(AbstractProject.GetPlatformNameFromKey(projectConfig.Location));
 				
 				loadInfo.ProgressMonitor = progressMonitor;
 				progressMonitor.Progress = (double)i / projectsToLoad.Count;

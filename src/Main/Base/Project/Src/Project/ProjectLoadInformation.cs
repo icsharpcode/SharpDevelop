@@ -13,10 +13,18 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public Solution ParentSolution { get; private set; }
 		public string FileName { get; private set; }
+		public string Configuration { get; internal set; }
 		public string Platform { get; internal set; }
 		public string ProjectName { get; private set; }
 		public string TypeGuid { get; set; }
 		public IList<ProjectSection> ProjectSections {get; set;}
+		
+		/// <summary>
+		/// Whether to initialize the type system for the newly loaded project.
+		/// The default is <c>true</c>.
+		/// </summary>
+		public bool InitializeTypeSystem { get; set; }
+		
 		internal string Guid { get; set; }
 		
 		internal bool? upgradeToolsVersion;
@@ -47,6 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ParentSolution = parentSolution;
 			this.FileName = fileName;
 			this.ProjectName = projectName;
+			this.InitializeTypeSystem = true;
 		}
 	}
 }

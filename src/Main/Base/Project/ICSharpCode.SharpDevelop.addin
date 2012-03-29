@@ -58,6 +58,8 @@
 		         class="ICSharpCode.SharpDevelop.Parser.GlobalAssemblyCacheService"/>
 		<Service id="ICSharpCode.SharpDevelop.Parser.IParserService"
 		         class="ICSharpCode.SharpDevelop.Parser.ParserService"/>
+		<Service id="ICSharpCode.SharpDevelop.Parser.IAssemblyParserService"
+		         class="ICSharpCode.SharpDevelop.Parser.AssemblyParserService"/>
 		<Service id="ICSharpCode.SharpDevelop.IFileService"
 		         class="ICSharpCode.SharpDevelop.Workbench.FileService"/>
 	</Path>

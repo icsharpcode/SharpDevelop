@@ -68,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (callback == null)
 				throw new ArgumentNullException("callback");
 			SD.MainThread.VerifyAccess();
-			if (SD.ParserService.LoadSolutionProjectsThreadRunning) {
+			if (SD.ParserService.LoadSolutionProjectsThread.IsRunning) {
 				progressMonitor.ShowingDialog = true;
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
 				progressMonitor.ShowingDialog = false;

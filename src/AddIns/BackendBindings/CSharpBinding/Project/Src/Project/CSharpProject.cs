@@ -52,6 +52,7 @@ namespace CSharpBinding
 			: base(loadInformation)
 		{
 			Init();
+			InitializeProjectContent(new CSharpProjectContent());
 		}
 		
 		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
@@ -73,6 +74,9 @@ namespace CSharpBinding
 			            PropertyStorageLocations.ConfigurationSpecific, false);
 			SetProperty("Release", null, "DefineConstants", "TRACE",
 			            PropertyStorageLocations.ConfigurationSpecific, false);
+			
+			if (info.InitializeTypeSystem)
+				InitializeProjectContent(new CSharpProjectContent());
 		}
 		
 		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
@@ -156,11 +160,6 @@ namespace CSharpBinding
 			}
 		}
 		 */
-		
-		protected override IProjectContent CreateProjectContent()
-		{
-			return new CSharpProjectContent();
-		}
 		
 		protected override ProjectBehavior CreateDefaultBehavior()
 		{

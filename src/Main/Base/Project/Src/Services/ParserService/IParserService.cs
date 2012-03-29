@@ -12,6 +12,7 @@ using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -29,26 +30,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		IReadOnlyList<string> TaskListTokens { get; set; }
 		
-		#region Load Solution Projects Thread
-		/// <summary>
-		/// Gets whether the solution is being loaded, or a major re-parse is happening
-		/// (e.g. after adding a project).
-		/// </summary>
-		/// <remarks>This property is only changed by the main thread.</remarks>
-		bool LoadSolutionProjectsThreadRunning { get; }
-		
-		/// <summary>
-		/// This event is raised when the LoadSolutionProjectsThreadRunning property changes to <c>true</c>.
-		/// This always happens on the main thread.
-		/// </summary>
-		event EventHandler LoadSolutionProjectsThreadStarted;
-		
-		/// <summary>
-		/// This event is raised when the LoadSolutionProjectsThreadRunning property changes to <c>false</c>.
-		/// This always happens on the main thread.
-		/// </summary>
-		event EventHandler LoadSolutionProjectsThreadEnded; // TODO: rename to finished
-		#endregion
+		ILoadSolutionProjectsThread LoadSolutionProjectsThread { get; }
 		
 		#region GetCompilation
 		/// <summary>
@@ -287,5 +269,34 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		event EventHandler<ParseInformationEventArgs> ParseInformationUpdated;
 		#endregion
+	}
+	
+	public interface ILoadSolutionProjectsThread
+	{
+		/// <summary>
+		/// Gets whether the solution is being loaded, or a major re-parse is happening
+		/// (e.g. after adding a project).
+		/// </summary>
+		bool IsRunning { get; }
+		
+		/// <summary>
+		/// This event is raised when the IsRunning property changes to <c>true</c>.
+		/// This always happens on the main thread.
+		/// </summary>
+		event EventHandler Started;
+		
+		/// <summary>
+		/// This event is raised when the IsRunning property changes to <c>false</c>.
+		/// This always happens on the main thread.
+		/// </summary>
+		event EventHandler Finished;
+		
+		/// <summary>
+		/// Adds a new task to the job queue, and starts the LoadSolutionProjects thread (if its not already running).
+		/// </summary>
+		/// <param name="action">The action to run. Parameter: a nested progress monitor for the action.</param>
+		/// <param name="name">Name of the action - shown in the status bar</param>
+		/// <param name="cost">Cost of the action</param>
+		void AddJob(Action<IProgressMonitor> action, string name, double cost);
 	}
 }

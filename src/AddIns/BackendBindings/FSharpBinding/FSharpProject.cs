@@ -41,15 +41,6 @@ namespace FSharpBinding
 		{
 			return new FSharpProjectBehavior(this, base.CreateDefaultBehavior());
 		}
-		
-		public override ICSharpCode.NRefactory.TypeSystem.IProjectContent ProjectContent {
-			get { return null; }
-		}
-		
-		protected override ICSharpCode.NRefactory.TypeSystem.IProjectContent CreateProjectContent()
-		{
-			throw new NotSupportedException();
-		}
 	}
 	
 	public class FSharpProjectBehavior : ProjectBehavior

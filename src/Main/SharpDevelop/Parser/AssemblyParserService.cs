@@ -11,13 +11,13 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Build.Tasks;
 using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Parser
@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <summary>
 	/// Portions of parser service that deal with loading external assemblies for code completion.
 	/// </summary>
-	public static class AssemblyParserService
+	sealed class AssemblyParserService : IAssemblyParserService
 	{
 		#region Get Assembly By File Name
 		sealed class LoadedAssembly
@@ -41,11 +41,11 @@ namespace ICSharpCode.SharpDevelop.Parser
 		}
 		
 		// TODO: use weak reference to IProjectContent (not to LoadedAssembly!) so that unused assemblies can be unloaded
-		static Dictionary<FileName, LoadedAssembly> projectContentDictionary = new Dictionary<FileName, LoadedAssembly>();
+		Dictionary<FileName, LoadedAssembly> projectContentDictionary = new Dictionary<FileName, LoadedAssembly>();
 		
 		[ThreadStatic] static Dictionary<FileName, LoadedAssembly> up2dateProjectContents;
 		
-		public static IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		public IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			// We currently do not support cancelling the load operation itself, because another GetAssembly() call
 			// with a different cancellation token might request the same assembly.
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return asm.ProjectContent.Result;
 		}
 		
-		public static Task<IUnresolvedAssembly> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
+		public Task<IUnresolvedAssembly> GetAssemblyAsync(FileName fileName, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			bool isNewTask;
 			LoadedAssembly asm = GetLoadedAssembly(fileName, out isNewTask);
@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// This applies only to the thread that called AvoidRedundantChecks() - other threads will
 		/// perform update checks as usual.
 		/// </summary>
-		public static IDisposable AvoidRedundantChecks()
+		public IDisposable AvoidRedundantChecks()
 		{
 			if (up2dateProjectContents != null)
 				return null;
@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				});
 		}
 		
-		static void CleanWeakDictionary()
+		void CleanWeakDictionary()
 		{
 			List<FileName> removed = new List<FileName>();
 			foreach (var pair in projectContentDictionary) {
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				projectContentDictionary.Remove(key);
 		}
 		
-		static LoadedAssembly GetLoadedAssembly(FileName fileName, out bool isNewTask)
+		LoadedAssembly GetLoadedAssembly(FileName fileName, out bool isNewTask)
 		{
 			isNewTask = false;
 			LoadedAssembly asm;
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region Load Assembly
-		static IUnresolvedAssembly LoadAssembly(FileName fileName, CancellationToken cancellationToken)
+		IUnresolvedAssembly LoadAssembly(FileName fileName, CancellationToken cancellationToken)
 		{
 			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
 			string cacheFileName = GetCacheFileName(fileName);
@@ -229,9 +229,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Gets/Sets the directory for cached project contents.
 		/// </summary>
-		public static string DomPersistencePath { get; set; }
+		public string DomPersistencePath { get; set; }
 		
-		static string GetCacheFileName(FileName assemblyFileName)
+		string GetCacheFileName(FileName assemblyFileName)
 		{
 			if (DomPersistencePath == null)
 				return null;
@@ -271,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		static void SaveToCache(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)
+		void SaveToCache(string cacheFileName, DateTime lastWriteTime, IUnresolvedAssembly pc)
 		{
 			if (cacheFileName == null)
 				return;
@@ -323,14 +323,5 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		#endregion
-		
-		internal static string FindReferenceAssembly(string shortName)
-		{
-			string path = Path.Combine(referenceAssembliesPath, @".NETFramework\v4.0", shortName + ".dll");
-			if (File.Exists(path))
-				return path;
-			else
-				return null;
-		}
 	}
 }
