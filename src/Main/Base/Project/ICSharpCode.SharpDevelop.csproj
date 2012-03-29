@@ -357,6 +357,7 @@
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
     <Compile Include="Src\Services\File\FileChangeWatcher.cs" />
     <Compile Include="Src\Services\File\IFileService.cs" />
+    <Compile Include="Src\Services\File\OnDiskTextSourceVersion.cs" />
     <Compile Include="Src\Services\File\OpenedFile.cs" />
     <Compile Include="Src\Services\IMessageLoop.cs" />
     <Compile Include="Src\Services\LanguageBinding\AggregatedLanguageBinding.cs" />

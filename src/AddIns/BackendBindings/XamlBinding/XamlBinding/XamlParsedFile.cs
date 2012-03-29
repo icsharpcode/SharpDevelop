@@ -53,10 +53,11 @@ namespace ICSharpCode.XamlBinding
 			get { return fileName; }
 		}
 		
-		DateTime lastWriteTime = DateTime.UtcNow;
+		DateTime? lastWriteTime;
 		
-		public DateTime LastWriteTime {
+		public DateTime? LastWriteTime {
 			get { return lastWriteTime; }
+			set { lastWriteTime = value; }
 		}
 		
 		public IList<IUnresolvedTypeDefinition> TopLevelTypeDefinitions {

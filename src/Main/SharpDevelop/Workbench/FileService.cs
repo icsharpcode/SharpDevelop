@@ -118,7 +118,10 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		public ITextSource GetFileContentFromDisk(FileName fileName, CancellationToken cancellationToken)
 		{
-			return new StringTextSource(FileReader.ReadFileContent(fileName, DefaultFileEncoding));
+			cancellationToken.ThrowIfCancellationRequested();
+			string text = FileReader.ReadFileContent(fileName, DefaultFileEncoding);
+			DateTime lastWriteTime = File.GetLastWriteTimeUtc(fileName);
+			return new StringTextSource(text, new OnDiskTextSourceVersion(lastWriteTime));
 		}
 		#endregion
 		

@@ -221,6 +221,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 						throw new NullReferenceException(parser.GetType().Name + ".Parse() returned null");
 					if (fullParseInformationRequested && !parseInfo.IsFullParseInformation)
 						throw new InvalidOperationException(parser.GetType().Name + ".Parse() did not return full parse info as requested.");
+					OnDiskTextSourceVersion onDiskVersion = fileContent.Version as OnDiskTextSourceVersion;
+					if (onDiskVersion != null)
+						parseInfo.ParsedFile.LastWriteTime = onDiskVersion.LastWriteTime;
 					FreezableHelper.Freeze(parseInfo.ParsedFile);
 					results[i] = new ParseInformationEventArgs(entries[i].Project, entries[i].ParsedFile, parseInfo);
 				}
@@ -326,5 +329,25 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return task;
 		}
 		#endregion
+		
+		public void RegisterParsedFile(IProject project, IParsedFile parsedFile)
+		{
+			if (project == null)
+				throw new ArgumentNullException("project");
+			if (parsedFile == null)
+				throw new ArgumentNullException("parsedFile");
+			FreezableHelper.Freeze(parsedFile);
+			var newParseInfo = new ParseInformation(parsedFile, false);
+			lock (this) {
+				int index = FindIndexForProject(project);
+				if (index >= 0) {
+					currentVersion = null;
+					var args = new ParseInformationEventArgs(project, entries[index].ParsedFile, newParseInfo);
+					entries[index] = new ProjectEntry(project, parsedFile, null);
+					project.OnParseInformationUpdated(args);
+					parserService.RaiseParseInformationUpdated(args);
+				}
+			}
+		}
 	}
 }

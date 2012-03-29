@@ -269,6 +269,13 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// </summary>
 		event EventHandler<ParseInformationEventArgs> ParseInformationUpdated;
 		#endregion
+		
+		/// <summary>
+		/// Registers parse information for the specified file.
+		/// The file must belong to the specified project, otherwise this method does nothing.
+		/// </summary>
+		/// <remarks>This method is intended for restoring parse information cached on disk.</remarks>
+		void RegisterParsedFile(FileName fileName, IProject project, IParsedFile parsedFile);
 	}
 	
 	public interface ILoadSolutionProjectsThread

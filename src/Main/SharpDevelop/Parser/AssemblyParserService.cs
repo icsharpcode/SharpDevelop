@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			if (pc != null)
 				return pc;
 			
-			LoggingService.Debug("Loading " + fileName);
+			//LoggingService.Debug("Loading " + fileName);
 			cancellationToken.ThrowIfCancellationRequested();
 			var param = new ReaderParameters();
 			param.AssemblyResolver = new DummyAssemblyResolver();
@@ -246,16 +246,15 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			if (cacheFileName == null || !File.Exists(cacheFileName))
 				return null;
-			LoggingService.Debug("Deserializing " + cacheFileName);
+			//LoggingService.Debug("Deserializing " + cacheFileName);
 			try {
 				using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
 					using (BinaryReader reader = new BinaryReaderWith7BitEncodedInts(fs)) {
 						if (reader.ReadInt64() != lastWriteTime.Ticks) {
-							LoggingService.Debug("Timestamp mismatch, deserialization aborted.");
+							LoggingService.Debug("Timestamp mismatch, deserialization aborted. (" + cacheFileName + ")");
 							return null;
 						}
 						FastSerializer s = new FastSerializer();
-						s.SerializationBinder = new MySerializationBinder();
 						return (IUnresolvedAssembly)s.Deserialize(reader);
 					}
 				}
@@ -282,7 +281,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 					using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
 						writer.Write(lastWriteTime.Ticks);
 						FastSerializer s = new FastSerializer();
-						s.SerializationBinder = new MySerializationBinder();
 						s.Serialize(writer, pc);
 					}
 				}
@@ -293,33 +291,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 				// Similarly, we also ignore the other kinds of IO exceptions.
 			} catch (UnauthorizedAccessException ex) {
 				LoggingService.Warn(ex);
-			}
-		}
-		
-		sealed class MySerializationBinder : SerializationBinder
-		{
-			public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
-			{
-				if (serializedType.Assembly == typeof(IProjectContent).Assembly) {
-					assemblyName = "NRefactory";
-				} else {
-					assemblyName = serializedType.Assembly.FullName;
-				}
-				typeName = serializedType.FullName;
-			}
-			
-			public override Type BindToType(string assemblyName, string typeName)
-			{
-				Assembly asm;
-				switch (assemblyName) {
-					case "NRefactory":
-						asm = typeof(IProjectContent).Assembly;
-						break;
-					default:
-						asm = Assembly.Load(assemblyName);
-						break;
-				}
-				return asm.GetType(typeName);
 			}
 		}
 		#endregion

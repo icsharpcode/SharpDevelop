@@ -572,8 +572,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			return false;
 		}
 		
+		Properties projectSpecificProperties = new Properties();
+		
 		[Browsable(false)]
-		public Properties ProjectSpecificProperties { get; protected set; }
+		public Properties ProjectSpecificProperties {
+			get { return projectSpecificProperties; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				projectSpecificProperties = value;
+			}
+		}
 		
 		public virtual string GetDefaultNamespace(string fileName)
 		{

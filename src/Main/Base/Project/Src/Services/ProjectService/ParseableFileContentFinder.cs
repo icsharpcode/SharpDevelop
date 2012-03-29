@@ -19,17 +19,25 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		FileName[] viewContentFileNamesCollection = SD.MainThread.InvokeIfRequired(() => SD.FileService.OpenedFiles.Select(f => f.FileName).ToArray());
 		
+		public ITextSource CreateForOpenFile(FileName fileName)
+		{
+			foreach (FileName name in viewContentFileNamesCollection) {
+				if (FileUtility.IsEqualFileName(name, fileName))
+					return SD.FileService.GetFileContentForOpenFile(fileName);
+			}
+			return null;
+		}
+		
 		/// <summary>
 		/// Retrieves the file contents for the specified project items.
 		/// </summary>
 		public ITextSource Create(FileName fileName)
 		{
-			foreach (FileName name in viewContentFileNamesCollection) {
-				if (FileUtility.IsEqualFileName(name, fileName))
-					return SD.FileService.GetFileContent(fileName);
-			}
+			ITextSource textSource = CreateForOpenFile(fileName);
+			if (textSource != null)
+				return textSource;
 			try {
-				return new StringTextSource(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(fileName, SD.FileService.DefaultFileEncoding));
+				return SD.FileService.GetFileContentFromDisk(fileName);
 			} catch (IOException) {
 				return null;
 			} catch (UnauthorizedAccessException) {

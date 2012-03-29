@@ -5,12 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -33,12 +36,16 @@ namespace ICSharpCode.SharpDevelop.Parser
 		// time necessary for loading references, in relation to time for a single C# file
 		const int LoadingReferencesWorkAmount = 15;
 		
+		string cacheFileName;
+		
 		public ParseProjectContentContainer(MSBuildBasedProject project, IProjectContent initialProjectContent)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
 			this.project = project;
 			this.projectContent = initialProjectContent.SetAssemblyName(project.AssemblyName);
+			
+			this.cacheFileName = GetCacheFileName(FileName.Create(project.FileName));
 			
 			ProjectService.ProjectItemAdded += OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
@@ -70,7 +77,103 @@ namespace ICSharpCode.SharpDevelop.Parser
 			foreach (var parsedFile in projectContent.Files) {
 				SD.ParserService.RemoveOwnerProject(FileName.Create(parsedFile.FileName), project);
 			}
+			var pc = projectContent;
+			Task.Run(
+				delegate {
+					pc = pc.RemoveAssemblyReferences(pc.AssemblyReferences);
+					int serializableFileCount = 0;
+					List<IParsedFile> nonSerializableParsedFiles = new List<IParsedFile>();
+					foreach (var parsedFile in pc.Files) {
+						if (!parsedFile.GetType().IsSerializable || parsedFile.LastWriteTime == default(DateTime))
+							nonSerializableParsedFiles.Add(parsedFile);
+						else
+							serializableFileCount++;
+					}
+					// remove non-serializable parsed files
+					if (nonSerializableParsedFiles.Count > 0)
+						pc = pc.UpdateProjectContent(nonSerializableParsedFiles, null);
+					if (serializableFileCount > 3)
+						SaveToCache(cacheFileName, pc);
+					else
+						RemoveCache(cacheFileName);
+				}).FireAndForget();
 		}
+		
+		#region Caching logic (serialization)
+		
+		static string GetCacheFileName(FileName projectFileName)
+		{
+			string persistencePath = SD.AssemblyParserService.DomPersistencePath;
+			if (persistencePath == null)
+				return null;
+			string cacheFileName = Path.GetFileNameWithoutExtension(projectFileName);
+			if (cacheFileName.Length > 32)
+				cacheFileName = cacheFileName.Substring(cacheFileName.Length - 32); // use 32 last characters
+			cacheFileName = Path.Combine(persistencePath, cacheFileName + "." + projectFileName.GetHashCode().ToString("x8") + ".prj");
+			return cacheFileName;
+		}
+		
+		static IProjectContent TryReadFromCache(string cacheFileName)
+		{
+			if (cacheFileName == null || !File.Exists(cacheFileName))
+				return null;
+			LoggingService.Debug("Deserializing " + cacheFileName);
+			try {
+				using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 4096, FileOptions.SequentialScan)) {
+					using (BinaryReader reader = new BinaryReaderWith7BitEncodedInts(fs)) {
+						FastSerializer s = new FastSerializer();
+						return (IProjectContent)s.Deserialize(reader);
+					}
+				}
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+				return null;
+			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
+				return null;
+			} catch (SerializationException ex) {
+				LoggingService.Warn(ex);
+				return null;
+			}
+		}
+		
+		static void SaveToCache(string cacheFileName, IProjectContent pc)
+		{
+			if (cacheFileName == null)
+				return;
+			LoggingService.Debug("Serializing to " + cacheFileName);
+			try {
+				Directory.CreateDirectory(Path.GetDirectoryName(cacheFileName));
+				using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
+					using (BinaryWriter writer = new BinaryWriterWith7BitEncodedInts(fs)) {
+						FastSerializer s = new FastSerializer();
+						s.Serialize(writer, pc);
+					}
+				}
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+				// Can happen if two SD instances are trying to access the file at the same time.
+				// We'll just let one of them win, and instance that got the exception won't write to the cache at all.
+				// Similarly, we also ignore the other kinds of IO exceptions.
+			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
+			}
+		}
+		
+		void RemoveCache(string cacheFileName)
+		{
+			if (cacheFileName == null)
+				return;
+			try {
+				File.Delete(cacheFileName);
+			} catch (IOException ex) {
+				LoggingService.Warn(ex);
+			} catch (UnauthorizedAccessException ex) {
+				LoggingService.Warn(ex);
+			}
+		}
+		
+		#endregion
 		
 		public IProjectContent ProjectContent {
 			get {
@@ -120,6 +223,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		void ParseFiles(IReadOnlyList<FileName> filesToParse, IProgressMonitor progressMonitor)
 		{
+			IProjectContent cachedPC = TryReadFromCache(cacheFileName);
 			ParseableFileContentFinder finder = new ParseableFileContentFinder();
 			
 			object progressLock = new object();
@@ -131,9 +235,26 @@ namespace ICSharpCode.SharpDevelop.Parser
 					CancellationToken = progressMonitor.CancellationToken
 				},
 				fileName => {
-					ITextSource content = finder.Create(fileName);
-					if (content != null) {
-						SD.ParserService.ParseFile(fileName, content, project);
+					ITextSource content = finder.CreateForOpenFile(fileName);
+					bool wasLoadedFromCache = false;
+					if (content == null && cachedPC != null) {
+						IParsedFile parsedFile = cachedPC.GetFile(fileName);
+						if (parsedFile != null && parsedFile.LastWriteTime == File.GetLastWriteTimeUtc(fileName)) {
+							SD.ParserService.RegisterParsedFile(fileName, project, parsedFile);
+							wasLoadedFromCache = true;
+						}
+					}
+					if (!wasLoadedFromCache) {
+						if (content == null) {
+							try {
+								content = SD.FileService.GetFileContentFromDisk(fileName);
+							} catch (IOException) {
+							} catch (UnauthorizedAccessException) {
+							}
+						}
+						if (content != null) {
+							SD.ParserService.ParseFile(fileName, content, project);
+						}
 					}
 					lock (progressLock) {
 						progressMonitor.Progress += fileCountInverse;

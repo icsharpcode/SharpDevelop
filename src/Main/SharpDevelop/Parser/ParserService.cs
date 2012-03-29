@@ -360,5 +360,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			// TODO
 		}
+		
+		public void RegisterParsedFile(FileName fileName, IProject project, IParsedFile parsedFile)
+		{
+			GetFileEntry(fileName, true).RegisterParsedFile(project, parsedFile);
+		}
 	}
 }
