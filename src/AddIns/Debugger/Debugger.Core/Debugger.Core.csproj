@@ -56,6 +56,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDStringProvider.cs" />
     <Compile Include="Interop\MTA2STA.cs" />
     <Compile Include="ManagedCallback.cs" />
     <Compile Include="ManagedCallbackProxy.cs" />

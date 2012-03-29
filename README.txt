@@ -19,19 +19,19 @@ you would expect in an IDE plus a few more.
 How To Compile
 SharpDevelop can be compiled using the supplied .bat files, or in SharpDevelop itself.
 
-System Requirements (compile and run time)
-- Windows XP SP2 or higher.
- - .NET 3.5 SP1
+System Requirements (running SharpDevelop)
+ - Windows XP SP2 or higher.
  - .NET 4 prerequisites (might be already installed, e.g. by Windows Update):
    - Windows Installer 3.1: http://www.microsoft.com/downloads/details.aspx?familyid=889482FC-5F56-4A38-B838-DE776FD4138C&displaylang=en
    - Windows Imaging Component: http://www.microsoft.com/downloads/details.aspx?FamilyId=8E011506-6307-445B-B950-215DEF45DDD8&displaylang=en#filelist
  - .NET 4.0 Full (Extended, the "Client" portion is not sufficient)
  - Visual C++ 2008 SP1 Runtime (http://www.microsoft.com/downloads/details.aspx?familyid=A5C84275-3B97-4AB7-A40D-3802B2AF5FC2&displaylang=en)
  
-Extended Requirements to compile
-- Windows SDK 7.0
-- Windows SDK 6.1 (optional; C++ compiler needed for profiler)
-- Windows PowerShell
+Extended Requirements (building SharpDevelop)
+ - .NET 3.5 SP1
+ - Windows SDK 7.1
+ - Windows SDK 7.0 (optional; C++ compiler needed for profiler)
+ - Windows PowerShell
 
 Libraries and integrated tools:
 	AvalonDock: New BSD License (BSD) (thanks to Adolfo Marinucci) 

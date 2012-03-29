@@ -82,7 +82,6 @@
     <Compile Include="Completion\CtrlSpaceNoAttributeValuesForCompletionTestFixture.cs" />
     <Compile Include="Completion\ElementCompletionWindowTests.cs" />
     <Compile Include="Completion\FirstCompletionListItemSelectedTestFixture.cs" />
-    <Compile Include="Completion\NamespaceCompletionWindowTestFixture.cs" />
     <Compile Include="Completion\NamespaceCompletionWindowTestFixtureBase.cs" />
     <Compile Include="Completion\NoCompletionItemsTestFixture.cs" />
     <Compile Include="Completion\NullCompletionItemsReturnedTestFixture.cs" />

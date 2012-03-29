@@ -8,34 +8,6 @@
 	<gui:AbstractInlineRefactorDialog.Resources>
 		<gui:IntToBoolConverter x:Key="intToBoolConverter" />
 		<Style TargetType="Button" BasedOn="{x:Static sd:GlobalStyles.ButtonStyle}"/>
-		
-		<Style x:Key="ListViewItemFocusHighlight" TargetType="{x:Type ListViewItem}">
-			<!-- This style replaces the default ListViewItem template with one that highlights the focused item instead of the selected items -->
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type ListViewItem}">
-						<Border Name="Bd"
-						        Background="{TemplateBinding Background}"
-						        BorderBrush="{TemplateBinding BorderBrush}"
-						        BorderThickness="{TemplateBinding BorderThickness}"
-						        Padding="{TemplateBinding Padding}"
-						        SnapsToDevicePixels="true">
-							<GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
-						</Border>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsKeyboardFocusWithin"
-							         Value="true">
-								<Setter TargetName="Bd"
-								        Property="Background"
-								        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-								<Setter Property="Foreground"
-								        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
 	</gui:AbstractInlineRefactorDialog.Resources>
 	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
 		<Grid.RowDefinitions>
@@ -46,7 +18,9 @@
 		<TextBlock Margin="3"
 		           Text="{sd:Localize AddIns.SharpRefactoring.InsertCtor.Description}"
 		           TextWrapping="Wrap" />
-		<ListView x:Name="varList" Grid.Row="1" SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" ItemContainerStyle="{StaticResource ListViewItemFocusHighlight}" MaxHeight="300">
+		<ListView x:Name="varList" Grid.Row="1"
+		          SelectionMode="Multiple" KeyboardNavigation.TabNavigation="Cycle" 
+		          ItemContainerStyle="{x:Static sd:GlobalStyles.ListViewItemFocusHighlightStyle}" MaxHeight="300">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">

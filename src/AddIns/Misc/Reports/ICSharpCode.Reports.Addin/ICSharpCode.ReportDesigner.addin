@@ -12,6 +12,7 @@
 	</Manifest>
 	
 	<Runtime>
+		<Import assembly = "ICSharpCode.Reports.Core.dll" />
 		<Import assembly = "ICSharpCode.Reports.Addin.dll">
 			<Doozer name="ReportDialogPanel" class="ICSharpCode.Reports.Addin.ReportWizard.DialogPanelDoozer"/>
 		</Import>

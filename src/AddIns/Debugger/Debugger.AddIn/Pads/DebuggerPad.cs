@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			if (this.toolbar != null) {
 				this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
-			
+				
 				this.panel.Children.Add(toolbar);
 			}
 			
@@ -53,8 +53,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		}
 		
-		public virtual void RefreshPad()
+		/// <summary>
+		/// Never call this directly. Always use InvalidatePad()
+		/// </summary>
+		protected virtual void RefreshPad()
 		{
+			
+		}
+		
+		bool invalidatePadEnqueued;
+		
+		public void InvalidatePad()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			if (invalidatePadEnqueued || WorkbenchSingleton.Workbench == null)
+				return;
+			invalidatePadEnqueued = true;
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					invalidatePadEnqueued = false;
+					RefreshPad();
+				});
 			
 		}
 		

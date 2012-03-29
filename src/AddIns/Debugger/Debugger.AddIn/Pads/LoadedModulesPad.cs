@@ -2,24 +2,30 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
-
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
+using Debugger.AddIn.Pads.ParallelPad;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LoadedModulesPad : DebuggerPad
 	{
-		SimpleListViewControl  loadedModulesList;
+		ListView loadedModulesList;
 		Process debuggedProcess;
+		ObservableCollection<ModuleModel> loadedModules;
 		
 		protected override void InitializeComponents()
 		{
-			loadedModulesList = new SimpleListViewControl();
+			loadedModulesList = new ListView();
+			loadedModules = new ObservableCollection<ModuleModel>();
+			loadedModulesList.ItemsSource = loadedModules;
+			loadedModulesList.View = new GridView();
 			panel.Children.Add(loadedModulesList);
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
@@ -51,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				debuggedProcess.Modules.Added += debuggedProcess_ModuleLoaded;
 				debuggedProcess.Modules.Removed += debuggedProcess_ModuleUnloaded;
 			}
-			RefreshPad();
+			InvalidatePad();
 		}
 		
 		void debuggedProcess_ModuleLoaded(object sender, CollectionItemEventArgs<Module> e)
@@ -64,9 +70,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RemoveModule(e.Item);
 		}
 		
-		public override void RefreshPad()
+		protected override void RefreshPad()
 		{
-			loadedModulesList.ItemCollection.Clear();
+			loadedModules.Clear();
 			if (debuggedProcess != null) {
 				foreach(Module module in debuggedProcess.Modules) {
 					AddModule(module);
@@ -76,31 +82,35 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void AddModule(Module module)
 		{
-			dynamic obj = new ExpandoObject();
-			obj.Tag = module;
-			RefreshItem(obj);
-			module.SymbolsUpdated += delegate { RefreshItem(obj); };
-			loadedModulesList.ItemCollection.Add(obj);
-		}
-		
-		void RefreshItem(ExpandoObject obj)
-		{
-			dynamic item = obj;
-			Module module = (Module)item.Tag;
-			item.Name = module.Name;
-			item.Address = String.Format("{0:X8}", module.BaseAdress);
-			item.Path = module.IsDynamic ? "(dynamic)" : module.IsInMemory ? "(in memory)" : module.FullPath;
-			item.Order = module.OrderOfLoading.ToString();
-			item.Symbols = StringParser.Parse(module.HasSymbols ? "${res:MainWindow.Windows.Debug.Modules.HasSymbols}" : "${res:MainWindow.Windows.Debug.Modules.HasNoSymbols}");
+			loadedModules.Add(new ModuleModel(module));
 		}
 
 		void RemoveModule(Module module)
 		{
-			foreach (dynamic item in loadedModulesList.ItemCollection) {
-				if (item.Tag == module) {
-					loadedModulesList.ItemCollection.Remove(item);
-					break;
-				}
+			loadedModules.RemoveWhere(model => model.Module == module);
+		}
+	}
+	
+	static class ListViewExtensions
+	{
+		public static void ClearColumns(this ListView view)
+		{
+			if (view == null)
+				throw new ArgumentNullException("view");
+			if (view.View is GridView)
+				((GridView)view.View).Columns.Clear();
+		}
+		
+		public static void AddColumn(this ListView view, string header, Binding binding, double width)
+		{
+			if (view == null)
+				throw new ArgumentNullException("view");
+			if (view.View is GridView) {
+				GridViewColumn column = new GridViewColumn {
+					Width = width,
+					DisplayMemberBinding = binding,
+					Header = header };
+				((GridView)view.View).Columns.Add(column);
 			}
 		}
 	}

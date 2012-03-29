@@ -142,11 +142,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		bool LoadFromBinary(string fileName, DateTime fileDate)
 		{
-			keyCacheQueue   = new Queue<string>(cacheLength);
-			fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
-			int len = (int)fs.Length;
-			loader = new BinaryReader(fs);
 			try {
+				keyCacheQueue   = new Queue<string>(cacheLength);
+				fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete);
+				int len = (int)fs.Length;
+				loader = new BinaryReader(fs);
 				if (loader.ReadInt64() != magic) {
 					LoggingService.Warn("Cannot load XmlDoc: wrong magic");
 					return false;

@@ -1,12 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using Debugger.AddIn.Visualizers.PresentationBindings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
+
+using Debugger.AddIn.Visualizers.PresentationBindings;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace Debugger.AddIn.Visualizers
 {
@@ -26,7 +28,7 @@ namespace Debugger.AddIn.Visualizers
 			set {
 				if (isVisible != value)	{
 					isVisible = value;
-					OnPropertyChanged("IsVisible");
+					RaisePropertyChanged(() => IsVisible);
 					ExtensionMethods.RaiseEvent(IsVisibleChanged, this, EventArgs.Empty);
 				}
 			}

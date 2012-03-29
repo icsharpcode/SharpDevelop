@@ -15,7 +15,7 @@ namespace ICSharpCode.XmlEditor
 
 		public XmlCompletionItemCollection()
 		{
-			normalKeys.AddRange(new char[] { ' ', ':', '.', '_' });
+			normalKeys.AddRange(new char[] { ':', '.', '_' });
 		}
 		
 		public XmlCompletionItemCollection(XmlCompletionItemCollection items)
@@ -120,11 +120,12 @@ namespace ICSharpCode.XmlEditor
 		
 		public CompletionItemListKeyResult ProcessInput(char key)
 		{
-			if (char.IsLetterOrDigit(key)) {
+			if (key == '!' || key == '?')
+				return CompletionItemListKeyResult.Cancel;
+			if (char.IsLetterOrDigit(key))
 				return CompletionItemListKeyResult.NormalKey;
-			} else if (normalKeys.Contains(key)) {
+			if (normalKeys.Contains(key))
 				return CompletionItemListKeyResult.NormalKey;
-			}
 			return CompletionItemListKeyResult.InsertionKey;
 		}
 		
@@ -134,7 +135,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public ICompletionItem SuggestedItem {
 			get { 
-				if (HasItems) {
+				if (HasItems && PreselectionLength == 0) {
 					return this[0];
 				}
 				return null;

@@ -469,7 +469,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		/* True, if lookahead is a primitive type keyword, or */
 		/* if it is a type declaration followed by an ident   */
 		bool IsLocalVarDecl () {
-			if (IsYieldStatement()) {
+			if (IsYieldStatement() || la.kind == Tokens.Await) {
 				return false;
 			}
 			if ((Tokens.TypeKW[la.kind] && Peek(1).kind != Tokens.Dot) || la.kind == Tokens.Void) {

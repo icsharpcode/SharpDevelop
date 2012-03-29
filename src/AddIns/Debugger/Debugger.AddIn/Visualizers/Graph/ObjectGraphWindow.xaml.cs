@@ -89,7 +89,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		{
 			// on step or breakpoint hit
 			if (!debuggerService.IsProcessRunning) {
-				this.objectGraphControl.Refresh();
+				this.objectGraphControl.RefreshView();
 			}
 		}
 		

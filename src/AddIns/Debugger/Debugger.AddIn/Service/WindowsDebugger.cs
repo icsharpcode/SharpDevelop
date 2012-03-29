@@ -427,15 +427,13 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			var frame = debuggedProcess.GetCurrentExecutingFrame();
-			try {
-				object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
-				                                                              frame.MethodInfo.MetadataToken,
-				                                                              variableName);
-				// evaluate expression
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, frame, data);
-			} catch {
-				throw;
-			}
+			if (frame == null)
+				return null;
+			object data = debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+			                                                              frame.MethodInfo.MetadataToken,
+			                                                              variableName);
+			// evaluate expression
+			return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, frame, data);
 		}
 
 		/// <summary>
@@ -859,7 +857,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			if (e.IsUnhandled) {
 				// Need to intercept now so that we can evaluate properties
-				if (e.Process.SelectedThread.InterceptCurrentException()) {
+				if (e.Process.SelectedThread.InterceptException(e.Exception)) {
 					stacktraceBuilder.AppendLine(e.Exception.ToString());
 					string stackTrace;
 					try {
@@ -883,12 +881,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			string message = string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Message}"), e.Exception.Type);
 			Bitmap icon = WinFormsResourceService.GetBitmap(e.IsUnhandled ? "Icons.32x32.Error" : "Icons.32x32.Warning");
 			
-			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, e.IsUnhandled);
+			DebuggeeExceptionForm.Show(debuggedProcess, title, message, stacktraceBuilder.ToString(), icon, e.IsUnhandled, e.Exception);
 		}
 		
-		public bool BreakAndInterceptHandledException()
+		public bool BreakAndInterceptHandledException(Debugger.Exception exception)
 		{
-			if (!debuggedProcess.SelectedThread.InterceptCurrentException()) {
+			if (!debuggedProcess.SelectedThread.InterceptException(exception)) {
 				MessageService.ShowError("${res:MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException}");
 				return false;
 			}
@@ -946,7 +944,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			// check for options - if these options are enabled, debugging decompiled code should not continue
-			if (debuggedProcess.Options.EnableJustMyCode || debuggedProcess.Options.StepOverNoSymbols) {
+			if (!debuggedProcess.Options.DecompileCodeWithoutSymbols) {
 				LoggingService.Info("Decompiled code debugging is disabled!");
 				return;
 			}
@@ -965,13 +963,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				// update marker & navigate to line
 				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
 				                             debugType.FullNameWithoutGenericArguments,
-				                             string.Empty,
+				                             IDStringProvider.GetIDString(frame.MethodInfo),
 				                             line);
 			} else {
 				// no line => do decompilation
 				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
 				                             debugType.FullNameWithoutGenericArguments,
-				                             string.Empty);
+				                             IDStringProvider.GetIDString(frame.MethodInfo));
+				
 			}
 		}
 		

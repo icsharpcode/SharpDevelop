@@ -2,30 +2,22 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Widgets;
-using ICSharpCode.SharpDevelop.Widgets.Resources;
-using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
@@ -66,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			HeadLine = header1 + header2;
 			
 			MruServices = ServiceReferenceHelper.AddMruList();
-			SelectedService = MruServices[0];
+			SelectedService = MruServices.FirstOrDefault();
 			
 			GoCommand = new RelayCommand(ExecuteGo, CanExecuteGo);
 			DiscoverCommand = new RelayCommand(ExecuteDiscover, CanExecuteDiscover);

@@ -60,16 +60,13 @@ namespace Debugger.AddIn.Visualizers.Graph
 			txtExpression.Text = string.Empty;
 		}
 		
-		public void Refresh()
+		public void RefreshView()
 		{
-			try {
-				Debugger.AddIn.TreeModel.Utils.DoEvents(debuggerService.DebuggedProcess);
-			} catch(AbortedBecauseDebuggeeResumedException) { 
-				Log.Warn("Object graph - debuggee resumed, cancelling refresh.");
-				this.graphDrawer.ClearCanvas();
-				return;
-			}
-			
+			debuggerService.DebuggedProcess.EnqueueWork(Dispatcher, () => Refresh());
+		}
+		
+		void Refresh()
+		{
 			ClearErrorMessage();
 			if (string.IsNullOrEmpty(txtExpression.Text)) {
 				this.graphDrawer.ClearCanvas();
@@ -107,19 +104,19 @@ namespace Debugger.AddIn.Visualizers.Graph
 				if (value == null) {
 					shownExpression = null;
 					txtExpression.Text = null;
-					Refresh();
+					RefreshView();
 					return;
 				}
 				if (shownExpression == null || value.PrettyPrint() != shownExpression.PrettyPrint()) {
 					txtExpression.Text = value.PrettyPrint();
-					Refresh();
+					RefreshView();
 				}
 			}
 		}
 		
 		private void Inspect_Button_Click(object sender, RoutedEventArgs e)
 		{
-			this.Refresh();
+			RefreshView();
 		}
 		
 		ObjectGraph RebuildGraph(string expression)

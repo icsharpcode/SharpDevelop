@@ -1499,6 +1499,9 @@ Chcete přidat nový soubor do projektu ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ShowErrorListPadCheckBox" xml:space="preserve">
     <value>Zobrazovat seznam chyb, pokud skončí sestavení chybou</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Aktuální jazyk UI:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Klepněte na ikonu pro výběr jazyka.</value>
   </data>

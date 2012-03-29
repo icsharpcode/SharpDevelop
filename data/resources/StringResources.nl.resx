@@ -1868,6 +1868,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stapsgewijs</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Code decompileren zonder symbolen</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>Stap naar 'Alleen mijn code' kenmerk</value>
   </data>
@@ -1988,6 +1991,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Bouw alle projecten.</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Huidige UI taal:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Selecteer een pictogram om een taal te selecteren.</value>
   </data>
@@ -2017,15 +2023,6 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Vormgeving</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Project referenties uitbreiden (referenties weergeven)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>SharpDevelop UI opties</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>SharpDevelop UI opties</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Commentaar labels</value>
@@ -3389,6 +3386,9 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>Het geselecteerd element is geen klasse of overschrijfbaar lid, waardoor geen afgeleide symbolen kunnen worden weergegeven.</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassUnderCursorError" xml:space="preserve">
+    <value>Kon de type definitie niet vinden op de cursorpositie.</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Stuur regel naar Ruby console</value>
   </data>
@@ -3784,6 +3784,9 @@ DIT HEEFT GEEN INVLOED OP DE BRON CODE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Laden van ontwerpvlak is mislukt. Ga na of de broncode syntactische fouten bevat en alle referenties beschikbaar zijn.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>Een of meer fouten traden op bij het spoelen van de designer inhoud.Dit kan te wijten zijn aan een niet-afgehandelde uitzondering in een aangepaste/thitd party component op het formulier/besturingselement.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Kan de zijkolom Component bibliotheek niet laden. Er zijn geen Windows Forms componenten beschikbaar, stel aub zijkolom handmatig in. (Rechts klikken op een zijkolom categorie -&gt; Zijkolom instellen)</value>
   </data>
@@ -3996,6 +3999,12 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description" xml:space="preserve">
     <value>De door de referentie ondersteunde cultuur</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes" xml:space="preserve">
+    <value>Interop types inbedden</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.EmbedInteropTypes.Description" xml:space="preserve">
+    <value>Specificeert welke COM interop types gedefinieerd in de referentie assembly zijn ingebed in de doel assembly.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy" xml:space="preserve">
     <value>Lokale kopie</value>
   </data>
@@ -4059,6 +4068,9 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Oplossing sluiten</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>De oude oplossing open houden.</value>
   </data>
@@ -4091,6 +4103,14 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Project opwaarderen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>Het project '${ProjectName}' heeft als doel MSBuild ${OldToolsVersion}, maar die versie is niet geïnstalleerd.
+Wilt u het project opwaarderen naar MSBuild ${NewToolsVersion}?
+Zonder opwaarderen kan het project niet geopend wordenh.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
+    <value>Opwaarderen naar MSBuild ${NewToolsVersion}</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>Deze oplossing werd met een vorige versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal of framework mogelijkheden.</value>
@@ -4172,7 +4192,7 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
     <value>ASP.NET/IIS (Express) werker proces ({0}) werd niet gevonden.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>Er is geen project URL of extern programma gespecificeerd. Check de Web server bij Project eigenschappen -&gt; Foutzoeken tab.</value>
+    <value>Er is geen extern programma of URL gespecificeerd. Controleer de web server bij Project eigenschappen - Web tab.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server poort:</value>
@@ -4791,7 +4811,7 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
     <value>Overschakelen naar een functie zonder symbolen is niet mogelijk.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
-    <value>Wisselen naar een functie zonder symbolen zonder dat de gedecompileerde code opties zijn ingeschakeld.</value>
+    <value>Kan niet wisselen naar een functie zonder debug symbolen, tenzij hercompileren wordt uitgevoerd en de optie "Decompileer code zonder symbolen" is ingeschakeld.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[Externe methodes]</value>
@@ -5009,11 +5029,17 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Adres</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(dynamisch)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>Geen symbolen geladen.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Symbolen geladen.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(in het geheugen)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Volgorde</value>

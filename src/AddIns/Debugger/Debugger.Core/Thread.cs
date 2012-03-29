@@ -202,7 +202,7 @@ namespace Debugger
 		/// The intercepted expression stays available through the CurrentException property. </summary>
 		/// <returns> False, if the exception was already intercepted or 
 		/// if it can not be intercepted. </returns>
-		public bool InterceptCurrentException()
+		public bool InterceptException(Exception exception)
 		{
 			if (!(this.CorThread is ICorDebugThread2)) return false; // Is the debuggee .NET 2.0?
 			if (this.CorThread.GetCurrentException() == null) return false; // Is there any exception
@@ -220,9 +220,12 @@ namespace Debugger
 			}
 			if (mostRecentUnoptimized == null) return false;
 			
+			if (exception == null)
+				exception = currentException;
+			
 			try {
 				// Interception will expire the CorValue so keep permanent reference
-				currentException.MakeValuePermanent();
+				exception.MakeValuePermanent();
 				((ICorDebugThread2)this.CorThread).InterceptCurrentException(mostRecentUnoptimized.CorILFrame);
 			} catch (COMException e) {
 				// 0x80131C02: Cannot intercept this exception

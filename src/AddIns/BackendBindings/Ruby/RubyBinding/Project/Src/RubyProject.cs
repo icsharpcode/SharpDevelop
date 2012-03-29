@@ -49,13 +49,9 @@ namespace ICSharpCode.RubyBinding
 			get { return GetProperty(null, null, "MainFile") != null; }
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			RubyProjectBehavior behavior = new RubyProjectBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new RubyProjectBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

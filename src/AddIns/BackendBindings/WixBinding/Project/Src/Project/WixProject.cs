@@ -216,13 +216,9 @@ namespace ICSharpCode.WixBinding
 			return new ReadOnlyCollection<WixExtensionProjectItem>(items);
 		}
 		
-		protected override ProjectBehavior GetOrCreateBehavior()
+		protected override ProjectBehavior CreateDefaultBehavior()
 		{
-			if (projectBehavior != null)
-				return projectBehavior;
-			WixStartBehavior behavior = new WixStartBehavior(this, new DotNetStartBehavior(this, new DefaultProjectBehavior(this)));
-			projectBehavior = ProjectBehaviorService.LoadBehaviorsForProject(this, behavior);
-			return projectBehavior;
+			return new WixStartBehavior(this, base.CreateDefaultBehavior());
 		}
 	}
 	

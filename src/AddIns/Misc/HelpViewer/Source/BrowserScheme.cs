@@ -36,6 +36,8 @@ namespace MSHelpSystem
 			}
 
 			ExtendedWebBrowser browser = pane.WebBrowser;
+			if (browser == null || browser.Document == null)
+				return;
 			HtmlElementCollection divs = browser.Document.GetElementsByTagName("div");
 			foreach (HtmlElement div in divs) {
 				if (!string.IsNullOrEmpty(div.Id)) {

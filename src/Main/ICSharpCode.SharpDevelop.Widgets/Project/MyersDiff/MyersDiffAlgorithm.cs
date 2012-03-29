@@ -38,9 +38,8 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
+namespace ICSharpCode.SharpDevelop.Widgets.MyersDiff
 {
 	/// <summary>
 	/// Diff algorithm, based on "An O(ND) Difference Algorithm and its

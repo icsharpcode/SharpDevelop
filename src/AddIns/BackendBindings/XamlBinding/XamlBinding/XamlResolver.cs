@@ -218,14 +218,13 @@ namespace ICSharpCode.XamlBinding
 			if (propertyOrEvent is IEvent && callingClass != null) {
 				return new MethodGroupResolveResult(callingClass, null, callingClass.DefaultReturnType, expression);
 			} else if (propertyOrEvent is IProperty && callingClass != null) {
-				return ResolveElementName(expression);
-			}
-
-			if (propertyOrEvent.Name == "Name" && callingClass != null) {
-				foreach (IField f in callingClass.Fields) {
-					if (f.Name == expression)
-						return new MemberResolveResult(callingClass, null, f);
+				if (propertyOrEvent.Name == "Name") {
+					foreach (IField f in callingClass.Fields) {
+						if (f.Name == expression)
+							return new MemberResolveResult(callingClass, null, f);
+					}
 				}
+				return ResolveElementName(expression);
 			}
 
 			IReturnType type = propertyOrEvent.ReturnType;

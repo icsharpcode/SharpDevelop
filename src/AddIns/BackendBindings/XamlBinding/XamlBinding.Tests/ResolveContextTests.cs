@@ -180,7 +180,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		public void ContextInMarkupExtensionTest2()
+		public void ContextInAttributeValueTest()
 		{
 			string xaml = "<Test attr=\"Test\" />";
 			int offset = "<Test attr=\"Te".Length;
@@ -191,7 +191,7 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		public void ContextInMarkupExtensionTest3()
+		public void ContextInMarkupExtensionTest2()
 		{
 			string xaml = "<Test attr=\"{}{Test}\" />";
 			int offset = "<Test attr=\"{}{Te".Length;
@@ -202,10 +202,21 @@ namespace ICSharpCode.XamlBinding.Tests
 		}
 		
 		[Test]
-		public void ContextInMarkupExtensionTest4()
+		public void ContextInAttributeValueTest2()
 		{
 			string xaml = "<Test attr=\"Test />";
 			int offset = "<Test attr=\"Te".Length;
+			
+			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
+			
+			Assert.AreEqual(XamlContextDescription.InAttributeValue, context.Description);
+		}
+		
+		[Test]
+		public void ContextInAttributeValueTest3()
+		{
+			string xaml = "<Test attr=\"Test />";
+			int offset = "<Test attr=\"".Length;
 			
 			XamlContext context = CompletionDataHelper.ResolveContext(xaml, "", offset);
 			

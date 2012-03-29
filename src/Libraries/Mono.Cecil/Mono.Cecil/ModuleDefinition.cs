@@ -47,6 +47,7 @@ namespace Mono.Cecil {
 
 		ReadingMode reading_mode;
 		IAssemblyResolver assembly_resolver;
+		IMetadataResolver metadata_resolver;
 		Stream symbol_stream;
 		ISymbolReaderProvider symbol_reader_provider;
 		bool read_symbols;
@@ -59,6 +60,11 @@ namespace Mono.Cecil {
 		public IAssemblyResolver AssemblyResolver {
 			get { return assembly_resolver; }
 			set { assembly_resolver = value; }
+		}
+
+		public IMetadataResolver MetadataResolver {
+			get { return metadata_resolver; }
+			set { metadata_resolver = value; }
 		}
 
 		public Stream SymbolStream {
@@ -95,6 +101,7 @@ namespace Mono.Cecil {
 		TargetRuntime runtime;
 		TargetArchitecture architecture;
 		IAssemblyResolver assembly_resolver;
+		IMetadataResolver metadata_resolver;
 
 		public ModuleKind Kind {
 			get { return kind; }
@@ -114,6 +121,11 @@ namespace Mono.Cecil {
 		public IAssemblyResolver AssemblyResolver {
 			get { return assembly_resolver; }
 			set { assembly_resolver = value; }
+		}
+
+		public IMetadataResolver MetadataResolver {
+			get { return metadata_resolver; }
+			set { metadata_resolver = value; }
 		}
 
 		public ModuleParameters ()
@@ -183,9 +195,10 @@ namespace Mono.Cecil {
 		internal MetadataSystem MetadataSystem;
 		internal ReadingMode ReadingMode;
 		internal ISymbolReaderProvider SymbolReaderProvider;
-		internal ISymbolReader SymbolReader;
 
+		internal ISymbolReader symbol_reader;
 		internal IAssemblyResolver assembly_resolver;
+		internal IMetadataResolver metadata_resolver;
 		internal TypeSystem type_system;
 
 		readonly MetadataReader reader;
@@ -248,7 +261,11 @@ namespace Mono.Cecil {
 		}
 
 		public bool HasSymbols {
-			get { return SymbolReader != null; }
+			get { return symbol_reader != null; }
+		}
+
+		public ISymbolReader SymbolReader {
+			get { return symbol_reader; }
 		}
 
 		public override MetadataScopeType MetadataScopeType {
@@ -266,7 +283,11 @@ namespace Mono.Cecil {
 #endif
 
 		public IAssemblyResolver AssemblyResolver {
-			get { return assembly_resolver; }
+			get { return assembly_resolver ?? (assembly_resolver = new DefaultAssemblyResolver ()); }
+		}
+
+		public IMetadataResolver MetadataResolver {
+			get { return metadata_resolver ?? (metadata_resolver = new MetadataResolver (this.AssemblyResolver)); }
 		}
 
 		public TypeSystem TypeSystem {
@@ -411,7 +432,6 @@ namespace Mono.Cecil {
 		{
 			this.MetadataSystem = new MetadataSystem ();
 			this.token = new MetadataToken (TokenType.Module, 1);
-			this.assembly_resolver = GlobalAssemblyResolver.Instance;
 		}
 
 		internal ModuleDefinition (Image image)
@@ -480,6 +500,13 @@ namespace Mono.Cecil {
 			return Read (this, (_, reader) => reader.GetMemberReferences ());
 		}
 
+		public TypeReference GetType (string fullName, bool runtimeName)
+		{
+			return runtimeName
+				? TypeParser.ParseType (this, fullName)
+				: GetType (fullName);
+		}
+
 		public TypeDefinition GetType (string fullName)
 		{
 			CheckFullName (fullName);
@@ -496,6 +523,26 @@ namespace Mono.Cecil {
 			Mixin.CheckName (name);
 
 			return ((TypeDefinitionCollection) this.Types).GetType (@namespace ?? string.Empty, name);
+		}
+
+		public IEnumerable<TypeDefinition> GetTypes ()
+		{
+			return GetTypes (Types);
+		}
+
+		static IEnumerable<TypeDefinition> GetTypes (Collection<TypeDefinition> types)
+		{
+			for (int i = 0; i < types.Count; i++) {
+				var type = types [i];
+
+				yield return type;
+
+				if (!type.HasNestedTypes)
+					continue;
+
+				foreach (var nested in GetTypes (type.NestedTypes))
+					yield return nested;
+			}
 		}
 
 		static void CheckFullName (string fullName)
@@ -527,17 +574,17 @@ namespace Mono.Cecil {
 
 		internal FieldDefinition Resolve (FieldReference field)
 		{
-			return MetadataResolver.Resolve (AssemblyResolver, field);
+			return MetadataResolver.Resolve (field);
 		}
 
 		internal MethodDefinition Resolve (MethodReference method)
 		{
-			return MetadataResolver.Resolve (AssemblyResolver, method);
+			return MetadataResolver.Resolve (method);
 		}
 
 		internal TypeDefinition Resolve (TypeReference type)
 		{
-			return MetadataResolver.Resolve (AssemblyResolver, type);
+			return MetadataResolver.Resolve (type);
 		}
 
 #if !READ_ONLY
@@ -776,15 +823,27 @@ namespace Mono.Cecil {
 			return ret;
 		}
 
+		public bool HasDebugHeader {
+			get { return Image != null && !Image.Debug.IsZero; }
+		}
+
+		public ImageDebugDirectory GetDebugHeader (out byte [] header)
+		{
+			if (!HasDebugHeader)
+				throw new InvalidOperationException ();
+
+			return Image.GetDebugHeader (out header);
+		}
+
 		void ProcessDebugHeader ()
 		{
-			if (Image == null || Image.Debug.IsZero)
+			if (!HasDebugHeader)
 				return;
 
 			byte [] header;
-			var directory = Image.GetDebugHeader (out header);
+			var directory = GetDebugHeader (out header);
 
-			if (!SymbolReader.ProcessDebugHeader (directory, header))
+			if (!symbol_reader.ProcessDebugHeader (directory, header))
 				throw new InvalidOperationException ();
 		}
 
@@ -812,16 +871,27 @@ namespace Mono.Cecil {
 			if (parameters.AssemblyResolver != null)
 				module.assembly_resolver = parameters.AssemblyResolver;
 
+			if (parameters.MetadataResolver != null)
+				module.metadata_resolver = parameters.MetadataResolver;
+
 			if (parameters.Kind != ModuleKind.NetModule) {
 				var assembly = new AssemblyDefinition ();
 				module.assembly = assembly;
-				module.assembly.Name = new AssemblyNameDefinition (name, new Version (0, 0));
+				module.assembly.Name = CreateAssemblyName (name);
 				assembly.main_module = module;
 			}
 
 			module.Types.Add (new TypeDefinition (string.Empty, "<Module>", TypeAttributes.NotPublic));
 
 			return module;
+		}
+
+		static AssemblyNameDefinition CreateAssemblyName (string name)
+		{
+			if (name.EndsWith (".dll") || name.EndsWith (".exe"))
+				name = name.Substring (0, name.Length - 4);
+
+			return new AssemblyNameDefinition (name, new Version (0, 0, 0, 0));
 		}
 
 #endif
@@ -832,10 +902,10 @@ namespace Mono.Cecil {
 				throw new InvalidOperationException ();
 
 			var provider = SymbolProvider.GetPlatformReaderProvider ();
+			if (provider == null)
+				throw new InvalidOperationException ();
 
-			SymbolReader = provider.GetSymbolReader (this, fq_name);
-
-			ProcessDebugHeader ();
+			ReadSymbols (provider.GetSymbolReader (this, fq_name));
 		}
 
 		public void ReadSymbols (ISymbolReader reader)
@@ -843,7 +913,7 @@ namespace Mono.Cecil {
 			if (reader == null)
 				throw new ArgumentNullException ("reader");
 
-			SymbolReader = reader;
+			symbol_reader = reader;
 
 			ProcessDebugHeader ();
 		}
@@ -937,6 +1007,14 @@ namespace Mono.Cecil {
 		public static bool HasImage (this ModuleDefinition self)
 		{
 			return self != null && self.HasImage;
+		}
+
+		public static bool IsCorlib (this ModuleDefinition module)
+		{
+			if (module.Assembly == null)
+				return false;
+
+			return module.Assembly.Name.Name == "mscorlib";
 		}
 
 		public static string GetFullyQualifiedName (this Stream self)

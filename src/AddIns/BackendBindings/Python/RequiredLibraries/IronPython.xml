@@ -2277,6 +2277,34 @@
             DLR hosting APIs.
             </summary>
         </member>
+        <member name="M:IronPython.Runtime.ClrModule.Use(IronPython.Runtime.CodeContext,System.String)">
+            <summary>
+            Use(name) -> module
+            
+            Attempts to load the specified module searching all languages in the loaded ScriptRuntime.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.ClrModule.Use(IronPython.Runtime.CodeContext,System.String,System.String)">
+            <summary>
+            Use(path, language) -> module
+            
+            Attempts to load the specified module belonging to a specific language loaded into the
+            current ScriptRuntime.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.ClrModule.SetCommandDispatcher(IronPython.Runtime.CodeContext,System.Action{System.Action})">
+            <summary>
+            SetCommandDispatcher(commandDispatcher)
+            
+            Sets the current command dispatcher for the Python command line.  
+            
+            The command dispatcher will be called with a delegate to be executed.  The command dispatcher
+            should invoke the target delegate in the desired context.
+            
+            A common use for this is to enable running all REPL commands on the UI thread while the REPL
+            continues to run on a non-UI thread.
+            </summary>
+        </member>
         <member name="M:IronPython.Runtime.ClrModule.LoadTypeLibrary(IronPython.Runtime.CodeContext,System.Object)">
             <summary>
             LoadTypeLibrary(rcw) -> type lib desc
@@ -2309,34 +2337,6 @@
             AddReferenceToTypeLibrary(guid) -> None
             
             Makes the type lib desc available for importing.  See also LoadTypeLibrary.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.ClrModule.Use(IronPython.Runtime.CodeContext,System.String)">
-            <summary>
-            Use(name) -> module
-            
-            Attempts to load the specified module searching all languages in the loaded ScriptRuntime.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.ClrModule.Use(IronPython.Runtime.CodeContext,System.String,System.String)">
-            <summary>
-            Use(path, language) -> module
-            
-            Attempts to load the specified module belonging to a specific language loaded into the
-            current ScriptRuntime.
-            </summary>
-        </member>
-        <member name="M:IronPython.Runtime.ClrModule.SetCommandDispatcher(IronPython.Runtime.CodeContext,System.Action{System.Action})">
-            <summary>
-            SetCommandDispatcher(commandDispatcher)
-            
-            Sets the current command dispatcher for the Python command line.  
-            
-            The command dispatcher will be called with a delegate to be executed.  The command dispatcher
-            should invoke the target delegate in the desired context.
-            
-            A common use for this is to enable running all REPL commands on the UI thread while the REPL
-            continues to run on a non-UI thread.
             </summary>
         </member>
         <member name="M:IronPython.Runtime.ClrModule.GetClrType(System.Type)">
@@ -3861,6 +3861,14 @@
             Imports the Python module by the given name and returns its ScriptSCope.  If the 
             module does not exist an exception is raised.
             </summary>
+        </member>
+        <member name="M:IronPython.Hosting.Python.ImportModule(Microsoft.Scripting.Hosting.ScriptScope,System.String)">
+            <summary>
+            Imports the Python module by the given name and inserts it into the ScriptScope as that name. If the
+            module does not exist an exception is raised.
+            </summary>
+            <param name="scope"></param>
+            <param name="moduleName"></param>
         </member>
         <member name="M:IronPython.Hosting.Python.SetHostVariables(Microsoft.Scripting.Hosting.ScriptRuntime,System.String,System.String,System.String)">
             <summary>
@@ -6092,6 +6100,13 @@
             </summary>
         </member>
         <member name="M:IronPython.Runtime.Operations.PythonOps.InitializeModule(System.Reflection.Assembly,System.String,System.String[])">
+            <summary>
+            Provides the entry point for a compiled module.  The stub exe calls into InitializeModule which
+            does the actual work of adding references and importing the main module.  Upon completion it returns
+            the exit code that the program reported via SystemExit or 0.
+            </summary>
+        </member>
+        <member name="M:IronPython.Runtime.Operations.PythonOps.InitializeModuleEx(System.Reflection.Assembly,System.String,System.String[],System.Boolean)">
             <summary>
             Provides the entry point for a compiled module.  The stub exe calls into InitializeModule which
             does the actual work of adding references and importing the main module.  Upon completion it returns

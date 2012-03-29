@@ -711,6 +711,9 @@ namespace Debugger
 		
 		public StackFrame GetCurrentExecutingFrame()
 		{
+			if (IsRunning || SelectedThread == null)
+				return null;
+			
 			if (IsSelectedFrameForced()) {
 				return SelectedStackFrame; // selected from callstack or threads pads
 			}

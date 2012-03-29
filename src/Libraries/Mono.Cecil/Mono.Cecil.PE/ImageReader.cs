@@ -118,6 +118,8 @@ namespace Mono.Cecil.PE {
 				return TargetArchitecture.AMD64;
 			case 0x0200:
 				return TargetArchitecture.IA64;
+			case 0x01c4:
+				return TargetArchitecture.ARMv7;
 			}
 
 			throw new NotSupportedException ();
@@ -275,9 +277,6 @@ namespace Mono.Cecil.PE {
 				Advance (16);
 
 				sections [i] = section;
-
-				if (section.Name == ".reloc")
-					continue;
 
 				ReadSectionData (section);
 			}

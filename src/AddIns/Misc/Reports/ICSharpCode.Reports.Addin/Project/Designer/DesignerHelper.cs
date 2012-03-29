@@ -77,8 +77,8 @@ namespace ICSharpCode.Reports.Addin.Designer
 			prop = props.Find("BackColor",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find ("VisibleInReport",true);
-			allProperties.Add(prop);
+//			prop = props.Find ("VisibleInReport",true);
+//			allProperties.Add(prop);
 			
 			
 			// need this for Contextmenu's

@@ -1982,6 +1982,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Construire tous les projets</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Langue en cours:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Cliquer sur une icône pour sélectionner la langue.</value>
   </data>
@@ -2011,15 +2014,6 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Style visuel</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Développer les références du projet</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>Options de l'interface de SharpDevelop</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>Options de l'interface de SharpDevelop</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Balises de Commentaires</value>

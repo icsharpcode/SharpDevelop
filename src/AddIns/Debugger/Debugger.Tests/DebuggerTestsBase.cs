@@ -162,7 +162,7 @@ namespace Debugger.Tests
 					string newSourceCode = File.ReadAllText(filename, Encoding.UTF8);
 					startIndex = newSourceCode.IndexOf(startMark);
 					endIndex = newSourceCode.IndexOf(endMark);
-					newSourceCode = 
+					newSourceCode =
 						newSourceCode.Substring(0, startIndex + startMark.Length) +
 						actualXml +
 						newSourceCode.Substring(endIndex);
@@ -213,7 +213,7 @@ namespace Debugger.Tests
 //			};
 			process.ExceptionThrown += delegate(object sender, ExceptionEventArgs e) {
 				StringBuilder msg = new StringBuilder();
-				if (process.SelectedThread.InterceptCurrentException()) {
+				if (process.SelectedThread.InterceptException(e.Exception)) {
 					msg.Append(e.Exception.ToString());
 				} else {
 					// For example, happens on stack overflow
@@ -279,10 +279,10 @@ namespace Debugger.Tests
 			Type declaringType = memberInfo.DeclaringType;
 			while(declaringType != null) {
 				if (list.Contains(declaringType.Name + "." + memberInfo.Name) ||
-					list.Contains(declaringType.Name + ".*") ||
-					list.Contains("*." + memberInfo.Name) ||
-					list.Contains("*.*") ||
-					list.Contains("*"))
+				    list.Contains(declaringType.Name + ".*") ||
+				    list.Contains("*." + memberInfo.Name) ||
+				    list.Contains("*.*") ||
+				    list.Contains("*"))
 					return true;
 				declaringType = declaringType.BaseType;
 			}
@@ -292,13 +292,13 @@ namespace Debugger.Tests
 		bool ExpandProperty(MemberInfo memberInfo)
 		{
 			return (memberInfo.IsDefined(typeof(Debugger.Tests.ExpandAttribute), true)) ||
-			       ListContains(expandProperties, memberInfo);
+				ListContains(expandProperties, memberInfo);
 		}
 		
 		bool IgnoreProperty(MemberInfo memberInfo)
 		{
 			return (memberInfo.IsDefined(typeof(Debugger.Tests.IgnoreAttribute), true)) ||
-			       ListContains(ignoreProperties, memberInfo);
+				ListContains(ignoreProperties, memberInfo);
 		}
 		
 		public void Serialize(XmlElement container, object obj, int maxDepth, List<object> parents)
@@ -371,7 +371,7 @@ namespace Debugger.Tests
 						continue;
 					val = "{Exception: " + e.Message + "}";
 				}
-								
+				
 				if (val is IEnumerable && !(val is string)) {
 					List<string> vals = new List<string>();
 					foreach(object o in (IEnumerable)val) {
@@ -382,7 +382,7 @@ namespace Debugger.Tests
 					}
 				} else {
 					bool isDefault = false;
-						
+					
 					if (method.ReturnType == typeof(bool)) {
 						isDefault = false.Equals(val);
 					} else if (method.ReturnType == typeof(string)) {
@@ -535,6 +535,12 @@ namespace Debugger.Tests
 			string testName = args[0];
 			Type type = Type.GetType(testName);
 			type.GetMethod("Main").Invoke(null, new object[0]);
+		}
+		
+		protected static bool IsDotnet45Installed()
+		{
+			Version dotnet45Beta = new Version(4, 0, 30319, 17379);
+			return Environment.Version >= dotnet45Beta;
 		}
 	}
 }

@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
-using System.Windows.Data;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Windows.Data;
+
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace Debugger.AddIn.Visualizers
 {
@@ -65,7 +67,7 @@ namespace Debugger.AddIn.Visualizers
             {
                 if (_enumValue.Equals(value)) return;
                 _enumValue = value;
-                OnPropertyChanged("SelectedEnumValue");
+                RaisePropertyChanged(() => SelectedEnumValue);
             }
         }
     }

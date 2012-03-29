@@ -114,10 +114,6 @@
       <DependentUpon>ConditionCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pads\Controls\Converters.cs" />
-    <Compile Include="Pads\Controls\SimpleListViewControl.xaml.cs">
-      <DependentUpon>SimpleListViewControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
     </Compile>
@@ -129,6 +125,7 @@
       <DependentUpon>DrawSurface.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pads\ParallelPad\ParallelStackFrameModel.cs" />
     <Compile Include="Pads\ParallelPad\ParallelStackPad.cs" />
     <Compile Include="Pads\ParallelPad\ParallelStacksGraph.cs" />
     <Compile Include="Pads\ParallelPad\SelectedFrameBookmark.cs" />
@@ -327,7 +324,6 @@
     </Compile>
     <Compile Include="Visualizers\PresentationBindings\DisplayAttribute.cs" />
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
-    <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
   </ItemGroup>
   <ItemGroup>
@@ -385,7 +381,6 @@
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Controls\ConditionCell.xaml" />
-    <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
     <Page Include="Pads\Controls\WatchList.xaml" />
     <Page Include="Pads\Controls\WatchListAutoCompleteCell.xaml" />
     <Page Include="Pads\ParallelPad\DrawSurface.xaml" />

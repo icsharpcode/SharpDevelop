@@ -75,30 +75,29 @@ namespace ICSharpCode.CodeQuality.Gui
 		}
 		
 		
-		/*
-		 * 
-		 * TreeTraversal.PreOrder(node, n => n.Children).OfType<MethodNode>().Count()
-		 * 
-		 * 
-		 */
-		
-		
 		void OverviewReport_Click(object sender, RoutedEventArgs e)
 		{
-			OverviewReport o = new OverviewReport(fileNames);
-			var reportCreator = o.Run(list);
-			var previewViewModel = new PreviewViewModel(o.ReportSettings,reportCreator.Pages);
+			var overviewReport = new OverviewReport(fileNames);
+			var reportCreator = overviewReport.Run(list);
+			var previewViewModel = new PreviewViewModel(overviewReport.ReportSettings,reportCreator.Pages);
 			viewer.SetBinding(previewViewModel);
-			reportTab.Visibility = Visibility.Visible;
+			ActivateReportTab();
 		}
+
 		
 		void DependecyReport_Click(object sender, RoutedEventArgs e)
 		{
-			var dependency = new DependencyReport(fileNames);
-			var reportCreator = dependency.Run(list);
-			var previewViewModel = new PreviewViewModel(dependency.ReportSettings,reportCreator.Pages);
+			var dependencyReport = new DependencyReport(fileNames);
+			var reportCreator = dependencyReport.Run(list);
+			var previewViewModel = new PreviewViewModel(dependencyReport.ReportSettings,reportCreator.Pages);
 			viewer.SetBinding(previewViewModel);
+			ActivateReportTab();
+		}
+		
+		void ActivateReportTab()
+		{
 			reportTab.Visibility = Visibility.Visible;
+			mainTab.SelectedItem = reportTab;
 		}
 	}
 }

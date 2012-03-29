@@ -6,37 +6,6 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Grid Cursor="Arrow" KeyboardNavigation.TabNavigation="Cycle">
-		<Grid.Resources>
-			<Style x:Key="ListBoxItemFocusHighlight" TargetType="{x:Type ListBoxItem}">
-				<!-- This style replaces the default ListBoxItem template with one that highlights the focused item instead of the selected item -->
-				<Setter Property="Template">
-					<Setter.Value>
-						<ControlTemplate TargetType="{x:Type ListBoxItem}">
-							<Border Name="Bd"
-							        Background="{TemplateBinding Background}"
-							        BorderBrush="{TemplateBinding BorderBrush}"
-							        BorderThickness="{TemplateBinding BorderThickness}"
-							        Padding="{TemplateBinding Padding}"
-							        SnapsToDevicePixels="true">
-								<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-							</Border>
-							<ControlTemplate.Triggers>
-								<Trigger Property="IsKeyboardFocusWithin"
-								         Value="true">
-									<Setter TargetName="Bd"
-									        Property="Background"
-									        Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-									<Setter Property="Foreground"
-									        Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
-								</Trigger>
-							</ControlTemplate.Triggers>
-						</ControlTemplate>
-					</Setter.Value>
-				</Setter>
-			</Style>
-		</Grid.Resources>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
@@ -45,7 +14,8 @@
 		<TextBlock Margin="3"
 		           Text="{sd:Localize AddIns.SharpRefactoring.OverrideToStringMethod.Description}"
 		           TextWrapping="Wrap" />
-		<ListBox Grid.Row="1" Margin="4" SelectionMode="Multiple" ItemContainerStyle="{StaticResource ListBoxItemFocusHighlight}" x:Name="listBox">
+		<ListBox x:Name="listBox" Grid.Row="1" Margin="4" SelectionMode="Multiple"
+		         ItemContainerStyle="{x:Static sd:GlobalStyles.ListBoxItemFocusHighlightStyle}">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<!-- The checkbox is toggling the actual IsSelected property on the container (ListBoxItem), so it'll update ListBox.SelectedItems -->

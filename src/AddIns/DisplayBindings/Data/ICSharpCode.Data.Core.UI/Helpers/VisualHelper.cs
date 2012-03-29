@@ -13,6 +13,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
 using System.Windows.Input;
+using ICSharpCode.SharpDevelop.Gui;
 
 #endregion
 
@@ -526,6 +527,7 @@ namespace ICSharpCode.Data.Core.UI
 		/// <param name="dispatcherToPause"></param>
 		public static void DoEvents(Dispatcher dispatcherToPause)
 		{
+			WorkbenchSingleton.AssertMainThread();
 			dispatcherToPause.Invoke(DispatcherPriority.Background, new System.Action(() => { }));
 		}
 	}

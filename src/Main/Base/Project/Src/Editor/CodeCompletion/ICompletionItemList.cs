@@ -60,7 +60,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// key. Can be used to insert whitespace (or other characters) in front of the expression
 		/// while the completion window is open.
 		/// </summary>
-		BeforeStartKey
+		BeforeStartKey,
+		/// <summary>
+		/// This key triggers cancellation of completion. The completion window will be closed.
+		/// </summary>
+		Cancel
 	}
 	
 	public class DefaultCompletionItemList : ICompletionItemList

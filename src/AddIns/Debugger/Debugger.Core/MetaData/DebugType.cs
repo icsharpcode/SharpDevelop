@@ -728,6 +728,13 @@ namespace Debugger.MetaData
 		}
 		
 		/// <inheritdoc/>
+		public override bool IsEnum {
+			get {
+				return this.BaseType == DebugType.CreateFromType(this.AppDomain.Mscorlib, typeof(Enum));
+			}
+		}
+		
+		/// <inheritdoc/>
 		public override bool IsSubclassOf(Type superType)
 		{
 			if (!(superType is DebugType)) {
@@ -813,6 +820,16 @@ namespace Debugger.MetaData
 			get {
 				if (this.IsCompilerGenerated) {
 					return GetInterface(typeof(System.Collections.IEnumerator).FullName) != null;
+				}
+				return false;
+			}
+		}
+		
+		public bool IsAsyncStateMachine {
+			get {
+				if (this.IsCompilerGenerated) {
+					// TODO : replace this by typeof(...).FullName in later releases
+					return GetInterface("System.Runtime.CompilerServices.IAsyncStateMachine") != null;
 				}
 				return false;
 			}

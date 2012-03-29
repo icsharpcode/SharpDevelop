@@ -65,5 +65,25 @@ namespace ICSharpCode.Core.Presentation
 		public static ResourceKey FlowDirectionKey {
 			get { return flowDirectionKey; }
 		}
+		
+		static readonly ResourceKey listViewItemFocusHighlightStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "ListViewItemFocusHighlightStyle");
+		
+		public static ResourceKey ListViewItemFocusHighlightStyleKey {
+			get { return listViewItemFocusHighlightStyleKey; }
+		}
+		
+		public static Style ListViewItemFocusHighlightStyle {
+			get { return FindResource(listViewItemFocusHighlightStyleKey); }
+		}
+		
+		static readonly ResourceKey listBoxItemFocusHighlightStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "ListBoxItemFocusHighlightStyle");
+		
+		public static ResourceKey ListBoxItemFocusHighlightStyleKey {
+			get { return listBoxItemFocusHighlightStyleKey; }
+		}
+		
+		public static Style ListBoxItemFocusHighlightStyle {
+			get { return FindResource(listBoxItemFocusHighlightStyleKey); }
+		}
 	}
 }

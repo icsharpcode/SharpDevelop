@@ -1927,6 +1927,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Stepping</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.Debugging.Stepping.DecompileCodeWithoutSymbols" xml:space="preserve">
+    <value>Decompile code without symbols</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping.EnableJustMyCode" xml:space="preserve">
     <value>Use 'Just My Code' feature for stepping</value>
   </data>
@@ -2056,6 +2059,9 @@ system. I don't think that it needs translation.</comment>
   <data name="Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning.RegularBuild" xml:space="preserve">
     <value>Build all projects</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Current UI language:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
     <value>Click on an icon to choose language.</value>
   </data>
@@ -2085,15 +2091,6 @@ system. I don't think that it needs translation.</comment>
   </data>
   <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
     <value>Appearance</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
-    <value>Expand project references (reflect references)</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
-    <value>Sharp Develop UI options</value>
-  </data>
-  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
-    <value>Sharp Develop UI options</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
     <value>Comment Tags</value>
@@ -3963,6 +3960,10 @@ THIS DOES NOT AFFECT THE SOURCE CODE.</value>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.LoadErrorCheckSourceCodeForErrors" xml:space="preserve">
     <value>Failed to load designer. Check the source code for syntax errors and check if all references are available.</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.ReportFlushErrors" xml:space="preserve">
+    <value>One or more errors occurred while trying to flush the designer content. This might be due to an unhandled exception in a custom/third-party component on the form/control.</value>
+    <comment>Message displayed when errors occur while flushing</comment>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning" xml:space="preserve">
     <value>Can't load side bar component library.
 No Windows Forms components will be avaiable, please configure the side bar manually.
@@ -4235,6 +4236,16 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
     <value>The public key token</value>
     <comment>Assembly reference's public key token property description</comment>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly" xml:space="preserve">
+    <value>Reference assembly</value>
+    <comment>'Reference' is a verb in this case.
+This string appears in the property pad when a project reference is selected in the projects pad.
+It is a boolean option that defaults to true.
+If set to false, this reference specifies only a build-order dependency and does not cause the assembly to be referenced.</comment>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description" xml:space="preserve">
+    <value>If set to false, this reference specifies only a build-order dependency and does not cause the assembly to be referenced.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion" xml:space="preserve">
     <value>Specific Version</value>
     <comment>Reference property name indicating if the reference is to a specific version</comment>
@@ -4288,6 +4299,9 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Loading ${Filename}...</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Project.CloseSolution" xml:space="preserve">
+    <value>Close solution</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Project.KeepOldSolution" xml:space="preserve">
     <value>Keep old solution open</value>
     <comment>Button text to keep old solution open</comment>
@@ -4324,6 +4338,15 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Project Upgrade</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateOnLoadDueToMissingMSBuild" xml:space="preserve">
+    <value>The project '${ProjectName}' is targeting MSBuild ${OldToolsVersion}, but that version is not installed.
+Do you want to upgrade the project to MSBuild ${NewToolsVersion}?
+The project cannot be opened without upgrading.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpdateToMSBuildButton" xml:space="preserve">
+    <value>Upgrade to MSBuild ${NewToolsVersion}</value>
+    <comment>OK button for UpdateOnLoadDueToMissingMSBuild message box</comment>
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
     <value>This solution was created using a previous version of SharpDevelop.
@@ -4409,7 +4432,7 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
     <value>ASP.NET/IIS (Express) worker process ({0}) was not found.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
-    <value>There's no Project Url specified or external program. Check the web server at Project Properties - Debug tab.</value>
+    <value>There is no external program or URL specified. Check the web server at Project Properties - Web tab.</value>
   </data>
   <data name="ICSharpCode.WebProjectOptionsPanel.Port" xml:space="preserve">
     <value>Server port:</value>
@@ -5072,7 +5095,7 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
     <value>You cannot switch to a function without symbols.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.CannotSwitchWithoutSymbolsOrDecompiledCodeOptions" xml:space="preserve">
-    <value>You cannot switch to a function without symbols without enabling decompiled code options.</value>
+    <value>You cannot switch to a function without debug symbols. Either recompile it with symbols or enable "Decompile code without symbols" in the options.</value>
   </data>
   <data name="MainWindow.Windows.Debug.CallStack.ExternalMethods" xml:space="preserve">
     <value>[External methods]</value>
@@ -5313,11 +5336,17 @@ Shows the full callstack of the error.</comment>
   <data name="MainWindow.Windows.Debug.Modules.AddressColumn" xml:space="preserve">
     <value>Address</value>
   </data>
+  <data name="MainWindow.Windows.Debug.Modules.DynamicModule" xml:space="preserve">
+    <value>(dynamic)</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Modules.HasNoSymbols" xml:space="preserve">
     <value>No symbols loaded.</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.HasSymbols" xml:space="preserve">
     <value>Symbols loaded.</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules.InMemoryModule" xml:space="preserve">
+    <value>(in memory)</value>
   </data>
   <data name="MainWindow.Windows.Debug.Modules.OrderColumn" xml:space="preserve">
     <value>Order</value>
@@ -6812,7 +6841,7 @@ The resources files have been renamed/moved accordingly.</value>
     <value>ASP.NET Web Form</value>
   </data>
   <data name="Templates.File.WebHandler.Description" xml:space="preserve">
-    <value>Creates a ASP.NET WebHandler with code-behind.</value>
+    <value>Creates an ASP.NET WebHandler with code-behind.</value>
   </data>
   <data name="Templates.File.WebHandler.Name" xml:space="preserve">
     <value>ASP.NET Web Handler</value>

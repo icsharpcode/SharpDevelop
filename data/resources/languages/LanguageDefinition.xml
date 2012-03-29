@@ -28,7 +28,7 @@
 	<!--<Languages name="Slovenian"                     code="sl"       icon="slovenia.png" />-->
 	<Languages name="Spanish"                       code="es"       icon="spain.png" />
 	<Languages name="Spanish (Mexico)"              code="es-mx"    icon="mexico.png" />
-	<!--<Languages name="Swedish"                       code="se"       icon="sweden.png" />-->
+	<Languages name="Swedish"                       code="se"       icon="sweden.png" />
 	<Languages name="Turkish"                       code="tr"       icon="turkey.png" />
 	
 </Languages>

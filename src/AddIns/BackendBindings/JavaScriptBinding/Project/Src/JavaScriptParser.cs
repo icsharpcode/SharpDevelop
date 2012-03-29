@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -48,14 +49,20 @@ namespace ICSharpCode.JavaScriptBinding
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			var astFactory = new JavaScriptAstFactory(fileContent);
-			JavaScriptAst ast = astFactory.Create();
+			try {
+				var astFactory = new JavaScriptAstFactory(fileContent);
+				JavaScriptAst ast = astFactory.Create();
+				
+				var unit = new JavaScriptCompilationUnit(projectContent, fileName);
+				var walker = new JavaScriptAstWalker(unit, ast);
+				walker.Walk();
+				
+				return unit;
+			} catch (Exception ex) {
+				LoggingService.Debug(ex.ToString());
+			}
 			
-			var unit = new JavaScriptCompilationUnit(projectContent, fileName);
-			var walker = new JavaScriptAstWalker(unit, ast);
-			walker.Walk();
-			
-			return unit;
+			return new DefaultCompilationUnit(projectContent) { FileName = fileName };
 		}
 		
 		public IResolver CreateResolver()

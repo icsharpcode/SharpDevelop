@@ -65,27 +65,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			ClosePopup();
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchSingleton_Workbench_ActiveViewContentChanged;
-			delayMoveTimer.Stop();
 		}
 		
 		void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (this.popup == null)
 				return;
-			if (e.Key == Key.T && Keyboard.Modifiers == ModifierKeys.Control)
-			{
+			if (e.Key == Key.T && Keyboard.Modifiers == ModifierKeys.Control) {
 				if (popup.ViewModel != null && popup.ViewModel.Actions != null && popup.ViewModel.Actions.Count > 0) {
 					popup.IsDropdownOpen = true;
 					popup.Focus();
 				} else {
+					ClosePopup();
 					// Popup is not shown but user explicitely requests it
 					var popupVM = BuildPopupViewModel(this.Editor);
 					popupVM.LoadHiddenActions();
-					if (popupVM.HiddenActions.Count == 0)
+					if (popupVM.Actions.Count == 0 && popupVM.HiddenActions.Count == 0)
 						return;
 					this.popup.ViewModel = popupVM;
 					this.popup.IsDropdownOpen = true;
-					this.popup.IsHiddenActionsExpanded = true;
+					this.popup.IsHiddenActionsExpanded = popupVM.Actions.Count == 0;
 					this.popup.OpenAtLineStart(this.Editor);
 					this.popup.Focus();
 				}
@@ -94,15 +93,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void ScrollChanged(object sender, EventArgs e)
 		{
-			ClosePopup();
+			StartTimer();
 		}
 
 		void TimerMoveTick(object sender, EventArgs e)
 		{
-			this.delayMoveTimer.Stop();
-			if (!IsEnabled)
+			if (!delayMoveTimer.IsEnabled)
 				return;
 			ClosePopup();
+			if (!IsEnabled)
+				return;
 			
 			ContextActionsBulbViewModel popupVM = BuildPopupViewModel(this.Editor);
 			//availableActionsVM.Title =
@@ -124,16 +124,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
-			if (this.popup.IsOpen)
-			{
-				ClosePopup();
-			}
-			this.delayMoveTimer.Stop();
-			this.delayMoveTimer.Start();
+			StartTimer();
+		}
+		
+		void StartTimer()
+		{
+			ClosePopup();
+			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
+			if (activeViewContent != null && activeViewContent.PrimaryFileName == this.Editor.FileName)
+				delayMoveTimer.Start();
 		}
 		
 		void ClosePopup()
 		{
+			this.delayMoveTimer.Stop();
 			this.popup.Close();
 			this.popup.IsDropdownOpen = false;
 			this.popup.IsHiddenActionsExpanded = false;
@@ -147,11 +151,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void WorkbenchSingleton_Workbench_ActiveViewContentChanged(object sender, EventArgs e)
 		{
 			// open the popup again if in current file
-			IViewContent activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
-			if (activeViewContent != null && activeViewContent.PrimaryFileName == this.Editor.FileName)
-				CaretPositionChanged(this, EventArgs.Empty);
-			else // otherwise close popup
-				ClosePopup();
+			StartTimer();
 		}
 	}
 }

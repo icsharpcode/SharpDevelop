@@ -499,6 +499,19 @@ namespace ICSharpCode.SharpDevelop
 				list.Add(itemToAdd);
 		}
 		
+		public static void RemoveWhere<T>(this IList<T> list, Predicate<T> condition)
+		{
+			if (list == null)
+				throw new ArgumentNullException("list");
+			int i = 0;
+			while (i < list.Count) {
+				if (condition(list[i]))
+					list.RemoveAt(i);
+				else
+					i++;
+			}
+		}
+		
 		public static ExpressionResult FindFullExpressionAtCaret(this ITextEditor editor)
 		{
 			if (editor == null)

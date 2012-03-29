@@ -48,10 +48,10 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		public event EventHandler<FrameSelectedEventArgs> FrameSelected;
 		
-		private ObservableCollection<ExpandoObject> itemCollection = new ObservableCollection<ExpandoObject>();
+		ObservableCollection<ParallelStackFrameModel> itemCollection = new ObservableCollection<ParallelStackFrameModel>();
 		
-		private ToolTip toolTip = new ToolTip();
-		private List<uint> threadIds = new List<uint>();
+		ToolTip toolTip = new ToolTip();
+		List<uint> threadIds = new List<uint>();
 		
 		public ThreadStack()
 		{
@@ -91,16 +91,11 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		public List<ThreadStack> ThreadStackChildren { get; set; }
 		
 		public List<uint> ThreadIds {
-			get {
-				return threadIds;
-			}
+			get { return threadIds; }
 		}
 		
-		public ObservableCollection<ExpandoObject> ItemCollection {
-			get {
-				return itemCollection;
-			}
-			
+		public ObservableCollection<ParallelStackFrameModel> ItemCollection {
+			get { return itemCollection; }
 			set {
 				itemCollection = value;
 				this.datagrid.ItemsSource = itemCollection;
@@ -132,7 +127,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		public void ClearImages()
 		{
-			foreach(dynamic item in itemCollection) {
+			foreach (ParallelStackFrameModel item in itemCollection) {
 				if (!item.IsRunningStackFrame)
 					item.Image = null;
 			}
@@ -170,7 +165,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		{
 			if (Process.IsRunning) return;
 			
-			dynamic selectedItem = datagrid.SelectedItem;
+			ParallelStackFrameModel selectedItem = datagrid.SelectedItem as ParallelStackFrameModel;
 			if (selectedItem != null) {
 				if (ThreadIds.Count > 1) {
 					datagrid.ContextMenu = CreateContextMenu(selectedItem);
@@ -183,7 +178,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		private void SelectFrame(uint threadId, ExpandoObject selectedItem)
+		private void SelectFrame(uint threadId, ParallelStackFrameModel selectedItem)
 		{
 			if (selectedItem == null)
 				return;
@@ -197,14 +192,12 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			
 			this.IsSelected = true;
 			
-			dynamic obj = selectedItem;
-			
 			foreach(var frame in thread.Callstack)
 			{
-				if (frame.GetMethodName() == obj.MethodName)
+				if (frame.GetMethodName() == selectedItem.MethodName)
 				{
-					if (!obj.IsRunningStackFrame)
-						obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
+					if (!selectedItem.IsRunningStackFrame)
+						selectedItem.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
 					
 					SourcecodeSegment nextStatement = frame.NextStatement;
 					if (nextStatement != null) {
@@ -225,7 +218,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		{
 			if (Process.IsRunning) return;
 			
-			dynamic selectedItem = datagrid.SelectedItem;
+			ParallelStackFrameModel selectedItem = datagrid.SelectedItem as ParallelStackFrameModel;
 			if (selectedItem == null)
 				return;
 			
@@ -233,13 +226,11 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			datagrid.ContextMenu.IsOpen = true;
 		}
 		
-		private ContextMenu CreateContextMenu(ExpandoObject item)
+		ContextMenu CreateContextMenu(ParallelStackFrameModel item)
 		{
-			dynamic obj = item;
-			
 			var menu = new ContextMenu();
-			foreach (var id in ThreadIds)
-			{
+			
+			foreach (var id in ThreadIds) {
 				MenuItem m = new MenuItem();
 				m.IsCheckable = true;
 				m.IsChecked = id == Process.SelectedThread.ID;
@@ -248,7 +239,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					SelectFrame((uint)menuItem.Tag, item);
 				};
 				m.Tag = id;
-				m.Header = id.ToString() + ":" + obj.MethodName;
+				m.Header = id.ToString() + ":" + item.MethodName;
 				
 				menu.Items.Add(m);
 			}
@@ -263,7 +254,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			
 			StackPanel panel = new StackPanel();
 			
-			dynamic selectedItem = datagrid.SelectedItem;
+			ParallelStackFrameModel selectedItem = datagrid.SelectedItem as ParallelStackFrameModel;
 			if (selectedItem == null) {
 				panel.Children.Add(new TextBlock { Text = "No item selected" });
 				this.toolTip.Content = panel;

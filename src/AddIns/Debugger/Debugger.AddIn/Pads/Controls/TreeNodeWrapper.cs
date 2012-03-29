@@ -4,11 +4,13 @@
 using System;
 using System.Linq;
 using System.Windows;
-
+using System.Windows.Threading;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TreeView;
 
 namespace Debugger.AddIn.Pads.Controls
@@ -40,7 +42,8 @@ namespace Debugger.AddIn.Pads.Controls
 		protected override void LoadChildren()
 		{
 			if (Node.HasChildNodes) {
-				this.Children.AddRange(Node.ChildNodes.Select(node => node.ToSharpTreeNode()));
+				((WindowsDebugger)DebuggerService.CurrentDebugger).DebuggedProcess
+					.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(Node.ChildNodes.Select(node => node.ToSharpTreeNode())));
 			}
 		}
 	}
@@ -74,7 +77,7 @@ namespace Debugger.AddIn.Pads.Controls
 			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.FullName == ((TreeNodeWrapper)n).Node.FullName))
 				WatchPad.Instance.WatchList.WatchItems.Add(node);
 			
-			WatchPad.Instance.RefreshPad();
+			WatchPad.Instance.InvalidatePad();
 		}
 	}
 }

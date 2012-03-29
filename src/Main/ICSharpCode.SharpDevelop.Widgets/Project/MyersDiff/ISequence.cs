@@ -38,7 +38,7 @@
 
 using System;
 
-namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
+namespace ICSharpCode.SharpDevelop.Widgets.MyersDiff
 {
 	/// <summary>
 	/// Arbitrary sequence of elements with fast comparison support.
@@ -85,5 +85,4 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		bool Equals(int thisIdx, ISequence other, int otherIdx);
 	}
 	
-
 }
