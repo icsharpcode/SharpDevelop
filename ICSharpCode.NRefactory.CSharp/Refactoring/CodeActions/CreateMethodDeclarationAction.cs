@@ -37,12 +37,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
+			var identifier = context.GetNode<IdentifierExpression>();
+			if (identifier != null && !(identifier.Parent is InvocationExpression && ((InvocationExpression)identifier.Parent).Target == identifier))
+				return GetActionsFromIdentifier(context, identifier);
+
 			var invocation = context.GetNode<InvocationExpression>();
 			if (invocation != null)
 				return GetActionsFromInvocation(context, invocation);
-			var identifier = context.GetNode<IdentifierExpression>();
-			if (identifier != null)
-				return GetActionsFromIdentifier(context, identifier);
 			return Enumerable.Empty<CodeAction>();
 		}
 

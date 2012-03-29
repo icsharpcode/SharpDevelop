@@ -602,6 +602,34 @@ class Test
 }");
 		}
 
+		[Test()]
+		public void TestCreateFromIdentifierNestedInMethodCall ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateMethodDeclarationAction> (@"namespace System {
+	class TestClass
+	{
+		public void FooBar (object test)
+		{
+			FooBar (new EventHandler ($Foo));
+		}
+	}
+}", @"namespace System {
+	class TestClass
+	{
+		void Foo (object sender, EventArgs e)
+		{
+			throw new NotImplementedException ();
+		}
+		public void FooBar (object test)
+		{
+			FooBar (new EventHandler (Foo));
+		}
+	}
+}");
+		}
+
+
 	}
 }
 
