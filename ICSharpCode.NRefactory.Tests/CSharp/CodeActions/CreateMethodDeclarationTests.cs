@@ -579,6 +579,29 @@ class Test
 ");
 		}
 		
+		[Test()]
+		public void TestStaticClassMethod ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateMethodDeclarationAction> (@"static class TestClass
+{
+	public TestClass ()
+	{
+		$Foo (5);
+	}
+}", @"static class TestClass
+{
+	static void Foo (int i)
+	{
+		throw new System.NotImplementedException ();
+	}
+	public TestClass ()
+	{
+		Foo (5);
+	}
+}");
+		}
+
 	}
 }
 

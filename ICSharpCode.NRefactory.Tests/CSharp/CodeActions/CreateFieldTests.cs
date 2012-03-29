@@ -150,31 +150,27 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 		[Test()]
-		public void TestStaticField ()
+		public void TestStaticClassField ()
 		{
-			string result = RunContextAction (
-				new CreateFieldAction (),
-				"using System;" + Environment.NewLine +
-					"class TestClass" + Environment.NewLine +
-					"{" + Environment.NewLine +
-					"	static void Test ()" + Environment.NewLine +
-					"	{" + Environment.NewLine +
-					"		$Foo = 0x10;" + Environment.NewLine +
-					"	}" + Environment.NewLine +
-					"}"
-			);
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateFieldAction> (@"static class TestClass
+{
+	public TestClass ()
+	{
+		$foo = 5;
+	}
+}", @"static class TestClass
+{
+	static int foo;
 
-			Assert.AreEqual (
-				"using System;" + Environment.NewLine +
-				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	static int Foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
-				"	static void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
-				"		Foo = 0x10;" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}", result);
+	public TestClass ()
+	{
+		foo = 5;
+	}
+}");
 		}
+
+		
+
 	}
 }

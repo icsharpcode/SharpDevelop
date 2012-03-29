@@ -219,6 +219,28 @@ class TestClass
 			);
 		}
 
+		[Test()]
+		public void TestStaticClassProperty ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreatePropertyAction> (@"static class TestClass
+{
+	public TestClass ()
+	{
+		$Foo = 5;
+	}
+}", @"static class TestClass
+{
+	static int Foo {
+		get;
+		set;
+	}
+	public TestClass ()
+	{
+		Foo = 5;
+	}
+}");
+		}
 
 	}
 }
