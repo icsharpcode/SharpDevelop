@@ -1,4 +1,4 @@
-// 
+﻿// 
 // InconsistentNamingTests.cs
 //  
 // Author:
@@ -27,16 +27,21 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.CodeActions;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
 	public class InconsistentNamingTests : InspectionActionTestBase
 	{
-		void CheckNaming (string input, string output)
+		void CheckNaming (string input, string output, bool shouldBeEmpty = false)
 		{
 			TestRefactoringContext context;
 			var issues = GetIssues (new InconsistentNamingIssue (), input, out context);
+			if (shouldBeEmpty) {
+				Assert.AreEqual (0, issues.Count ());
+				return;
+			}
 			Assert.Greater (issues.Count, 0);
 			CheckFix (context, issues [0], output);
 		}
@@ -156,9 +161,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 		[Test]
 		public void TestPrivateStaticReadOnlyFieldName ()
 		{
-			var input = @"class AClass { static readonly int field; }";
+			var input = @"class AClass { static readonly int Field; }";
 			var output = @"class AClass { static readonly int Field; }";
-			CheckNaming (input, output);
+			CheckNaming (input, output, true);
+		}
+		
+		[Test]
+		public void TestPrivateStaticReadOnlyFieldNameCase2 ()
+		{
+			var input = @"class AClass { static readonly int field; }";
+			var output = @"class AClass { static readonly int field; }";
+			CheckNaming (input, output, true);
 		}
 
 		[Test]
