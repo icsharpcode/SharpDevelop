@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IAXmlVisitor visitor)
+		public override void AcceptVisitor(AXmlVisitor visitor)
 		{
 			visitor.VisitDocument(this);
 		}
@@ -55,5 +55,10 @@ namespace ICSharpCode.NRefactory.Xml
 		{
 			return string.Format(CultureInfo.InvariantCulture, "[{0} Chld:{1}]", base.ToString(), this.Children.Count);
 		}
+		
+		/// <summary>
+		/// Represents an empty document.
+		/// </summary>
+		public readonly static AXmlDocument Empty = new AXmlDocument(null, 0, new InternalDocument());
 	}
 }

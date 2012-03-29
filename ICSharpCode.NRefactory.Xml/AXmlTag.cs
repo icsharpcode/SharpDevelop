@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.Xml
 		public bool IsUnknownBang           { get { return internalObject.IsUnknownBang; } }
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IAXmlVisitor visitor)
+		public override void AcceptVisitor(AXmlVisitor visitor)
 		{
 			visitor.VisitTag(this);
 		}
