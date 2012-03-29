@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -320,7 +320,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					if (controlSpace && isAsExpression != null && isAsExpression.Node is VariableDeclarationStatement && token != "new") {
 						var parent = isAsExpression.Node as VariableDeclarationStatement;
 						var proposeNameList = new CompletionDataWrapper(this);
-					
+						if (parent.Variables.Count != 1)
+							return DefaultControlSpaceItems(isAsExpression, controlSpace);
+
 						foreach (var possibleName in GenerateNameProposals (parent.Type)) {
 							if (possibleName.Length > 0) {
 								proposeNameList.Result.Add(factory.CreateLiteralCompletionData(possibleName.ToString()));
