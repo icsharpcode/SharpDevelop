@@ -84,10 +84,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		sealed class TestScript : DocumentScript
 		{
 			readonly TestRefactoringContext context;
-			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions())
+			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions(), new TextEditorOptions ())
 			{
 				this.context = context;
-				this.eolMarker = context.EolMarker;
 			}
 			
 			public override void Link (params AstNode[] nodes)
@@ -181,7 +180,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		}
 
 		#region Text stuff
-		public override string EolMarker { get { return Environment.NewLine; } }
 
 		public override bool IsSomethingSelected { get { return selectionStart > 0; }  }
 

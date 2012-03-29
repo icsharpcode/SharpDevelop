@@ -70,6 +70,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		/// <summary>
+		/// Gets or sets the label indent. A label indent is the indent that will be put before an label.
+		/// (Note: it may be negative -IndentSize would cause that labels are unindented)
+		/// </summary>
+		public int LabelIndent {
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Gets or sets the eol marker.
 		/// </summary>
 		public string EolMarker {

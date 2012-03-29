@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TastBlankLineFormatting.cs
 //  
 // Author:
@@ -51,7 +51,7 @@ using System.Text;
 
 namespace Test
 {
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesAfterUsings = 0;
 			Continue (policy, adapter,
@@ -59,7 +59,7 @@ namespace Test
 using System.Text;
 namespace Test
 {
-}");
+}", FormattingMode.Intrusive);
 		}
 
 		[Test()]
@@ -80,7 +80,7 @@ using System;
 using System.Text;
 namespace Test
 {
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesBeforeUsings = 0;
 			Continue (policy, adapter, 
@@ -88,7 +88,7 @@ namespace Test
 using System.Text;
 namespace Test
 {
-}");
+}", FormattingMode.Intrusive);
 		}
 
 		[Test()]
@@ -110,7 +110,7 @@ namespace Test
 	class Test
 	{
 	}
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesBeforeFirstDeclaration = 0;
 			Continue (policy, adapter,
@@ -119,7 +119,7 @@ namespace Test
 	class Test
 	{
 	}
-}");
+}", FormattingMode.Intrusive);
 		}
 
 		[Test()]
@@ -153,7 +153,7 @@ namespace Test
 	class Test3
 	{
 	}
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesBetweenTypes = 0;
 			Continue (policy, adapter, @"namespace Test
@@ -167,7 +167,7 @@ namespace Test
 	class Test3
 	{
 	}
-}");
+}", FormattingMode.Intrusive);
 		}
 
 		[Test()]
@@ -189,7 +189,7 @@ namespace Test
 	int b;
 
 	int c;
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesBetweenFields = 0;
 			Continue (policy, adapter, @"class Test
@@ -197,7 +197,7 @@ namespace Test
 	int a;
 	int b;
 	int c;
-}");
+}", FormattingMode.Intrusive);
 		}
 
 		[Test()]
@@ -219,7 +219,7 @@ namespace Test
 	public event EventHandler b;
 
 	public event EventHandler c;
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesBetweenEventFields = 0;
 			Continue (policy, adapter,
@@ -228,7 +228,7 @@ namespace Test
 	public event EventHandler a;
 	public event EventHandler b;
 	public event EventHandler c;
-}");
+}", FormattingMode.Intrusive);
 		}
 
 		[Test()]
@@ -237,7 +237,7 @@ namespace Test
 			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
 			policy.BlankLinesBetweenMembers = 1;
 			
-			var adapter = Test (policy,@"class Test
+			var adapter = Test (policy, @"class Test
 {
 	void AMethod ()
 	{
@@ -261,7 +261,7 @@ namespace Test
 	void CMethod ()
 	{
 	}
-}");
+}", FormattingMode.Intrusive);
 			
 			policy.BlankLinesBetweenMembers = 0;
 			Continue (policy, adapter, @"class Test
@@ -275,7 +275,7 @@ namespace Test
 	void CMethod ()
 	{
 	}
-}");
+}", FormattingMode.Intrusive);
 		}
 		
 		

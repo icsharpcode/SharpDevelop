@@ -28,22 +28,24 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return b.ToString();
 		}*/
 		
-		protected static IDocument GetResult (CSharpFormattingOptions policy, string input)
+		protected static IDocument GetResult (CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.OnTheFly)
 		{
-			input = NormalizeNewlines(input);
+			input = NormalizeNewlines (input);
 			var document = new StringBuilderDocument (input);
-			var visitor = new AstFormattingVisitor (policy, document);
-			visitor.EolMarker = "\n";
+			var options = new TextEditorOptions ();
+			options.EolMarker = "\n";
+			var visitor = new AstFormattingVisitor (policy, document, options);
+			visitor.FormattingMode = mode;
 			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");
 			compilationUnit.AcceptVisitor (visitor);
 			visitor.ApplyChanges();
 			return document;
 		}
 		
-		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput)
+		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.OnTheFly)
 		{
 			expectedOutput = NormalizeNewlines(expectedOutput);
-			IDocument doc = GetResult(policy, input);
+			IDocument doc = GetResult(policy, input, mode);
 			if (expectedOutput != doc.Text) {
 				Console.WriteLine (doc.Text);
 			}
@@ -56,11 +58,13 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return input.Replace("\r\n", "\n");
 		}
 
-		protected static void Continue (CSharpFormattingOptions policy, IDocument document, string expectedOutput)
+		protected static void Continue (CSharpFormattingOptions policy, IDocument document, string expectedOutput, FormattingMode formattingMode = FormattingMode.OnTheFly)
 		{
-			expectedOutput = NormalizeNewlines(expectedOutput);
-			var visitior = new AstFormattingVisitor (policy, document);
-			visitior.EolMarker = "\n";
+			expectedOutput = NormalizeNewlines (expectedOutput);
+			var options = new TextEditorOptions ();
+			options.EolMarker = "\n";
+			var visitior = new AstFormattingVisitor (policy, document, options);
+			visitior.FormattingMode = formattingMode;
 			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");
 			compilationUnit.AcceptVisitor (visitior);
 			visitior.ApplyChanges();
