@@ -420,7 +420,8 @@ namespace ICSharpCode.NRefactory.CSharp.Analysis
 					falseEnd = ifElseStatement.FalseStatement.AcceptVisitor(this, falseBegin);
 				}
 				ControlFlowNode end = builder.CreateEndNode(ifElseStatement);
-				Connect(trueEnd, end);
+				if (trueEnd != null)
+					Connect(trueEnd, end);
 				if (falseEnd != null) {
 					Connect(falseEnd, end);
 				} else if (cond != true) {
