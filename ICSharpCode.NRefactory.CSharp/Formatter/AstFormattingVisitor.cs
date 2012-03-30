@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AstFormattingVisitor.cs
 //
 // Author:
@@ -870,8 +870,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (child.Role == Roles.LBrace || child.Role == Roles.RBrace) {
 					continue;
 				}
-				FixStatementIndentation(child.StartLocation);
-				child.AcceptVisitor(this);
+				if (child is Statement) {
+					FixStatementIndentation(child.StartLocation);
+					child.AcceptVisitor(this);
+				} else {
+					// leave comments and pre processor directives at line start, if they are there.
+					if (child.StartLocation.Column > 1)
+						FixStatementIndentation(child.StartLocation);
+				}
 			}
 			if (indent) {
 				curIndent.Pop ();
