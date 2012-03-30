@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+﻿﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -17,27 +17,46 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.Xml
 {
 	/// <summary>
-	/// Visitor for the XML tree
+	/// Derive from this class to create visitor for the XML tree
 	/// </summary>
-	public interface IAXmlVisitor
+	public abstract class AXmlVisitor
 	{
-		/// <summary> Visit document </summary>
-		void VisitDocument(AXmlDocument document);
+		/// <summary> Visit AXmlDocument </summary>
+		public virtual void VisitDocument(AXmlDocument document)
+		{
+			foreach (AXmlObject child in document.Children)
+				child.AcceptVisitor(this);
+		}
 		
-		/// <summary> Visit tag </summary>
-		void VisitTag(AXmlTag tag);
+		/// <summary> Visit AXmlElement </summary>
+		public virtual void VisitElement(AXmlElement element)
+		{
+			foreach (AXmlObject child in element.Children)
+				child.AcceptVisitor(this);
+		}
 		
-		/// <summary> Visit attribute </summary>
-		void VisitAttribute(AXmlAttribute attribute);
+		/// <summary> Visit AXmlTag </summary>
+		public virtual void VisitTag(AXmlTag tag)
+		{
+			foreach (AXmlObject child in tag.Children)
+				child.AcceptVisitor(this);
+		}
 		
-		/// <summary> Visit text </summary>
-		void VisitText(AXmlText text);
+		/// <summary> Visit AXmlAttribute </summary>
+		public virtual void VisitAttribute(AXmlAttribute attribute)
+		{
+			
+		}
 		
-		/// <summary> Visit element </summary>
-		void VisitElement(AXmlElement element);
+		/// <summary> Visit AXmlText </summary>
+		public virtual void VisitText(AXmlText text)
+		{
+			
+		}
 	}
 }
