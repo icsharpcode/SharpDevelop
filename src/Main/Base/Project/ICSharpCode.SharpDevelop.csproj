@@ -253,6 +253,10 @@
       <DependentUpon>SelectCulturePanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanelXaml.xaml.cs">
+      <DependentUpon>SelectStylePanelXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml.cs">
       <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -529,7 +533,7 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\CodeGenerationPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\old_SelectStylePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
@@ -707,7 +711,7 @@
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
-    <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
+    <EmbeddedResource Include="Resources\old_SelectStylePanel.xfrm" />
     <EmbeddedResource Include="Resources\WordCountDialog.xfrm" />
     <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
@@ -885,6 +889,7 @@
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanelXaml.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
