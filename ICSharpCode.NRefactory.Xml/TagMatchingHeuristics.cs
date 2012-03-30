@@ -20,6 +20,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.Utils;
 
@@ -28,6 +29,7 @@ namespace ICSharpCode.NRefactory.Xml
 	class TagMatchingHeuristics
 	{
 		readonly ITextSource textSource;
+		
 		const int MaxConfigurationCount = 30;
 		
 		public TagMatchingHeuristics(ITextSource textSource)
@@ -35,9 +37,9 @@ namespace ICSharpCode.NRefactory.Xml
 			this.textSource = textSource;
 		}
 		
-		public InternalDocument CreateDocument(List<InternalObject> tagSoup)
+		public InternalDocument CreateDocument(List<InternalObject> tagSoup, CancellationToken cancellationToken)
 		{
-			var stack = InsertPlaceholderTags(tagSoup);
+			var stack = InsertPlaceholderTags(tagSoup, cancellationToken);
 			InternalDocument doc = new InternalDocument();
 			var docElements = CreateElements(ref stack);
 			docElements.Reverse(); // reverse due to stack
@@ -201,7 +203,7 @@ namespace ICSharpCode.NRefactory.Xml
 			return indentation;
 		}
 		
-		ImmutableStack<InternalObject> InsertPlaceholderTags(List<InternalObject> objects)
+		ImmutableStack<InternalObject> InsertPlaceholderTags(List<InternalObject> objects, CancellationToken cancellationToken)
 		{
 			// Calculate indentation levels in front of the tags:
 			int[] indentationBeforeTags = new int[objects.Count];
@@ -218,6 +220,7 @@ namespace ICSharpCode.NRefactory.Xml
 			listA.Add(new Configuration(new OpenTagStack(), ImmutableStack<InternalObject>.Empty, 0));
 			
 			for (int i = 0; i < indentationBeforeTags.Length; i++) {
+				cancellationToken.ThrowIfCancellationRequested();
 				ProcessObject(objects[i], indentationBeforeTags[i], listA, ref listB);
 				Swap(ref listA, ref listB);
 			}

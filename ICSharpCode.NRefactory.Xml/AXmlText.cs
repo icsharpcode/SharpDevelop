@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Xml
 		}
 		
 		/// <inheritdoc/>
-		public override void AcceptVisitor(IAXmlVisitor visitor)
+		public override void AcceptVisitor(AXmlVisitor visitor)
 		{
 			visitor.VisitText(this);
 		}
