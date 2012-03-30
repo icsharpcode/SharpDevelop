@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <gui:OptionPanel
-	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanelXaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 	<StackPanel>
 		
 		<GroupBox Margin="2,8,2,2"
