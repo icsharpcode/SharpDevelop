@@ -142,9 +142,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 		#endregion
 		
 		#region Entry management
-		const int cachedEntryCount = 5;
 		Dictionary<FileName, ParserServiceEntry> fileEntryDict = new Dictionary<FileName, ParserServiceEntry>();
-		Queue<ParserServiceEntry> cacheExpiryQueue = new Queue<ParserServiceEntry>();
 		
 		ParserServiceEntry GetFileEntry(FileName fileName, bool createIfMissing)
 		{
@@ -182,16 +180,22 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
+		const int cachedEntryCount = 5;
+		List<ParserServiceEntry> cacheExpiryQueue = new List<ParserServiceEntry>();
+		
 		internal void RegisterForCacheExpiry(ParserServiceEntry entry)
 		{
 			// This method should not be called within any locks
 			Debug.Assert(!Monitor.IsEntered(entry));
 			ParserServiceEntry expiredItem = null;
 			lock (cacheExpiryQueue) {
+				cacheExpiryQueue.Remove(entry); // remove entry from queue if it's already enqueued
 				if (cacheExpiryQueue.Count >= cachedEntryCount) {
-					expiredItem = cacheExpiryQueue.Dequeue();
+					// dequeue item at front
+					expiredItem = cacheExpiryQueue[0];
+					cacheExpiryQueue.RemoveAt(0);
 				}
-				cacheExpiryQueue.Enqueue(entry);
+				cacheExpiryQueue.Add(entry); // add entry to back
 			}
 			if (expiredItem != null)
 				expiredItem.ExpireCache();

@@ -73,5 +73,12 @@ namespace CSharpBinding.Refactoring
 		{
 			// TODO
 		}
+		
+		public override void Dispose()
+		{
+			base.Dispose();
+			// refresh parse information so that the issue can disappear immediately
+			SD.ParserService.ParseAsync(editor.FileName, editor.Document).FireAndForget();
+		}
 	}
 }

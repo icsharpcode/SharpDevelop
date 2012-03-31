@@ -156,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				fileContent = SD.FileService.GetFileContent(fileName);
 			}
 			
-			return DoParse(fileContent, parentProject, false, cancellationToken).CachedParseInformation;
+			return DoParse(fileContent, parentProject, true, cancellationToken).CachedParseInformation;
 		}
 		
 		public IParsedFile ParseFile(ITextSource fileContent, IProject parentProject, CancellationToken cancellationToken)
@@ -231,10 +231,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 				// Only if all parse runs succeeded, register the parse information.
 				currentVersion = fileContent.Version;
 				for (int i = 0; i < entries.Count; i++) {
-					if (fullParseInformationRequested || entries[i].CachedParseInformation != null)
-						entries[i] = new ProjectEntry(entries[i].Project, entries[i].ParsedFile, results[i].NewParseInformation);
+					if (fullParseInformationRequested || (entries[i].CachedParseInformation != null && results[i].NewParseInformation.IsFullParseInformation))
+						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewParsedFile, results[i].NewParseInformation);
 					else
-						entries[i] = new ProjectEntry(entries[i].Project, entries[i].ParsedFile, null);
+						entries[i] = new ProjectEntry(entries[i].Project, results[i].NewParsedFile, null);
 					if (entries[i].Project != null)
 						entries[i].Project.OnParseInformationUpdated(results[i]);
 					parserService.RaiseParseInformationUpdated(results[i]);

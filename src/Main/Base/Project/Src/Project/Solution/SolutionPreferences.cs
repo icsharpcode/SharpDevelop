@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		Properties IMementoCapable.CreateMemento()
 		{
-			Properties p = properties;
+			Properties p = properties.Clone();
 			p.Set("StartupProject",      startupProject);
 			p.Set("ActiveConfiguration", activeConfiguration);
 			p.Set("ActivePlatform",      activePlatform);

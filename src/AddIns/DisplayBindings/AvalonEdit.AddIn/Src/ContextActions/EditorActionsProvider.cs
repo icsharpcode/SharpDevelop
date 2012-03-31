@@ -50,6 +50,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.ContextActions
 				throw new ArgumentNullException("editorContext");
 			if (providers == null)
 				throw new ArgumentNullException("providers");
+			LoadProviderVisibilities(providers);
 			this.providers = providers;
 			this.editorContext = editorContext;
 		}

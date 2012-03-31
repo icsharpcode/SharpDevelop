@@ -79,7 +79,7 @@ namespace CSharpBinding.Parser
 			ParseInformation parseInfo;
 			
 			if (fullParseInformationRequested)
-				parseInfo = new CSharpFullParseInformation(file, cu);
+				parseInfo = new CSharpFullParseInformation(file, fileContent.Version, cu);
 			else
 				parseInfo = new ParseInformation(file, fullParseInformationRequested);
 			

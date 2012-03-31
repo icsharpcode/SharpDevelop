@@ -92,6 +92,7 @@ namespace CSharpBinding.Refactoring
 			this.editor = editor;
 			this.markerService = editor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			//SD.ParserService.ParserUpdateStepFinished += ParserService_ParserUpdateStepFinished;
+			SD.ParserService.ParseInformationUpdated += new EventHandler<ParseInformationEventArgs>(SD_ParserService_ParseInformationUpdated);
 			editor.ContextActionProviders.Add(this);
 		}
 		
@@ -218,17 +219,19 @@ namespace CSharpBinding.Refactoring
 			analyzedVersion = null;
 		}
 		
-		void ParserService_ParserUpdateStepFinished(object sender, ParserUpdateStepEventArgs e)
+		void SD_ParserService_ParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			var parseInfo = e.ParseInformation as CSharpFullParseInformation;
+			var parseInfo = e.NewParseInformation as CSharpFullParseInformation;
 			ITextSourceVersion currentVersion  = editor.Document.Version;
-			ITextSourceVersion parsedVersion = e.Content.Version;
-			if (parseInfo != null && parsedVersion != null && currentVersion != null && parsedVersion.BelongsToSameDocumentAs(currentVersion)) {
+			if (parseInfo == null)
+				return;
+			ITextSourceVersion parsedVersion = parseInfo.ParsedVersion;
+			if (parsedVersion != null && currentVersion != null && parsedVersion.BelongsToSameDocumentAs(currentVersion)) {
 				if (analyzedVersion != null && analyzedVersion.CompareAge(parsedVersion) == 0) {
 					// don't analyze the same version twice
 					return;
 				}
-				RunAnalysis(e.Content, parseInfo);
+				RunAnalysis(editor.Document.CreateSnapshot(), parseInfo);
 			}
 		}
 		
