@@ -204,7 +204,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			public IResourceWriter GetWriter()
 			{
 				this.stream = new MemoryStream();
-				this.writer = CreateResourceWriter(this.stream, GetResourceType(OpenedFile.FileName));
+				this.writer = CreateResourceWriter(this.stream, OpenedFile.FileName);
 				return this.writer;
 			}
 			
@@ -335,12 +335,12 @@ namespace ICSharpCode.FormsDesigner.Services
 			return new ResXResourceReader(stream);
 		}
 		
-		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
+		internal static IResourceWriter CreateResourceWriter(Stream stream, string fileName)
 		{
-			if (type == ResourceType.Resources) {
+			if (GetResourceType(fileName) == ResourceType.Resources) {
 				return new ResourceWriter(stream);
 			}
-			return new ResXResourceWriter(stream);
+			return new ResXResourceWriter(stream, t => ResXConverter.ConvertTypeName(t, fileName));
 		}
 		
 		internal static ResourceType GetResourceType(string fileName)

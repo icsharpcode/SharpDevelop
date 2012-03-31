@@ -345,6 +345,7 @@
     <Compile Include="Src\Project\Behaviors\ProjectBehavior.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorService.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorSupportedConditionEvaluator.cs" />
+    <Compile Include="Src\Project\Behaviors\ResXConverter.cs" />
     <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\Converter\IUpgradableProject.cs" />
