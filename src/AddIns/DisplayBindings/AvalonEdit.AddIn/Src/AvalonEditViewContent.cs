@@ -275,7 +275,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (trackedFeature != null)
 				trackedFeature.EndTracking();
-			this.PrimaryFile.IsDirtyChanged -= PrimaryFile_IsDirtyChanged;
+			if (PrimaryFile != null)
+				this.PrimaryFile.IsDirtyChanged -= PrimaryFile_IsDirtyChanged;
 			base.Dispose();
 			BookmarksDetach();
 			codeEditor.Dispose();
