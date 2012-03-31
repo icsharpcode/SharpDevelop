@@ -241,6 +241,10 @@
     <Compile Include="Src\Gui\Dialogs\OpenWithDialog.Designer.cs">
       <DependentUpon>OpenWithDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml.cs">
+      <DependentUpon>EditStandardHeaderPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\LoadSaveOptions.xaml.cs">
       <DependentUpon>LoadSaveOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -581,9 +585,6 @@
     <Compile Include="Src\Internal\Templates\File\ScriptRunner.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\BooleanTypeConverter.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\TemplateTypeConverter.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Internal\Templates\StandardHeaders.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningEvaluator.cs" />
@@ -702,7 +703,6 @@
     <EmbeddedResource Include="Resources\CodeGenerationOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\EditStandardHeaderPanel.xfrm" />
     <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
@@ -733,9 +733,6 @@
     <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_ReferencePaths.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs">
@@ -885,6 +882,7 @@
   <ItemGroup>
     <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
     <Page Include="Src\Gui\Components\StringListEditorXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
