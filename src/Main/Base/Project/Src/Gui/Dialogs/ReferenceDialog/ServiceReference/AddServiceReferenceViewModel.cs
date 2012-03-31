@@ -37,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		List<string> mruServices = new List<string>();
 		string selectedService;
 		IProject project;
+		ServiceReferenceGenerator serviceGenerator;
 		
 		List<ServiceItem> items = new List <ServiceItem>();
 		ServiceItem myItem;
@@ -53,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public AddServiceReferenceViewModel(IProject project)
 		{
 			this.project = project;
+			this.serviceGenerator = new ServiceReferenceGenerator(project);
 			discoverButtonContent = "Discover";
 			HeadLine = header1 + header2;
 			
@@ -114,10 +116,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void ExecuteAdvancedDialogCommand()
 		{
-			var vm = new AdvancedServiceViewModel();
+			var vm = new AdvancedServiceViewModel(serviceGenerator.Options.Clone());
 			var view = new AdvancedServiceDialog();
 			view.DataContext = vm;
-			view.ShowDialog();
+			if (view.ShowDialog() ?? false) {
+				serviceGenerator.Options = vm.Options;
+			}
 		}
 			
 		#endregion
@@ -376,7 +380,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public void AddServiceReference()
 		{
-			var serviceGenerator = new ServiceReferenceGenerator(project);
 			serviceGenerator.Options.Namespace = defaultNameSpace;
 			serviceGenerator.Options.Url = discoveryUri.ToString();
 			serviceGenerator.AddServiceReference();

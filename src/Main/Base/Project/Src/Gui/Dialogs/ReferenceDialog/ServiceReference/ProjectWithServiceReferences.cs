@@ -3,6 +3,7 @@
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -155,6 +156,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		string GetDefaultAppConfigFileName()
 		{
 			return Path.Combine(project.Directory, "app.config");
+		}
+		
+		public IEnumerable<string> GetReferences()
+		{
+			foreach (ProjectItem item in project.GetItemsOfType(ItemType.Reference)) {
+				yield return item.FileName;
+			}
 		}
 	}
 }

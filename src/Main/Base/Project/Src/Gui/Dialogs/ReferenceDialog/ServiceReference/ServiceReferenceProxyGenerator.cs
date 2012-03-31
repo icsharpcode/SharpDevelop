@@ -10,10 +10,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class ServiceReferenceProxyGenerator : IServiceReferenceProxyGenerator
 	{
-		SvcUtilOptions options = new SvcUtilOptions();
+		ServiceReferenceGeneratorOptions options = new ServiceReferenceGeneratorOptions();
 		
 		public ServiceReferenceGeneratorOptions Options {
 			get { return options; }
+			set { options = value; }
 		}
 		
 		public void GenerateProxyFile()

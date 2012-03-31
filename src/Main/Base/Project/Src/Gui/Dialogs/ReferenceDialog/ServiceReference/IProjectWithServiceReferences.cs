@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
@@ -19,5 +20,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		bool HasAppConfigFile();
 		string GetAppConfigFileName();
 		void AddAppConfigFile();
+		IEnumerable<string> GetReferences();
 	}
 }

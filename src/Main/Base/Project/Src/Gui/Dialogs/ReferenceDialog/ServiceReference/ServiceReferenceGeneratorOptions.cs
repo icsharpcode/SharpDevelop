@@ -2,19 +2,33 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class ServiceReferenceGeneratorOptions
 	{
+		List<string> assemblies = new List<string>();
+		
 		public ServiceReferenceGeneratorOptions()
+			: this(new string[0])
 		{
+		}
+		
+		public ServiceReferenceGeneratorOptions(IEnumerable<string> assemblies)
+		{
+			this.assemblies.AddRange(assemblies);
 			this.AppConfigFileName = String.Empty;
 			this.MergeAppConfig = false;
 			this.OutputFileName = String.Empty;
 			this.Namespace = String.Empty;
 			this.Language = "CS";
 			this.NoAppConfig = true;
+			this.UseTypesInProjectReferences = true;
+			this.ArrayCollectionType = CollectionTypes.Array;
+			this.DictionaryCollectionType = DictionaryCollectionTypes.Dictionary;
 		}
 		
 		public string Namespace { get; set; }
@@ -24,6 +38,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public string AppConfigFileName { get; set; }
 		public bool NoAppConfig { get; set; }
 		public bool MergeAppConfig { get; set; }
+		public bool GenerateInternalClasses { get; set; }
+		public bool GenerateAsyncOperations { get; set; }
+		public bool GenerateMessageContract { get; set; }
+		public bool UseTypesInProjectReferences { get; set; }
+		public CollectionTypes ArrayCollectionType { get; set; }
+		public DictionaryCollectionTypes DictionaryCollectionType { get; set; }
 		
 		public void MapProjectLanguage(string language)
 		{
@@ -31,6 +51,102 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				Language = "VB";
 			} else {
 				Language = "CS";
+			}
+		}
+		
+		public IList<string> Assemblies {
+			get { return assemblies; }
+		}
+		
+		public ServiceReferenceGeneratorOptions Clone()
+		{
+			return new ServiceReferenceGeneratorOptions(this.assemblies) {
+				Namespace = this.Namespace,
+				OutputFileName = this.OutputFileName,
+				Url = this.Url,
+				Language = this.Language,
+				AppConfigFileName = this.AppConfigFileName,
+				NoAppConfig = this.NoAppConfig,
+				MergeAppConfig = this.MergeAppConfig,
+				
+				UseTypesInProjectReferences = this.UseTypesInProjectReferences,
+				ArrayCollectionType = this.ArrayCollectionType,
+				DictionaryCollectionType = this.DictionaryCollectionType,
+				GenerateInternalClasses = this.GenerateInternalClasses,
+				GenerateAsyncOperations = this.GenerateAsyncOperations,
+				GenerateMessageContract = this.GenerateMessageContract
+			};
+		}
+		
+		public string GetNamespaceMapping()
+		{
+			if (Namespace != null) {
+				return "*," + Namespace;
+			}
+			return null;
+		}
+		
+		public string GetArrayCollectionTypeDescription()
+		{
+			string description = GetEnumTypeDescription(ArrayCollectionType.GetType(), ArrayCollectionType.ToString());
+			return description + GetGenericTypeSuffix(ArrayCollectionType);
+		}
+		
+		string GetEnumTypeDescription(Type type, string name)
+		{
+			foreach (FieldInfo field in type.GetFields()) {
+				if (field.IsStatic) {
+					if (field.Name == name) {
+						return GetDescription(field);
+					}
+				}
+			}
+			return null;
+		}
+		
+		string GetDescription(FieldInfo field)
+		{
+			foreach (DescriptionAttribute attribute in field.GetCustomAttributes(typeof(DescriptionAttribute), false))
+				return attribute.Description;
+			return field.Name;
+		}
+		
+		string GetGenericTypeSuffix(CollectionTypes type)
+		{
+			switch (type) {
+				case CollectionTypes.List:
+				case CollectionTypes.LinkedList:
+				case CollectionTypes.ObservableCollection:
+				case CollectionTypes.Collection:
+				case CollectionTypes.BindingList:
+					return "`1";
+			}
+			return String.Empty;
+		}
+		
+		public string GetDictionaryCollectionTypeDescription()
+		{
+			string description = GetEnumTypeDescription(DictionaryCollectionType.GetType(), DictionaryCollectionType.ToString());
+			return description + GetGenericTypeSuffix(DictionaryCollectionType);
+		}
+		
+		string GetGenericTypeSuffix(DictionaryCollectionTypes type)
+		{
+			switch (type) {
+				case DictionaryCollectionTypes.SortedList_2:
+				case DictionaryCollectionTypes.HashTable:
+				case DictionaryCollectionTypes.HybridDictionary:
+				case DictionaryCollectionTypes.ListDictionary:
+				case DictionaryCollectionTypes.OrderedDictionary:
+					return String.Empty;
+			}
+			return "`2";
+		}
+		
+		public void AddProjectReferencesIfUsingTypesFromProjectReferences(IEnumerable<string> assemblies)
+		{
+			if (UseTypesInProjectReferences) {
+				Assemblies.AddRange(assemblies);
 			}
 		}
 	}

@@ -28,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public ServiceReferenceGeneratorOptions Options {
 			get { return proxyGenerator.Options; }
+			set { proxyGenerator.Options = value; }
 		}
 		
 		public void GenerateProxyFile()

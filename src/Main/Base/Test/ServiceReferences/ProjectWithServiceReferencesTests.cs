@@ -97,6 +97,12 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ProjectService.AddProjectItem(msbuildProject, fileItem);
 		}
 		
+		void AddGacReferenceToProject(string name)
+		{
+			var referenceItem = new ReferenceProjectItem(msbuildProject, name);
+			ProjectService.AddProjectItem(msbuildProject, referenceItem);
+		}
+		
 		int CountAssemblyReferencesInMSBuildProject()
 		{
 			return msbuildProject.GetItemsOfType(ItemType.Reference).Count();
@@ -368,6 +374,19 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			string fileName = project.GetAppConfigFileName();
 			
 			Assert.AreEqual(@"d:\projects\MyProject\SubFolder\app.config", fileName);
+		}
+		
+		[Test]
+		public void GetReferences_ProjectHasGacReference_ReturnsGacReference()
+		{
+			CreateProjectWithMSBuildProject();
+			AddGacReferenceToProject("System.Xml");
+			IEnumerable<string> references = project.GetReferences();
+			
+			string[] expectedReferences = new string[] {
+				"System.Xml"
+			};
+			CollectionAssert.AreEqual(expectedReferences, references);
 		}
 	}
 }

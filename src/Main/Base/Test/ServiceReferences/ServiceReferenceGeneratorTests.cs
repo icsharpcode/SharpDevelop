@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ServiceModel.Description;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
@@ -20,15 +21,16 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		ServiceReferenceFileGenerator fileGenerator;
 		IFileSystem fakeFileSystem;
 		ServiceReferenceGeneratorOptions options;
+		List<string> projectReferences;
 		
 		void CreateGenerator()
 		{
 			options = new ServiceReferenceGeneratorOptions();
 			fakeProject = MockRepository.GenerateStub<IProjectWithServiceReferences>();
+			projectReferences = new List<string>();
+			fakeProject.Stub(p => p.GetReferences()).Return(projectReferences);
 			fakeProxyGenerator = MockRepository.GenerateStub<IServiceReferenceProxyGenerator>();
-			fakeProxyGenerator
-				.Stub(p => p.Options)
-				.Return(options);
+			fakeProxyGenerator.Options = options;
 			fakeReferenceMapGenerator = MockRepository.GenerateStub<IServiceReferenceMapGenerator>();
 			fileGenerator = new ServiceReferenceFileGenerator(fakeProxyGenerator, fakeReferenceMapGenerator);
 			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
@@ -108,6 +110,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		void ProjectHasAppConfigFile(bool hasAppConfigFile)
 		{
 			fakeProject.Stub(p => p.HasAppConfigFile()).Return(hasAppConfigFile);
+		}
+		
+		void AddReferenceToProject(string reference)
+		{
+			projectReferences.Add(reference);
 		}
 		
 		[Test]
@@ -319,6 +326,45 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			Assert.IsFalse(fakeProxyGenerator.Options.NoAppConfig);
 			Assert.IsTrue(fakeProxyGenerator.Options.MergeAppConfig);
 			fakeProject.AssertWasNotCalled(p => p.AddAppConfigFile());
+		}
+		
+		[Test]
+		public void AddServiceReference_UseTypesInProjectReferencesIsTrue_ProjectReferencesAddedToOptions()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.Namespace = "MyService";
+			generator.Options.UseTypesInProjectReferences = true;
+			
+			AddReferenceToProject("System.Windows.Forms");
+			AddReferenceToProject(@"d:\projects\MyProject\lib\MyLib.dll");
+			
+			generator.AddServiceReference();
+			
+			string[] expectedReferences = new string[] {
+				"System.Windows.Forms",
+				@"d:\projects\MyProject\lib\MyLib.dll"
+			};
+			
+			CollectionAssert.AreEqual(expectedReferences, fakeProxyGenerator.Options.Assemblies);
+		}
+				
+		[Test]
+		public void AddServiceReference_UseTypesInProjectReferencesIsFalse_NoProjectReferencesAddedToOptions()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.Namespace = "MyService";
+			generator.Options.UseTypesInProjectReferences = false;
+			
+			AddReferenceToProject("System.Windows.Forms");
+			AddReferenceToProject(@"d:\projects\MyProject\lib\MyLib.dll");
+			
+			generator.AddServiceReference();
+			
+			Assert.AreEqual(0, fakeProxyGenerator.Options.Assemblies.Count);
 		}
 	}
 }

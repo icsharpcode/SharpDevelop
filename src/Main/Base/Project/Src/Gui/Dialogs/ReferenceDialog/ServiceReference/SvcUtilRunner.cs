@@ -8,12 +8,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class SvcUtilRunner
 	{
-		public SvcUtilRunner(SvcUtilOptions options)
+		public SvcUtilRunner(ServiceReferenceGeneratorOptions options)
 		{
 			this.Options = options;
 		}
 		
-		public SvcUtilOptions Options { get; private set; }
+		public ServiceReferenceGeneratorOptions Options { get; private set; }
 		
 		public void Run()
 		{

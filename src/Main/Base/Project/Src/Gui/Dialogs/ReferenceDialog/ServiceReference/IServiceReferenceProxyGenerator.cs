@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public interface IServiceReferenceProxyGenerator
 	{
-		ServiceReferenceGeneratorOptions Options { get; }
+		ServiceReferenceGeneratorOptions Options { get; set; }
 		void GenerateProxyFile();
 	}
 }

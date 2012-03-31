@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public ServiceReferenceGeneratorOptions Options {
 			get { return fileGenerator.Options; }
+			set { fileGenerator.Options = value; }
 		}
 		
 		public void AddServiceReference()
@@ -70,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			Options.NoAppConfig = false;
 			Options.MergeAppConfig = project.HasAppConfigFile();
 			Options.MapProjectLanguage(project.Language);
+			Options.AddProjectReferencesIfUsingTypesFromProjectReferences(project.GetReferences());
 			fileGenerator.GenerateProxyFile();
 			
 			return referenceFileName;

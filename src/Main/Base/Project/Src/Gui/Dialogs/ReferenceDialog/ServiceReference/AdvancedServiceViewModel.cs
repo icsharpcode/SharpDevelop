@@ -39,14 +39,23 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	
 	public enum DictionaryCollectionTypes
 	{
+		[Description("System.Collections.Generic.Dictionary")]
 		Dictionary,
+		[Description("System.Collections.Generic.SortedList")]
 		SortedList,
+		[Description("System.Collections.Generic.SortedDictionary")]
 		SortedDictionary,
+		[Description("System.Collections.Hashtable")]
 		HashTable,
+		[Description("System.Collections.ObjectModel.KeyedCollection")]
 		KeyedCollection,
+		[Description("System.Collections.SortedList")]
 		SortedList_2,
+		[Description("System.Collections.Specialized.HybridDictionary")]
 		HybridDictionary,
+		[Description("System.Collections.Specialized.ListDictionary")]
 		ListDictionary,
+		[Description("System.Collections.Specialized.OrderedDictionary")]
 		OrderedDictionary
 	}	
 	
@@ -55,10 +64,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		string compatibilityText = "Add a Web Reference instead of a Service Reference. ";
 		string c_2 = "This will generate code based on .NET Framework 2.0 Web Services technology.";
 		string accesslevel = "Access level for generated classes:";
+		ServiceReferenceGeneratorOptions options;
 		
-		public AdvancedServiceViewModel()
+		public AdvancedServiceViewModel(ServiceReferenceGeneratorOptions options)
 		{
-			Title ="Service Reference Settings";
+			this.options = options;
+			UpdateSettingsFromOptions();
+			Title = "Service Reference Settings";
 			UseReferencedAssemblies = true;
 			BitmapSource image = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
 			AssembliesToReference = new ObservableCollection<CheckableImageAndDescription>();
@@ -71,6 +83,36 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.ServiceModel"));
 			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Xml"));
 			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Xml.Linq"));
+		}
+		
+		public ServiceReferenceGeneratorOptions Options {
+			get { return options; }
+		}
+		
+		void UpdateSettingsFromOptions()
+		{
+			UpdateSelectedModifier();
+			UpdateReferencedTypes();
+		}
+		
+		void UpdateReferencedTypes()
+		{
+			if (options.UseTypesInProjectReferences) {
+				this.ReuseTypes = true;
+				this.UseReferencedAssemblies = true;
+			} else {
+				this.ReuseTypes = false;
+				this.UseReferencedAssemblies = false;
+			}
+		}
+		
+		void UpdateSelectedModifier()
+		{
+			if (options.GenerateInternalClasses) {
+				SelectedModifier = Modifiers.Internal;
+			} else {
+				SelectedModifier = Modifiers.Public;
+			}
 		}
 		
 		public string Title { get; set; }
@@ -89,42 +131,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		bool generateAsyncOperations;
-		
 		public bool GenerateAsyncOperations {
-			get { return generateAsyncOperations; }
+			get { return options.GenerateAsyncOperations; }
 			set {
-				generateAsyncOperations = value;
+				options.GenerateAsyncOperations = value;
 				base.RaisePropertyChanged(() => GenerateAsyncOperations);
 			}
 		}
 		
-		bool generateMessageContract;
-		
 		public bool GenerateMessageContract {
-			get { return generateMessageContract; }
+			get { return options.GenerateMessageContract; }
 			set {
-				generateMessageContract = value;
+				options.GenerateMessageContract = value;
 				base.RaisePropertyChanged(() => GenerateMessageContract);
 			}
 		}
 		
-		CollectionTypes collectionType;
-		
 		public CollectionTypes CollectionType {
-			get { return collectionType; }
+			get { return options.ArrayCollectionType; }
 			set {
-				collectionType = value;
+				options.ArrayCollectionType = value;
 				base.RaisePropertyChanged(() => CollectionType);
 			}
 		}
 		
-		DictionaryCollectionTypes dictionaryCollectionType;
-		
 		public DictionaryCollectionTypes DictionaryCollectionType {
-			get { return dictionaryCollectionType; }
+			get { return options.DictionaryCollectionType; }
 			set {
-				dictionaryCollectionType = value;
+				options.DictionaryCollectionType = value;
 				base.RaisePropertyChanged(() => DictionaryCollectionType);
 			}
 		}
@@ -140,12 +174,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		bool reuseTypes;
-		
 		public bool ReuseTypes {
-			get { return reuseTypes; }
+			get { return options.UseTypesInProjectReferences; }
 			set {
-				reuseTypes = value;
+				options.UseTypesInProjectReferences = value;
 				base.RaisePropertyChanged(() => ReuseTypes);
 			}
 		}
