@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				sdkPath = TryGetLocalMachineSdkInstallPath();
 			}
 			if (sdkPath != null) {
-				string fullPath = Path.Combine(sdkPath, @"bin\svcutil.exe");
+				string fullPath = Path.Combine(sdkPath, @"bin\NETFX 4.0 Tools\svcutil.exe");
 				exists = File.Exists(fullPath);
 				if (exists) {
 					fileName = fullPath;
