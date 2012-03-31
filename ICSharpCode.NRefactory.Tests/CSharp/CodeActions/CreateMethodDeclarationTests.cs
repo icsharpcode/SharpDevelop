@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 
 
 		[Test()]
-		public void TestCreateDelegateDeclaration ()
+		public void TestCreateDelegateDeclarationIdentifierCase ()
 		{
 			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
@@ -212,7 +212,77 @@ public delegate string MyDelegate (int a, object b);
 public delegate string MyDelegate (int a, object b);
 ");
 		}
+
+		[Test()]
+		public void TestCreateDelegateDeclarationMemberReferenceCase ()
+		{
+			Test<CreateMethodDeclarationAction> (@"class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += $this.NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+", @"class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	string NonExistantMethod (int a, object b)
+	{
+		throw new System.NotImplementedException ();
+	}
+	void TestMethod ()
+	{
+		MyEvent += this.NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+");
+		}
 		
+		[Test()]
+		public void TestCreateDelegateDeclarationInOtherClassMemberReferenceCase ()
+		{
+			Test<CreateMethodDeclarationAction> (@"class Foo {
+}
+
+class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += $new Foo ().NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+", @"class Foo {
+	public string NonExistantMethod (int a, object b)
+	{
+		throw new System.NotImplementedException ();
+	}
+}
+
+class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += new Foo ().NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+");
+		}
+
 		[Test()]
 		public void TestRefOutCreateMethod ()
 		{
@@ -628,6 +698,7 @@ class Test
 	}
 }");
 		}
+
 
 
 	}
