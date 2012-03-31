@@ -337,10 +337,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			foreach (var stmt in initializeComponent.Statements.OfType<CodeExpressionStatement>().Where(ces => ces.Expression is CodeMethodInvokeExpression)) {
 				CodeMethodInvokeExpression invocation = (CodeMethodInvokeExpression)stmt.Expression;
-				if (invocation.Method.TargetObject is CodeCastExpression) {
-					CodeCastExpression expr = (CodeCastExpression)invocation.Method.TargetObject;
-					CodeFieldReferenceExpression fieldRef = (CodeFieldReferenceExpression)expr.Expression;
-					if (!(fieldRef.TargetObject is CodeThisReferenceExpression))
+				CodeCastExpression expr = invocation.Method.TargetObject as CodeCastExpression;
+				if (expr != null) {
+					CodeFieldReferenceExpression fieldRef = expr.Expression as CodeFieldReferenceExpression;
+					if (fieldRef == null || !(fieldRef.TargetObject is CodeThisReferenceExpression))
 						continue;
 					if (expr.TargetType.BaseType != "System.ComponentModel.ISupportInitialize")
 						continue;
