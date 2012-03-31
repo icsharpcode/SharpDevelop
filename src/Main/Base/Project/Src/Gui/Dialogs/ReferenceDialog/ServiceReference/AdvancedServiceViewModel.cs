@@ -61,8 +61,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	
 	internal class AdvancedServiceViewModel : ViewModelBase
 	{
-		string compatibilityText = "Add a Web Reference instead of a Service Reference. ";
-		string c_2 = "This will generate code based on .NET Framework 2.0 Web Services technology.";
 		string accesslevel = "Access level for generated classes:";
 		ServiceReferenceGeneratorOptions options;
 		
@@ -203,11 +201,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		public ObservableCollection <CheckableImageAndDescription> AssembliesToReference { get; private set; }
-		
-		public string CompatibilityText 
-		{
-			get { return compatibilityText + c_2; }
-		}	
+		public ObservableCollection <CheckableImageAndDescription> AssembliesToReference { get; private set; }	
 	}
 }
