@@ -81,6 +81,7 @@
     <Compile Include="GetElementByReflectionNameTests.cs" />
     <Compile Include="Highlighting\AddInHighlightingResourceTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
+    <Compile Include="MimeDetectionTests.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OutputTextLineParserTests.cs" />

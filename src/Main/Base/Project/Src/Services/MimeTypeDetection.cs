@@ -29,7 +29,9 @@ namespace ICSharpCode.SharpDevelop
 				// UTF-16 Big Endian
 				(buffer.Length >= 2 && buffer[0] == 0xFE && buffer[1] == 0xFF) ||
 				// UTF-16 Little Endian
-				(buffer.Length >= 2 && buffer[0] == 0xFF && buffer[1] == 0xFE))
+				(buffer.Length >= 2 && buffer[0] == 0xFF && buffer[1] == 0xFE) ||
+				// UTF-32 Big Endian
+				(buffer.Length >= 4 && buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] == 0xFE && buffer[3] == 0xFF))
 				return "text/plain";
 			
 			fixed (byte *b = &buffer[offset]) {
@@ -59,16 +61,6 @@ namespace ICSharpCode.SharpDevelop
 			byte[] buffer = new byte[BUFFER_SIZE];
 			stream.Position = 0;
 			return FindMimeType(buffer, 0, stream.Read(buffer, 0, buffer.Length));
-		}
-		
-		public static string FindMimeType(ITextBuffer buffer)
-		{
-			if (buffer == null)
-				throw new ArgumentNullException("buffer");
-			// TODO USE PROPER ENCODING!
-			// Maybe use Encoding detection from AvalonEdit?
-			byte[] bytes = Encoding.Default.GetBytes(buffer.TextLength > BUFFER_SIZE ? buffer.GetText(0, BUFFER_SIZE) : buffer.Text);
-			return FindMimeType(bytes, 0, bytes.Length);
 		}
 	}
 }
