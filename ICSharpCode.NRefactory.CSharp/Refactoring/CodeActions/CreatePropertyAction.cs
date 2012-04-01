@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreateProperty.cs
 //  
 // Author:
@@ -64,15 +64,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
 			}
 
-			bool isStatic;
+			bool isStatic = targetResolveResult is TypeResolveResult;
 			if (createInOtherType) {
-				isStatic = targetResolveResult is TypeResolveResult;
 				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
 					yield break;
 			} else {
 				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
 					yield break;
-				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
+				isStatic |= state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}
 
 //			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));

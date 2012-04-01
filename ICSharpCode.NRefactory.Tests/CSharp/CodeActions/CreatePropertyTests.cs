@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreatePropertyTests.cs
 //  
 // Author:
@@ -242,5 +242,26 @@ class TestClass
 }");
 		}
 
+		[Test()]
+		public void CreateStaticPropertyInCurrentType()
+		{
+			Test<CreatePropertyAction> (@"class TestClass
+{
+	public TestClass ()
+	{
+		TestClass.$Foo = 5;
+	}
+}", @"class TestClass
+{
+	static int Foo {
+		get;
+		set;
+	}
+	public TestClass ()
+	{
+		TestClass.Foo = 5;
+	}
+}");
+		}
 	}
 }
