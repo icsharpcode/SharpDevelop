@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
@@ -23,10 +24,12 @@ namespace CSharpBinding.Refactoring
 	{
 		readonly ITextEditor editor;
 		readonly TextSegmentCollection<TextSegment> textSegmentCollection;
+		readonly SDRefactoringContext context;
 		
-		public SDScript(ITextEditor editor, TextEditorOptions options) : base(editor.Document, new CSharpFormattingOptions(), options)
+		public SDScript(ITextEditor editor, SDRefactoringContext context) : base(editor.Document, new CSharpFormattingOptions(), context.TextEditorOptions)
 		{
 			this.editor = editor;
+			this.context = context;
 			this.textSegmentCollection = new TextSegmentCollection<TextSegment>((TextDocument)editor.Document);
 		}
 		
@@ -46,8 +49,7 @@ namespace CSharpBinding.Refactoring
 				//var startLocation = editor.Document.GetLocation(offset);
 				//var endLocation = editor.Document.GetLocation(offset + length);
 				//var node = parseInfo.CompilationUnit.GetNodeContaining(startLocation, endLocation);
-				// TODO: pass TextEditorOptions
-				var formatter = new AstFormattingVisitor(new CSharpFormattingOptions(), editor.Document);
+				var formatter = new AstFormattingVisitor(new CSharpFormattingOptions(), editor.Document, context.TextEditorOptions);
 				parseInfo.CompilationUnit.AcceptVisitor(formatter);
 				var segment = GetSegment(node);
 				formatter.ApplyChanges(segment.Offset, segment.Length);
@@ -72,6 +74,30 @@ namespace CSharpBinding.Refactoring
 		public override void Link(params AstNode[] nodes)
 		{
 			// TODO
+		}
+		
+		public override void InsertWithCursor(string operation, AstNode node, InsertPosition defaultPosition)
+		{
+			AstNode contextNode = context.GetNode();
+			if (contextNode == null)
+				return;
+			var resolver = context.GetResolverStateBefore(contextNode);
+			InsertWithCursor(operation, node, resolver.CurrentTypeDefinition);
+		}
+		
+		public override void InsertWithCursor(string operation, AstNode node, ITypeDefinition parentType)
+		{
+			if (parentType == null)
+				return;
+			var currentPart = parentType.Parts.FirstOrDefault(p => p.ParsedFile != null && string.Equals(p.ParsedFile.FileName, editor.FileName, StringComparison.OrdinalIgnoreCase));
+			if (currentPart != null) {
+				var insertionPoints = InsertionPoint.GetInsertionPoints(editor.Document, currentPart);
+				if (insertionPoints.Count > 0) {
+					int indentLevel = GetIndentLevelAt(editor.Document.GetOffset(insertionPoints[0].Location));
+					var output = OutputNode(indentLevel, node);
+					insertionPoints[0].Insert(editor.Document, output.Text);
+				}
+			}
 		}
 		
 		public override void Dispose()

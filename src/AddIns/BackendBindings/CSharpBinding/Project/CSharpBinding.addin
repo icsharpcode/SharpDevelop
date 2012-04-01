@@ -173,10 +173,10 @@
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateDelegateAction" />
 		<CSharpCodeActionProvider id = "CreateEventInvocator"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateEventInvocatorAction" />
-		<CSharpCodeActionProvider id = "CreateField"
-			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateFieldAction" />
 		<CSharpCodeActionProvider id = "CreateLocalVariable"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariableAction" />
+		<CSharpCodeActionProvider id = "CreateField"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateFieldAction" />
 		<CSharpCodeActionProvider id = "CreateMethodDeclaration"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateMethodDeclarationAction" />
 		<CSharpCodeActionProvider id = "CreateProperty"

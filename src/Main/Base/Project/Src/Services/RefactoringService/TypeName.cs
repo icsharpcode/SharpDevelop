@@ -19,12 +19,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public readonly string AssemblyName;
 		public readonly string Namespace;
 		public readonly string Name;
+		public readonly int TypeParameterCount;
 		
-		public TypeName(string assemblyName, string @namespace, string name)
+		public TypeName(string assemblyName, string @namespace, string name, int typeParameterCount)
 		{
 			this.AssemblyName = assemblyName;
 			this.Namespace = @namespace;
 			this.Name = name;
+			this.TypeParameterCount = typeParameterCount;
 		}
 		
 		public TypeName(ITypeDefinition typeDefinition)
@@ -35,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			for (ITypeDefinition parent = typeDefinition.DeclaringTypeDefinition; parent != null; parent = parent.DeclaringTypeDefinition) {
 				this.Name = parent.Name + "." + this.Name;
 			}
+			this.TypeParameterCount = typeDefinition.TypeParameterCount;
 		}
 		
 		public override string ToString()
@@ -44,6 +47,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				fullName = Name;
 			else
 				fullName = Namespace + "." + Name;
+			if (TypeParameterCount > 0)
+				fullName = fullName + "`" + TypeParameterCount.ToString();
 			if (string.IsNullOrEmpty(AssemblyName))
 				return fullName;
 			else
@@ -57,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public bool Equals(TypeName other)
 		{
-			return this.AssemblyName == other.AssemblyName && this.Namespace == other.Namespace && this.Name == other.Name;
+			return this.AssemblyName == other.AssemblyName && this.Namespace == other.Namespace && this.Name == other.Name && this.TypeParameterCount == other.TypeParameterCount;
 		}
 		
 		public override int GetHashCode()
@@ -70,6 +75,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					hashCode += 1000000009 * Namespace.GetHashCode();
 				if (Name != null)
 					hashCode += 1000000021 * Name.GetHashCode();
+				hashCode += TypeParameterCount;
 			}
 			return hashCode;
 		}

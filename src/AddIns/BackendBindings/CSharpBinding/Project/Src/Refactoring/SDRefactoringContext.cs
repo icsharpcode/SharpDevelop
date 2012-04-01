@@ -59,7 +59,7 @@ namespace CSharpBinding.Refactoring
 		{
 			if (editor == null)
 				throw new InvalidOperationException("Cannot start a script in IsAvailable().");
-			return new SDScript(editor, this.TextEditorOptions);
+			return new SDScript(editor, this);
 		}
 		
 		public override TextLocation Location {
