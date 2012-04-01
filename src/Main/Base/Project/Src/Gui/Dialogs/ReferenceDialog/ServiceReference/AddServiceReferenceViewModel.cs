@@ -361,6 +361,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public void AddServiceReference()
 		{
+			CompilerMessageView.Instance.BringToFront();
 			serviceGenerator.Options.Namespace = defaultNameSpace;
 			serviceGenerator.Options.Url = discoveryUri.ToString();
 			serviceGenerator.AddServiceReference();
