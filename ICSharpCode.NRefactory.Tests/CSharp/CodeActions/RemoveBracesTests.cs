@@ -33,22 +33,22 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	public class RemoveBracesTests : ContextActionTestBase
 	{
 		[Test()]
-		public void TestSimpleBraces ()
+		public void TestSimpleBraces()
 		{
-			string result = RunContextAction (
-				new RemoveBracesAction (),
+			string result = RunContextAction(
+				new RemoveBracesAction(),
 				"class TestClass" + Environment.NewLine +
-				"{" + Environment.NewLine +
-				"	void Test ()" + Environment.NewLine +
-				"	{" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
 					"		if (true) ${" + Environment.NewLine +
-									"			;" + Environment.NewLine +
-				"		}" + Environment.NewLine +
-				"	}" + Environment.NewLine +
-				"}"
+					"			;" + Environment.NewLine +
+					"		}" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
 			);
 			
-			Assert.AreEqual (
+			Assert.AreEqual(
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
@@ -58,6 +58,68 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test()]
+		public void TestTryCatch()
+		{
+			TestWrongContext<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		try ${ ; } catch (Exception) { ; }
+	}
+}");
+		}
+		
+		[Test()]
+		public void TestTryCatchCatch()
+		{
+			TestWrongContext<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		try { ; } catch (Exception) ${ ; }
+	}
+}");
+		}
+		
+		[Test()]
+		public void TestTryCatchFinally()
+		{
+			TestWrongContext<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		try { ; } catch (Exception) { ; } finally ${ ; }
+	}
+}");
+		}
+
+
+		[Test()]
+		public void TestSwitchCatch()
+		{
+			TestWrongContext<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	{
+		switch (foo	) ${ default: break;}
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodDeclaration()
+		{
+			TestWrongContext<RemoveBracesAction>(@"class TestClass
+{
+	void Test ()
+	${
+		;
+	}
+}");
+		}
+		
 	}
 }
 
