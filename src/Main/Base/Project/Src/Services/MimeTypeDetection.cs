@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static unsafe string FindMimeType(byte[] buffer, int offset, int length)
 		{
-			if (buffer.Length == 0 ||
+			if (length == 0 ||
 				// UTF-16 Big Endian
 				(buffer.Length >= 2 && buffer[0] == 0xFE && buffer[1] == 0xFF) ||
 				// UTF-16 Little Endian
