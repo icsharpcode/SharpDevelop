@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			CompareResults(obj1.Children, obj2.Children);
 		}
 		
-		sealed class ValidationVisitor : IAXmlVisitor
+		sealed class ValidationVisitor : AXmlVisitor
 		{
 			readonly ITextSource textSource;
 			
@@ -191,19 +191,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				this.textSource = textSource;
 			}
 			
-			public void Visit(IList<AXmlObject> objects)
-			{
-				for (int i = 0; i < objects.Count; i++) {
-					objects[i].AcceptVisitor(this);
-				}
-			}
-			
-			public void VisitDocument(AXmlDocument document)
-			{
-				Visit(document.Children);
-			}
-			
-			public void VisitTag(AXmlTag tag)
+			public override void VisitTag(AXmlTag tag)
 			{
 				if (textSource.GetText(tag.StartOffset, tag.OpeningBracket.Length) != tag.OpeningBracket)
 					throw new InvalidOperationException();
@@ -211,24 +199,14 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					throw new InvalidOperationException();
 				if (textSource.GetText(tag.EndOffset - tag.ClosingBracket.Length, tag.ClosingBracket.Length) != tag.ClosingBracket)
 					throw new InvalidOperationException();
-				Visit(tag.Children);
+				base.VisitTag(tag);
 			}
 			
-			public void VisitAttribute(AXmlAttribute attribute)
+			public override void VisitAttribute(AXmlAttribute attribute)
 			{
 				if (textSource.GetText(attribute.NameSegment) != attribute.Name)
 					throw new InvalidOperationException();
-				Visit(attribute.Children);
-			}
-			
-			public void VisitText(AXmlText text)
-			{
-				Visit(text.Children);
-			}
-			
-			public void VisitElement(AXmlElement element)
-			{
-				Visit(element.Children);
+				base.VisitAttribute(attribute);
 			}
 		}
 	}
