@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
+using ICSharpCode.SharpDevelop.Project;
+
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class ServiceReferenceGeneratorOptions
@@ -42,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public bool GenerateAsyncOperations { get; set; }
 		public bool GenerateMessageContract { get; set; }
 		public bool UseTypesInProjectReferences { get; set; }
+		public bool UseTypesInSpecifiedAssemblies { get; set; }
 		public CollectionTypes ArrayCollectionType { get; set; }
 		public DictionaryCollectionTypes DictionaryCollectionType { get; set; }
 		
@@ -68,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				AppConfigFileName = this.AppConfigFileName,
 				NoAppConfig = this.NoAppConfig,
 				MergeAppConfig = this.MergeAppConfig,
-				
+				UseTypesInSpecifiedAssemblies = this.UseTypesInSpecifiedAssemblies,
 				UseTypesInProjectReferences = this.UseTypesInProjectReferences,
 				ArrayCollectionType = this.ArrayCollectionType,
 				DictionaryCollectionType = this.DictionaryCollectionType,
@@ -143,10 +146,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return "`2";
 		}
 		
-		public void AddProjectReferencesIfUsingTypesFromProjectReferences(IEnumerable<string> assemblies)
+		public void AddProjectReferencesIfUsingTypesFromProjectReferences(IEnumerable<ReferenceProjectItem> assemblies)
 		{
 			if (UseTypesInProjectReferences) {
-				Assemblies.AddRange(assemblies);
+				foreach (ReferenceProjectItem item in assemblies) {
+					Assemblies.Add(item.FileName);
+				}
 			}
 		}
 	}

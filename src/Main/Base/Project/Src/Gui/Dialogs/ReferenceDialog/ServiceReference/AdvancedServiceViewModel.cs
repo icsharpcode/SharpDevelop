@@ -69,7 +69,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.options = options;
 			UpdateSettingsFromOptions();
 			Title = "Service Reference Settings";
-			UseReferencedAssemblies = true;
 			BitmapSource image = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
 			AssembliesToReference = new ObservableCollection<CheckableImageAndDescription>();
 			AssembliesToReference.Add(new CheckableImageAndDescription(image, "Microsoft.CSharp"));
@@ -98,7 +97,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			if (options.UseTypesInProjectReferences) {
 				this.ReuseTypes = true;
 				this.UseReferencedAssemblies = true;
+			} else if (options.UseTypesInSpecifiedAssemblies) {
+				this.ReuseReferencedTypes = true;
+				this.UseReferencedAssemblies = true;
 			} else {
+				this.ReuseReferencedTypes = false;
 				this.ReuseTypes = false;
 				this.UseReferencedAssemblies = false;
 			}
@@ -125,8 +128,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return selectedModifier; }
 			set {
 				selectedModifier = value;
+				UpdateClassGenerationModifier();
 				base.RaisePropertyChanged(() => SelectedModifier);
 			}
+		}
+		
+		void UpdateClassGenerationModifier()
+		{
+			options.GenerateInternalClasses = (selectedModifier == Modifiers.Internal);
 		}
 		
 		public bool GenerateAsyncOperations {
@@ -168,6 +177,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { 
 				useReferencedAssemblies = value;
 				ReuseTypes = useReferencedAssemblies;
+				if (!useReferencedAssemblies)
+					ReuseReferencedTypes = false;
 				base.RaisePropertyChanged(() => UseReferencedAssemblies);
 			}
 		}
@@ -180,12 +191,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		bool reuseReferencedTypes;
-		
 		public bool ReuseReferencedTypes {
-			get { return reuseReferencedTypes; }
+			get { return options.UseTypesInSpecifiedAssemblies; }
 			set { 
-				reuseReferencedTypes = value;
+				options.UseTypesInSpecifiedAssemblies = value;
 				ListViewEnable = value;
 				base.RaisePropertyChanged(() => ReuseReferencedTypes);
 			}

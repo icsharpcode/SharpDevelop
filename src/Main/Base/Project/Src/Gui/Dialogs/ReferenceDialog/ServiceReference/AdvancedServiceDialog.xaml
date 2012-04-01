@@ -115,23 +115,25 @@
 				
 				<RadioButton Grid.Row="4"  Margin="45,0,0,0"
 				             VerticalAlignment="Center"
-				            GroupName="ReferenceType"
+ 				             GroupName="ReferenceType"
 				             IsChecked="{Binding ReuseTypes}"
+				             IsEnabled="{Binding UseReferencedAssemblies}"
 				             Content="Reuse types in all referenced assemblies">
 				</RadioButton>
 				
 				<RadioButton Grid.Row="5" Margin="45,0,0,0"
 				             VerticalAlignment="Center"
-				              GroupName="ReferenceType"
+				             GroupName="ReferenceType"
 				             IsChecked="{Binding ReuseReferencedTypes}"
+				             IsEnabled="{Binding UseReferencedAssemblies}"
 				             Content="Reuse types in specified referenced assemblies">
 				</RadioButton>
 				
 				<ListBox Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
-				          Margin="80,0,0,0" 
-				          SelectionMode="Multiple"
-				          ItemsSource="{Binding AssembliesToReference}"
-				          IsEnabled="{Binding ListViewEnable}">
+				         Margin="80,0,0,0" 
+				         SelectionMode="Multiple"
+				         ItemsSource="{Binding AssembliesToReference}"
+				         IsEnabled="{Binding ListViewEnable}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal">
