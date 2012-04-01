@@ -260,6 +260,7 @@
     <Compile Include="CSharp\CodeActions\CreateConstructorDeclarationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateDelegateTests.cs" />
     <Compile Include="CSharp\CodeActions\IntroduceConstantTests.cs" />
+    <Compile Include="CSharp\CodeActions\ExtractMethodTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -294,6 +295,8 @@
       <Properties>
         <Policies>
           <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
+          <TextStylePolicy FileWidth="120" TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
+          <CSharpFormattingPolicy inheritsSet="1TBS" inheritsScope="text/x-csharp" scope="text/x-csharp" />
         </Policies>
       </Properties>
     </MonoDevelop>
