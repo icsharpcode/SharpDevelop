@@ -259,6 +259,7 @@
     <Compile Include="CSharp\CodeActions\CreateClassDeclarationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateConstructorDeclarationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateDelegateTests.cs" />
+    <Compile Include="CSharp\CodeActions\IntroduceConstantTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
