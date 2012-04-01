@@ -19,12 +19,6 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Widgets;
 
-//using ICSharpCode.Core;
-
-
-
-
-
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class AddServiceReferenceViewModel : ViewModelBase
@@ -39,13 +33,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		ObservableCollection<ImageAndDescription> twoValues;
 		
-		List<string> mruServices = new List<string>();
+		ServiceReferenceUrlHistory urlHistory = new ServiceReferenceUrlHistory();
 		string selectedService;
 		IProject project;
 		ServiceReferenceGenerator serviceGenerator;
 		List<CheckableAssemblyReference> assemblyReferences;
 		
-		List<ServiceItem> items = new List <ServiceItem>();
+		List<ServiceItem> items = new List<ServiceItem>();
 		ServiceItem myItem;
 		
 		Uri discoveryUri;
@@ -63,9 +57,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.serviceGenerator = new ServiceReferenceGenerator(project);
 			this.assemblyReferences = serviceGenerator.GetCheckableAssemblyReferences().ToList();
 			HeadLine = header;
-			
-			MruServices = ServiceReferenceHelper.AddMruList();
-			SelectedService = MruServices.FirstOrDefault();
 			
 			GoCommand = new RelayCommand(ExecuteGo, CanExecuteGo);
 			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand, CanExecuteAdvancedDialogCommand);
@@ -223,10 +214,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 					"{0} service(s) found at address {1}",
 				    serviceDescriptionCollection.Count,
 				    discoveryUri);
+				if (serviceDescriptionCollection.Count > 0) {
+					AddUrlToHistory(discoveryUri);
+				}
 				DefaultNameSpace = GetDefaultNamespace();
 				FillItems(serviceDescriptionCollection);
 				string referenceName = ServiceReferenceHelper.GetReferenceName(discoveryUri);
 			}
+		}
+		
+		void AddUrlToHistory(Uri discoveryUri)
+		{
+			urlHistory.AddUrl(discoveryUri);
+			RaisePropertyChanged("MruServices");
 		}
 		
 		/// <summary>
@@ -256,11 +256,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public string HeadLine { get; set; }
 		
 		public List<string> MruServices {
-			get { return mruServices; }
-			set {
-				mruServices = value;
-				base.RaisePropertyChanged(() => MruServices);
-			}
+			get { return urlHistory.Urls; }
 		}
 		
 		public string SelectedService {

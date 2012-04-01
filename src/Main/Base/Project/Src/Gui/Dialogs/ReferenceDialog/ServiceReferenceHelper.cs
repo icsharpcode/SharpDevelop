@@ -3,43 +3,13 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Security;
 using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 
-using Microsoft.Win32;
-
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// Description of ServiceReferenceHelper.
-	/// </summary>
-	internal class ServiceReferenceHelper
+	internal static class ServiceReferenceHelper
 	{
-		private ServiceReferenceHelper()
-		{
-		}
-		
-		public static List <string>  AddMruList()
-		{
-			var list = new List<string>();
-			try {
-				RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Internet Explorer\TypedURLs");
-				if (key != null) {
-					foreach (string name in key.GetValueNames()) {
-						list.Add ((string)key.GetValue(name));
-					}
-				}
-			} catch (SecurityException) {
-			} catch (UnauthorizedAccessException) {
-			} catch (IOException) {
-			};
-			return list;
-		}
-		
-		
 		public static ServiceDescriptionCollection GetServiceDescriptions(DiscoveryClientProtocol protocol)
 		{
 			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
@@ -53,7 +23,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return services;
 		}
-		
 		
 		public static string GetServiceName(ServiceDescription description)
 		{
@@ -70,7 +39,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return String.Empty;
 		}
 		
-		
 		public static string GetReferenceName(Uri uri)
 		{
 			if (uri != null) {
@@ -78,6 +46,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			return String.Empty;
 		}
-		
 	}
 }

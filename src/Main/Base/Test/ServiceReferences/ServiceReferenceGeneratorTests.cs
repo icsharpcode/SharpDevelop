@@ -123,7 +123,6 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			IProject dummyProject = MockRepository.GenerateStub<IProject>();
 			dummyProject.Stub(p => p.SyncRoot).Return(new object());
 			var projectItem = new ReferenceProjectItem(dummyProject, reference);
-			Console.WriteLine(projectItem.Include);
 			projectItem.FileName = fileName;
 			projectReferences.Add(projectItem);
 			return projectItem;
