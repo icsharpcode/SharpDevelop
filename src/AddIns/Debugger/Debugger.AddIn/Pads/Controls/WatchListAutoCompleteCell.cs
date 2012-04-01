@@ -121,9 +121,9 @@ namespace Debugger.AddIn.Pads.Controls
 			
 			// FIXME workaround the NRefactory issue that needs a ; at the end
 			if (language == "C#" || language == "CSharp") {
-				if(!command.EndsWith(";"))
+				if (!command.EndsWith(";"))
 					command += ";";
-				// FIXME only one string should be available; highlighting expects C#, supproted language, CSharp
+				// FIXME only one string should be available; highlighting expects C#, supported language, CSharp
 				language = "CSharp";
 			}
 			
