@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ServiceModel.Description;
 using ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference;
 using ICSharpCode.SharpDevelop.Project;
@@ -21,13 +22,13 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		ServiceReferenceFileGenerator fileGenerator;
 		IFileSystem fakeFileSystem;
 		ServiceReferenceGeneratorOptions options;
-		List<string> projectReferences;
+		List<ReferenceProjectItem> projectReferences;
 		
 		void CreateGenerator()
 		{
 			options = new ServiceReferenceGeneratorOptions();
 			fakeProject = MockRepository.GenerateStub<IProjectWithServiceReferences>();
-			projectReferences = new List<string>();
+			projectReferences = new List<ReferenceProjectItem>();
 			fakeProject.Stub(p => p.GetReferences()).Return(projectReferences);
 			fakeProxyGenerator = MockRepository.GenerateStub<IServiceReferenceProxyGenerator>();
 			fakeProxyGenerator.Options = options;
@@ -112,9 +113,20 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			fakeProject.Stub(p => p.HasAppConfigFile()).Return(hasAppConfigFile);
 		}
 		
-		void AddReferenceToProject(string reference)
+		ReferenceProjectItem AddReferenceToProject(string reference)
 		{
-			projectReferences.Add(reference);
+			return AddReferenceToProject(reference, reference);
+		}
+		
+		ReferenceProjectItem AddReferenceToProject(string reference, string fileName)
+		{
+			IProject dummyProject = MockRepository.GenerateStub<IProject>();
+			dummyProject.Stub(p => p.SyncRoot).Return(new object());
+			var projectItem = new ReferenceProjectItem(dummyProject, reference);
+			Console.WriteLine(projectItem.Include);
+			projectItem.FileName = fileName;
+			projectReferences.Add(projectItem);
+			return projectItem;
 		}
 		
 		[Test]
@@ -365,6 +377,60 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			generator.AddServiceReference();
 			
 			Assert.AreEqual(0, fakeProxyGenerator.Options.Assemblies.Count);
+		}
+		
+		[Test]
+		public void GetCheckableAssemblyReferences_ProjectHasOneAssemblyReference_ReturnsOneAssemblyReference()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			AddReferenceToProject("System.Xml");
+			
+			List<CheckableAssemblyReference> references =
+				generator.GetCheckableAssemblyReferences().ToList();
+			
+			Assert.AreEqual("System.Xml", references[0].Description);
+		}
+		
+		[Test]
+		public void GetCheckableAssemblyReferences_ProjectHasReferencesInNonAlphabeticalOrder_ReturnsAssemblyReferencesInAlphabeticalOrder()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			AddReferenceToProject("Aardvark");
+			AddReferenceToProject("System.Xml");
+			AddReferenceToProject("System.ComponentModel");
+			
+			List<CheckableAssemblyReference> references =
+				generator.GetCheckableAssemblyReferences().ToList();
+			
+			Assert.AreEqual("Aardvark", references[0].Description);
+			Assert.AreEqual("System.ComponentModel", references[1].Description);
+			Assert.AreEqual("System.Xml", references[2].Description);
+		}
+		
+		[Test]
+		public void UpdateAssemblyReferences_TwoAssemblyReferencesButOnlyOneChecked_OneAssemblyReferenced()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			ReferenceProjectItem checkedReference = AddReferenceToProject("Checked", @"d:\projects\MyProject\Checked.dll");
+			ReferenceProjectItem uncheckedReference = AddReferenceToProject("Unchecked");
+			
+			var references = new List<CheckableAssemblyReference>();
+			references.Add(new CheckableAssemblyReference(checkedReference) { ItemChecked = true });
+			references.Add(new CheckableAssemblyReference(uncheckedReference) { ItemChecked = false });
+			
+			generator.UpdateAssemblyReferences(references);
+			
+			string[] expectedAssemblies = new string[] {
+				@"d:\projects\MyProject\Checked.dll"
+			};
+			
+			CollectionAssert.AreEqual(expectedAssemblies, generator.Options.Assemblies);
 		}
 	}
 }

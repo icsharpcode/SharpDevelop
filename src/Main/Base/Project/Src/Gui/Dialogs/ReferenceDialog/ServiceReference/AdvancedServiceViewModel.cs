@@ -69,17 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.options = options;
 			UpdateSettingsFromOptions();
 			Title = "Service Reference Settings";
-			BitmapSource image = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
-			AssembliesToReference = new ObservableCollection<CheckableImageAndDescription>();
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "Microsoft.CSharp"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "mscorlib"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Core"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Data"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Data.DataSetExtensions"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Runtime.Serialization"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.ServiceModel"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Xml"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Xml.Linq"));
+			AssembliesToReference = new ObservableCollection<CheckableAssemblyReference>();
 		}
 		
 		public ServiceReferenceGeneratorOptions Options {
@@ -210,6 +200,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		public ObservableCollection <CheckableImageAndDescription> AssembliesToReference { get; private set; }	
+		public ObservableCollection <CheckableAssemblyReference> AssembliesToReference { get; private set; }	
 	}
 }

@@ -43,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		string selectedService;
 		IProject project;
 		ServiceReferenceGenerator serviceGenerator;
+		List<CheckableAssemblyReference> assemblyReferences;
 		
 		List<ServiceItem> items = new List <ServiceItem>();
 		ServiceItem myItem;
@@ -60,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			this.project = project;
 			this.serviceGenerator = new ServiceReferenceGenerator(project);
+			this.assemblyReferences = serviceGenerator.GetCheckableAssemblyReferences().ToList();
 			HeadLine = header;
 			
 			MruServices = ServiceReferenceHelper.AddMruList();
@@ -104,10 +106,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void ExecuteAdvancedDialogCommand()
 		{
 			var vm = new AdvancedServiceViewModel(serviceGenerator.Options.Clone());
+			vm.AssembliesToReference.AddRange(assemblyReferences);
 			var view = new AdvancedServiceDialog();
 			view.DataContext = vm;
 			if (view.ShowDialog() ?? false) {
 				serviceGenerator.Options = vm.Options;
+				serviceGenerator.UpdateAssemblyReferences(assemblyReferences);
 			}
 		}
 			
@@ -386,19 +390,43 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public List<ServiceItem> SubItems { get; set; }
 	}
 	
-	public class CheckableImageAndDescription : ImageAndDescription
+	public class CheckableAssemblyReference : ImageAndDescription
 	{
-		public CheckableImageAndDescription(BitmapSource bitmapSource, string description) : base(bitmapSource, description)
+		static BitmapSource ReferenceImage;
+
+		ReferenceProjectItem projectItem;
+		
+		public CheckableAssemblyReference(ReferenceProjectItem projectItem)
+			: this(projectItem.AssemblyName.ShortName)
+		{
+			this.projectItem = projectItem;
+		}
+		
+		protected CheckableAssemblyReference(string description)
+			: base(GetReferenceImage(), description)
 		{
 		}
 		
-		bool itemChecked;
-		
-		public bool ItemChecked {
-			get { return itemChecked; }
-			set { itemChecked = value; }
-//			base.RaisePropertyChanged(() =>IsChecked);}
+		static BitmapSource GetReferenceImage()
+		{
+			try {
+				if (ReferenceImage == null) {
+					ReferenceImage = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
+				}
+				return ReferenceImage;
+			} catch (Exception) {
+				return null;
+			}
 		}
 		
+		public bool ItemChecked { get; set; }
+		
+		public string GetFileName()
+		{
+			if (projectItem != null) {
+				return projectItem.FileName;
+			}
+			return Description;
+		}
 	}
 }

@@ -2,7 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.ServiceModel.Description;
 
 using ICSharpCode.SharpDevelop.Project;
@@ -89,6 +91,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			string folder = Path.GetDirectoryName(fileName);
 			fileSystem.CreateDirectoryIfMissing(folder);
+		}
+		
+		public IEnumerable<CheckableAssemblyReference> GetCheckableAssemblyReferences()
+		{
+			return GetUnsortedCheckableAssemblyReferences()
+				.OrderBy(reference => reference.Description)
+				.ToArray();
+		}
+		
+		IEnumerable<CheckableAssemblyReference> GetUnsortedCheckableAssemblyReferences()
+		{
+			foreach (ReferenceProjectItem item in project.GetReferences()) {
+				yield return new CheckableAssemblyReference(item);
+			}
+		}
+		
+		public void UpdateAssemblyReferences(IEnumerable<CheckableAssemblyReference> references)
+		{
+			Options.Assemblies.Clear();
+			foreach (CheckableAssemblyReference reference in references) {
+				if (reference.ItemChecked) {
+					Options.Assemblies.Add(reference.GetFileName());
+				}
+			}
 		}
 	}
 }

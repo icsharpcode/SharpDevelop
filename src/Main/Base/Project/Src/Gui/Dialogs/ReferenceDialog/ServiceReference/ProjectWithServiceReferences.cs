@@ -158,10 +158,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return Path.Combine(project.Directory, "app.config");
 		}
 		
-		public IEnumerable<string> GetReferences()
+		public IEnumerable<ReferenceProjectItem> GetReferences()
 		{
-			foreach (ProjectItem item in project.GetItemsOfType(ItemType.Reference)) {
-				yield return item.FileName;
+			foreach (ReferenceProjectItem item in project.GetItemsOfType(ItemType.Reference)) {
+				yield return item;
 			}
 		}
 	}

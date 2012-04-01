@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
@@ -20,6 +21,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		bool HasAppConfigFile();
 		string GetAppConfigFileName();
 		void AddAppConfigFile();
-		IEnumerable<string> GetReferences();
+		IEnumerable<ReferenceProjectItem> GetReferences();
 	}
 }

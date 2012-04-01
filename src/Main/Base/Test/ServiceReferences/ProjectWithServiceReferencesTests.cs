@@ -97,10 +97,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ProjectService.AddProjectItem(msbuildProject, fileItem);
 		}
 		
-		void AddGacReferenceToProject(string name)
+		ReferenceProjectItem AddGacReferenceToProject(string name)
 		{
 			var referenceItem = new ReferenceProjectItem(msbuildProject, name);
 			ProjectService.AddProjectItem(msbuildProject, referenceItem);
+			return referenceItem;
 		}
 		
 		int CountAssemblyReferencesInMSBuildProject()
@@ -380,11 +381,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		public void GetReferences_ProjectHasGacReference_ReturnsGacReference()
 		{
 			CreateProjectWithMSBuildProject();
-			AddGacReferenceToProject("System.Xml");
-			IEnumerable<string> references = project.GetReferences();
+			ReferenceProjectItem refItem = AddGacReferenceToProject("System.Xml");
+			IEnumerable<ReferenceProjectItem> references = project.GetReferences();
 			
-			string[] expectedReferences = new string[] {
-				"System.Xml"
+			var expectedReferences = new ReferenceProjectItem[] {
+				refItem
 			};
 			CollectionAssert.AreEqual(expectedReferences, references);
 		}
