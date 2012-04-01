@@ -11,20 +11,25 @@ using System.Web.Services.Description;
 using System.Web.Services.Discovery;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.SharpDevelop.Widgets;
 
+//using ICSharpCode.Core;
+
+
+
+
+
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class AddServiceReferenceViewModel : ViewModelBase
 	{
-		string header1 = "To see a list of available services on a specific server, ";
-		string header2 = "enter a service URL and click Go. To browse for available services click Discover.";
+		string header = "To see a list of available services on a specific server, enter a service URL and click Go.";
 		string noUrl = "Please enter the address of the Service.";
 		string title =  "Add Service Reference";
 		string waitMessage = "Please wait....";
@@ -55,21 +60,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			this.project = project;
 			this.serviceGenerator = new ServiceReferenceGenerator(project);
-			discoverButtonContent = "Discover";
-			HeadLine = header1 + header2;
+			HeadLine = header;
 			
 			MruServices = ServiceReferenceHelper.AddMruList();
 			SelectedService = MruServices.FirstOrDefault();
 			
 			GoCommand = new RelayCommand(ExecuteGo, CanExecuteGo);
-			DiscoverCommand = new RelayCommand(ExecuteDiscover, CanExecuteDiscover);
 			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand, CanExecuteAdvancedDialogCommand);
 			TwoValues = new ObservableCollection<ImageAndDescription>();
 		}
 		
 		#region Go Command
 		
-		public System.Windows.Input.ICommand GoCommand { get; private set; }
+		public ICommand GoCommand { get; private set; }
 		
 		void ExecuteGo()
 		{
@@ -89,25 +92,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		#endregion
 		
-		#region Discover Command
-		
-		public System.Windows.Input.ICommand DiscoverCommand { get; private set; }
-		
-		bool CanExecuteDiscover()
-		{
-			return true;
-		}
-		
-		void ExecuteDiscover()
-		{
-			MessageBox.Show("<Discover> is not implemented at the Moment");
-		}
-			
-		#endregion
-		
 		#region AdvancedDialogCommand
 		
-		public System.Windows.Input.ICommand AdvancedDialogCommand { get; private set; }
+		public ICommand AdvancedDialogCommand { get; private set; }
 		
 		bool CanExecuteAdvancedDialogCommand()
 		{
@@ -173,7 +160,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 //	trouble					Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
 					} else {
 						ServiceDescriptionMessage = ex.Message;
-						LoggingService.Error("DiscoveryCompleted", ex);
+						ICSharpCode.Core.LoggingService.Error("DiscoveryCompleted", ex);
 //	trouble					Invoke(handler, new object[] {null});
 					}
 				}
@@ -263,16 +250,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		public string HeadLine { get; set; }
-		
-		string discoverButtonContent;
-		
-		public string DiscoverButtonContent {
-			get { return discoverButtonContent; }
-			set {
-				discoverButtonContent = value;
-				base.RaisePropertyChanged(() => DiscoverButtonContent);
-			}
-		}
 		
 		public List<string> MruServices {
 			get { return mruServices; }
