@@ -1,45 +1,40 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Debugger;
-using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
-using Exception = System.Exception;
-using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
+using ICSharpCode.TreeView;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : AbstractPadContent
 	{
-		DockPanel panel;
-		WatchList localVarList;
-		static LocalVarPad instance;
+		SharpTreeView tree;
 		
 		public override object Control {
-			get { return panel; }
+			get { return tree; }
+		}
+		
+		SharpTreeNodeCollection Items {
+			get { return tree.Root.Children; }
 		}
 		
 		public LocalVarPad()
 		{
-			this.panel = new DockPanel();
-			instance = this;
+			var res = new CommonResources();
+			res.InitializeComponent();
 			
-			localVarList = new WatchList(WatchListType.LocalVar);
-			panel.Children.Add(localVarList);
+			this.tree = new SharpTreeView();
+			this.tree.Root = new SharpTreeNode();
+			this.tree.ShowRoot = false;
+			this.tree.View = (GridView)res["variableGridView"];
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();
-		}
-		
-		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
-		public static LocalVarPad Instance {
-			get { return instance; }
 		}
 		
 		void RefreshPad()
@@ -47,13 +42,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			StackFrame frame = WindowsDebugger.CurrentStackFrame;
 			
 			if (frame == null) {
-				localVarList.WatchItems.Clear();
+				this.Items.Clear();
 			} else {
-				localVarList.WatchItems.Clear();
+				this.Items.Clear();
 				frame.Process.EnqueueForEach(
 					Dispatcher.CurrentDispatcher,
 					ValueNode.GetLocalVariables().ToList(),
-					n => localVarList.WatchItems.Add(n.ToSharpTreeNode())
+					n => this.Items.Add(n.ToSharpTreeNode())
 				);
 			}
 		}

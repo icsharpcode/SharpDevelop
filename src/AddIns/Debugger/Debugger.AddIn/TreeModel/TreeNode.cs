@@ -19,7 +19,7 @@ namespace Debugger.AddIn.TreeModel
 	public class TreeNode : INotifyPropertyChanged
 	{
 		public event EventHandler<PropertyEventArgs> PropertyRead;
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler PropertyChanged;
 		
 		IImage image;
 		string name;
@@ -52,7 +52,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public bool CanSetName { get; protected set; }
+		public bool CanSetName { get; set; }
 		
 		public string Value {
 			get {
@@ -67,7 +67,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public bool CanSetValue { get; protected set; }
+		public bool CanSetValue { get; set; }
 		
 		public string Type {
 			get {

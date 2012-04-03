@@ -15,24 +15,20 @@ using ICSharpCode.TreeView;
 
 namespace Debugger.AddIn.Pads.Controls
 {
-	public class TreeNodeWrapper : SharpTreeNode
+	public class SharpTreeNodeAdapter : SharpTreeNode
 	{
-		public TreeNodeWrapper(TreeNode node)
+		public SharpTreeNodeAdapter(TreeNode node)
 		{
 			if (node == null)
 				throw new ArgumentNullException("node");
-			Node = node;
-			LazyLoading = true;
+			this.Node = node;
+			this.LazyLoading = true;
 		}
 		
 		public TreeNode Node { get; private set; }
 		
-		public override object Text {
-			get { return this.Node.Name; }
-		}
-		
 		public override object Icon {
-			get { return this.Node.Image.ImageSource; }
+			get { return this.Node.Image != null ? this.Node.Image.ImageSource : null; }
 		}
 		
 		public override bool ShowExpander {
@@ -46,10 +42,8 @@ namespace Debugger.AddIn.Pads.Controls
 				process.EnqueueWork(Dispatcher.CurrentDispatcher, () => Children.AddRange(this.Node.GetChildren().Select(node => node.ToSharpTreeNode())));
 			}
 		}
-	}
-	
-	public class WatchRootNode : SharpTreeNode
-	{
+		
+		/*
 		public override bool CanDrop(System.Windows.DragEventArgs e, int index)
 		{
 			e.Effects = DragDropEffects.None;
@@ -72,10 +66,11 @@ namespace Debugger.AddIn.Pads.Controls
 			var text = new TreeNode(e.Data.GetData(DataFormats.StringFormat).ToString(), null);
 
 			var node = text.ToSharpTreeNode();
-			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.Name == ((TreeNodeWrapper)n).Node.Name))
+			if (!WatchPad.Instance.WatchList.WatchItems.Any(n => text.Name == ((SharpTreeNodeAdapter)n).Node.Name))
 				WatchPad.Instance.WatchList.WatchItems.Add(node);
 			
 			WindowsDebugger.RefreshPads();
 		}
+		*/
 	}
 }

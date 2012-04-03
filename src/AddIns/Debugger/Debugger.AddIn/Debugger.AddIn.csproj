@@ -111,16 +111,9 @@
     <Compile Include="Pads\Commands\ParallelStacksViewCommands.cs" />
     <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
     <Compile Include="Pads\Commands\WatchPadCommands.cs" />
-    <Compile Include="Pads\Controls\TreeNodeWrapper.cs" />
-    <Compile Include="Pads\Controls\ConditionCell.xaml.cs">
+    <Compile Include="Pads\Common\AutoCompleteTextBox.cs" />
+    <Compile Include="Pads\Common\ConditionCell.xaml.cs">
       <DependentUpon>ConditionCell.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pads\Controls\Converters.cs" />
-    <Compile Include="Pads\Controls\WatchList.xaml.cs">
-      <DependentUpon>WatchList.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pads\Controls\WatchListAutoCompleteCell.cs">
-      <DependentUpon>WatchListAutoCompleteCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pads\MemoryPad.cs" />
     <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
@@ -133,10 +126,6 @@
     <Compile Include="Pads\ParallelPad\SelectedFrameBookmark.cs" />
     <Compile Include="Pads\ParallelPad\ThreadStack.xaml.cs">
       <DependentUpon>ThreadStack.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Pads\WatchInputBox.xaml.cs">
-      <DependentUpon>WatchInputBox.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -182,6 +171,7 @@
     <Compile Include="Tooltips\VisualizerPicker.cs">
       <DependentUpon>VisualizerPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TreeModel\SharpTreeNodeAdapter.cs" />
     <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
@@ -352,12 +342,10 @@
   <ItemGroup>
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
-    <Page Include="Pads\Controls\ConditionCell.xaml" />
-    <Page Include="Pads\Controls\WatchList.xaml" />
-    <Page Include="Pads\Controls\WatchListAutoCompleteCell.xaml" />
+    <Page Include="Pads\Common\CommonResources.xaml" />
+    <Page Include="Pads\Common\ConditionCell.xaml" />
     <Page Include="Pads\ParallelPad\DrawSurface.xaml" />
     <Page Include="Pads\ParallelPad\ThreadStack.xaml" />
-    <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
     <Page Include="Tooltips\VisualizerPicker.xaml" />
@@ -379,7 +367,7 @@
     </ProjectReference>
     <Folder Include="NRefactory" />
     <Folder Include="Pads\Commands" />
-    <Folder Include="Pads\Controls" />
+    <Folder Include="Pads\Common" />
     <Folder Include="Pads\ParallelPad" />
     <Folder Include="Tooltips" />
     <Folder Include="Visualizers\Graph" />

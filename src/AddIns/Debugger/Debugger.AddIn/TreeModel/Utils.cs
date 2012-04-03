@@ -122,9 +122,9 @@ namespace Debugger.AddIn.TreeModel
 	
 	public static class ExtensionMethods
 	{
-		public static TreeNodeWrapper ToSharpTreeNode(this TreeNode node)
+		public static SharpTreeNodeAdapter ToSharpTreeNode(this TreeNode node)
 		{
-			return new TreeNodeWrapper(node);
+			return new SharpTreeNodeAdapter(node);
 		}
 	}
 }

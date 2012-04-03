@@ -20,30 +20,9 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				
-				var inputWindow = new WatchInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
-				                                    StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"));
-				inputWindow.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWindow;
-				var result = inputWindow.ShowDialog();
-				if (!result.HasValue || !result.Value)
-					return;
-				
-				string input = inputWindow.CommandText;
-				
-				if (!string.IsNullOrEmpty(input)) {
-					// get language
-					if (ProjectService.CurrentProject == null) return;
-					
-					string language = ProjectService.CurrentProject.Language;
-					
-					var text = new TreeNode(input, null).ToSharpTreeNode();
-					var list = pad.WatchList;
-					
-					if(!list.WatchItems.Any(n => text.Node.Name == ((TreeNodeWrapper)n).Node.Name))
-						list.WatchItems.Add(text);
-				}
-				
-				WindowsDebugger.RefreshPads();
+				var node = new TreeNode(string.Empty, null).ToSharpTreeNode();
+				pad.Items.Add(node);
+				pad.Tree.FocusNode(node);
 			}
 		}
 	}
@@ -54,24 +33,9 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var list = pad.WatchList;
-				var node = list.SelectedNode;
-				
-				if (node == null)
-					return;
-				
-				list.WatchItems.Remove(node);
-				
+				pad.Items.Remove(pad.Tree.SelectedItem as SharpTreeNodeAdapter);
 				WindowsDebugger.RefreshPads();
 			}
-		}
-	}
-	
-	public class RefreshWatchesCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			WindowsDebugger.RefreshPads();
 		}
 	}
 	
@@ -81,23 +45,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var list =  pad.WatchList;
-				list.WatchItems.Clear();
-			}
-		}
-	}
-	
-	public class CopyToClipboardCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			if (this.Owner is WatchPad) {
-				WatchPad pad = (WatchPad)this.Owner;
-				var node =  pad.WatchList.SelectedNode;
-				if (node != null && node.Node is ValueNode) {
-					string text = ((ValueNode)node.Node).FullText;
-					ClipboardWrapper.SetText(text);
-				}
+				pad.Items.Clear();
 			}
 		}
 	}
