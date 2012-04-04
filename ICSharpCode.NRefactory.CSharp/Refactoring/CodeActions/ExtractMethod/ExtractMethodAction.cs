@@ -56,8 +56,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod
 				if (!(node is Statement))
 					yield break;
 			}
-
-			yield return CreateFromStatements(context, new List<Statement> (selected.OfType<Statement> ()));
+			var action = CreateFromStatements (context, new List<Statement> (selected.OfType<Statement> ()));
+			if (action != null)
+				yield return action;
 		}
 
 		CodeAction CreateFromExpression(RefactoringContext context, Expression expression)
