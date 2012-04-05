@@ -36,6 +36,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		[Test]
+		public void AnonymousLocalVariableDeclaration()
+		{
+			var code = @"class Test
+{
+	void Foo ()
+	{
+		Action<int> act = delegate (int testMe) {
+		};
+	}
+}
+";
+			var unit = CompilationUnit.Parse(code);
+			AssertOutput("class Test\n{\n$void Foo ()\n${\n$$Action<int> act = delegate (int testMe) {\n$$};\n$}\n}\n", unit);
+		}
+		
+		[Test]
 		public void AssignmentInCollectionInitializer()
 		{
 			Expression expr = new ObjectCreateExpression {
