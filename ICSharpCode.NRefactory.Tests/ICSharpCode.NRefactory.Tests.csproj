@@ -262,6 +262,7 @@
     <Compile Include="CSharp\CodeActions\CreateDelegateTests.cs" />
     <Compile Include="CSharp\CodeActions\IntroduceConstantTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractMethodTests.cs" />
+    <Compile Include="CSharp\Parser\Bugs\ParserBugTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -289,6 +290,7 @@
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\CodeIssues\" />
     <Folder Include="CSharp\CodeActions\" />
+    <Folder Include="CSharp\Parser\Bugs\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
