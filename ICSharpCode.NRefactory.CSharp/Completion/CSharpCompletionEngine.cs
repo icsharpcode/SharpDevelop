@@ -1712,7 +1712,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (alreadyInserted.Any(cm => SignatureComparer.Ordinal.Equals(cm, m)))
 					continue;
 				alreadyInserted.Add (m);
-				data.CompletionCategory = col.GetCompletionCategory(curType);
+				data.CompletionCategory = col.GetCompletionCategory(m.DeclaringTypeDefinition);
 				col.Add(data);
 			}
 		}
