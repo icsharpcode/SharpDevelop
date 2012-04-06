@@ -29,12 +29,45 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using System.Threading;
 using System.Linq;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	public abstract class ContextActionTestBase
 	{
-		protected static string RunContextAction (ICodeActionProvider action, string input)
+		internal static string HomogenizeEol (string str)
+		{
+			var sb = new StringBuilder ();
+			for (int i = 0; i < str.Length; i++) {
+				var ch = str [i];
+				if (ch == '\n') {
+					sb.AppendLine ();
+				} else if (ch == '\r') {
+					sb.AppendLine ();
+					if (i + 1 < str.Length && str [i + 1] == '\n')
+						i++;
+				} else {
+					sb.Append (ch);
+				}
+			}
+			return sb.ToString ();
+		}
+
+		public void Test<T> (string input, string output, int action = 0) where T : ICodeActionProvider, new ()
+		{
+			string result = RunContextAction (new T (), HomogenizeEol (input), action);
+			bool passed = result == output;
+			if (!passed) {
+				Console.WriteLine ("-----------Expected:");
+				Console.WriteLine (output);
+				Console.WriteLine ("-----------Got:");
+				Console.WriteLine (result);
+			}
+			Assert.AreEqual (HomogenizeEol (output), result);
+		}	
+	
+
+		protected static string RunContextAction (ICodeActionProvider action, string input, int actionIndex = 0)
 		{
 			var context = TestRefactoringContext.Create (input);
 			bool isValid = action.GetActions (context).Any ();
@@ -43,14 +76,15 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				Console.WriteLine ("invalid node is:" + context.GetNode ());
 			Assert.IsTrue (isValid, action.GetType () + " is invalid.");
 			using (var script = context.StartScript ()) {
-				action.GetActions (context).First ().Run (script);
+				action.GetActions (context).Skip (actionIndex).First ().Run (script);
 			}
 
 			return context.doc.Text;
 		}
 		
-		protected static void TestWrongContext (ICodeActionProvider action, string input)
+		protected static void TestWrongContext<T> (string input) where T : ICodeActionProvider, new ()
 		{
+			ICodeActionProvider action = new T ();
 			var context = TestRefactoringContext.Create (input);
 			bool isValid = action.GetActions (context).Any ();
 			if (!isValid)

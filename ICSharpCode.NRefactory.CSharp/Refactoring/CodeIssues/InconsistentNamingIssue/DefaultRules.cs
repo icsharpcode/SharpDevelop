@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DefaultRules.cs
 //  
 // Author:
@@ -71,18 +71,56 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				NamingStyle = NamingStyle.PascalCase
 			};
 
-			yield return new NamingRule(AffectedEntity.Fields) {
+			yield return new NamingRule(AffectedEntity.ReadonlyField) {
+				Name = "Static Readonly Fields",
+				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal,
+				NamingStyle = NamingStyle.PascalCase,
+				IncludeInstanceMembers = false
+			};
+
+			yield return new NamingRule(AffectedEntity.Field) {
 				Name = "Fields (Non Private)",
 				NamingStyle = NamingStyle.PascalCase,
 				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal
 			};
+			
+			yield return new NamingRule(AffectedEntity.ReadonlyField) {
+				Name = "ReadOnly Fields (Non Private)",
+				NamingStyle = NamingStyle.PascalCase,
+				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal,
+				IncludeStaticEntities = false
+			};
 
-			yield return new NamingRule(AffectedEntity.Fields) {
+			yield return new NamingRule(AffectedEntity.Field | AffectedEntity.ReadonlyField) {
 				Name = "Fields (Private)",
 				NamingStyle = NamingStyle.CamelCase,
-				VisibilityMask = Modifiers.Private
+				AllowedPrefixes = new [] { "_", "m_" },
+				VisibilityMask = Modifiers.Private,
+				IncludeStaticEntities = false
 			};
 			
+			yield return new NamingRule(AffectedEntity.Field) {
+				Name = "Static Fields (Private)",
+				NamingStyle = NamingStyle.CamelCase,
+				VisibilityMask = Modifiers.Private,
+				IncludeStaticEntities = true,
+				IncludeInstanceMembers = false
+			};
+			
+			yield return new NamingRule(AffectedEntity.ReadonlyField) {
+				Name = "ReadOnly Fields (Private)",
+				NamingStyle = NamingStyle.CamelCase,
+				VisibilityMask = Modifiers.Private,
+				AllowedPrefixes = new [] { "_", "m_" },
+				IncludeStaticEntities = false
+			};
+
+			yield return new NamingRule(AffectedEntity.ConstantField) {
+				Name = "Constant Fields",
+				NamingStyle = NamingStyle.PascalCase,
+				VisibilityMask = Modifiers.Public | Modifiers.Protected | Modifiers.Internal | Modifiers.Private
+			};
+
 			yield return new NamingRule(AffectedEntity.Property) {
 				Name = "Properties",
 				NamingStyle = NamingStyle.PascalCase
@@ -105,7 +143,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			yield return new NamingRule(AffectedEntity.TypeParameter) {
 				Name = "Type Parameters",
-				NamingStyle = NamingStyle.PascalCase
+				NamingStyle = NamingStyle.PascalCase,
+				RequiredPrefixes = new [] { "T" }
 			};
 		}
 	}

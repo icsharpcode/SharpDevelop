@@ -85,6 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
+			resolver.ApplyNavigator(new NodeListResolveVisitorNavigator(node), cancellationToken);
 			ResolveResult rr = resolver.Resolve(node, cancellationToken);
 			if (rr is MethodGroupResolveResult && parentInvocation != null)
 				return resolver.Resolve(parentInvocation);

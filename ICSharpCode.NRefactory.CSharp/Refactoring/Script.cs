@@ -26,7 +26,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -136,9 +135,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			get { return formattingOptions; }
 		}
 		
-		public void InsertBefore (AstNode node, AstNode insertNode)
+		public void InsertBefore(AstNode node, AstNode insertNode)
 		{
-			var startOffset = GetCurrentOffset (new TextLocation(node.StartLocation.Line, 1));
+			var startOffset = GetCurrentOffset(new TextLocation(node.StartLocation.Line, 1));
 			var output = OutputNode (GetIndentLevelAt (startOffset), insertNode);
 			string text = output.Text;
 			if (!(insertNode is Expression || insertNode is AstType))
@@ -147,12 +146,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			output.RegisterTrackedSegments(this, startOffset);
 		}
 
-		public void AddTo (BlockStatement bodyStatement, AstNode insertNode)
+		public void AddTo(BlockStatement bodyStatement, AstNode insertNode)
 		{
-			var startOffset = GetCurrentOffset (bodyStatement.LBraceToken.EndLocation);
-			var output = OutputNode (1 + GetIndentLevelAt (startOffset), insertNode, true);
-			InsertText (startOffset, output.Text);
-			output.RegisterTrackedSegments (this, startOffset);
+			var startOffset = GetCurrentOffset(bodyStatement.LBraceToken.EndLocation);
+			var output = OutputNode(1 + GetIndentLevelAt(startOffset), insertNode, true);
+			InsertText(startOffset, output.Text);
+			output.RegisterTrackedSegments(this, startOffset);
 		}
 		
 		public virtual void Link (params AstNode[] nodes)
@@ -193,6 +192,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		public virtual void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public virtual void InsertWithCursor(string operation, AstNode node, ITypeDefinition parentType)
 		{
 			throw new NotImplementedException();
 		}
@@ -300,6 +304,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		/// <summary>
+		/// Renames the specified entity.
+		/// </summary>
+		/// <param name='entity'>
+		/// The Entity to rename
+		/// </param>
+		/// <param name='name'>
+		/// The new name, if null the user is prompted for a new name.
+		/// </param>
+		public virtual void RenameTypeParameter (IType type, string name = null)
+		{
+		}
+		
+		/// <summary>
 		/// Renames the specified variable.
 		/// </summary>
 		/// <param name='variable'>
@@ -313,6 +330,32 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		public virtual void Dispose()
+		{
+		}
+
+		public enum NewTypeContext {
+			/// <summary>
+			/// The class should be placed in a new file to the current namespace.
+			/// </summary>
+			CurrentNamespace,
+
+			/// <summary>
+			/// The class should be placed in the unit tests. (not implemented atm.)
+			/// </summary>
+			UnitTests
+		}
+
+		/// <summary>
+		/// Creates a new file containing the type, namespace and correct usings.
+		/// (Note: Should take care of IDE specific things, file headers, add to project, correct name).
+		/// </summary>
+		/// <param name='newType'>
+		/// New type to be created.
+		/// </param>
+		/// <param name='context'>
+		/// The Context in which the new type should be created.
+		/// </param>
+		public virtual void CreateNewType(AstNode newType, NewTypeContext context = NewTypeContext.CurrentNamespace)
 		{
 		}
 	}

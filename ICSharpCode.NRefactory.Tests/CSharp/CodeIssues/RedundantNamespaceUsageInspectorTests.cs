@@ -1,6 +1,6 @@
-// 
+﻿// 
 // RedundantNamespaceUsageInspectorTests.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -55,6 +55,29 @@ class Foo
 	void Bar (string str)
 	{
 		Console.WriteLine ();
+	}
+}");
+		}
+		
+		[Test]
+		public void TestInspectorCase2 ()
+		{
+			var input = @"using System.Text;
+class Foo
+{
+	void Bar (System.Text.StringBuilder b)
+	{
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantNamespaceUsageIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"using System.Text;
+class Foo
+{
+	void Bar (StringBuilder b)
+	{
 	}
 }");
 		}

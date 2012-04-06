@@ -80,6 +80,33 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"{" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
+				"		var foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+
+		[Test()]
+		public void ExplicitTestAssignment ()
+		{
+			TestRefactoringContext.UseExplict = true;
+			string result = RunContextAction (
+				new CreateLocalVariableAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
 				"		int foo = 0x10;" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
@@ -170,5 +197,44 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+
+		[Test()]
+		public void TestWrongContext1()
+		{
+			// May be syntactically possible, but very unlikely.
+			TestWrongContext<CreateLocalVariableAction>(
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		$foo();" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}"
+			);
+		}
+
+		[Test()]
+		public void TestBool()
+		{
+			Test<CreateLocalVariableAction>(
+@"class TestClass
+{
+	void Test ()
+	{
+		object o = !$foo;
+	}
+}", 
+@"class TestClass
+{
+	void Test ()
+	{
+		bool foo;
+		object o = !foo;
+	}
+}");
+		}
+
 	}
 }

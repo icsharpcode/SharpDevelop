@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CreatePropertyTests.cs
 //  
 // Author:
@@ -121,6 +121,147 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"		FooBar(out Foo);" + Environment.NewLine +
 				"	}" + Environment.NewLine +
 				"}", result);
+		}
+
+		[Test()]
+		public void TestStaticProperty ()
+		{
+			string result = RunContextAction (
+				new CreatePropertyAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	static void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$Foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	static int Foo {" + Environment.NewLine +
+				"		get;" + Environment.NewLine +
+				"		set;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"	static void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		Foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+
+		public void TestCreateProperty (string input, string output)
+		{
+			string result = RunContextAction (new CreatePropertyAction (), CreateMethodDeclarationTests.HomogenizeEol (input));
+			bool passed = result == output;
+			if (!passed) {
+				Console.WriteLine ("-----------Expected:");
+				Console.WriteLine (output);
+				Console.WriteLine ("-----------Got:");
+				Console.WriteLine (result);
+			}
+			Assert.AreEqual (CreateMethodDeclarationTests.HomogenizeEol (output), result);
+		}
+
+		[Test()]
+		public void TestExternProperty ()
+		{
+			TestCreateProperty (
+@"
+interface FooBar
+{
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar fb;
+		fb.$NonExistantProperty = 5;
+	}
+}
+", @"
+interface FooBar
+{
+	int NonExistantProperty {
+		get;
+		set;
+	}
+}
+
+class TestClass
+{
+	void TestMethod ()
+	{
+		FooBar fb;
+		fb.NonExistantProperty = 5;
+	}
+}
+");
+		}
+
+		[Test()]
+		public void TestWrongContext1 ()
+		{
+			// May be syntactically possible, but very unlikely.
+			TestWrongContext<CreatePropertyAction> (
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$Foo();" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+		}
+
+		[Test()]
+		public void TestStaticClassProperty ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreatePropertyAction> (@"static class TestClass
+{
+	public TestClass ()
+	{
+		$Foo = 5;
+	}
+}", @"static class TestClass
+{
+	static int Foo {
+		get;
+		set;
+	}
+	public TestClass ()
+	{
+		Foo = 5;
+	}
+}");
+		}
+
+		[Test()]
+		public void CreateStaticPropertyInCurrentType()
+		{
+			Test<CreatePropertyAction> (@"class TestClass
+{
+	public TestClass ()
+	{
+		TestClass.$Foo = 5;
+	}
+}", @"class TestClass
+{
+	static int Foo {
+		get;
+		set;
+	}
+	public TestClass ()
+	{
+		TestClass.Foo = 5;
+	}
+}");
 		}
 	}
 }

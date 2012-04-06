@@ -36,6 +36,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (identifier == null) {
 				yield break;
 			}
+			if (CreateFieldAction.IsInvocationTarget(identifier)) {
+				yield break;
+			}
 			var statement = context.GetNode<Statement>();
 			if (statement == null) {
 				yield break;
@@ -56,7 +59,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Variables = { initializer }
 				};
 				if (identifier.Parent is AssignmentExpression && ((AssignmentExpression)identifier.Parent).Left == identifier) {
-					initializer.Initializer = ((AssignmentExpression)identifier.Parent).Right.Clone ();
+					initializer.Initializer = ((AssignmentExpression)identifier.Parent).Right.Clone();
+					if (!context.UseExplicitTypes)
+						decl.Type = new SimpleType("var");
 					script.Replace(statement, decl);
 				} else {
 					script.InsertBefore(statement, decl);

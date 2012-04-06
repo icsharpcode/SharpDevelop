@@ -306,7 +306,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Gets the first child with the specified role.
 		/// Returns the role's null object if the child is not found.
 		/// </summary>
-		public T GetChildByRole<T> (Role<T> role) where T : AstNode
+		public T GetChildByRole<T>(Role<T> role) where T : AstNode
 		{
 			if (role == null)
 				throw new ArgumentNullException ("role");
@@ -318,6 +318,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return role.NullObject;
 		}
 		
+		public T GetParent<T>() where T : AstNode
+		{
+			return Ancestors.OfType<T>().FirstOrDefault();
+		}
+				
 		public AstNodeCollection<T> GetChildrenByRole<T> (Role<T> role) where T : AstNode
 		{
 			return new AstNodeCollection<T> (this, role);
@@ -601,7 +606,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return Parent.GetPrevNode ();
 			return null;
 		}
-		
 		// filters all non c# nodes (comments, white spaces or pre processor directives)
 		public AstNode GetCSharpNodeBefore (AstNode node)
 		{
@@ -614,11 +618,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			return null;
 		}
 		
+		#region GetNodeAt
+		/// <summary>
+		/// Gets the node specified by T at the location line, column. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End exclusive)
+		/// </summary>
 		public AstNode GetNodeAt (int line, int column, Predicate<AstNode> pred = null)
 		{
 			return GetNodeAt (new TextLocation (line, column), pred);
 		}
 		
+		/// <summary>
+		/// Gets the node specified by pred at location. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End exclusive)
+		/// </summary>
 		public AstNode GetNodeAt (TextLocation location, Predicate<AstNode> pred = null)
 		{
 			AstNode result = null;
@@ -641,6 +656,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return result;
 		}
 		
+		/// <summary>
+		/// Gets the node specified by T at the location line, column. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End exclusive)
+		/// </summary>
 		public T GetNodeAt<T> (int line, int column) where T : AstNode
 		{
 			return GetNodeAt<T> (new TextLocation (line, column));
@@ -649,6 +669,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Gets the node specified by T at location. This is useful for getting a specific node from the tree. For example searching
 		/// the current method declaration.
+		/// (End exclusive)
 		/// </summary>
 		public T GetNodeAt<T> (TextLocation location) where T : AstNode
 		{
@@ -671,7 +692,86 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return result;
 		}
+
+		#endregion
+
+		#region GetAdjacentNodeAt
+		/// <summary>
+		/// Gets the node specified by pred at the location line, column. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End inclusive)
+		/// </summary>
+		public AstNode GetAdjacentNodeAt(int line, int column, Predicate<AstNode> pred = null)
+		{
+			return GetAdjacentNodeAt (new TextLocation (line, column), pred);
+		}
 		
+		/// <summary>
+		/// Gets the node specified by pred at location. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End inclusive)
+		/// </summary>
+		public AstNode GetAdjacentNodeAt (TextLocation location, Predicate<AstNode> pred = null)
+		{
+			AstNode result = null;
+			AstNode node = this;
+			while (node.FirstChild != null) {
+				var child = node.FirstChild;
+				while (child != null) {
+					if (child.StartLocation <= location && location <= child.EndLocation) {
+						if (pred == null || pred (child))
+							result = child;
+						node = child;
+						break;
+					}
+					child = child.NextSibling;
+				}
+				// found no better child node - therefore the parent is the right one.
+				if (child == null)
+					break;
+			}
+			return result;
+		}
+		
+		/// <summary>
+		/// Gets the node specified by T at the location line, column. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End inclusive)
+		/// </summary>
+		public T GetAdjacentNodeAt<T>(int line, int column) where T : AstNode
+		{
+			return GetAdjacentNodeAt<T> (new TextLocation (line, column));
+		}
+		
+		/// <summary>
+		/// Gets the node specified by T at location. This is useful for getting a specific node from the tree. For example searching
+		/// the current method declaration.
+		/// (End inclusive)
+		/// </summary>
+		public T GetAdjacentNodeAt<T> (TextLocation location) where T : AstNode
+		{
+			T result = null;
+			AstNode node = this;
+			while (node.FirstChild != null) {
+				var child = node.FirstChild;
+				while (child != null) {
+					if (child.StartLocation <= location && location < child.EndLocation) {
+						if (child is T)
+							result = (T)child;
+						node = child;
+						break;
+					}
+					child = child.NextSibling;
+				}
+				// found no better child node - therefore the parent is the right one.
+				if (child == null)
+					break;
+			}
+			return result;
+		}
+		#endregion
+
+
 		/// <summary>
 		/// Gets the node that fully contains the range from startLocation to endLocation.
 		/// </summary>

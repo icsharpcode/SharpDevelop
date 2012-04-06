@@ -41,6 +41,11 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
 	public class TestRefactoringContext : RefactoringContext
 	{
+		public static bool UseExplict {
+			get;
+			set;
+		}
+
 		internal readonly IDocument doc;
 		readonly TextLocation location;
 		
@@ -48,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		{
 			this.doc = document;
 			this.location = location;
+			this.UseExplicitTypes = UseExplict;
+			UseExplict = false;
 			Services.AddService (typeof(NamingConventionService), new TestNameService ());
 		}
 		
@@ -77,10 +84,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		sealed class TestScript : DocumentScript
 		{
 			readonly TestRefactoringContext context;
-			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions())
+			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions(), new TextEditorOptions ())
 			{
 				this.context = context;
-				this.eolMarker = context.EolMarker;
 			}
 			
 			public override void Link (params AstNode[] nodes)
@@ -96,22 +102,94 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				var entity = context.GetNode<EntityDeclaration> ();
 				InsertBefore (entity, node);
 			}
+
+			public override void InsertWithCursor (string operation, AstNode node, ITypeDefinition parentType)
+			{
+				var unit = context.RootNode;
+				var insertType = unit.GetNodeAt<TypeDeclaration> (parentType.Region.Begin);
+
+				var startOffset = GetCurrentOffset (insertType.LBraceToken.EndLocation);
+				var output = OutputNode (1, node, true);
+				InsertText (startOffset, output.Text);
+				output.RegisterTrackedSegments (this, startOffset);
+			}
+
+			void Rename (AstNode node, string newName)
+			{
+				if (node is ObjectCreateExpression)
+					node = ((ObjectCreateExpression)node).Type;
+
+				if (node is InvocationExpression)
+					node = ((InvocationExpression)node).Target;
+			
+				if (node is MemberReferenceExpression)
+					node = ((MemberReferenceExpression)node).MemberNameToken;
+			
+				if (node is MemberType)
+					node = ((MemberType)node).MemberNameToken;
+			
+				if (node is EntityDeclaration) 
+					node = ((EntityDeclaration)node).NameToken;
+			
+				if (node is ParameterDeclaration) 
+					node = ((ParameterDeclaration)node).NameToken;
+				if (node is ConstructorDeclaration)
+					node = ((ConstructorDeclaration)node).NameToken;
+				if (node is DestructorDeclaration)
+					node = ((DestructorDeclaration)node).NameToken;
+				if (node is VariableInitializer)
+					node = ((VariableInitializer)node).NameToken;
+				Replace (node, new IdentifierExpression (newName));
+			}
+
+			public override void Rename (IEntity entity, string name)
+			{
+				FindReferences refFinder = new FindReferences ();
+				refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), 
+				                               context.ParsedFile, 
+				                               context.RootNode as CompilationUnit, 
+				                               context.Compilation, (n, r) => Rename (n, name), 
+				                               context.CancellationToken);
+			}
+
+			public override void Rename (IVariable variable, string name)
+			{
+				FindReferences refFinder = new FindReferences ();
+				refFinder.FindLocalReferences (variable, 
+				                               context.ParsedFile, 
+				                               context.RootNode as CompilationUnit, 
+				                               context.Compilation, (n, r) => Rename (n, name), 
+				                               context.CancellationToken);
+			}
+			
+			public override void RenameTypeParameter (IType type, string name = null)
+			{
+				FindReferences refFinder = new FindReferences ();
+				refFinder.FindTypeParameterReferences (type, 
+				                               context.ParsedFile, 
+				                               context.RootNode as CompilationUnit, 
+				                               context.Compilation, (n, r) => Rename (n, name), 
+				                               context.CancellationToken);
+			}
+		
+			public override void CreateNewType (AstNode newType, NewTypeContext context)
+			{
+				var output = OutputNode (0, newType, true);
+				InsertText (0, output.Text);
+			}
 		}
 
 		#region Text stuff
-		public override string EolMarker { get { return Environment.NewLine; } }
 
-		public override bool IsSomethingSelected { get { return SelectionStart > 0; }  }
+		public override bool IsSomethingSelected { get { return selectionStart > 0; }  }
 
-		public override string SelectedText { get { return IsSomethingSelected ? doc.GetText (SelectionStart, SelectionLength) : ""; } }
+		public override string SelectedText { get { return IsSomethingSelected ? doc.GetText (selectionStart, selectionEnd - selectionStart) : ""; } }
 		
 		int selectionStart;
-		public override int SelectionStart { get { return selectionStart; } }
+		public override TextLocation SelectionStart { get { return doc.GetLocation (selectionStart); } }
 		
 		int selectionEnd;
-		public override int SelectionEnd { get { return selectionEnd; } }
-
-		public override int SelectionLength { get { return IsSomethingSelected ? SelectionEnd - SelectionStart : 0; } }
+		public override TextLocation SelectionEnd { get { return doc.GetLocation (selectionEnd); } }
 
 		public override int GetOffset (TextLocation location)
 		{
@@ -179,7 +257,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			TextLocation location = TextLocation.Empty;
 			if (idx >= 0)
 				location = doc.GetLocation (idx);
-			Console.WriteLine ("idx:" + location);
 			return new TestRefactoringContext(doc, location, resolver) {
 				selectionStart = selectionStart,
 				selectionEnd = selectionEnd

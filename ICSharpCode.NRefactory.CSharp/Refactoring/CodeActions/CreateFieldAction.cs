@@ -31,50 +31,62 @@ using ICSharpCode.NRefactory.TypeSystem;
 using System.Threading;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[ContextAction("Create field", Description = "Creates a field for a undefined variable.")]
 	public class CreateFieldAction : ICodeActionProvider
 	{
+		internal static bool IsInvocationTarget(AstNode node)
+		{
+			var invoke = node.Parent as InvocationExpression;
+			return invoke != null && invoke.Target == node;
+		}
+
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
 			var identifier = context.GetNode<IdentifierExpression>();
-			if (identifier == null) {
+			if (identifier == null)
 				yield break;
-			}
-			var statement = context.GetNode<Statement>();
-			if (statement == null) {
+			if (IsInvocationTarget(identifier))
 				yield break;
-			}
-
-			if (!(context.Resolve(identifier).IsError)) {
+			var statement = identifier.GetParent<Statement>();
+			if (statement == null)
 				yield break;
-			}
-			
+			if (!(context.Resolve(identifier).IsError))
+				yield break;
 			var guessedType = CreateFieldAction.GuessAstType(context, identifier);
-			if (guessedType == null) {
+			if (guessedType == null)
 				yield break;
-			}
-			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field)) 
+			var state = context.GetResolverStateBefore(identifier);
+			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
 				yield break;
+
+			bool isStatic = state.CurrentMember.IsStatic | state.CurrentTypeDefinition.IsStatic;
+
+//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+//			if (service != null && !service.IsValidName(identifier.Identifier, AffectedEntity.Field, Modifiers.Private, isStatic)) { 
+//				yield break;
+//			}
 
 			yield return new CodeAction(context.TranslateString("Create field"), script => {
 				var decl = new FieldDeclaration() {
-						ReturnType = guessedType,
-						Variables = { new VariableInitializer(identifier.Identifier) }
-					};
+					ReturnType = guessedType,
+					Variables = { new VariableInitializer(identifier.Identifier) }
+				};
+				if (isStatic)
+					decl.Modifiers |= Modifiers.Static;
 				script.InsertWithCursor(context.TranslateString("Create field"), decl, Script.InsertPosition.Before);
 			});
 
 		}
 
 		#region Type guessing
-		static int GetArgumentIndex(InvocationExpression invoke, AstNode parameter)
+		static int GetArgumentIndex(IEnumerable<Expression> arguments, AstNode parameter)
 		{
 			int argumentNumber = 0;
-			foreach (var arg in invoke.Arguments) {
+			foreach (var arg in arguments) {
 				if (arg == parameter) {
 					return argumentNumber;
 				}
@@ -85,10 +97,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static IEnumerable<IType> GetAllValidTypesFromInvokation(RefactoringContext context, InvocationExpression invoke, AstNode parameter)
 		{
-			int index = GetArgumentIndex(invoke, parameter);
-			if (index < 0) {
+			int index = GetArgumentIndex(invoke.Arguments, parameter);
+			if (index < 0)
 				yield break;
-			}
 					
 			var targetResult = context.Resolve(invoke.Target);
 			if (targetResult is MethodGroupResolveResult) {
@@ -100,6 +111,26 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
+		static IEnumerable<IType> GetAllValidTypesFromObjectCreation(RefactoringContext context, ObjectCreateExpression invoke, AstNode parameter)
+		{
+			int index = GetArgumentIndex(invoke.Arguments, parameter);
+			if (index < 0)
+				yield break;
+					
+			var targetResult = context.Resolve(invoke.Type);
+			if (targetResult is TypeResolveResult) {
+				var type = ((TypeResolveResult)targetResult).Type;
+				if (type.Kind == TypeKind.Delegate && index == 0) {
+					yield return type;
+					yield break;
+				}
+				foreach (var constructor in type.GetConstructors ()) {
+					if (index < constructor.Parameters.Count)
+						yield return constructor.Parameters [index].Type;
+				}
+			}
+		}
+
 		internal static IEnumerable<IType> GetValidTypes(RefactoringContext context, Expression expr)
 		{
 			if (expr.Parent is DirectionExpression) {
@@ -107,6 +138,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (parent is InvocationExpression) {
 					var invoke = (InvocationExpression)parent;
 					return GetAllValidTypesFromInvokation(context, invoke, expr.Parent);
+				}
+			}
+
+			if (expr.Parent is ObjectCreateExpression) {
+				var parent = expr.Parent;
+				if (parent is ObjectCreateExpression) {
+					var invoke = (ObjectCreateExpression)parent;
+					return GetAllValidTypesFromObjectCreation(context, invoke, expr);
 				}
 			}
 
@@ -147,9 +186,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			
 			if (expr.Parent is ReturnStatement) {
 				var state = context.GetResolverStateBefore(expr);
-				if (state != null) {
+				if (state != null)
 					return new [] { state.CurrentMember.ReturnType };
-				}
 			}
 
 			if (expr.Parent is YieldReturnStatement) {
@@ -157,11 +195,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (state != null && (state.CurrentMember.ReturnType is ParameterizedType)) {
 					var pt = (ParameterizedType)state.CurrentMember.ReturnType;
 					if (pt.FullName == "System.Collections.Generic.IEnumerable") {
-						return new [] { pt.TypeArguments.First () };
+						return new [] { pt.TypeArguments.First() };
 					}
 				}
 			}
 
+			if (expr.Parent is UnaryOperatorExpression) {
+				var uop = (UnaryOperatorExpression)expr.Parent;
+				switch (uop.Operator) {
+					case UnaryOperatorType.Not:
+						return new [] { context.Compilation.FindType(KnownTypeCode.Boolean) };
+					case UnaryOperatorType.Minus:
+					case UnaryOperatorType.Plus:
+					case UnaryOperatorType.Increment:
+					case UnaryOperatorType.Decrement:
+					case UnaryOperatorType.PostIncrement:
+					case UnaryOperatorType.PostDecrement:
+						return new [] { context.Compilation.FindType(KnownTypeCode.Int32) };
+				}
+			}
 			return Enumerable.Empty<IType>();
 		}
 		static readonly IType[] emptyTypes = new IType[0];
@@ -171,9 +223,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var typeInference = new TypeInference(context.Compilation);
 			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
 			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
-			if (inferedType.Kind == TypeKind.Unknown) {
+			if (inferedType.Kind == TypeKind.Unknown)
 				return new PrimitiveType("object");
-			}
 			return context.CreateShortType(inferedType);
 		}
 
@@ -184,7 +235,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
 			var inferedType = typeInference.FindTypeInBounds(type, emptyTypes);
 			return inferedType;
-
 		}
 		#endregion
 	}

@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TestStatementIndentation.cs
 //  
 // Author:
@@ -1968,9 +1968,9 @@ if (b) {
 	Test TestMethod ()
 	{
 {
-//CMT1
+ //CMT1
 ;
-/* cmt 2 */
+ /* cmt 2 */
 }
 	}
 }", @"class Test
@@ -1996,9 +1996,9 @@ if (b) {
 	Test TestMethod ()
 	{
 {
-" + @"#if true
+" + @" #if true
 ;
-" + @"#endif
+" + @" #endif
 }
 	}
 }", @"class Test

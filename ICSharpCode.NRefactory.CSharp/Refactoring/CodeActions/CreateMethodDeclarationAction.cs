@@ -37,116 +37,191 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var invocation = context.GetNode<InvocationExpression>();
-			if (invocation != null) {
-				return GetActionsFromInvocation(context, invocation);
-			}
 			var identifier = context.GetNode<IdentifierExpression>();
-			if (identifier != null) {
+			if (identifier != null && !(identifier.Parent is InvocationExpression && ((InvocationExpression)identifier.Parent).Target == identifier))
 				return GetActionsFromIdentifier(context, identifier);
-			}
+			
+			var memberReference = context.GetNode<MemberReferenceExpression>();
+			if (memberReference != null && !(memberReference.Parent is InvocationExpression && ((InvocationExpression)memberReference.Parent).Target == memberReference))
+				return GetActionsFromMemberReferenceExpression(context, memberReference);
+
+			var invocation = context.GetNode<InvocationExpression>();
+			if (invocation != null)
+				return GetActionsFromInvocation(context, invocation);
 			return Enumerable.Empty<CodeAction>();
 		}
 
-		public IEnumerable<CodeAction>  GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
+		IEnumerable<CodeAction> GetActionsFromMemberReferenceExpression(RefactoringContext context, MemberReferenceExpression invocation)
 		{
-			if (!(context.Resolve(identifier).IsError)) {
+			if (!(context.Resolve(invocation).IsError)) 
 				yield break;
-			}
-			var methodName = identifier.Identifier;
-			var state = context.GetResolverStateBefore(identifier);
-			var guessedType = CreateFieldAction.GuessType(context, identifier);
-			if (guessedType.Kind != TypeKind.Delegate) {
+
+			var methodName = invocation.MemberName;
+			var guessedType = CreateFieldAction.GuessType(context, invocation);
+			if (guessedType.Kind != TypeKind.Delegate)
 				yield break;
-			}
 			var invocationMethod = guessedType.GetDelegateInvokeMethod();
-			bool isStatic = state.CurrentMember.IsStatic;
+
+			var state = context.GetResolverStateBefore(invocation);
+			if (state.CurrentTypeDefinition == null)
+				yield break;
+			ResolveResult targetResolveResult = context.Resolve(invocation.Target);
+			bool createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
+
+			bool isStatic;
+			if (createInOtherType) {
+				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
+					yield break;
+				isStatic = targetResolveResult is TypeResolveResult;
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+					yield break;
+			} else {
+				if (state.CurrentMember == null)
+					yield break;
+				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
+			}
+
+//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+//			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+//				yield break;
+//			}
+
+			yield return CreateAction(
+				context, 
+				methodName, 
+				context.CreateShortType(invocationMethod.ReturnType),
+				invocationMethod.Parameters.Select(parameter => new ParameterDeclaration(context.CreateShortType(parameter.Type), parameter.Name) { 
+					ParameterModifier = GetModifiers(parameter)
+				}),
+				createInOtherType,
+				isStatic,
+				targetResolveResult);
+		}
+		
+		IEnumerable<CodeAction> GetActionsFromIdentifier(RefactoringContext context, IdentifierExpression identifier)
+		{
+			if (!(context.Resolve(identifier).IsError))
+				yield break;
+			var methodName = identifier.Identifier;
+			var guessedType = CreateFieldAction.GuessType(context, identifier);
+			if (guessedType.Kind != TypeKind.Delegate)
+				yield break;
+			var invocationMethod = guessedType.GetDelegateInvokeMethod();
+			var state = context.GetResolverStateBefore(identifier);
+			if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+				yield break;
+			bool isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 
 			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic))
 				yield break;
+
+			yield return CreateAction(
+				context, 
+				methodName, 
+				context.CreateShortType(invocationMethod.ReturnType),
+				invocationMethod.Parameters.Select(parameter => new ParameterDeclaration(context.CreateShortType(parameter.Type), parameter.Name) { 
+					ParameterModifier = GetModifiers(parameter)
+				}),
+				false,
+				isStatic,
+				null);
+		}
+
+		IEnumerable<CodeAction> GetActionsFromInvocation(RefactoringContext context, InvocationExpression invocation)
+		{
+			if (!(context.Resolve(invocation.Target).IsError)) 
+				yield break;
+
+			var methodName = GetMethodName(invocation);
+			if (methodName == null)
+				yield break;
+			var state = context.GetResolverStateBefore(invocation);
+			var guessedType = invocation.Parent is ExpressionStatement ? new PrimitiveType("void") : CreateFieldAction.GuessAstType(context, invocation);
+
+			bool createInOtherType = false;
+			ResolveResult targetResolveResult = null;
+			if (invocation.Target is MemberReferenceExpression) {
+				targetResolveResult = context.Resolve(((MemberReferenceExpression)invocation.Target).Target);
+				createInOtherType = !state.CurrentTypeDefinition.Equals(targetResolveResult.Type.GetDefinition());
 			}
 
-			yield return new CodeAction(context.TranslateString("Create delegate handler"), script => {
-				var decl = new MethodDeclaration() {
-					ReturnType = context.CreateShortType(invocationMethod.ReturnType),
-					Name = methodName,
-					Body = new BlockStatement() {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				};
-				if (isStatic) {
-					decl.Modifiers |= Modifiers.Static;
-				}
+			bool isStatic;
+			if (createInOtherType) {
+				if (targetResolveResult.Type.GetDefinition() == null || targetResolveResult.Type.GetDefinition().Region.IsEmpty)
+					yield break;
+				isStatic = targetResolveResult is TypeResolveResult;
+				if (isStatic && targetResolveResult.Type.Kind == TypeKind.Interface)
+					yield break;
+			} else {
+				if (state.CurrentMember == null || state.CurrentTypeDefinition == null)
+					yield break;
+				isStatic = state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
+			}
 
-				foreach (var parameter in invocationMethod.Parameters) {
-					decl.Parameters.Add(new ParameterDeclaration(context.CreateShortType (parameter.Type), parameter.Name) {
-						ParameterModifier = GetModifiers(parameter)
-					});
-				}
-				script.InsertWithCursor(context.TranslateString("Create delegate handler"), decl, Script.InsertPosition.Before);
-			});
+//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+//			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
+//				yield break;
+//			}
 
+
+			yield return CreateAction(
+				context, 
+				methodName, 
+				guessedType,
+				GenerateParameters(context, invocation.Arguments),
+				createInOtherType,
+				isStatic,
+				targetResolveResult);
 		}
 
 		static ParameterModifier GetModifiers(IParameter parameter)
 		{
-			if (parameter.IsOut) {
+			if (parameter.IsOut)
 				return ParameterModifier.Out;
-			}
-			if (parameter.IsRef) {
+			if (parameter.IsRef)
 				return ParameterModifier.Ref;
-			}
-			if (parameter.IsParams) {
+			if (parameter.IsParams)
 				return ParameterModifier.Params;
-			}
 			return ParameterModifier.None;
 		}
-		
-		public IEnumerable<CodeAction> GetActionsFromInvocation(RefactoringContext context, InvocationExpression invocation)
+
+		static CodeAction CreateAction(RefactoringContext context, string methodName, AstType returnType, IEnumerable<ParameterDeclaration> parameters, bool createInOtherType, bool isStatic, ResolveResult targetResolveResult)
 		{
-			if (!(context.Resolve(invocation.Target).IsError)) {
-				yield break;
-			}
-
-			var methodName = GetMethodName(invocation);
-			if (methodName == null) {
-				yield break;
-			}
-			var state = context.GetResolverStateBefore(invocation);
-			var guessedType = invocation.Parent is ExpressionStatement ? new PrimitiveType("void") : CreateFieldAction.GuessAstType(context, invocation);
-
-			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
-			bool isStatic = invocation.Target is IdentifierExpression && state.CurrentMember.IsStatic;
-			if (service != null && !service.IsValidName(methodName, AffectedEntity.Method, Modifiers.Private, isStatic)) { 
-				yield break;
-			}
-
-
-			yield return new CodeAction(context.TranslateString("Create method"), script => {
+			return new CodeAction(context.TranslateString("Create method"), script => {
 				var decl = new MethodDeclaration() {
-					ReturnType = guessedType,
+					ReturnType = returnType,
 					Name = methodName,
 					Body = new BlockStatement() {
 						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
 					}
 				};
-				if (isStatic) {
+				decl.Parameters.AddRange(parameters);
+				
+				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
+				
+				if (createInOtherType) {
+					if (targetResolveResult.Type.Kind == TypeKind.Interface) {
+						decl.Body = null;
+						decl.Modifiers = Modifiers.None;
+					} else {
+						decl.Modifiers |= Modifiers.Public;
+					}
+
+					script.InsertWithCursor(context.TranslateString("Create method"), decl, targetResolveResult.Type.GetDefinition());
+					return;
 				}
 
-				foreach (var parameter in GenerateParameters (context, invocation)) {
-					decl.Parameters.Add(parameter);
-				}
 				script.InsertWithCursor(context.TranslateString("Create method"), decl, Script.InsertPosition.Before);
 			});
 		}
 
-		public IEnumerable<ParameterDeclaration> GenerateParameters(RefactoringContext context, InvocationExpression invocation)
+		public static IEnumerable<ParameterDeclaration> GenerateParameters(RefactoringContext context, IEnumerable<Expression> arguments)
 		{
-			Dictionary<string, int> nameCounter = new Dictionary<string, int>();
-			foreach (var argument in invocation.Arguments) {
-				ParameterModifier direction = ParameterModifier.None;
+			var nameCounter = new Dictionary<string, int>();
+			foreach (var argument in arguments) {
+				var direction = ParameterModifier.None;
 				AstNode node;
 				if (argument is DirectionExpression) {
 					var de = (DirectionExpression)argument;
@@ -182,9 +257,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					wordStart = true;
 					continue;
 				}
-				if (!char.IsLetter(ch)) {
+				if (!char.IsLetter(ch))
 					continue;
-				}
 				if (firstLetter) {
 					sb.Append(char.ToLower(ch));
 					firstLetter = false;
@@ -200,13 +274,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return sb.Length == 0 ? "str" : sb.ToString();
 		}
 
-		static string CreateBaseName(AstNode node, IType type)
+		public static string CreateBaseName(AstNode node, IType type)
 		{
 			string name = null;
-			if (node is DirectionExpression) {
+			if (node is DirectionExpression)
 				node = ((DirectionExpression)node).Expression;
-			}
-
 			if (node is IdentifierExpression) {
 				name = ((IdentifierExpression)node).Identifier;
 			} else if (node is MemberReferenceExpression) {
@@ -215,24 +287,68 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var pe = (PrimitiveExpression)node;
 				if (pe.Value is string) {
 					name = CreateBaseNameFromString(pe.Value.ToString());
+				} else {
+					return char.ToLower(type.Name [0]).ToString();
 				}
-				name = char.ToLower(type.Name [0]).ToString();
 			} else {
-				name = type.Kind == TypeKind.Unknown ? "par" : type.Name;
+				if (type.Kind == TypeKind.Unknown)
+					return "par";
+				name = GuessNameFromType(type);
 			}
 
 			name = char.ToLower(name [0]) + name.Substring(1);
 			return name;
 		}
 
-		public string GetMethodName(InvocationExpression invocation)
+		static string GuessNameFromType(IType returnType)
 		{
-			if (invocation.Target is IdentifierExpression) {
+			switch (returnType.ReflectionName) {
+				case "System.Byte":
+				case "System.SByte":
+					return "b";
+				
+				case "System.Int16":
+				case "System.UInt16":
+				case "System.Int32":
+				case "System.UInt32":
+				case "System.Int64":
+				case "System.UInt64":
+					return "i";
+				
+				case "System.Boolean":
+					return "b";
+				
+				case "System.DateTime":
+					return "date";
+				
+				case "System.Char":
+					return "ch";
+				case "System.Double":
+				case "System.Decimal":
+					return "d";
+				case "System.Single":
+					return "f";
+				case "System.String":
+					return "str";
+				
+				case "System.Exception":
+					return "e";
+				case "System.Object":
+					return "obj";
+				case "System.Func":
+					return "func";
+				case "System.Action":
+					return "action";
+			}
+			return returnType.Name;
+		}
+		
+		string GetMethodName(InvocationExpression invocation)
+		{
+			if (invocation.Target is IdentifierExpression)
 				return ((IdentifierExpression)invocation.Target).Identifier;
-			}
-			if (invocation.Target is MemberReferenceExpression) {
+			if (invocation.Target is MemberReferenceExpression)
 				return ((MemberReferenceExpression)invocation.Target).MemberName;
-			}
 
 			return null;
 		}

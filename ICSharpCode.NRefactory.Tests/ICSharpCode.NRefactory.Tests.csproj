@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
@@ -253,6 +254,15 @@
     <Compile Include="CSharp\CodeActions\CreateFieldTests.cs" />
     <Compile Include="CSharp\CodeActions\CreatePropertyTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateMethodDeclarationTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateIndexerTests.cs" />
+    <Compile Include="CSharp\CodeActions\InlineLocalVariableTests.cs" />
+    <Compile Include="CSharp\CodeActions\DeclareLocalVariableTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateClassDeclarationTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateConstructorDeclarationTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateDelegateTests.cs" />
+    <Compile Include="CSharp\CodeActions\IntroduceConstantTests.cs" />
+    <Compile Include="CSharp\CodeActions\ExtractMethodTests.cs" />
+    <Compile Include="CSharp\Parser\Bugs\ParserBugTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -280,6 +290,7 @@
     <Folder Include="CSharp\Parser\" />
     <Folder Include="CSharp\CodeIssues\" />
     <Folder Include="CSharp\CodeActions\" />
+    <Folder Include="CSharp\Parser\Bugs\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
@@ -287,6 +298,8 @@
       <Properties>
         <Policies>
           <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
+          <TextStylePolicy FileWidth="120" TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
+          <CSharpFormattingPolicy inheritsSet="1TBS" inheritsScope="text/x-csharp" scope="text/x-csharp" />
         </Policies>
       </Properties>
     </MonoDevelop>

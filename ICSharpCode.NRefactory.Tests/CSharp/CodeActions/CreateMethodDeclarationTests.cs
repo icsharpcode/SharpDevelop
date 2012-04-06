@@ -33,41 +33,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class CreateMethodDeclarationTests : ContextActionTestBase
 	{
-		static string HomogenizeEol (string str)
-		{
-			var sb = new StringBuilder ();
-			for (int i = 0; i < str.Length; i++) {
-				var ch = str [i];
-				if (ch == '\n') {
-					sb.AppendLine ();
-				} else if (ch == '\r') {
-					sb.AppendLine ();
-					if (i + 1 < str.Length && str [i + 1] == '\n')
-						i++;
-				} else {
-					sb.Append (ch);
-				}
-			}
-			return sb.ToString ();
-		}
-
-		public void TestCreateMethod (string input, string output)
-		{
-			string result = RunContextAction (new CreateMethodDeclarationAction (), HomogenizeEol (input));
-			bool passed = result == output;
-			if (!passed) {
-				Console.WriteLine ("-----------Expected:");
-				Console.WriteLine (output);
-				Console.WriteLine ("-----------Got:");
-				Console.WriteLine (result);
-			}
-			Assert.AreEqual (HomogenizeEol (output), result);
-		}
-
 		[Test()]
 		public void TestPrivateSimpleCreateMethod ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	int member = 5;
 	string Test { get; set; }
@@ -95,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestStaticSimpleCreateMethod ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	public static void TestMethod ()
 	{
@@ -119,7 +88,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessAssignmentReturnType ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -141,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessAssignmentReturnTypeCase2 ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -165,7 +134,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessAssignmentReturnTypeCase3 ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	static void TestMethod ()
 	{
@@ -188,7 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		[Test()]
 		public void TestGuessParameterType ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	void TestMethod ()
 	{
@@ -213,9 +182,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 
 
 		[Test()]
-		public void TestCreateDelegateDeclaration ()
+		public void TestCreateDelegateDeclarationIdentifierCase ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	public event MyDelegate MyEvent;
 
@@ -243,11 +212,81 @@ public delegate string MyDelegate (int a, object b);
 public delegate string MyDelegate (int a, object b);
 ");
 		}
+
+		[Test()]
+		public void TestCreateDelegateDeclarationMemberReferenceCase ()
+		{
+			Test<CreateMethodDeclarationAction> (@"class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += $this.NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+", @"class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	string NonExistantMethod (int a, object b)
+	{
+		throw new System.NotImplementedException ();
+	}
+	void TestMethod ()
+	{
+		MyEvent += this.NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+");
+		}
 		
+		[Test()]
+		public void TestCreateDelegateDeclarationInOtherClassMemberReferenceCase ()
+		{
+			Test<CreateMethodDeclarationAction> (@"class Foo {
+}
+
+class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += $new Foo ().NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+", @"class Foo {
+	public string NonExistantMethod (int a, object b)
+	{
+		throw new System.NotImplementedException ();
+	}
+}
+
+class TestClass
+{
+	public event MyDelegate MyEvent;
+
+	void TestMethod ()
+	{
+		MyEvent += new Foo ().NonExistantMethod;
+	}
+}
+
+public delegate string MyDelegate (int a, object b);
+");
+		}
+
 		[Test()]
 		public void TestRefOutCreateMethod ()
 		{
-			TestCreateMethod (@"class TestClass
+			Test<CreateMethodDeclarationAction> (@"class TestClass
 {
 	void TestMethod ()
 	{
@@ -268,11 +307,10 @@ public delegate string MyDelegate (int a, object b);
 }");
 		}
 		
-		[Ignore("TODO")]
 		[Test()]
 		public void TestExternMethod ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"
 class FooBar
 {
@@ -292,7 +330,7 @@ class FooBar
 	public void NonExistantMethod ()
 	{
 		throw new System.NotImplementedException ();
-	}	
+	}
 }
 
 class TestClass
@@ -306,11 +344,10 @@ class TestClass
 ");
 		}
 		
-		[Ignore("TODO")]
 		[Test()]
 		public void TestCreateInterfaceMethod ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"
 interface FooBar
 {
@@ -341,11 +378,10 @@ class TestClass
 ");
 		}
 		
-		[Ignore("TODO")]
 		[Test()]
 		public void TestCreateInStaticClassMethod ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"
 static class FooBar
 {
@@ -385,7 +421,7 @@ class TestClass
 		[Test()]
 		public void TestBug677522 ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"namespace Test {
 	class TestClass
 	{
@@ -417,7 +453,7 @@ class TestClass
 		[Test()]
 		public void TestBug677527 ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"using System.Text;
 
 namespace Test {
@@ -458,7 +494,7 @@ namespace Test {
 		public void TestBug693949 ()
 		{
 			// the c# code isn't 100% correct since test isn't accessible in Main (can't call non static method from static member)
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"using System.Text;
 
 namespace Test {
@@ -503,7 +539,7 @@ namespace Test {
 		[Test()]
 		public void TestBug469 ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"class Test
 {
 	public override string ToString ()
@@ -528,7 +564,7 @@ namespace Test {
 		[Test()]
 		public void TestTestGuessReturnReturnType ()
 		{
-			TestCreateMethod (
+			Test<CreateMethodDeclarationAction> (
 @"class Test
 {
 	public override string ToString ()
@@ -549,6 +585,122 @@ namespace Test {
 }
 ");
 		}
+
+		[Test()]
+		public void TestStringParameterNameGuessing ()
+		{
+			Test<CreateMethodDeclarationAction> (@"class TestClass
+{
+	static void TestMethod ()
+	{
+		$NonExistantMethod (""Hello World!"");
+	}
+}", @"class TestClass
+{
+	static void NonExistantMethod (string helloWorld)
+	{
+		throw new System.NotImplementedException ();
+	}
+	static void TestMethod ()
+	{
+		NonExistantMethod (""Hello World!"");
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodInFrameworkClass ()
+		{
+			TestWrongContext<CreateMethodDeclarationAction> (
+@"class TestClass
+{
+	void TestMethod ()
+	{
+		$System.Console.ImprovedWriteLine (""Think of it"");
+	}
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateMethodOutOfDelegateCreation ()
+		{
+			Test<CreateMethodDeclarationAction> (
+@"using System;
+class Test
+{
+	public void ATest ()
+	{
+		new System.EventHandler<System.EventArgs>($BeginDownloadingImage);
+	}
+}
+", @"using System;
+class Test
+{
+	void BeginDownloadingImage (object sender, EventArgs e)
+	{
+		throw new NotImplementedException ();
+	}
+	public void ATest ()
+	{
+		new System.EventHandler<System.EventArgs>(BeginDownloadingImage);
+	}
+}
+");
+		}
+		
+		[Test()]
+		public void TestStaticClassMethod ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateMethodDeclarationAction> (@"static class TestClass
+{
+	public TestClass ()
+	{
+		$Foo (5);
+	}
+}", @"static class TestClass
+{
+	static void Foo (int i)
+	{
+		throw new System.NotImplementedException ();
+	}
+	public TestClass ()
+	{
+		Foo (5);
+	}
+}");
+		}
+
+		[Test()]
+		public void TestCreateFromIdentifierNestedInMethodCall ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateMethodDeclarationAction> (@"namespace System {
+	class TestClass
+	{
+		public void FooBar (object test)
+		{
+			FooBar (new EventHandler ($Foo));
+		}
+	}
+}", @"namespace System {
+	class TestClass
+	{
+		void Foo (object sender, EventArgs e)
+		{
+			throw new NotImplementedException ();
+		}
+		public void FooBar (object test)
+		{
+			FooBar (new EventHandler (Foo));
+		}
+	}
+}");
+		}
+
+
+
 	}
 }
 

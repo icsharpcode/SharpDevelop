@@ -1,6 +1,6 @@
-// 
+﻿// 
 // RedundantUsingInspectorTests.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
@@ -56,6 +56,84 @@ class Foo
 	{
 	}
 }");
+		}
+		
+		[Test]
+		public void TestInspectorCase2 ()
+		{
+			var input = @"using System;
+
+class Foo
+{
+	void Bar (string str)
+	{
+	}
+}";
+
+			TestRefactoringContext context;
+			var issueProvider = new RedundantUsingIssue ();
+			issueProvider.NamespacesToKeep.Add("System");
+			var issues = GetIssues (issueProvider, input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
+		public void TestInspectorCase3 ()
+		{
+			var input = @"using System;
+using System.Collections.Generic;
+
+namespace Foo
+{
+	class Bar
+	{
+		List<String> list;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantUsingIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
+		public void Linq1 ()
+		{
+			var input = @"using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Bar
+{
+	public object M(List<String> list)
+	{
+		return list.Where(t => !String.IsNullOrEmpty(t));
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantUsingIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
+		
+		[Test]
+		public void Linq2 ()
+		{
+			var input = @"using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Bar
+{
+	public object M(List<String> list)
+	{
+		return from t in list where !String.IsNullOrEmpty(t) select t;
+	}
+}";
+
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantUsingIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
 		}
 	}
 }

@@ -4859,5 +4859,30 @@ namespace Test
 			Assert.IsNull (provider.Find ("Dispose"), "'Dispose' found.");
 		}
 
+
+		/// <summary>
+		/// Bug 4085 - code completion problem with generic dictionary
+		/// </summary>
+		[Test()]
+		public void TestBug4085 ()
+		{
+			// Name proposal feature breaks here
+			var provider = CreateCtrlSpaceProvider (
+@"using System.Collections.Generic;
+namespace Test
+{
+	class TestClass
+	{
+		static void Main()
+		{
+			$IDictionary<string, TestClass> foo = new Dictionary<string, $
+		}
+	}
+}
+
+");
+			Assert.IsNotNull (provider.Find ("TestClass"), "'TestClass' not found.");
+		}
+
 	}
 }

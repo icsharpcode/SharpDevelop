@@ -32,33 +32,32 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class CreateFieldTests : ContextActionTestBase
 	{
-		[Test()]
-		public void TestWrongContext1 ()
-		{
-			TestWrongContext (
-				new CreateFieldAction (),
-				"using System;" + Environment.NewLine +
-					"class TestClass" + Environment.NewLine +
-					"{" + Environment.NewLine +
-					"	void Test ()" + Environment.NewLine +
-					"	{" + Environment.NewLine +
-					"		Console.WriteLine ($Foo);" + Environment.NewLine +
-					"	}" + Environment.NewLine +
-					"}"
-			);
-		}
-		
-		[Test()]
+	[Test()]
 		public void TestWrongContext2 ()
 		{
-			TestWrongContext (
-				new CreateFieldAction (),
+			TestWrongContext<CreateFieldAction> (
 				"using System;" + Environment.NewLine +
 					"class TestClass" + Environment.NewLine +
 					"{" + Environment.NewLine +
 					"	void Test ()" + Environment.NewLine +
 					"	{" + Environment.NewLine +
 					"		Console.WriteLine ($Foo());" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+		}
+
+		[Test()]
+		public void TestWrongContext3 ()
+		{
+			// May be syntactically possible, but very unlikely.
+			TestWrongContext<CreateFieldAction> (
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		$foo();" + Environment.NewLine +
 					"	}" + Environment.NewLine +
 					"}"
 			);
@@ -149,5 +148,29 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	}" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test()]
+		public void TestStaticClassField ()
+		{
+			// Not 100% correct input code, but should work in that case as well.
+			Test<CreateFieldAction> (@"static class TestClass
+{
+	public TestClass ()
+	{
+		$foo = 5;
+	}
+}", @"static class TestClass
+{
+	static int foo;
+
+	public TestClass ()
+	{
+		foo = 5;
+	}
+}");
+		}
+
+		
+
 	}
 }

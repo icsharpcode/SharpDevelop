@@ -39,12 +39,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public abstract class BaseRefactoringContext : IServiceProvider
 	{
-		protected readonly CSharpAstResolver resolver;
+		readonly CSharpAstResolver resolver;
 		readonly CancellationToken cancellationToken;
 		
 		public virtual bool Supports(Version version)
 		{
 			return true;
+		}
+
+		/// <summary>
+		/// Gets a value indicating if 'var' keyword should be used or explicit types.
+		/// </summary>
+		public virtual bool UseExplicitTypes {
+			get;
+			set;
 		}
 		
 		public CancellationToken CancellationToken {
@@ -52,7 +60,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 		
 		public virtual AstNode RootNode {
-			get { return resolver.RootNode; }
+			get {
+				return resolver.RootNode;
+			}
+		}
+
+		public CSharpAstResolver Resolver {
+			get {
+				return resolver;
+			}
+		}
+
+		public virtual CSharpParsedFile ParsedFile {
+			get {
+				return resolver.ParsedFile;
+			}
 		}
 
 		public ICompilation Compilation {
