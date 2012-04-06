@@ -4815,7 +4815,7 @@ class A
 		/// Bug 4017 - code completion in foreach does not work for local variables declared in the same block
 		/// </summary>
 		[Test()]
-		public void TestBug4017 ()
+		public void TestBug4017()
 		{
 			var provider = CreateProvider (
 @"
@@ -4864,10 +4864,10 @@ namespace Test
 		/// Bug 4085 - code completion problem with generic dictionary
 		/// </summary>
 		[Test()]
-		public void TestBug4085 ()
+		public void TestBug4085()
 		{
 			// Name proposal feature breaks here
-			var provider = CreateCtrlSpaceProvider (
+			var provider = CreateCtrlSpaceProvider(
 @"using System.Collections.Generic;
 namespace Test
 {
@@ -4881,8 +4881,62 @@ namespace Test
 }
 
 ");
-			Assert.IsNotNull (provider.Find ("TestClass"), "'TestClass' not found.");
+			Assert.IsNotNull(provider.Find("TestClass"), "'TestClass' not found.");
 		}
+
+		/// <summary>
+		/// Bug 4283 - Newresolver: completing constructor parameters
+		/// </summary>
+		[Ignore ("fixme")]
+		[Test()]
+		public void TestBug4283()
+		{
+			CombinedProviderTest(
+@"class Program
+{
+	$public Program (int test) : base(t$
+}", provider => {
+				Assert.IsNotNull(provider.Find("test"), "'test' not found.");
+			});
+		}
+
+		[Ignore ("fixme")]
+		[Test()]
+		public void TestBug4283ThisCase()
+		{
+			CombinedProviderTest(
+@"class Program
+{
+	$public Program (int test) : this(t$
+}", provider => {
+				Assert.IsNotNull(provider.Find("test"), "'test' not found.");
+			});
+		}
+
+		/// <summary>
+		/// Bug 4290 - Parameter completion exception inserting method with arguments before other methods
+		/// </summary>
+		[Test()]
+		public void TestBug4290()
+		{
+			// just test for exception
+			ParameterCompletionTests.CreateProvider (
+@"using System;
+namespace Test
+{
+    class TestClass  
+    {
+        $public static void Foo(string bar,$
+        public static void Main(string[] args)
+        {
+        }
+    }
+}");
+		}
+
+
+
+		
 
 	}
 }

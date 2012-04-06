@@ -105,6 +105,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			//var memberLocation = currentMember != null ? currentMember.Region.Begin : currentType.Region.Begin;
 			var expr = baseUnit.GetNodeAt<AstType>(location.Line, location.Column + 1);
+			if (expr == null)
+				return null;
 			// '>' position
 			return new ExpressionResult((AstNode)expr, baseUnit);
 		}
