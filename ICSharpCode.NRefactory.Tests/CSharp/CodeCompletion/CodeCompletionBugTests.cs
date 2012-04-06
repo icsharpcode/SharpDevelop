@@ -4934,9 +4934,22 @@ namespace Test
 }");
 		}
 
-
-
-		
-
+		/// <summary>
+		/// Bug 4174 - Intellisense popup after #region (same line) 
+		/// </summary>
+		[Test()]
+		public void TestBug4174()
+		{
+			var provider = CreateProvider(
+@"
+namespace Test
+{
+	class TestClass  
+    {
+$#region S$
+    }
+}");
+			Assert.IsTrue(provider == null || provider.Count == 0);
+		}
 	}
 }

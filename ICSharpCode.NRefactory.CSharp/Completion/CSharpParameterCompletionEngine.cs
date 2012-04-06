@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpParameterCompletionEngine.cs
 //  
 // Author:
@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			SetOffset(offset);
-			if (IsInsideCommentOrString()) {
+			if (IsInsideCommentStringOrDirective()) {
 				return null;
 			}
 
