@@ -165,7 +165,7 @@ namespace ICSharpCode.PythonBinding
 			
 			MemberExpression eventExpression = node.Left as MemberExpression;
 			string eventName = eventExpression.Name.ToString();
-			PythonControlFieldExpression field = PythonControlFieldExpression.Create(eventExpression);
+			fieldExpression = PythonControlFieldExpression.Create(eventExpression);
 			
 			MemberExpression eventHandlerExpression = node.Right as MemberExpression;
 			string eventHandlerName = eventHandlerExpression.Name.ToString();
