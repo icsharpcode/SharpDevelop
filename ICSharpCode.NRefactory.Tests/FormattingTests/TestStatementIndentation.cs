@@ -947,7 +947,6 @@ do {
 }");
 		}
 
-		[Ignore("Broken")]
 		[Test()]
 		[Ignore("Crashes due to overlapping changes")]
 		public void TestForEachBraceForcementRemove ()
@@ -1105,7 +1104,6 @@ do {
 }");
 		}
 
-		[Ignore("Broken")]
 		[Test()]
 		[Ignore("Crashes due to overlapping changes")]
 		public void TestIfForcementRemove ()
@@ -1415,7 +1413,6 @@ if (b) {
 }");
 		}
 
-		[Ignore("Broken")]
 		[Test()]
 		[Ignore("Crashes due to overlapping changes")]
 		public void TestWhileForcementRemove ()

@@ -411,12 +411,6 @@ namespace Mono.CSharp
 			}
 		}
 
-		public Block OriginalBlock {
-			get {
-				return block.Parent;
-			}
-		}
-
 		public TypeInferenceContext ReturnTypeInference {
 			get {
 				return return_inference;
@@ -424,38 +418,6 @@ namespace Mono.CSharp
 		}
 
 		#endregion
-
-		public static void Create (IMemberContext context, ParametersBlock block, ParametersCompiled parameters, TypeDefinition host, TypeSpec returnType, Location loc)
-		{
-			for (int i = 0; i < parameters.Count; i++) {
-				Parameter p = parameters[i];
-				Parameter.Modifier mod = p.ModFlags;
-				if ((mod & Parameter.Modifier.RefOutMask) != 0) {
-					host.Compiler.Report.Error (1988, p.Location,
-						"Async methods cannot have ref or out parameters");
-					return;
-				}
-
-				if (p is ArglistParameter) {
-					host.Compiler.Report.Error (4006, p.Location,
-						"__arglist is not allowed in parameter list of async methods");
-					return;
-				}
-
-				if (parameters.Types[i].IsPointer) {
-					host.Compiler.Report.Error (4005, p.Location,
-						"Async methods cannot have unsafe parameters");
-					return;
-				}
-			}
-
-			if (!block.HasAwait) {
-				host.Compiler.Report.Warning (1998, 1, loc,
-					"Async block lacks `await' operator and will run synchronously");
-			}
-
-			block.WrapIntoAsyncTask (context, host, returnType);
-		}
 
 		protected override BlockContext CreateBlockContext (ResolveContext rc)
 		{
@@ -507,8 +469,8 @@ namespace Mono.CSharp
 		Dictionary<TypeSpec, List<Field>> stack_fields;
 		Dictionary<TypeSpec, List<Field>> awaiter_fields;
 
-		public AsyncTaskStorey (IMemberContext context, AsyncInitializer initializer, TypeSpec type)
-			: base (initializer.OriginalBlock, initializer.Host, context.CurrentMemberDefinition as MemberBase, context.CurrentTypeParameters, "async", MemberKind.Class)
+		public AsyncTaskStorey (ParametersBlock block, IMemberContext context, AsyncInitializer initializer, TypeSpec type)
+			: base (block, initializer.Host, context.CurrentMemberDefinition as MemberBase, context.CurrentTypeParameters, "async", MemberKind.Struct)
 		{
 			return_type = type;
 			awaiter_fields = new Dictionary<TypeSpec, List<Field>> ();
@@ -793,16 +755,10 @@ namespace Mono.CSharp
 				InstanceExpression = new CompilerGeneratedThis (ec.CurrentType, Location)
 			};
 
-			// TODO: CompilerGeneratedThis is enough for structs
-			var temp_this = new LocalTemporary (CurrentType);
-			temp_this.EmitAssign (ec, new CompilerGeneratedThis (CurrentType, Location), false, false);
-
 			var args = new Arguments (2);
 			args.Add (new Argument (awaiter, Argument.AType.Ref));
-			args.Add (new Argument (temp_this, Argument.AType.Ref));
+			args.Add (new Argument (new CompilerGeneratedThis (CurrentType, Location), Argument.AType.Ref));
 			mg.EmitCall (ec, args);
-
-			temp_this.Release (ec);
 		}
 
 		public void EmitInitializer (EmitContext ec)
@@ -832,14 +788,14 @@ namespace Mono.CSharp
 			//
 			// stateMachine.$builder = AsyncTaskMethodBuilder<{task-type}>.Create();
 			//
-			instance.Emit (ec); // .AddressOf (ec, AddressOp.Store);
+			instance.AddressOf (ec, AddressOp.Store);
 			ec.Emit (OpCodes.Call, builder_factory);
 			ec.Emit (OpCodes.Stfld, builder_field);
 
 			//
 			// stateMachine.$builder.Start<{storey-type}>(ref stateMachine);
 			//
-			instance.Emit (ec); //.AddressOf (ec, AddressOp.Store);
+			instance.AddressOf (ec, AddressOp.Store);
 			ec.Emit (OpCodes.Ldflda, builder_field);
 			if (Task != null)
 				ec.Emit (OpCodes.Dup);
@@ -905,7 +861,7 @@ namespace Mono.CSharp
 
 		protected override TypeSpec[] ResolveBaseTypes (out FullNamedExpression base_class)
 		{
-			base_type = Compiler.BuiltinTypes.Object; // ValueType;
+			base_type = Compiler.BuiltinTypes.ValueType;
 			base_class = null;
 
 			var istate_machine = Module.PredefinedTypes.IAsyncStateMachine;

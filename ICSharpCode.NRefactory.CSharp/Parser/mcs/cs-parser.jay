@@ -5401,7 +5401,7 @@ for_statement_condition
 	  {
 		$$ = $4;
 	  }
-	| opt_for_condition CLOSE_PARENS {
+	| boolean_expression CLOSE_PARENS {
 		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
 		For f =  (For) $0;
 		f.Condition = (BooleanExpression) $1;
@@ -6796,7 +6796,7 @@ public void parse ()
 			if (yacc_verbose_flag > 0)
 				throw;
 		
-			report.Error (589, lexer.Location, "Internal compiler error during parsing");
+			report.Error (589, lexer.Location, "Internal compiler error during parsing" + e);
 		}
 	}
 }
