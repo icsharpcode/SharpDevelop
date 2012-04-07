@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// maybe make this writable again? Needs special care when saving!
 			Get<TextBox>("projectFile").ReadOnly = true;
 			
-			RefreshStartupObjectEnabled(null, EventArgs.Empty);
+		RefreshStartupObjectEnabled(null, EventArgs.Empty);
 			RefreshOutputNameTextBox(null, EventArgs.Empty);
 			
 			helper.AddConfigurationSelector(this);
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			applicationManifestComboBox.Text = "app.manifest";
 		}
-		
+		//--------------
 		sealed class ManifestBinding : ConfigurationGuiBinding
 		{
 			ComboBox applicationManifestComboBox;
@@ -190,6 +190,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				return true;
 			}
 		}
+		
+		//--------------
 		
 		public static IList<IClass> GetPossibleStartupObjects(IProject project)
 		{
