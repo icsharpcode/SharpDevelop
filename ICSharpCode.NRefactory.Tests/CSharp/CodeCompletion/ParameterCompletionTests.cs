@@ -212,9 +212,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			
 			#region IParameterCompletionDataFactory implementation
-			public IParameterDataProvider CreateConstructorProvider (int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateConstructorProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
-				
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				return new Provider () {
 					Data = type.GetConstructors (m => m.Accessibility == Accessibility.Public)
 				};
@@ -227,15 +227,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				};
 			}
 
-			public IParameterDataProvider CreateDelegateDataProvider (int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateDelegateDataProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				return new Provider () {
 					Data = new [] { type.GetDelegateInvokeMethod () }
 				};
 			}
 			
-			public IParameterDataProvider CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
+			public IParameterDataProvider CreateIndexerParameterDataProvider(int startOffset, IType type, AstNode resolvedNode)
 			{
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				if (type.Kind == TypeKind.Array)
 					return new ArrayProvider ();
 				return new IndexerProvider () {

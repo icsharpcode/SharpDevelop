@@ -4951,5 +4951,25 @@ $#region S$
 }");
 			Assert.IsTrue(provider == null || provider.Count == 0);
 		}
+
+		/// <summary>
+		/// Bug 4323 - Parameter completion exception while attempting to instantiate unknown class
+		/// </summary>
+		[Test()]
+		public void TestBug4323()
+		{
+			// just test for exception
+			ParameterCompletionTests.CreateProvider(
+@"namespace Test
+{
+    class TestClass
+    {
+        public static void Main(string[] args)
+        {
+            $object foo = new Foo($
+        }
+    }
+}");
+		}
 	}
 }
