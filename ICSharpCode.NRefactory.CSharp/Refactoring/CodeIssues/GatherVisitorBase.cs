@@ -39,7 +39,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.ctx = ctx;
 		}
-		
+
+		public IEnumerable<CodeIssue> GetIssues()
+		{
+			ctx.RootNode.AcceptVisitor(this);
+			return FoundIssues;
+		}
+
 		protected override void VisitChildren (AstNode node)
 		{
 			if (ctx.CancellationToken.IsCancellationRequested)

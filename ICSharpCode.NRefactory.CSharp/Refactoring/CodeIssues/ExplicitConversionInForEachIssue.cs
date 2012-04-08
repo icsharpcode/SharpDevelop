@@ -30,11 +30,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                  Severity = Severity.Warning)]
 	public class ExplicitConversionInForEachIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			var visitor = new GatherVisitor (context);
-			context.RootNode.AcceptVisitor (visitor);
-			return visitor.FoundIssues;
+			return new GatherVisitor(context).GetIssues();
 		}
 
 		class GatherVisitor : GatherVisitorBase
