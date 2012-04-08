@@ -62,14 +62,14 @@ namespace SearchAndReplace
 			
 			public ITextBuffer Create(FileName fileName)
 			{
-				foreach (FileName name in viewContentFileNamesCollection) {
-					if (FileUtility.IsEqualFileName(name, fileName)) {
-						ITextBuffer buffer = WorkbenchSingleton.SafeThreadFunction(ReadFile, fileName);
-						if (buffer != null)
-							return buffer;
-					}
-				}
 				try {
+					foreach (FileName name in viewContentFileNamesCollection) {
+						if (FileUtility.IsEqualFileName(name, fileName)) {
+							ITextBuffer buffer = WorkbenchSingleton.SafeThreadFunction(ReadFile, fileName);
+							if (buffer != null)
+								return buffer;
+						}
+					}
 					using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
 						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/")) {
 							stream.Position = 0;
