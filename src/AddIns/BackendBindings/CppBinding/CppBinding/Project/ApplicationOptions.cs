@@ -23,7 +23,7 @@ namespace ICSharpCode.CppBinding.Project
 	/// <summary>
 	/// Application settings panel for c++ project.
 	/// </summary>
-	public class ApplicationOptions : ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings
+	public class ApplicationOptions : ICSharpCode.SharpDevelop.Gui.OptionPanels.old_ApplicationSettings
 	{
 		public override void LoadPanelContents()
 		{

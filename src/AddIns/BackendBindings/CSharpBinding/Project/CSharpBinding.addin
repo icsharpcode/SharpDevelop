@@ -76,9 +76,7 @@
 		<OptionPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
-		<OptionPanel id    = "Application1"
-		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettingsXaml"/>
+	
 		<OptionPanel id    = "ReferencePaths"
 		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>

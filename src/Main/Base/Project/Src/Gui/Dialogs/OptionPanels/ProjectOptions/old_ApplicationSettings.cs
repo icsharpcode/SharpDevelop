@@ -14,13 +14,13 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class ApplicationSettings : AbstractXmlFormsProjectOptionPanel
+	public class old_ApplicationSettings : AbstractXmlFormsProjectOptionPanel
 	{
 		ComboBox applicationManifestComboBox;
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlResource("ProjectOptions.ApplicationSettings.xfrm");
+			SetupFromXmlResource("ProjectOptions.old_ApplicationSettings.xfrm");
 			
 			InitializeHelper();
 			

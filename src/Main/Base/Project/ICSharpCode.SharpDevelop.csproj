@@ -269,8 +269,8 @@
       <DependentUpon>TaskListOptionsl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettingsXaml.xaml.cs">
-      <DependentUpon>ApplicationSettingsXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml.cs">
+      <DependentUpon>ApplicationSettings.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
@@ -727,10 +727,10 @@
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_ApplicationSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="Resources\ProjectOptions\ApplicationSettings.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectOptions\old_ApplicationSettings.xfrm" />
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
     <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
@@ -890,7 +890,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\EditStandardHeaderPanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettingsXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
