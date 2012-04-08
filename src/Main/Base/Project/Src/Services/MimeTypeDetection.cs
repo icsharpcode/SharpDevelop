@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -11,6 +12,13 @@ namespace ICSharpCode.SharpDevelop
 	public static class MimeTypeDetection
 	{
 		const int BUFFER_SIZE = 4 * 1024;
+		
+		// Known BOMs
+		public static readonly byte[] UTF8 = new byte[] { 0xEF, 0xBB, 0xBF };
+		public static readonly byte[] UTF16BE = new byte[] { 0xFE, 0xFF };
+		public static readonly byte[] UTF16LE = new byte[] { 0xFF, 0xFE };
+		public static readonly byte[] UTF32BE = new byte[] { 0x00, 0x00, 0xFE, 0xFF };
+		public static readonly byte[] UTF32LE = new byte[] { 0xFF, 0xFE, 0x00, 0x00 };
 		
 		[DllImport("urlmon.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = false)]
 		static extern unsafe int FindMimeFromData(
@@ -23,15 +31,45 @@ namespace ICSharpCode.SharpDevelop
 			out IntPtr ppwzMimeOut,
 			int dwReserved);
 		
+		
+		static byte[] DetectAndRemoveBOM(byte[] buffer, out int len)
+		{
+			len = UTF8.Length;
+			if (buffer.StartsWith(UTF8))
+				return buffer.Skip(UTF8.Length).ToArray();
+			len = UTF32BE.Length;
+			if (buffer.StartsWith(UTF32BE))
+				return buffer.Skip(UTF32BE.Length).ToArray();
+			len = UTF32LE.Length;
+			if (buffer.StartsWith(UTF32LE))
+				return buffer.Skip(UTF32LE.Length).ToArray();
+			len = UTF16LE.Length;
+			if (buffer.StartsWith(UTF16LE))
+				return buffer.Skip(UTF16LE.Length).ToArray();
+			len = UTF16BE.Length;
+			if (buffer.StartsWith(UTF16BE))
+				return buffer.Skip(UTF16BE.Length).ToArray();
+			len = 0;
+			return buffer;
+		}
+		
+		static bool StartsWith(this byte[] buffer, byte[] start)
+		{
+			if (buffer.Length < start.Length)
+				return false;
+			int i = 0;
+			while (i < start.Length && buffer[i] == start[i])
+				i++;
+			return i >= start.Length;
+		}
+		
 		static unsafe string FindMimeType(byte[] buffer, int offset, int length)
 		{
-			if (length == 0 ||
-				// UTF-16 Big Endian
-				(buffer.Length >= 2 && buffer[0] == 0xFE && buffer[1] == 0xFF) ||
-				// UTF-16 Little Endian
-				(buffer.Length >= 2 && buffer[0] == 0xFF && buffer[1] == 0xFE) ||
-				// UTF-32 Big Endian
-				(buffer.Length >= 4 && buffer[0] == 0x00 && buffer[1] == 0x00 && buffer[2] == 0xFE && buffer[3] == 0xFF))
+			int len;
+			buffer = DetectAndRemoveBOM(buffer, out len);
+			length -= len;
+			offset = (offset < len) ? 0 : offset - len;
+			if (length == 0)
 				return "text/plain";
 			
 			fixed (byte *b = &buffer[offset]) {
