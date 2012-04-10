@@ -68,6 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static readonly TokenRole Colon = new TokenRole (":");
 		public static readonly TokenRole DoubleColon = new TokenRole ("::");
 		public static readonly Role<Comment> Comment = new Role<Comment> ("Comment");
+		public static readonly Role<NewLineNode> NewLine = new Role<NewLineNode> ("NewLine");
 		public static readonly Role<PreProcessorDirective> PreProcessorDirective = new Role<PreProcessorDirective> ("PreProcessorDirective");
 		public static readonly Role<ErrorNode> Error = new Role<ErrorNode> ("Error");
 			

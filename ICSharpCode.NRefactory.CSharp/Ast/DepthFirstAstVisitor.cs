@@ -49,11 +49,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			VisitChildren (unit);
 		}
 		
-		public virtual void VisitComment (Comment comment)
+		public virtual void VisitComment(Comment comment)
 		{
-			VisitChildren (comment);
+			VisitChildren(comment);
 		}
-		
+
+		public virtual void VisitNewLine(NewLineNode newLineNode)
+		{
+			VisitChildren(newLineNode);
+		}
+
 		public virtual void VisitDocumentationReference (DocumentationReference documentationReference)
 		{
 			VisitChildren (documentationReference);
@@ -635,6 +640,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public virtual T VisitComment (Comment comment)
 		{
 			return VisitChildren (comment);
+		}
+		
+		public virtual T VisitNewLine(NewLineNode newLineNode)
+		{
+			return VisitChildren(newLineNode);
 		}
 		
 		public virtual T VisitDocumentationReference (DocumentationReference documentationReference)
@@ -1220,6 +1230,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (comment, data);
 		}
 		
+		public virtual S VisitNewLine(NewLineNode newLineNode, T data)
+		{
+			return VisitChildren(newLineNode, data);
+		}
+
 		public virtual S VisitDocumentationReference (DocumentationReference documentationReference, T data)
 		{
 			return VisitChildren (documentationReference, data);

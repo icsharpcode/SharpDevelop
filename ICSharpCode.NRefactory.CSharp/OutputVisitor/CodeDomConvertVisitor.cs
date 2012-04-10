@@ -1244,7 +1244,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return new CodeComment (comment.Content, comment.CommentType == CommentType.Documentation);
 		}
-		
+
+		CodeObject IAstVisitor<CodeObject>.VisitNewLine(NewLineNode newLineNode)
+		{
+			throw new NotSupportedException();
+		}
+
 		CodeObject IAstVisitor<CodeObject>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective)
 		{
 			return new CodeComment ("#" + preProcessorDirective.Type.ToString ().ToLower ());

@@ -60,9 +60,18 @@ namespace ICSharpCode.NRefactory.CSharp
 				handler (comment, data);
 			return VisitChildren (comment, data);
 		}
-		
-		public event Action<PreProcessorDirective, T> PreProcessorDirectiveVisited;
 
+		public event Action<NewLineNode, T> NewLineVisited;
+
+		S IAstVisitor<T, S>.VisitNewLine(NewLineNode newLineNode, T data)
+		{
+			var handler = NewLineVisited;
+			if (handler != null)
+				handler(newLineNode, data);
+			return VisitChildren(newLineNode, data);
+		}
+
+		public event Action<PreProcessorDirective, T> PreProcessorDirectiveVisited;
 		S IAstVisitor<T, S>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, T data)
 		{
 			var handler = PreProcessorDirectiveVisited;

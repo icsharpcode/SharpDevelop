@@ -364,6 +364,8 @@
     <Compile Include="Refactoring\CodeActions\ExtractMethod\StaticVisitor.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableLookupVisitor.cs" />
     <Compile Include="Refactoring\CodeActions\SpecializedCodeAction.cs" />
+    <Compile Include="Formatter\GeneratedCodeSettings.cs" />
+    <Compile Include="Ast\GeneralScope\NewLineNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
