@@ -1250,6 +1250,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			throw new NotSupportedException();
 		}
 
+		CodeObject IAstVisitor<CodeObject>.VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			throw new NotSupportedException();
+		}
+
+		CodeObject IAstVisitor<CodeObject>.VisitText(TextNode textNode)
+		{
+			throw new NotSupportedException();
+		}
+
 		CodeObject IAstVisitor<CodeObject>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective)
 		{
 			return new CodeComment ("#" + preProcessorDirective.Type.ToString ().ToLower ());

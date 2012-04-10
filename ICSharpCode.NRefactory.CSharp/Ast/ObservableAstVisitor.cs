@@ -71,6 +71,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren(newLineNode, data);
 		}
 
+		public event Action<WhitespaceNode, T> WhitespaceVisited;
+
+		S IAstVisitor<T, S>.VisitWhitespace(WhitespaceNode whitespace, T data)
+		{
+			var handler = WhitespaceVisited;
+			if (handler != null)
+				handler(whitespace, data);
+			return VisitChildren(whitespace, data);
+		}
+
+		public event Action<TextNode, T> TextVisited;
+
+		S IAstVisitor<T, S>.VisitText(TextNode textNode, T data)
+		{
+			var handler = TextVisited;
+			if (handler != null)
+				handler(textNode, data);
+			return VisitChildren(textNode, data);
+		}
+
 		public event Action<PreProcessorDirective, T> PreProcessorDirectiveVisited;
 		S IAstVisitor<T, S>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective, T data)
 		{

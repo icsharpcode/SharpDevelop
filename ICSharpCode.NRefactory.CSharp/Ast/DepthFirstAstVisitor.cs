@@ -59,6 +59,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			VisitChildren(newLineNode);
 		}
 
+		public virtual void VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			VisitChildren(whitespaceNode);
+		}
+
+		public virtual void VisitText(TextNode textNode)
+		{
+			VisitChildren(textNode);
+		}
+
 		public virtual void VisitDocumentationReference (DocumentationReference documentationReference)
 		{
 			VisitChildren (documentationReference);
@@ -647,6 +657,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren(newLineNode);
 		}
 		
+		public virtual T VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			return VisitChildren(whitespaceNode);
+		}
+
+		public virtual T VisitText(TextNode textNode)
+		{
+			return VisitChildren(textNode);
+		}
+
 		public virtual T VisitDocumentationReference (DocumentationReference documentationReference)
 		{
 			return VisitChildren (documentationReference);
@@ -1233,6 +1253,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public virtual S VisitNewLine(NewLineNode newLineNode, T data)
 		{
 			return VisitChildren(newLineNode, data);
+		}
+
+		public virtual S VisitWhitespace(WhitespaceNode whitespaceNode, T data)
+		{
+			return VisitChildren(whitespaceNode, data);
+		}
+
+		public virtual S VisitText(TextNode textNode, T data)
+		{
+			return VisitChildren(textNode, data);
 		}
 
 		public virtual S VisitDocumentationReference (DocumentationReference documentationReference, T data)

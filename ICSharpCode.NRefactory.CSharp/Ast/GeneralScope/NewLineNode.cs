@@ -7,6 +7,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		Mac
 	}
 
+	/// <summary>
+	/// A New line node represents a line break in the text.
+	/// </summary>
 	public abstract class NewLineNode : AstNode
 	{
 		public override NodeType NodeType {

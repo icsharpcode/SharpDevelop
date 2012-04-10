@@ -2384,6 +2384,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			formatter.EndNode(newLineNode);
 		}
 
+		public void VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			// unused
+		}
+
+		public void VisitText(TextNode textNode)
+		{
+			// unused
+		}
+
 		public void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
 		{
 			formatter.StartNode(preProcessorDirective);
