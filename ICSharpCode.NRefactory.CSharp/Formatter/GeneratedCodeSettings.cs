@@ -37,11 +37,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		InstanceFields,
 		StaticProperties,
 		InstanceProperties,
+		Indexer,
 		Constructors,
 		StaticMethods,
 		InstanceMethods,
 		StaticEvents,
 		InstanceEvents,
+		Operators,
 		NestedTypes
 	}
 
@@ -86,6 +88,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					return "Static Properties";
 				case GeneratedCodeMember.InstanceProperties:
 					return "Properties";
+				case GeneratedCodeMember.Indexer:
+					return "Indexer";
 				case GeneratedCodeMember.Constructors:
 					return "Constructors";
 				case GeneratedCodeMember.StaticMethods:
@@ -96,6 +100,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					return "Static Events";
 				case GeneratedCodeMember.InstanceEvents:
 					return "Events";
+				case GeneratedCodeMember.Operators:
+					return "Operators";
 				case GeneratedCodeMember.NestedTypes:
 					return "Nested Types";
 			}
@@ -118,12 +124,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				bool isStatic = x.HasModifier(Modifiers.Static) || x.HasModifier(Modifiers.Const);
 				if (x is FieldDeclaration)
 					return isStatic ? GeneratedCodeMember.StaticFields : GeneratedCodeMember.InstanceFields;
+				if (x is IndexerDeclaration)
+					return GeneratedCodeMember.Indexer;
 				if (x is PropertyDeclaration)
 					return isStatic ? GeneratedCodeMember.StaticProperties : GeneratedCodeMember.InstanceProperties;
 				if (x is ConstructorDeclaration || x is DestructorDeclaration)
 					return GeneratedCodeMember.Constructors;
 				if (x is MethodDeclaration)
 					return isStatic ? GeneratedCodeMember.StaticMethods : GeneratedCodeMember.InstanceMethods;
+				if (x is OperatorDeclaration)
+					return GeneratedCodeMember.Operators;
 				if (x is EventDeclaration)
 					return isStatic ? GeneratedCodeMember.StaticEvents : GeneratedCodeMember.InstanceEvents;
 
@@ -179,11 +189,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					GeneratedCodeMember.InstanceFields,
 					GeneratedCodeMember.StaticProperties,
 					GeneratedCodeMember.InstanceProperties,
+					GeneratedCodeMember.Indexer,
 					GeneratedCodeMember.Constructors,
 					GeneratedCodeMember.StaticMethods,
 					GeneratedCodeMember.InstanceMethods,
 					GeneratedCodeMember.StaticEvents,
 					GeneratedCodeMember.InstanceEvents,
+					GeneratedCodeMember.Operators,
 					GeneratedCodeMember.NestedTypes
 				},
 				GenerateCategoryComments = true,
