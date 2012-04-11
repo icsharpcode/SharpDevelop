@@ -92,7 +92,6 @@ class Stub
 		/// <summary>
 		/// Bug 4058 - Unattached parameter attributes should be included in the AST
 		/// </summary>
-		[Ignore("Still open")]
 		[Test]
 		public void TestBug4058()
 		{
@@ -107,7 +106,7 @@ class TestClass
 			
 			var type = unit.Members.First() as TypeDeclaration;
 			var constructor = type.Members.First() as ConstructorDeclaration;
-			bool passed = constructor.LParToken.NextSibling is AttributeSection;
+			bool passed = constructor.GetNodeAt<AttributeSection>(constructor.LParToken.StartLocation.Line, constructor.LParToken.StartLocation.Column + 1) != null;
 			if (!passed) {
 				Console.WriteLine("Expected:" + code);
 				Console.WriteLine("Was:" + unit.GetText());
@@ -177,7 +176,6 @@ class Foo
 		/// <summary>
 		/// Bug 3517 - Incomplete conditional operator in the AST request.
 		/// </summary>
-		[Ignore("'expr' is in the AST, but cond not.")]
 		[Test]
 		public void TestBug3517()
 		{
