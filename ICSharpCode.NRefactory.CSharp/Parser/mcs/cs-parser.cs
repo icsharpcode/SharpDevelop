@@ -5883,11 +5883,11 @@ void case_314()
 #line 2607 "cs-parser.jay"
 {
 	 	var te = yyVals[0+yyTop] as TypeExpression;
+		savedLocation = GetLocation (yyVals[-1+yyTop]);
 		if (te == null || !EnumSpec.IsValidUnderlyingType (te.Type)) {
 			Enum.Error_1008 (GetLocation (yyVals[0+yyTop]), report);
-			yyVal = null;
+			yyVal = yyVals[0+yyTop];
 		} else {
-			savedLocation = GetLocation (yyVals[-1+yyTop]);
 			yyVal = yyVals[0+yyTop];
 		}
 	 }

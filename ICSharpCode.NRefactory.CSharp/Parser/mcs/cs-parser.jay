@@ -2606,11 +2606,11 @@ opt_enum_base
 	| COLON type
 	 {
 	 	var te = $2 as TypeExpression;
+		savedLocation = GetLocation ($1);
 		if (te == null || !EnumSpec.IsValidUnderlyingType (te.Type)) {
 			Enum.Error_1008 (GetLocation ($2), report);
-			$$ = null;
+			$$ = $2;
 		} else {
-			savedLocation = GetLocation ($1);
 			$$ = $2;
 		}
 	 }
