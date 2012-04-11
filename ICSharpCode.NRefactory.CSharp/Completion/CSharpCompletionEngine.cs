@@ -852,13 +852,26 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			return null;
 		}
-		
+
+		string[] validEnumBaseTypes = { "byte", "sbyte", "short", "int", "long", "ushort", "uint", "ulong" };
 		IEnumerable<ICompletionData> HandleEnumContext()
 		{
 			var cu = ParseStub("a", false);
 			if (cu == null) {
 				return null;
 			}
+
+			var curType = cu.GetNodeAt<TypeDeclaration> (location);
+			if (curType == null || curType.ClassType != ClassType.Enum) {
+				cu = ParseStub("a {}", false);
+				var node = cu.GetNodeAt<AstType>(location);
+				if (node != null) {
+					var wrapper = new CompletionDataWrapper(this);
+					AddKeywords(wrapper, validEnumBaseTypes);
+					return wrapper.Result;
+				}
+			}
+
 			var member = cu.GetNodeAt<EnumMemberDeclaration>(location);
 			if (member != null && member.NameToken.EndLocation < location) {
 				return DefaultControlSpaceItems();
@@ -887,7 +900,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (node is Accessor) {
 				node = node.Parent;
 			}
-			var contextList = new CompletionDataWrapper (this);
+			var contextList = new CompletionDataWrapper(this);
 			if (node is PropertyDeclaration) {
 				contextList.AddCustom("get");
 				contextList.AddCustom("set");

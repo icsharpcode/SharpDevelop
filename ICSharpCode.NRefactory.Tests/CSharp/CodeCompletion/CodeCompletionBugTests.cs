@@ -4971,5 +4971,24 @@ $#region S$
     }
 }");
 		}
+
+
+		[Test()]
+		public void TestParameterAttributeContext()
+		{
+			CombinedProviderTest(
+@"using System;
+using System.Runtime.InteropServices;
+
+public class Test
+{
+	$static extern IntPtr somefunction([MarshalAs(UnmanagedType.LPTStr)] string fileName, [MarshalAs(UnmanagedType.$
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("LPStr"), "'LPStr' not found.");
+			});
+		}
+
+
 	}
 }
