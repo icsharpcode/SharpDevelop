@@ -691,8 +691,9 @@ ConditionalExpression =
 .
 
 LambdaExpression =
-	SubLambdaExpression |
-	FunctionLambdaExpression
+	(. lambdaNestingDepth++; .)
+	( SubLambdaExpression | FunctionLambdaExpression )
+	(. lambdaNestingDepth--; .)
 .
 
 SubLambdaExpression =
