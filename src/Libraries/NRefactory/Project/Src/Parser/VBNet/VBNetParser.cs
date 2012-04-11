@@ -300,6 +300,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			// look for attributes
 			while (tn.kind == Tokens.LessThan) {
 				while (braceCount > 0 || tn.kind != Tokens.GreaterThan) {
+					if (tn.kind == Tokens.EOF) return false;
 					tn = lexer.Peek();
 					if (tn.kind == Tokens.OpenParenthesis)
 						braceCount++;
