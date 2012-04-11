@@ -468,7 +468,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							return null;
 						case ":":
 							if (currentMember == null) {
+								token = GetPreviousToken(ref tokenIndex, false);
+								token = GetPreviousToken(ref tokenIndex, false);
+								if (token == "enum")
+									return HandleEnumContext();
 								var wrapper = new CompletionDataWrapper(this);
+
 								AddTypesAndNamespaces(wrapper, GetState(), null, t => currentType != null ? !currentType.ReflectionName.Equals(t.ReflectionName) : true);
 								return wrapper.Result;
 							}

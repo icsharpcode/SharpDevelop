@@ -127,6 +127,19 @@ enum Name : $b$
 				Assert.IsNull(provider.Find("char"), "type 'char' found.");
 			});
 		}
+
+		[Test()]
+		public void TestEnumBaseTypesAutoPopup()
+		{
+			string[] integralTypes = { "byte", "sbyte", "short", "int", "long", "ushort", "uint", "ulong" };
+			var provider = CodeCompletionBugTests.CreateProvider(
+@"using System;
+$enum Name : $
+");
+			foreach (var type in integralTypes)
+				Assert.IsNotNull(provider.Find(type), "value '" + type + "' not found.");
+			Assert.IsNull(provider.Find("char"), "type 'char' found.");
+		}
 		
 	}
 }
