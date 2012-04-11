@@ -67,7 +67,6 @@ class Foo
 		/// <summary>
 		/// Bug 4059 - Return statement without semicolon missing in the AST
 		/// </summary>
-		[Ignore("Still open")]
 		[Test]
 		public void TestBug4059()
 		{
@@ -178,7 +177,7 @@ class Foo
 		/// <summary>
 		/// Bug 3517 - Incomplete conditional operator in the AST request.
 		/// </summary>
-		[Ignore("Still open")]
+		[Ignore("'expr' is in the AST, but cond not.")]
 		[Test]
 		public void TestBug3517()
 		{
@@ -205,7 +204,6 @@ class Foo
 			Assert.IsTrue(passed);
 		}
 		
-		[Ignore("Still open")]
 		[Test]
 		public void TestBug3517Case2()
 		{

@@ -5,12 +5,19 @@ namespace ICSharpCode.NRefactory.GtkDemo
 	public partial class MainWindow
 	{
 		private global::Gtk.VBox vbox1;
+		
 		private global::Gtk.ScrolledWindow scrolledwindow1;
+		
 		private global::Gtk.TextView textview1;
+		
 		private global::Gtk.HBox hbox1;
+		
 		private global::Gtk.Button buttonParse;
+		
 		private global::Gtk.Button buttonGenerate;
+		
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
+		
 		private global::Gtk.TreeView treeviewNodes;
 		
 		protected virtual void Build ()
