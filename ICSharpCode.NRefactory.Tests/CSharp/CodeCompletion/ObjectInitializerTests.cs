@@ -413,9 +413,9 @@ class Test
 		}
 		
 		[Test()]
-		public void TestCollectionInitializer ()
+		public void TestCollectionInitializer()
 		{
-			CodeCompletionBugTests.CombinedProviderTest (
+			CodeCompletionBugTests.CombinedProviderTest(
 @"using System;
 using System.Collections.Generic;
 
@@ -429,8 +429,34 @@ class Test
 	}
 }
 ", (provider) => {
-				Assert.IsNotNull (provider.Find ("new"), "keyword 'new' not found.");
+				Assert.IsNotNull(provider.Find("new"), "keyword 'new' not found.");
 			});
+		}
+
+
+		/// <summary>
+		/// Bug 4284 - NewResolver does not offer completion for properties in constructor initialization (edit)
+		/// </summary>
+		[Test()]
+		public void TestBug4284()
+		{
+			// only affects ctrl+space completion.
+			var provider = CodeCompletionBugTests.CreateCtrlSpaceProvider(
+@"public class ClassName
+{
+	public int Foo { get; set; }
+}
+class MainClass
+{
+	void Method ()
+	{
+		var stuff = new ClassName  {
+			$
+		};
+	}
+}
+");
+			Assert.IsNotNull(provider.Find("Foo"), "'Foo' not found.");
 		}
 	}
 }
