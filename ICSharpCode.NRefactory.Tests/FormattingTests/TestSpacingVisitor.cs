@@ -35,14 +35,14 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	public class TestSpacingVisitor : TestBase
 	{
 		[Test()]
-		public void TestFieldSpacesBeforeComma1 ()
+		public void TestFieldSpacesBeforeComma1()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = new CSharpFormattingOptions();
 			policy.ClassBraceStyle = BraceStyle.EndOfLine;
 			policy.SpaceBeforeFieldDeclarationComma = false;
 			policy.SpaceAfterFieldDeclarationComma = false;
 			
-			Test (policy, @"class Test {
+			Test(policy, @"class Test {
 	int a           ,                   b,          c;
 }",
 @"class Test {
@@ -1629,6 +1629,9 @@ return (Test)null;
 			int i2 = result.Text.LastIndexOf(";") + ";".Length;
 			Assert.AreEqual(@"Foo (bar:expr);", result.GetText(i1, i2 - i1));
 		}
+
+
+
 
 
 		

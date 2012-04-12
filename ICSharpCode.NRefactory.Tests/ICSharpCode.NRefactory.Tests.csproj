@@ -263,6 +263,7 @@
     <Compile Include="CSharp\CodeActions\IntroduceConstantTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractMethodTests.cs" />
     <Compile Include="CSharp\Parser\Bugs\ParserBugTests.cs" />
+    <Compile Include="FormattingTests\TestKeepReformattingRules.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

@@ -873,8 +873,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (child is Statement) {
 					FixStatementIndentation(child.StartLocation);
 					child.AcceptVisitor(this);
+				} else if (child is Comment) {
+					child.AcceptVisitor(this);
 				} else {
-					// leave comments and pre processor directives at line start, if they are there.
+					// pre processor directives at line start, if they are there.
 					if (child.StartLocation.Column > 1)
 						FixStatementIndentation(child.StartLocation);
 				}
@@ -893,7 +895,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitComment(Comment comment)
 		{
-			if (comment.StartsLine && !HadErrors && comment.StartLocation.Column > 1) {
+			if (comment.StartsLine && !HadErrors && (!policy.KeepCommentsAtFirstColumn || comment.StartLocation.Column > 1)) {
 				FixIndentation(comment.StartLocation);
 			}
 		}

@@ -770,7 +770,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		#endregion
-		
+
+
+		#region Keep formatting
+		public bool KeepCommentsAtFirstColumn {
+			get;
+			set;
+		}
+		#endregion
+
 		public CSharpFormattingOptions()
 		{
 			IndentNamespaceBody = true;
@@ -883,6 +891,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			BlankLinesBetweenFields = 0;
 			BlankLinesBetweenEventFields = 0;
 			BlankLinesBetweenMembers = 1;
+
+			KeepCommentsAtFirstColumn = true;
 		}
 
 		/*public static CSharpFormattingOptions Load (FilePath selectedFile)
