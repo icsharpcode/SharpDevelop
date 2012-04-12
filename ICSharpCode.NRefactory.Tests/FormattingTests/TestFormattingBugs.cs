@@ -231,7 +231,7 @@ foo ();
         /// <summary>
         /// Bug GH35 - Formatter issues with if/else statements and // comments
         /// </summary>
-        [Test()]
+        [Ignore]
         public void TestBugGH35()
         {
             var policy = new CSharpFormattingOptions();
@@ -270,7 +270,7 @@ foo ();
         /// <summary>
         /// Bug GH35a - Formatter issues with if/else statements and // comments else variant
         /// </summary>
-        [Test()]
+        [Ignore]
         public void TestBugGH35a()
         {
             var policy = new CSharpFormattingOptions();
