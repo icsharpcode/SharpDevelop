@@ -1,6 +1,8 @@
 ﻿<RecentFiles>
   <RecentFiles>
-    <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:FormattingTests/f:TestFormattingBugs.cs" caret="7401" fromTop="18" />
+    <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:FormattingTests/f:TestFormattingBugs.cs" caret="1792" fromTop="0" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="119900" fromTop="31" />
+    <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:CSharp/d:Resolver/f:ObjectCreationTests.cs" caret="5290" fromTop="12" />
   </RecentFiles>
   <RecentEdits>
     <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:FormattingTests/f:TestFormattingBugs.cs" caret="6244" fromTop="8" />
@@ -12,5 +14,24 @@
     <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:FormattingTests/f:TestFormattingBugs.cs" caret="7645" fromTop="19" />
     <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:FormattingTests/f:TestFormattingBugs.cs" caret="7645" fromTop="18" />
     <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:FormattingTests/f:TestFormattingBugs.cs" caret="7401" fromTop="18" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="159824" fromTop="16" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="159824" fromTop="16" />
+    <File id="63D3B27A-D966-4902-90B3-30290E1692F1/d:CSharp/d:Resolver/f:ObjectCreationTests.cs" caret="5446" fromTop="19" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="159824" fromTop="20" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="159824" fromTop="34" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="159824" fromTop="0" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="159824" fromTop="0" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="1631" fromTop="23" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="118802" fromTop="14" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="119331" fromTop="24" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="120055" fromTop="37" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="120698" fromTop="25" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="121207" fromTop="32" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="121427" fromTop="36" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="121564" fromTop="25" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="121796" fromTop="29" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="122139" fromTop="36" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="118376" fromTop="34" />
+    <File id="53DCA265-3C3C-42F9-B647-F72BA678122B/d:Parser/f:CSharpParser.cs" caret="119900" fromTop="31" />
   </RecentEdits>
 </RecentFiles>

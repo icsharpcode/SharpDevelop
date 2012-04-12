@@ -2741,7 +2741,7 @@ namespace ICSharpCode.NRefactory.CSharp
                             parent.AddChild((ICSharpCode.NRefactory.CSharp.Expression)arg.Expr.Accept(this), Roles.Expression);
                         }
 
-                        if (braceLocs != null)
+                        if (braceLocs != null && braceLocs.Count > 1)
                             parent.AddChild(new CSharpTokenNode(Convert(braceLocs[1])), Roles.RBrace);
 
                         init.AddChild(parent, Roles.Expression);
