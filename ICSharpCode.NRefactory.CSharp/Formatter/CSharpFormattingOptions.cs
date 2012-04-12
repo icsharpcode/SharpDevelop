@@ -727,6 +727,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		public bool SpaceInNamedArgumentAfterDoubleColon {
+			get;
+			set;
+		}
 		#endregion
 		
 		#region Blank Lines
@@ -767,7 +771,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		#endregion
 		
-		public CSharpFormattingOptions ()
+		public CSharpFormattingOptions()
 		{
 			IndentNamespaceBody = true;
 			IndentClassBody = IndentInterfaceBody = IndentStructBody = IndentEnumBody = true;
@@ -866,7 +870,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			SpaceBeforeIndexerDeclarationBracket = true;
 			SpaceWithinIndexerDeclarationBracket = false;
 			SpaceBeforeIndexerDeclarationParameterComma = false;
-		
+			SpaceInNamedArgumentAfterDoubleColon = true;
 		
 			SpaceAfterIndexerDeclarationParameterComma = true;
 			

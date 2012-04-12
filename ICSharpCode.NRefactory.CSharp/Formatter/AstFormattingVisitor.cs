@@ -1687,6 +1687,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			base.VisitLambdaExpression(lambdaExpression);
 		}
 
+		public override void VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression)
+		{
+			ForceSpacesAfter(namedArgumentExpression.ColonToken, policy.SpaceInNamedArgumentAfterDoubleColon);
+			base.VisitNamedArgumentExpression(namedArgumentExpression);
+		}
+
 		#endregion
 		
 		void ForceSpaceBefore(int offset, bool forceSpace)

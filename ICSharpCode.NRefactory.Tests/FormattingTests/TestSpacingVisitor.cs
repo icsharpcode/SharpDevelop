@@ -1584,19 +1584,53 @@ return (Test)null;
 		}
 
 		[Test()]
-		public void TestRemoveWhitespacesBeforeSemicolon ()
+		public void TestRemoveWhitespacesBeforeSemicolon()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
-			var result = GetResult (policy, @"class Test {
+			CSharpFormattingOptions policy = new CSharpFormattingOptions();
+			var result = GetResult(policy, @"class Test {
 	void TestMe ()
 	{
 		Foo ()        ;
 	}
 }");
-			int i1 = result.Text.IndexOf ("Foo");
-			int i2 = result.Text.LastIndexOf (";") + ";".Length;
-			Assert.AreEqual (@"Foo ();", result.GetText (i1, i2 - i1));
+			int i1 = result.Text.IndexOf("Foo");
+			int i2 = result.Text.LastIndexOf(";") + ";".Length;
+			Assert.AreEqual(@"Foo ();", result.GetText(i1, i2 - i1));
 		}
+
+		[Test()]
+		public void TestSpaceInNamedArgumentAfterDoubleColon()
+		{
+			var policy = new CSharpFormattingOptions();
+			policy.SpaceInNamedArgumentAfterDoubleColon = true;
+			var result = GetResult(policy, @"class Test {
+	void TestMe ()
+	{
+		Foo (bar:expr);
+	}
+}");
+			int i1 = result.Text.IndexOf("Foo");
+			int i2 = result.Text.LastIndexOf(";") + ";".Length;
+			Assert.AreEqual(@"Foo (bar: expr);", result.GetText(i1, i2 - i1));
+		}
+
+		[Test()]
+		public void TestSpaceInNamedArgumentAfterDoubleColon2()
+		{
+			var policy = new CSharpFormattingOptions();
+			policy.SpaceInNamedArgumentAfterDoubleColon = false;
+			var result = GetResult(policy, @"class Test {
+	void TestMe ()
+	{
+		Foo (bar:                      expr);
+	}
+}");
+			int i1 = result.Text.IndexOf("Foo");
+			int i2 = result.Text.LastIndexOf(";") + ";".Length;
+			Assert.AreEqual(@"Foo (bar:expr);", result.GetText(i1, i2 - i1));
+		}
+
+
 		
 	}
 }
