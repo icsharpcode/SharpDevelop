@@ -4887,30 +4887,30 @@ namespace Test
 		/// <summary>
 		/// Bug 4283 - Newresolver: completing constructor parameters
 		/// </summary>
-		[Ignore ("fixme")]
 		[Test()]
 		public void TestBug4283()
 		{
-			CombinedProviderTest(
+			var provider = CreateCtrlSpaceProvider(
 @"class Program
 {
-	$public Program (int test) : base(t$
-}", provider => {
-				Assert.IsNotNull(provider.Find("test"), "'test' not found.");
-			});
+	public Program (int test) : base($)
+	{
+	}
+}");
+			Assert.IsNotNull(provider.Find("test"), "'test' not found.");
 		}
 
-		[Ignore ("fixme")]
 		[Test()]
 		public void TestBug4283ThisCase()
 		{
-			CombinedProviderTest(
+			var provider = CreateCtrlSpaceProvider(
 @"class Program
 {
-	$public Program (int test) : this(t$
-}", provider => {
-				Assert.IsNotNull(provider.Find("test"), "'test' not found.");
-			});
+	public Program (int test) : this($)
+	{
+	}
+}");
+			Assert.IsNotNull(provider.Find("test"), "'test' not found.");
 		}
 
 		/// <summary>
@@ -4971,7 +4971,6 @@ $#region S$
     }
 }");
 		}
-
 
 		[Test()]
 		public void TestParameterAttributeContext()
