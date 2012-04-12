@@ -173,7 +173,7 @@ namespace UnitTesting.Tests.Tree
 			StartNUnitTestRunner();
 			
 			string expectedArgs = 
-				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" " +
+				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" /noxml " +
 				"/results=\"c:\\temp\\tmp66.tmp\" " +
 				"/run=\"MyTests.MyTestClass.MyTestMethod\"";
 			Assert.AreEqual(expectedArgs, context.MockProcessRunner.CommandArgumentsPassedToStartMethod);

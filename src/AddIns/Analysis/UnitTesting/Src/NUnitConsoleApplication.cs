@@ -51,6 +51,7 @@ namespace ICSharpCode.UnitTesting
 			NoDots = options.NoDots;
 			Labels = options.Labels;
 			ShadowCopy = !options.NoShadow;
+			NoXmlOutputFile = !options.CreateXmlOutputFile;
 			
 			if (options.CreateXmlOutputFile) {
 				GenerateXmlOutputFileName();
@@ -120,6 +121,11 @@ namespace ICSharpCode.UnitTesting
 		/// File to write xml output to. Default = null.
 		/// </summary>
 		public string XmlOutputFile;
+		
+		/// <summary>
+		/// Use /noxml.
+		/// </summary>
+		public bool NoXmlOutputFile = true;
 		
 		/// <summary>
 		/// Fixture to test. Null = test all fixtures.
@@ -195,7 +201,9 @@ namespace ICSharpCode.UnitTesting
 				b.Append(" /labels");
 			if (NoDots) 
 				b.Append(" /nodots");
-			if (XmlOutputFile != null) {
+			if (NoXmlOutputFile) {
+				b.Append(" /noxml");
+			} else if (XmlOutputFile != null) {
 				b.Append(" /xml=\"");
 				b.Append(XmlOutputFile);
 				b.Append('"');
