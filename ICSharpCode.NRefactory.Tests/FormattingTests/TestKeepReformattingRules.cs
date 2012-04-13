@@ -34,11 +34,10 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	public class TestKeepReformattingRules : TestBase
 	{
 		[Test()]
-		public void TestKeepCommentsAtFirstColumnTrue ()
+		public void TestKeepCommentsAtFirstColumnTrue()
 		{
-			var policy = FormattingOptionsFactory.CreateMonoOptions () {
-				KeepCommentsAtFirstColumn = true
-			};
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.KeepCommentsAtFirstColumn = true;
 
 			Test(policy, @"class Test
 {
@@ -59,9 +58,9 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestKeepCommentsAtFirstColumnFalse()
 		{
-			var policy = FormattingOptionsFactory.CreateMonoOptions () {
-				KeepCommentsAtFirstColumn = false
-			};
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.KeepCommentsAtFirstColumn = false;
+
 			Test(policy, @"class Test
 {
 	void TestMe ()
@@ -83,10 +82,9 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestKeepCommentsAfterStatement()
 		{
-			var policy = FormattingOptionsFactory.CreateMonoOptions () {
-				KeepCommentsAtFirstColumn = true
-			};
-
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.KeepCommentsAtFirstColumn = true;
+			
 			Test(policy, @"class Test
 {
 	void TestMe ()

@@ -37,10 +37,9 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestInitializerWrapAlways()
 		{
-			var policy = FormattingOptionsFactory.CreateMonoOptions () {
-				ArrayInitializerWrapping = Wrapping.WrapAlways
-			};
-
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.ArrayInitializerWrapping = Wrapping.WrapAlways;
+			
 			Test(policy, @"class Test
 {
 	void TestMe ()
@@ -64,9 +63,8 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestInitializerDoNotWrap()
 		{
-			var policy = FormattingOptionsFactory.CreateMonoOptions () {
-				ArrayInitializerWrapping = Wrapping.DoNotWrap
-			};
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.ArrayInitializerWrapping = Wrapping.DoNotWrap;
 
 			Test(policy,
 @"class Test
@@ -91,11 +89,10 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestInitializerBraceStyle()
 		{
-			var policy = FormattingOptionsFactory.CreateMonoOptions () {
-				ArrayInitializerWrapping = Wrapping.WrapAlways,
-				ArrayInitializerBraceStyle = BraceStyle.NextLine
-			};
-
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.ArrayInitializerWrapping = Wrapping.WrapAlways;
+			policy.ArrayInitializerBraceStyle = BraceStyle.NextLine;
+			
 			Test(policy, @"class Test
 {
 	void TestMe ()
