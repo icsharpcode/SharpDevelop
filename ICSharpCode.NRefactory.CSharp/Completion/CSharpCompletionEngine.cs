@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.document = document;
 			this.factory = factory;
 			// Set defaults for additional input properties
-			this.FormattingPolicy = new CSharpFormattingOptions ();
+			this.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			this.EolMarker = Environment.NewLine;
 			this.IndentString = "\t";
 		}

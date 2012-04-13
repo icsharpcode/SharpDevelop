@@ -368,6 +368,7 @@
     <Compile Include="Ast\GeneralScope\NewLineNode.cs" />
     <Compile Include="Ast\GeneralScope\WhitespaceNode.cs" />
     <Compile Include="Ast\GeneralScope\TextNode.cs" />
+    <Compile Include="Formatter\FormattingOptionsFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

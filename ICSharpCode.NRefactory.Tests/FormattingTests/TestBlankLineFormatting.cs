@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TastBlankLineFormatting.cs
 //  
 // Author:
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestBlankLinesAfterUsings ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesAfterUsings = 2;
 			
 			var adapter = Test (policy, @"using System;
@@ -65,7 +65,7 @@ namespace Test
 		[Test()]
 		public void TestBlankLinesBeforeUsings ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesAfterUsings = 0;
 			policy.BlankLinesBeforeUsings = 2;
 			
@@ -94,7 +94,7 @@ namespace Test
 		[Test()]
 		public void TestBlankLinesBeforeFirstDeclaration ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBeforeFirstDeclaration = 2;
 			
 			var adapter = Test (policy, @"namespace Test
@@ -125,7 +125,7 @@ namespace Test
 		[Test()]
 		public void TestBlankLinesBetweenTypes ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBetweenTypes = 1;
 			
 			var adapter = Test (policy, @"namespace Test
@@ -173,7 +173,7 @@ namespace Test
 		[Test()]
 		public void TestBlankLinesBetweenFields ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBetweenFields = 1;
 			
 			var adapter = Test (policy, @"class Test
@@ -203,7 +203,7 @@ namespace Test
 		[Test()]
 		public void TestBlankLinesBetweenEventFields ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBetweenEventFields = 1;
 			
 			var adapter = Test (policy, @"class Test
@@ -234,7 +234,7 @@ namespace Test
 		[Test()]
 		public void TestBlankLinesBetweenMembers ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.BlankLinesBetweenMembers = 1;
 			
 			var adapter = Test (policy, @"class Test

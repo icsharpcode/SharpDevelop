@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TestRefactoringContext.cs
 //  
 // Author:
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		sealed class TestScript : DocumentScript
 		{
 			readonly TestRefactoringContext context;
-			public TestScript(TestRefactoringContext context) : base(context.doc, new CSharpFormattingOptions(), new TextEditorOptions ())
+			public TestScript(TestRefactoringContext context) : base(context.doc, FormattingOptionsFactory.CreateMono (), new TextEditorOptions ())
 			{
 				this.context = context;
 			}
@@ -265,7 +265,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 		
 		internal static void Print (AstNode node)
 		{
-			var v = new CSharpOutputVisitor (Console.Out, new CSharpFormattingOptions ());
+			var v = new CSharpOutputVisitor (Console.Out, FormattingOptionsFactory.CreateMono ());
 			node.AcceptVisitor (v);
 		}
 	}

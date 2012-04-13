@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeCompletionBugTests.cs
 //
 // Author:
@@ -241,7 +241,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, rctx, compilationUnit, parsedFile);
 				
 			engine.EolMarker = Environment.NewLine;
-			engine.FormattingPolicy = new CSharpFormattingOptions ();
+			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			
 			var data = engine.GetCompletionData (cursorPosition, isCtrlSpace);
 			
@@ -265,7 +265,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			
 			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly), compilationUnit, parsedFile);
 			engine.EolMarker = Environment.NewLine;
-			engine.FormattingPolicy = new CSharpFormattingOptions ();
+			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);
 		}
 		

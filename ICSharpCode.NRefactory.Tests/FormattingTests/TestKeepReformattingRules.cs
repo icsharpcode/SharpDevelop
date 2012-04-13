@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestKeepCommentsAtFirstColumnTrue ()
 		{
-			var policy = new CSharpFormattingOptions() {
+			var policy = FormattingOptionsFactory.CreateMonoOptions () {
 				KeepCommentsAtFirstColumn = true
 			};
 
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestKeepCommentsAtFirstColumnFalse()
 		{
-			var policy = new CSharpFormattingOptions() {
+			var policy = FormattingOptionsFactory.CreateMonoOptions () {
 				KeepCommentsAtFirstColumn = false
 			};
 			Test(policy, @"class Test
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestKeepCommentsAfterStatement()
 		{
-			var policy = new CSharpFormattingOptions() {
+			var policy = FormattingOptionsFactory.CreateMonoOptions () {
 				KeepCommentsAtFirstColumn = true
 			};
 
