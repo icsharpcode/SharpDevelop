@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
+    <Compile Include="Src\ConfigSettingsFileSystem.cs" />
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />

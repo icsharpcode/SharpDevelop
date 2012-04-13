@@ -40,6 +40,8 @@ namespace ICSharpCode.PackageManagement
 			return directory + @"\";
 		}
 		
+		public bool IsBindingRedirectSupported { get; set; }
+		
 		public FrameworkName TargetFramework {
 			get { return GetTargetFramework(); }
 		}

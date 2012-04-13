@@ -120,18 +120,29 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void GetPackagesByDependencyOrder_OnePackageInSharedRepository_SharedRepositoryCreatedWithFileSystemForSolutionPackagesFolder()
+		public void Constructor_CreateInstance_SharedRepositoryCreatedWithFileSystemForSolutionPackagesFolder()
 		{
 			CreateSolution(@"d:\projects\myproject\myproject.sln");
 			CreateRepository(solution);
-			FakePackage package = AddPackageToSharedRepository("Test");
-						
-			List<IPackage> actualPackages = repository.GetPackagesByDependencyOrder().ToList();
 			
 			IFileSystem fileSystem = fakeRepositoryFactory.FileSystemPassedToCreateSharedRepository;
 			string rootPath = fileSystem.Root;
 			
 			string expectedRootPath = @"d:\projects\myproject\packages";
+			
+			Assert.AreEqual(expectedRootPath, rootPath);
+		}
+		
+		[Test]
+		public void Constructor_CreateInstance_SharedRepositoryCreatedWithConfigSettingsFileSystemForSolutionNuGetFolder()
+		{
+			CreateSolution(@"d:\projects\myproject\myproject.sln");
+			CreateRepository(solution);
+			
+			IFileSystem fileSystem = fakeRepositoryFactory.ConfigSettingsFileSystemPassedToCreateSharedRepository;
+			string rootPath = fileSystem.Root;
+			
+			string expectedRootPath = @"d:\projects\myproject\.nuget";
 			
 			Assert.AreEqual(expectedRootPath, rootPath);
 		}

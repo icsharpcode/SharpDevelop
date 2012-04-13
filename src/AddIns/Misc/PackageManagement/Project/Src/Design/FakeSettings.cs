@@ -118,5 +118,15 @@ namespace ICSharpCode.PackageManagement.Design
 				AddFakePackageSource(packageSource);
 			}
 		}
+		
+		public IList<KeyValuePair<string, string>> GetNestedValues(string section, string key)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void SetNestedValues(string section, string key, IList<KeyValuePair<string, string>> values)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

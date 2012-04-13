@@ -421,6 +421,10 @@ Returns a list of recently installed packages.
           <maml:name>RemoveDependencies</maml:name>
         </command:parameter>
         <command:parameter required="false" position="named">
+          <maml:name>ProjectName</maml:name>
+          <command:parameterValue required="true">string</command:parameterValue>
+        </command:parameter>
+        <command:parameter required="false" position="named">
           <maml:name>Force</maml:name>
         </command:parameter>
         <command:parameter required="false" position="named">
@@ -456,6 +460,12 @@ Returns a list of recently installed packages.
         <command:parameterValue required="true">
           string
         </command:parameterValue>
+      </command:parameter>
+      <command:parameter required="false" position="named">
+        <maml:name>Force</maml:name>
+        <maml:description>
+          <maml:para>Forces an uninstall of the package even if another package depends on it.</maml:para>
+        </maml:description>
       </command:parameter>
       <command:parameter required="false" position="named">
         <maml:name>Version</maml:name>
@@ -702,124 +712,6 @@ available in the feed, the -Safe flag updates the package to 1.0.2.
       </maml:navigationLink>
       <maml:navigationLink>
         <maml:linkText>Update-Package</maml:linkText>
-        <maml:uri/>
-      </maml:navigationLink>
-    </maml:relatedLinks>
-  </command:command>
-
-  <!-- New-Package command -->
-  <command:command
-      xmlns:maml="http://schemas.microsoft.com/maml/2004/10"
-      xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10"
-      xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10">
-
-    <command:details>
-      <command:name>
-        New-Package
-      </command:name>
-      <maml:description>
-        <maml:para>Creates a package.</maml:para>
-      </maml:description>
-      <command:verb>New</command:verb>
-      <command:noun>Package</command:noun>
-      <dev:version></dev:version>
-    </command:details>
-
-    <maml:description>
-      <maml:para>Creates a new package when supplied with a Nuspec package specification file.</maml:para>
-    </maml:description>
-
-    <!-- Cmdlet syntax section-->
-    <command:syntax>
-      <command:syntaxItem>
-        <maml:name>New-Package</maml:name>
-        <command:parameter required="false" position="0">
-          <maml:name>ProjectName</maml:name>
-          <command:parameterValue required="true">string</command:parameterValue>
-        </command:parameter>
-        <command:parameter required="true" position="1">
-          <maml:name>SpecFileName</maml:name>
-          <command:parameterValue required="true">string</command:parameterValue>
-        </command:parameter>
-        <command:parameter required="true" position="2">
-          <maml:name>TargetFile </maml:name>
-          <command:parameterValue required="true">string</command:parameterValue>
-        </command:parameter>
-        <command:parameter required="false" position="named">
-          <maml:name>NoClobber</maml:name>
-        </command:parameter>
-      </command:syntaxItem>
-    </command:syntax>
-
-    <!-- Cmdlet parameter section  -->
-    <command:parameters>
-      <command:parameter required="false" position="0">
-        <maml:name>ProjectName</maml:name>
-        <maml:description>
-          <maml:para>Specifies the project containing the NuSpec file to use when creating the package. If omitted, the current project selected in the console is used.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true">string</command:parameterValue>
-      </command:parameter>
-      <command:parameter required="true" position="1">
-        <maml:name>SpecFileName</maml:name>
-        <maml:description>
-          <maml:para>Specifies the NuSpec file used to create the package. If omitted, the NuSpec file within the current project is used if there is only one such file.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true">string</command:parameterValue>
-      </command:parameter>
-      <command:parameter required="true" position="2">
-        <maml:name>TargetFile </maml:name>
-        <maml:description>
-          <maml:para>Specifes the full name of the output NuPkg file.</maml:para>
-        </maml:description>
-        <command:parameterValue required="true">string</command:parameterValue>
-      </command:parameter>
-      <command:parameter required="false" position="named">
-        <maml:name>NoClobber</maml:name>
-        <maml:description>
-          <maml:para>If specified, the target file is not overwritten.</maml:para>
-        </maml:description>
-      </command:parameter>
-    </command:parameters>
-
-    <command:examples>
-      <command:example>
-        <maml:title>----------  EXAMPLE 1 ----------</maml:title>
-        <dev:code>PM&gt; New-Package</dev:code>
-        <dev:remarks>
-          <maml:para>
-Description
-------------------------------------------------------------------
-Creates a new package based on the current project using a Nuspec file within the project if only one such file is found.
-          </maml:para>
-          <maml:para></maml:para>
-          <maml:para></maml:para>
-        </dev:remarks>
-      </command:example>
-
-      <command:example>
-        <maml:title>----------  EXAMPLE 2  ----------</maml:title>
-        <dev:code>PM&gt; New-Package -Project MyProjectName -SpecFileName MyPackage.nuspec</dev:code>
-        <dev:remarks>
-          <maml:para>
-Description
-------------------------------------------------------------------
-Creates a new package from the specified project, MyProjectName using the specified Nuspec file, MyPackage.nuspec.
-          </maml:para>
-          <maml:para></maml:para>
-          <maml:para></maml:para>
-        </dev:remarks>
-      </command:example>
-    </command:examples>
-    
-    <!-- Link section  -->
-    <maml:relatedLinks>
-      <maml:navigationLink>
-        <maml:linkText>Online version:</maml:linkText>
-        <maml:uri>http://docs.nuget.org/</maml:uri>
-      </maml:navigationLink>
-      <maml:navigationLink>
-        <maml:linkText>New-Package</maml:linkText>
         <maml:uri/>
       </maml:navigationLink>
     </maml:relatedLinks>
