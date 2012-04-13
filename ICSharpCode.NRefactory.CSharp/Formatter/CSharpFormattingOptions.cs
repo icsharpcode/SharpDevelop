@@ -48,17 +48,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		AddBraces
 	}
 
-	public enum ArrayInitializerPlacement
-	{
-		AlwaysNewLine,
-		AlwaysSameLine
-	}
-
 	public enum PropertyFormatting
 	{
 		AllowOneLine,
 		ForceOneLine,
 		ForceNewLine
+	}
+
+	public enum Wrapping {
+		DoNotWrap,
+		WrapAlways,
+		WrapIfTooLong
 	}
 
 	public class CSharpFormattingOptions
@@ -319,11 +319,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public bool PlaceWhileOnNewLine { // tested
-			get;
-			set;
-		}
-
-		public ArrayInitializerPlacement PlaceArrayInitializersOnNewLine {
 			get;
 			set;
 		}
@@ -779,6 +774,20 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 
+		#region Wrapping
+
+		public Wrapping ArrayInitializerWrapping {
+			get;
+			set;
+		}
+
+		public BraceStyle ArrayInitializerBraceStyle {
+			get;
+			set;
+		}
+
+		#endregion
+
 		public CSharpFormattingOptions()
 		{
 			IndentNamespaceBody = true;
@@ -804,7 +813,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			PlaceCatchOnNewLine = false;
 			PlaceFinallyOnNewLine = false;
 			PlaceWhileOnNewLine = false;
-			PlaceArrayInitializersOnNewLine = ArrayInitializerPlacement.AlwaysSameLine;
+			ArrayInitializerWrapping = Wrapping.WrapIfTooLong;
+			ArrayInitializerBraceStyle = BraceStyle.EndOfLine;
 
 			SpaceBeforeMethodCallParentheses = true;
 			SpaceBeforeMethodDeclarationParentheses = true;

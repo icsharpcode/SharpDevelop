@@ -1,5 +1,5 @@
 // 
-// TestKeepReformattingRules.cs
+// TestWrapping.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.IO;
 using NUnit.Framework;
@@ -31,77 +32,94 @@ using ICSharpCode.NRefactory.CSharp;
 namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 {
 	[TestFixture()]
-	public class TestKeepReformattingRules : TestBase
+	public class TestWrapping : TestBase
 	{
 		[Test()]
-		public void TestKeepCommentsAtFirstColumnTrue ()
+		public void TestInitializerWrapAlways()
 		{
 			var policy = new CSharpFormattingOptions() {
-				KeepCommentsAtFirstColumn = true
+				ArrayInitializerWrapping = Wrapping.WrapAlways
 			};
 
 			Test(policy, @"class Test
 {
 	void TestMe ()
 	{
-// comment
+		var foo = new [] { 1, 2, 3 };
 	}
 }",
 @"class Test
 {
 	void TestMe ()
 	{
-// comment
+		var foo = new [] {
+			1,
+			2,
+			3
+		};
 	}
 }");
 		}
 
 		[Test()]
-		public void TestKeepCommentsAtFirstColumnFalse()
+		public void TestInitializerDoNotWrap()
 		{
 			var policy = new CSharpFormattingOptions() {
-				KeepCommentsAtFirstColumn = false
+				ArrayInitializerWrapping = Wrapping.DoNotWrap
 			};
-			Test(policy, @"class Test
-{
-	void TestMe ()
-	{
-// comment
-	}
-}",
+
+			Test(policy,
 @"class Test
 {
 	void TestMe ()
 	{
-		// comment
+		var foo = new [] {
+			1,
+			2,
+			3
+		};
+	}
+}", @"class Test
+{
+	void TestMe ()
+	{
+		var foo = new [] { 1, 2, 3 };
 	}
 }");
-
-		
 		}
 
 		[Test()]
-		public void TestKeepCommentsAfterStatement()
+		public void TestInitializerBraceStyle()
 		{
 			var policy = new CSharpFormattingOptions() {
-				KeepCommentsAtFirstColumn = true
+				ArrayInitializerWrapping = Wrapping.WrapAlways,
+				ArrayInitializerBraceStyle = BraceStyle.NextLine
 			};
 
 			Test(policy, @"class Test
 {
 	void TestMe ()
 	{
-		FooBar (); // comment
+		var foo = new [] {
+			1,
+			2,
+			3
+		};
 	}
 }",
 @"class Test
 {
 	void TestMe ()
 	{
-		FooBar (); // comment
+		var foo = new []
+		{
+			1,
+			2,
+			3
+		};
 	}
 }");
 		}
+
 	}
 }
-
