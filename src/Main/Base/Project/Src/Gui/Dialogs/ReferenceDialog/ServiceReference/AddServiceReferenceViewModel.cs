@@ -58,34 +58,41 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.assemblyReferences = serviceGenerator.GetCheckableAssemblyReferences().ToList();
 			HeadLine = header;
 			
-			GoCommand = new RelayCommand(ExecuteGo, CanExecuteGo);
+			GoCommand = new RelayCommand(DiscoveryServices, CanExecuteGo);
 			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand, CanExecuteAdvancedDialogCommand);
 			TwoValues = new ObservableCollection<ImageAndDescription>();
 		}
 		
-		#region Go Command
-		
 		public ICommand GoCommand { get; private set; }
 		
-		void ExecuteGo()
+		void DiscoveryServices()
 		{
-			if (String.IsNullOrEmpty(SelectedService)) {
-				MessageBox.Show(noUrl);
-				return;
+			Uri uri = TryGetUri(SelectedService);
+			if (uri != null) {
+				ServiceDescriptionMessage = waitMessage;
+				StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
 			}
-			ServiceDescriptionMessage = waitMessage;
-			Uri uri = new Uri(SelectedService);
-			StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
+		}
+		
+		Uri TryGetUri(string url)
+		{
+			if (String.IsNullOrEmpty(url)) {
+				ServiceDescriptionMessage = noUrl;
+				return null;
+			}
+			
+			try {
+				return new Uri(url);
+			} catch (Exception ex) {
+				ServiceDescriptionMessage = ex.Message;
+			}
+			return null;
 		}
 		
 		bool CanExecuteGo()
 		{
 			return true;
 		}
-		
-		#endregion
-		
-		#region AdvancedDialogCommand
 		
 		public ICommand AdvancedDialogCommand { get; private set; }
 		
@@ -105,11 +112,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				serviceGenerator.UpdateAssemblyReferences(assemblyReferences);
 			}
 		}
-			
-		#endregion
 		
-		#region discover service Code from Matt
-
 		void StartDiscovery(Uri uri, DiscoveryNetworkCredential credential)
 		{
 			// Abort previous discovery.
@@ -233,8 +236,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return String.Empty;
 		}
 		
-		#endregion
-		
 		public string Title
 		{
 			get { return title; }
@@ -348,10 +349,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public void AddServiceReference()
 		{
 			CompilerMessageView.Instance.BringToFront();
-			serviceGenerator.Options.Namespace = defaultNameSpace;
-			serviceGenerator.Options.Url = discoveryUri.ToString();
-			serviceGenerator.AddServiceReference();
-			new RefreshProjectBrowser().Run();
+			
+			try {
+				serviceGenerator.Options.Namespace = defaultNameSpace;
+				serviceGenerator.Options.Url = discoveryUri.ToString();
+				serviceGenerator.AddServiceReference();
+				new RefreshProjectBrowser().Run();
+			} catch (Exception ex) {
+				ICSharpCode.Core.LoggingService.Error("Failed to add service reference.", ex);
+			}
 		}
 	}
 	
