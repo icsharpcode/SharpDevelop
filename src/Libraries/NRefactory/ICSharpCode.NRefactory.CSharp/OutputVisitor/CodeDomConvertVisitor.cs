@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -171,7 +171,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		string MakeSnippet(AstNode node)
 		{
 			StringWriter w = new StringWriter();
-			CSharpOutputVisitor v = new CSharpOutputVisitor(w, new CSharpFormattingOptions());
+			CSharpOutputVisitor v = new CSharpOutputVisitor(w, FormattingOptionsFactory.CreateMono ());
 			node.AcceptVisitor(v);
 			return w.ToString();
 		}
@@ -1244,7 +1244,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return new CodeComment (comment.Content, comment.CommentType == CommentType.Documentation);
 		}
-		
+
+		CodeObject IAstVisitor<CodeObject>.VisitNewLine(NewLineNode newLineNode)
+		{
+			throw new NotSupportedException();
+		}
+
+		CodeObject IAstVisitor<CodeObject>.VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			throw new NotSupportedException();
+		}
+
+		CodeObject IAstVisitor<CodeObject>.VisitText(TextNode textNode)
+		{
+			throw new NotSupportedException();
+		}
+
 		CodeObject IAstVisitor<CodeObject>.VisitPreProcessorDirective (PreProcessorDirective preProcessorDirective)
 		{
 			return new CodeComment ("#" + preProcessorDirective.Type.ToString ().ToLower ());

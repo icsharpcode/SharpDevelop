@@ -1,4 +1,4 @@
-// 
+﻿// 
 // RedundantInternalInspector.cs
 //  
 // Author:
@@ -34,18 +34,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	/// <summary>
 	/// Finds redundant internal modifiers.
 	/// </summary>
-	[IssueDescription("Remove redunant 'internal' modifier",
+	[IssueDescription("Remove redundant 'internal' modifier",
 	       Description="Removes 'internal' modifiers that are not required.", 
 	       Category = IssueCategories.Redundancies,
 	       Severity = Severity.Hint,
 	       IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantInternalIssue : ICodeIssueProvider
 	{
-		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
+		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
-			var visitor = new GatherVisitor (context, this);
-			context.RootNode.AcceptVisitor (visitor);
-			return visitor.FoundIssues;
+			return new GatherVisitor(context, this).GetIssues();
 		}
 
 		class GatherVisitor : GatherVisitorBase

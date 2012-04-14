@@ -100,76 +100,258 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var provider = MemberProvider ?? new DefaultMemberProvider (this);
 			provider.GetCurrentMembers (offset, out currentType, out currentMember);
 		}
-		
-		#region Context helper methods
-		protected bool IsInsideCommentOrString ()
+
+		protected bool GetParameterCompletionCommandOffset(out int cpos)
 		{
-			var text = GetMemberTextToCaret ();
-			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			
-			for (int i = 0; i < text.Item1.Length - 1; i++) {
-				char ch = text.Item1 [i];
-				char nextCh = text.Item1 [i + 1];
-				
-				switch (ch) {
-				case '/':
-					if (inString || inChar || inVerbatimString)
-						break;
-					if (nextCh == '/') {
-						i++;
-						inSingleComment = true;
+			// Start calculating the parameter offset from the beginning of the
+			// current member, instead of the beginning of the file. 
+			cpos = offset - 1;
+			var mem = currentMember;
+			if (mem == null || (mem is IType)) {
+				return false;
+			}
+			int startPos = document.GetOffset(mem.Region.BeginLine, mem.Region.BeginColumn);
+			int parenDepth = 0;
+			int chevronDepth = 0;
+			Stack<int> indexStack = new Stack<int>();
+			while (cpos > startPos) {
+				char c = document.GetCharAt(cpos);
+				if (c == ')') {
+					parenDepth++;
+				}
+				if (c == '>') {
+					chevronDepth++;
+				}
+				if (c == '}') {
+					if (indexStack.Count > 0) {
+						parenDepth = indexStack.Pop();
+					} else {
+						parenDepth = 0;
 					}
-					if (nextCh == '*')
-						inMultiLineComment = true;
+					chevronDepth = 0;
+				}
+				if (indexStack.Count == 0 && (parenDepth == 0 && c == '(' || chevronDepth == 0 && c == '<')) {
+					int p = GetCurrentParameterIndex (cpos + 1, startPos);
+					if (p != -1) {
+						cpos++;
+						return true;
+					} else {
+						return false;
+					}
+				}
+				if (c == '(') {
+					parenDepth--;
+				}
+				if (c == '<') {
+					chevronDepth--;
+				}
+				if (c == '{') {
+					indexStack.Push (parenDepth);
+					chevronDepth = 0;
+				}
+				cpos--;
+			}
+			return false;
+		}
+		
+		protected int GetCurrentParameterIndex (int offset, int memberStart)
+		{
+			int cursor = this.offset;
+			int i = offset;
+			
+			if (i > cursor) {
+				return -1;
+			}
+			if (i == cursor) { 
+				return 1;
+			}
+			// parameters are 1 based
+			int index = memberStart + 1;
+			int parentheses = 0;
+			int bracket = 0;
+			bool insideQuote = false, insideString = false, insideSingleLineComment = false, insideMultiLineComment = false;
+			Stack<int> indexStack = new Stack<int> ();
+			do {
+				char c = document.GetCharAt (i - 1);
+				switch (c) {
+				case '\\':
+					if (insideString || insideQuote) {
+						i++;
+					}
+					break;
+				case '\'':
+					if (!insideString && !insideSingleLineComment && !insideMultiLineComment) {
+						insideQuote = !insideQuote;
+					}
+					break;
+				case '"':
+					if (!insideQuote && !insideSingleLineComment && !insideMultiLineComment) {
+						insideString = !insideString;
+					}
+					break;
+				case '/':
+					if (!insideQuote && !insideString && !insideMultiLineComment) {
+						if (document.GetCharAt (i) == '/') {
+							insideSingleLineComment = true;
+						}
+						if (document.GetCharAt (i) == '*') {
+							insideMultiLineComment = true;
+						}
+					}
 					break;
 				case '*':
-					if (inString || inChar || inVerbatimString || inSingleComment)
-						break;
-					if (nextCh == '/') {
-						i++;
-						inMultiLineComment = false;
-					}
-					break;
-				case '@':
-					if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment)
-						break;
-					if (nextCh == '"') {
-						i++;
-						inVerbatimString = true;
+					if (insideMultiLineComment && document.GetCharAt (i) == '/') {
+						insideMultiLineComment = false;
 					}
 					break;
 				case '\n':
 				case '\r':
-					inSingleComment = false;
-					inString = false;
-					inChar = false;
+					insideSingleLineComment = false;
 					break;
-				case '\\':
-					if (inString || inChar)
-						i++;
-					break;
-				case '"':
-					if (inSingleComment || inMultiLineComment || inChar)
-						break;
-					if (inVerbatimString) {
-						if (nextCh == '"') {
-							i++;
-							break;
-						}
-						inVerbatimString = false;
-						break;
+				case '{':
+					if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
+						bracket++;
+						indexStack.Push (index);
 					}
-					inString = !inString;
 					break;
-				case '\'':
-					if (inSingleComment || inMultiLineComment || inString || inVerbatimString)
-						break;
-					inChar = !inChar;
+				case '}':
+					if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
+						bracket--;
+						if (indexStack.Count > 0)
+							index = indexStack.Pop ();
+					}
 					break;
+				case '(':
+					if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
+						parentheses++;
+					}
+					break;
+				case ')':
+					if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment) {
+						parentheses--;
+					}
+					break;
+				case ',':
+					if (!insideQuote && !insideString && !insideSingleLineComment && !insideMultiLineComment && parentheses == 1 && bracket == 0) {
+						index++;
+					}
+					break;
+
+				}
+				i++;
+			} while (i <= cursor && parentheses >= 0);
+			Console.WriteLine (indexStack.Count >= 0 || parentheses != 1 || bracket > 0 ? -1 : index);
+			return indexStack.Count >= 0 || parentheses != 1 || bracket > 0 ? -1 : index;
+		}
+
+		#region Context helper methods
+		public class MiniLexer
+		{
+			readonly string text;
+
+			public bool IsFistNonWs = true;
+			public bool IsInSingleComment = false;
+			public bool IsInString = false;
+			public bool IsInVerbatimString = false;
+			public bool IsInChar = false;
+			public bool IsInMultiLineComment = false;
+			public bool IsInPreprocessorDirective = false;
+
+			public MiniLexer(string text)
+			{
+				this.text = text;
+			}
+
+			public void Parse(Action<char> act = null)
+			{
+				Parse(0, text.Length, act);
+			}
+
+			public void Parse(int start, int length, Action<char> act = null)
+			{
+				for (int i = start; i < length; i++) {
+					char ch = text [i];
+					char nextCh = i + 1 < text.Length ? text [i + 1] : '\0';
+					switch (ch) {
+						case '#':
+							if (IsFistNonWs)
+								IsInPreprocessorDirective = true;
+							break;
+						case '/':
+							if (IsInString || IsInChar || IsInVerbatimString)
+								break;
+							if (nextCh == '/') {
+								i++;
+								IsInSingleComment = true;
+							}
+							if (nextCh == '*')
+								IsInMultiLineComment = true;
+							break;
+						case '*':
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment)
+								break;
+							if (nextCh == '/') {
+								i++;
+								IsInMultiLineComment = false;
+							}
+							break;
+						case '@':
+							if (IsInString || IsInChar || IsInVerbatimString || IsInSingleComment || IsInMultiLineComment)
+								break;
+							if (nextCh == '"') {
+								i++;
+								IsInVerbatimString = true;
+							}
+							break;
+						case '\n':
+						case '\r':
+							IsInSingleComment = false;
+							IsInString = false;
+							IsInChar = false;
+							IsFistNonWs = true;
+							break;
+						case '\\':
+							if (IsInString || IsInChar)
+								i++;
+							break;
+						case '"':
+							if (IsInSingleComment || IsInMultiLineComment || IsInChar)
+								break;
+							if (IsInVerbatimString) {
+								if (nextCh == '"') {
+									i++;
+									break;
+								}
+								IsInVerbatimString = false;
+								break;
+							}
+							IsInString = !IsInString;
+							break;
+						case '\'':
+							if (IsInSingleComment || IsInMultiLineComment || IsInString || IsInVerbatimString)
+								break;
+							IsInChar = !IsInChar;
+							break;
+					}
+					if (act != null)
+						act(ch);
+					IsFistNonWs &= ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
 				}
 			}
-			
-			return inSingleComment || inString || inVerbatimString || inChar || inMultiLineComment;
+		}
+
+		protected bool IsInsideCommentStringOrDirective()
+		{
+			var text = GetMemberTextToCaret();
+			var lexer = new MiniLexer(text.Item1);
+			lexer.Parse();
+			return
+				lexer.IsInSingleComment || 
+				lexer.IsInString ||
+				lexer.IsInVerbatimString ||
+				lexer.IsInChar ||
+				lexer.IsInMultiLineComment || 
+				lexer.IsInPreprocessorDirective;
 		}
 
 		protected bool IsInsideDocComment ()
@@ -439,7 +621,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AppendMissingClosingBrackets(wrapper, memberText, appendSemicolon);
 			wrapper.Append(afterContinuation);
 			if (closingBrackets > 0) { 
-				wrapper.Append(new string ('}', closingBrackets));
+				wrapper.Append(new string('}', closingBrackets));
 			}
 			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
 				try {

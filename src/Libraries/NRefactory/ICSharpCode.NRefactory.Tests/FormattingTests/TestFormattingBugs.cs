@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TestFormattingBugs.cs
 //  
 // Author:
@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		[Test()]
 		public void TestBug325187 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.PlaceElseOnNewLine = true;
 			
 			TestStatementFormatting (policy,
@@ -62,7 +62,7 @@ Console.WriteLine (""Bad indent"");",
 		[Test()]
 		public void TestBug415469 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			
 			TestStatementFormatting (policy,
 @"switch (condition) {
@@ -86,7 +86,7 @@ case CONDITION2:
 		[Test()]
 		public void TestBug540043 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			
 			TestStatementFormatting (policy,
 @"using (IDisposable a = null)
@@ -105,7 +105,7 @@ using (IDisposable b = null) {
 		[Test()]
 		public void TestBug655635 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			
 			TestStatementFormatting (policy,
 @"try {
@@ -145,7 +145,7 @@ using (IDisposable b = null) {
 		[Test()]
 		public void TestBug659675 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			TestStatementFormatting (policy, "@string=@int;", "@string = @int;");
 		}
 		
@@ -155,7 +155,7 @@ using (IDisposable b = null) {
 		[Test()]
 		public void TestBug670213 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.MethodBraceStyle = BraceStyle.EndOfLine;
 			
 			Test (policy, @"class Test
@@ -178,7 +178,7 @@ using (IDisposable b = null) {
 		[Test()]
 		public void TestBug677261 ()
 		{
-			CSharpFormattingOptions policy = new CSharpFormattingOptions ();
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
 			policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
 			
 			Test (policy, @"class Test
@@ -200,7 +200,7 @@ using (IDisposable b = null) {
 		[Test()]
 		public void TestBug3586 ()
 		{
-			var policy = new CSharpFormattingOptions ();
+			var policy = FormattingOptionsFactory.CreateMono ();
 			policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
 			
 			Test (policy, @"public class A

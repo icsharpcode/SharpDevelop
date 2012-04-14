@@ -1,4 +1,4 @@
-﻿//
+//
 // CodeCompletionBugTests.cs
 //
 // Author:
@@ -241,7 +241,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, rctx, compilationUnit, parsedFile);
 				
 			engine.EolMarker = Environment.NewLine;
-			engine.FormattingPolicy = new CSharpFormattingOptions ();
+			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			
 			var data = engine.GetCompletionData (cursorPosition, isCtrlSpace);
 			
@@ -265,7 +265,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			
 			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly), compilationUnit, parsedFile);
 			engine.EolMarker = Environment.NewLine;
-			engine.FormattingPolicy = new CSharpFormattingOptions ();
+			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);
 		}
 		
@@ -924,7 +924,7 @@ class Test{
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("string"), "type string not found.");
+			Assert.IsNotNull (provider.Find ("string[]"), "type string not found.");
 		}
 
 		/// <summary>
@@ -4706,9 +4706,9 @@ class MainClass
 		}
 
 		[Test()]
-		public void TestInterfaceReturnType ()
+		public void TestInterfaceReturnType()
 		{
-			var provider = CreateProvider (
+			var provider = CreateProvider(
 @"using System;
 using System.Collections.Generic;
 
@@ -4720,9 +4720,10 @@ class MainClass
 	}
 }
 ");
-			Assert.IsNotNull (provider.Find ("string"), "'string' not found.");
-			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
-			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+			Assert.IsNotNull(provider.Find("string[]"), "'string[]' not found.");
+			Assert.IsNotNull(provider.Find("List<string>"), "'List<string>' not found.");
+			Assert.IsNull(provider.Find("IEnumerable"), "'IEnumerable' found.");
+			Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
 			Assert.IsNull (provider.Find ("Console"), "'Console' found.");
 		}
 
@@ -4815,7 +4816,7 @@ class A
 		/// Bug 4017 - code completion in foreach does not work for local variables declared in the same block
 		/// </summary>
 		[Test()]
-		public void TestBug4017 ()
+		public void TestBug4017()
 		{
 			var provider = CreateProvider (
 @"
@@ -4864,10 +4865,10 @@ namespace Test
 		/// Bug 4085 - code completion problem with generic dictionary
 		/// </summary>
 		[Test()]
-		public void TestBug4085 ()
+		public void TestBug4085()
 		{
 			// Name proposal feature breaks here
-			var provider = CreateCtrlSpaceProvider (
+			var provider = CreateCtrlSpaceProvider(
 @"using System.Collections.Generic;
 namespace Test
 {
@@ -4881,8 +4882,138 @@ namespace Test
 }
 
 ");
-			Assert.IsNotNull (provider.Find ("TestClass"), "'TestClass' not found.");
+			Assert.IsNotNull(provider.Find("TestClass"), "'TestClass' not found.");
 		}
+
+		/// <summary>
+		/// Bug 4283 - Newresolver: completing constructor parameters
+		/// </summary>
+		[Test()]
+		public void TestBug4283()
+		{
+			var provider = CreateCtrlSpaceProvider(
+@"class Program
+{
+	public Program (int test) : base($)
+	{
+	}
+}");
+			Assert.IsNotNull(provider.Find("test"), "'test' not found.");
+		}
+
+		[Test()]
+		public void TestBug4283ThisCase()
+		{
+			var provider = CreateCtrlSpaceProvider(
+@"class Program
+{
+	public Program (int test) : this($)
+	{
+	}
+}");
+			Assert.IsNotNull(provider.Find("test"), "'test' not found.");
+		}
+
+		/// <summary>
+		/// Bug 4290 - Parameter completion exception inserting method with arguments before other methods
+		/// </summary>
+		[Test()]
+		public void TestBug4290()
+		{
+			// just test for exception
+			ParameterCompletionTests.CreateProvider (
+@"using System;
+namespace Test
+{
+    class TestClass  
+    {
+        $public static void Foo(string bar,$
+        public static void Main(string[] args)
+        {
+        }
+    }
+}");
+		}
+
+		/// <summary>
+		/// Bug 4174 - Intellisense popup after #region (same line) 
+		/// </summary>
+		[Test()]
+		public void TestBug4174()
+		{
+			var provider = CreateProvider(
+@"
+namespace Test
+{
+	class TestClass  
+    {
+$#region S$
+    }
+}");
+			Assert.IsTrue(provider == null || provider.Count == 0);
+		}
+
+		/// <summary>
+		/// Bug 4323 - Parameter completion exception while attempting to instantiate unknown class
+		/// </summary>
+		[Test()]
+		public void TestBug4323()
+		{
+			// just test for exception
+			ParameterCompletionTests.CreateProvider(
+@"namespace Test
+{
+    class TestClass
+    {
+        public static void Main(string[] args)
+        {
+            $object foo = new Foo($
+        }
+    }
+}");
+		}
+
+		[Test()]
+		public void TestParameterAttributeContext()
+		{
+			CombinedProviderTest(
+@"using System;
+using System.Runtime.InteropServices;
+
+public class Test
+{
+	$static extern IntPtr somefunction([MarshalAs(UnmanagedType.LPTStr)] string fileName, [MarshalAs(UnmanagedType.$
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("LPStr"), "'LPStr' not found.");
+			});
+		}
+
+
+		/// <summary>
+		/// Bug 1051 - Code completion can't handle interface return types properly
+		/// </summary>
+		[Test()]
+		public void TestBug1051()
+		{
+			CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+
+public class Test
+{
+	IEnumerable<string> TestFoo()
+	{
+		$return new $
+	}
+}
+", provider => {
+				Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
+				Assert.IsNotNull(provider.Find("List<string>"), "'List<string>' not found.");
+				Assert.IsNotNull(provider.Find("string[]"), "'string[]' not found.");
+			});
+		}
+
 
 	}
 }

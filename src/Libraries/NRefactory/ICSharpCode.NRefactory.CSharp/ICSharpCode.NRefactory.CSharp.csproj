@@ -41,7 +41,8 @@
     <DefineConstants>TRACE;FULL_AST</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>PdbOnly</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -240,6 +241,7 @@
     <Compile Include="Parser\mcs\typespec.cs" />
     <Compile Include="Parser\mcs\visit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Refactoring\PatternHelper.cs" />
     <Compile Include="Refactoring\RefactoringAstHelper.cs" />
@@ -358,6 +360,16 @@
     <Compile Include="Refactoring\CodeActions\CreateClassDeclarationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateDelegateAction.cs" />
     <Compile Include="Formatter\TextEditorOptions.cs" />
+    <Compile Include="Refactoring\CodeActions\IntroduceConstantAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\ExtractMethodAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\StaticVisitor.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableLookupVisitor.cs" />
+    <Compile Include="Refactoring\CodeActions\SpecializedCodeAction.cs" />
+    <Compile Include="Formatter\GeneratedCodeSettings.cs" />
+    <Compile Include="Ast\GeneralScope\NewLineNode.cs" />
+    <Compile Include="Ast\GeneralScope\WhitespaceNode.cs" />
+    <Compile Include="Ast\GeneralScope\TextNode.cs" />
+    <Compile Include="Formatter\FormattingOptionsFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -370,6 +382,7 @@
     <Folder Include="Completion\" />
     <Folder Include="Refactoring\CodeIssues\" />
     <Folder Include="Refactoring\CodeIssues\InconsistentNamingIssue\" />
+    <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

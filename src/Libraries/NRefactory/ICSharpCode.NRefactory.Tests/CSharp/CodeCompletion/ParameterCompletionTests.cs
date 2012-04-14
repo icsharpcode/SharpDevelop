@@ -212,9 +212,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			}
 			
 			#region IParameterCompletionDataFactory implementation
-			public IParameterDataProvider CreateConstructorProvider (int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateConstructorProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
-				
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				return new Provider () {
 					Data = type.GetConstructors (m => m.Accessibility == Accessibility.Public)
 				};
@@ -227,15 +227,17 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				};
 			}
 
-			public IParameterDataProvider CreateDelegateDataProvider (int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
+			public IParameterDataProvider CreateDelegateDataProvider(int startOffset, ICSharpCode.NRefactory.TypeSystem.IType type)
 			{
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				return new Provider () {
 					Data = new [] { type.GetDelegateInvokeMethod () }
 				};
 			}
 			
-			public IParameterDataProvider CreateIndexerParameterDataProvider (int startOffset, IType type, AstNode resolvedNode)
+			public IParameterDataProvider CreateIndexerParameterDataProvider(int startOffset, IType type, AstNode resolvedNode)
 			{
+				Assert.IsTrue(type.Kind != TypeKind.Unknown);
 				if (type.Kind == TypeKind.Array)
 					return new ArrayProvider ();
 				return new IndexerProvider () {
@@ -902,9 +904,9 @@ namespace Test
 		/// Bug 3991 - constructor argument completion not working for attributes applied to methods or parameters
 		/// </summary>
 		[Test()]
-		public void TestBug3991 ()
+		public void TestBug3991()
 		{
-			IParameterDataProvider provider = CreateProvider (
+			IParameterDataProvider provider = CreateProvider(
 @"using System;
 namespace Test
 {
@@ -917,8 +919,27 @@ namespace Test
 	}
 }
 ");
-			Assert.IsNotNull (provider, "provider was not created.");
-			Assert.Greater (provider.Count, 0);
+			Assert.IsNotNull(provider, "provider was not created.");
+			Assert.Greater(provider.Count, 0);
+		}
+
+		/// <summary>
+		/// Bug 4087 - code completion handles object and collection initializers (braces) incorrectly in method calls
+		/// </summary>
+		[Test()]
+		public void TestBug4087()
+		{
+			IParameterDataProvider provider = CreateProvider(
+@"using System;
+class TestClass
+{
+	TestClass()
+	{
+		$Console.WriteLine (new int[]{ 4, 5,$
+	}
+}
+");
+			Assert.IsTrue (provider == null || provider.Count == 0);
 		}
 	}
 }

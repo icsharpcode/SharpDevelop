@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		[SetUp]
 		public void SetUp()
 		{
-			policy = new CSharpFormattingOptions();
+			policy = FormattingOptionsFactory.CreateMono ();
 		}
 		
 		string InsertReadable(Expression expr)

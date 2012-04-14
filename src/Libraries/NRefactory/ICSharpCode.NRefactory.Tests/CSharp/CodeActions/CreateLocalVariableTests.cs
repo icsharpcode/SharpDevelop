@@ -200,19 +200,40 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 
 
 		[Test()]
-		public void TestWrongContext1 ()
+		public void TestWrongContext1()
 		{
 			// May be syntactically possible, but very unlikely.
-			TestWrongContext<CreateLocalVariableAction> (
+			TestWrongContext<CreateLocalVariableAction>(
 				"using System;" + Environment.NewLine +
-					"class TestClass" + Environment.NewLine +
-					"{" + Environment.NewLine +
-					"	void Test ()" + Environment.NewLine +
-					"	{" + Environment.NewLine +
-					"		$foo();" + Environment.NewLine +
-					"	}" + Environment.NewLine +
-					"}"
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		$foo();" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}"
 			);
+		}
+
+		[Test()]
+		public void TestBool()
+		{
+			Test<CreateLocalVariableAction>(
+@"class TestClass
+{
+	void Test ()
+	{
+		object o = !$foo;
+	}
+}", 
+@"class TestClass
+{
+	void Test ()
+	{
+		bool foo;
+		object o = !foo;
+	}
+}");
 		}
 
 	}

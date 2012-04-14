@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteSpecials(AstNode start, AstNode end)
 		{
 			for (AstNode pos = start; pos != end; pos = pos.NextSibling) {
-				if (pos.Role == Roles.Comment || pos.Role == Roles.PreProcessorDirective) {
+				if (pos.Role == Roles.Comment || pos.Role == Roles.NewLine || pos.Role == Roles.PreProcessorDirective) {
 					pos.AcceptVisitor(this);
 				}
 			}
@@ -519,6 +519,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteEmbeddedStatement(Statement embeddedStatement)
 		{
 			if (embeddedStatement.IsNull) {
+				NewLine();
 				return;
 			}
 			BlockStatement block = embeddedStatement as BlockStatement;
@@ -659,7 +660,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void PrintInitializerElements(AstNodeCollection<Expression> elements)
 		{
 			BraceStyle style;
-			if (policy.PlaceArrayInitializersOnNewLine == ArrayInitializerPlacement.AlwaysNewLine) {
+			if (policy.ArrayInitializerWrapping == Wrapping.WrapAlways) {
 				style = BraceStyle.NextLine;
 			} else {
 				style = BraceStyle.EndOfLine;
@@ -1584,7 +1585,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				node.AcceptVisitor(this);
 			}
 			CloseBrace(style);
-			NewLine();
+			if (!(blockStatement.Parent is Expression))
+				NewLine();
 			EndNode(blockStatement);
 		}
 		
@@ -1694,9 +1696,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			forStatement.Condition.AcceptVisitor(this);
 			Space(policy.SpaceBeforeForSemicolon);
 			WriteToken(Roles.Semicolon);
-			Space(policy.SpaceAfterForSemicolon);
-			
-			WriteCommaSeparatedList(forStatement.Iterators);
+			if (forStatement.Iterators.Any()) {
+				Space(policy.SpaceAfterForSemicolon);
+				WriteCommaSeparatedList(forStatement.Iterators);
+			}
 			
 			Space(policy.SpacesWithinForParentheses);
 			RPar();
@@ -2373,7 +2376,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			formatter.EndNode(comment);
 			lastWritten = LastWritten.Whitespace;
 		}
-		
+
+		public void VisitNewLine(NewLineNode newLineNode)
+		{
+			formatter.StartNode(newLineNode);
+			formatter.NewLine();
+			formatter.EndNode(newLineNode);
+		}
+
+		public void VisitWhitespace(WhitespaceNode whitespaceNode)
+		{
+			// unused
+		}
+
+		public void VisitText(TextNode textNode)
+		{
+			// unused
+		}
+
 		public void VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective)
 		{
 			formatter.StartNode(preProcessorDirective);

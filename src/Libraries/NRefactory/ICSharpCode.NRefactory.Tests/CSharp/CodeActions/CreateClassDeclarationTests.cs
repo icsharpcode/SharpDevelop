@@ -63,9 +63,9 @@ class TestClass
 		}
 
 		[Test()]
-		public void TestNestedCreateClass ()
+		public void TestNestedCreateClass()
 		{
-			Test<CreateClassDeclarationAction> (
+			Test<CreateClassDeclarationAction>(
 @"
 class TestClass
 {
@@ -225,13 +225,78 @@ class TestClass
 		}
 
 		[Test()]
-		public void TestNotShowInEventTypes ()
+		public void TestNotShowInEventTypes()
 		{
-			TestWrongContext<CreateClassDeclarationAction> (
+			TestWrongContext<CreateClassDeclarationAction>(
 @"
 class TestClass
 {
 	event $MyEventHandler evt;
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateClassImplementingInterface()
+		{
+			Test<CreateClassDeclarationAction>(
+@"
+class TestClass
+{
+	void TestMethod (System.IDisposable d)
+	{
+		TestMethod ($new Foo ());
+	}
+}
+", @"
+class Foo : System.IDisposable
+{
+	public void Dispose ()
+	{
+		throw new System.NotImplementedException ();
+	}
+}
+class TestClass
+{
+	void TestMethod (System.IDisposable d)
+	{
+		TestMethod (new Foo ());
+	}
+}
+");
+		}
+
+		[Test()]
+		public void TestCreateClassExtendingAbstractClass()
+		{
+			Test<CreateClassDeclarationAction>(
+@"
+class TestClass
+{
+	abstract class FooBar { protected abstract void SomeFoo (); public abstract int MoreFoo { get; } }
+	void TestMethod (FooBar d)
+	{
+		TestMethod ($new Foo ());
+	}
+}
+", @"
+class Foo : FooBar
+{
+	public override int MoreFoo {
+		get;
+	}
+	protected override void SomeFoo ()
+	{
+		throw new System.NotImplementedException ();
+	}
+}
+class TestClass
+{
+	abstract class FooBar { protected abstract void SomeFoo (); public abstract int MoreFoo { get; } }
+	void TestMethod (FooBar d)
+	{
+		TestMethod (new Foo ());
+	}
 }
 ");
 		}
