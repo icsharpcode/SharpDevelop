@@ -924,7 +924,7 @@ class Test{
 	}
 }");
 			Assert.IsNotNull (provider, "provider not found.");
-			Assert.IsNotNull (provider.Find ("string"), "type string not found.");
+			Assert.IsNotNull (provider.Find ("string[]"), "type string not found.");
 		}
 
 		/// <summary>
@@ -4706,9 +4706,9 @@ class MainClass
 		}
 
 		[Test()]
-		public void TestInterfaceReturnType ()
+		public void TestInterfaceReturnType()
 		{
-			var provider = CreateProvider (
+			var provider = CreateProvider(
 @"using System;
 using System.Collections.Generic;
 
@@ -4720,9 +4720,10 @@ class MainClass
 	}
 }
 ");
-			Assert.IsNotNull (provider.Find ("string"), "'string' not found.");
-			Assert.IsNotNull (provider.Find ("List"), "'List' not found.");
-			Assert.IsNull (provider.Find ("IEnumerable"), "'IEnumerable' found.");
+			Assert.IsNotNull(provider.Find("string[]"), "'string[]' not found.");
+			Assert.IsNotNull(provider.Find("List<string>"), "'List<string>' not found.");
+			Assert.IsNull(provider.Find("IEnumerable"), "'IEnumerable' found.");
+			Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
 			Assert.IsNull (provider.Find ("Console"), "'Console' found.");
 		}
 
@@ -4985,6 +4986,31 @@ public class Test
 }
 ", provider => {
 				Assert.IsNotNull(provider.Find("LPStr"), "'LPStr' not found.");
+			});
+		}
+
+
+		/// <summary>
+		/// Bug 1051 - Code completion can't handle interface return types properly
+		/// </summary>
+		[Test()]
+		public void TestBug1051()
+		{
+			CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+
+public class Test
+{
+	IEnumerable<string> TestFoo()
+	{
+		$return new $
+	}
+}
+", provider => {
+				Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
+				Assert.IsNotNull(provider.Find("List<string>"), "'List<string>' not found.");
+				Assert.IsNotNull(provider.Find("string[]"), "'string[]' not found.");
 			});
 		}
 
