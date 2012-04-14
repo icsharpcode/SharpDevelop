@@ -78,8 +78,8 @@
     <Compile Include="CppFormattingStrategy.cs" />
     <Compile Include="CppLanguageBinding.cs" />
     <Compile Include="CppLanguageProperties.cs" />
-    <Compile Include="Project\ApplicationOptionsXaml.cs">
-      <DependentUpon>ApplicationOptionsXaml.xaml</DependentUpon>
+    <Compile Include="Project\ApplicationOptions.cs">
+      <DependentUpon>ApplicationOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project\DependencyRelation.cs" />
@@ -170,6 +170,6 @@
     <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Project\ApplicationOptionsXaml.xaml" />
+    <Page Include="Project\ApplicationOptions.xaml" />
   </ItemGroup>
 </Project>

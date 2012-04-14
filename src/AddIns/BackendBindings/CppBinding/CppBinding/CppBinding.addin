@@ -14,14 +14,10 @@
 	</Manifest>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C++">
-	<!--
-		<OptionPanel id = "Application"
-		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
-		             class = "ICSharpCode.CppBinding.Project.ApplicationOptions" />
-	-->
+	
 		<OptionPanel id = "Application1"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
-		             class = "ICSharpCode.CppBinding.Project.ApplicationOptionsXaml" />
+		             class = "ICSharpCode.CppBinding.Project.ApplicationOptions" />
 		
 		<OptionPanel id = "Preprocessor"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor}"
@@ -29,19 +25,7 @@
 		<OptionPanel id = "Linker"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Linker}"
 				class = "ICSharpCode.CppBinding.Project.LinkerOptions" />
-		<!--<OptionPanel id    = "BuildEvents"
-		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
-		             class = "ICSharpCode.CppBinding.Project.BuildEventOptions"/>-->
-		
-		<!--<OptionPanel id    = "ReferencePaths"
-		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
-		<OptionPanel id    = "Signing"
-		             label = "${res:Dialog.ProjectOptions.Signing}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
-		<OptionPanel id    = "DebugOptions"
-		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>/-->
+	
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>	
 	

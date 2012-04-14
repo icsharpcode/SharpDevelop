@@ -27,14 +27,14 @@ namespace ICSharpCode.CppBinding.Project
 	/// <summary>
 	/// Interaction logic for ApplicationSettingsXaml.xaml
 	/// </summary>
-	public partial class ApplicationOptionsXaml : ProjectOptionPanel
+	public partial class ApplicationOptions : ProjectOptionPanel
 	{
 		private const string iconsfilter = "${res:SharpDevelop.FileFilter.Icons}|*.ico|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string manifestFilter = "${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles}|*.manifest|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string win32filter = "Win32 Resource files|*.res|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		MSBuildBasedProject project;
 		
-		public ApplicationOptionsXaml()
+		public ApplicationOptions()
 		{
 			InitializeComponent();
 		}
