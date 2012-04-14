@@ -132,6 +132,8 @@
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/IssueProviders">
 		<Class id    = "ConditionalToNullCoalescing"
 		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.ConditionalToNullCoalescingIssue" />
+		<Class id    = "ExplicitConversionInForEach"
+		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExplicitConversionInForEachIssue" />
 		<Class id    = "NotImplementedException"
 		       class = "ICSharpCode.NRefactory.CSharp.Refactoring.NotImplementedExceptionIssue" />
 		<Class id    = "RedundantInternal"
@@ -153,6 +155,9 @@
 	<Path path = "/SharpDevelop/ViewContent/TextEditor/C#/ContextActions">
 		<!-- In this path, you can add SD context action providers using <Class>,
 		     or you can add NR5 code action providers using <CSharpCodeActionProvider> -->
+		<CSharpCodeActionProvider id = "ExtractMethod"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod.ExtractMethodAction" />
+		
 		<CSharpCodeActionProvider id = "AddAnotherAccessor"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.AddAnotherAccessorAction" />
 		<CSharpCodeActionProvider id = "CheckIfParameterIsNull"
@@ -177,6 +182,8 @@
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateLocalVariableAction" />
 		<CSharpCodeActionProvider id = "CreateField"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateFieldAction" />
+		<CSharpCodeActionProvider id = "CreateIndexer"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateIndexerAction" />
 		<CSharpCodeActionProvider id = "CreateMethodDeclaration"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.CreateMethodDeclarationAction" />
 		<CSharpCodeActionProvider id = "CreateProperty"
@@ -191,8 +198,12 @@
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.GeneratePropertyAction" />
 		<CSharpCodeActionProvider id = "GenerateSwitchLabels"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.GenerateSwitchLabelsAction" />
+		<CSharpCodeActionProvider id = "InlineLocalVariable"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.InlineLocalVariableAction" />
 		<CSharpCodeActionProvider id = "InsertAnonymousMethodSignature"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.InsertAnonymousMethodSignatureAction" />
+		<CSharpCodeActionProvider id = "IntroduceConstant"
+			class = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceConstantAction" />
 		<CSharpCodeActionProvider id = "IntroduceFormatItem"
 			class = "ICSharpCode.NRefactory.CSharp.Refactoring.IntroduceFormatItemAction" />
 		<CSharpCodeActionProvider id = "InvertIf"
