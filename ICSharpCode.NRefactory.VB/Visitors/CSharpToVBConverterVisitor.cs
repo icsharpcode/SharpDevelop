@@ -2220,5 +2220,20 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		{
 			throw new NotImplementedException();
 		}
+		
+		public AstNode VisitNewLine(CSharp.NewLineNode newLineNode, object data)
+		{
+			return null;
+		}
+		
+		public AstNode VisitWhitespace(CSharp.WhitespaceNode whitespaceNode, object data)
+		{
+			return null;
+		}
+		
+		public AstNode VisitText(CSharp.TextNode textNode, object data)
+		{
+			return null;
+		}
 	}
 }
