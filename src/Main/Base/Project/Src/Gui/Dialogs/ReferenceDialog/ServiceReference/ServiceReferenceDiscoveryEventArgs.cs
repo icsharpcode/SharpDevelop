@@ -2,10 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ServiceModel.Description;
 using System.Text;
 using System.Web.Services.Description;
+using System.Web.Services.Discovery;
+
 using WebServices = System.Web.Services.Description;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -24,9 +27,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			var message = new StringBuilder();
 			foreach (Exception ex in errors) {
 				message.AppendLine(ex.Message);
-				message.AppendLine();
 			}
 			Error = new AggregateException(message.ToString(), errors);
+		}
+		
+		public ServiceReferenceDiscoveryEventArgs(DiscoveryClientReferenceCollection references)
+		{
+			GetServices(references);
+		}
+		
+		void GetServices(DiscoveryClientReferenceCollection references)
+		{
+			foreach (DictionaryEntry entry in references) {
+				var contractRef = entry.Value as ContractReference;
+				if (contractRef != null) {
+					services.Add(contractRef.Contract);
+				}
+			}
 		}
 		
 		public ServiceReferenceDiscoveryEventArgs(MetadataSet metadata)

@@ -43,13 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ServiceItem myItem;
 		
 		Uri discoveryUri;
-		CredentialCache credentialCache = new CredentialCache();
-		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
 		ServiceReferenceDiscoveryClient serviceReferenceDiscoveryClient;
-		
-		delegate DiscoveryDocument DiscoverAnyAsync(string url);
-		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
-		delegate void AuthenticationHandler(Uri uri, string authenticationType);
 		
 		public AddServiceReferenceViewModel(IProject project)
 		{
@@ -58,19 +52,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.assemblyReferences = serviceGenerator.GetCheckableAssemblyReferences().ToList();
 			HeadLine = header;
 			
-			GoCommand = new RelayCommand(DiscoveryServices, CanExecuteGo);
-			AdvancedDialogCommand = new RelayCommand(ExecuteAdvancedDialogCommand, CanExecuteAdvancedDialogCommand);
+			GoCommand = new RelayCommand(DiscoverServices);
+			AdvancedDialogCommand = new RelayCommand(ShowAdvancedOptions);
 			TwoValues = new ObservableCollection<ImageAndDescription>();
 		}
 		
 		public ICommand GoCommand { get; private set; }
 		
-		void DiscoveryServices()
+		void DiscoverServices()
 		{
 			Uri uri = TryGetUri(SelectedService);
 			if (uri != null) {
 				ServiceDescriptionMessage = waitMessage;
-				StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
+				StartDiscovery(uri);
 			}
 		}
 		
@@ -89,19 +83,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			return null;
 		}
 		
-		bool CanExecuteGo()
-		{
-			return true;
-		}
-		
 		public ICommand AdvancedDialogCommand { get; private set; }
 		
-		bool CanExecuteAdvancedDialogCommand()
-		{
-			return true;
-		}
-		
-		void ExecuteAdvancedDialogCommand()
+		void ShowAdvancedOptions()
 		{
 			var vm = new AdvancedServiceViewModel(serviceGenerator.Options.Clone());
 			vm.AssembliesToReference.AddRange(assemblyReferences);
@@ -113,19 +97,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		void StartDiscovery(Uri uri, DiscoveryNetworkCredential credential)
+		void StartDiscovery(Uri uri)
 		{
-			// Abort previous discovery.
-			StopDiscovery();
-			
-			// Start new discovery.
-			discoveryUri = uri;
-			DiscoverAnyAsync asyncDelegate = new DiscoverAnyAsync(discoveryClientProtocol.DiscoverAny);
-			AsyncCallback callback = new AsyncCallback(DiscoveryCompleted);
-			discoveryClientProtocol.Credentials = credential;
-			IAsyncResult result = asyncDelegate.BeginInvoke(uri.AbsoluteUri, callback, new AsyncDiscoveryState(discoveryClientProtocol, uri, credential));
-			
+			if (serviceReferenceDiscoveryClient != null) {
+				serviceReferenceDiscoveryClient.DiscoveryComplete -= ServiceReferenceDiscoveryComplete;
+			}
+			serviceReferenceDiscoveryClient = new ServiceReferenceDiscoveryClient();
 			serviceReferenceDiscoveryClient.DiscoveryComplete += ServiceReferenceDiscoveryComplete;
+			
+			discoveryUri = uri;
 			serviceReferenceDiscoveryClient.Discover(uri);
 		}
 
@@ -146,69 +126,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			ICSharpCode.Core.LoggingService.Debug("DiscoveryCompleted: " + ex.ToString());
 		}
 		
-		/// <summary>
-		/// Called after an asynchronous web services search has
-		/// completed.
-		/// </summary>
-		void DiscoveryCompleted(IAsyncResult result)
-		{
-			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
-			WebServiceDiscoveryClientProtocol protocol = state.Protocol;
-			
-			// Check that we are still waiting for this particular callback.
-			bool wanted = false;
-			lock (this) {
-				wanted = Object.ReferenceEquals(discoveryClientProtocol, protocol);
-			}
-			
-			if (wanted) {
-				DiscoveredWebServicesHandler handler = new DiscoveredWebServicesHandler(DiscoveredWebServices);
-				try {
-					DiscoverAnyAsync asyncDelegate = (DiscoverAnyAsync)((AsyncResult)result).AsyncDelegate;
-					DiscoveryDocument handlerdoc = asyncDelegate.EndInvoke(result);
-					handler(protocol);
-				} catch (Exception ex) {
-					OnWebServiceDiscoveryError(ex);
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Stops any outstanding asynchronous discovery requests.
-		/// </summary>
-		void StopDiscovery()
-		{
-			lock (this) {
-				if (discoveryClientProtocol != null) {
-					try {
-						discoveryClientProtocol.Abort();
-					} catch (NotImplementedException) {
-					} catch (ObjectDisposedException) {
-						// Receive this error if the url pointed to a file.
-						// The discovery client will already have closed the file
-						// so the abort fails.
-					}
-					discoveryClientProtocol.Dispose();
-				}
-				discoveryClientProtocol = new WebServiceDiscoveryClientProtocol();
-				serviceReferenceDiscoveryClient = new ServiceReferenceDiscoveryClient();
-			}
-		}
-		
-		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
-		{
-			if (protocol != null) {
-				ServiceDescriptionCollection services = ServiceReferenceHelper.GetServiceDescriptions(protocol);
-				DiscoveredWebServices(services);
-			}
-		}
-		
 		void DiscoveredWebServices(ServiceDescriptionCollection services)
 		{
-			ServiceDescriptionMessage = String.Format(
-				"{0} service(s) found at address {1}",
-			    services.Count,
-			    discoveryUri);
+			ServiceDescriptionMessage = String.Format("{0} service(s) found at address {1}", services.Count, discoveryUri);
 			if (services.Count > 0) {
 				AddUrlToHistory(discoveryUri);
 			}
@@ -307,14 +227,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			TwoValues.Clear();
 			if (ServiceItem.Tag is ServiceDescription) {
 				ServiceDescription desc = (ServiceDescription)ServiceItem.Tag;
-				var tv = new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),
-				                                 desc.RetrievalUrl);
+				var tv = new ImageAndDescription("Icons.16x16.Interface", desc.RetrievalUrl);
 				TwoValues.Add(tv);
 			} else if (ServiceItem.Tag is PortType) {
 				PortType portType = (PortType)ServiceItem.Tag;
 				foreach (Operation op in portType.Operations) {
-					TwoValues.Add(new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Method"),
-					                                      op.Name));
+					TwoValues.Add(new ImageAndDescription("Icons.16x16.Method", op.Name));
 				}
 			}
 		}
@@ -328,17 +246,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void Add(ServiceDescription description)
 		{
-			List<ServiceItem> items = new List<ServiceItem>();
-			var name = ServiceReferenceHelper.GetServiceName(description);
-			var rootNode = new ServiceItem(null, name);
+			var items = new List<ServiceItem>();
+			string name = ServiceReferenceHelper.GetServiceName(description);
+			var rootNode = new ServiceItem(name);
 			rootNode.Tag = description;
 
 			foreach (Service service in description.Services) {
-				var serviceNode = new ServiceItem(null, service.Name);
+				var serviceNode = new ServiceItem(service.Name);
 				serviceNode.Tag = service;
 				items.Add(serviceNode);
 				foreach (PortType portType  in description.PortTypes) {
-					var portNode = new ServiceItem(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"), portType.Name);
+					var portNode = new ServiceItem("Icons.16x16.Interface", portType.Name);
 					portNode.Tag = portType;
 					serviceNode.SubItems.Add(portNode);
 				}
@@ -369,18 +287,35 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			Description = description;
 		}
 		
+		public ImageAndDescription(string resourceName, string description)
+			: this(PresentationResourceService.GetBitmapSource(resourceName), description)
+		{
+		}
+		
 		public BitmapSource Image { get; set; }
 		public string Description { get; set; }
 	}
 	
 	public class ServiceItem : ImageAndDescription
 	{
-		public ServiceItem(BitmapSource bitmapSource, string description) : base(bitmapSource, description)
+		List<ServiceItem> subItems = new List<ServiceItem>();
+			
+		public ServiceItem(string description)
+			: base((BitmapSource)null, description)
 		{
-			SubItems = new List<ServiceItem>();
 		}
+		
+		public ServiceItem(string resourceName, string description)
+			: base(resourceName, description)
+		{
+		}
+		
 		public object Tag { get; set; }
-		public List<ServiceItem> SubItems { get; set; }
+		
+		public List<ServiceItem> SubItems {
+			get { return subItems; }
+			set { subItems = value; }
+		}
 	}
 	
 	public class CheckableAssemblyReference : ImageAndDescription

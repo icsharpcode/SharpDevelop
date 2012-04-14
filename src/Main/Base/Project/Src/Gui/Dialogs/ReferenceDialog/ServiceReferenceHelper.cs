@@ -9,21 +9,7 @@ using System.Web.Services.Discovery;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	internal static class ServiceReferenceHelper
-	{
-		public static ServiceDescriptionCollection GetServiceDescriptions(DiscoveryClientProtocol protocol)
-		{
-			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
-			protocol.ResolveOneLevel();
-		
-			foreach (DictionaryEntry entry in protocol.References) {
-				ContractReference contractRef = entry.Value as ContractReference;
-				if (contractRef != null) {
-					services.Add(contractRef.Contract);
-				}
-			}
-			return services;
-		}
-		
+	{		
 		public static string GetServiceName(ServiceDescription description)
 		{
 			if (description.Name != null) {

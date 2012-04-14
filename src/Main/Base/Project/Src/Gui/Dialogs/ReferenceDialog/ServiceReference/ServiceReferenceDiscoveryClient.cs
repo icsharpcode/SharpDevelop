@@ -4,22 +4,21 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net;
 using System.ServiceModel.Description;
+using System.Web.Services.Discovery;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class ServiceReferenceDiscoveryClient
 	{
-		const int DiscoveryClientsUsed = 2;
+		const int DiscoveryClientsUsed = 3;
 		
 		Uri discoveryUrl;
+		BackgroundWorker webServiceDiscoveryBackgroundWorker = new BackgroundWorker();
 		BackgroundWorker mexDiscoveryBackgroundWorker = new BackgroundWorker();
 		BackgroundWorker mexRelativePathDiscoveryBackgroundWorker = new BackgroundWorker();
 		List<Exception> errors = new List<Exception>();
-		
-		public ServiceReferenceDiscoveryClient()
-		{
-		}
 		
 		public event EventHandler<ServiceReferenceDiscoveryEventArgs> DiscoveryComplete;
 		
@@ -33,7 +32,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void Discover(Uri url)
 		{
 			this.discoveryUrl = url;
+			DiscoverWebService();
 			DiscoverMexMetadata();
+		}
+		
+		void DiscoverWebService()
+		{
+			webServiceDiscoveryBackgroundWorker.DoWork += DiscoverWebServiceMetadata;
+			webServiceDiscoveryBackgroundWorker.RunWorkerCompleted += DiscoveryCompleted;
+			webServiceDiscoveryBackgroundWorker.RunWorkerAsync(discoveryUrl);
+		}
+		
+		void DiscoverWebServiceMetadata(object sender, DoWorkEventArgs e)
+		{
+			Uri url = (Uri)e.Argument;
+			var client = new DiscoveryClientProtocol();
+			client.Credentials = GetCredentials();
+			DiscoveryDocument document = client.DiscoverAny(url.AbsoluteUri);
+			client.ResolveOneLevel();
+			
+			e.Result = new ServiceReferenceDiscoveryEventArgs(client.References);
+		}
+		
+		DiscoveryNetworkCredential GetCredentials()
+		{
+			return new DiscoveryNetworkCredential(
+				CredentialCache.DefaultNetworkCredentials, 
+				DiscoveryNetworkCredential.DefaultAuthenticationType);
 		}
 		
 		void DiscoverMexMetadata()
