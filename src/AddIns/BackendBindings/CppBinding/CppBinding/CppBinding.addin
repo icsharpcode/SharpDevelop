@@ -14,9 +14,15 @@
 	</Manifest>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C++">
+	<!--
 		<OptionPanel id = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.CppBinding.Project.ApplicationOptions" />
+	-->
+		<OptionPanel id = "Application1"
+		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
+		             class = "ICSharpCode.CppBinding.Project.ApplicationOptionsXaml" />
+		
 		<OptionPanel id = "Preprocessor"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor}"
 				class = "ICSharpCode.CppBinding.Project.PreprocessorOptions" />

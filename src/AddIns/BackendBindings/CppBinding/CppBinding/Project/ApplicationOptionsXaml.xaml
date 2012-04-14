@@ -1,16 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
-	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"
+	x:Class="ICSharpCode.CppBinding.Project.ApplicationOptionsXaml"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	
-	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
+	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels;assembly=ICSharpCode.SharpDevelop"
+	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
-	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
-	
-	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project">
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 	
 	<Grid>
 		<Grid.RowDefinitions>
@@ -22,19 +21,18 @@
 			<RowDefinition Height="25"></RowDefinition>
 			<RowDefinition Height="30"></RowDefinition>
 			<RowDefinition Height="30"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
-			<RowDefinition Height="25"></RowDefinition>
+			<RowDefinition Height="10"></RowDefinition>
 			<RowDefinition Height="100"></RowDefinition>
 		</Grid.RowDefinitions>
 		
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition
+			<ColumnDefinition 
 				Width="40"></ColumnDefinition>
 			<ColumnDefinition Width="150"></ColumnDefinition>
 			<ColumnDefinition></ColumnDefinition>
 		</Grid.ColumnDefinitions>
 		
-		<Label Grid.ColumnSpan="2"
+		<Label Grid.ColumnSpan="2" 
 		       Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.AssemblyName}"></Label>
 		
 		<optionpanels:StorageLocationPicker Grid.Row="1" Location="{Binding AssemblyName.Location}" DockPanel.Dock="Left" />
@@ -84,7 +82,8 @@
 			<optionpanels:StorageLocationPicker
 				Location="{Binding ApplicationIcon.Location}" DockPanel.Dock="Left" />
 			
-			<TextBox x:Name="applicationIconTextBox" Grid.Column="1" Margin="5,5,0,0"			
+			<TextBox x:Name="applicationIconTextBox" Grid.Column="1" Margin="5,5,0,0"
+			         TextChanged="ApplicationIconTextBox_TextChanged"
 			         Text="{Binding ApplicationIcon.Value,UpdateSourceTrigger=PropertyChanged}"></TextBox>
 			
 			<Button  Grid.Column="2" Margin="8,5,8,0" Content="..." Click="ApplicationIconButton_Click"></Button>
@@ -101,23 +100,8 @@
 			          SelectionChanged="ApplicationManifestComboBox_SelectionChanged" Width="200"></ComboBox>
 		</widgets:StackPanelWithSpacing>
 		
-		<Label Grid.Row="8" Grid.ColumnSpan="2"
-		       Content="{core:Localize Dialog.ProjectOptions.ApplicationSettings.Win32Resource}"></Label>
 		
-		<optionpanels:StorageLocationPicker Grid.Row="9" Location="{Binding Win32Resource .Location}" DockPanel.Dock="Left" />
-			
-		<Grid Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="8*"></ColumnDefinition>
-				<ColumnDefinition Width="*"></ColumnDefinition>
-			</Grid.ColumnDefinitions>
-			
-			<TextBox x:Name="win32ResourceFileTextBox"  Text="{Binding Win32Resource.Value,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
-			
-			<Button x:Name="Win32ResourceCombo" Content="....." Grid.Column="1" Margin="8,0,0,8" Click="Win32ResourceComboButton_Click"></Button>
-		</Grid>
-		
-		<GroupBox Grid.Row="10" Grid.ColumnSpan="3" Margin="0,5,0,0"
+		<GroupBox Grid.Row="9" Grid.ColumnSpan="3" Margin="0,5,0,0"
 		          Header="{core:Localize Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}">
 			<Grid Margin="15,0,0,0">
 				<Grid.RowDefinitions>
