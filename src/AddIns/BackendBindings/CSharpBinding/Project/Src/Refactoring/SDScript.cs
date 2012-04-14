@@ -26,7 +26,7 @@ namespace CSharpBinding.Refactoring
 		readonly TextSegmentCollection<TextSegment> textSegmentCollection;
 		readonly SDRefactoringContext context;
 		
-		public SDScript(ITextEditor editor, SDRefactoringContext context) : base(editor.Document, new CSharpFormattingOptions(), context.TextEditorOptions)
+		public SDScript(ITextEditor editor, SDRefactoringContext context) : base(editor.Document, FormattingOptionsFactory.CreateSharpDevelop(), context.TextEditorOptions)
 		{
 			this.editor = editor;
 			this.context = context;
@@ -49,7 +49,7 @@ namespace CSharpBinding.Refactoring
 				//var startLocation = editor.Document.GetLocation(offset);
 				//var endLocation = editor.Document.GetLocation(offset + length);
 				//var node = parseInfo.CompilationUnit.GetNodeContaining(startLocation, endLocation);
-				var formatter = new AstFormattingVisitor(new CSharpFormattingOptions(), editor.Document, context.TextEditorOptions);
+				var formatter = new AstFormattingVisitor(FormattingOptionsFactory.CreateSharpDevelop(), editor.Document, context.TextEditorOptions);
 				parseInfo.CompilationUnit.AcceptVisitor(formatter);
 				var segment = GetSegment(node);
 				formatter.ApplyChanges(segment.Offset, segment.Length);

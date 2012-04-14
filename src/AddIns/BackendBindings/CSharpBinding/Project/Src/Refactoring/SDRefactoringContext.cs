@@ -20,6 +20,7 @@ namespace CSharpBinding.Refactoring
 {
 	public class SDRefactoringContext : RefactoringContext
 	{
+		readonly CSharpAstResolver resolver;
 		readonly ITextEditor editor;
 		readonly ITextSource textSource;
 		readonly TextLocation location;
@@ -29,6 +30,7 @@ namespace CSharpBinding.Refactoring
 		public SDRefactoringContext(ITextSource textSource, CSharpAstResolver resolver, TextLocation location, int selectionStart, int selectionLength, CancellationToken cancellationToken)
 			: base(resolver, cancellationToken)
 		{
+			this.resolver = resolver;
 			this.textSource = textSource;
 			this.document = textSource as IDocument;
 			this.selectionStart = selectionStart;
