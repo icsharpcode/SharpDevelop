@@ -24,7 +24,6 @@ namespace ICSharpCode.UnitTesting
 		public ProjectUnitTestNode(TestProject project)
 		{
 			this.project = project;
-			project.
 		}
 		
 		protected override void LoadChildren()

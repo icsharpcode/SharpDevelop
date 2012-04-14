@@ -50,7 +50,7 @@ namespace ICSharpCode.UnitTesting
 			// Add the load solution projects thread ended handler before
 			// we try to display the open solution so the event does not
 			// get missed.
-			ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEnded;
+			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadFinished;
 			OnAddedLoadSolutionProjectsThreadEndedHandler();
 
 			// Display currently open solution.
@@ -61,7 +61,7 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 			
-			ParserService.ParseInformationUpdated += ParseInformationUpdated;
+			SD.ParserService.ParseInformationUpdated += ParseInformationUpdated;
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.SolutionFolderRemoved += SolutionFolderRemoved;
 			ProjectService.ProjectAdded += ProjectAdded;
@@ -89,8 +89,8 @@ namespace ICSharpCode.UnitTesting
 				ProjectService.ProjectAdded -= ProjectAdded;
 				ProjectService.SolutionFolderRemoved -= SolutionFolderRemoved;
 				ProjectService.SolutionClosed -= SolutionClosed;
-				ParserService.ParseInformationUpdated -= ParseInformationUpdated;
-				ParserService.LoadSolutionProjectsThreadEnded -= LoadSolutionProjectsThreadEnded;
+				SD.ParserService.ParseInformationUpdated -= ParseInformationUpdated;
+				SD.ParserService.LoadSolutionProjectsThread.Finished -= LoadSolutionProjectsThreadFinished;
 			}
 		}
 		
@@ -246,7 +246,7 @@ namespace ICSharpCode.UnitTesting
 		/// solution.
 		/// </summary>
 		protected virtual bool IsParserLoadingSolution {
-			get { return ParserService.LoadSolutionProjectsThreadRunning; }
+			get { return SD.ParserService.LoadSolutionProjectsThread.IsRunning; }
 		}
 		
 		/// <summary>
@@ -275,7 +275,7 @@ namespace ICSharpCode.UnitTesting
 			UpdateToolbar();
 		}
 		
-		void LoadSolutionProjectsThreadEnded(object source, EventArgs e)
+		void LoadSolutionProjectsThreadFinished(object source, EventArgs e)
 		{
 			WorkbenchSingleton.SafeThreadAsyncCall(UpdateToolbar);
 			Solution solution = ProjectService.OpenSolution;

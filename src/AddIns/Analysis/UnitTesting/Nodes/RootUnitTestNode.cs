@@ -30,7 +30,7 @@ namespace ICSharpCode.UnitTesting
 			this.solution = solution;
 			ProjectService.ProjectAdded += OnProjectAdded;
 			ProjectService.ProjectRemoved += OnProjectRemoved;
-			ParserService.LoadSolutionProjectsThreadEnded += delegate { LoadChildren(); };
+			SD.ParserService.LoadSolutionProjectsThread.Finished += delegate { LoadChildren(); };
 			LazyLoading = true;
 		}
 
@@ -47,7 +47,7 @@ namespace ICSharpCode.UnitTesting
 		protected override void LoadChildren()
 		{
 			this.Children.Clear();
-			if (!ParserService.LoadSolutionProjectsThreadRunning)
+			if (!SD.ParserService.LoadSolutionProjectsThread.IsRunning)
 				this.Children.AddRange(solution.Projects.Where(p => p.IsTestProject()).Select(p => new ProjectUnitTestNode(new TestProject(p))));
 		}
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.UnitTesting
 				throw new ArgumentNullException("project");
 			if (project.ProjectContent == null)
 				return false;
-			return ParserService.GetCompilation(project).FindType(typeof(TestAttribute)).Kind != TypeKind.Unknown;
+			return SD.ParserService.GetCompilation(project).FindType("NUnit.Framework.TestAttribute").Kind != TypeKind.Unknown;
 		}
 	}
 }

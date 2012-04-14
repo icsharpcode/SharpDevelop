@@ -28,7 +28,7 @@ namespace ICSharpCode.UnitTesting
 			this.project = project;
 			this.projectContent = project.ProjectContent;
 			this.testFrameworks = TestService.RegisteredTestFrameworks;
-			project.ProjectContent.GetAllTypeDefinitions().Where(td => td.Attributes.Select(a => a.CreateResolvedAttribute(project.ProjectContent.CreateCompilation().
+//			project.ProjectContent.GetAllTypeDefinitions().Where(td => td.Attributes.Select(a => a.CreateResolvedAttribute(project.ProjectContent.CreateCompilation().
 		}
 		
 		public IProject Project {
