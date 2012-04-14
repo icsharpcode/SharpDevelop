@@ -43,9 +43,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		ServiceItem myItem;
 		
 		Uri discoveryUri;
-		ServiceDescriptionCollection serviceDescriptionCollection = new ServiceDescriptionCollection();
 		CredentialCache credentialCache = new CredentialCache();
 		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
+		ServiceReferenceDiscoveryClient serviceReferenceDiscoveryClient;
 		
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
@@ -121,13 +121,32 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			AsyncCallback callback = new AsyncCallback(DiscoveryCompleted);
 			discoveryClientProtocol.Credentials = credential;
 			IAsyncResult result = asyncDelegate.BeginInvoke(uri.AbsoluteUri, callback, new AsyncDiscoveryState(discoveryClientProtocol, uri, credential));
+			
+			serviceReferenceDiscoveryClient.DiscoveryComplete += ServiceReferenceDiscoveryComplete;
+			serviceReferenceDiscoveryClient.Discover(uri);
+		}
+
+		void ServiceReferenceDiscoveryComplete(object sender, ServiceReferenceDiscoveryEventArgs e)
+		{
+			if (Object.ReferenceEquals(serviceReferenceDiscoveryClient, sender)) {
+				if (e.HasError) {
+					OnWebServiceDiscoveryError(e.Error);
+				} else {
+					DiscoveredWebServices(e.Services);
+				}
+			}
+		}
+		
+		void OnWebServiceDiscoveryError(Exception ex)
+		{
+			ServiceDescriptionMessage = ex.Message;
+			ICSharpCode.Core.LoggingService.Debug("DiscoveryCompleted: " + ex.ToString());
 		}
 		
 		/// <summary>
 		/// Called after an asynchronous web services search has
 		/// completed.
 		/// </summary>
-		/// 
 		void DiscoveryCompleted(IAsyncResult result)
 		{
 			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
@@ -144,20 +163,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				try {
 					DiscoverAnyAsync asyncDelegate = (DiscoverAnyAsync)((AsyncResult)result).AsyncDelegate;
 					DiscoveryDocument handlerdoc = asyncDelegate.EndInvoke(result);
-					if (!state.Credential.IsDefaultAuthenticationType) {
-						AddCredential(state.Uri, state.Credential);
-					}
 					handler(protocol);
 				} catch (Exception ex) {
-					if (protocol.IsAuthenticationRequired) {
-						HttpAuthenticationHeader authHeader = protocol.GetAuthenticationHeader();
-						AuthenticationHandler authHandler = new AuthenticationHandler(AuthenticateUser);
-//	trouble					Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
-					} else {
-						ServiceDescriptionMessage = ex.Message;
-						ICSharpCode.Core.LoggingService.Error("DiscoveryCompleted", ex);
-//	trouble					Invoke(handler, new object[] {null});
-					}
+					OnWebServiceDiscoveryError(ex);
 				}
 			}
 		}
@@ -180,47 +188,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 					discoveryClientProtocol.Dispose();
 				}
 				discoveryClientProtocol = new WebServiceDiscoveryClientProtocol();
+				serviceReferenceDiscoveryClient = new ServiceReferenceDiscoveryClient();
 			}
-		}
-		
-		void AuthenticateUser(Uri uri, string authenticationType)
-		{
-			DiscoveryNetworkCredential credential = (DiscoveryNetworkCredential)credentialCache.GetCredential(uri, authenticationType);
-			if (credential != null) {
-				StartDiscovery(uri, credential);
-			} else {
-				using (UserCredentialsDialog credentialsForm = new UserCredentialsDialog(uri.ToString(), authenticationType)) {
-//					if (DialogResult.OK == credentialsForm.ShowDialog(WorkbenchSingleton.MainWin32Window)) {
-//						StartDiscovery(uri, credentialsForm.Credential);
-//					}
-				}
-			}
-		}
-		
-		void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
-		{
-			NetworkCredential matchedCredential = credentialCache.GetCredential(uri, credential.AuthenticationType);
-			if (matchedCredential != null) {
-				credentialCache.Remove(uri, credential.AuthenticationType);
-			}
-			credentialCache.Add(uri, credential.AuthenticationType, credential);
 		}
 		
 		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
 		{
 			if (protocol != null) {
-				serviceDescriptionCollection = ServiceReferenceHelper.GetServiceDescriptions(protocol);
-				ServiceDescriptionMessage = String.Format(
-					"{0} service(s) found at address {1}",
-				    serviceDescriptionCollection.Count,
-				    discoveryUri);
-				if (serviceDescriptionCollection.Count > 0) {
-					AddUrlToHistory(discoveryUri);
-				}
-				DefaultNameSpace = GetDefaultNamespace();
-				FillItems(serviceDescriptionCollection);
-				string referenceName = ServiceReferenceHelper.GetReferenceName(discoveryUri);
+				ServiceDescriptionCollection services = ServiceReferenceHelper.GetServiceDescriptions(protocol);
+				DiscoveredWebServices(services);
 			}
+		}
+		
+		void DiscoveredWebServices(ServiceDescriptionCollection services)
+		{
+			ServiceDescriptionMessage = String.Format(
+				"{0} service(s) found at address {1}",
+			    services.Count,
+			    discoveryUri);
+			if (services.Count > 0) {
+				AddUrlToHistory(discoveryUri);
+			}
+			DefaultNameSpace = GetDefaultNamespace();
+			FillItems(services);
+			string referenceName = ServiceReferenceHelper.GetReferenceName(discoveryUri);
 		}
 		
 		void AddUrlToHistory(Uri discoveryUri)
@@ -312,14 +303,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void UpdateListView()
 		{
-			ServiceDescription desc = null;
 			TwoValues.Clear();
-			if(ServiceItem.Tag is ServiceDescription) {
-				desc = (ServiceDescription)ServiceItem.Tag;
+			if (ServiceItem.Tag is ServiceDescription) {
+				ServiceDescription desc = (ServiceDescription)ServiceItem.Tag;
 				var tv = new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Interface"),
 				                                 desc.RetrievalUrl);
 				TwoValues.Add(tv);
-			} else if(ServiceItem.Tag is PortType) {
+			} else if (ServiceItem.Tag is PortType) {
 				PortType portType = (PortType)ServiceItem.Tag;
 				foreach (Operation op in portType.Operations) {
 					TwoValues.Add(new ImageAndDescription(PresentationResourceService.GetBitmapSource("Icons.16x16.Method"),
@@ -330,7 +320,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void FillItems(ServiceDescriptionCollection descriptions)
 		{
-			foreach(ServiceDescription element in descriptions) {
+			foreach (ServiceDescription element in descriptions) {
 				Add(element);
 			}
 		}
@@ -342,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			var rootNode = new ServiceItem(null, name);
 			rootNode.Tag = description;
 
-			foreach(Service service in description.Services) {
+			foreach (Service service in description.Services) {
 				var serviceNode = new ServiceItem(null, service.Name);
 				serviceNode.Tag = service;
 				items.Add(serviceNode);
