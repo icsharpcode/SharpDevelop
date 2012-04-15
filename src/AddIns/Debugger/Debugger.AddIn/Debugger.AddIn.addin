@@ -89,11 +89,11 @@
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
-		<Pad id    = "RunningThreadsPad"
+		<Pad id    = "ThreadsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Threads}"
 		     icon     = "PadIcons.Threads"
-		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ThreadsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "LocalVarPad"

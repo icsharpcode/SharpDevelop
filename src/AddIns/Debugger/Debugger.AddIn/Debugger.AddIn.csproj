@@ -141,7 +141,7 @@
     </Compile>
     <Compile Include="Pads\LoadedModulesPad.cs" />
     <Compile Include="Pads\LocalVarPad.cs" />
-    <Compile Include="Pads\RunningThreadsPad.cs" />
+    <Compile Include="Pads\ThreadsPad.cs" />
     <Compile Include="Pads\WatchPad.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -249,7 +249,6 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
     <Compile Include="TreeModel\ValueNode.cs" />
     <Compile Include="TreeModel\Utils.cs" />
     <Compile Include="Visualizers\Graph\Drawing\CanvasLocationAdapter.cs" />

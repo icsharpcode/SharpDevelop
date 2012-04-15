@@ -87,5 +87,13 @@
 		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.OrderColumn}" Width="80" DisplayMemberBinding="{Binding Order}"/>
 		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.SymbolsColumn}" Width="130" DisplayMemberBinding="{Binding Symbols}"/>
 	</GridView>
-
+	
+	<!-- Threads -->
+	<GridView x:Key="theadsGridView">
+		<GridViewColumn Header="{core:Localize Global.ID}" Width="100" DisplayMemberBinding="{Binding ID}"/>
+		<GridViewColumn Header="{core:Localize Global.Name}" Width="300" DisplayMemberBinding="{Binding Name}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Threads.Priority}" Width="120" DisplayMemberBinding="{Binding Priority}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Threads.Frozen}" Width="80" DisplayMemberBinding="{Binding Frozen}"/>
+	</GridView>
+	
 </ResourceDictionary>

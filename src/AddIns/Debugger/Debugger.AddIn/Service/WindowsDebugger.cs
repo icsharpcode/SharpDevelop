@@ -596,7 +596,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			CurrentProcess = e.Process;
 			CurrentThread = e.Thread;
-			CurrentStackFrame = CurrentThread.MostRecentUserStackFrame;
+			CurrentStackFrame = CurrentThread != null ? CurrentThread.MostRecentUserStackFrame : null;
 			
 			LoggingService.Info("Jump to current line");
 			JumpToCurrentLine();
