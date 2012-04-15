@@ -2,11 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -23,32 +26,31 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class RootUnitTestNode : UnitTestBaseNode
 	{
-		Solution solution;
-		
-		public RootUnitTestNode(Solution solution)
+		public RootUnitTestNode()
 		{
-			this.solution = solution;
-			ProjectService.ProjectAdded += OnProjectAdded;
-			ProjectService.ProjectRemoved += OnProjectRemoved;
-			SD.ParserService.LoadSolutionProjectsThread.Finished += delegate { LoadChildren(); };
+			TestService.TestableProjects.CollectionChanged += TestService_TestableProjects_CollectionChanged;
 			LazyLoading = true;
 		}
 
-		void OnProjectRemoved(object sender, ProjectEventArgs e)
+		void TestService_TestableProjects_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			LoadChildren();
-		}
-
-		void OnProjectAdded(object sender, ProjectEventArgs e)
-		{
-			LoadChildren();
+			switch (e.Action) {
+				case NotifyCollectionChangedAction.Add:
+					Children.AddRange(e.NewItems.OfType<TestProject>().Select(p => new ProjectUnitTestNode(p)));
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					Children.RemoveWhere(node => node is ProjectUnitTestNode && e.OldItems.OfType<TestProject>().Any(p => p.Project == ((ProjectUnitTestNode)node).Project));
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					LoadChildren();
+					break;
+			}
 		}
 		
 		protected override void LoadChildren()
 		{
-			this.Children.Clear();
-			if (!SD.ParserService.LoadSolutionProjectsThread.IsRunning)
-				this.Children.AddRange(solution.Projects.Where(p => p.IsTestProject()).Select(p => new ProjectUnitTestNode(new TestProject(p))));
+			Children.Clear();
+			Children.AddRange(TestService.TestableProjects.Select(p => new ProjectUnitTestNode(p)));
 		}
 		
 		public override object Text {
@@ -58,13 +60,51 @@ namespace ICSharpCode.UnitTesting
 	
 	public static class Extensions
 	{
+		static readonly ITypeReference testAttribute = new GetClassTypeReference("NUnit.Framework", "TestAttribute", 0);
+		
 		public static bool IsTestProject(this IProject project)
 		{
 			if (project == null)
 				throw new ArgumentNullException("project");
 			if (project.ProjectContent == null)
 				return false;
-			return SD.ParserService.GetCompilation(project).FindType("NUnit.Framework.TestAttribute").Kind != TypeKind.Unknown;
+			return testAttribute.Resolve(SD.ParserService.GetCompilation(project).TypeResolveContext).Kind != TypeKind.Unknown;
+		}
+		
+		public static bool HasTests(this ITypeDefinition type, ICompilation compilation)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			var testAttribute = Extensions.testAttribute.Resolve(compilation.TypeResolveContext);
+			return type.Methods.Any(m => m.Attributes.Any(a => a.AttributeType.Equals(testAttribute)));
+		}
+		
+		public static IEnumerable<TResult> FullOuterJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter,TKey> outerKeySelector, Func<TInner,TKey> innerKeySelector, Func<TOuter,TInner,TResult> resultSelector)
+			where TInner : class
+			where TOuter : class
+		{
+			var innerLookup = inner.ToLookup(innerKeySelector);
+			var outerLookup = outer.ToLookup(outerKeySelector);
+
+			var innerJoinItems = inner
+				.Where(innerItem => !outerLookup.Contains(innerKeySelector(innerItem)))
+				.Select(innerItem => resultSelector(null, innerItem));
+
+			return outer
+				.SelectMany(outerItem => {
+				            	var innerItems = innerLookup[outerKeySelector(outerItem)];
+
+				            	return innerItems.Any() ? innerItems : new TInner[] { null };
+				            }, resultSelector)
+				.Concat(innerJoinItems);
+		}
+		
+		public static void OrderedInsert<T>(this IList<T> list, T item, Func<T, T, int> comparer)
+		{
+			int index = 0;
+			while (index < list.Count && comparer(list[index], item) < 0)
+				index++;
+			list.Insert(index, item);
 		}
 	}
 }

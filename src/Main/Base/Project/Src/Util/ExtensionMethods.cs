@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Adds all <paramref name="elements"/> to <paramref name="list"/>.
 		/// </summary>
-		public static void AddRange(this WinForms.ComboBox.ObjectCollection list, IEnumerable elements)
+		internal static void AddRange(this WinForms.ComboBox.ObjectCollection list, IEnumerable elements)
 		{
 			foreach (var o in elements)
 				list.Add(o);

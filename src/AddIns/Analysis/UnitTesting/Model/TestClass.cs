@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Collections.Generic;
 using ICSharpCode.Core;
@@ -14,7 +15,8 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestClass
 	{
-		List<IUnresolvedTypeDefinition> parts;
+		string fullName;
+		ObservableCollection<IUnresolvedTypeDefinition> parts;
 //		TestMemberCollection testMembers;
 		TestResultType testResultType;
 		IRegisteredTestFrameworks testFrameworks;
@@ -24,10 +26,11 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public event EventHandler ResultChanged;
 		
-		public TestClass(IRegisteredTestFrameworks testFrameworks, params IUnresolvedTypeDefinition[] parts)
+		public TestClass(IRegisteredTestFrameworks testFrameworks, string fullName, IEnumerable<IUnresolvedTypeDefinition> parts)
 		{
-			this.parts = new List<IUnresolvedTypeDefinition>(parts);
+			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>(parts);
 			this.testFrameworks = testFrameworks;
+			this.fullName = fullName;
 		}
 		
 		/// <summary>
@@ -35,6 +38,10 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public IEnumerable<IUnresolvedTypeDefinition> Parts {
 			get { return parts; }
+		}
+		
+		public string FullName {
+			get { return fullName; }
 		}
 
 		/// <summary>
@@ -72,69 +79,25 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Gets all child namespaces that starts with the specified string.
-		/// </summary>
-		/// <remarks>
-		/// If the starts with string is 'ICSharpCode' and there is a code coverage
-		/// method with a namespace of 'ICSharpCode.XmlEditor.Tests', then this
-		/// method will return 'XmlEditor' as one of its strings.
-		/// </remarks>
-		public static string[] GetChildNamespaces(ICollection<TestClass> classes, string parentNamespace) {
-			List<string> items = new List<string>();
-			foreach (TestClass c in classes) {
-				string ns = c.GetChildNamespace(parentNamespace);
-				if (ns.Length > 0) {
-					if (!items.Contains(ns)) {
-						items.Add(ns);
-					}
-				}
-			}
-			return items.ToArray();
-		}
-		
-		/// <summary>
 		/// Gets the name of the class.
 		/// </summary>
 		public string Name {
-			get
-			{
-//				var currentClass = c;
-//				var name = c.Name;
-//				while(currentClass.DeclaringType != null)
-//				{
-//					name = String.Concat(currentClass.DeclaringType.Name, "+", name);
-//					currentClass = currentClass.DeclaringType;
-//				}
-				return "";//name;
-			}
+			get { return parts.First().Name; }
 		}
 		
 		/// <summary>
 		/// Gets the fully qualified name of the class.
 		/// </summary>
 		public string QualifiedName {
-			get { return ""; }// c.DotNetName; }
+			get { return parts.First().ReflectionName; }
 		}
 		
 		/// <summary>
 		/// Gets the namespace of this class.
 		/// </summary>
 		public string Namespace {
-			get {
-//				var currentClass = c;
-//				while (currentClass.DeclaringType != null)
-//					currentClass = currentClass.DeclaringType;
-//				return currentClass.Namespace;
-				throw new NotImplementedException();
-			}
+			get { return parts.First().Namespace; }
 		}
-		
-		/// <summary>
-		/// Gets the root namespace for this class.
-		/// </summary>
-//		public string RootNamespace {
-//			get { return GetRootNamespace(c.Namespace); }
-//		}
 		
 		/// <summary>
 		/// Gets the test result for this class.
@@ -149,59 +112,6 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 		}
-		
-		/// <summary>
-		/// Gets the child namespace from the specified namespace
-		/// based on the parent namespace.
-		/// </summary>
-		/// <param name="parentNamespace">Can contain multiple namespaces
-		/// (e.g. ICSharpCode.XmlEditor).</param>
-		public static string GetChildNamespace(string ns, string parentNamespace)
-		{
-			if (parentNamespace.Length > 0) {
-				if (ns.StartsWith(String.Concat(parentNamespace, "."))) {
-					string end = ns.Substring(parentNamespace.Length + 1);
-					return GetRootNamespace(end);
-				}
-				return String.Empty;
-			}
-			return ns;
-		}
-		
-		/// <summary>
-		/// Gets the child namespace based on the parent namespace
-		/// from this class.
-		/// </summary>
-		/// <param name="parentNamespace">Can contain multiple namespaces
-		/// (e.g. ICSharpCode.XmlEditor).</param>
-		public string GetChildNamespace(string parentNamespace)
-		{
-			return GetChildNamespace(Namespace, parentNamespace);
-		}
-		
-		/// <summary>
-		/// Gets the test members in this class.
-		/// </summary>
-//		public TestMemberCollection TestMembers {
-//			get {
-//				if (testMembers == null) {
-//					GetTestMembers();
-//				}
-//				return testMembers;
-//			}
-//		}
-		
-		/// <summary>
-		/// Gets the test member with the specified name.
-		/// </summary>
-		/// <returns>Null if the member cannot be found.</returns>
-//		public TestMember GetTestMember(string name)
-//		{
-//			if (TestMembers.Contains(name)) {
-//				return TestMembers[name];
-//			}
-//			return null;
-//		}
 		
 		/// <summary>
 		/// Updates the test member with the specified test result.
@@ -234,9 +144,8 @@ namespace ICSharpCode.UnitTesting
 		/// Updates the members and class based on the new class
 		/// information that has been parsed.
 		/// </summary>
-		public void UpdateClass(IUnresolvedTypeDefinition c)
+		public void UpdateClass(ITypeDefinition definition)
 		{
-			#warning not implemented!
 //			this.c = c.GetCompoundClass();
 //			
 //			// Remove missing members.
@@ -280,44 +189,6 @@ namespace ICSharpCode.UnitTesting
 //			testMembers = GetTestMembers(c);
 //			testMembers.ResultChanged += TestMembersResultChanged;
 		}
-		
-		/// <summary>
-		/// Gets the test members for the specified class.
-		/// </summary>
-//		TestMemberCollection GetTestMembers(IUnresolvedTypeDefinition c)
-//		{
-//			TestMemberCollection testMembers = new TestMemberCollection();
-//			foreach (var member in testFrameworks.GetTestMembersFor(c))
-//				if (!testMembers.Contains(member.Name)) {
-//					testMembers.Add(member);
-//				}
-//			
-//			// Add base class test members.
-//			IClass declaringType = c;
-//			while (c.BaseClass != null)
-//			{
-//				foreach (var testMember in testFrameworks.GetTestMembersFor(c.BaseClass)) {
-//					BaseTestMember baseTestMethod = new BaseTestMember(declaringType, testMember.Member);
-//					TestMember testMethod = new TestMember(c.BaseClass, baseTestMethod);
-//					if (testMember.Member.IsVirtual) {
-//						if (!testMembers.Contains(testMember.Name)) {
-//							testMembers.Add(testMethod);
-//						}
-//					} else {
-//						if (!testMembers.Contains(testMethod.Name)) {
-//							testMembers.Add(testMethod);
-//						}
-//					}
-//				}
-//				c = c.BaseClass;
-//			}
-//
-//			baseClassesFQNames.Clear();
-//			foreach (var memberDeclaringClass in testMembers.Select(member => member.DeclaringType).Distinct())
-//				if (memberDeclaringClass.CompareTo(declaringType) != 0)
-//					baseClassesFQNames.Add(memberDeclaringClass.FullyQualifiedName);
-//			return testMembers;
-//		}
 		
 		/// <summary>
 		/// Updates the test class's test result after the test member's

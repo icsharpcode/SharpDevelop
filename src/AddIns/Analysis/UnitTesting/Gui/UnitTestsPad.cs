@@ -53,13 +53,7 @@ namespace ICSharpCode.UnitTesting
 			SD.ParserService.LoadSolutionProjectsThread.Finished += LoadSolutionProjectsThreadFinished;
 			OnAddedLoadSolutionProjectsThreadEndedHandler();
 
-			// Display currently open solution.
-			if (!IsParserLoadingSolution) {
-				Solution openSolution = GetOpenSolution();
-				if (openSolution != null) {
-					SolutionLoaded(openSolution);
-				}
-			}
+			treeView.Root = new RootUnitTestNode();
 			
 			SD.ParserService.ParseInformationUpdated += ParseInformationUpdated;
 			ProjectService.SolutionClosed += SolutionClosed;
@@ -134,22 +128,6 @@ namespace ICSharpCode.UnitTesting
 //		}
 		
 		/// <summary>
-		/// Called when a solution has been loaded.
-		/// </summary>
-		protected void SolutionLoaded(Solution solution)
-		{
-			// SolutionLoaded will be invoked from another thread.
-			// The UnitTestsPad might be disposed by the time the event is processed by the main thread.
-			if (treeView != null) {
-				if (solution != null) {
-					treeView.Root = new RootUnitTestNode(solution);
-				} else {
-					treeView.Root = null;
-				}
-			}
-		}
-		
-		/// <summary>
 		/// Called when a solution has been closed.
 		/// </summary>
 //		protected void SolutionClosed()
@@ -161,15 +139,6 @@ namespace ICSharpCode.UnitTesting
 //		{
 //			treeView.RemoveSolutionFolder(solutionFolder);
 //		}
-//
-		/// <summary>
-		/// The project is added to the tree view only if it has a
-		/// reference to a unit testing framework.
-		/// </summary>
-		protected void ProjectAdded(IProject project)
-		{
-			SolutionLoaded(GetOpenSolution());
-		}
 		
 		/// <summary>
 		/// If the project item removed is a reference to a unit
@@ -193,7 +162,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			RootUnitTestNode root = (RootUnitTestNode)treeView.Root;
 			if (root == null) {
-				SolutionLoaded(GetOpenSolution());
+//				SolutionLoaded(GetOpenSolution());
 				root = (RootUnitTestNode)treeView.Root;
 				if (root == null) return;
 			}
@@ -271,7 +240,6 @@ namespace ICSharpCode.UnitTesting
 		
 		void ProjectAdded(object source, ProjectEventArgs e)
 		{
-			ProjectAdded(e.Project);
 			UpdateToolbar();
 		}
 		
