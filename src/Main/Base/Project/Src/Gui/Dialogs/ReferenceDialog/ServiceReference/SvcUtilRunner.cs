@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		void DisplaySvcUtilNotFoundMessage()
 		{
 			string message =
-				"Unable to find svcutil.exe. Please install the Windows SDK";
+				"Unable to find svcutil.exe. Please install the Windows SDK or specify the path to svcutil in Tools | Options.";
 			SvcUtilMessageView.AppendLine(message);
 		}
 		

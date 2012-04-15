@@ -291,6 +291,11 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileName.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileProjectItem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml.cs">
+      <DependentUpon>ServiceReferenceOptionsPanel..xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceProxyGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceUrlHistory.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\SvcUtilCommandLine.cs" />
@@ -888,6 +893,7 @@
     </Page>
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
+    <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />

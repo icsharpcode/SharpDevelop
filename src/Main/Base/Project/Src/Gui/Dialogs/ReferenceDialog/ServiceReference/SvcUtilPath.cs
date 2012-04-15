@@ -9,7 +9,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class SvcUtilPath
 	{
-		string fileName = "svcutil.exe";
+		string svcUtilFileName = "svcutil.exe";
 		bool exists = true;
 		
 		public SvcUtilPath()
@@ -23,16 +23,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void FindSvcUtil()
 		{
+			if (ServiceReferenceOptions.HasSvcUtilPath) {
+				SetSvcUtilPathIfFileExists(ServiceReferenceOptions.SvcUtilPath);
+			} else {
+				FindSvcUtilFromSdk();
+			}
+		}
+		
+		void SetSvcUtilPathIfFileExists(string fileName)
+		{
+			exists = File.Exists(fileName);
+			if (exists) {
+				svcUtilFileName = fileName;
+			}
+		}
+		
+		void FindSvcUtilFromSdk()
+		{
 			string sdkPath = TryGetCurrentUserSdkInstallPath();
 			if (sdkPath == null) {
 				sdkPath = TryGetLocalMachineSdkInstallPath();
 			}
 			if (sdkPath != null) {
 				string fullPath = Path.Combine(sdkPath, @"bin\NETFX 4.0 Tools\svcutil.exe");
-				exists = File.Exists(fullPath);
-				if (exists) {
-					fileName = fullPath;
-				}
+				SetSvcUtilPathIfFileExists(fullPath);
 			}
 		}
 		
@@ -57,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		public string FileName {
-			get { return fileName; }
+			get { return svcUtilFileName; }
 		}
 	}
 }
