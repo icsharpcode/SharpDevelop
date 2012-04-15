@@ -79,4 +79,13 @@
 		</GridViewColumn>
 	</GridView>
 	
+	<!-- Loaded Modules -->
+	<GridView x:Key="loadedModulesGridView">
+		<GridViewColumn Header="{core:Localize Global.Name}" Width="250" DisplayMemberBinding="{Binding Name}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.AddressColumn}" Width="100" DisplayMemberBinding="{Binding Address}"/>
+		<GridViewColumn Header="{core:Localize Global.Path}" Width="250" DisplayMemberBinding="{Binding Path}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.OrderColumn}" Width="80" DisplayMemberBinding="{Binding Order}"/>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Modules.SymbolsColumn}" Width="130" DisplayMemberBinding="{Binding Symbols}"/>
+	</GridView>
+
 </ResourceDictionary>

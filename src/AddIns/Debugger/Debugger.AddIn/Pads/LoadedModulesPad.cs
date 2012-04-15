@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Windows;
@@ -17,77 +18,58 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LoadedModulesPad : AbstractPadContent
 	{
-		DockPanel panel;
-		ListView loadedModulesList;
-		ObservableCollection<ModuleModel> loadedModules;
+		ListView listView;
 		
 		public override object Control {
-			get { return panel; }
+			get { return listView; }
 		}
 		
 		public LoadedModulesPad()
 		{
-			this.panel = new DockPanel();
-			loadedModulesList = new ListView();
-			loadedModules = new ObservableCollection<ModuleModel>();
-			loadedModulesList.ItemsSource = loadedModules;
-			loadedModulesList.View = new GridView();
-			panel.Children.Add(loadedModulesList);
-			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			var res = new CommonResources();
+			res.InitializeComponent();
+			
+			listView = new ListView();
+			listView.View = (GridView)res["loadedModulesGridView"];
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();
 		}
 		
-		public void RedrawContent()
-		{
-			loadedModulesList.ClearColumns();
-			loadedModulesList.AddColumn(StringParser.Parse("${res:Global.Name}"),
-			                            new Binding { Path = new PropertyPath("Name") }, 250);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.AddressColumn}"),
-			                            new Binding { Path = new PropertyPath("Address") }, 100);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:Global.Path}"),
-			                            new Binding { Path = new PropertyPath("Path") }, 250);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.OrderColumn}"),
-			                            new Binding { Path = new PropertyPath("Order") }, 80);
-			loadedModulesList.AddColumn(StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.SymbolsColumn}"),
-			                            new Binding { Path = new PropertyPath("Symbols") }, 130);
-		}
-		
 		void RefreshPad()
 		{
 			Process process = WindowsDebugger.CurrentProcess;
-			loadedModules.Clear();
+			List<ModuleItem> loadedModules = new List<ModuleItem>();
 			if (process != null) {
 				foreach(Module module in process.Modules) {
-					loadedModules.Add(new ModuleModel(module));
+					loadedModules.Add(new ModuleItem(module));
 				}
 			}
+			listView.ItemsSource = loadedModules;
 		}
 	}
 	
-	static class ListViewExtensions
+	public class ModuleItem
 	{
-		public static void ClearColumns(this ListView view)
-		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			if (view.View is GridView)
-				((GridView)view.View).Columns.Clear();
-		}
+		public string Name { get; private set; }
+		public string Address { get; private set; }
+		public string Path { get; private set; }
+		public string Order { get; private set; }
+		public string Symbols { get; private set; }
 		
-		public static void AddColumn(this ListView view, string header, Binding binding, double width)
+		public ModuleItem(Module module)
 		{
-			if (view == null)
-				throw new ArgumentNullException("view");
-			if (view.View is GridView) {
-				GridViewColumn column = new GridViewColumn {
-					Width = width,
-					DisplayMemberBinding = binding,
-					Header = header };
-				((GridView)view.View).Columns.Add(column);
+			this.Name = module.Name;
+			this.Address = string.Format("{0:X8}", module.BaseAdress);
+			if (module.IsDynamic) {
+				this.Path = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.DynamicModule}");
+			} else if (module.IsInMemory) {
+				this.Path = StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.InMemoryModule}");
+			} else {
+				this.Path = module.FullPath;
 			}
+			this.Order = module.OrderOfLoading.ToString();
+			this.Symbols = module.HasSymbols ? StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.HasSymbols}") : StringParser.Parse("${res:MainWindow.Windows.Debug.Modules.HasNoSymbols}");
 		}
 	}
 }
