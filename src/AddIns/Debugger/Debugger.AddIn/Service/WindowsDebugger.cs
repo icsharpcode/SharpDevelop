@@ -35,6 +35,8 @@ namespace ICSharpCode.SharpDevelop.Services
 {
 	public class WindowsDebugger : IDebugger
 	{
+		public static WindowsDebugger Instance { get; set; }
+		
 		public static NDebugger  CurrentDebugger { get; private set; }
 		public static Process    CurrentProcess { get; private set; }
 		public static Thread     CurrentThread { get; set; }
@@ -93,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public WindowsDebugger()
 		{
-			
+			Instance = this;
 		}
 		
 		#region IDebugger Members

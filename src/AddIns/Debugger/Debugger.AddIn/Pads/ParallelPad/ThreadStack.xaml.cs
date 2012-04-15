@@ -271,7 +271,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 						if (selectedItem.MethodName == frame.GetMethodName())
 						{
 							TextBlock tb = new TextBlock();
-							tb.Text = thread.ID + ": " + CallStackPadContent.GetFullName(frame);
+							tb.Text = thread.ID + ": " + CallStackPad.GetFullName(frame);
 							panel.Children.Add(tb);
 						}
 					}

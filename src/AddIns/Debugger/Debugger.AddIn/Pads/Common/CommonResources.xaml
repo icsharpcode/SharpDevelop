@@ -10,7 +10,7 @@
 	<!-- Local Variables Pad and Watch Pad -->
 	<tv:SharpGridView x:Key="variableGridView">
 		<GridView.Columns>
-			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.NameColumn}" Width="400">
+			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.NameColumn}" Width="200">
 				<GridViewColumn.CellTemplate>
 					<DataTemplate>
 						<StackPanel Orientation="Horizontal">
@@ -36,6 +36,20 @@
 			</GridViewColumn>
 		</GridView.Columns>
 	</tv:SharpGridView>
+	
+	<!-- Callstack -->
+	<GridView x:Key="callstackGridView">
+		<GridViewColumn Header="{core:Localize Global.Name}" Width="400">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="{Binding ImageSource}" Margin="1, 1, 5, 1" />
+						<TextBlock Text="{Binding Name}" Foreground="{Binding FontColor}" />
+					</StackPanel>
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+	</GridView>
 	
 	<!-- Breakpoints Pad -->
 	<GridView x:Key="breakpointsGridView">
