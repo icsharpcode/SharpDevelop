@@ -27,6 +27,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		string condition;
 		string scriptLanguage;
 		
+		public event EventHandler<EventArgs> ConditionChanged;
+		
 		public string ScriptLanguage {
 			get { return scriptLanguage; }
 			set { scriptLanguage = value; }
@@ -34,7 +36,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public string Condition {
 			get { return condition; }
-			set { condition = value; }
+			set {
+				if (condition != value) {
+					condition = value;
+					this.Action = string.IsNullOrEmpty(condition) ? BreakpointAction.Break : BreakpointAction.Condition;
+					if (ConditionChanged != null)
+						ConditionChanged(this, EventArgs.Empty);
+					Redraw();
+				}
+			}
 		}
 		
 		public BreakpointAction Action {

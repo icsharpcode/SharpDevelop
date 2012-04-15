@@ -96,9 +96,6 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
-    <Compile Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml.cs">
-      <DependentUpon>ListViewPad.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
@@ -700,8 +697,6 @@
     <Compile Include="Src\Bookmarks\BookmarkBase.cs" />
     <Compile Include="Src\Bookmarks\Commands\MenuCommands.cs" />
     <Compile Include="Src\Bookmarks\IBookmarkMargin.cs" />
-    <Compile Include="Src\Bookmarks\Pad\Nodes\BookmarkFolderNode.cs" />
-    <Compile Include="Src\Bookmarks\Pad\Nodes\BookmarkNode.cs" />
     <Compile Include="Src\Bookmarks\Pad\BookmarkPad.cs" />
     <Compile Include="Src\Bookmarks\Pad\BookmarkPadToolbarCommands.cs" />
     <Compile Include="Src\Bookmarks\SDBookmark.cs" />
@@ -871,7 +866,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml" />
+    <Page Include="Src\Bookmarks\Pad\BookmarkPadContent.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
@@ -911,7 +906,6 @@
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Src\Project\Behaviors" />
     <Folder Include="themes" />
-    <Folder Include="Src\Bookmarks\Pad\Controls" />
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />
     <Folder Include="Src\Editor\Commands" />

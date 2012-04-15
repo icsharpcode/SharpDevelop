@@ -112,9 +112,6 @@
     <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
     <Compile Include="Pads\Commands\WatchPadCommands.cs" />
     <Compile Include="Pads\Common\AutoCompleteTextBox.cs" />
-    <Compile Include="Pads\Common\ConditionCell.xaml.cs">
-      <DependentUpon>ConditionCell.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pads\MemoryPad.cs" />
     <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
       <DependentUpon>DrawSurface.xaml</DependentUpon>
@@ -343,7 +340,6 @@
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Common\CommonResources.xaml" />
-    <Page Include="Pads\Common\ConditionCell.xaml" />
     <Page Include="Pads\ParallelPad\DrawSurface.xaml" />
     <Page Include="Pads\ParallelPad\ThreadStack.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />

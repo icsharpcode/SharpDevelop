@@ -1,11 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Windows.Input;
+using System.Windows.Media;
+
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -150,6 +152,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public virtual IImage Image {
 			get { return DefaultBookmarkImage; }
+		}
+		
+		public ImageSource ImageSource {
+			get { return this.Image != null ? this.Image.ImageSource : null; }
 		}
 		
 		public virtual void MouseDown(MouseButtonEventArgs e)

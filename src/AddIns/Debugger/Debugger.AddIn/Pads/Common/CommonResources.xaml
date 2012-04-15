@@ -6,6 +6,8 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
 	>
+	
+	<!-- Local Variables Pad and Watch Pad -->
 	<tv:SharpGridView x:Key="variableGridView">
 		<GridView.Columns>
 			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.NameColumn}" Width="400">
@@ -34,4 +36,33 @@
 			</GridViewColumn>
 		</GridView.Columns>
 	</tv:SharpGridView>
+	
+	<!-- Breakpoints Pad -->
+	<GridView x:Key="breakpointsGridView">
+		<GridViewColumn Header="" Width="Auto">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<CheckBox IsChecked="{Binding Path=IsEnabled, Mode=TwoWay}" />
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.BookmarkPad.LocationText}" Width="Auto">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Image Source="{Binding ImageSource}" Margin="1, 1, 5, 1" />
+						<TextBlock Text="{Binding FileNameAndLineNumber}" />
+					</StackPanel>
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+		<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader}" Width="Auto">
+			<GridViewColumn.CellTemplate>
+				<DataTemplate>
+					<local:AutoCompleteTextBox Text="{Binding Condition}" MinWidth="100" />
+				</DataTemplate>
+			</GridViewColumn.CellTemplate>
+		</GridViewColumn>
+	</GridView>
+	
 </ResourceDictionary>
