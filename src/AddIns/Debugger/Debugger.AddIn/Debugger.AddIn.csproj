@@ -106,12 +106,10 @@
     <Compile Include="Pads\CallStackPad.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Pads\Commands\MemoryPadCommands.cs" />
     <Compile Include="Pads\Commands\ParallelStacksViewCommands.cs" />
     <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
     <Compile Include="Pads\Commands\WatchPadCommands.cs" />
     <Compile Include="Pads\Common\AutoCompleteTextBox.cs" />
-    <Compile Include="Pads\MemoryPad.cs" />
     <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
       <DependentUpon>DrawSurface.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -137,7 +135,6 @@
     <Compile Include="Options\DebuggingSymbolsPanel.Designer.cs">
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Pads\ObjectGraphPad.cs" />
     <Compile Include="Pads\BreakPointsPad.cs" />
     <Compile Include="Pads\ConsolePad.cs">
       <SubType>UserControl</SubType>
