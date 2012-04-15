@@ -680,23 +680,28 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers(newType, location);
 				int curLoc = 0;
 				if (location != null && location.Count > 0)
-					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.EnumKeyword);
-				newType.AddChild (Identifier.Create (e.MemberName.Name, Convert (e.MemberName.Location)), Roles.Identifier);
+					newType.AddChild(new CSharpTokenNode(Convert(location [curLoc++])), Roles.EnumKeyword);
+				newType.AddChild(Identifier.Create(e.MemberName.Name, Convert(e.MemberName.Location)), Roles.Identifier);
 				
 				if (e.BaseTypeExpression != null) {
 					if (location != null && curLoc < location.Count)
-						newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.Colon);
-					newType.AddChild (ConvertToType (e.BaseTypeExpression), Roles.BaseType);
+						newType.AddChild(new CSharpTokenNode(Convert(location [curLoc++])), Roles.Colon);
+					newType.AddChild(ConvertToType(e.BaseTypeExpression), Roles.BaseType);
 				}
 
 				if (location != null && curLoc < location.Count)
-					newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.LBrace);
-				typeStack.Push (newType);
+					newType.AddChild(new CSharpTokenNode(Convert(location [curLoc++])), Roles.LBrace);
+				typeStack.Push(newType);
 				
-				foreach (EnumMember member in e.Members) {
-					Visit (member);
+				foreach (var m in e.Members) {
+					EnumMember member = m as EnumMember;
+					if (member == null) {
+						Console.WriteLine("WARNING - ENUM MEMBER: " + m);
+						continue;
+					}
+					Visit(member);
 					if (location != null && curLoc < location.Count - 1) //last one is closing brace
-						newType.AddChild (new CSharpTokenNode (Convert (location [curLoc++])), Roles.Comma);
+						newType.AddChild(new CSharpTokenNode(Convert(location [curLoc++])), Roles.Comma);
 				}
 				
 				if (location != null && location.Count > 2) {
