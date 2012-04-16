@@ -195,5 +195,9 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="mime_utf-16_be_test.txt" />
+    <EmbeddedResource Include="mime_utf-16_le_test.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
