@@ -445,7 +445,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return i;
 		}
 
-		int ForceSpacesBeforeRemoveNewLines(AstNode n)
+		int ForceSpacesBeforeRemoveNewLines(AstNode n, bool forceSpace = true)
 		{
 			if (n == null || n.IsNull) {
 				return 0;
@@ -459,7 +459,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				i--;
 			}
 			var length = System.Math.Max(0, (offset - 1) - i);
-			AddChange(i + 1, length, " ");
+			AddChange(i + 1, length, forceSpace ? " " : "");
 			return i;
 		}
 
@@ -1600,6 +1600,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
+		bool DoWrap(Wrapping wrapping, AstNode wrapNode)
+		{
+			return wrapping == Wrapping.WrapAlways || 
+				options.WrapLineLength > 0 && wrapping == Wrapping.WrapIfTooLong && wrapNode.StartLocation.Column >= options.WrapLineLength;
+		}
+
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 		{
 			ForceSpacesBefore(invocationExpression.LParToken, policy.SpaceBeforeMethodCallParentheses);
@@ -1612,8 +1618,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			FormatCommas(invocationExpression, policy.SpaceBeforeMethodCallParameterComma, policy.SpaceAfterMethodCallParameterComma);
 
+			if (invocationExpression.Target is MemberReferenceExpression) {
+				var mt = (MemberReferenceExpression)invocationExpression.Target;
+				if (mt.Target is InvocationExpression) {
+					if (policy.ChainedMethodCallWrapping == Wrapping.DoNotWrap) {
+						ForceSpacesBeforeRemoveNewLines(mt.DotToken, false);
+					} else if (DoWrap(policy.ChainedMethodCallWrapping, mt.DotToken)) {
+						curIndent.Push(IndentType.Continuation);
+						FixStatementIndentation(mt.DotToken.StartLocation);
+						curIndent.Pop();
+					}
+				}
+			}
+
 			base.VisitInvocationExpression(invocationExpression);
 		}
+
+
 
 		public override void VisitIndexerExpression(IndexerExpression indexerExpression)
 		{
@@ -1694,7 +1715,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression)
 		{
-			if (policy.ArrayInitializerWrapping == Wrapping.WrapAlways) {
+			if (DoWrap(policy.ArrayInitializerWrapping, arrayInitializerExpression.RBraceToken)) {
 				EnforceBraceStyle(policy.ArrayInitializerBraceStyle, arrayInitializerExpression.LBraceToken, arrayInitializerExpression.RBraceToken);
 				curIndent.Push(IndentType.Block);
 				foreach (var init in arrayInitializerExpression.Elements) {
@@ -1726,6 +1747,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			ForceSpacesAfter(namedArgumentExpression.ColonToken, policy.SpaceInNamedArgumentAfterDoubleColon);
 			base.VisitNamedArgumentExpression(namedArgumentExpression);
+		}
+
+		public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
+		{
+			ForceSpacesAfter(memberReferenceExpression.DotToken, false);
+			base.VisitMemberReferenceExpression(memberReferenceExpression);
 		}
 
 		#endregion

@@ -175,6 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
+				ChainedMethodCallWrapping = Wrapping.WrapAlways
 			};
 		}
 
@@ -313,6 +314,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
+				ChainedMethodCallWrapping = Wrapping.WrapAlways
 			};
 		}
 

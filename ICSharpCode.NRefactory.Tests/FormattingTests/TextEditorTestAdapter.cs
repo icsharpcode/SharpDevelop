@@ -28,12 +28,13 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return b.ToString();
 		}*/
 		
-		protected static IDocument GetResult (CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.OnTheFly)
+		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.OnTheFly)
 		{
-			input = NormalizeNewlines (input);
-			var document = new StringBuilderDocument (input);
-			var options = new TextEditorOptions ();
+			input = NormalizeNewlines(input);
+			var document = new StringBuilderDocument(input);
+			var options = new TextEditorOptions();
 			options.EolMarker = "\n";
+			options.WrapLineLength = 80;
 			var visitor = new AstFormattingVisitor (policy, document, options);
 			visitor.FormattingMode = mode;
 			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");

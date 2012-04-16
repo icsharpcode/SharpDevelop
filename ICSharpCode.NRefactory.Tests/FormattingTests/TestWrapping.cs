@@ -118,5 +118,53 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
+		[Test()]
+		public void TestChainedMethodCallWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.ChainedMethodCallWrapping = Wrapping.WrapAlways;
+			
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo ().Bar ().             Zoom();
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo ()
+			.Bar ()
+			.Zoom ();
+	}
+}");
+		}
+
+		[Test()]
+		public void TestChainedMethodCallDoNotWrapWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.ChainedMethodCallWrapping = Wrapping.DoNotWrap;
+			
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo ()
+			.Bar ()
+			.Zoom ();
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo ().Bar ().Zoom ();
+	}
+}");
+		}
+
 	}
 }

@@ -786,6 +786,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		public Wrapping ChainedMethodCallWrapping {
+			get;
+			set;
+		}
+
+
 		#endregion
 
 		internal CSharpFormattingOptions()
