@@ -59,5 +59,53 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"	int myField;" + Environment.NewLine +
 				"}", result);
 		}
+
+		[Test()]
+		public void HandlesFieldsWhichMatchThePropertyNameTest ()
+		{
+			Test<GeneratePropertyAction> (
+@"
+class TestClass
+{
+	public int $MyField;
+}",
+@"
+class TestClass
+{
+	public int MyField {
+		get {
+			return myField;
+		}
+		set {
+			myField = value;
+		}
+	}
+	public int myField;
+}");
+		}
+
+		[Test()]
+		public void HandlesMultiDeclarationTest ()
+		{
+			Test<GeneratePropertyAction> (
+@"
+class TestClass
+{
+	int $MyField, myOtherField;
+}",
+@"
+class TestClass
+{
+	public int MyField {
+		get {
+			return myField;
+		}
+		set {
+			myField = value;
+		}
+	}
+	int myField, myOtherField;
+}");
+		}
 	}
 }
