@@ -806,7 +806,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		public Wrapping IndexerArgumentWrapping {
+			get;
+			set;
+		}
 
+		public bool NewLineAferIndexerOpenBracket {
+			get;
+			set;
+		}
+
+		public bool IndexerClosingBracketOnNewLine {
+			get;
+			set;
+		}
 		#endregion
 
 		internal CSharpFormattingOptions()
