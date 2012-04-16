@@ -166,5 +166,146 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
+		[Test()]
+		public void TestMethodCallArgumentWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo (1, 2, 3);
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo (
+			1,
+			2,
+			3
+		);
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodCallArgumentNoNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodCallOpenParentheses = false;
+			policy.MethodClosingParenthesesOnNewLine = false;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		FooBar (1, 2, 3);
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		FooBar (1,
+		        2,
+		        3);
+	}
+}");
+		}
+
+
+		[Test()]
+		public void TestMethodCallArgumentDoNotWrapWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.DoNotWrap;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo (
+			1, 
+			2, 
+			3
+		);
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo (1, 2, 3);
+	}
+}");
+		}
+
+		
+		[Test()]
+		public void TestIndexerCallArgumentNoNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		FooBar [1, 2, 3] = 5;
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		FooBar [
+			1,
+			2,
+			3
+		] = 5;
+	}
+}");
+		}
+
+		[Test()]
+		public void TestObjectCreationArgumentNoNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		new FooBar (1, 2, 3);
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		new FooBar (
+			1,
+			2,
+			3
+		);
+	}
+}");
+		}
+
+
 	}
 }

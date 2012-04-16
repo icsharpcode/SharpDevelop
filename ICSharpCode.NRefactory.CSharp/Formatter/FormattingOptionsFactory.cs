@@ -175,7 +175,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapAlways
+				ChainedMethodCallWrapping = Wrapping.WrapAlways,
+				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
+				NewLineAferMethodCallOpenParentheses = true,
+				MethodClosingParenthesesOnNewLine = true
 			};
 		}
 
@@ -314,7 +317,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				BlankLinesBetweenMembers = 1,
 	
 				KeepCommentsAtFirstColumn = true,
-				ChainedMethodCallWrapping = Wrapping.WrapAlways
+				ChainedMethodCallWrapping = Wrapping.WrapAlways,
+				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
+				NewLineAferMethodCallOpenParentheses = true,
+				MethodClosingParenthesesOnNewLine = true
 			};
 		}
 

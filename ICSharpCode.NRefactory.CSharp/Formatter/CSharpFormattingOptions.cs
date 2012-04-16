@@ -791,6 +791,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
+		public Wrapping MethodCallArgumentWrapping {
+			get;
+			set;
+		}
+
+		public bool NewLineAferMethodCallOpenParentheses {
+			get;
+			set;
+		}
+
+		public bool MethodClosingParenthesesOnNewLine {
+			get;
+			set;
+		}
+
 
 		#endregion
 
