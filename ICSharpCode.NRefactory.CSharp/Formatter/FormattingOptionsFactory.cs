@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ChainedMethodCallWrapping = Wrapping.WrapAlways,
 				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferMethodCallOpenParentheses = true,
-				MethodClosingParenthesesOnNewLine = true,
+				MethodCallClosingParenthesesOnNewLine = true,
 
 				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferIndexerOpenBracket = false,
@@ -324,7 +324,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				ChainedMethodCallWrapping = Wrapping.WrapAlways,
 				MethodCallArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferMethodCallOpenParentheses = true,
-				MethodClosingParenthesesOnNewLine = true,
+				MethodCallClosingParenthesesOnNewLine = true,
 
 				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferIndexerOpenBracket = false,

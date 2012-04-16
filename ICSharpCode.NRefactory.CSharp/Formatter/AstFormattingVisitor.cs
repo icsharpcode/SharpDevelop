@@ -1632,7 +1632,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var oce = node as ObjectCreateExpression;
 				methodCallArgumentWrapping = policy.MethodCallArgumentWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodCallOpenParentheses;
-				methodClosingParenthesesOnNewLine = policy.MethodClosingParenthesesOnNewLine;
+				methodClosingParenthesesOnNewLine = policy.MethodCallClosingParenthesesOnNewLine;
 				spaceWithinMethodCallParentheses = policy.SpacesWithinNewParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterNewParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeNewParameterComma;
@@ -1643,7 +1643,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				InvocationExpression invocationExpression = node as InvocationExpression;
 				methodCallArgumentWrapping = policy.MethodCallArgumentWrapping;
 				newLineAferMethodCallOpenParentheses = policy.NewLineAferMethodCallOpenParentheses;
-				methodClosingParenthesesOnNewLine = policy.MethodClosingParenthesesOnNewLine;
+				methodClosingParenthesesOnNewLine = policy.MethodCallClosingParenthesesOnNewLine;
 				spaceWithinMethodCallParentheses = policy.SpaceWithinMethodCallParentheses;
 				spaceAfterMethodCallParameterComma = policy.SpaceAfterMethodCallParameterComma;
 				spaceBeforeMethodCallParameterComma = policy.SpaceBeforeMethodCallParameterComma;
@@ -1673,7 +1673,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					FixStatementIndentation(rParToken.StartLocation);
 			} else {
 				foreach (var arg in arguments) {
-					ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (methodCallArgumentWrapping == Wrapping.DoNotWrap)
+						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
 					arg.AcceptVisitor(this);
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
@@ -1704,7 +1705,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						FixStatementIndentation(mt.DotToken.StartLocation);
 						curIndent.Pop();
 					} else {
-						ForceSpacesBeforeRemoveNewLines(mt.DotToken, false);
+						if (policy.ChainedMethodCallWrapping == Wrapping.DoNotWrap)
+							ForceSpacesBeforeRemoveNewLines(mt.DotToken, false);
 					}
 				}
 			}

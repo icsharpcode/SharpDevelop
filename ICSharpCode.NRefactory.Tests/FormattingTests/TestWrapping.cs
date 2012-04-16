@@ -172,7 +172,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			var policy = FormattingOptionsFactory.CreateMono();
 			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
 			policy.NewLineAferMethodCallOpenParentheses = true;
-			policy.MethodClosingParenthesesOnNewLine = true;
+			policy.MethodCallClosingParenthesesOnNewLine = true;
 
 			Test(policy, @"class Test
 {
@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			var policy = FormattingOptionsFactory.CreateMono();
 			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
 			policy.NewLineAferMethodCallOpenParentheses = false;
-			policy.MethodClosingParenthesesOnNewLine = false;
+			policy.MethodCallClosingParenthesesOnNewLine = false;
 
 			Test(policy, @"class Test
 {
@@ -227,7 +227,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			var policy = FormattingOptionsFactory.CreateMono();
 			policy.MethodCallArgumentWrapping = Wrapping.DoNotWrap;
 			policy.NewLineAferMethodCallOpenParentheses = true;
-			policy.MethodClosingParenthesesOnNewLine = true;
+			policy.MethodCallClosingParenthesesOnNewLine = true;
 
 			Test(policy, @"class Test
 {
@@ -254,9 +254,9 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		public void TestIndexerCallArgumentNoNewLineWrapping()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
-			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
-			policy.NewLineAferMethodCallOpenParentheses = true;
-			policy.MethodClosingParenthesesOnNewLine = true;
+			policy.IndexerArgumentWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferIndexerOpenBracket = true;
+			policy.IndexerClosingBracketOnNewLine = true;
 
 			Test(policy, @"class Test
 {
@@ -284,7 +284,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			var policy = FormattingOptionsFactory.CreateMono();
 			policy.MethodCallArgumentWrapping = Wrapping.WrapAlways;
 			policy.NewLineAferMethodCallOpenParentheses = true;
-			policy.MethodClosingParenthesesOnNewLine = true;
+			policy.MethodCallClosingParenthesesOnNewLine = true;
 
 			Test(policy, @"class Test
 {
@@ -302,6 +302,61 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			2,
 			3
 		);
+	}
+}");
+		}
+
+		[Ignore("Not Implemented")]
+		[Test()]
+		public void TestMethodDeclarationParameterNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodDeclarationOpenParentheses = true;
+			policy.MethodDeclarationClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe (int i, int j, int k)
+	{
+	}
+}",
+@"class Test
+{
+	void TestMe (
+		int i,
+		int j,
+		int k
+	)
+	{
+	}
+}");
+		}
+
+		[Ignore("Not Implemented")]
+		[Test()]
+		public void TestIndexerDeclarationParameterNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.IndexerDeclarationParameterWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferIndexerDeclarationOpenBracket = true;
+			policy.IndexerDeclarationClosingBracketOnNewLine = true;
+			Test(policy, @"class Test
+{
+	int this [int i, int j, int k] {
+		get {
+		}
+	}
+}",
+@"class Test
+{
+	int this [
+		int i,
+		int j,
+		int k
+	] {
+		get {
+		}
 	}
 }");
 		}

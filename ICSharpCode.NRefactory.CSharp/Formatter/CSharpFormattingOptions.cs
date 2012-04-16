@@ -56,6 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	}
 
 	public enum Wrapping {
+		DoNotChange,
 		DoNotWrap,
 		WrapAlways,
 		WrapIfTooLong
@@ -801,7 +802,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 
-		public bool MethodClosingParenthesesOnNewLine {
+		public bool MethodCallClosingParenthesesOnNewLine {
 			get;
 			set;
 		}
@@ -817,6 +818,36 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public bool IndexerClosingBracketOnNewLine {
+			get;
+			set;
+		}
+
+		public Wrapping MethodDeclarationParameterWrapping {
+			get;
+			set;
+		}
+
+		public bool NewLineAferMethodDeclarationOpenParentheses {
+			get;
+			set;
+		}
+
+		public bool MethodDeclarationClosingParenthesesOnNewLine {
+			get;
+			set;
+		}
+
+		public Wrapping IndexerDeclarationParameterWrapping {
+			get;
+			set;
+		}
+
+		public bool NewLineAferIndexerDeclarationOpenBracket {
+			get;
+			set;
+		}
+
+		public bool IndexerDeclarationClosingBracketOnNewLine {
 			get;
 			set;
 		}
