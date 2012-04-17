@@ -271,7 +271,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		public bool CanAddServiceReference()
 		{
-			return GetServiceUri() != null;
+			return GetServiceUri() != null && ValidateNamespace();
+		}
+		
+		bool ValidateNamespace()
+		{
+			if (String.IsNullOrEmpty(defaultNameSpace)) {
+				ServiceDescriptionMessage = "No namespace specified.";
+				return false;
+			}
+				
+			if (!WebReference.IsValidNamespace(defaultNameSpace) || !WebReference.IsValidReferenceName(defaultNameSpace)) {
+				ServiceDescriptionMessage = "Namespace contains invalid characters.";
+			}
+			return true;
 		}
 		
 		public void AddServiceReference()
