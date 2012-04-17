@@ -38,10 +38,10 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		/// Bug 325187 - Bug in smart indent
 		/// </summary>
 		[Test()]
-		public void TestBug325187 ()
+		public void TestBug325187()
 		{
-			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
-			policy.PlaceElseOnNewLine = true;
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.ElseNewLinePlacement = NewLinePlacement.NewLine;
 			
 			TestStatementFormatting (policy,
 @"foreach (int i in myints)

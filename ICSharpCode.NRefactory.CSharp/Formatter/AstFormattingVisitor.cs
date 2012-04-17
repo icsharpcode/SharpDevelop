@@ -1283,11 +1283,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			if (!ifElseStatement.FalseStatement.IsNull) {
-				PlaceOnNewLine(policy.PlaceElseOnNewLine || !(ifElseStatement.TrueStatement is BlockStatement) && policy.IfElseBraceForcement != BraceForcement.AddBraces, ifElseStatement.ElseToken);
+				var placeElseOnNewLine = policy.ElseNewLinePlacement;
+				if (!(ifElseStatement.TrueStatement is BlockStatement) && policy.IfElseBraceForcement != BraceForcement.AddBraces)
+					placeElseOnNewLine = NewLinePlacement.NewLine;
+				PlaceOnNewLine(placeElseOnNewLine, ifElseStatement.ElseToken);
 				var forcement = policy.IfElseBraceForcement;
 				if (ifElseStatement.FalseStatement is IfElseStatement) {
 					forcement = BraceForcement.DoNotChange;
-					PlaceOnNewLine(policy.PlaceElseIfOnNewLine, ((IfElseStatement)ifElseStatement.FalseStatement).IfToken);
+					PlaceOnNewLine(policy.ElseIfNewLinePlacement, ((IfElseStatement)ifElseStatement.FalseStatement).IfToken);
 				}
 				FixEmbeddedStatment(policy.StatementBraceStyle, forcement, ifElseStatement.ElseToken, policy.AllowIfBlockInline, ifElseStatement.FalseStatement, ifElseStatement.FalseStatement is IfElseStatement);
 			}
@@ -1378,7 +1381,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			foreach (CatchClause clause in tryCatchStatement.CatchClauses) {
-				PlaceOnNewLine(policy.PlaceCatchOnNewLine, clause.CatchToken);
+				PlaceOnNewLine(policy.CatchNewLinePlacement, clause.CatchToken);
 				if (!clause.LParToken.IsNull) {
 					ForceSpacesBefore(clause.LParToken, policy.SpaceBeforeCatchParentheses);
 
@@ -1389,7 +1392,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
-				PlaceOnNewLine(policy.PlaceFinallyOnNewLine, tryCatchStatement.FinallyToken);
+				PlaceOnNewLine(policy.FinallyNewLinePlacement, tryCatchStatement.FinallyToken);
 				
 				FixEmbeddedStatment(policy.StatementBraceStyle, BraceForcement.DoNotChange, tryCatchStatement.FinallyBlock);
 			}
@@ -1443,7 +1446,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitDoWhileStatement(DoWhileStatement doWhileStatement)
 		{
-			PlaceOnNewLine(policy.PlaceWhileOnNewLine, doWhileStatement.WhileToken);
+			PlaceOnNewLine(policy.WhileNewLinePlacement, doWhileStatement.WhileToken);
 			FixEmbeddedStatment(policy.StatementBraceStyle, policy.WhileBraceForcement, doWhileStatement.EmbeddedStatement);
 		}
 
@@ -1653,7 +1656,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 
 			bool wrapMethodCall = DoWrap(methodCallArgumentWrapping, rParToken);
-
 			if (wrapMethodCall && arguments.Any()) {
 				if (newLineAferMethodCallOpenParentheses) {
 					curIndent.Push(IndentType.Continuation);
@@ -1673,8 +1675,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					FixStatementIndentation(rParToken.StartLocation);
 			} else {
 				foreach (var arg in arguments) {
-					if (methodCallArgumentWrapping == Wrapping.DoNotWrap)
-						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
 					arg.AcceptVisitor(this);
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
@@ -1907,15 +1908,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		void PlaceOnNewLine(bool newLine, AstNode keywordNode)
+		void PlaceOnNewLine(NewLinePlacement newLine, AstNode keywordNode)
 		{
-			if (keywordNode == null) {
+			if (keywordNode == null || newLine == NewLinePlacement.DoNotCare) {
 				return;
 			}
+
 			int offset = document.GetOffset(keywordNode.StartLocation);
 			
 			int whitespaceStart = SearchWhitespaceStart(offset);
-			string indentString = newLine ? this.options.EolMarker + this.curIndent.IndentString : " ";
+			string indentString = newLine == NewLinePlacement.NewLine ? this.options.EolMarker + this.curIndent.IndentString : " ";
 			AddChange(whitespaceStart, offset - whitespaceStart, indentString);
 		}
 
