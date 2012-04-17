@@ -306,7 +306,6 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Ignore("Not Implemented")]
 		[Test()]
 		public void TestMethodDeclarationParameterNewLineWrapping()
 		{
@@ -333,7 +332,58 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 }");
 		}
 
-		[Ignore("Not Implemented")]
+		[Test()]
+		public void TestOperatorDeclarationParameterNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodDeclarationOpenParentheses = true;
+			policy.MethodDeclarationClosingParenthesesOnNewLine = false;
+
+			Test(policy, @"class Test
+{
+	public static Test operator + (Test a, Test b)
+	{
+		return null;
+	}
+}",
+@"class Test
+{
+	public static Test operator + (
+		Test a,
+		Test b)
+	{
+		return null;
+	}
+}");
+		}
+
+		[Test()]
+		public void TestConstructorDeclarationParameterNewLineWrapping()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.WrapAlways;
+			policy.NewLineAferMethodDeclarationOpenParentheses = true;
+			policy.MethodDeclarationClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	Test (int i, int j, int k)
+	{
+	}
+}",
+@"class Test
+{
+	Test (
+		int i,
+		int j,
+		int k
+	)
+	{
+	}
+}");
+		}
+
 		[Test()]
 		public void TestIndexerDeclarationParameterNewLineWrapping()
 		{
