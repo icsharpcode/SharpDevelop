@@ -309,6 +309,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							IsInString = false;
 							IsInChar = false;
 							IsFistNonWs = true;
+							IsInPreprocessorDirective = false;
 							break;
 						case '\\':
 							if (IsInString || IsInChar)
