@@ -22,8 +22,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void okButtonClick(object sender, RoutedEventArgs e)
 		{
-			this.DialogResult = true;
-			Close();
+			if (CanAddServiceReference()) {
+				this.DialogResult = true;
+				Close();
+			}
+		}
+		
+		bool CanAddServiceReference()
+		{
+			var dc = (AddServiceReferenceViewModel)DataContext;
+			return dc.CanAddServiceReference();
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)

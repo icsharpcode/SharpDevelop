@@ -61,11 +61,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		void DiscoverServices()
 		{
-			Uri uri = TryGetUri(SelectedService);
+			Uri uri = TryGetUri();
 			if (uri != null) {
 				ServiceDescriptionMessage = waitMessage;
 				StartDiscovery(uri);
 			}
+		}
+		
+		Uri TryGetUri()
+		{
+			return TryGetUri(selectedService);
 		}
 		
 		Uri TryGetUri(string url)
@@ -264,18 +269,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			ServiceItems = items;
 		}
 		
+		public bool CanAddServiceReference()
+		{
+			return GetServiceUri() != null;
+		}
+		
 		public void AddServiceReference()
 		{
 			CompilerMessageView.Instance.BringToFront();
+			Uri uri = GetServiceUri();
+			if (uri == null)
+				return;
 			
 			try {
 				serviceGenerator.Options.Namespace = defaultNameSpace;
-				serviceGenerator.Options.Url = discoveryUri.ToString();
+				serviceGenerator.Options.Url = uri.ToString();
 				serviceGenerator.AddServiceReference();
 				new RefreshProjectBrowser().Run();
 			} catch (Exception ex) {
 				ICSharpCode.Core.LoggingService.Error("Failed to add service reference.", ex);
 			}
+		}
+		
+		Uri GetServiceUri()
+		{
+			if (discoveryUri != null) {
+				return discoveryUri;
+			}
+			return TryGetUri();
 		}
 	}
 	
