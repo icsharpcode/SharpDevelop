@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		}
 		
 		public static string SvcUtilPath {
-			get { return properties.Get<string>("SvcUtilPath", null); }
+			get { return properties.Get<string>("SvcUtilPath", String.Empty); }
 			set { properties.Set("SvcUtilPath", value); }
 		}
 	}
