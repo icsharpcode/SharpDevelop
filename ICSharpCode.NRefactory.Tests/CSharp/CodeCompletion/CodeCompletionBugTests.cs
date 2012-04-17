@@ -5014,6 +5014,32 @@ public class Test
 			});
 		}
 
+		/// <summary>
+		/// Bug 2668 - No completion offered for enum keys of Dictionaries 
+		/// </summary>
+		[Test()]
+		public void TestBug2668()
+		{
+			CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+
+public enum SomeEnum { One, Two }
+
+public class Test
+{
+	void TestFoo()
+	{
+		Dictionary<SomeEnum,int> dict = new Dictionary<SomeEnum,int>();
+		$dict[O$
+
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("SomeEnum"), "'SomeEnum' not found.");
+				Assert.IsNotNull(provider.Find("SomeEnum.One"), "'SomeEnum.One' not found.");
+			});
+		}
 
 	}
 }
