@@ -858,11 +858,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					curIndent.ExtraSpaces -= extraSpaces;
 				}
-				if (methodClosingParenthesesOnNewLine)
+				if (methodClosingParenthesesOnNewLine) {
 					FixStatementIndentation(rParToken.StartLocation);
+				}
 			} else {
 				foreach (var arg in parameters) {
-					ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					}
 					arg.AcceptVisitor(this);
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
@@ -1686,7 +1689,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		bool DoWrap(Wrapping wrapping, AstNode wrapNode)
+		bool DoWrap (Wrapping wrapping, AstNode wrapNode)
 		{
 			return wrapping == Wrapping.WrapAlways || 
 				options.WrapLineLength > 0 && wrapping == Wrapping.WrapIfTooLong && wrapNode.StartLocation.Column >= options.WrapLineLength;
@@ -1754,11 +1757,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					curIndent.ExtraSpaces -= extraSpaces;
 				}
-				if (methodClosingParenthesesOnNewLine)
+				if (methodClosingParenthesesOnNewLine) {
 					FixStatementIndentation(rParToken.StartLocation);
+				}
 			} else {
 				foreach (var arg in arguments) {
-					ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					}
 					arg.AcceptVisitor(this);
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
