@@ -183,6 +183,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
+
+				IfElseBraceForcement = BraceForcement.DoNotChange,
+				ForBraceForcement = BraceForcement.DoNotChange,
+				ForEachBraceForcement = BraceForcement.DoNotChange,
+				WhileBraceForcement = BraceForcement.DoNotChange,
+				UsingBraceForcement = BraceForcement.DoNotChange,
+				FixedBraceForcement = BraceForcement.DoNotChange
 			};
 		}
 
@@ -345,6 +352,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				IndexerArgumentWrapping = Wrapping.WrapIfTooLong,
 				NewLineAferIndexerOpenBracket = false,
 				IndexerClosingBracketOnNewLine = false,
+
+				IfElseBraceForcement = BraceForcement.DoNotChange,
+				ForBraceForcement = BraceForcement.DoNotChange,
+				ForEachBraceForcement = BraceForcement.DoNotChange,
+				WhileBraceForcement = BraceForcement.DoNotChange,
+				UsingBraceForcement = BraceForcement.DoNotChange,
+				FixedBraceForcement = BraceForcement.DoNotChange
 			};
 		}
 
@@ -353,17 +367,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		public static CSharpFormattingOptions CreateAllman()
 		{
-			var baseOptions = CreateSharpDevelop();
-			baseOptions.AnonymousMethodBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.PropertyBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.PropertyGetBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.PropertySetBraceStyle = BraceStyle.EndOfLine;
+			var baseOptions = CreateKRStyle();
+			baseOptions.AnonymousMethodBraceStyle = BraceStyle.NextLine;
+			baseOptions.PropertyBraceStyle = BraceStyle.NextLine;
+			baseOptions.PropertyGetBraceStyle = BraceStyle.NextLine;
+			baseOptions.PropertySetBraceStyle = BraceStyle.NextLine;
 
-			baseOptions.EventBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.EventAddBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.EventRemoveBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.StatementBraceStyle = BraceStyle.EndOfLine;
-			baseOptions.ArrayInitializerBraceStyle = BraceStyle.EndOfLine;
+			baseOptions.EventBraceStyle = BraceStyle.NextLine;
+			baseOptions.EventAddBraceStyle = BraceStyle.NextLine;
+			baseOptions.EventRemoveBraceStyle = BraceStyle.NextLine;
+			baseOptions.StatementBraceStyle = BraceStyle.NextLine;
+			baseOptions.ArrayInitializerBraceStyle = BraceStyle.NextLine;
 			return baseOptions;
 		}
 	
@@ -372,7 +386,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		public static CSharpFormattingOptions CreateWhitesmiths()
 		{
-			var baseOptions = CreateSharpDevelop();
+			var baseOptions = CreateKRStyle();
 				
 			baseOptions.NamespaceBraceStyle = BraceStyle.NextLineShifted;
 			baseOptions.ClassBraceStyle = BraceStyle.NextLineShifted;
