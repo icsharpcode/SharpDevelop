@@ -41,6 +41,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return project.Language; }
 		}
 		
+		public string RootNamespace {
+			get {
+				if (project.RootNamespace != null) {
+					return project.RootNamespace;
+				}
+				return String.Empty;
+			}
+		}
+		
 		public ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName)
 		{
 			return new ServiceReferenceFileName(ServiceReferencesFolder, serviceReferenceName);

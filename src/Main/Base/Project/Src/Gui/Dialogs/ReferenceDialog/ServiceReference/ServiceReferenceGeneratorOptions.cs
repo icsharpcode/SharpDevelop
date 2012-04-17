@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.AppConfigFileName = String.Empty;
 			this.MergeAppConfig = false;
 			this.OutputFileName = String.Empty;
-			this.Namespace = String.Empty;
+			this.ServiceName = String.Empty;
 			this.Language = "CS";
 			this.NoAppConfig = true;
 			this.UseTypesInProjectReferences = true;
@@ -33,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.DictionaryCollectionType = DictionaryCollectionTypes.Dictionary;
 		}
 		
+		public string ServiceName { get; set; }
 		public string Namespace { get; set; }
 		public string OutputFileName { get; set; }
 		public string Url { get; set; }
@@ -47,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public bool UseTypesInSpecifiedAssemblies { get; set; }
 		public CollectionTypes ArrayCollectionType { get; set; }
 		public DictionaryCollectionTypes DictionaryCollectionType { get; set; }
-		
+
 		public void MapProjectLanguage(string language)
 		{
 			if (language == "VBNet") {
@@ -64,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public ServiceReferenceGeneratorOptions Clone()
 		{
 			return new ServiceReferenceGeneratorOptions(this.assemblies) {
-				Namespace = this.Namespace,
+				ServiceName = this.ServiceName,
 				OutputFileName = this.OutputFileName,
 				Url = this.Url,
 				Language = this.Language,
@@ -152,6 +153,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				foreach (ReferenceProjectItem item in assemblies) {
 					Assemblies.Add(item.FileName);
 				}
+			}
+		}
+		
+		public void GenerateNamespace(string rootNamespace)
+		{
+			if (String.IsNullOrEmpty(rootNamespace)) {
+				Namespace = ServiceName;
+			} else {
+				Namespace = rootNamespace + "." + ServiceName;
 			}
 		}
 	}

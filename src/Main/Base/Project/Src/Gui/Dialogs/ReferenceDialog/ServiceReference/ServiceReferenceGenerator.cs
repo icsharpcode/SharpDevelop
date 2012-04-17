@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		ServiceReferenceFileName GenerateProxyFile()
 		{
-			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.Namespace);
+			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.ServiceName);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
 			Options.OutputFileName = referenceFileName.Path;
@@ -73,6 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			Options.NoAppConfig = false;
 			Options.MergeAppConfig = project.HasAppConfigFile();
 			Options.MapProjectLanguage(project.Language);
+			Options.GenerateNamespace(project.RootNamespace);
 			Options.AddProjectReferencesIfUsingTypesFromProjectReferences(project.GetReferences());
 			fileGenerator.GenerateProxyFile();
 			
@@ -81,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		
 		ServiceReferenceMapFileName CreateServiceReferenceMapFile()
 		{
-			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(fileGenerator.Options.Namespace);
+			ServiceReferenceMapFileName mapFileName = project.GetServiceReferenceMapFileName(fileGenerator.Options.ServiceName);
 			var mapFile = new ServiceReferenceMapFile(mapFileName);
 			fileGenerator.GenerateServiceReferenceMapFile(mapFile);
 			return mapFileName;

@@ -11,6 +11,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	{
 		string ServiceReferencesFolder { get; }
 		string Language { get; }
+		string RootNamespace { get; }
 		
 		ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName);
 		ServiceReferenceMapFileName GetServiceReferenceMapFileName(string serviceReferenceName);

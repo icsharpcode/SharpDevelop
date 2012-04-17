@@ -29,7 +29,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		string waitMessage = "Please wait....";
 		string defaultNameSpace;
 		string serviceDescriptionMessage;
-		string namespacePrefix = String.Empty;
 		
 		ObservableCollection<ImageAndDescription> twoValues;
 		
@@ -153,9 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		/// </summary>
 		string GetDefaultNamespace()
 		{
-			if (namespacePrefix.Length > 0 && discoveryUri != null) {
-				return String.Concat(namespacePrefix, ".", discoveryUri.Host);
-			} else if (discoveryUri != null) {
+			if (discoveryUri != null) {
 				return discoveryUri.Host;
 			}
 			return String.Empty;
@@ -295,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				return;
 			
 			try {
-				serviceGenerator.Options.Namespace = defaultNameSpace;
+				serviceGenerator.Options.ServiceName = defaultNameSpace;
 				serviceGenerator.Options.Url = uri.ToString();
 				serviceGenerator.AddServiceReference();
 				new RefreshProjectBrowser().Run();

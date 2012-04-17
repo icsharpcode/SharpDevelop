@@ -300,6 +300,24 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		}
 		
 		[Test]
+		public void RootNamespace_MSBuildProjectHasRootNamespace_RootNamespaceReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.RootNamespace = "Test";
+			
+			Assert.AreEqual("Test", project.RootNamespace);
+		}
+		
+		[Test]
+		public void RootNamespace_MSBuildProjectHasNullRootNamespace_EmptyStringReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.Name = null;
+			
+			Assert.AreEqual(String.Empty, project.RootNamespace);
+		}
+		
+		[Test]
 		public void AddAppConfigFile_ProjectHasNoAppConfig_ProjectItemAddedToProjectForAppConfig()
 		{
 			CreateProjectWithMSBuildProject();
