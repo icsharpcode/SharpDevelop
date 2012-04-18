@@ -863,10 +863,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			} else {
 				foreach (var arg in parameters) {
-					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
-						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
-					} else {
-						ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (arg.PrevSibling != null) {
+						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+						} else {
+							ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+						}
 					}
 					arg.AcceptVisitor(this);
 				}
@@ -1764,10 +1766,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			} else {
 				foreach (var arg in arguments) {
-					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
-						ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
-					} else {
-						ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+					if (arg.PrevSibling != null) {
+						if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
+							ForceSpacesBeforeRemoveNewLines(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+						} else {
+							ForceSpacesBefore(arg, spaceAfterMethodCallParameterComma && arg.PrevSibling.Role == Roles.Comma);
+						}
 					}
 					arg.AcceptVisitor(this);
 				}
