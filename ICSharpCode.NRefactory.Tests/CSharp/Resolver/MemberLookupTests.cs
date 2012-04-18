@@ -456,5 +456,30 @@ class TestClass {
 			var mrr = Resolve<MemberResolveResult>(program);
 			Assert.AreEqual("TestClass.B", mrr.Member.FullName);
 		}
+
+		[Test]
+		public void ProtectedInnerClassMemberTest()
+		{
+			string program = @"class A
+{
+	protected class Foo
+	{
+		public int Bar = 0;
+	}
+}
+
+class B : A
+{
+	class FooBar : A.Foo
+	{
+		public void Test ()
+		{
+			System.Console.WriteLine ($base.Bar$);
+		}
+	}
+}";
+			var rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("A.Foo.Bar", rr.Member.FullName);
+		}
 	}
 }
