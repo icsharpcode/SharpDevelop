@@ -1130,21 +1130,28 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return false;
 		}
 		
-		void AddTypesAndNamespaces(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Func<IType, IType> typePred = null, Predicate<IMember> memberPred = null)
+		void AddTypesAndNamespaces(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Func<IType, IType> typePred = null, Predicate<IMember> memberPred = null, Action<ICompletionData, IType> callback = null)
 		{
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
 						string name = nestedType.Name;
-						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length)
+						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 							name = name.Substring(0, name.Length - "Attribute".Length);
+						}
 
 						if (typePred == null) {
 							wrapper.AddType(nestedType, name);
 							continue;
 						}
 
-						wrapper.AddType(typePred(nestedType.Resolve(ctx)), name);
+						var type = typePred(nestedType.Resolve(ctx));
+						if (type != null) {
+							var a2 = wrapper.AddType(type, name);
+							if (a2 != null && callback != null) {
+								callback(a2, type);
+							}
+						}
 						continue;
 					}
 				}
@@ -1194,7 +1201,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 								name = name.Substring(0, name.Length - "Attribute".Length);
 							}
-							wrapper.AddType(addType, name);
+							var a = wrapper.AddType(addType, name);
+							if (a != null && callback != null) {
+								callback(a, type);
+							}
 						}
 					}
 				}
@@ -1202,7 +1212,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				foreach (var type in n.Namespace.Types) {
 					IType addType = typePred != null ? typePred(type) : type;
 					if (addType != null) {
-						wrapper.AddType(addType, addType.Name);
+						var a2 = wrapper.AddType(addType, addType.Name);
+						if (a2 != null && callback != null) {
+							callback(a2, type);
+						}
 					}
 				}
 				
@@ -1564,19 +1577,44 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		static CSharpAmbience amb = new CSharpAmbience ();
 
+		class Category : CompletionCategory
+		{
+			public Category (string displayText, string icon) : base (displayText, icon)
+			{
+			}
+			
+			public override int CompareTo (CompletionCategory other)
+			{
+				return 0;
+			}
+		}
+
 		IEnumerable<ICompletionData> CreateTypeCompletionData(IType hintType, AstType hintTypeAst)
 		{
 			var wrapper = new CompletionDataWrapper(this);
 			var state = GetState();
 			Func<IType, IType> pred = null;
+			Action<ICompletionData, IType> typeCallback = null;
+			var inferredTypesCategory = new Category("Inferred Types", null);
+			var derivedTypesCategory = new Category("Derived Types", null);
+
 			if (hintType != null) {
 				if (hintType.Kind != TypeKind.Unknown) {
 					var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+					typeCallback = (data, t) => {
+						//check if type is in inheritance tree.
+						if (hintType.GetDefinition() != null &&
+							t.GetDefinition() != null &&
+							t.GetDefinition().IsDerivedFrom(hintType.GetDefinition())) {
+							data.CompletionCategory = derivedTypesCategory;
+						}
+					};
 					pred = t => {
-						// check if type is in inheritance tree.
-						// if (hintType.GetDefinition() != null && !t.GetDefinition().IsDerivedFrom(hintType.GetDefinition())) {
-						//	return null;
-						//}
+						if (hintType.GetDefinition() != null &&
+							t.GetDefinition() != null &&
+							t.GetDefinition().IsDerivedFrom(hintType.GetDefinition())) {
+							return t;
+						}
 						if (t.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array) {
 							return null;
 						}
@@ -1593,12 +1631,20 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						var typeInference = new TypeInference(Compilation);
 						typeInference.Algorithm = TypeInferenceAlgorithm.ImprovedReturnAllResults;
 						var inferedType = typeInference.FindTypeInBounds(new [] { t }, new [] { hintType });
-						wrapper.AddType(inferedType, amb.ConvertType(inferedType));
+						if (inferedType != SpecialType.UnknownType) {
+							var newType = wrapper.AddType(inferedType, amb.ConvertType(inferedType));
+							if (newType != null) {
+								newType.CompletionCategory = inferredTypesCategory;
+							}
+						}
 						return t;
 					};
 					if (!(hintType.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array)) {
 						DefaultCompletionString = GetShortType(hintType, GetState());
-						wrapper.AddType(hintType, DefaultCompletionString);
+						var hint = wrapper.AddType(hintType, DefaultCompletionString);
+						if (hint != null) {
+							hint.CompletionCategory = derivedTypesCategory;
+						}
 					}
 					if (hintType is ParameterizedType && hintType.TypeParameterCount == 1 && hintType.FullName == "System.Collections.Generic.IEnumerable") {
 						var arg = ((ParameterizedType)hintType).TypeArguments.FirstOrDefault();
@@ -1607,12 +1653,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				} else {
 					DefaultCompletionString = hintTypeAst.ToString();
-					wrapper.AddType(hintType, DefaultCompletionString);
+					var hint = wrapper.AddType(hintType, DefaultCompletionString);
+					if (hint != null) {
+						hint.CompletionCategory = derivedTypesCategory;
+					}
 				}
 			} 
-			AddTypesAndNamespaces(wrapper, state, null, pred, m => false);
-			if (hintType == null || hintType == SpecialType.UnknownType)
+			AddTypesAndNamespaces(wrapper, state, null, pred, m => false, typeCallback);
+			if (hintType == null || hintType == SpecialType.UnknownType) {
 				AddKeywords(wrapper, primitiveTypesKeywords.Where(k => k != "void"));
+			}
+
 			CloseOnSquareBrackets = true;
 			AutoCompleteEmptyMatch = true;
 			return wrapper.Result;
