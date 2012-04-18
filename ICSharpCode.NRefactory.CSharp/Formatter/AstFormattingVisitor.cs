@@ -874,8 +874,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
 			}
-			foreach (CSharpTokenNode comma in rParToken.Parent.Children.Where(n => n.Role == Roles.Comma)) {
-				ForceSpacesBefore(comma, spaceBeforeMethodCallParameterComma);
+			if (!rParToken.IsNull) {
+				foreach (CSharpTokenNode comma in rParToken.Parent.Children.Where(n => n.Role == Roles.Comma)) {
+					ForceSpacesBefore(comma, spaceBeforeMethodCallParameterComma);
+				}
 			}
 		}
 
@@ -1777,8 +1779,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
 			}
-			foreach (CSharpTokenNode comma in rParToken.Parent.Children.Where(n => n.Role == Roles.Comma)) {
-				ForceSpacesBefore(comma, spaceBeforeMethodCallParameterComma);
+			if (!rParToken.IsNull) {
+				foreach (CSharpTokenNode comma in rParToken.Parent.Children.Where(n => n.Role == Roles.Comma)) {
+					ForceSpacesBefore(comma, spaceBeforeMethodCallParameterComma);
+				}
 			}
 		}
 
