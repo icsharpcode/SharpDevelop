@@ -1610,11 +1610,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					};
 					pred = t => {
-						if (hintType.GetDefinition() != null &&
-							t.GetDefinition() != null &&
-							t.GetDefinition().IsDerivedFrom(hintType.GetDefinition())) {
-							return t;
-						}
 						if (t.Kind == TypeKind.Interface && hintType.Kind != TypeKind.Array) {
 							return null;
 						}
@@ -1636,6 +1631,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (newType != null) {
 								newType.CompletionCategory = inferredTypesCategory;
 							}
+							return null;
 						}
 						return t;
 					};
