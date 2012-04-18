@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -896,7 +896,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				if (nae != null) {
 					if (namedCtorArguments == null)
 						namedCtorArguments = new List<KeyValuePair<string, IConstantValue>>();
-					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Identifier, ConvertAttributeArgument(nae.Expression)));
+					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Name, ConvertAttributeArgument(nae.Expression)));
 				} else {
 					NamedExpression namedExpression = expr as NamedExpression;
 					if (namedExpression != null) {

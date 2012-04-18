@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
@@ -419,7 +419,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		public AstNode VisitNamedArgumentExpression(CSharp.NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			Expression expr = new NamedArgumentExpression {
-				Identifier = namedArgumentExpression.Identifier,
+				Identifier = namedArgumentExpression.Name,
 				Expression = (Expression)namedArgumentExpression.Expression.AcceptVisitor(this, data)
 			};
 			

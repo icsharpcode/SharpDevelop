@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -1535,7 +1535,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (nae != null) {
 					if (argumentNames == null)
 						argumentNames = new string[arguments.Length];
-					argumentNames[i] = nae.Identifier;
+					argumentNames[i] = nae.Name;
 					argumentValue = nae.Expression;
 				} else {
 					argumentValue = argument;
