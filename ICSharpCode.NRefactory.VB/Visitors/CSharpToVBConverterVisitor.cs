@@ -430,7 +430,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		{
 			Expression expr = new FieldInitializerExpression {
 				IsKey = true,
-				Identifier = namedExpression.Identifier,
+				Identifier = namedExpression.Name,
 				Expression = (Expression)namedExpression.Expression.AcceptVisitor(this, data)
 			};
 			return EndNode(namedExpression, expr);

@@ -30,9 +30,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public NamedArgumentExpression(string identifier, Expression expression)
+		public NamedArgumentExpression(string name, Expression expression)
 		{
-			this.Name = identifier;
+			this.Name = name;
 			this.Expression = expression;
 		}
 		

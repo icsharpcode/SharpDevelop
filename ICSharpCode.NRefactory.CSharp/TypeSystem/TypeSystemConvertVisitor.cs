@@ -900,7 +900,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				} else {
 					NamedExpression namedExpression = expr as NamedExpression;
 					if (namedExpression != null) {
-						string name = namedExpression.Identifier;
+						string name = namedExpression.Name;
 						if (namedArguments == null)
 							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
 						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(namedExpression.Expression)));

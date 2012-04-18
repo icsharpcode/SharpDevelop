@@ -962,7 +962,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (expr is NamedExpression) {
 				var namedArgExpr = (NamedExpression)expr;
 				resolveExpr = namedArgExpr.Expression;
-				return namedArgExpr.Identifier;
+				return namedArgExpr.Name;
 			}
 			// no name given, so it's a projection initializer
 			if (expr is MemberReferenceExpression) {
@@ -1287,7 +1287,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			StoreCurrentState(namedExpression);
 			Expression rhs = namedExpression.Expression;
-			ResolveResult lhsRR = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Identifier);
+			ResolveResult lhsRR = resolver.ResolveIdentifierInObjectInitializer(namedExpression.Name);
 			if (rhs is ArrayInitializerExpression) {
 				HandleObjectInitializer(lhsRR, (ArrayInitializerExpression)rhs, initializerStatements);
 			} else {
