@@ -90,7 +90,7 @@ class MyTest
 		/// <summary>
 		/// Bug 487236 - Object initializer completion uses wrong type
 		/// </summary>
-		[Test(), Ignore ("FIXME!")]
+		[Test()]
 		public void TestBug487236 ()
 		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
@@ -457,6 +457,25 @@ class MainClass
 }
 ");
 			Assert.IsNotNull(provider.Find("Foo"), "'Foo' not found.");
+		}
+
+		[Test()]
+		public void TestArrayInitializerObjectCreation()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+
+class MyTest
+{
+	public void Test ()
+	{
+		$new IEnumerable<string>[] { new L$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("List<string>"), "class 'List<string>' not found.");
+			});
 		}
 	}
 }

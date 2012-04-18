@@ -4164,12 +4164,13 @@ public class Test
 		/// Bug 1747 - [New Resolver] Code completion issues when declaring a generic dictionary
 		/// </summary>
 		[Test()]
-		public void Test1747 ()
+		public void Test1747()
 		{
-			var provider = CreateProvider (
-@"public class Test
+			var provider = CreateProvider(
+@"using System.Collections.Generic;
+public class Test
 {
-	$Dictionary<int, string> field = new $
+	$Dictionary<int,string> field = new $
 }
 ");
 			Assert.IsNotNull (provider, "provider not found.");
