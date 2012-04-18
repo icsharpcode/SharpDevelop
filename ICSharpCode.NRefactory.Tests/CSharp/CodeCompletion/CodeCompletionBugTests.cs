@@ -1493,9 +1493,9 @@ public class AClass
 		/// Bug 471937 - Code completion of 'new' showing invorrect entries 
 		/// </summary>
 		[Test()]
-		public void TestBug471937 ()
+		public void TestBug471937()
 		{
-			CompletionDataList provider = CreateCtrlSpaceProvider (
+			CompletionDataList provider = CreateCtrlSpaceProvider(
 @"
 class B
 {
@@ -1514,7 +1514,7 @@ class A
 			Assert.IsNotNull (provider, "provider not found.");
 			Assert.IsNotNull (provider.Find ("A"), "class 'A' not found.");
 			Assert.AreEqual ("A", provider.DefaultCompletionString);
-			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn'tj.");
+//			Assert.IsNull (provider.Find ("B"), "class 'B' found, but shouldn'tj.");
 		}
 		
 		/// <summary>
@@ -4724,7 +4724,6 @@ class MainClass
 			Assert.IsNotNull(provider.Find("List<string>"), "'List<string>' not found.");
 			Assert.IsNull(provider.Find("IEnumerable"), "'IEnumerable' found.");
 			Assert.IsNull(provider.Find("IEnumerable<string>"), "'IEnumerable<string>' found.");
-			Assert.IsNull (provider.Find ("Console"), "'Console' found.");
 		}
 
 		[Test()]
@@ -5040,6 +5039,27 @@ public class Test
 				Assert.IsNotNull(provider.Find("SomeEnum.One"), "'SomeEnum.One' not found.");
 			});
 		}
+
+		/// <summary>
+		/// Bug 4487 - Filtering possible types for new expressions a bit too aggressively
+		/// </summary>
+		[Test()]
+		public void TestBug4487()
+		{
+			// note 'string bar = new Test ().ToString ()' would be valid.
+			CombinedProviderTest(
+@"public class Test
+{
+	void TestFoo()
+	{
+		$string bar = new T$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("Test"), "'Test' not found.");
+			});
+		}
+
 
 	}
 }
