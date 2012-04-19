@@ -29,7 +29,6 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
-	[Ignore("TODO")]
 	[TestFixture]
 	public class ImplementInterfaceTests : ContextActionTestBase
 	{
@@ -44,9 +43,9 @@ class Foo : $IDisposable
 class Foo : IDisposable
 {
 	#region IDisposable implementation
-	public void Dispose()
+	public void Dispose ()
 	{
-		throw new NotImplementedException();
+		throw new NotImplementedException ();
 	}
 	#endregion
 }
@@ -57,6 +56,7 @@ class Foo : IDisposable
 		/// <summary>
 		/// Bug 663842 - Interface implementation does not include constraints
 		/// </summary>
+		[Ignore("TODO")]
 		[Test()]
 		public void TestBug663842()
 		{
@@ -79,24 +79,21 @@ interface ITest {
 	void MyMethod4<T> (T t) where T : IDisposable, IServiceProvider;
 }
 
-class Foo : $ITest
+class Foo : ITest
 {
 	#region ITest implementation
 	public void MyMethod1<T> (T t) where T : new ()
 	{
 		throw new System.NotImplementedException ();
 	}
-
 	public void MyMethod2<T> (T t) where T : class
 	{
 		throw new System.NotImplementedException ();
 	}
-
 	public void MyMethod3<T> (T t) where T : struct
 	{
 		throw new System.NotImplementedException ();
 	}
-
 	public void MyMethod4<T> (T t) where T : IDisposable, IServiceProvider
 	{
 		throw new System.NotImplementedException ();
@@ -119,8 +116,7 @@ class Foo : $ITest
 
 class Foo : $ITest
 {
-}
-", @"interface ITest {
+}", @"interface ITest {
 	void M1();
 	void M1(int x);
 }
@@ -132,7 +128,6 @@ class Foo : ITest
 	{
 		throw new System.NotImplementedException ();
 	}
-
 	public void M1 (int x)
 	{
 		throw new System.NotImplementedException ();
@@ -167,7 +162,6 @@ class Foo : ITest
 	{
 		throw new System.NotImplementedException ();
 	}
-
 	public void Inc (string message)
 	{
 		throw new System.NotImplementedException ();
@@ -191,28 +185,28 @@ class Foo : ITest
 
 class Foo : $ITest
 {
-	public void Method2 () {}	
+	public void Method2 () {}
 }", @"interface ITest {
 	void Method1 ();
 	void Method2 ();
 }
 
-class Foo : $ITest
+class Foo : ITest
 {
-	public void Method2 () {}
-	
 	#region ITest implementation
 	public void Method1 ()
 	{
 		throw new System.NotImplementedException ();
 	}
 	#endregion
+	public void Method2 () {}
 }");
 		}
 		
 		/// <summary>
 		/// Bug 3365 - MD cannot implement IEnumerable interface correctly  - MD cannot implement IEnumerable interface correctly 
 		/// </summary>
+		[Ignore("TODO")]
 		[Test()]
 		public void TestBug3365()
 		{
@@ -242,7 +236,7 @@ public interface ITest : IA, IEnumerable
 {
 }
 
-class Foo : $ITest
+class Foo : ITest
 {
 	#region ITest implementation
 	public bool GetEnumerator ()
@@ -250,7 +244,6 @@ class Foo : $ITest
 		throw new System.NotImplementedException ();
 	}
 	#endregion
-
 	#region IEnumerable implementation
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 	{

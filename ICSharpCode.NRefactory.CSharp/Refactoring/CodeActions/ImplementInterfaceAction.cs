@@ -40,6 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var type = context.GetNode<AstType>();
 			if (type == null || type.Role != Roles.BaseType)
 				yield break;
+
 			var state = context.GetResolverStateBefore(type);
 			if (state.CurrentTypeDefinition == null)
 				yield break;
@@ -47,11 +48,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var resolveResult = context.Resolve(type);
 			if (resolveResult.Type.Kind != TypeKind.Interface)
 				yield break;
-
 			var toImplement = CollectMembersToImplement(state.CurrentTypeDefinition, resolveResult.Type, false);
 			if (toImplement.Count == 0)
 				yield break;
-
 			yield return new CodeAction(context.TranslateString("Implement interface"), script => {
 				script.InsertWithCursor(
 					context.TranslateString ("Implement Interface"),
@@ -63,8 +62,23 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public static IEnumerable<AstNode> GenerateImplementation(RefactoringContext context, List<Tuple<IMember, bool>> toImplement)
 		{
+			var nodes = new Dictionary<IType, List<AstNode>>();
+
 			foreach (var member in toImplement) {
-				yield return GenerateMemberImplementation(context, member);
+				if (!nodes.ContainsKey(member.Item1.DeclaringType)) 
+					nodes [member.Item1.DeclaringType] = new List<AstNode>();
+				nodes [member.Item1.DeclaringType].Add(GenerateMemberImplementation(context, member));
+			}
+
+			foreach (var kv in nodes) {
+				yield return new PreProcessorDirective(
+					PreProcessorDirectiveType.Region,
+					string.Format("{0} implementation", kv.Key.Name));
+				foreach (var member in kv.Value)
+					yield return member;
+				yield return new PreProcessorDirective(
+					PreProcessorDirectiveType.Endregion
+				);
 			}
 		}
 

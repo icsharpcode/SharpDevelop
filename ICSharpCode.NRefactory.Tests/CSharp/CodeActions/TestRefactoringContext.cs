@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				var insertType = unit.GetNodeAt<TypeDeclaration> (parentType.Region.Begin);
 
 				var startOffset = GetCurrentOffset (insertType.LBraceToken.EndLocation);
-				foreach (var node in nodes) {
+				foreach (var node in nodes.Reverse ()) {
 					var output = OutputNode (1, node, true);
 					InsertText (startOffset, output.Text);
 					output.RegisterTrackedSegments (this, startOffset);
