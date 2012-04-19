@@ -1493,7 +1493,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 					IType hintType = null;
 					var expressionOrVariableDeclaration = GetNewExpressionAt(j);
-			
+					if (expressionOrVariableDeclaration == null)
+						return null;
 					var astResolver = new CSharpAstResolver(GetState(), expressionOrVariableDeclaration.Unit, CSharpParsedFile);
 					hintType = CreateFieldAction.GetValidTypes(astResolver, expressionOrVariableDeclaration.Node as Expression).FirstOrDefault ();
 
