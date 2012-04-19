@@ -412,5 +412,95 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		}
 
 
+		[Test()]
+		public void TestMethodCallArgumentWrappingDoNotChangeCase1()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodCallClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo (
+			1,
+			2,
+			3
+		);
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo (
+			1,
+			2,
+			3
+		);
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodCallArgumentWrappingDoNotChangeCase2()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodCallClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo (1,
+		     2,
+		     3
+					);
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo (1,
+		     2,
+		     3
+		);
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodCallArgumentWrappingDoNotChangeCase3()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodCallArgumentWrapping = Wrapping.DoNotChange;
+			policy.NewLineAferMethodCallOpenParentheses = true;
+			policy.MethodCallClosingParenthesesOnNewLine = true;
+
+			Test(policy, @"class Test
+{
+	void TestMe ()
+	{
+		Foo (1,
+		     2,
+		     3           );
+	}
+}",
+@"class Test
+{
+	void TestMe ()
+	{
+		Foo (1,
+		     2,
+		     3);
+	}
+}");
+		}
+
 	}
 }
