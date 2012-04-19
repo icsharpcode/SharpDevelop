@@ -333,6 +333,84 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 		}
 
 		[Test()]
+		public void TestMethodDeclarationParameterDoNotChangeCase1()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.DoNotChange;
+
+			Test(policy, @"class Test
+{
+	void TestMe (
+		int i,
+		int j,
+		int k
+			)
+	{
+	}
+}",
+@"class Test
+{
+	void TestMe (
+		int i,
+		int j,
+		int k
+	)
+	{
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodDeclarationParameterDoNotChangeCase2()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.DoNotChange;
+
+			Test(policy, @"class Test
+{
+	void TestMe (
+		int i,
+		int j,
+		int k						)
+	{
+	}
+}",
+@"class Test
+{
+	void TestMe (
+		int i,
+		int j,
+		int k)
+	{
+	}
+}");
+		}
+
+		[Test()]
+		public void TestMethodDeclarationParameterDoNotChangeCase3()
+		{
+			var policy = FormattingOptionsFactory.CreateMono();
+			policy.MethodDeclarationParameterWrapping = Wrapping.DoNotChange;
+
+			Test(policy, @"class Test
+{
+	void TestMe (int i,
+	             int j,
+	             int k						)
+	{
+	}
+}",
+@"class Test
+{
+	void TestMe (int i,
+	             int j,
+	             int k)
+	{
+	}
+}");
+		}
+
+		[Test()]
 		public void TestOperatorDeclarationParameterNewLineWrapping()
 		{
 			var policy = FormattingOptionsFactory.CreateMono();
