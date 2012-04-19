@@ -5061,6 +5061,21 @@ public class Test
 			});
 		}
 
+		/// <summary>
+		/// Bug 4525 - Unexpected code completion exception
+		/// </summary>
+		[Test()]
+		public void TestBug4525()
+		{
+			CombinedProviderTest(
+@"public class Test
+{
+	$public new s$
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("static"), "'static' not found.");
+			});
+		}
 
 	}
 }
