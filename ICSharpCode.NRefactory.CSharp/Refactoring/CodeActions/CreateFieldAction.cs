@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				};
 				if (isStatic)
 					decl.Modifiers |= Modifiers.Static;
-				script.InsertWithCursor(context.TranslateString("Create field"), decl, Script.InsertPosition.Before);
+				script.InsertWithCursor(context.TranslateString("Create field"), Script.InsertPosition.Before, decl);
 			});
 
 		}

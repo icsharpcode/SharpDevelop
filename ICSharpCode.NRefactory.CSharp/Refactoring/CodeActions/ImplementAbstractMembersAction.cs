@@ -1,10 +1,10 @@
 // 
-// CreateClassDeclarationAction.cs
+// ImplementAbstractMembersAction.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin <http://xamarin.com>
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,41 +23,39 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+using System;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Threading;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[ContextAction("Create constructor", Description = "Creates a constructor declaration out of an object creation.")]
-	public class CreateConstructorDeclarationAction : ICodeActionProvider
+//	[ContextAction("Implement abstract members", Description = "Implements abstract members from an abstract class.")]
+	public class ImplementAbstractMembersAction : ICodeActionProvider
 	{
 		public IEnumerable<CodeAction> GetActions(RefactoringContext context)
 		{
-			var createExpression = context.GetNode<ObjectCreateExpression>();
-			if (createExpression == null) 
+			var type = context.GetNode<AstType>();
+			if (type == null || type.Role != Roles.BaseType)
 				yield break;
-			
-			var resolveResult = context.Resolve(createExpression) as CSharpInvocationResolveResult;
-			if (resolveResult == null || !resolveResult.IsError || resolveResult.Member.DeclaringTypeDefinition == null || resolveResult.Member.DeclaringTypeDefinition.IsSealed || resolveResult.Member.DeclaringTypeDefinition.Region.IsEmpty)
+			var state = context.GetResolverStateBefore(type);
+			if (state.CurrentTypeDefinition == null)
 				yield break;
 
-			yield return new CodeAction(context.TranslateString("Create constructor"), script => {
-				var decl = new ConstructorDeclaration() {
-					Name = resolveResult.Member.DeclaringTypeDefinition.Name,
-					Modifiers = Modifiers.Public,
-					Body = new BlockStatement() {
-						new ThrowStatement(new ObjectCreateExpression(context.CreateShortType("System", "NotImplementedException")))
-					}
-				};
-				decl.Parameters.AddRange(CreateMethodDeclarationAction.GenerateParameters(context, createExpression.Arguments));
+			var resolveResult = context.Resolve(type);
+			if (resolveResult.Type.Kind != TypeKind.Class || resolveResult.Type.GetDefinition() == null || !resolveResult.Type.GetDefinition().IsAbstract)
+				yield break;
 
+			yield break;
+			/*
+			yield return new CodeAction(context.TranslateString("Implement abstract members"), script => {
 				script.InsertWithCursor(
-					context.TranslateString("Create constructor"),
-					resolveResult.Member.DeclaringTypeDefinition,
-					decl
+					context.TranslateString("Implement abstract members"),
+					state.CurrentTypeDefinition,
+					ImplementInterfaceAction.GenerateImplementation (context, toImplement)
 				);
-			});
+			});*/
 		}
 	}
 }

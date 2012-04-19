@@ -369,6 +369,9 @@
     <Compile Include="Ast\GeneralScope\WhitespaceNode.cs" />
     <Compile Include="Ast\GeneralScope\TextNode.cs" />
     <Compile Include="Formatter\FormattingOptionsFactory.cs" />
+    <Compile Include="Refactoring\CodeActions\ImplementInterfaceAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ImplementInterfaceExplicitAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ImplementAbstractMembersAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

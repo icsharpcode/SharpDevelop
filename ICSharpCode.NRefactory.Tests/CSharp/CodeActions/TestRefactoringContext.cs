@@ -97,21 +97,25 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				}
 			}
 			
-			public override void InsertWithCursor (string operation, AstNode node, InsertPosition defaultPosition)
+			public override void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 			{
-				var entity = context.GetNode<EntityDeclaration> ();
-				InsertBefore (entity, node);
+				var entity = context.GetNode<EntityDeclaration>();
+				foreach (var node in nodes) {
+					InsertBefore(entity, node);
+				}
 			}
 
-			public override void InsertWithCursor (string operation, AstNode node, ITypeDefinition parentType)
+			public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 			{
 				var unit = context.RootNode;
 				var insertType = unit.GetNodeAt<TypeDeclaration> (parentType.Region.Begin);
 
 				var startOffset = GetCurrentOffset (insertType.LBraceToken.EndLocation);
-				var output = OutputNode (1, node, true);
-				InsertText (startOffset, output.Text);
-				output.RegisterTrackedSegments (this, startOffset);
+				foreach (var node in nodes) {
+					var output = OutputNode (1, node, true);
+					InsertText (startOffset, output.Text);
+					output.RegisterTrackedSegments (this, startOffset);
+				}
 			}
 
 			void Rename (AstNode node, string newName)
