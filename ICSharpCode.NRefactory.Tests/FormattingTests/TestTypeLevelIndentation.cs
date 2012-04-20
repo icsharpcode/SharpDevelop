@@ -522,7 +522,59 @@ set;
 	}
 }");
 		}
+
+		[Test()]
+		public void TestPropertyIndentationClosingBracketCorrection ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+
+			Test (policy, 
+@"class Test
+{
+				public int Prop { get;
+				}
+}",@"class Test
+{
+	public int Prop { get; }
+}");
+		}
+		[Test()]
+		public void TestPropertyIndentationClosingBracketCorrection2 ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+
+			Test (policy, 
+@"class Test
+{
+				public int Prop {
+					get;}
+}",@"class Test
+{
+	public int Prop {
+		get;
+	}
+}");
+		}
+
+		[Test()]
+		public void TestPropertyCorrection()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+			policy.PropertyFormatting = PropertyFormatting.ForceNewLine;
+			Test(policy, 
+@"class Test
+{
+				public int Prop { get;          private set; }
+}", @"class Test
+{
+	public int Prop {
+		get;
+		private set;
+	}
+}");
+		}
 		
+
 		
 		[Test()]
 		public void TestIndentEventBody ()
