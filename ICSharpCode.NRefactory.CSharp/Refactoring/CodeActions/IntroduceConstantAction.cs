@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IntroduceConstantAction.cs
 //  
 // Author:

@@ -598,6 +598,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition type = GetTypeDefinition(typeof(ConstantTest));
 			IField answer = type.Fields.Single(f => f.Name == "Answer");
 			Assert.IsTrue(answer.IsConst);
+			Assert.IsTrue(answer.IsStatic);
 			Assert.AreEqual(42, answer.ConstantValue);
 		}
 		

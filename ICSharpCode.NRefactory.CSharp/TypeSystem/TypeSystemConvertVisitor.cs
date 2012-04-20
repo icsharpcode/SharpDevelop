@@ -354,6 +354,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
+					field.IsStatic = true;
 				}
 				
 				currentTypeDefinition.Members.Add(field);
