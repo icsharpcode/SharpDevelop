@@ -69,12 +69,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Saves project preferences (currently opened files, bookmarks etc.) to the
 		/// a property container.
 		/// </summary>
-		public Properties CreateMemento()
+		public virtual Properties CreateMemento()
 		{
 			return GetOrCreateBehavior().CreateMemento();
 		}
 		
-		public void SetMemento(Properties memento)
+		public virtual void SetMemento(Properties memento)
 		{
 			GetOrCreateBehavior().SetMemento(memento);
 		}
