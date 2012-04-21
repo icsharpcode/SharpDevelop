@@ -541,8 +541,8 @@
 				<ComponentRef Id="PackageManagementCmdletsDllHelpXml"/>
 				<ComponentRef Id="PackageManagementDll"/>
 				<ComponentRef Id="PackageManagementPowerShellDll"/>
-				<ComponentRef Id="JQuery161NuGetPackage"/>
-				<ComponentRef Id="Modernizr17NuGetPackage"/>
+				<ComponentRef Id="JQuery172NuGetPackage"/>
+				<ComponentRef Id="Modernizr253NuGetPackage"/>
 			
 				<ComponentRef Id="MonoTextTemplatingDll"/>
 				<ComponentRef Id="TextTemplatingAddin"/>
