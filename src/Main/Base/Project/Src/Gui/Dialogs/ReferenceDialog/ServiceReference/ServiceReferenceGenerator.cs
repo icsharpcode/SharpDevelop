@@ -18,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		IFileSystem fileSystem;
 		IActiveTextEditors activeTextEditors;
 		string tempAppConfigFileName;
+		ServiceReferenceFileName referenceFileName;
 		
 		public ServiceReferenceGenerator(IProject project)
 			: this(new ProjectWithServiceReferences(project))
@@ -50,25 +51,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { fileGenerator.Options = value; }
 		}
 		
-		public void AddServiceReference()
-		{
-			GenerateServiceReferenceProxy();
-			project.AddAssemblyReference("System.ServiceModel");
-			project.Save();
-		}
+		public event EventHandler<GeneratorCompleteEventArgs> Complete;
 		
-		void GenerateServiceReferenceProxy()
+		void OnComplete(GeneratorCompleteEventArgs e)
 		{
-			ServiceReferenceFileName referenceFileName = GenerateProxyFile();
-			ServiceReferenceMapFileName mapFileName = CreateServiceReferenceMapFile();
-			project.AddServiceReferenceProxyFile(referenceFileName);
-			project.AddServiceReferenceMapFile(mapFileName);
-			if (!project.HasAppConfigFile()) {
-				project.AddAppConfigFile();
+			if (Complete != null) {
+				Complete(this, e);
 			}
 		}
 		
-		ServiceReferenceFileName GenerateProxyFile()
+		public void AddServiceReference()
+		{
+			referenceFileName = StartProxyFileGeneration();
+		}
+		
+		ServiceReferenceFileName StartProxyFileGeneration()
 		{
 			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.ServiceName);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
@@ -119,12 +116,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			fileSystem.CreateDirectoryIfMissing(folder);
 		}
 		
-		void ProxyFileGenerationComplete(object sender, EventArgs e)
+		void ProxyFileGenerationComplete(object sender, GeneratorCompleteEventArgs e)
 		{
+			if (e.IsSuccess) {
+				UpdateProjectWithGeneratedServiceReference();
+			}
+			
 			if (tempAppConfigFileName != null) {
-				UpdateAppConfigInTextEditor();
+				if (e.IsSuccess) {
+					UpdateAppConfigInTextEditor();
+				}
 				DeleteTempAppConfigFile();
 			}
+			OnComplete(e);
+		}
+		
+		void UpdateProjectWithGeneratedServiceReference()
+		{
+			ServiceReferenceMapFileName mapFileName = CreateServiceReferenceMapFile();
+			project.AddServiceReferenceProxyFile(referenceFileName);
+			project.AddServiceReferenceMapFile(mapFileName);
+			
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			if (!project.HasAppConfigFile()) {
+				project.AddAppConfigFile();
+			}
+			
+			project.Save();
 		}
 		
 		void DeleteTempAppConfigFile()

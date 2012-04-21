@@ -48,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			this.project = project;
 			this.serviceGenerator = new ServiceReferenceGenerator(project);
+			this.serviceGenerator.Complete += ServiceReferenceGenerated;
 			this.assemblyReferences = serviceGenerator.GetCheckableAssemblyReferences().ToList();
 			HeadLine = header;
 			
@@ -111,6 +112,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			
 			discoveryUri = uri;
 			serviceReferenceDiscoveryClient.Discover(uri);
+		}
+		
+		void ServiceReferenceGenerated(object sender, GeneratorCompleteEventArgs e)
+		{
+			if (e.IsSuccess) {
+				new RefreshProjectBrowser().Run();
+			}
 		}
 
 		void ServiceReferenceDiscoveryComplete(object sender, ServiceReferenceDiscoveryEventArgs e)
@@ -295,7 +303,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				serviceGenerator.Options.ServiceName = defaultNameSpace;
 				serviceGenerator.Options.Url = uri.ToString();
 				serviceGenerator.AddServiceReference();
-				new RefreshProjectBrowser().Run();
 			} catch (Exception ex) {
 				ICSharpCode.Core.LoggingService.Error("Failed to add service reference.", ex);
 			}

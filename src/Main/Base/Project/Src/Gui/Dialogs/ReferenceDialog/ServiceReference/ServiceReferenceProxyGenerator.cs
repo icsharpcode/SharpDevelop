@@ -24,12 +24,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			runner.Run();
 		}
 		
-		public event EventHandler Complete;
+		public event EventHandler<GeneratorCompleteEventArgs> Complete;
 		
 		void OnComplete(object sender, EventArgs e)
 		{
 			if (Complete != null) {
-				Complete(this, e);
+				var runner = (SvcUtilRunner)sender;
+				Complete(this, new GeneratorCompleteEventArgs(runner.ExitCode));
 			}
 		}
 	}

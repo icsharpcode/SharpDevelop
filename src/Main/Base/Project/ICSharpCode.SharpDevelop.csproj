@@ -273,6 +273,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceViewModel.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ClientOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\GeneratorCompleteEventArgs.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IActiveTextEditors.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IFileSystem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IProjectWithServiceReferences.cs" />

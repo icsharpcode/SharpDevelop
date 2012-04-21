@@ -2,15 +2,20 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ServiceModel.Description;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	public interface IServiceReferenceProxyGenerator
+	public class GeneratorCompleteEventArgs : EventArgs
 	{
-		ServiceReferenceGeneratorOptions Options { get; set; }
-		void GenerateProxyFile();
+		public GeneratorCompleteEventArgs(int exitCode)
+		{
+			this.ExitCode = exitCode;
+		}
 		
-		event EventHandler<GeneratorCompleteEventArgs> Complete;
+		public bool IsSuccess {
+			get { return ExitCode == 0; }
+		}
+		
+		public int ExitCode { get; set; }
 	}
 }

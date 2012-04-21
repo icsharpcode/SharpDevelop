@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			mapGenerator.GenerateServiceReferenceMapFile(mapFile);
 		}
 		
-		public event EventHandler Complete {
+		public event EventHandler<GeneratorCompleteEventArgs> Complete {
 			add { proxyGenerator.Complete += value; }
 			remove { proxyGenerator.Complete += value; }
 		}
