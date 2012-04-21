@@ -137,5 +137,15 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("ProjectA", name);
 		}
+		
+		[Test]
+		public void Version_CheckVersion_Returns10()
+		{
+			CreateDTE();
+			
+			string version = dte.Version;
+			
+			Assert.AreEqual("10.0", version);
+		}
 	}
 }
