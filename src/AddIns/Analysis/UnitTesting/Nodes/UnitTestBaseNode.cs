@@ -21,6 +21,7 @@ namespace ICSharpCode.UnitTesting
 				return TestResultType.Success;
 			}
 		}
+		
 		public override object Icon {
 			get { return GetIcon(TestResultType); }
 		}

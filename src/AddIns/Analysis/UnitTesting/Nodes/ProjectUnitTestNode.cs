@@ -36,21 +36,37 @@ namespace ICSharpCode.UnitTesting
 			switch (e.Action) {
 				case NotifyCollectionChangedAction.Add:
 					foreach (TestClass c in e.NewItems) {
-						var node = FindNamespace(c.Namespace);
-						if (node == null) {
-							node = new NamespaceUnitTestNode(c.Namespace);
-							Children.OrderedInsert(node, (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+						if (c.Namespace == "<invalid>") continue;
+						string namespaceSuffix = GetNamespaceSuffix(c.Namespace, project.Project.RootNamespace);
+						if (string.IsNullOrEmpty(namespaceSuffix)) {
+							Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+						} else {
+							var node = FindNamespace(namespaceSuffix);
+							if (node == null) {
+								node = new NamespaceUnitTestNode(namespaceSuffix);
+								Children.OrderedInsert(node, (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+							}
+							node.Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
 						}
-						node.Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
 					}
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					foreach (TestClass c in e.OldItems) {
-						var node = FindNamespace(c.Namespace);
-						if (node == null) continue;
-						node.Children.RemoveWhere(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
-						if (node.Children.Count == 0)
-							Children.Remove(node);
+						if (c.Namespace == "<invalid>") continue;
+						string namespaceSuffix = GetNamespaceSuffix(c.Namespace, project.Project.RootNamespace);
+						if (string.IsNullOrEmpty(namespaceSuffix)) {
+							Children.RemoveWhere(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
+						} else {
+							UnitTestBaseNode node = FindNamespace(namespaceSuffix);
+							if (node == null) continue;
+							node.Children.RemoveWhere(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
+							while (node.Children.Count == 0) {
+								var parent = (UnitTestBaseNode)node.Parent;
+								if (parent == null) break;
+								parent.Children.Remove(node);
+								node = parent;
+							}
+						}
 					}
 					break;
 				case NotifyCollectionChangedAction.Reset:
@@ -59,46 +75,72 @@ namespace ICSharpCode.UnitTesting
 			}
 		}
 		
+		static string GetNamespaceSuffix(string @namespace, string rootNamespace)
+		{
+			if (@namespace.StartsWith(rootNamespace + ".", StringComparison.Ordinal))
+				return @namespace.Substring(rootNamespace.Length + 1);
+			if (@namespace.Equals(rootNamespace, StringComparison.Ordinal))
+				return "";
+			return @namespace;
+		}
+		
 		NamespaceUnitTestNode FindNamespace(string @namespace)
 		{
-			foreach (var node in Children.OfType<NamespaceUnitTestNode>()) {
-				// TODO use language-specific StringComparer
-				if (string.Equals(node.Namespace, @namespace, StringComparison.Ordinal))
-					return node;
+			var parent = FindNamespace(@namespace, this);
+			NamespaceUnitTestNode newNode;
+			string rootNamespace = "";
+			if (parent is NamespaceUnitTestNode) {
+				var namespaceNode = (NamespaceUnitTestNode)parent;
+				rootNamespace = namespaceNode.Namespace;
+				if (namespaceNode.Namespace.Equals(@namespace, StringComparison.OrdinalIgnoreCase))
+					return namespaceNode;
 			}
-			return null;
+			parent.Children.Add(CreateMissingNamespaceNodes(out newNode, @namespace, rootNamespace));
+			return newNode;
+		}
+		
+		NamespaceUnitTestNode CreateMissingNamespaceNodes(out NamespaceUnitTestNode newNode, string @namespace, string rootNamespace)
+		{
+			newNode = new NamespaceUnitTestNode(@namespace);
+			NamespaceUnitTestNode result = newNode;
+			int dot = @namespace.LastIndexOf('.');
+			@namespace = dot > -1 ? @namespace.Substring(0, dot) : @namespace;
+			while (dot > -1 && !rootNamespace.Equals(@namespace, StringComparison.OrdinalIgnoreCase)) {
+				var node = result;
+				result = new NamespaceUnitTestNode(@namespace);
+				result.Children.Add(node);
+				dot = @namespace.LastIndexOf('.');
+				@namespace = dot > -1 ? @namespace.Substring(0, dot) : @namespace;
+			}
+			return result;
+		}
+		
+		UnitTestBaseNode FindNamespace(string @namespace, UnitTestBaseNode parent)
+		{
+			foreach (var node in parent.Children.OfType<NamespaceUnitTestNode>()) {
+				if (@namespace.StartsWith(node.Namespace + ".", StringComparison.OrdinalIgnoreCase) || @namespace.Equals(node.Namespace, StringComparison.OrdinalIgnoreCase))
+					return FindNamespace(@namespace, node);
+			}
+			return parent;
 		}
 		
 		protected override void LoadChildren()
 		{
 			Children.Clear();
 			foreach (var g in project.TestClasses.Select(c => new ClassUnitTestNode(c)).GroupBy(tc => tc.TestClass.Namespace)) {
-				var namespaceNode = new NamespaceUnitTestNode(g.Key);
-				namespaceNode.Children.AddRange(g);
-				Children.Add(namespaceNode);
+				UnitTestBaseNode node;
+				if (g.Key == "<invalid>") continue;
+				string namespaceName = GetNamespaceSuffix(g.Key, project.Project.RootNamespace);
+				if (string.IsNullOrEmpty(namespaceName))
+					node = this;
+				else
+					node = FindNamespace(namespaceName);
+				node.Children.AddRange(g);
 			}
 		}
 		
 		public override object Text {
 			get { return project.Project.Name; }
-		}
-	}
-	
-	public class NamespaceUnitTestNode : UnitTestBaseNode
-	{
-		string name;
-		
-		public string Namespace {
-			get { return name; }
-		}
-		
-		public NamespaceUnitTestNode(string name)
-		{
-			this.name = name;
-		}
-		
-		public override object Text {
-			get { return string.IsNullOrEmpty(name) ? "<default>" : name; }
 		}
 	}
 }

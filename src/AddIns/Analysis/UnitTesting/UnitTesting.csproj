@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\AbstractRunTestCommand.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Gui\EmptyUnitTestsPad.cs" />
     <Compile Include="Gui\UnitTestingOptionsPanel.xaml.cs">
       <DependentUpon>UnitTestingOptionsPanel.xaml</DependentUpon>
@@ -103,9 +104,12 @@
     <Compile Include="Interfaces\IUnitTestTaskService.cs" />
     <Compile Include="Interfaces\IUnitTestWorkbench.cs" />
     <Compile Include="Model\TestClass.cs" />
+    <Compile Include="Model\TestMember.cs" />
     <Compile Include="Model\TestProject.cs" />
     <Compile Include="MultipleProjectBuildable.cs" />
     <Compile Include="Nodes\ClassUnitTestNode.cs" />
+    <Compile Include="Nodes\MemberUnitTestNode.cs" />
+    <Compile Include="Nodes\NamespaceUnitTestNode.cs" />
     <Compile Include="Nodes\ProjectUnitTestNode.cs" />
     <Compile Include="Nodes\RootUnitTestNode.cs" />
     <Compile Include="Nodes\UnitTestBaseNode.cs" />

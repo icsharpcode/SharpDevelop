@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Collections.Generic;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -17,7 +19,7 @@ namespace ICSharpCode.UnitTesting
 	{
 		string fullName;
 		ObservableCollection<IUnresolvedTypeDefinition> parts;
-//		TestMemberCollection testMembers;
+		readonly ObservableCollection<TestMember> testMembers;
 		TestResultType testResultType;
 		IRegisteredTestFrameworks testFrameworks;
 		
@@ -26,11 +28,13 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public event EventHandler ResultChanged;
 		
-		public TestClass(IRegisteredTestFrameworks testFrameworks, string fullName, IEnumerable<IUnresolvedTypeDefinition> parts)
+		public TestClass(IRegisteredTestFrameworks testFrameworks, string fullName, ITypeDefinition definition)
 		{
-			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>(parts);
+			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>();
+			this.testMembers = new ObservableCollection<TestMember>();
 			this.testFrameworks = testFrameworks;
 			this.fullName = fullName;
+			UpdateClass(definition);
 		}
 		
 		/// <summary>
@@ -40,44 +44,14 @@ namespace ICSharpCode.UnitTesting
 			get { return parts; }
 		}
 		
+		public ObservableCollection<TestMember> Members {
+			get { return testMembers; }
+		}
+		
 		public string FullName {
 			get { return fullName; }
 		}
 
-		/// <summary>
-		/// Gets the list of other (e.g. base types) classes where from which test members included in this test class come from.
-		/// </summary>
-		private readonly ICollection<string> baseClassesFQNames = new List<string>();
-		
-		/// <summary>
-		/// Gets the test classes that exist in the specified namespace.
-		/// </summary>		
-		public static TestClass[] GetTestClasses(ICollection<TestClass> classes, string ns)
-		{
-			List<TestClass> matchedClasses = new List<TestClass>();
-			foreach (TestClass c in classes) {
-				if (c.Namespace == ns) {
-					matchedClasses.Add(c);
-				}
-			}
-			return matchedClasses.ToArray();
-		}
-		
-		/// <summary>
-		/// Gets the test classes that namespaces starts with the specified 
-		/// string.
-		/// </summary>		
-		public static TestClass[] GetAllTestClasses(ICollection<TestClass> classes, string namespaceStartsWith)
-		{
-			List<TestClass> matchedClasses = new List<TestClass>();
-			foreach (TestClass c in classes) {
-				if (c.Namespace.StartsWith(namespaceStartsWith)) {
-					matchedClasses.Add(c);
-				}
-			}
-			return matchedClasses.ToArray();
-		}
-		
 		/// <summary>
 		/// Gets the name of the class.
 		/// </summary>
@@ -146,27 +120,21 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void UpdateClass(ITypeDefinition definition)
 		{
-//			this.c = c.GetCompoundClass();
-//			
-//			// Remove missing members.
-//			TestMemberCollection newTestMembers = GetTestMembers(this.c);
-//			TestMemberCollection existingTestMembers = TestMembers;
-//			for (int i = existingTestMembers.Count - 1; i >= 0; --i) {
-//				TestMember member = existingTestMembers[i];
-//				if (newTestMembers.Contains(member.Name)) {
-//					member.Update(newTestMembers[member.Name].Member);
-//				} else {
-//					existingTestMembers.RemoveAt(i);
-//				}
-//			}
-//			
-//			// Add new members.
-//			foreach (TestMember member in newTestMembers) {
-//				if (existingTestMembers.Contains(member.Name)) {
-//				} else {
-//					existingTestMembers.Add(member);
-//				}
-//			}
+			int i = 0;
+			while (i < parts.Count) {
+				var part = parts[i];
+				if (!definition.Parts.Any(p => p.ParsedFile.FileName == part.ParsedFile.FileName && p.Region == part.Region))
+					parts.RemoveAt(i);
+				else
+					i++;
+			}
+			
+			foreach (var part in definition.Parts) {
+				if (!parts.Any(p => p.ParsedFile.FileName == part.ParsedFile.FileName && p.Region == part.Region))
+					parts.Add(part);
+			}
+			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Method.ReflectionName && dm.IsTestMethod(definition.Compilation)));
+			testMembers.AddRange(definition.Methods.Where(m => m.IsTestMethod(definition.Compilation) && !testMembers.Any(dm => dm.Method.ReflectionName == m.ReflectionName)).Select(m => new TestMember((IUnresolvedMethod)m.UnresolvedMember)));
 		}
 		
 		/// <summary>
@@ -208,7 +176,7 @@ namespace ICSharpCode.UnitTesting
 				ResultChanged(this, new EventArgs());
 			}
 		}
-				
+		
 		/// <summary>
 		/// This function adds the base class as a prefix and tries to find
 		/// the corresponding test member.
@@ -218,9 +186,9 @@ namespace ICSharpCode.UnitTesting
 		/// RootNamespace.TestFixture.TestFixtureBaseClass.TestMethod
 		/// </summary>
 		/// <remarks>
-		/// NUnit 2.4 uses the correct test method name when a test 
-		/// class uses a base class with test methods. It does 
-		/// not prefix the test method name with the base class name 
+		/// NUnit 2.4 uses the correct test method name when a test
+		/// class uses a base class with test methods. It does
+		/// not prefix the test method name with the base class name
 		/// in the test results returned from nunit-console. It still
 		/// displays the name in the NUnit GUI with the base class
 		/// name prefixed. Older versions of NUnit-console (2.2.9) returned
@@ -228,7 +196,7 @@ namespace ICSharpCode.UnitTesting
 		/// 
 		/// RootNamespace.TestFixture.BaseTestFixture.TestMethod
 		/// 
-		/// The test method name would have the base class name prefixed 
+		/// The test method name would have the base class name prefixed
 		/// to it.
 		/// </remarks>
 //		TestMember GetPrefixedTestMember(string testResultName)
@@ -245,10 +213,5 @@ namespace ICSharpCode.UnitTesting
 //			}
 //			return null;
 //		}
-
-		public bool IsDerivedFrom(IUnresolvedTypeDefinition c)
-		{
-			return baseClassesFQNames.Contains(c.FullName);
-		}
 	}
 }
