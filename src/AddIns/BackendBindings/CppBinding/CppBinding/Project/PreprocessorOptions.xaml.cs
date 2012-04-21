@@ -6,20 +6,11 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -28,13 +19,13 @@ namespace ICSharpCode.CppBinding.Project
 	/// <summary>
 	/// Interaction logic for PreprocessorOptionsXaml.xaml
 	/// </summary>
-	public partial class PreprocessorOptionsXaml : ProjectOptionPanel,INotifyPropertyChanged
+	public partial class PreprocessorOptions : ProjectOptionPanel,INotifyPropertyChanged
 	{
 		private const string metaElement ="ClCompile";
 		
 		MSBuildBasedProject project;
 		
-		public PreprocessorOptionsXaml()
+		public PreprocessorOptions()
 		{
 			InitializeComponent();
 		}

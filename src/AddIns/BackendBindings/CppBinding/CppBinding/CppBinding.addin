@@ -18,19 +18,24 @@
 		<OptionPanel id = "Application1"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.CppBinding.Project.ApplicationOptions" />
+		<!--
+		<OptionPanel id = "Preprocessor"
+				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor}"
+				class = "ICSharpCode.CppBinding.Project.PreprocessorOptions" />
+		-->
 		
 		<OptionPanel id = "Preprocessor"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor}"
 				class = "ICSharpCode.CppBinding.Project.PreprocessorOptions" />
 		
-		<OptionPanel id = "Preprocessor1"
-				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor}"
-				class = "ICSharpCode.CppBinding.Project.PreprocessorOptionsXaml" />
-		
 		<OptionPanel id = "Linker"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Linker}"
 				class = "ICSharpCode.CppBinding.Project.LinkerOptions" />
 	
+		<OptionPanel id = "Linker1"
+				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Linker}"
+				class = "ICSharpCode.CppBinding.Project.LinkerOptionsXaml" />
+		
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>	
 	

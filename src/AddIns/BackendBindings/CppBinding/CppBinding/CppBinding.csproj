@@ -83,6 +83,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project\DependencyRelation.cs" />
+    <Compile Include="Project\LinkerOptionsXaml.xaml.cs">
+      <DependentUpon>LinkerOptionsXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Project\MultiDictionary.cs" />
     <Compile Include="Project\old_ApplicationOptions.cs">
       <SubType>UserControl</SubType>
@@ -96,11 +100,11 @@
     <Compile Include="Project\ItemDefinitionGroupBinding.cs" />
     <Compile Include="Project\ObservedBinding.cs" />
     <Compile Include="Project\OpenStringListEditorEvent.cs" />
-    <Compile Include="Project\PreprocessorOptions.cs">
+    <Compile Include="Project\old_PreprocessorOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Project\PreprocessorOptionsXaml.xaml.cs">
-      <DependentUpon>PreprocessorOptionsXaml.xaml</DependentUpon>
+    <Compile Include="Project\PreprocessorOptions.xaml.cs">
+      <DependentUpon>PreprocessorOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project\ProjectConfigurationProjectItem.cs" />
@@ -123,7 +127,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CppProjectBinding.cs" />
     <EmbeddedResource Include="Resources\LinkerOptions.xfrm" />
-    <EmbeddedResource Include="Resources\PreprocessorOptions.xfrm" />
+    <EmbeddedResource Include="Resources\old_PreprocessorOptions.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -179,7 +183,8 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Project\ApplicationOptions.xaml" />
-    <Page Include="Project\PreprocessorOptionsXaml.xaml" />
+    <Page Include="Project\LinkerOptionsXaml.xaml" />
+    <Page Include="Project\PreprocessorOptions.xaml" />
     <Page Include="Project\StringListEditorDialogXaml.xaml" />
   </ItemGroup>
 </Project>
