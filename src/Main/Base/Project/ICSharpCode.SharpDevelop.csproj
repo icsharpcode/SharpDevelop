@@ -100,6 +100,7 @@
       <DependentUpon>ListViewPad.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
+    <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditSyntaxHighlighterAdapter.cs" />

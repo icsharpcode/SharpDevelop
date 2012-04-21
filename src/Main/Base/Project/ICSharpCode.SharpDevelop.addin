@@ -490,7 +490,7 @@
 						<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
 					</Not>
 					<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False"/>
-					<Condition name = "ViewInBrowser" extensions="aspx,asmx,html,htm,svc"/>
+					<Condition name = "ViewInBrowser" extensions="html,htm"/>
 				</And>
 				
 				<MenuItem id          = "ViewInBrowser"
