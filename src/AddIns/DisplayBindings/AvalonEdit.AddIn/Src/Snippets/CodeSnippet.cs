@@ -6,20 +6,21 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
 	/// <summary>
 	/// A code snippet.
 	/// </summary>
-	public class CodeSnippet : INotifyPropertyChanged, IEquatable<CodeSnippet>
+	public class CodeSnippet : AbstractFreezable, INotifyPropertyChanged
 	{
 		string name = string.Empty, description = string.Empty, text = string.Empty, keyword = string.Empty;
 		
@@ -38,6 +39,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Name {
 			get { return name; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (name != value) {
 					name = value ?? string.Empty;
 					OnPropertyChanged("Name");
@@ -48,6 +50,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Text {
 			get { return text; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (text != value) {
 					text = value ?? string.Empty;
 					OnPropertyChanged("Text");
@@ -58,6 +61,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Description {
 			get { return description; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (description != value) {
 					description = value ?? string.Empty;
 					OnPropertyChanged("Description");
@@ -76,6 +80,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		public string Keyword {
 			get { return keyword; }
 			set {
+				FreezableHelper.ThrowIfFrozen(this);
 				if (keyword != value) {
 					keyword = value ?? string.Empty;
 					OnPropertyChanged("Keyword");
@@ -229,41 +234,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			}
 		}
 		
-		public override int GetHashCode()
-		{
-			int hashCode = 0;
-			unchecked {
-				if (name != null)
-					hashCode += 1000000007 * name.GetHashCode();
-				if (description != null)
-					hashCode += 1000000009 * description.GetHashCode();
-				if (text != null)
-					hashCode += 1000000021 * text.GetHashCode();
-				if (keyword != null)
-					hashCode += 1000000033 * keyword.GetHashCode();
-			}
-			return hashCode;
-		}
-
-		public override bool Equals(object obj)
-		{
-			CodeSnippet other = obj as CodeSnippet;
-			return Equals(other);
-		}
-		
-		public bool Equals(CodeSnippet other)
-		{
-			if (other == null)
-				return false;
-			return this.name == other.name && this.description == other.description && this.text == other.text && this.keyword == other.keyword;
-		}
-		
 		/// <summary>
 		/// Reports the snippet usage to UDC
 		/// </summary>
 		internal void TrackUsage(string activationMethod)
 		{
-			bool isUserModified = !SnippetManager.defaultSnippets.Any(g => g.Snippets.Contains(this));
+			bool isUserModified = !SnippetManager.Instance.defaultSnippets.Any(g => g.Snippets.Contains(this, CodeSnippetComparer.Instance));
 			SD.AnalyticsMonitor.TrackFeature(typeof(CodeSnippet), isUserModified ? "usersnippet" : Name, activationMethod);
 		}
 	}

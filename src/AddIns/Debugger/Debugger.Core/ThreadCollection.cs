@@ -38,16 +38,5 @@ namespace Debugger
 			}
 			return false;
 		}
-		
-		internal Thread this[ICorDebugThread corThread] {
-			get {
-				foreach(Thread thread in this) {
-					if (thread.CorThread == corThread) {
-						return thread;
-					}
-				}
-				throw new DebuggerException("Thread is not in collection");
-			}
-		}
 	}
 }

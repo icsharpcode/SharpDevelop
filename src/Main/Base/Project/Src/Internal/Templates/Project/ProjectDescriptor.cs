@@ -369,7 +369,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						}
 						if (!String.IsNullOrEmpty(file.BinaryFileName)) {
 							// Binary content
-							File.Copy(file.BinaryFileName,fileName);
+							File.Copy(file.BinaryFileName, fileName, true);
 						} else {
 							// Textual content
 							StreamWriter sr = new StreamWriter(File.Create(fileName), SD.FileService.DefaultFileEncoding);

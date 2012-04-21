@@ -2,10 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -27,7 +25,7 @@ namespace ICSharpCode.XmlEditor
 			this.schemas = schemaFileAssociations.Schemas;
 		}
 		
-		char[] ignoredChars = new[] { '\\', '/', '"', '\'', '=', '>' };
+		char[] ignoredChars = new[] { '\\', '/', '"', '\'', '=', '>', '!', '?' };
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
@@ -62,6 +60,14 @@ namespace ICSharpCode.XmlEditor
 		
 		public bool CtrlSpace(ITextEditor editor)
 		{
+			int elementStartIndex = XmlParser.GetActiveElementStartIndex(editor.Document.Text, editor.Caret.Offset);
+			if (elementStartIndex <= -1)
+				return false;
+			if (ElementStartsWith("<!", elementStartIndex, editor.Document))
+				return false;
+			if (ElementStartsWith("<?", elementStartIndex, editor.Document))
+				return false;
+			
 			XmlSchemaCompletion defaultSchema = schemaFileAssociations.GetSchemaCompletion(editor.FileName);
 			
 			XmlCompletionItemCollection completionItems = GetCompletionItems(editor, defaultSchema);
@@ -76,6 +82,12 @@ namespace ICSharpCode.XmlEditor
 				return true;
 			}
 			return false;
+		}
+		
+		bool ElementStartsWith(string text, int elementStartIndex, ITextSource document)
+		{
+			int textLength = Math.Min(text.Length, document.TextLength - elementStartIndex);
+			return document.GetText(elementStartIndex, textLength).Equals(text, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public bool HandleKeyPressed(ITextEditor editor, char ch)

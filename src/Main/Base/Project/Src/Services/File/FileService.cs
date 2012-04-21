@@ -67,12 +67,15 @@ namespace ICSharpCode.SharpDevelop
 			public void Invoke(string fileName)
 			{
 				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(FileName.Create(fileName));
-				IViewContent newContent = binding.CreateContentForFile(file);
-				if (newContent != null) {
-					DisplayBindingService.AttachSubWindows(newContent, false);
-					WorkbenchSingleton.Workbench.ShowView(newContent, switchToOpenedView);
+				try {
+					IViewContent newContent = binding.CreateContentForFile(file);
+					if (newContent != null) {
+						DisplayBindingService.AttachSubWindows(newContent, false);
+						WorkbenchSingleton.Workbench.ShowView(newContent, switchToOpenedView);
+					}
+				} finally {
+					file.CloseIfAllViewsClosed();
 				}
-				file.CloseIfAllViewsClosed();
 			}
 		}
 		

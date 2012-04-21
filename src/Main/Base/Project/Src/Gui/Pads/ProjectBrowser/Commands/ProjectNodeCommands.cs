@@ -29,7 +29,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			AbstractProjectBrowserTreeNode node  = ProjectBrowserPad.Instance.SelectedNode;
+			DoRunProject();
+		}
+
+		internal static void DoRunProject(bool withDebugging = true)
+		{
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node == null) {
 				return;
 			}
@@ -37,13 +42,21 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				BuildProjectBeforeExecute build = new BuildProjectBeforeExecute(node.Project);
 				build.BuildComplete += delegate {
 					if (build.LastBuildResults.ErrorCount == 0) {
-						node.Project.Start(true);
+						node.Project.Start(withDebugging);
 					}
 				};
 				build.Run();
 			} else {
 				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 			}
+		}
+	}
+	
+	public class RunProjectWithoutDebugger : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			RunProject.DoRunProject(false);
 		}
 	}
 }

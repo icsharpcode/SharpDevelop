@@ -339,13 +339,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public bool IsStartable {
+		public virtual bool IsStartable {
 			get {
 				return GetOrCreateBehavior().IsStartable;
 			}
 		}
 		
-		public void Start(bool withDebugging)
+		public virtual void Start(bool withDebugging)
 		{
 			GetOrCreateBehavior().Start(withDebugging);
 		}
@@ -356,7 +356,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <exception cref="ProjectStartException">Occurs when the project cannot be started.</exception>
 		/// <returns>ProcessStartInfo used to start the project.
 		/// Note: this can be a ProcessStartInfo with a URL as filename!</returns>
-		public ProcessStartInfo CreateStartInfo()
+		public virtual ProcessStartInfo CreateStartInfo()
 		{
 			return GetOrCreateBehavior().CreateStartInfo();
 		}
@@ -423,7 +423,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new projectItem for the passed itemType
 		/// </summary>
-		public ProjectItem CreateProjectItem(IProjectItemBackendStore item)
+		public virtual ProjectItem CreateProjectItem(IProjectItemBackendStore item)
 		{
 			return GetOrCreateBehavior().CreateProjectItem(item);
 		}
@@ -455,7 +455,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Returns ItemType.None for unknown items.
 		/// Every override should call base.GetDefaultItemType for unknown file extensions.
 		/// </summary>
-		public ItemType GetDefaultItemType(string fileName)
+		public virtual ItemType GetDefaultItemType(string fileName)
 		{
 			return GetOrCreateBehavior().GetDefaultItemType(fileName);
 		}
@@ -553,7 +553,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return projectOptions;
 		}
 		
-		public void ProjectCreationComplete()
+		public virtual void ProjectCreationComplete()
 		{
 			GetOrCreateBehavior().ProjectCreationComplete();
 		}

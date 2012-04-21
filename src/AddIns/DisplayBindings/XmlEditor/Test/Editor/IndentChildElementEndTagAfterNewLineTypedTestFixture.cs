@@ -72,14 +72,5 @@ namespace XmlEditor.Tests.Editor
 			
 			Assert.AreEqual(expectedText, textDocument.Text);
 		}
-		
-		[Test]
-		public void CursorIsJustBeforeChildEndElementEndTagAfterIndent()
-		{
-			int line = 3;
-			int column = 2;
-			var expectedLocation = new TextLocation(line, column);
-			Assert.AreEqual(expectedLocation, textEditor.Caret.Location);
-		}
 	}
 }

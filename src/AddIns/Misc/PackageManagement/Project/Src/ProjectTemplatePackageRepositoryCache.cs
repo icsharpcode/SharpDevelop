@@ -46,7 +46,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
+		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem, IFileSystem configSettingsFileSystem)
 		{
 			throw new NotImplementedException();
 		}

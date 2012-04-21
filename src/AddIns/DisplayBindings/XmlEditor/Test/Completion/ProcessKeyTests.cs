@@ -24,7 +24,7 @@ namespace XmlEditor.Tests.Completion
 		[Test]
 		public void ProcessInputWithSpaceCharReturnsNormalKey()
 		{
-			Assert.AreEqual(CompletionItemListKeyResult.NormalKey, completionItems.ProcessInput(' '));
+			Assert.AreEqual(CompletionItemListKeyResult.InsertionKey, completionItems.ProcessInput(' '));
 		}
 		
 		[Test]

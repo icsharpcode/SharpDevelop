@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Window
 	x:Class="ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference.AdvancedServiceDialog" 
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,7 +7,7 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-	Width="700" Height="600"
+	Width="700" Height="500"
 	Title="{Binding Title}">
 	<Grid>
 		<Grid.RowDefinitions>
@@ -115,23 +115,25 @@
 				
 				<RadioButton Grid.Row="4"  Margin="45,0,0,0"
 				             VerticalAlignment="Center"
-				            GroupName="ReferenceType"
+ 				             GroupName="ReferenceType"
 				             IsChecked="{Binding ReuseTypes}"
+				             IsEnabled="{Binding UseReferencedAssemblies}"
 				             Content="Reuse types in all referenced assemblies">
 				</RadioButton>
 				
 				<RadioButton Grid.Row="5" Margin="45,0,0,0"
 				             VerticalAlignment="Center"
-				              GroupName="ReferenceType"
+				             GroupName="ReferenceType"
 				             IsChecked="{Binding ReuseReferencedTypes}"
+				             IsEnabled="{Binding UseReferencedAssemblies}"
 				             Content="Reuse types in specified referenced assemblies">
 				</RadioButton>
 				
 				<ListBox Grid.Row="6"  Grid.ColumnSpan="2" Width="400"
-				          Margin="80,0,0,0" 
-				          SelectionMode="Multiple"
-				          ItemsSource="{Binding AssembliesToReference}"
-				          IsEnabled="{Binding ListViewEnable}">
+				         Margin="80,0,0,0" 
+				         SelectionMode="Multiple"
+				         ItemsSource="{Binding AssembliesToReference}"
+				         IsEnabled="{Binding ListViewEnable}">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<StackPanel Orientation="Horizontal">
@@ -174,30 +176,6 @@
 				</ListView>
 			-->
 			</Grid>
-		</GroupBox>
-	
-		<GroupBox Grid.Row="2"  Grid.ColumnSpan="2"
-		          Header="Compatibility">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition
-						Height="Auto"></RowDefinition>
-					<RowDefinition
-						Height="Auto"></RowDefinition>
-				</Grid.RowDefinitions>
-				<TextBox
-					Margin="25,0,0,0"
-					Text="{Binding CompatibilityText, Mode=OneWay}"
-					Height="50" TextWrapping="Wrap"></TextBox>
-				<Button
-					Grid.Row="2"
-					Margin="25,0,0,0"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Center"
-					Content="Add Web Reference..." Width="140">
-				</Button>
-			</Grid>
-		
 		</GroupBox>
 		
 		<widgets:UniformGridWithSpacing

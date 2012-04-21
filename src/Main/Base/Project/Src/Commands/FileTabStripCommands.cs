@@ -117,4 +117,17 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 				window.ActiveViewContent.PrimaryFileName);
 		}
 	}
+	
+	/// <summary>
+	/// Opens a command prompt at the file's location.
+	/// </summary>
+	public class OpenCommandPromptHere : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			IWorkbenchWindow window = Owner as IWorkbenchWindow;
+			ICSharpCode.SharpDevelop.Project.Commands.OpenCommandPromptHere.OpenCommandPrompt(
+				window.ActiveViewContent.PrimaryFileName);
+		}
+	}
 }

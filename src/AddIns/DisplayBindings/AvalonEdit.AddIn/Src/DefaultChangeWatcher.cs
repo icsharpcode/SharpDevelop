@@ -198,8 +198,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (!disposed) {
 				if (watcher != null)
 					watcher.Dispose();
-				this.textDocument.LineTrackers.Remove(this);
-				this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
+				if (this.textDocument != null) {
+					this.textDocument.LineTrackers.Remove(this);
+					this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
+				}
 				disposed = true;
 			}
 		}

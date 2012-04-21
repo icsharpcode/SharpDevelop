@@ -321,8 +321,14 @@ namespace ICSharpCode.SharpDevelop.Workbench
 					Directory.CreateDirectory(configPath);
 					string fileName = Path.Combine(configPath, current.FileName);
 					LoggingService.Info("Saving layout file: " + fileName);
+					// Save docking layout into memory stream first, then write the contents to file.
+					// This prevents corruption when there is an exception saving the layout.
+					var memoryStream = new MemoryStream();
+					dockingManager.SaveLayout(memoryStream);
+					memoryStream.Position = 0;
 					try {
-						dockingManager.SaveLayout(fileName);
+						using (FileStream stream = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
+							memoryStream.CopyTo(stream);
 					} catch (IOException ex) {
 						// ignore IO errors (maybe switching layout in two SharpDevelop instances at once?)
 						LoggingService.Warn(ex);

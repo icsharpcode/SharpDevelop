@@ -228,7 +228,8 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		/// <summary>Called by OpenedFile.UnregisterView to update the dictionary.</summary>
 		internal void OpenedFileClosed(OpenedFile file)
 		{
-			if (openedFileDict[file.FileName] != file)
+			OpenedFile existing;
+			if (openedFileDict.TryGetValue(file.FileName, out existing) && existing != file)
 				throw new ArgumentException("file must be registered");
 			
 			openedFileDict.Remove(file.FileName);

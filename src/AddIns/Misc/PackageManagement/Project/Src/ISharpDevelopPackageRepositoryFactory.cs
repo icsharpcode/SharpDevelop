@@ -11,7 +11,8 @@ namespace ICSharpCode.PackageManagement
 	{
 		ISharedPackageRepository CreateSharedRepository(
 			IPackagePathResolver pathResolver,
-			IFileSystem fileSystem);
+			IFileSystem fileSystem,
+			IFileSystem configSettingsFileSystem);
 		
 		IRecentPackageRepository CreateRecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,

@@ -54,5 +54,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool IsBindingRedirectSupported { get; set; }
 	}
 }

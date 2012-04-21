@@ -8,9 +8,9 @@ using System.Drawing.Printing;
 using System.IO;
 using System.Resources;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.ListViewSorting;
 
 namespace ResourceEditor
@@ -174,7 +174,7 @@ namespace ResourceEditor
 					
 					// write XML resource
 				case ".resx":
-					ResXResourceWriter rxw = new ResXResourceWriter(stream);
+					ResXResourceWriter rxw = new ResXResourceWriter(stream, t => ResXConverter.ConvertTypeName(t, filename));
 					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						if (entry.Value != null) {
 							ResourceItem item = entry.Value;

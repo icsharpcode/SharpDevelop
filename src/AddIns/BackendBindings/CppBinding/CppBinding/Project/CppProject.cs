@@ -67,7 +67,7 @@ namespace ICSharpCode.CppBinding.Project
 				else
 				{
 					// this will be valid if there is an explicit OutDir property in vcxproj file.
-					if (GetUnevalatedProperty("OutDir").StartsWith("$(SolutionDir)"))
+					if ((GetUnevalatedProperty("OutDir") ?? "").StartsWith("$(SolutionDir)"))
 					{
 						// in #D every project is compiled by msbuild separately, this mean that SolutionDir will
 						// be equal to ProjectDir, so it has to be replaced with actual solution directory

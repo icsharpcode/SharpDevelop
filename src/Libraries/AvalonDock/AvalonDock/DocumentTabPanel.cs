@@ -65,6 +65,10 @@ namespace AvalonDock
 
             foreach (ManagedContent child in Children)
             {
+				// David: Sometimes happened when closing document tab by middle clicking.  Really difficult to reproduce.
+				if (child == null)
+					continue;
+				
                 Panel.SetZIndex(child, Selector.GetIsSelected(child) ? 1 : -i);
                 i++;
                 child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -81,6 +85,10 @@ namespace AvalonDock
             bool skipAllOthers = false;
             foreach (ManagedContent doc in Children)
             {
+				// David: Sometimes happened when closing document tab by middle clicking.  Really difficult to reproduce.
+				if (doc == null)
+					continue;
+				
                 if (skipAllOthers || offset + doc.DesiredSize.Width > finalSize.Width)
                 {
                     SetIsHeaderVisible(doc, false);

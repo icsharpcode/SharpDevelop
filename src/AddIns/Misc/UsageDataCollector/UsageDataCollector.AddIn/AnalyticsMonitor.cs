@@ -49,6 +49,8 @@ namespace ICSharpCode.UsageDataCollector
 		
 		static void AsyncEnableDisable()
 		{
+			if (System.Diagnostics.Debugger.IsAttached)
+				return;
 			if (Enabled) {
 				Instance.OpenSession();
 			} else {
@@ -253,6 +255,8 @@ namespace ICSharpCode.UsageDataCollector
 	{
 		public override void Run()
 		{
+			if (System.Diagnostics.Debugger.IsAttached)
+				return;
 			if (AnalyticsMonitor.Enabled)
 				AnalyticsMonitor.Instance.OpenSession();
 		}

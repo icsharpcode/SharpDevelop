@@ -2636,6 +2636,15 @@ namespace AvalonDock
                 //_flyoutWindow.KeepWindowOpen();
                 return;
             }
+            
+            // David: This sometimes seems to be null when hovering over auto-hide pad.
+            // It only seems to occur in specific circumstances - whether the pad is the
+            // "selected" one in the set seems important.  Having no open document might have effect?
+            // I have only managed to reliablely reproduce it in stand-alone application.
+			if (content.ContainerPane == null)
+			{
+				return;
+			}
 
             //hide previous window
             HideFlyoutWindow();
