@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		IProjectWithServiceReferences project;
 		IServiceReferenceFileGenerator fileGenerator;
 		IFileSystem fileSystem;
+		IActiveTextEditors activeTextEditors;
+		string tempAppConfigFileName;
 		
 		public ServiceReferenceGenerator(IProject project)
 			: this(new ProjectWithServiceReferences(project))
@@ -26,18 +28,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			: this(
 				project,
 				new ServiceReferenceFileGenerator(),
-				new ServiceReferenceFileSystem())
+				new ServiceReferenceFileSystem(),
+				new ActiveTextEditors())
 		{
 		}
 		
 		public ServiceReferenceGenerator(
 			IProjectWithServiceReferences project,
 			IServiceReferenceFileGenerator fileGenerator,
-			IFileSystem fileSystem)
+			IFileSystem fileSystem,
+			IActiveTextEditors activeTextEditors)
 		{
 			this.project = project;
 			this.fileGenerator = fileGenerator;
 			this.fileSystem = fileSystem;
+			this.activeTextEditors = activeTextEditors;
 		}
 		
 		public ServiceReferenceGeneratorOptions Options {
@@ -68,16 +73,36 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.ServiceName);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
+			CreateTempAppConfigFileIfOpenInTextEditor();
+			
 			Options.OutputFileName = referenceFileName.Path;
-			Options.AppConfigFileName = project.GetAppConfigFileName();
+			Options.AppConfigFileName = GetAppConfigFileName();
 			Options.NoAppConfig = false;
 			Options.MergeAppConfig = project.HasAppConfigFile();
 			Options.MapProjectLanguage(project.Language);
 			Options.GenerateNamespace(project.RootNamespace);
 			Options.AddProjectReferencesIfUsingTypesFromProjectReferences(project.GetReferences());
+			
+			fileGenerator.Complete += ProxyFileGenerationComplete;
 			fileGenerator.GenerateProxyFile();
 			
 			return referenceFileName;
+		}
+		
+		string GetAppConfigFileName()
+		{
+			if (tempAppConfigFileName != null) {
+				return tempAppConfigFileName;
+			}
+			return project.GetAppConfigFileName();
+		}
+		
+		void CreateTempAppConfigFileIfOpenInTextEditor()
+		{
+			string appConfigText = activeTextEditors.GetTextForOpenFile(project.GetAppConfigFileName());
+			if (appConfigText != null) {
+				tempAppConfigFileName = fileSystem.CreateTempFile(appConfigText);
+			}
 		}
 		
 		ServiceReferenceMapFileName CreateServiceReferenceMapFile()
@@ -92,6 +117,29 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			string folder = Path.GetDirectoryName(fileName);
 			fileSystem.CreateDirectoryIfMissing(folder);
+		}
+		
+		void ProxyFileGenerationComplete(object sender, EventArgs e)
+		{
+			if (tempAppConfigFileName != null) {
+				UpdateAppConfigInTextEditor();
+				DeleteTempAppConfigFile();
+			}
+		}
+		
+		void DeleteTempAppConfigFile()
+		{
+			fileSystem.DeleteFile(tempAppConfigFileName);
+		}
+		
+		void UpdateAppConfigInTextEditor()
+		{
+			string text = fileSystem.ReadAllFileText(tempAppConfigFileName);
+			if (activeTextEditors.IsFileOpen(project.GetAppConfigFileName())) {
+				activeTextEditors.UpdateTextForOpenFile(project.GetAppConfigFileName(), text);
+			} else {
+				fileSystem.WriteAllText(project.GetAppConfigFileName(), text);
+			}
 		}
 		
 		public IEnumerable<CheckableAssemblyReference> GetCheckableAssemblyReferences()

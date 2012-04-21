@@ -261,6 +261,7 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ActiveTextEditors.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml.cs">
       <DependentUpon>AddServiceReferenceDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -272,6 +273,7 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceViewModel.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ClientOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IActiveTextEditors.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IFileSystem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IProjectWithServiceReferences.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceFileGenerator.cs" />

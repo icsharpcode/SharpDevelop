@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		IFileSystem fakeFileSystem;
 		ServiceReferenceGeneratorOptions options;
 		List<ReferenceProjectItem> projectReferences;
+		IActiveTextEditors fakeActiveTextEditors;
 		
 		void CreateGenerator()
 		{
@@ -35,8 +36,9 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			fakeReferenceMapGenerator = MockRepository.GenerateStub<IServiceReferenceMapGenerator>();
 			fileGenerator = new ServiceReferenceFileGenerator(fakeProxyGenerator, fakeReferenceMapGenerator);
 			fakeFileSystem = MockRepository.GenerateStub<IFileSystem>();
+			fakeActiveTextEditors = MockRepository.GenerateStub<IActiveTextEditors>();
 			
-			generator = new ServiceReferenceGenerator(fakeProject, fileGenerator, fakeFileSystem);
+			generator = new ServiceReferenceGenerator(fakeProject, fileGenerator, fakeFileSystem, fakeActiveTextEditors);
 		}
 		
 		void SetProjectRootNamespace(string rootNamespace)
@@ -131,6 +133,45 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			projectItem.FileName = fileName;
 			projectReferences.Add(projectItem);
 			return projectItem;
+		}
+		
+		void AppConfigIsOpenInTextEditor(string fileName, string appConfigText)
+		{
+			fakeActiveTextEditors
+				.Stub(editors => editors.GetTextForOpenFile(fileName))
+				.Return(appConfigText);
+			
+			fakeActiveTextEditors
+				.Stub(editors => editors.IsFileOpen(fileName))
+				.Return(true);
+		}
+		
+		void AppConfigIsClosedInTextEditor(string fileName)
+		{
+	        fakeActiveTextEditors.BackToRecord(BackToRecordOptions.All);
+	        fakeActiveTextEditors.Replay();
+			fakeActiveTextEditors
+				.Stub(editors => editors.IsFileOpen(fileName))
+				.Return(false);
+		}
+		
+		void SetTempFileNameCreated(string tempFileName)
+		{
+			fakeFileSystem.Stub(fs => fs.CreateTempFile(Arg<string>.Is.Anything))
+				.Return(tempFileName);
+		}
+		
+		void SvcUtilRunCompleted()
+		{
+			fakeProxyGenerator.Raise(g => g.Complete += null, fakeProxyGenerator, new EventArgs());
+		}
+		
+		void SetTempFileText(string fileName, string text)
+		{
+			SetTempFileNameCreated(fileName);
+			fakeFileSystem
+				.Stub(fs => fs.ReadAllFileText(fileName))
+				.Return(text);
 		}
 		
 		[Test]
@@ -449,6 +490,138 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			};
 			
 			CollectionAssert.AreEqual(expectedAssemblies, generator.Options.Assemblies);
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsOpenInTextEditor_TempFileCreatedWithAppConfigText()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			AppConfigIsOpenInTextEditor(appConfigFileName, "appconfig text");
+			
+			generator.AddServiceReference();
+			
+			fakeFileSystem.AssertWasCalled(fs => fs.CreateTempFile("appconfig text"));
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsNotOpenInTextEditor_TempFileNotCreated()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			
+			generator.AddServiceReference();
+			
+			fakeFileSystem.AssertWasNotCalled(fs => fs.CreateTempFile(Arg<string>.Is.Anything));
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsOpenInTextEditor_TempFileAppConfigPassedUsedWhenGeneratingProxy()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			AppConfigIsOpenInTextEditor(appConfigFileName, "appconfig text");
+			SetTempFileNameCreated(@"d:\temp\test.tmp");
+			
+			generator.AddServiceReference();
+			
+			Assert.AreEqual(@"d:\temp\test.tmp", fakeProxyGenerator.Options.AppConfigFileName);
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsOpenInTextEditorAndSvcUtilHasFinished_TempFileAppConfigContentReplacesTextInTextEditor()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			AppConfigIsOpenInTextEditor(appConfigFileName, "appconfig text");
+			SetTempFileText(@"d:\temp\test.tmp", "New appconfig text");
+			
+			generator.AddServiceReference();
+			
+			SvcUtilRunCompleted();
+			
+			fakeActiveTextEditors.AssertWasCalled(editors => editors.UpdateTextForOpenFile(appConfigFileName, "New appconfig text"));
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsNotOpenInTextEditor_TextInTextEditorNotUpdated()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			
+			generator.AddServiceReference();
+			
+			SvcUtilRunCompleted();
+			
+			fakeActiveTextEditors.AssertWasNotCalled(editors => editors.UpdateTextForOpenFile(Arg<string>.Is.Anything, Arg<string>.Is.Anything));
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsOpenInTextEditorAndSvcUtilHasFinished_TempFileIsDeleted()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			AppConfigIsOpenInTextEditor(appConfigFileName, "appconfig text");
+			SetTempFileNameCreated(@"d:\temp\test.tmp");
+			
+			generator.AddServiceReference();
+			
+			SvcUtilRunCompleted();
+			
+			fakeFileSystem.AssertWasCalled(fs => fs.DeleteFile(@"d:\temp\test.tmp"));
+		}
+		
+		[Test]
+		public void AddServiceReference_AppConfigIsOriginallyOpenInTextEditorButIsClosedWhenSvcUtilHasFinished_TempFileAppConfigContentReplacesAppConfigOnFileSystem()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			string appConfigFileName = @"d:\projects\MyProject\app.config";
+			SetProjectAppConfigFileName(appConfigFileName);
+			ProjectHasAppConfigFile();
+			AppConfigIsOpenInTextEditor(appConfigFileName, "appconfig text");
+			SetTempFileText(@"d:\temp\test.tmp", "New appconfig text");
+			
+			generator.AddServiceReference();
+			
+			AppConfigIsClosedInTextEditor(appConfigFileName);
+			
+			SvcUtilRunCompleted();
+			
+			fakeFileSystem.AssertWasCalled(fs => fs.WriteAllText(appConfigFileName, "New appconfig text"));
+			fakeActiveTextEditors.AssertWasNotCalled(editors => editors.UpdateTextForOpenFile(Arg<string>.Is.Anything, Arg<string>.Is.Anything));			
 		}
 	}
 }

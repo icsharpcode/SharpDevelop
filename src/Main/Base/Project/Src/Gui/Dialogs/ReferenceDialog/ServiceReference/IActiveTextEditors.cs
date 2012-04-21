@@ -5,12 +5,10 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
-	public interface IFileSystem
+	public interface IActiveTextEditors
 	{
-		void CreateDirectoryIfMissing(string path);
-		string CreateTempFile(string text);
-		string ReadAllFileText(string fileName);
-		void DeleteFile(string fileName);
-		void WriteAllText(string fileName, string text);
+		string GetTextForOpenFile(string fileName);
+		void UpdateTextForOpenFile(string fileName, string text);
+		bool IsFileOpen(string fileName);
 	}
 }

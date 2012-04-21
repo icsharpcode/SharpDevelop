@@ -13,6 +13,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			this.Options = options;
 		}
 		
+		public event EventHandler ProcessExited;
+		
 		public ServiceReferenceGeneratorOptions Options { get; private set; }
 		
 		public void Run()
@@ -48,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			runner.LogStandardOutputAndError = false;
 			runner.OutputLineReceived += LineReceived;
 			runner.ErrorLineReceived += LineReceived;
-			runner.ProcessExited += ProcessExited;
+			runner.ProcessExited += SvcUtilProcessExited;
 			return runner;
 		}
 		
@@ -57,9 +59,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			SvcUtilMessageView.AppendLine(e.Line);
 		}
 		
-		void ProcessExited(object sender, EventArgs e)
+		void SvcUtilProcessExited(object sender, EventArgs e)
 		{
 			SvcUtilMessageView.AppendLine("SvcUtil finished.");
+			
+			WorkbenchSingleton.SafeThreadAsyncCall(() => OnProcessExited());
+		}
+		
+		void OnProcessExited()
+		{
+			if (ProcessExited != null) {
+				ProcessExited(this, new EventArgs());
+			}
 		}
 	}
 }
