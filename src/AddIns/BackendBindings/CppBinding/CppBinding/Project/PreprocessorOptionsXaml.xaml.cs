@@ -1,0 +1,187 @@
+﻿/*
+ * Created by SharpDevelop.
+ * User: Peter Forstmeier
+ * Date: 14.04.2012
+ * Time: 17:53
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.CppBinding.Project
+{
+	/// <summary>
+	/// Interaction logic for PreprocessorOptionsXaml.xaml
+	/// </summary>
+	public partial class PreprocessorOptionsXaml : ProjectOptionPanel,INotifyPropertyChanged
+	{
+		private const string metaElement ="ClCompile";
+		
+		MSBuildBasedProject project;
+		
+		public PreprocessorOptionsXaml()
+		{
+			InitializeComponent();
+		}
+		
+		
+		private void Initialize()
+		{
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
+			                                                                  project.ActiveConfiguration, project.ActivePlatform);
+			
+			this.defineTextBox.Text = group.GetElementMetadata(metaElement,"PreprocessorDefinitions");
+			
+			this.undefineTextBox.Text =  group.GetElementMetadata(metaElement,"UndefinePreprocessorDefinitions" );
+			
+			var defs = group.GetElementMetadata(metaElement,"UndefineAllPreprocessorDefinitions");
+			
+			bool check;
+			if (bool.TryParse(defs, out check))
+//				this.undefineAllCheckBox.IsChecked = check;
+			this.UnCheck = check;
+			IsDirty = false;
+		}
+		
+		
+		#region Properties
+		
+//		public ProjectProperty<string> PreprocessorDefinitions {
+//			get { return GetProperty("PreprocessorDefinition", "", TextBoxEditMode.EditRawProperty); }
+//		}
+		
+		
+		public ProjectProperty<string> IncludePath {
+			get { return GetProperty("IncludePath", "", TextBoxEditMode.EditRawProperty); }
+		}
+		
+//		public ProjectProperty<string> UndefinePreprocessorDefinitions {
+//			get { return GetProperty("UndefinePreprocessorDefinitions", "", TextBoxEditMode.EditRawProperty); }
+//		}
+		
+			
+//		public ProjectProperty<string> UndefineAllPreprocessorDefinitions {
+//			get { return GetProperty("UndefineAllPreprocessorDefinitions", "", TextBoxEditMode.EditRawProperty); }
+//		}
+
+		bool unCheck;
+		
+		public bool UnCheck {
+			get {return unCheck;}
+			set
+			{
+				unCheck = value;
+				if (PropertyChanged != null)
+					PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("UnCheck"));
+				IsDirty = true;
+			}
+		}
+		
+		#endregion
+		
+		
+		#region Save/Load
+		
+		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
+		{
+			base.Load(project, configuration, platform);
+			this.project = project;
+			Initialize();
+		}
+		
+		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
+		{
+			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
+			                                                                  project.ActiveConfiguration, project.ActivePlatform);
+			
+			group.SetElementMetadata(metaElement,"PreprocessorDefinitions",this.defineTextBox.Text);
+			
+			group.SetElementMetadata(metaElement,"UndefinePreprocessorDefinitions",this.undefineTextBox.Text);
+			
+			string check = "false";
+			if ((bool)this.undefineAllCheckBox.IsChecked) {
+				check = "true";
+			}
+			group.SetElementMetadata(metaElement,"UndefineAllPreprocessorDefinitions",check);
+					
+			return base.Save(project, configuration, platform);
+		}
+		#endregion
+		
+		
+		void IncludePathButton_Click(object sender, RoutedEventArgs e)
+		{
+			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
+			dlg.TitleText = StringParser.Parse("${res:Global.Folder}:");
+			dlg.ListCaption = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes}:");
+			dlg.BrowseForDirectory = true;
+			string[] strings = this.includePathTextBox.Text.Split(';');
+			dlg.LoadList (strings);
+			dlg.ShowDialog();
+			
+			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+			{
+				this.includePathTextBox.Text =  String.Join(";", dlg.GetList());
+			}
+			
+		}
+		
+		void DefinePathButton_Click(object sender, RoutedEventArgs e)
+		{
+			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
+			dlg.TitleText = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:");
+			dlg.ListCaption = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions}:");
+			
+			string[] strings = this.defineTextBox.Text.Split(';');
+			dlg.LoadList (strings);
+			dlg.ShowDialog();
+			
+			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+			{
+				this.defineTextBox.Text = String.Join(";",dlg.GetList());
+			}
+		}
+		
+		
+		void UndefineButton_Click(object sender, RoutedEventArgs e)
+		{
+			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
+			dlg.TitleText = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:");
+			dlg.ListCaption = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:");
+			string[] strings = this.undefineTextBox.Text.Split(';');
+			dlg.LoadList (strings);
+			dlg.BrowseForDirectory = false;
+			dlg.ShowDialog();
+			
+			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+			{
+				this.undefineTextBox.Text = String.Join(";",dlg.GetList());
+			}
+		}
+		
+		
+		void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			IsDirty = true;
+		}
+		
+		
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+	}
+}

@@ -155,8 +155,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			moveDownButton.IsEnabled = listBox.SelectedIndex >= 0 && listBox.SelectedIndex < listBox.Items.Count - 1;
 			removeButton.IsEnabled = deleteButton.IsEnabled = listBox.SelectedIndex >= 0;
 			updateButton.IsEnabled = listBox.SelectedIndex >= 0 && editTextBox.Text.Length > 0;
-			Console.WriteLine("{0} - {1} - {2} - {3}",moveUpButton.IsEnabled,moveDownButton.IsEnabled,removeButton.IsEnabled,updateButton.IsEnabled);
 		}
+		
 		
 		#region MoveUp-MoveDow-DeleteButton
 		

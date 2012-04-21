@@ -99,6 +99,10 @@
     <Compile Include="Project\PreprocessorOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Project\PreprocessorOptionsXaml.xaml.cs">
+      <DependentUpon>PreprocessorOptionsXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Project\ProjectConfigurationProjectItem.cs" />
     <Compile Include="Project\ResourceScript.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
@@ -108,6 +112,10 @@
     </Compile>
     <Compile Include="Project\StringListEditorDialog.Designer.cs">
       <DependentUpon>StringListEditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Project\StringListEditorDialogXaml.xaml.cs">
+      <DependentUpon>StringListEditorDialogXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <None Include="CppBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -171,5 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Project\ApplicationOptions.xaml" />
+    <Page Include="Project\PreprocessorOptionsXaml.xaml" />
+    <Page Include="Project\StringListEditorDialogXaml.xaml" />
   </ItemGroup>
 </Project>
