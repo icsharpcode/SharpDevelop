@@ -422,6 +422,12 @@ namespace Mono.CSharp {
 			}
 		}
 
+		bool ITypeDefinition.IsPartial {
+			get {
+				return false;
+			}
+		}
+
 		public bool IsMethodTypeParameter {
 			get {
 				return spec.IsMethodOwned;
@@ -479,7 +485,7 @@ namespace Mono.CSharp {
 		// already have constraints they become our constraints. If we already
 		// have constraints, we must check that they're the same.
 		//
-		public bool AddPartialConstraints (TypeContainer part, TypeParameter tp)
+		public bool AddPartialConstraints (TypeDefinition part, TypeParameter tp)
 		{
 			if (builder == null)
 				throw new InvalidOperationException ();
@@ -1831,9 +1837,13 @@ namespace Mono.CSharp {
 				return;
 			}
 
-			var tc = open_type.MemberDefinition as TypeContainer;
-			if (tc != null && !tc.HasMembersDefined)
-				throw new InternalErrorException ("Inflating MemberCache with undefined members");
+			var tc = open_type.MemberDefinition as TypeDefinition;
+			if (tc != null && !tc.HasMembersDefined) {
+				//
+				// Inflating MemberCache with undefined members
+				//
+				return;
+			}
 
 			if ((state & StateFlags.PendingBaseTypeInflate) != 0) {
 				BaseType = inflator.Inflate (open_type.BaseType);
@@ -2094,6 +2104,11 @@ namespace Mono.CSharp {
 			return null;
 		}
 
+		public string[] GetAllNames ()
+		{
+			return names.Select (l => l.Name).ToArray ();
+		}
+
 		public string GetSignatureForError ()
 		{
 			StringBuilder sb = new StringBuilder ();
@@ -2135,10 +2150,6 @@ namespace Mono.CSharp {
 			this.open_type = open_type;
 			loc = l;
 			this.args = args;
-		}
-
-		public TypeArguments TypeArguments {
-			get { return args; }
 		}
 
 		public override string GetSignatureForError ()
@@ -2495,7 +2506,7 @@ namespace Mono.CSharp {
 			return false;
 		}
 
-		bool HasDefaultConstructor (TypeSpec atype)
+		static bool HasDefaultConstructor (TypeSpec atype)
 		{
 			var tp = atype as TypeParameterSpec;
 			if (tp != null) {
@@ -2849,16 +2860,17 @@ namespace Mono.CSharp {
 				if (!u.IsArray)
 					return 0;
 
-				// TODO MemberCache: GetMetaInfo ()
-				if (u.GetMetaInfo ().GetArrayRank () != v.GetMetaInfo ().GetArrayRank ())
+				var ac_u = (ArrayContainer) u;
+				var ac_v = (ArrayContainer) v;
+				if (ac_u.Rank != ac_v.Rank)
 					return 0;
 
-				return ExactInference (TypeManager.GetElementType (u), TypeManager.GetElementType (v));
+				return ExactInference (ac_u.Element, ac_v.Element);
 			}
 
 			// If V is constructed type and U is constructed type
 			if (TypeManager.IsGenericType (v)) {
-				if (!TypeManager.IsGenericType (u))
+				if (!TypeManager.IsGenericType (u) || v.MemberDefinition != u.MemberDefinition)
 					return 0;
 
 				TypeSpec [] ga_u = TypeManager.GetTypeArguments (u);
