@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
@@ -20,6 +20,7 @@ namespace ICSharpCode.UnitTesting
 		string fullName;
 		ObservableCollection<IUnresolvedTypeDefinition> parts;
 		readonly ObservableCollection<TestMember> testMembers;
+		readonly ObservableCollection<TestClass> nestedClasses;
 		TestResultType testResultType;
 		IRegisteredTestFrameworks testFrameworks;
 		
@@ -32,6 +33,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>();
 			this.testMembers = new ObservableCollection<TestMember>();
+			this.nestedClasses = new ObservableCollection<TestClass>();
 			this.testFrameworks = testFrameworks;
 			this.fullName = fullName;
 			UpdateClass(definition);
@@ -46,6 +48,10 @@ namespace ICSharpCode.UnitTesting
 		
 		public ObservableCollection<TestMember> Members {
 			get { return testMembers; }
+		}
+		
+		public ObservableCollection<TestClass> NestedClasses {
+			get { return nestedClasses; }
 		}
 		
 		public string FullName {
@@ -135,6 +141,9 @@ namespace ICSharpCode.UnitTesting
 			}
 			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Method.ReflectionName && dm.IsTestMethod(definition.Compilation)));
 			testMembers.AddRange(definition.Methods.Where(m => m.IsTestMethod(definition.Compilation) && !testMembers.Any(dm => dm.Method.ReflectionName == m.ReflectionName)).Select(m => new TestMember((IUnresolvedMethod)m.UnresolvedMember)));
+			
+			var context = new SimpleTypeResolveContext(definition);
+			nestedClasses.UpdateTestClasses(testFrameworks, nestedClasses.Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), definition.NestedTypes.Where(nt => nt.HasTests(definition.Compilation)).ToList());
 		}
 		
 		/// <summary>

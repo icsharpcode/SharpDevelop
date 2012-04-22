@@ -21,7 +21,27 @@ namespace ICSharpCode.UnitTesting
 		{
 			this.testClass = testClass;
 			testClass.Members.CollectionChanged += TestMembersCollectionChanged;
+			testClass.NestedClasses.CollectionChanged += NestedClassesCollectionChanged;
 			LazyLoading = true;
+		}
+
+		void NestedClassesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action) {
+				case NotifyCollectionChangedAction.Add:
+					foreach (TestClass c in e.NewItems) {
+						Children.OrderedInsert(new ClassUnitTestNode(c), (a, b) => string.CompareOrdinal(a.Text.ToString(), b.Text.ToString()));
+					}
+					break;
+				case NotifyCollectionChangedAction.Remove:
+					foreach (TestClass c in e.OldItems) {
+						Children.RemoveAll(n => n is ClassUnitTestNode && ((ClassUnitTestNode)n).TestClass.FullName == c.FullName);
+					}
+					break;
+				case NotifyCollectionChangedAction.Reset:
+					LoadChildren();
+					break;
+			}
 		}
 
 		void TestMembersCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -46,6 +66,8 @@ namespace ICSharpCode.UnitTesting
 		protected override void LoadChildren()
 		{
 			Children.Clear();
+			foreach (TestClass c in testClass.NestedClasses)
+				Children.Add(new ClassUnitTestNode(c));
 			foreach (TestMember m in testClass.Members)
 				Children.Add(new MemberUnitTestNode(m));
 		}

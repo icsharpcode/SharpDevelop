@@ -80,5 +80,23 @@ namespace ICSharpCode.UnitTesting
 				index++;
 			list.Insert(index, item);
 		}
+		
+		public static void UpdateTestClasses(this IList<TestClass> testClasses, IRegisteredTestFrameworks testFrameworks, IReadOnlyList<ITypeDefinition> oldTypes, IReadOnlyList<ITypeDefinition> newTypes)
+		{
+			var mappings = oldTypes.FullOuterJoin(newTypes, t => t.ReflectionName, t => t.ReflectionName, Tuple.Create);
+			foreach (Tuple<ITypeDefinition, ITypeDefinition> mapping in mappings) {
+				if (mapping.Item2 == null)
+					testClasses.RemoveWhere(c => c.FullName == mapping.Item1.ReflectionName);
+				else if (mapping.Item1 == null)
+					testClasses.Add(new TestClass(testFrameworks, mapping.Item2.ReflectionName, mapping.Item2));
+				else {
+					var testClass = testClasses.SingleOrDefault(c => c.FullName == mapping.Item1.ReflectionName);
+					if (testClass == null)
+						testClasses.Add(new TestClass(testFrameworks, mapping.Item2.ReflectionName, mapping.Item2));
+					else
+						testClass.UpdateClass(mapping.Item2);
+				}
+			}
+		}
 	}
 }
