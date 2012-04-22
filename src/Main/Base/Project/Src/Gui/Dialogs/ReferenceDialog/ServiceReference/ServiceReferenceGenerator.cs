@@ -137,6 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			project.AddServiceReferenceProxyFile(referenceFileName);
 			project.AddServiceReferenceMapFile(mapFileName);
 			
+			project.AddAssemblyReference("System.Runtime.Serialization");
 			project.AddAssemblyReference("System.ServiceModel");
 			
 			if (!project.HasAppConfigFile()) {

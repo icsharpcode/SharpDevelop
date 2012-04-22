@@ -315,6 +315,21 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		}
 		
 		[Test]
+		public void AddServiceReference_ProjectDoesNotHaveSystemRuntimeSerializationReference_SystemRuntimeSerializationReferenceAddedToProject()
+		{
+			CreateGenerator();
+			AddProxyFileNameForServiceName("MyService");
+			AddMapFileNameForServiceName("MyService");
+			generator.Options.ServiceName = "MyService";
+			
+			generator.AddServiceReference();
+			
+			SvcUtilRunCompletedSuccessfully();
+			
+			fakeProject.AssertWasCalled(p => p.AddAssemblyReference("System.Runtime.Serialization"));
+		}
+		
+		[Test]
 		public void AddServiceReference_ProjectDoesNotHaveSystemServiceModelReference_ProjectIsSavedAfterReferenceIsAdded()
 		{
 			CreateGenerator();
