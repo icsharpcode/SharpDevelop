@@ -8,11 +8,11 @@
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
 	
 	<GroupBox Header="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker}">
-		<Grid ShowGridLines="True">
+		<Grid>
 			<Grid.RowDefinitions>
+				<RowDefinition Height="50"></RowDefinition>
 				<RowDefinition Height="30"></RowDefinition>
-				<RowDefinition Height="30"></RowDefinition>
-				<RowDefinition Height="30"></RowDefinition>
+				<RowDefinition Height="40"></RowDefinition>
 				<RowDefinition Height="30"></RowDefinition>
 				<RowDefinition Height="30"></RowDefinition>
 				<RowDefinition Height="30"></RowDefinition>
@@ -26,7 +26,34 @@
 				<ColumnDefinition></ColumnDefinition>
 				<ColumnDefinition Width="50"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
+			<CheckBox x:Name="debugInfoCheckBox" Margin="0,15,0,0"
+			           IsChecked="{Binding CheckBoxChecked}"
+			          Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo}"></CheckBox>
+			
+			<Label Grid.Row="1" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.Library}"></Label>   
+			<TextBox x:Name="libraryPathTextBox" Grid.Row="2"
+			Text="{Binding LibraryPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+			
+			<Button x:Name="libraryPathButton" Click="LibraryPathButton_Click"
+			        Margin="5" Grid.Row="2"
+			        Height="20"
+			        Grid.Column="1" Content="...."></Button>
 		
+			<Label Grid.Row="3" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}"></Label>
+			<TextBox x:Name="additionalLibsTextBox" Grid.Row="4"></TextBox>
+			<Button x:Name="additionalLibsButton" Click="AdditionalLibsButton_Click" Grid.Row="4" Grid.Column="1" Margin="5" Content="...." ></Button>
+		
+			<Label Grid.Row="5" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule}"></Label>
+			<TextBox x:Name="addModuleTextBox" Grid.Row="6"></TextBox>
+			<Button x:Name="addModuleButton" Click="AddModuleButton_Click" Grid.Row="6" Grid.Column="1" Margin="5" Content="...."></Button>
+		
+			<Label Grid.Row="7" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile}" ></Label>
+			<TextBox x:Name="resourceFileTextBox" Grid.Row="8"></TextBox>
+			<Button x:Name="resourceFileButton" Click="ResourceFileButton_Click" Grid.Row="8" Grid.Column="1" Margin="5" Content="...."></Button>
+
+			<Label Grid.Row="9" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions}"></Label>
+			<TextBox x:Name="additionalOptionsTextBox" Grid.Row="10" Grid.ColumnSpan="2"></TextBox>
+
 		</Grid>
 	</GroupBox>
 </optionpanels:ProjectOptionPanel>

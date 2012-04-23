@@ -23,7 +23,7 @@ namespace ICSharpCode.CppBinding.Project
 	{
 		private const string metaElement ="ClCompile";
 		
-		MSBuildBasedProject project;
+		private MSBuildBasedProject project;
 		
 		public PreprocessorOptions()
 		{
@@ -44,39 +44,27 @@ namespace ICSharpCode.CppBinding.Project
 			
 			bool check;
 			if (bool.TryParse(defs, out check))
-//				this.undefineAllCheckBox.IsChecked = check;
-			this.UnCheck = check;
+			{
+				this.CheckBoxChecked = check;
+				this.undefineAllCheckBox.IsChecked = check;
+			}
 			IsDirty = false;
 		}
 		
 		
 		#region Properties
 		
-//		public ProjectProperty<string> PreprocessorDefinitions {
-//			get { return GetProperty("PreprocessorDefinition", "", TextBoxEditMode.EditRawProperty); }
-//		}
-		
-		
 		public ProjectProperty<string> IncludePath {
 			get { return GetProperty("IncludePath", "", TextBoxEditMode.EditRawProperty); }
 		}
 		
-//		public ProjectProperty<string> UndefinePreprocessorDefinitions {
-//			get { return GetProperty("UndefinePreprocessorDefinitions", "", TextBoxEditMode.EditRawProperty); }
-//		}
+		bool checkBoxChecked;
 		
-			
-//		public ProjectProperty<string> UndefineAllPreprocessorDefinitions {
-//			get { return GetProperty("UndefineAllPreprocessorDefinitions", "", TextBoxEditMode.EditRawProperty); }
-//		}
-
-		bool unCheck;
-		
-		public bool UnCheck {
-			get {return unCheck;}
+		public bool CheckBoxChecked {
+			get {return checkBoxChecked;}
 			set
 			{
-				unCheck = value;
+				checkBoxChecked = value;
 				if (PropertyChanged != null)
 					PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("UnCheck"));
 				IsDirty = true;
@@ -170,8 +158,6 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			IsDirty = true;
 		}
-		
-		
 		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 	}
