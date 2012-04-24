@@ -195,8 +195,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			if (expr.Parent is ReturnStatement) {
-				var state = resolver.GetResolverStateBefore(expr);
-				if (state != null)
+				var state = resolver.GetResolverStateBefore(expr.Parent);
+				if (state != null  && state.CurrentMember != null)
 					return new [] { state.CurrentMember.ReturnType };
 			}
 
