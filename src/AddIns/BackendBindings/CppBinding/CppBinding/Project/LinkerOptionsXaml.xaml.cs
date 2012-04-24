@@ -57,7 +57,7 @@ namespace ICSharpCode.CppBinding.Project
 				this.debugInfoCheckBox.IsChecked = check;
 			}
 			
-			IsDirty = false;	
+			IsDirty = false;
 		}
 		
 		#region Properties
@@ -83,6 +83,11 @@ namespace ICSharpCode.CppBinding.Project
 		#endregion
 		
 		#region Save/Load
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			HideHeader();
+		}
 		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
@@ -134,7 +139,7 @@ namespace ICSharpCode.CppBinding.Project
 		void AdditionalLibsButton_Click(object sender, RoutedEventArgs e)
 		{
 			var dlg = InitStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
-			                                          StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}:"),false);
+			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}:"),false);
 			string[] strings = this.additionalLibsTextBox.Text.Split(';');
 			dlg.LoadList (strings);
 			dlg.ShowDialog();
@@ -145,7 +150,7 @@ namespace ICSharpCode.CppBinding.Project
 			}
 		}
 
-	
+		
 		void AddModuleButton_Click(object sender, RoutedEventArgs e)
 		{
 			var dlg = InitStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),

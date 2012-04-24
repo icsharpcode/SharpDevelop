@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -34,6 +36,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		string activePlatform;
 		bool resettingIndex;
 		
+		StackPanel configStackPanel;
+		Line headerline;
+		
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			foreach (IProjectProperty p in projectProperties.Values)
@@ -49,12 +54,24 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			return true;
 		}
 		
+		
+		public void HideHeader ()
+		{
+			configStackPanel.Visibility = Visibility.Hidden;
+			headerline.Visibility = Visibility.Hidden;
+		}
+		
+		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 			configurationComboBox = Template.FindName("PART_configuration", this) as ComboBox;
 			platformComboBox = Template.FindName("PART_platform", this) as ComboBox;
+
+			headerline = Template.FindName("PART_headerline", this) as Line;
+			configStackPanel = Template.FindName("PART_stackpanel", this) as StackPanel;
 		}
+		
 		
 		object owner;
 		

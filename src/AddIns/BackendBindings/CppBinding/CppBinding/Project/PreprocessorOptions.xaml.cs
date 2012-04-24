@@ -74,8 +74,13 @@ namespace ICSharpCode.CppBinding.Project
 		#endregion
 		
 		
-		#region Save/Load
+		#region overrides
 		
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			HideHeader();
+		}
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
