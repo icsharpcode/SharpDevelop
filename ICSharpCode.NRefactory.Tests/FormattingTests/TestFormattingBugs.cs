@@ -234,7 +234,7 @@ foo ();
         [Ignore]
         public void TestBugGH35()
         {
-            var policy = new CSharpFormattingOptions();
+            var policy = FormattingOptionsFactory.CreateMono ();
             policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
 
             Test(policy, @"public class A : B
@@ -273,7 +273,7 @@ foo ();
         [Ignore]
         public void TestBugGH35a()
         {
-            var policy = new CSharpFormattingOptions();
+            var policy = FormattingOptionsFactory.CreateMono ();
             policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
 
             Test(policy, @"public class A : B

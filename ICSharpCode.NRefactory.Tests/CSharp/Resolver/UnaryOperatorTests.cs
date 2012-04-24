@@ -222,6 +222,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertType(typeof(StringComparison?), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(StringComparison?))));
 		}
 		
+		[Ignore("Broken on mcs")]
 		[Test]
 		public void IntMinValue()
 		{
