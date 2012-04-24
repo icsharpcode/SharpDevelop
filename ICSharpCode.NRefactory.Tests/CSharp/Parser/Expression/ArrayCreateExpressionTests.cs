@@ -101,7 +101,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 							new PrimitiveExpression(100),
 							new PrimitiveExpression(1000)
 						}
-					}});
+					}}
+			);
 		}
 		
 		[Test]
@@ -156,7 +157,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			                	Roles.RBrace
 			                }, ace.Initializer.Children.Select(c => c.Role).ToArray());
 		}
-
 
 		[Test, Ignore("Parser bug")]
 		public void ArrayInitializerWithCommaAtEnd()
