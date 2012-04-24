@@ -227,7 +227,84 @@ foo ();
 	}
 }");
 		}
-		
+
+        /// <summary>
+        /// Bug GH35 - Formatter issues with if/else statements and // comments
+        /// </summary>
+        [Ignore]
+        public void TestBugGH35()
+        {
+            var policy = new CSharpFormattingOptions();
+            policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
+
+            Test(policy, @"public class A : B
+{
+    public void Test()
+    {
+        // Comment before
+        if (conditionA) {
+            DoSomething();
+        }
+        // Comment before else ends up incorporating it
+        else if (conditionB) {
+            DoSomethingElse();
+        }
+    }
+}",
+@"public class A : B
+{
+	public void Test()
+	{
+		// Comment before
+		if (conditionA) {
+			DoSomething();
+		}
+		// Comment before else ends up incorporating it
+		else if (conditionB) {
+			DoSomethingElse();
+		}
+	}
+}");
+        }
+
+        /// <summary>
+        /// Bug GH35a - Formatter issues with if/else statements and // comments else variant
+        /// </summary>
+        [Ignore]
+        public void TestBugGH35a()
+        {
+            var policy = new CSharpFormattingOptions();
+            policy.ConstructorBraceStyle = BraceStyle.EndOfLine;
+
+            Test(policy, @"public class A : B
+{
+    public void Test()
+    {
+        // Comment before
+        if (conditionA) {
+            DoSomething();
+        }
+        // Comment before else ends up incorporating it
+        else (conditionB) {
+            DoSomethingElse();
+        }
+    }
+}",
+@"public class A : B
+{
+	public void Test()
+	{
+		// Comment before
+		if (conditionA) {
+			DoSomething();
+		}
+		// Comment before else ends up incorporating it
+		else (conditionB) {
+			DoSomethingElse();
+		}
+	}
+}");
+        }
 	}
 }
 
