@@ -191,6 +191,11 @@ namespace ICSharpCode.CppBinding.Project
 			return dlg;
 		}
 		
+		void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			IsDirty = true;
+		}
+		
 		
 	}
 }

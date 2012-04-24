@@ -27,33 +27,43 @@
 				<ColumnDefinition Width="50"></ColumnDefinition>
 			</Grid.ColumnDefinitions>
 			<CheckBox x:Name="debugInfoCheckBox" Margin="5,15,0,0"
-			           IsChecked="{Binding CheckBoxChecked}"
-			          Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo}"></CheckBox>
+			          IsChecked="{Binding CheckBoxChecked}"
+			          Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo}">
+			</CheckBox>
 			
-			<Label Grid.Row="1" Margin="5,5,0,0" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.Library}"></Label>   
-			<TextBox x:Name="libraryPathTextBox" Grid.Row="2"
-			Text="{Binding LibraryPath.Value, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+			<Label Grid.Row="1" Margin="5,5,0,0" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.Library}"></Label>
+			<TextBox x:Name="libraryPathTextBox"
+			         TextChanged="TextBox_TextChanged" Grid.Row="2"
+			         Text="{Binding LibraryPath.Value, UpdateSourceTrigger=PropertyChanged}">
+			</TextBox>
 			
 			<Button x:Name="libraryPathButton" Click="LibraryPathButton_Click"
 			        Margin="5" Grid.Row="2"
 			        Height="20"
 			        Grid.Column="1" Content="...."></Button>
-		
+			
 			<Label Grid.Row="3" Margin="5,5,0,0" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}"></Label>
-			<TextBox x:Name="additionalLibsTextBox" Grid.Row="4"></TextBox>
+			<TextBox x:Name="additionalLibsTextBox"
+			         TextChanged="TextBox_TextChanged" Grid.Row="4">
+			</TextBox>
 			<Button x:Name="additionalLibsButton" Click="AdditionalLibsButton_Click" Grid.Row="4" Grid.Column="1" Margin="5" Content="...." ></Button>
-		
+			
 			<Label Grid.Row="5" Margin="5,5,0,0"  Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule}"></Label>
-			<TextBox x:Name="addModuleTextBox" Grid.Row="6"></TextBox>
+			<TextBox x:Name="addModuleTextBox"
+			         TextChanged="TextBox_TextChanged"  Grid.Row="6">
+			</TextBox>
 			<Button x:Name="addModuleButton" Click="AddModuleButton_Click" Grid.Row="6" Grid.Column="1" Margin="5" Content="...."></Button>
-		
+			
 			<Label Grid.Row="7" Margin="5,5,0,0" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile}" ></Label>
-			<TextBox x:Name="resourceFileTextBox" Grid.Row="8"></TextBox>
+			<TextBox x:Name="resourceFileTextBox"
+			         TextChanged="TextBox_TextChanged" Grid.Row="8"></TextBox>
 			<Button x:Name="resourceFileButton" Click="ResourceFileButton_Click" Grid.Row="8" Grid.Column="1" Margin="5" Content="...."></Button>
-
+			
 			<Label Grid.Row="9" Margin="5,5,0,0" Content="{core:Localize ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions}"></Label>
-			<TextBox x:Name="additionalOptionsTextBox" Grid.Row="10" Grid.ColumnSpan="2"></TextBox>
-
+			<TextBox x:Name="additionalOptionsTextBox"
+			         TextChanged="TextBox_TextChanged" Grid.Row="10" Grid.ColumnSpan="2">
+			</TextBox>
+		
 		</Grid>
 	</GroupBox>
 </optionpanels:ProjectOptionPanel>
