@@ -27,11 +27,11 @@
 		<OptionPanel id = "Preprocessor"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor}"
 				class = "ICSharpCode.CppBinding.Project.PreprocessorOptions" />
-		
+		<!--
 		<OptionPanel id = "Linker"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Linker}"
 				class = "ICSharpCode.CppBinding.Project.LinkerOptions" />
-	
+	-->
 		<OptionPanel id = "Linker1"
 				label = "${res:ICSharpCode.CppBinding.ProjectOptions.Linker}"
 				class = "ICSharpCode.CppBinding.Project.LinkerOptionsXaml" />

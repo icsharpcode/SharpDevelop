@@ -23,7 +23,7 @@ namespace ICSharpCode.CppBinding.Project
 	/// <summary>
 	/// Directory settings for c++ application.
 	/// </summary>
-	public class LinkerOptions : AbstractXmlFormsProjectOptionPanel
+	public class old_LinkerOptions : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
