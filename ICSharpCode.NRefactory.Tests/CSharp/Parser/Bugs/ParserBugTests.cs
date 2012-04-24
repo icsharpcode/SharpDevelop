@@ -317,6 +317,36 @@ class Test
 			}
 			Assert.IsTrue(passed);
 		}
+
+		/// <summary>
+		/// Bug 4556 - AST broken for unclosed invocation
+		/// </summary>
+		[Ignore ()]
+		[Test]
+		public void TestBug4556()
+		{
+			string code = 
+@"using System;
+
+class Foo
+{
+    public static void Main (string[] args)
+    {
+        Console.WriteLine (""foo"", 
+    }
+}
+";
+			var unit = CompilationUnit.Parse(code);
+			
+			var type = unit.Members.First() as TypeDeclaration;
+			var method = type.Members.First() as MethodDeclaration;
+			bool passed = !method.Body.IsNull;
+			if (!passed) {
+				Console.WriteLine("Expected:" + code);
+				Console.WriteLine("Was:" + unit.GetText());
+			}
+			Assert.IsTrue(passed);
+		}
 		
 	}
 }

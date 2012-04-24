@@ -475,8 +475,97 @@ class MyTest
 }
 ", provider => {
 				Assert.IsNotNull(provider.Find("List<string>"), "class 'List<string>' not found.");
-			});
+			}
+			);
+		}
+
+		[Ignore ()]
+		[Test()]
+		public void TestArrayInitializerObjectCreationNarrowing()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+class MyList : List<IEnumerable<string>> {}
+class MyTest
+{
+	public void Test ()
+	{
+		$new MyList { new L$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("List<string>"), "class 'List<string>' not found.");
+			}
+			);
+		}
+
+		[Ignore ()]
+		[Test()]
+		public void TestObjectCreationEnumerable()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+class MyList : List<IEnumerable<string>> { public bool MyProp {get;set; } }
+class MyTest
+{
+	public void Test ()
+	{
+		$new MyList { n$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("new"), "'new' not found.");
+				Assert.IsNotNull(provider.Find("MyProp"), "'MyProp' not found.");
+			}
+			);
+		}
+
+		[Ignore ()]
+		[Test()]
+		public void TestObjectCreationForbiddenInArrayInitializers()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+class MyList : List<IEnumerable<string>> { public bool MyProp {get;set; } }
+class MyTest
+{
+	public void Test ()
+	{
+		$new MyList { new List<string> (), n$
+	}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("new"), "'new' not found.");
+				Assert.IsNull(provider.Find("MyProp"), "'MyProp' found.");
+			}
+			);
+		}
+
+		[Ignore ()]
+		[Test()]
+		public void TestArrayInitializersForbiddenInObjectCreation()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+class MyList : List<IEnumerable<string>> { public bool MyProp {get;set; }  public bool MyProp2 {get;set; }  }
+class MyTest
+{
+	public void Test ()
+	{
+		$new MyList { MyProp = true, n$
+	}
+}
+", provider => {
+				Assert.IsNull(provider.Find("new"), "'new' found.");
+				Assert.IsNotNull(provider.Find("MyProp2"), "'MyProp2' not found.");
+			}
+			);
 		}
 	}
+
 }
 
