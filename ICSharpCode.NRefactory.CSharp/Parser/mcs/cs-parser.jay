@@ -3327,6 +3327,7 @@ argument_list
 	  }
 	| argument_list COMMA error
 	  {
+	  	lexer.putback (')'); // TODO: Wrong but what can I do
 		Error_SyntaxError (yyToken);
 		$$ = $1;
 	  }
@@ -5414,6 +5415,7 @@ for_statement_condition
 	  {
 		$$ = $4;
 	  }
+
 	| boolean_expression CLOSE_PARENS {
 		report.Error (1525, GetLocation ($2), "Unexpected symbol ')', expected ';'");
 		For f =  (For) $0;
