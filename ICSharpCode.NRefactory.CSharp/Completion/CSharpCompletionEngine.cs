@@ -501,7 +501,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 										evt,
 										parameterDefinition,
 										currentMember,
-										currentType));
+										currentType)
+									);
 								}
 					
 								return wrapper.Result;
@@ -809,7 +810,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							nodes.Add(n.Parent);
 						}
 						var astResolver = new CSharpAstResolver(csResolver, identifierStart.Unit, CSharpParsedFile);
-						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator (nodes));
+						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator(nodes));
 						try {
 							csResolver = astResolver.GetResolverStateBefore(n);
 						} catch (Exception) {
@@ -1100,7 +1101,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			wrapper.Result.Add(factory.CreateLiteralCompletionData("global"));
 			
 			if (!(node is AstType)) {
-				if (currentMember != null) {
+				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
 					AddKeywords(wrapper, expressionLevelKeywords);
 				} else if (currentType != null) {
@@ -1124,7 +1125,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords(wrapper, parameterTypePredecessorKeywords);
 				}
 			}
-			
+
 			AddKeywords(wrapper, primitiveTypesKeywords);
 			if (currentMember != null) {
 				wrapper.AddCustom("var");

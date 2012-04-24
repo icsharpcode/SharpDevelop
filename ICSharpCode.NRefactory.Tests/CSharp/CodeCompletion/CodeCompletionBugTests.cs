@@ -5076,6 +5076,31 @@ public class Test
 				Assert.IsNotNull(provider.Find("static"), "'static' not found.");
 			});
 		}
+		/// <summary>
+		/// Bug 4604 - [Resolver] Attribute Properties are not offered valid autocomplete choices
+		/// </summary>
+		[Test()]
+		public void TestBug4604()
+		{
+			CombinedProviderTest(
+@"
+		public sealed class MyAttribute : System.Attribute
+		{
+			public bool SomeBool {
+				get;
+				set;
+			}
+		}
+$[MyAttribute(SomeBool=t$
+public class Test
+{
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("true"), "'true' not found.");
+				Assert.IsNotNull(provider.Find("false"), "'false' not found.");
+			});
+		}
+
 
 	}
 }
