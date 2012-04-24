@@ -2850,7 +2850,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					next = next.Next;
 				}
 				
-				if (arrayCreationExpression.Initializers != null && arrayCreationExpression.Initializers.Count != 0) {
+				if (arrayCreationExpression.Initializers != null) {
 					var initLocation = LocationsBag.GetLocations (arrayCreationExpression.Initializers);
 					ArrayInitializerExpression initializer = new ArrayInitializerExpression ();
 					
