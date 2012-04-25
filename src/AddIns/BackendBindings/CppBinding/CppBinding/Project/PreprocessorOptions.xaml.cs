@@ -22,8 +22,8 @@ namespace ICSharpCode.CppBinding.Project
 	public partial class PreprocessorOptions : ProjectOptionPanel,INotifyPropertyChanged
 	{
 		private const string metaElement ="ClCompile";
-		
 		private MSBuildBasedProject project;
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 		
 		public PreprocessorOptions()
 		{
@@ -36,11 +36,11 @@ namespace ICSharpCode.CppBinding.Project
 			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
 			                                                                  project.ActiveConfiguration, project.ActivePlatform);
 			
-			this.defineTextBox.Text = group.GetElementMetadata(metaElement,"PreprocessorDefinitions");
+			this.defineTextBox.Text = GetElementMetaData(group,"PreprocessorDefinitions");
 			
-			this.undefineTextBox.Text =  group.GetElementMetadata(metaElement,"UndefinePreprocessorDefinitions" );
+			this.undefineTextBox.Text =  GetElementMetaData(group,"UndefinePreprocessorDefinitions" );
 			
-			var defs = group.GetElementMetadata(metaElement,"UndefineAllPreprocessorDefinitions");
+			var defs = GetElementMetaData(group,"UndefineAllPreprocessorDefinitions");
 			
 			bool check;
 			if (bool.TryParse(defs, out check))
@@ -93,77 +93,66 @@ namespace ICSharpCode.CppBinding.Project
 			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
 			                                                                  project.ActiveConfiguration, project.ActivePlatform);
 			
-			group.SetElementMetadata(metaElement,"PreprocessorDefinitions",this.defineTextBox.Text);
+			SetElementMetaData(group,"PreprocessorDefinitions",this.defineTextBox.Text);
 			
-			group.SetElementMetadata(metaElement,"UndefinePreprocessorDefinitions",this.undefineTextBox.Text);
+			SetElementMetaData(group,"UndefinePreprocessorDefinitions",this.undefineTextBox.Text);
 			
 			string check = "false";
 			if ((bool)this.undefineAllCheckBox.IsChecked) {
 				check = "true";
 			}
-			group.SetElementMetadata(metaElement,"UndefineAllPreprocessorDefinitions",check);
+			SetElementMetaData(group,"UndefineAllPreprocessorDefinitions",check);
 					
 			return base.Save(project, configuration, platform);
 		}
 		#endregion
 		
+		#region MSBuildItemDefinitionGroup Set-Get
 		
-		void IncludePathButton_Click(object sender, RoutedEventArgs e)
+		private static string GetElementMetaData (MSBuildItemDefinitionGroup group,string name)
 		{
-			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
-			dlg.TitleText = StringParser.Parse("${res:Global.Folder}:");
-			dlg.ListCaption = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes}:");
-			dlg.BrowseForDirectory = true;
-			string[] strings = this.includePathTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-			{
-				this.includePathTextBox.Text =  String.Join(";", dlg.GetList());
-			}
-			
-		}
-		
-		void DefinePathButton_Click(object sender, RoutedEventArgs e)
-		{
-			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
-			dlg.TitleText = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:");
-			dlg.ListCaption = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions}:");
-			
-			string[] strings = this.defineTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-			{
-				this.defineTextBox.Text = String.Join(";",dlg.GetList());
-			}
+			return group.GetElementMetadata(metaElement,name);
 		}
 		
 		
-		void UndefineButton_Click(object sender, RoutedEventArgs e)
+		private  static void SetElementMetaData (MSBuildItemDefinitionGroup group,string name,string value)
 		{
-			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
-			dlg.TitleText = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:");
-			dlg.ListCaption = StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:");
-			string[] strings = this.undefineTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.BrowseForDirectory = false;
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-			{
-				this.undefineTextBox.Text = String.Join(";",dlg.GetList());
-			}
+			group.SetElementMetadata(metaElement,name,value);
+		}
+		
+		#endregion
+		
+		
+		private void IncludePathButton_Click(object sender, RoutedEventArgs e)
+		{
+			LinkerOptionsXaml.PopulateStringListEditor(StringParser.Parse("${res:Global.Folder}:"),
+			                                           StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes}:"),
+			                                           this.includePathTextBox,
+			                                           true);
 		}
 		
 		
-		void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+		private void DefinePathButton_Click(object sender, RoutedEventArgs e)
+		{
+			LinkerOptionsXaml.PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			                                           StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions}:"),
+			                                           this.defineTextBox,
+			                                           false);
+		}
+		
+		
+		private void UndefineButton_Click(object sender, RoutedEventArgs e)
+		{
+			LinkerOptionsXaml.PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			                                           StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			                                           this.undefineTextBox,
+			                                           false);
+		}
+		
+		
+		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			IsDirty = true;
 		}
-		
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 	}
 }

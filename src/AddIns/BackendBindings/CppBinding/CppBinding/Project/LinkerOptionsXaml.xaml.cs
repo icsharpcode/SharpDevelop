@@ -36,20 +36,22 @@ namespace ICSharpCode.CppBinding.Project
 			InitializeComponent();
 		}
 		
-		void Initialize()
+		
+		private void Initialize()
 		{
-			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
-			                                                                  project.ActiveConfiguration, project.ActivePlatform);
+			var msDefGroup = new MSBuildItemDefinitionGroup(project, project.ActiveConfiguration, project.ActivePlatform);
+			                                                                  
 			
-			this.additionalLibsTextBox.Text = group.GetElementMetadata(metaElement,"AdditionalDependencies");
+			this.additionalLibsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalDependencies");
 			
-			this.addModuleTextBox.Text = group.GetElementMetadata(metaElement,"AddModuleNamesToAssembly");
+			this.addModuleTextBox.Text = GetElementMetaData(msDefGroup,"AddModuleNamesToAssembly");
 			
-			this.resourceFileTextBox.Text = group.GetElementMetadata(metaElement,"EmbedManagedResourceFile");
+			this.resourceFileTextBox.Text = GetElementMetaData(msDefGroup,"EmbedManagedResourceFile");
 			
-			this.additionalOptionsTextBox.Text = group.GetElementMetadata(metaElement,"AdditionalOptions");
+			this.additionalOptionsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalOptions");
 			
-			var def = group.GetElementMetadata(metaElement,"GenerateDebugInformation");
+			var def = GetElementMetaData(msDefGroup,"GenerateDebugInformation");
+			
 			bool check;
 			if (bool.TryParse(def, out check))
 			{
@@ -59,7 +61,7 @@ namespace ICSharpCode.CppBinding.Project
 			
 			IsDirty = false;
 		}
-		
+	
 		#region Properties
 		
 		public ProjectProperty<string> LibraryPath {
@@ -67,7 +69,7 @@ namespace ICSharpCode.CppBinding.Project
 		}
 		
 		
-		bool checkBoxChecked;
+		private bool checkBoxChecked;
 		
 		public bool CheckBoxChecked {
 			get {return checkBoxChecked;}
@@ -83,6 +85,7 @@ namespace ICSharpCode.CppBinding.Project
 		#endregion
 		
 		#region Save/Load
+		
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
@@ -101,101 +104,94 @@ namespace ICSharpCode.CppBinding.Project
 			MSBuildItemDefinitionGroup group = new MSBuildItemDefinitionGroup(project,
 			                                                                  project.ActiveConfiguration, project.ActivePlatform);
 			
-			
-			group.SetElementMetadata(metaElement,"AdditionalDependencies",this.additionalLibsTextBox.Text);
-			group.SetElementMetadata(metaElement,"AddModuleNamesToAssembly",this.addModuleTextBox.Text);
-			group.SetElementMetadata(metaElement,"EmbedManagedResourceFile",this.resourceFileTextBox.Text);
-			group.SetElementMetadata(metaElement,"AdditionalOptions",this.additionalOptionsTextBox.Text);
+			SetElementMetaData(group,"AdditionalDependencies",this.additionalLibsTextBox.Text);
+			SetElementMetaData(group,"AddModuleNamesToAssembly",this.addModuleTextBox.Text);
+			SetElementMetaData(group,"EmbedManagedResourceFile",this.resourceFileTextBox.Text);
+			SetElementMetaData(group,"AdditionalOptions",this.additionalOptionsTextBox.Text);
 			
 			string check = "false";
 			if ((bool)this.debugInfoCheckBox.IsChecked) {
 				check = "true";
 			}
 			
-			group.SetElementMetadata(metaElement,"GenerateDebugInformation",check);
+			SetElementMetaData(group,"GenerateDebugInformation",check);
 			
 			return base.Save(project, configuration, platform);
 		}
 		
+		#endregion
+		
+		#region MSBuildItemDefinitionGroup Set-Get
+		
+		private static string GetElementMetaData (MSBuildItemDefinitionGroup group,string name)
+		{
+			return group.GetElementMetadata(metaElement,name);
+		}
+		
+		
+		private  static void SetElementMetaData (MSBuildItemDefinitionGroup group,string name,string value)
+		{
+			group.SetElementMetadata(metaElement,name,value);
+		}
 		
 		#endregion
 		
-		void LibraryPathButton_Click(object sender, RoutedEventArgs e)
+		private void LibraryPathButton_Click(object sender, RoutedEventArgs e)
 		{
-			var dlg = InitStringListEditor(StringParser.Parse("${res:Global.Folder}:"),
-			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.Library}:"),true);
-
-			string[] strings = this.libraryPathTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-			{
-				this.libraryPathTextBox.Text =  String.Join(";", dlg.GetList());
-			}
+			PopulateStringListEditor(StringParser.Parse("${res:Global.Folder}:"),
+			                        StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.Library}:"),
+			                        this.libraryPathTextBox,
+			                        true);
 		}
 		
 		
-		void AdditionalLibsButton_Click(object sender, RoutedEventArgs e)
+		private void AdditionalLibsButton_Click(object sender, RoutedEventArgs e)
 		{
-			var dlg = InitStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
-			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}:"),false);
-			string[] strings = this.additionalLibsTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-			{
-				this.additionalLibsTextBox.Text = String.Join(";",dlg.GetList());
-			}
+			PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs}:"),
+			                               this.additionalLibsTextBox,
+			                               false);
 		}
 
 		
-		void AddModuleButton_Click(object sender, RoutedEventArgs e)
+		private void AddModuleButton_Click(object sender, RoutedEventArgs e)
 		{
-			var dlg = InitStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
-			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule}"),false);
-			
-			string[] strings = this.addModuleTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+			PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule}"),
+			                               this.addModuleTextBox,
+			                               false);
+		}
+		
+		
+		private void ResourceFileButton_Click(object sender, RoutedEventArgs e)
+		{
+			PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile}"),
+			                               this.resourceFileTextBox,
+			                               false);
+		}
+		
+		
+		public static void PopulateStringListEditor(string title, string listCaption,TextBox textBox,bool browseForDirectoty)
+		{
+			var  stringListDialog = new StringListEditorDialogXaml();
+			stringListDialog.TitleText = title;
+			stringListDialog.ListCaption = listCaption;
+			stringListDialog.BrowseForDirectory = browseForDirectoty;
+			string[] strings = textBox.Text.Split(';');
+			stringListDialog.LoadList (strings);
+			stringListDialog.ShowDialog();
+			if (stringListDialog.DialogResult.HasValue && stringListDialog.DialogResult.Value)
 			{
-				this.addModuleTextBox.Text = String.Join(";",dlg.GetList());
+				textBox.Text = String.Join(";",stringListDialog.GetList());
 			}
 		}
 		
-		
-		void ResourceFileButton_Click(object sender, RoutedEventArgs e)
-		{
-			var dlg = InitStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
-			                               StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile}"),false);
-			string[] strings = this.resourceFileTextBox.Text.Split(';');
-			dlg.LoadList (strings);
-			dlg.ShowDialog();
-			
-			if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-			{
-				this.resourceFileTextBox.Text = String.Join(";",dlg.GetList());
-			}
-		}
-		
-		
-		static StringListEditorDialogXaml InitStringListEditor(string title, string listCaption,bool browseForDirectoty)
-		{
-			StringListEditorDialogXaml dlg = new StringListEditorDialogXaml();
-			dlg.TitleText = title;
-			dlg.ListCaption = listCaption;
-			dlg.BrowseForDirectory = browseForDirectoty;
-			return dlg;
-		}
-		
-		void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+
+		private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			IsDirty = true;
 		}
-		
 		
 	}
 }
