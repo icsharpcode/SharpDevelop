@@ -260,7 +260,7 @@ class Test {
 			Assert.IsFalse(rr.IsError);
 			Assert.AreEqual("Test..ctor", rr.Member.FullName);
 			Assert.AreEqual("Test", rr.Type.ReflectionName);
-			Assert.AreEqual(3, rr.InitializerStatements.Count);
+			Assert.AreEqual(5, rr.InitializerStatements.Count);
 		}
 		
 		[Test]

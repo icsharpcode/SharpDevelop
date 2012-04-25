@@ -2731,12 +2731,14 @@ namespace ICSharpCode.NRefactory.CSharp
 					var collectionInit = expr as CollectionElementInitializer;
 					if (collectionInit != null) {
 						AstNode parent;
-						Console.WriteLine("single:" + collectionInit.IsSingle);
+						// For ease of use purposes in the resolver the ast representation 
+						// of { a, b, c }  is { {a}, {b}, {c} } - but the generated ArrayInitializerExpression
+						// can be identified by expr.IsSingleElement.
 						if (!collectionInit.IsSingle) {
 							parent = new ArrayInitializerExpression();
 							parent.AddChild(new CSharpTokenNode(Convert(collectionInit.Location)), Roles.LBrace); 
 						} else {
-							parent = init;
+							parent = ArrayInitializerExpression.CreateSingleElementInitializer ();
 						}
 						for (int i = 0; i < collectionInit.Arguments.Count; i++) {
 							var arg = collectionInit.Arguments [i] as CollectionElementInitializer.ElementInitializerArgument;
@@ -2752,8 +2754,8 @@ namespace ICSharpCode.NRefactory.CSharp
 							var braceLocs = LocationsBag.GetLocations(expr);
 							if (braceLocs != null)
 								parent.AddChild(new CSharpTokenNode(Convert(braceLocs [0])), Roles.RBrace);
-							init.AddChild((ArrayInitializerExpression)parent, Roles.Expression);
 						}
+						init.AddChild((ArrayInitializerExpression)parent, Roles.Expression);
 					} else {
 						var eleInit = expr as ElementInitializer;
 						if (eleInit != null) {

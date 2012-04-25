@@ -165,7 +165,6 @@ class TestClass {
 		#endregion
 		
 		#region Lambda In Collection Initializer
-		[Ignore("Got broken due to ArrayInitializer fix (the AST is now correct)")]
 		[Test]
 		public void LambdaInCollectionInitializer1()
 		{
