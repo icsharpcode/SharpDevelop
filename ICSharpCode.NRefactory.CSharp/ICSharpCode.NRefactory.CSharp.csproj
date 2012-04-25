@@ -270,7 +270,7 @@
     <Compile Include="Resolver\TypeInference.cs" />
     <Compile Include="Completion\ICompletionDataFactory.cs" />
     <Compile Include="Completion\IParameterCompletionDataFactory.cs" />
-    <Compile Include="SimpleNameLookupMode.cs" />
+    <Compile Include="NameLookupMode.cs" />
     <Compile Include="TypeSystem\AliasNamespaceReference.cs" />
     <Compile Include="TypeSystem\AttributeTypeReference.cs" />
     <Compile Include="TypeSystem\ConstantValues.cs" />

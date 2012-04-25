@@ -967,6 +967,7 @@ class MainClass : Test
 }
 ";
 			var result = Resolve<MemberResolveResult>(program);
+			Assert.IsFalse(result.IsError);
 			Assert.AreEqual("Test.Foo.Bar", result.Member.FullName);
 		}
 	}
