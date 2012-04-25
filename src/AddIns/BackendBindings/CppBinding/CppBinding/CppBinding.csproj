@@ -150,10 +150,6 @@
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\DisplayBindings\Data\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj">
-      <Project>{B7823AE9-4B43-4859-8796-2EBDC116FBB8}</Project>
-      <Name>ICSharpCode.Data.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Project\ApplicationOptions.xaml" />
