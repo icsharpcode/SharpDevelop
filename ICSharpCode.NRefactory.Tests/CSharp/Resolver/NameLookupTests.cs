@@ -942,5 +942,32 @@ class Derived : Base {
 			Assert.AreEqual("A.X", result.Member.FullName);
 			Assert.AreEqual("A", result.Type.ReflectionName);
 		}
+
+		[Test]
+		public void InheritFromProtectedInnerClassTest()
+		{
+			string program = @"
+class Test
+{
+	protected class Foo
+	{
+		public int Bar = 0;
+	}
+}
+
+class MainClass : Test
+{
+	class Foo2 : Test.Foo
+	{
+		public Foo2 ()
+		{
+			Console.WriteLine ($Bar$);
+		}
+	}
+}
+";
+			var result = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Test.Foo.Bar", result.Member.FullName);
+		}
 	}
 }
