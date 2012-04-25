@@ -83,26 +83,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project\DependencyRelation.cs" />
-    <Compile Include="Project\LinkerOptionsXaml.xaml.cs">
-      <DependentUpon>LinkerOptionsXaml.xaml</DependentUpon>
+    <Compile Include="Project\LinkerOptions.xaml.cs">
+      <DependentUpon>LinkerOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Project\MultiDictionary.cs" />
-    <Compile Include="Project\old_ApplicationOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Project\old_LinkerOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Project\BuildEventOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Project\ItemDefinitionGroupBinding.cs" />
-    <Compile Include="Project\ObservedBinding.cs" />
-    <Compile Include="Project\OpenStringListEditorEvent.cs" />
-    <Compile Include="Project\old_PreprocessorOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Project\PreprocessorOptions.xaml.cs">
       <DependentUpon>PreprocessorOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -111,14 +96,8 @@
     <Compile Include="Project\ResourceScript.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
     <Compile Include="Project\CppProject.cs" />
-    <Compile Include="Project\StringListEditorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Project\StringListEditorDialog.Designer.cs">
-      <DependentUpon>StringListEditorDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Project\StringListEditorDialogXaml.xaml.cs">
-      <DependentUpon>StringListEditorDialogXaml.xaml</DependentUpon>
+    <Compile Include="Project\StringListEditorDialog.xaml.cs">
+      <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <None Include="CppBinding.addin">
@@ -126,8 +105,6 @@
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="CppProjectBinding.cs" />
-    <EmbeddedResource Include="Resources\old_LinkerOptions.xfrm" />
-    <EmbeddedResource Include="Resources\old_PreprocessorOptions.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -179,12 +156,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="Project\ApplicationOptions.xaml" />
-    <Page Include="Project\LinkerOptionsXaml.xaml" />
+    <Page Include="Project\LinkerOptions.xaml" />
     <Page Include="Project\PreprocessorOptions.xaml" />
-    <Page Include="Project\StringListEditorDialogXaml.xaml" />
+    <Page Include="Project\StringListEditorDialog.xaml" />
   </ItemGroup>
 </Project>

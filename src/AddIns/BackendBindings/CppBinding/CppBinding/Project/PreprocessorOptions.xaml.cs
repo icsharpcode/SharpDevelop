@@ -125,7 +125,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		private void IncludePathButton_Click(object sender, RoutedEventArgs e)
 		{
-			LinkerOptionsXaml.PopulateStringListEditor(StringParser.Parse("${res:Global.Folder}:"),
+			LinkerOptions.PopulateStringListEditor(StringParser.Parse("${res:Global.Folder}:"),
 			                                           StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes}:"),
 			                                           this.includePathTextBox,
 			                                           true);
@@ -134,7 +134,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		private void DefinePathButton_Click(object sender, RoutedEventArgs e)
 		{
-			LinkerOptionsXaml.PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			LinkerOptions.PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
 			                                           StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions}:"),
 			                                           this.defineTextBox,
 			                                           false);
@@ -143,7 +143,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		private void UndefineButton_Click(object sender, RoutedEventArgs e)
 		{
-			LinkerOptionsXaml.PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
+			LinkerOptions.PopulateStringListEditor(StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
 			                                           StringParser.Parse("${res:ICSharpCode.CppBinding.ProjectOptions.SymbolLabel}:"),
 			                                           this.undefineTextBox,
 			                                           false);
