@@ -282,7 +282,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if ('a' <= digit && digit <= 'f') {
 				return digit - 'a' + 0xA;
 			}
-			errors.Error(line, col, String.Format("Invalid hex number '" + digit + "'"));
+			errors.Error(line, col, "Invalid hex number '" + digit + "'");
 			return 0;
 		}
 		protected Location lastLineEnd = new Location (1, 1);

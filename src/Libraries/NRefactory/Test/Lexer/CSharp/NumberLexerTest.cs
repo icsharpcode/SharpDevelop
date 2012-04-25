@@ -173,5 +173,16 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			CheckToken(@"'\x0041'", '\x0041');
 			CheckToken(@"'\U00000041'", '\U00000041');
 		}
+		
+		[Test]
+		public void TestInvalidStringLiteral2()
+		{
+			ILexer l = GenerateLexer(new StringReader(@"""\u{0}"""));
+			Token t = l.NextToken();
+			Assert.AreEqual(Tokens.Literal, t.Kind);
+			Assert.AreEqual(new Location(1, 1), t.Location);
+			Assert.AreEqual(new Location(8, 1), t.EndLocation);
+			Assert.AreEqual(1, l.Errors.Count);
+		}
 	}
 }
