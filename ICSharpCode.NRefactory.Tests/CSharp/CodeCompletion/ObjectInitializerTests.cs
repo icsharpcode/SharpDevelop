@@ -479,7 +479,6 @@ class MyTest
 			);
 		}
 
-		[Ignore ()]
 		[Test()]
 		public void TestArrayInitializerObjectCreationNarrowing()
 		{
