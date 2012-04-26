@@ -16,14 +16,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			ITextEditor editor = provider.TextEditor;
-			ParserFoldingStrategy strategy = editor.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
+			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
-			if (strategy != null) {
+			if (foldingManager != null) {
 				// look for folding on this line:
-				FoldingSection folding = strategy.FoldingManager.GetNextFolding(editor.Document.PositionToOffset(editor.Caret.Line, 1));
+				FoldingSection folding = foldingManager.GetNextFolding(editor.Document.PositionToOffset(editor.Caret.Line, 1));
 				if (folding == null || editor.Document.GetLineForOffset(folding.StartOffset).LineNumber != editor.Caret.Line) {
 					// no folding found on current line: find innermost folding containing the caret
-					folding = strategy.FoldingManager.GetFoldingsContaining(editor.Caret.Offset).LastOrDefault();
+					folding = foldingManager.GetFoldingsContaining(editor.Caret.Offset).LastOrDefault();
 				}
 				if (folding != null) {
 					folding.IsFolded = !folding.IsFolded;
@@ -38,17 +38,17 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			ITextEditor editor = provider.TextEditor;
-			ParserFoldingStrategy strategy = editor.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
+			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
-			if (strategy != null) {
+			if (foldingManager != null) {
 				bool doFold = true;
-				foreach (FoldingSection fm in strategy.FoldingManager.AllFoldings) {
+				foreach (FoldingSection fm in foldingManager.AllFoldings) {
 					if (fm.IsFolded) {
 						doFold = false;
 						break;
 					}
 				}
-				foreach (FoldingSection fm in strategy.FoldingManager.AllFoldings) {
+				foreach (FoldingSection fm in foldingManager.AllFoldings) {
 					fm.IsFolded = doFold;
 				}
 			}
@@ -61,10 +61,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 		{
 			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
 			ITextEditor editor = provider.TextEditor;
-			ParserFoldingStrategy strategy = editor.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
+			FoldingManager foldingManager = editor.GetService(typeof(FoldingManager)) as FoldingManager;
 			
-			if (strategy != null) {
-				foreach (FoldingSection fm in strategy.FoldingManager.AllFoldings) {
+			if (foldingManager != null) {
+				foreach (FoldingSection fm in foldingManager.AllFoldings) {
 					fm.IsFolded = ParserFoldingStrategy.IsDefinition(fm);
 				}
 			}
