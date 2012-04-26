@@ -42,7 +42,7 @@ namespace SharpRefactoring
 				var rr = context.ResolveResult as UnknownMethodResolveResult;
 				SearchAttributesWithName(results, pc, rr.CallName);
 				
-				foreach (IProjectContent content in pc.ReferencedContents)
+				foreach (IProjectContent content in pc.ThreadSafeGetReferencedContents())
 					SearchAttributesWithName(results, content, rr.CallName);
 				
 				name = rr.CallName;
@@ -52,7 +52,7 @@ namespace SharpRefactoring
 				var rr = context.ResolveResult as UnknownIdentifierResolveResult;
 				SearchAttributesWithName(results, pc, rr.Identifier);
 				
-				foreach (IProjectContent content in pc.ReferencedContents)
+				foreach (IProjectContent content in pc.ThreadSafeGetReferencedContents())
 					SearchAttributesWithName(results, content, rr.Identifier);
 				
 				name = rr.Identifier;

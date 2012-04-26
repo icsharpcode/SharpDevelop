@@ -311,7 +311,7 @@ namespace ICSharpCode.XamlBinding
 		{
 			List<XmlnsCompletionItem> list = new List<XmlnsCompletionItem>();
 			
-			foreach (IProjectContent content in projectContent.ReferencedContents) {
+			foreach (IProjectContent content in projectContent.ThreadSafeGetReferencedContents()) {
 				foreach (IAttribute att in content.GetAssemblyAttributes()) {
 					if (att.PositionalArguments.Count == 2
 					    && att.AttributeType.FullyQualifiedName == "System.Windows.Markup.XmlnsDefinitionAttribute") {

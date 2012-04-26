@@ -2,10 +2,12 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Linq;
-using ICSharpCode.SharpDevelop.Dom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -81,7 +83,7 @@ namespace ICSharpCode.XamlBinding
 				IReturnType type = FindTypeInAssembly(pc, xmlNamespace, className);
 				if (type != null)
 					return type;
-				foreach (IProjectContent p in pc.ReferencedContents) {
+				foreach (IProjectContent p in pc.ThreadSafeGetReferencedContents()) {
 					type = FindTypeInAssembly(p, xmlNamespace, className);
 					if (type != null)
 						return type;
@@ -117,7 +119,7 @@ namespace ICSharpCode.XamlBinding
 				else {
 					var list = new List<ICompletionEntry>();
 					AddNamespaceMembersInAssembly(pc, xmlNamespace, list);
-					foreach (IProjectContent p in pc.ReferencedContents) {
+					foreach (IProjectContent p in pc.ThreadSafeGetReferencedContents()) {
 						AddNamespaceMembersInAssembly(p, xmlNamespace, list);
 					}
 					return list.OfType<IClass>();
