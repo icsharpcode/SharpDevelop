@@ -499,7 +499,6 @@ class MyTest
 			);
 		}
 
-		[Ignore ()]
 		[Test()]
 		public void TestObjectCreationEnumerable()
 		{
@@ -521,7 +520,6 @@ class MyTest
 			);
 		}
 
-		[Ignore ()]
 		[Test()]
 		public void TestObjectCreationForbiddenInArrayInitializers()
 		{
@@ -543,7 +541,6 @@ class MyTest
 			);
 		}
 
-		[Ignore ()]
 		[Test()]
 		public void TestArrayInitializersForbiddenInObjectCreation()
 		{
