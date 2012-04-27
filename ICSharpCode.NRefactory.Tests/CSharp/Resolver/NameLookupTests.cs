@@ -970,5 +970,24 @@ class MainClass : Test
 			Assert.IsFalse(result.IsError);
 			Assert.AreEqual("Test.Foo.Bar", result.Member.FullName);
 		}
+
+		[Test]
+		public void LocalInsideUnsafeBlock()
+		{
+			string program = @"class A {
+	void Method() {
+		unsafe {
+			string a;
+			string b = $a$;
+		}
+	}
+}
+";
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("a", result.Variable.Name);
+			Assert.IsFalse(result.IsParameter);
+			
+			Assert.AreEqual("System.String", result.Type.FullName);
+		}
 	}
 }
