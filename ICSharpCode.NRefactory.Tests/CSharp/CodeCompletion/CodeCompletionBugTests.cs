@@ -5102,5 +5102,67 @@ public class Test
 		}
 
 
+		/// <summary>
+		/// Bug 4624 - [AutoComplete] Attribute autocomplete inserts entire attribute class name. 
+		/// </summary>
+		[Ignore("MCS BUG")]
+		[Test()]
+		public void TestBug4624()
+		{
+			CombinedProviderTest(
+@"using System;
+
+enum TestEnum
+{
+   $[E$
+   EnumMember
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Obsolete"), "'Obsolete' not found.");
+			});
+		}
+
+		[Test()]
+		public void TestCatchContext()
+		{
+			CombinedProviderTest(
+@"using System;
+
+class Foo
+{
+	void Test ()
+	{
+		$try { } catch (S$
+	}
+}
+
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Exception"), "'Exception' not found.");
+				Assert.IsNull(provider.Find("String"), "'String' found.");
+			});
+		}
+
+		[Test()]
+		public void TestCatchContextFollowUp()
+		{
+			CombinedProviderTest(
+@"using System;
+
+class Foo
+{
+	void Test ()
+	{
+		$try { } catch (System.$
+	}
+}
+
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Exception"), "'Exception' not found.");
+				Assert.IsNull(provider.Find("String"), "'String' found.");
+			});
+		}
 	}
 }
