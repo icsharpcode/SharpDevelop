@@ -1046,8 +1046,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			string token;
 			while (null != (token = GetPreviousToken (ref offset, true)) && !IsInsideCommentStringOrDirective ()) {
+
 				if (token == "from") {
-					return true;
+					return !IsInsideCommentStringOrDirective (offset);
 				}
 				if (token == ";" || token == "{") {
 					return false;

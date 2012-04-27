@@ -5164,5 +5164,28 @@ class Foo
 				Assert.IsNull(provider.Find("String"), "'String' found.");
 			});
 		}
+
+		/// <summary>
+		/// Bug 4688 - No code completion in nested using statements
+		/// </summary>
+		[Test()]
+		public void TestBug4688()
+		{
+			CombinedProviderTest(
+@"using System;
+
+public class TestFoo
+{
+	void Bar ()
+	{
+		// Read the file from
+		$using (S$
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("String"), "'String'not found.");
+			});
+		}
 	}
 }
