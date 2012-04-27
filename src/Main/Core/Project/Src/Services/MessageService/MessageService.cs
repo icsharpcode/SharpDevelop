@@ -209,7 +209,7 @@ namespace ICSharpCode.Core
 			Service.ShowMessage(message, caption);
 		}
 		
-		static string Format(string formatstring, object[] formatitems)
+		public static string Format(string formatstring, object[] formatitems)
 		{
 			try {
 				return String.Format(StringParser.Parse(formatstring), formatitems);

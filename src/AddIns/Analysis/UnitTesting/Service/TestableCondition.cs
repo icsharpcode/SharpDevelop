@@ -3,6 +3,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -25,39 +28,33 @@ namespace ICSharpCode.UnitTesting
 		{
 		}
 		
-		public static IMember GetMember(object caller)
+		public static IMethod GetMethod(object caller)
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
 			if (testTreeView != null) {
-				return testTreeView.SelectedMember;
+				return testTreeView.SelectedMethod;
 			}
-			MemberNode memberNode = caller as MemberNode;
-			if (memberNode != null) {
-				return memberNode.Member;
-			} else {
-				ClassMemberBookmark mbookmark = caller as ClassMemberBookmark;
-				if (mbookmark != null) {
-					return mbookmark.Member;
-				}
-			}
+//			MemberNode memberNode = caller as MemberNode;
+//			if (memberNode != null)
+//				return memberNode.Member;
+//			ClassMemberBookmark mbookmark = caller as ClassMemberBookmark;
+//			if (mbookmark != null)
+//				return mbookmark.Member;
 			return null;
 		}
 		
-		public static IClass GetClass(object caller)
+		public static ITypeDefinition GetClass(object caller)
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
 			if (testTreeView != null) {
 				return testTreeView.SelectedClass;
 			}
-			ClassNode classNode = caller as ClassNode;
-			if (classNode != null) {
-				return classNode.Class;
-			} else {
-				ClassBookmark bookmark = caller as ClassBookmark;
-				if (bookmark != null) {
-					return bookmark.Class;
-				}
-			}
+//			ClassNode classNode = caller as ClassNode;
+//			if (classNode != null)
+//				return classNode.Class;
+//			ClassBookmark bookmark = caller as ClassBookmark;
+//			if (bookmark != null)
+//				return bookmark.Class;
 			return null;
 		}
 		
@@ -67,25 +64,22 @@ namespace ICSharpCode.UnitTesting
 			if (testTreeView != null) {
 				return testTreeView.SelectedProject;
 			}
-			IClass c = GetClassFromMemberOrCaller(caller);
+			ITypeDefinition c = GetClassFromMemberOrCaller(caller);
 			return GetProject(c);
 		}
 		
-		static IClass GetClassFromMemberOrCaller(object caller)
+		static ITypeDefinition GetClassFromMemberOrCaller(object caller)
 		{
-			IMember m = GetMember(caller);
+			IMethod m = GetMethod(caller);
 			if (m != null) {
-				return m.DeclaringType;
+				return m.DeclaringType.GetDefinition();
 			}
 			return GetClass(caller);
 		}
 		
-		static IProject GetProject(IClass c)
+		static IProject GetProject(ITypeDefinition c)
 		{
-			if (c != null) {
-				return (IProject)c.ProjectContent.Project;
-			}
-			return null;
+			return c != null ? c.ParentAssembly.GetProject() : null;
 		}
 		
 		/// <summary>
@@ -102,20 +96,20 @@ namespace ICSharpCode.UnitTesting
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			IMember m = GetMember(caller);
+			IMethod m = GetMethod(caller);
 			if (m != null) {
-				return testFrameworks.IsTestMember(m);
+				return testFrameworks.IsTestMethod(m, m.Compilation);
 			}
-			IClass c = GetClass(caller);
+			ITypeDefinition c = GetClass(caller);
 			if (ClassHasProject(c)) {
-				return testFrameworks.IsTestClass(c);
+				return testFrameworks.IsTestClass(c, c.Compilation);
 			}
 			return false;
 		}
 		
-		static bool ClassHasProject(IClass c)
+		static bool ClassHasProject(ITypeDefinition c)
 		{
-			return (c != null) && (c.ProjectContent.Project != null);
+			return (c != null) && (c.ParentAssembly.GetProject() != null);
 		}
 	}
 }

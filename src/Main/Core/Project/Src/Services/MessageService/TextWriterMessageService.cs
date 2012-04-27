@@ -78,5 +78,10 @@ namespace ICSharpCode.Core.Implementation
 				writer.WriteLine(exceptionGot.ToString());
 			return ChooseSaveErrorResult.Ignore;
 		}
+		
+		public void ShowErrorFormatted(string formatstring, params object[] formatitems)
+		{
+			writer.WriteLine(MessageService.Format(formatstring, formatitems));
+		}
 	}
 }

@@ -13,6 +13,7 @@ using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Parser;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -20,7 +21,7 @@ namespace ICSharpCode.UnitTesting
 	/// Represents a project that has a reference to a unit testing
 	/// framework assembly. Currently only NUnit is supported.
 	/// </summary>
-	public class TestProject
+	public class TestProject : ViewModelBase
 	{
 		IProject project;
 		IRegisteredTestFrameworks testFrameworks;
@@ -34,8 +35,8 @@ namespace ICSharpCode.UnitTesting
 			var compilation = SD.ParserService.GetCompilation(project);
 			var classes = project.ProjectContent
 				.Resolve(compilation.TypeResolveContext)
-				.GetAllTypeDefinitions()
-				.Where(td => td.HasTests(compilation))
+				.TopLevelTypeDefinitions
+				.Where(td => testFrameworks.IsTestClass(td, compilation))
 				.Select(g => new TestClass(testFrameworks, g.ReflectionName, g));
 			testClasses = new ObservableCollection<TestClass>(classes);
 		}
@@ -45,7 +46,7 @@ namespace ICSharpCode.UnitTesting
 			var context = new SimpleTypeResolveContext(SD.ParserService.GetCompilation(project).MainAssembly);
 			IEnumerable<ITypeDefinition> @new;
 			if (e.NewParsedFile != null)
-				@new = e.NewParsedFile.TopLevelTypeDefinitions.Select(utd => utd.Resolve(context).GetDefinition()).Where(x => x != null && x.HasTests(SD.ParserService.GetCompilation(project)));
+				@new = e.NewParsedFile.TopLevelTypeDefinitions.Select(utd => utd.Resolve(context).GetDefinition()).Where(x => x != null && testFrameworks.IsTestClass(x, SD.ParserService.GetCompilation(project)));
 			else
 				@new = Enumerable.Empty<ITypeDefinition>();
 			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.ParsedFile.FileName == e.OldParsedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList());
@@ -59,9 +60,62 @@ namespace ICSharpCode.UnitTesting
 			get { return testClasses; }
 		}
 		
+		public TestMember GetTestMethod(string fullName)
+		{
+			foreach (var tc in testClasses) {
+				var result = TreeTraversal.PostOrder(tc, c => c.NestedClasses)
+					.SelectMany(c => c.Members)
+					.SingleOrDefault(m => fullName.Equals(m.Method.ReflectionName, StringComparison.Ordinal));
+				if (result != null)
+					return result;
+			}
+			return null;
+		}
+		
+		public bool FindTestInfo(string fullName, out TestClass testClass, out TestMember method)
+		{
+			testClass = null;
+			method = null;
+			foreach (var tc in testClasses) {
+				foreach (var c in TreeTraversal.PostOrder(tc, c => c.NestedClasses)) {
+					testClass = c;
+					method = c.SingleOrDefault(m => fullName.Equals(m.Method.ReflectionName, StringComparison.Ordinal));
+					if (method != null)
+						return true;
+				}
+			}
+			return false;
+		}
+		
 		public void UpdateTestResult(TestResult result)
 		{
-			
+			TestMember member;
+			TestClass testClass;
+			if (FindTestInfo(result.Name, out testClass, out member)) {
+				member.TestResult = result.ResultType;
+				testClass.TestResult = r
+			}
+		}
+		
+		public void ResetTestResults()
+		{
+			foreach (var member in testClasses.SelectMany(tc => TreeTraversal.PostOrder(tc, c => c.NestedClasses)).SelectMany(c => c.Members))
+				member.TestResult = TestResultType.None;
+		}
+		
+		TestResultType testResult;
+		
+		/// <summary>
+		/// Gets the test result for this project.
+		/// </summary>
+		public TestResultType TestResult {
+			get { return testResult; }
+			set {
+				if (testResult != value) {
+					testResult = value;
+					OnPropertyChanged();
+				}
+			}
 		}
 	}
 }

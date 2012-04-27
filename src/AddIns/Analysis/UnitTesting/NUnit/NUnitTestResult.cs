@@ -24,14 +24,14 @@ namespace ICSharpCode.UnitTesting
 			if (fileLineRef != null) {
 				StackTraceFilePosition = CreateFilePosition(fileLineRef);
 			} else {
-				StackTraceFilePosition = FilePosition.Empty;
+				StackTraceFilePosition = DomRegion.Empty;
 			}
 		}
 		
 		DomRegion CreateFilePosition(FileLineReference fileLineRef)
 		{
 			string fileName = Path.GetFullPath(fileLineRef.FileName);
-			return new FilePosition(fileName, fileLineRef.Line, fileLineRef.Column + 1);
+			return new DomRegion(fileName, fileLineRef.Line, fileLineRef.Column + 1);
 		}
 	}
 }

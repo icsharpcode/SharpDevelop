@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -17,6 +19,19 @@ namespace ICSharpCode.UnitTesting
 		public MemberUnitTestNode(TestMember testMember)
 		{
 			this.testMember = testMember;
+			this.testMember.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
+				if (e.PropertyName == "TestResult") {
+					SharpTreeNode p = this;
+					while (p != null) {
+						p.RaisePropertyChanged("Icon");
+						p = p.Parent;
+					}
+				}
+			};
+		}
+		
+		internal override TestResultType TestResultType {
+			get { return this.testMember.TestResult; }
 		}
 		
 		public override object Text {

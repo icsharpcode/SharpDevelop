@@ -74,13 +74,13 @@ namespace ICSharpCode.UnitTesting
 		
 		static void ProjectService_ProjectCreated(object sender, ProjectEventArgs e)
 		{
-			if (e.Project.IsTestProject())
+			if (RegisteredTestFrameworks.IsTestProject(e.Project))
 				testableProjects.Add(new TestProject(e.Project));
 		}
 
 		static void ProjectService_ProjectAdded(object sender, ProjectEventArgs e)
 		{
-			if (e.Project.IsTestProject())
+			if (RegisteredTestFrameworks.IsTestProject(e.Project))
 				testableProjects.Add(new TestProject(e.Project));
 		}
 
@@ -110,7 +110,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (ProjectService.OpenSolution == null)
 				return Enumerable.Empty<TestProject>();
-			return ProjectService.OpenSolution.Projects.Where(p => p.IsTestProject()).Select(p => new TestProject(p));
+			return ProjectService.OpenSolution.Projects.Where(p => RegisteredTestFrameworks.IsTestProject(p)).Select(p => new TestProject(p));
 		}
 	}
 }

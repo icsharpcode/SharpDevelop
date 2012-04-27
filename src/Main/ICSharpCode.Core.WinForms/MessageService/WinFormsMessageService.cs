@@ -196,5 +196,10 @@ namespace ICSharpCode.Core.WinForms
 				});
 			return r;
 		}
+		
+		public void ShowErrorFormatted(string formatstring, params object[] formatitems)
+		{
+			ShowError(MessageService.Format(formatstring, formatitems));
+		}
 	}
 }

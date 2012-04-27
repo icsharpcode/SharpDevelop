@@ -70,7 +70,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\AbstractRunTestCommand.cs" />
+    <Compile Include="Commands\RunTestCommands.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Gui\EmptyUnitTestsPad.cs" />
     <Compile Include="Gui\UnitTestingOptionsPanel.xaml.cs">
@@ -113,21 +113,34 @@
     <Compile Include="Nodes\ProjectUnitTestNode.cs" />
     <Compile Include="Nodes\RootUnitTestNode.cs" />
     <Compile Include="Nodes\UnitTestBaseNode.cs" />
+    <Compile Include="NUnit\NUnitConsoleApplication.cs" />
+    <Compile Include="NUnit\NUnitTestDebugger.cs" />
+    <Compile Include="NUnit\NUnitTestFramework.cs" />
+    <Compile Include="NUnit\NUnitTestResult.cs" />
+    <Compile Include="NUnit\NUnitTestRunner.cs" />
     <Compile Include="Resources\Images.cs" />
     <Compile Include="RunTestCommandContext.cs" />
     <Compile Include="Service\MessageReceivedEventArgs.cs" />
     <Compile Include="Service\RegisteredTestFrameworks.cs" />
     <Compile Include="Service\RunningTestsCondition.cs" />
     <Compile Include="Service\SelectedTests.cs" />
+    <Compile Include="Service\TestableCondition.cs" />
+    <Compile Include="Service\TestDebuggerBase.cs" />
     <Compile Include="Service\TestFinishedEventArgs.cs" />
     <Compile Include="Service\TestFrameworkDescriptor.cs" />
     <Compile Include="Service\TestFrameworkDoozer.cs" />
     <Compile Include="Service\TestFrameworkFactory.cs" />
+    <Compile Include="Service\TestProcessRunnerBase.cs" />
+    <Compile Include="Service\TestProcessRunnerBaseContext.cs" />
     <Compile Include="Service\TestResult.cs" />
     <Compile Include="Service\TestRunnerBase.cs" />
     <Compile Include="Service\TestService.cs" />
+    <Compile Include="TestResultsMonitor.cs" />
+    <Compile Include="TestResultsReader.cs" />
     <Compile Include="TestResultTask.cs" />
+    <Compile Include="UnitTestApplicationStartHelper.cs" />
     <Compile Include="UnitTestingOptions.cs" />
+    <Compile Include="UnitTestProcessRunner.cs" />
     <None Include="PostBuildEvent.proj" />
     <None Include="UnitTesting.addin">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -184,6 +197,7 @@
     <Folder Include="Implementation" />
     <Folder Include="Interfaces" />
     <Folder Include="Model" />
+    <Folder Include="NUnit" />
     <Folder Include="Service" />
     <Folder Include="Nodes" />
   </ItemGroup>

@@ -14,12 +14,12 @@ namespace ICSharpCode.UnitTesting
 		ITestRunner CreateTestRunner(IProject project);
 		ITestRunner CreateTestDebugger(IProject project);
 		
-		bool IsTestMember(IUnresolvedMember member);
-		bool IsTestClass(IUnresolvedTypeDefinition typeDefinition);
+		bool IsTestMethod(IMethod method, ICompilation compilation);
+		bool IsTestClass(ITypeDefinition typeDefinition, ICompilation compilation);
 		bool IsTestProject(IProject project);
 		
-		IEnumerable<IUnresolvedMember> GetTestMembersFor(IUnresolvedTypeDefinition typeDefinition);
+		IEnumerable<IMethod> GetTestMethodsFor(ITypeDefinition typeDefinition, ICompilation compilation);
 
-		bool IsBuildNeededBeforeTestRunForProject(IProject project);		
+		bool IsBuildNeededBeforeTestRunForProject(IProject project);
 	}
 }

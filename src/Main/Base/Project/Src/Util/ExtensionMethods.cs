@@ -161,6 +161,20 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
+		/// Gets the project for which the specified assembly was created.
+		/// Returns null if the assembly was not created from a project.
+		/// </summary>
+		public static IProject GetProject(this IAssembly assembly)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			var snapshot = assembly.Compilation as SharpDevelopSolutionSnapshot;
+			if (snapshot == null)
+				return null;
+			return snapshot.GetProject(assembly.UnresolvedAssembly as IProjectContent);
+		}
+		
+		/// <summary>
 		/// Creates an array containing a part of the array (similar to string.Substring).
 		/// </summary>
 		public static T[] Splice<T>(this T[] array, int startIndex)

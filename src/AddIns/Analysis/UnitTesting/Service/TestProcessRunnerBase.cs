@@ -3,7 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -13,13 +14,13 @@ namespace ICSharpCode.UnitTesting
 		IUnitTestProcessRunner processRunner;
 		ITestResultsMonitor testResultsMonitor;
 		IFileSystem fileSystem;
-		IUnitTestMessageService messageService;
+		IMessageService messageService;
 		
 		public TestProcessRunnerBase()
 			: this(new UnitTestProcessRunner(),
 				new TestResultsMonitor(),
 				new UnitTestFileService(),
-				new UnitTestMessageService())
+				SD.MessageService)
 		{
 		}
 		
@@ -34,7 +35,7 @@ namespace ICSharpCode.UnitTesting
 		public TestProcessRunnerBase(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
 			IFileSystem fileSystem,
-			IUnitTestMessageService messageService)
+			IMessageService messageService)
 		{
 			this.processRunner = processRunner;
 			this.testResultsMonitor = testResultsMonitor;
@@ -88,7 +89,7 @@ namespace ICSharpCode.UnitTesting
 		void ShowApplicationDoesNotExistMessage(string fileName)
 		{
 			string resourceString = "${res:ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat}";
-			messageService.ShowFormattedErrorMessage(resourceString, fileName);
+			messageService.ShowErrorFormatted(resourceString, fileName);
 		}
 		
 		public override void Stop()

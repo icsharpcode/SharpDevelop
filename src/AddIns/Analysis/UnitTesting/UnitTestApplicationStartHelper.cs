@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -101,7 +100,7 @@ namespace ICSharpCode.UnitTesting
 		
 		IProject project;
 
-		public void Initialize(IProject project, IClass fixture, IMember test)
+		public void Initialize(IProject project, ITypeDefinition fixture, IMethod test)
 		{
 			Initialize(project, null, fixture, test);
 		}
@@ -111,7 +110,7 @@ namespace ICSharpCode.UnitTesting
 			Initialize(project, namespaceFilter, null, null);
 		}
 		
-		public void Initialize(IProject project, string namespaceFilter, IClass fixture, IMember test)
+		public void Initialize(IProject project, string namespaceFilter, ITypeDefinition fixture, IMethod test)
 		{
 			this.project = project;
 			Assemblies.Add(project.OutputAssemblyFullPath);
@@ -119,7 +118,7 @@ namespace ICSharpCode.UnitTesting
 				NamespaceFilter = namespaceFilter;
 			}
 			if (fixture != null) {
-				Fixture = fixture.DotNetName;
+				Fixture = fixture.ReflectionName;
 				if (test != null) {
 					Test = test.Name;
 				}

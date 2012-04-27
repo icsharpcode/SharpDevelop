@@ -75,5 +75,9 @@ namespace ICSharpCode.UnitTesting
 		public override object Text {
 			get { return testClass.Name; }
 		}
+		
+		internal override TestResultType TestResultType {
+			get { return testClass.TestResult; }
+		}
 	}
 }

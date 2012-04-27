@@ -2,7 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -12,20 +13,20 @@ namespace ICSharpCode.UnitTesting
 		IUnitTestProcessRunner processRunner;
 		ITestResultsMonitor testResultsMonitor;
 		IFileSystem fileSystem;
-		IUnitTestMessageService messageService;
+		IMessageService messageService;
 		
 		public TestProcessRunnerBaseContext()
 			: this(new UnitTestProcessRunner(),
 				new TestResultsMonitor(),
 				new UnitTestFileService(),
-				new UnitTestMessageService())
+				SD.MessageService)
 		{
 		}
 				
 		public TestProcessRunnerBaseContext(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
 			IFileSystem fileSystem,
-			IUnitTestMessageService messageService)
+			IMessageService messageService)
 		{
 			this.processRunner = processRunner;
 			this.testResultsMonitor = testResultsMonitor;
@@ -45,7 +46,7 @@ namespace ICSharpCode.UnitTesting
 			get { return fileSystem; }
 		}
 		
-		public IUnitTestMessageService MessageService {
+		public IMessageService MessageService {
 			get { return messageService; }
 		}
 	}

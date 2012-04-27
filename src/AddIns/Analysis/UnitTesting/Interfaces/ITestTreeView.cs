@@ -13,12 +13,12 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the selected member in the test tree view.
 		/// </summary>
-		IUnresolvedMember SelectedMember {get;}
+		IMethod SelectedMethod {get;}
 		
 		/// <summary>
 		/// Gets the selected class in the test tree view.
 		/// </summary>
-		IUnresolvedTypeDefinition SelectedClass {get;}
+		ITypeDefinition SelectedClass {get;}
 		
 		/// <summary>
 		/// Gets the selected project for the selected node

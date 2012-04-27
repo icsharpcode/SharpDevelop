@@ -12,14 +12,14 @@ namespace ICSharpCode.UnitTesting
 	{
 		string namespaceFilter;
 		TestClass c;
-//		TestMember member;
+		TestMember member;
 		List<IProject> projects = new List<IProject>();
 		
-		public SelectedTests(IProject project, string namespaceFilter, TestClass c)//, TestMember member)
+		public SelectedTests(IProject project, string namespaceFilter, TestClass c, TestMember member)
 		{
 			this.namespaceFilter = namespaceFilter;
 			this.c = c;
-//			this.member = member;
+			this.member = member;
 			
 			if (project != null) {
 				projects.Add(project);
@@ -27,7 +27,7 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		public SelectedTests(IProject project)
-			: this(project, null,  null)//, null)
+			: this(project, null,  null, null)
 		{
 		}
 		
@@ -85,12 +85,12 @@ namespace ICSharpCode.UnitTesting
 			get { return namespaceFilter; }
 		}
 		
-//		public IUnresolvedTypeDefinition Class {
-//			get { return c; }
-//		}
-//		
-//		public IUnresolvedMember Member {
-//			get { return member; }
-//		}
+		public TestClass Class {
+			get { return c; }
+		}
+		
+		public TestMember Method {
+			get { return member; }
+		}
 	}
 }

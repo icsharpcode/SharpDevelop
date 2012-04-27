@@ -56,5 +56,18 @@ namespace ICSharpCode.UnitTesting
 		public override object Text {
 			get { return ResourceService.GetString("ICSharpCode.UnitTesting.AllTestsTreeNode.Text"); }
 		}
+		
+		internal override TestResultType TestResultType {
+			get {
+				if (Children.Count == 0) return TestResultType.None;
+				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.Failure))
+					return TestResultType.Failure;
+				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.None))
+					return TestResultType.None;
+				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.Ignored))
+					return TestResultType.Ignored;
+				return TestResultType.Success;
+			}
+		}
 	}
 }

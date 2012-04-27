@@ -18,6 +18,14 @@ namespace ICSharpCode.Core
 		void ShowError(string message);
 		
 		/// <summary>
+		/// Shows an error using a message box.
+		/// <paramref name="formatstring"/> is first passed through the
+		/// <see cref="StringParser"/>,
+		/// then through <see cref="string.Format(string, object)"/>, using the formatitems as arguments.
+		/// </summary>
+		void ShowErrorFormatted(string formatstring, params object[] formatitems);
+		
+		/// <summary>
 		/// Shows an exception.
 		/// </summary>
 		void ShowException(Exception ex, string message);

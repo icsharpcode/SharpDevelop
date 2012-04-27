@@ -34,5 +34,9 @@ namespace ICSharpCode.UnitTesting
 		public override object Text {
 			get { return name.Substring(name.LastIndexOf('.') + 1); }
 		}
+		
+		internal override TestResultType TestResultType {
+			get { return TestResultType.None; }
+		}
 	}
 }

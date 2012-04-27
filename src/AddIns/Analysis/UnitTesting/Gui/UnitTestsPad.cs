@@ -97,10 +97,10 @@ namespace ICSharpCode.UnitTesting
 //			treeView.ResetTestResults();
 //		}
 //
-//		public IProject[] GetProjects()
-//		{
-//			return treeView.GetProjects();
-//		}
+		public IProject[] GetProjects()
+		{
+			return TestService.TestableProjects.Select(tp => tp.Project).ToArray();
+		}
 		
 //		public TestProject GetTestProject(IProject project)
 //		{
@@ -309,6 +309,12 @@ namespace ICSharpCode.UnitTesting
 		void ProjectItemRemoved(object source, ProjectItemEventArgs e)
 		{
 //			ProjectItemRemoved(e.ProjectItem);
+		}
+		
+		public void ResetTestResults()
+		{
+			foreach (var testProject in TestService.TestableProjects)
+				testProject.ResetTestResults();
 		}
 	}
 	

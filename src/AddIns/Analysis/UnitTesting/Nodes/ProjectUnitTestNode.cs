@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
@@ -28,7 +29,14 @@ namespace ICSharpCode.UnitTesting
 		{
 			this.project = project;
 			project.TestClasses.CollectionChanged += TestClassesCollectionChanged;
+			project.PropertyChanged += ProjectPropertyChanged;
 			LazyLoading = true;
+		}
+
+		void ProjectPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "TestResult")
+				RaisePropertyChanged("Icon");
 		}
 
 		void TestClassesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -141,6 +149,10 @@ namespace ICSharpCode.UnitTesting
 		
 		public override object Text {
 			get { return project.Project.Name; }
+		}
+		
+		internal override TestResultType TestResultType {
+			get { return project.TestResult; }
 		}
 	}
 }

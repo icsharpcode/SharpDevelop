@@ -9,25 +9,20 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
 {
 	/// <summary>
 	/// Represents a class that can be tested.
 	/// </summary>
-	public class TestClass
+	public class TestClass : ViewModelBase
 	{
 		string fullName;
 		ObservableCollection<IUnresolvedTypeDefinition> parts;
 		readonly ObservableCollection<TestMember> testMembers;
 		readonly ObservableCollection<TestClass> nestedClasses;
-		TestResultType testResultType;
 		IRegisteredTestFrameworks testFrameworks;
-		
-		/// <summary>
-		/// Raised when the test class result is changed.
-		/// </summary>
-		public event EventHandler ResultChanged;
 		
 		public TestClass(IRegisteredTestFrameworks testFrameworks, string fullName, ITypeDefinition definition)
 		{
@@ -79,16 +74,17 @@ namespace ICSharpCode.UnitTesting
 			get { return parts.First().Namespace; }
 		}
 		
+		TestResultType testResult;
+		
 		/// <summary>
 		/// Gets the test result for this class.
 		/// </summary>
-		public TestResultType Result {
-			get { return testResultType; }
+		public TestResultType TestResult {
+			get { return testResult; }
 			set {
-				TestResultType previousTestResultType = testResultType;
-				testResultType = value;
-				if (previousTestResultType != testResultType) {
-					OnResultChanged();
+				if (testResult != value) {
+					testResult = value;
+					OnPropertyChanged();
 				}
 			}
 		}
@@ -98,17 +94,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void UpdateTestResult(TestResult testResult)
 		{
-//			TestMember member = null;
-//			string memberName = TestMember.GetMemberName(testResult.Name);
-//			if (memberName != null) {
-//				member = GetTestMember(memberName);
-//				if (member == null) {
-//					member = GetPrefixedTestMember(testResult.Name);
-//				}
-//			}
-//			if (member != null) {
-//				member.Result = testResult.ResultType;
-//			}
+			
 		}
 		
 		/// <summary>
@@ -116,7 +102,7 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void ResetTestResults()
 		{
-			Result = TestResultType.None;
+			TestResult = TestResultType.None;
 //			TestMembers.ResetTestResults();
 		}
 		
@@ -139,11 +125,11 @@ namespace ICSharpCode.UnitTesting
 				if (!parts.Any(p => p.ParsedFile.FileName == part.ParsedFile.FileName && p.Region == part.Region))
 					parts.Add(part);
 			}
-			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Method.ReflectionName && dm.IsTestMethod(definition.Compilation)));
-			testMembers.AddRange(definition.Methods.Where(m => m.IsTestMethod(definition.Compilation) && !testMembers.Any(dm => dm.Method.ReflectionName == m.ReflectionName)).Select(m => new TestMember((IUnresolvedMethod)m.UnresolvedMember)));
+			testMembers.RemoveWhere(m => !definition.Methods.Any(dm => dm.ReflectionName == m.Method.ReflectionName && testFrameworks.IsTestMethod(dm, definition.Compilation)));
+			testMembers.AddRange(definition.Methods.Where(m => testFrameworks.IsTestMethod(m, definition.Compilation) && !testMembers.Any(dm => dm.Method.ReflectionName == m.ReflectionName)).Select(m => new TestMember((IUnresolvedMethod)m.UnresolvedMember)));
 			
 			var context = new SimpleTypeResolveContext(definition);
-			nestedClasses.UpdateTestClasses(testFrameworks, nestedClasses.Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), definition.NestedTypes.Where(nt => nt.HasTests(definition.Compilation)).ToList());
+			nestedClasses.UpdateTestClasses(testFrameworks, nestedClasses.Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), definition.NestedTypes.Where(nt => testFrameworks.IsTestClass(nt, definition.Compilation)).ToList());
 		}
 		
 		/// <summary>
@@ -175,52 +161,5 @@ namespace ICSharpCode.UnitTesting
 		{
 //			Result = testMembers.Result;
 		}
-		
-		/// <summary>
-		/// Raises the ResultChanged event.
-		/// </summary>
-		void OnResultChanged()
-		{
-			if (ResultChanged != null) {
-				ResultChanged(this, new EventArgs());
-			}
-		}
-		
-		/// <summary>
-		/// This function adds the base class as a prefix and tries to find
-		/// the corresponding test member.
-		/// 
-		/// Actual method name:
-		/// 
-		/// RootNamespace.TestFixture.TestFixtureBaseClass.TestMethod
-		/// </summary>
-		/// <remarks>
-		/// NUnit 2.4 uses the correct test method name when a test
-		/// class uses a base class with test methods. It does
-		/// not prefix the test method name with the base class name
-		/// in the test results returned from nunit-console. It still
-		/// displays the name in the NUnit GUI with the base class
-		/// name prefixed. Older versions of NUnit-console (2.2.9) returned
-		/// the test result with the test method name as follows:
-		/// 
-		/// RootNamespace.TestFixture.BaseTestFixture.TestMethod
-		/// 
-		/// The test method name would have the base class name prefixed
-		/// to it.
-		/// </remarks>
-//		TestMember GetPrefixedTestMember(string testResultName)
-//		{
-//			IClass baseClass = c.BaseClass;
-//			while (baseClass != null) {
-//				string memberName = TestMember.GetMemberName(testResultName);
-//				string actualMemberName = String.Concat(baseClass.Name, ".", memberName);
-//				TestMember member = GetTestMember(actualMemberName);
-//				if (member != null) {
-//					return member;
-//				}
-//				baseClass = baseClass.BaseClass;
-//			}
-//			return null;
-//		}
 	}
 }

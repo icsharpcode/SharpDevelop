@@ -10,11 +10,11 @@ namespace ICSharpCode.UnitTesting
 {
 	public interface ITestFramework
 	{
-		bool IsTestMember(IUnresolvedMember member);
-		bool IsTestClass(IUnresolvedTypeDefinition c);
+		bool IsTestMethod(IMethod method, ICompilation compilation);
+		bool IsTestClass(ITypeDefinition testClass, ICompilation compilation);
 		bool IsTestProject(IProject project);
 		
-		IEnumerable<IUnresolvedMember> GetTestMembersFor(IUnresolvedTypeDefinition typeDefinition);
+		IEnumerable<IMethod> GetTestMethodsFor(ITypeDefinition typeDefinition);
 		
 		ITestRunner CreateTestRunner();
 		ITestRunner CreateTestDebugger();

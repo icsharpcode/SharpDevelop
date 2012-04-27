@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
+using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
@@ -54,15 +55,15 @@ namespace ICSharpCode.UnitTesting
 		{
 			projects = new List<IProject>();
 			
-			IMember m = TestableCondition.GetMember(Owner);
-			IClass c = (m != null) ? m.DeclaringType : TestableCondition.GetClass(Owner);
+			IMethod m = TestableCondition.GetMethod(Owner);
+			ITypeDefinition c = (m != null) ? m.DeclaringType.GetDefinition() : TestableCondition.GetClass(Owner);
 			IProject project = TestableCondition.GetProject(Owner);
 			string namespaceFilter = TestableCondition.GetNamespace(Owner);
 			
 			if (project != null) {
 				projects.Add(project);
 			} else if (UnitTestsPad.Instance != null) {
-				projects.AddRange(UnitTestsPad.Instance.TestTreeView.GetProjects());
+				projects.AddRange(UnitTestsPad.Instance.GetProjects());
 			}
 			
 			if (projects.Count > 0) {
@@ -181,7 +182,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Runs the tests after building the project under test.
 		/// </summary>
-		void Run(IProject project, string namespaceFilter, IClass fixture, IMember test)
+		void Run(IProject project, string namespaceFilter, ITypeDefinition fixture, IMethod test)
 		{
 			BuildProjectBeforeTestRun build = new BuildProjectBeforeTestRun(project);
 			build.BuildComplete += delegate {
@@ -232,7 +233,7 @@ namespace ICSharpCode.UnitTesting
 			ShowPad(WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)));
 		}
 		
-		Task CreateTask(TestResult result)
+		SDTask CreateTask(TestResult result)
 		{
 			TaskType taskType = TaskType.Warning;
 			FileLineReference lineRef = null;
@@ -249,10 +250,10 @@ namespace ICSharpCode.UnitTesting
 				lineRef = FindTest(result.Name);
 			}
 			if (lineRef != null) {
-				return new Task(FileName.Create(lineRef.FileName),
+				return new SDTask(FileName.Create(lineRef.FileName),
 				                message, lineRef.Column, lineRef.Line, taskType);
 			}
-			return new Task(null, message, 0, 0, taskType);
+			return new SDTask(null, message, 0, 0, taskType);
 		}
 		
 		/// <summary>
@@ -264,7 +265,7 @@ namespace ICSharpCode.UnitTesting
 			if (result.Message.Length > 0) {
 				return result.Message;
 			}
-			return StringParser.Parse(stringResource, new string[,] {{"TestCase", result.Name}});
+			return StringParser.Parse(stringResource, new[] { new StringTagPair("TestCase", result.Name) });
 		}
 		
 		/// <summary>
@@ -275,11 +276,10 @@ namespace ICSharpCode.UnitTesting
 		{
 			TestProject testProject = GetTestProject(currentProject);
 			if (testProject != null) {
-				TestMethod method = testProject.TestClasses.GetTestMethod(methodName);
+				TestMember method = testProject.GetTestMethod(methodName);
 				if (method != null) {
-					MemberResolveResult resolveResult = new MemberResolveResult(null, null, method.Method);
-					FilePosition filePos = resolveResult.GetDefinitionPosition();
-					return new FileLineReference(filePos.FileName, filePos.Line, filePos.Column);
+					var filePos = method.Method.Region;
+					return new FileLineReference(filePos.FileName, filePos.BeginLine, filePos.BeginColumn);
 				}
 			}
 			return null;
@@ -293,12 +293,12 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Runs the test for the project after a successful build.
 		/// </summary>
-		void OnBuildComplete(BuildResults results, IProject project, string namespaceFilter, IClass fixture, IMember test)
+		void OnBuildComplete(BuildResults results, IProject project, string namespaceFilter, ITypeDefinition fixture, IMethod test)
 		{
 			if (results.ErrorCount == 0 && IsRunningTest) {
 				UnitTestApplicationStartHelper helper = new UnitTestApplicationStartHelper();
 				
-				UnitTestingOptions options = new UnitTestingOptions();
+				UnitTestingOptions options = UnitTestingOptions.Instance;
 				helper.NoThread = options.NoThread;
 				helper.NoLogo = options.NoLogo;
 				helper.NoDots = options.NoDots;
@@ -352,7 +352,7 @@ namespace ICSharpCode.UnitTesting
 		void ResetAllTestResults()
 		{
 			if (UnitTestsPad.Instance != null) {
-				UnitTestsPad.Instance.TestTreeView.ResetTestResults();
+				UnitTestsPad.Instance.ResetTestResults();
 			}
 		}
 		
@@ -363,7 +363,7 @@ namespace ICSharpCode.UnitTesting
 		TestProject GetTestProject(IProject project)
 		{
 			if (UnitTestsPad.Instance != null) {
-				return UnitTestsPad.Instance.TestTreeView.GetTestProject(project);
+				return TestService.TestableProjects.FirstOrDefault(tp => tp.Project == project);
 			}
 			return null;
 		}
@@ -527,11 +527,11 @@ namespace ICSharpCode.UnitTesting
 			base.Run();
 		}
 		
-		public IMember SelectedMethod {
+		public IMethod SelectedMethod {
 			get { return null; }
 		}
 		
-		public IClass SelectedClass {
+		public ITypeDefinition SelectedClass {
 			get { return null; }
 		}
 		
