@@ -84,8 +84,8 @@
     <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
       <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\Gui\OptionPanels\GeneralOptionsPanelXaml.xaml.cs">
-      <DependentUpon>GeneralOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\OptionPanels\GeneralOptionsPanel.xaml.cs">
+      <DependentUpon>GeneralOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml.cs">
@@ -192,7 +192,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\Gui\OptionPanels\GeneralOptionsPanelXaml.xaml" />
+    <Page Include="Src\Gui\OptionPanels\GeneralOptionsPanel.xaml" />
     <Page Include="Src\Gui\OptionPanels\GridOptionsPanel.xaml" />
     <Page Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.xaml" />
   </ItemGroup>

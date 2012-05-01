@@ -31,7 +31,7 @@ namespace ICSharpCode.FormsDesigner
 			b.AppendLine(indentation + "void " + eventMethodName + "(" + param + ")");
 			b.AppendLine(indentation + "{");
 			if (string.IsNullOrEmpty(body)) {
-				if (ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanelXaml.InsertTodoComment) {
+				if (ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanel.InsertTodoComment) {
 					body = "// TODO: Implement " + eventMethodName;
 				}
 			}

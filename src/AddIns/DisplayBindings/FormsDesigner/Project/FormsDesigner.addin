@@ -306,7 +306,7 @@
 			
 			<OptionPanel id    = "GeneralOptions1"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName}"
-			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanelXaml"/>
+			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanel"/>
 			
 			<OptionPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"
