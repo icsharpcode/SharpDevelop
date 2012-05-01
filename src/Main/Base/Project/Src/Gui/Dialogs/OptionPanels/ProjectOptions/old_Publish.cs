@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class Publish : AbstractXmlFormsProjectOptionPanel
+	public class old_Publish : AbstractXmlFormsProjectOptionPanel
 	{
 		public override void LoadPanelContents()
 		{

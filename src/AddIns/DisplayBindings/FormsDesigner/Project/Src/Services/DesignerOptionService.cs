@@ -31,11 +31,11 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.showGrid   = PropertyService.Get("FormsDesigner.DesignerOptions.ShowGrid", true);
 			this.snapToGrid = PropertyService.Get("FormsDesigner.DesignerOptions.SnapToGrid", true);
 			
-			this.useSmartTags = GeneralOptionsPanel.UseSmartTags;
+			this.useSmartTags = GeneralOptionsPanelXaml.UseSmartTags;
 			this.useSnapLines = PropertyService.Get("FormsDesigner.DesignerOptions.UseSnapLines", true);
 
 			this.enableInSituEditing         = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
-			this.objectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
+			this.objectBoundSmartTagAutoShow = GeneralOptionsPanelXaml.SmartTagAutoShow;
 			this.useOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
 		}
 		

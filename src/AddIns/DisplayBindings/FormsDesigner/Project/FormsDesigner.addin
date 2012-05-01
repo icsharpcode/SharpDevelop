@@ -304,9 +304,9 @@
 		             insertafter = "ToolsOptions"
 		             label       = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.PanelName}">
 			
-			<OptionPanel id    = "GeneralOptions"
+			<OptionPanel id    = "GeneralOptions1"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName}"
-			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanel"/>
+			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanelXaml"/>
 			
 			<OptionPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"

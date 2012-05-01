@@ -40,7 +40,7 @@ namespace ICSharpCode.CppBinding.Project
 			
 			this.undefineTextBox.Text =  GetElementMetaData(group,"UndefinePreprocessorDefinitions" );
 			
-			var defs = GetElementMetaData(group,"UndefineAllPreprocessorDefinitions");
+			string defs = GetElementMetaData(group,"UndefineAllPreprocessorDefinitions");
 			
 			bool check;
 			if (bool.TryParse(defs, out check))

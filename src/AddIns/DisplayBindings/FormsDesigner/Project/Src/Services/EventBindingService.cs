@@ -40,7 +40,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		string GetEventHandlerNameFormat()
 		{
-			if (GeneralOptionsPanel.GenerateVisualStudioStyleEventHandlers) {
+			if (GeneralOptionsPanelXaml.GenerateVisualStudioStyleEventHandlers) {
 				return "{0}_{1}";
 			}
 			return "{0}{1}";

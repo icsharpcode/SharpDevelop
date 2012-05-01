@@ -44,7 +44,7 @@ namespace ICSharpCode.CppBinding.Project
 			
 			this.additionalOptionsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalOptions");
 			
-			var def = GetElementMetaData(msDefGroup,"GenerateDebugInformation");
+			string def = GetElementMetaData(msDefGroup,"GenerateDebugInformation");
 			
 			bool check;
 			if (bool.TryParse(def, out check))
@@ -175,8 +175,8 @@ namespace ICSharpCode.CppBinding.Project
 			string[] strings = textBox.Text.Split(';');
 			stringListDialog.LoadList (strings);
 			stringListDialog.ShowDialog();
-			if (stringListDialog.DialogResult.HasValue && stringListDialog.DialogResult.Value)
-			{
+		//	if (stringListDialog.DialogResult.HasValue && stringListDialog.DialogResult.Value)
+			if (stringListDialog.DialogResult ?? false) {
 				textBox.Text = String.Join(";",stringListDialog.GetList());
 			}
 		}

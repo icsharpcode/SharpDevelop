@@ -49,7 +49,7 @@ namespace ICSharpCode.FormsDesigner
 			b.AppendLine(indentation);
 			b.AppendLine(indentation + "Sub " + eventMethodName + "(" + param + ")");
 			if (string.IsNullOrEmpty(body)) {
-				if (ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanel.InsertTodoComment) {
+				if (ICSharpCode.FormsDesigner.Gui.OptionPanels.GeneralOptionsPanelXaml.InsertTodoComment) {
 					body = "' TODO: Implement " + eventMethodName;
 				}
 			}
