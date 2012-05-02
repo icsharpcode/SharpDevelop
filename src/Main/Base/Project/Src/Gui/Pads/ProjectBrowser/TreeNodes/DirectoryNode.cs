@@ -608,7 +608,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void CopyDirectoryHere(DirectoryNode node, bool performMove)
 		{
-			CopyDirectoryHere(node.Directory, performMove);
+			CopyDirectoryHere(node.Directory, false);
+			if (performMove) {
+				FileService.RemoveFile(node.Directory, true);
+				node.Project.Save();
+			}
 		}
 		
 		/// <summary>
@@ -803,6 +807,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			PerformInitialization();
 			Expand();
 			try {
+				if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) {
+					effect = DragDropEffects.Move;
+				}
+
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
 					FileNode fileNode = (FileNode)dataObject.GetData(typeof(FileNode));
 					LoggingService.Debug("ProjectBrowser: Dragging file '" + fileNode.FileName + "' onto directory '" + this.Directory + "'");

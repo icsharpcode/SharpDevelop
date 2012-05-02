@@ -50,6 +50,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// Return the solution node in which this node belongs to.
+		/// </summary>
+		public virtual SolutionNode SolutionNode {
+			get {
+				TreeNode node = this;
+				while (node != null) {
+					if (node is SolutionNode) 
+					{
+						return (node as SolutionNode);
+					}
+					else
+					{
+						node = node.Parent;
+					}
+				}
+				
+				return null;
+			}
+		}
+
+		/// <summary>
 		/// Returns the project in which this node belongs to. This assumes that
 		/// any node is child of a project. THIS DON'T WORK ON COMBINE NODES!
 		/// (a combine node returns null)

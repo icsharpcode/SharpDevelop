@@ -127,6 +127,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				fileNodeStatus = FileNodeStatus.InProject;
 				SetIcon();
 			}
+			else if(fileNodeStatus != FileNodeStatus.Missing && viewContent == null) 
+			{
+				fileNodeStatus = FileNodeStatus.Missing;
+				SetIcon();
+			}
 		}
 		
 //		protected override void Initialize()
@@ -163,6 +168,36 @@ namespace ICSharpCode.SharpDevelop.Project
 							}
 						} else {
 							LoggingService.Warn("FileNode.AfterLabelEdit. Child is not a FileNode.");
+						}
+					}
+
+					if(IsLink) {
+						// Update the link infomation of the selected node
+						ProjectItem.FileName = newFileName;
+						(ProjectItem as FileProjectItem).SetEvaluatedMetadata("Link", Text);
+
+						Queue<TreeNode> nodeQueue = new Queue<TreeNode>();
+						nodeQueue.Enqueue(SolutionNode);
+						
+						while (nodeQueue.Count > 0) {
+							TreeNode node = nodeQueue.Dequeue();
+							if (node == this) {
+								continue;
+							}
+							foreach (TreeNode childNode in node.Nodes) {
+								nodeQueue.Enqueue(childNode);
+							}
+
+							FileNode fileNode = node as FileNode;
+							if ((fileNode != null ) && fileNode.IsLink) {
+								// Update the links in the other places of the solution
+								if(fileNode.FileName == oldFileName) {
+									fileNode.FileName = newFileName;
+									fileNode.ProjectItem.FileName = newFileName;
+									(fileNode.ProjectItem as FileProjectItem).SetEvaluatedMetadata("Link", Text);
+									fileNode.Project.Save();
+								}
+							}
 						}
 					}
 					

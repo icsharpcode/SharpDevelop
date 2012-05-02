@@ -20,13 +20,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		string version;
 		string lcid;
 		bool   isolated = false;
+		string primaryinteropname;
 		
 		public string Guid {
 			get {
 				return guid;
 			}
 		}
-		
+
+		public string PrimaryInteropName {
+			get {
+				return primaryinteropname;
+			}
+			set {
+				primaryinteropname = value;
+			}
+		}
+
 		public bool Isolated {
 			get {
 				return isolated;
@@ -91,7 +101,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public string WrapperTool {
 			get {
 				// TODO: which wrapper tool ?
-				return "tlbimp";
+				if (primaryinteropname != null) {
+					return "primary";
+				}
+				else {
+					return "tlbimp";
+				}
 			}
 		}
 		
@@ -116,6 +131,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static TypeLibrary Create(string guid) {
+			RegistryKey typeLibsKey = Registry.ClassesRoot.OpenSubKey("TypeLib");
+			RegistryKey typeLibKey = typeLibsKey.OpenSubKey(guid);
+
+			if (typeLibKey == null) {
+				return null;
+			}
+			
+			return Create(typeLibKey);
+		}
+		
 		static TypeLibrary Create(RegistryKey typeLibKey)
 		{
 			string[] versions = typeLibKey.GetSubKeyNames();
@@ -127,6 +153,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				RegistryKey versionKey = typeLibKey.OpenSubKey(lib.version);
 				lib.description = (string)versionKey.GetValue(null);
+				if (Array.IndexOf<string>(versionKey.GetValueNames(), "PrimaryInteropAssemblyName") >= 0) {
+					lib.PrimaryInteropName = (string)versionKey.GetValue("PrimaryInteropAssemblyName");
+				}
 				lib.path = GetTypeLibPath(versionKey, ref lib.lcid);
 				lib.guid = System.IO.Path.GetFileName(typeLibKey.Name);
 				
