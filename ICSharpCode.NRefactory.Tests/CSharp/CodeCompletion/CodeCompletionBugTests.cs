@@ -5187,5 +5187,30 @@ public class TestFoo
 				Assert.IsNotNull(provider.Find("String"), "'String'not found.");
 			});
 		}
+
+		/// <summary>
+		/// Bug 4808 - Enums have an unknown 'split_char' member included in them.
+		/// </summary>
+		[Test()]
+		public void TestBug4808()
+		{
+			var provider = CreateProvider(
+@"using System;
+
+enum Foo { A, B }
+public class TestFoo
+{
+	void Bar ()
+	{
+		$Foo.$
+	}
+}
+"
+			);
+			Assert.IsNotNull(provider.Find("A"));
+			Assert.IsNotNull(provider.Find("B"));
+			Assert.IsNull(provider.Find("split_char"), "'split_char' found.");
+		}
+
 	}
 }
