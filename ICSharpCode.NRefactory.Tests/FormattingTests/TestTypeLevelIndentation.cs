@@ -35,6 +35,24 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	public class TestTypeLevelIndentation : TestBase
 	{
 		[Test()]
+		public void TestUsingDeclarations()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+	
+			Test(policy, @"		using Foo;", @"using Foo;
+");
+		}
+
+		[Test()]
+		public void TestUsingAliasDeclarations()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono();
+	
+			Test(policy, @"		using Foo = Bar;", @"using Foo = Bar;
+");
+		}
+
+		[Test()]
 		public void TestClassIndentation ()
 		{
 			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();

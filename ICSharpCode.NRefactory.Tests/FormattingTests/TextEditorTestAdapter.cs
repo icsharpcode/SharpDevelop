@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return b.ToString();
 		}*/
 		
-		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.OnTheFly)
+		protected static IDocument GetResult(CSharpFormattingOptions policy, string input, FormattingMode mode = FormattingMode.Intrusive)
 		{
 			input = NormalizeNewlines(input);
 			var document = new StringBuilderDocument(input);
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			return document;
 		}
 		
-		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.OnTheFly)
+		protected static IDocument Test (CSharpFormattingOptions policy, string input, string expectedOutput, FormattingMode mode = FormattingMode.Intrusive)
 		{
 			expectedOutput = NormalizeNewlines(expectedOutput);
 			IDocument doc = GetResult(policy, input, mode);

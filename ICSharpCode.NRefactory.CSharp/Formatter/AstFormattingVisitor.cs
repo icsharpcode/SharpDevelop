@@ -237,6 +237,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
+			FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			}
@@ -247,6 +248,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
+			FixIndentationForceNewLine(usingDeclaration.StartLocation);
 			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			}
