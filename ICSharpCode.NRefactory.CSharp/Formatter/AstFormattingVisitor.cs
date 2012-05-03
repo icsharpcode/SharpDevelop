@@ -210,6 +210,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				removedChars += document.GetLineByNumber(loc.Line + foundBlankLines - blankLines).EndOffset
 					- document.GetLineByNumber(loc.Line).EndOffset;
 			}
+			if (removedChars == 0 && sb.Length == 0)
+				return;
 			AddChange(start, removedChars, sb.ToString());
 		}
 
@@ -228,6 +230,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			for (int i = 0; i < blankLines; i++) {
 				sb.Append(this.options.EolMarker);
 			}
+			if (end - start == 0 && sb.Length == 0)
+				return;
 			AddChange(start, end - start, sb.ToString());
 		}
 
