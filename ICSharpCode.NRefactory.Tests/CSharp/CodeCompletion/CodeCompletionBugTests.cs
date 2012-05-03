@@ -4379,8 +4379,8 @@ namespace Test
         $MethodOne(b$
     }
 }", provider => {
-				Assert.IsNotNull (provider.Find ("bar"), "'bar' not found.");
-				Assert.IsNotNull (provider.Find ("foo"), "'foo' not found.");
+				Assert.IsNotNull (provider.Find ("bar:"), "'bar:' not found.");
+				Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
 			});
 		}
 		
