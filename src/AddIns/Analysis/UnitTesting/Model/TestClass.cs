@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Widgets;
 
@@ -24,15 +26,18 @@ namespace ICSharpCode.UnitTesting
 		readonly ObservableCollection<TestClass> nestedClasses;
 		IRegisteredTestFrameworks testFrameworks;
 		
-		public TestClass(IRegisteredTestFrameworks testFrameworks, string fullName, ITypeDefinition definition)
+		public TestClass(IRegisteredTestFrameworks testFrameworks, string fullName, ITypeDefinition definition, TestClass parent = null)
 		{
 			this.parts = new ObservableCollection<IUnresolvedTypeDefinition>();
 			this.testMembers = new ObservableCollection<TestMember>();
 			this.nestedClasses = new ObservableCollection<TestClass>();
 			this.testFrameworks = testFrameworks;
 			this.fullName = fullName;
+			Parent = parent;
 			UpdateClass(definition);
 		}
+		
+		public TestClass Parent { get; private set; }
 		
 		/// <summary>
 		/// Gets the underlying IClass for this test class.
@@ -81,12 +86,23 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public TestResultType TestResult {
 			get { return testResult; }
-			set {
-				if (testResult != value) {
-					testResult = value;
-					OnPropertyChanged();
-				}
-			}
+			set { SetAndNotifyPropertyChanged(ref testResult, value); }
+		}
+
+		static TestResultType GetTestResult(TestClass testClass)
+		{
+			if (testClass.nestedClasses.Count == 0 && testClass.testMembers.Count == 0)
+				return TestResultType.None;
+			if (testClass.nestedClasses.Any(c => c.TestResult == TestResultType.Failure)
+			    || testClass.testMembers.Any(m => m.TestResult == TestResultType.Failure))
+				return TestResultType.Failure;
+			if (testClass.nestedClasses.Any(c => c.TestResult == TestResultType.None)
+			    || testClass.testMembers.Any(m => m.TestResult == TestResultType.None))
+				return TestResultType.None;
+			if (testClass.nestedClasses.Any(c => c.TestResult == TestResultType.Ignored)
+			    || testClass.testMembers.Any(m => m.TestResult == TestResultType.Ignored))
+				return TestResultType.Ignored;
+			return TestResultType.Success;
 		}
 		
 		/// <summary>
@@ -94,7 +110,13 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void UpdateTestResult(TestResult testResult)
 		{
-			
+			var member = testMembers.SingleOrDefault(m => m.Method.ReflectionName == testResult.Name);
+			member.TestResult = testResult.ResultType;
+			var parent = this;
+			while (parent != null) {
+				parent.TestResult = GetTestResult(parent);
+				parent = parent.Parent;
+			}
 		}
 		
 		/// <summary>
@@ -102,8 +124,16 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public void ResetTestResults()
 		{
-			TestResult = TestResultType.None;
-//			TestMembers.ResetTestResults();
+			foreach (var testClass in TreeTraversal.PostOrder(this, c => c.NestedClasses)) {
+				foreach (var member in testClass.Members)
+					member.TestResult = TestResultType.None;
+				testClass.TestResult = TestResultType.None;
+			}
+			var parent = this;
+			while (parent != null) {
+				parent.TestResult = TestResultType.None;
+				parent = parent.Parent;
+			}
 		}
 		
 		/// <summary>
@@ -129,7 +159,7 @@ namespace ICSharpCode.UnitTesting
 			testMembers.AddRange(definition.Methods.Where(m => testFrameworks.IsTestMethod(m, definition.Compilation) && !testMembers.Any(dm => dm.Method.ReflectionName == m.ReflectionName)).Select(m => new TestMember((IUnresolvedMethod)m.UnresolvedMember)));
 			
 			var context = new SimpleTypeResolveContext(definition);
-			nestedClasses.UpdateTestClasses(testFrameworks, nestedClasses.Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), definition.NestedTypes.Where(nt => testFrameworks.IsTestClass(nt, definition.Compilation)).ToList());
+			nestedClasses.UpdateTestClasses(testFrameworks, nestedClasses.Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), definition.NestedTypes.Where(nt => testFrameworks.IsTestClass(nt, definition.Compilation)).ToList(), this);
 		}
 		
 		/// <summary>
@@ -161,5 +191,11 @@ namespace ICSharpCode.UnitTesting
 		{
 //			Result = testMembers.Result;
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[TestClass TestResult={0}, FullName={1}]", testResult, fullName);
+		}
+
 	}
 }

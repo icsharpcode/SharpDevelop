@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
@@ -21,11 +23,7 @@ namespace ICSharpCode.UnitTesting
 			this.testMember = testMember;
 			this.testMember.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
 				if (e.PropertyName == "TestResult") {
-					SharpTreeNode p = this;
-					while (p != null) {
-						p.RaisePropertyChanged("Icon");
-						p = p.Parent;
-					}
+					RaisePropertyChanged("Icon");
 				}
 			};
 		}
@@ -36,6 +34,12 @@ namespace ICSharpCode.UnitTesting
 		
 		public override object Text {
 			get { return testMember.Method.Name; }
+		}
+		
+		public override void ActivateItem(System.Windows.RoutedEventArgs e)
+		{
+			var region = testMember.Method.Region;
+			SD.FileService.JumpToFilePosition(new FileName(region.FileName), region.BeginLine, region.BeginColumn);
 		}
 	}
 }

@@ -49,7 +49,7 @@ namespace ICSharpCode.UnitTesting
 				@new = e.NewParsedFile.TopLevelTypeDefinitions.Select(utd => utd.Resolve(context).GetDefinition()).Where(x => x != null && testFrameworks.IsTestClass(x, SD.ParserService.GetCompilation(project)));
 			else
 				@new = Enumerable.Empty<ITypeDefinition>();
-			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.ParsedFile.FileName == e.OldParsedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList());
+			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.ParsedFile.FileName == e.OldParsedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList(), null);
 		}
 		
 		public IProject Project {
@@ -72,35 +72,32 @@ namespace ICSharpCode.UnitTesting
 			return null;
 		}
 		
-		public bool FindTestInfo(string fullName, out TestClass testClass, out TestMember method)
+		public TestClass FindTestClass(string fullName)
 		{
-			testClass = null;
-			method = null;
 			foreach (var tc in testClasses) {
 				foreach (var c in TreeTraversal.PostOrder(tc, c => c.NestedClasses)) {
-					testClass = c;
-					method = c.SingleOrDefault(m => fullName.Equals(m.Method.ReflectionName, StringComparison.Ordinal));
+					var method = c.Members.SingleOrDefault(m => fullName.Equals(m.Method.ReflectionName, StringComparison.Ordinal));
 					if (method != null)
-						return true;
+						return c;
 				}
 			}
-			return false;
+			return null;
 		}
 		
 		public void UpdateTestResult(TestResult result)
 		{
-			TestMember member;
-			TestClass testClass;
-			if (FindTestInfo(result.Name, out testClass, out member)) {
-				member.TestResult = result.ResultType;
-				testClass.TestResult = r
+			TestClass testClass = FindTestClass(result.Name);
+			if (testClass != null) {
+				testClass.UpdateTestResult(result);
+				TestResult = GetTestResult(testClasses);
 			}
 		}
 		
 		public void ResetTestResults()
 		{
-			foreach (var member in testClasses.SelectMany(tc => TreeTraversal.PostOrder(tc, c => c.NestedClasses)).SelectMany(c => c.Members))
-				member.TestResult = TestResultType.None;
+			foreach (var testClass in testClasses)
+				testClass.ResetTestResults();
+			TestResult = TestResultType.None;
 		}
 		
 		TestResultType testResult;
@@ -110,12 +107,20 @@ namespace ICSharpCode.UnitTesting
 		/// </summary>
 		public TestResultType TestResult {
 			get { return testResult; }
-			set {
-				if (testResult != value) {
-					testResult = value;
-					OnPropertyChanged();
-				}
-			}
+			set { SetAndNotifyPropertyChanged(ref testResult, value); }
+		}
+
+		static TestResultType GetTestResult(IList<TestClass> testClasses)
+		{
+			if (testClasses.Count == 0)
+				return TestResultType.None;
+			if (testClasses.Any(c => c.TestResult == TestResultType.Failure))
+				return TestResultType.Failure;
+			if (testClasses.Any(c => c.TestResult == TestResultType.None))
+				return TestResultType.None;
+			if (testClasses.Any(c => c.TestResult == TestResultType.Ignored))
+				return TestResultType.Ignored;
+			return TestResultType.Success;
 		}
 	}
 }

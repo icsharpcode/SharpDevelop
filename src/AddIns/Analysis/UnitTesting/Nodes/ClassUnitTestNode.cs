@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -20,6 +21,16 @@ namespace ICSharpCode.UnitTesting
 		public ClassUnitTestNode(TestClass testClass)
 		{
 			this.testClass = testClass;
+			this.testClass.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
+				if (e.PropertyName == "TestResult") {
+					RaisePropertyChanged("Icon");
+					var parentNode = Parent;
+					while (parentNode is NamespaceUnitTestNode) {
+						parentNode.RaisePropertyChanged("Icon");
+						parentNode = parentNode.Parent;
+					}
+				}
+			};
 			testClass.Members.CollectionChanged += TestMembersCollectionChanged;
 			testClass.NestedClasses.CollectionChanged += NestedClassesCollectionChanged;
 			LazyLoading = true;

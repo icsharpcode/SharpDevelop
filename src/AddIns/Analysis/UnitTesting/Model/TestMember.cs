@@ -36,5 +36,10 @@ namespace ICSharpCode.UnitTesting
 				}
 			}
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[TestMember Method={0}, TestResult={1}]", method, testResult);
+		}
 	}
 }

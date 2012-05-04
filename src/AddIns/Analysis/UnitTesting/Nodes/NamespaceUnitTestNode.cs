@@ -36,7 +36,16 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		internal override TestResultType TestResultType {
-			get { return TestResultType.None; }
+			get {
+				if (Children.Count == 0) return TestResultType.None;
+				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.Failure))
+					return TestResultType.Failure;
+				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.None))
+					return TestResultType.None;
+				if (Children.OfType<UnitTestBaseNode>().Any(node => node.TestResultType == TestResultType.Ignored))
+					return TestResultType.Ignored;
+				return TestResultType.Success;
+			}
 		}
 	}
 }
