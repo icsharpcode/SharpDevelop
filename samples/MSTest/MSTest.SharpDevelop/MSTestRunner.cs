@@ -42,9 +42,14 @@ namespace ICSharpCode.MSTest
 		void ProcessRunnerExited(object source, EventArgs e)
 		{
 			// Read all tests.
-			var testResults = new MSTestResults(resultsFileName);
-			var workbench = new UnitTestWorkbench();
-			workbench.SafeThreadAsyncCall(() => UpdateTestResults(testResults));
+			if (FileExists(resultsFileName)) {
+				var testResults = new MSTestResults(resultsFileName);
+				var workbench = new UnitTestWorkbench();
+				workbench.SafeThreadAsyncCall(() => UpdateTestResults(testResults));
+			} else {
+				messageService.ShowFormattedErrorMessage("Unable to find test results file: '{0}'.", resultsFileName);
+				OnAllTestsFinished(source, e);
+			}
 		}
 		
 		void UpdateTestResults(MSTestResults testResults)
@@ -70,6 +75,7 @@ namespace ICSharpCode.MSTest
 		protected override ProcessStartInfo GetProcessStartInfo(SelectedTests selectedTests)
 		{
 			resultsFileName = new MSTestResultsFileName(selectedTests).FileName;
+			CreateDirectoryForResultsFile();
 			var mstestApplication = new MSTestApplication(selectedTests, resultsFileName);
 			return mstestApplication.ProcessStartInfo;
 		}
@@ -78,7 +84,7 @@ namespace ICSharpCode.MSTest
 		{
 			LogCommandLine(processStartInfo);
 			
-			if (ApplicationFileNameExists(processStartInfo.FileName)) {
+			if (FileExists(processStartInfo.FileName)) {
 				processRunner.WorkingDirectory = processStartInfo.WorkingDirectory;
 				processRunner.Start(processStartInfo.FileName, processStartInfo.Arguments);
 			} else {
@@ -86,7 +92,15 @@ namespace ICSharpCode.MSTest
 			}
 		}
 		
-		bool ApplicationFileNameExists(string fileName)
+		void CreateDirectoryForResultsFile()
+		{
+			string path = Path.GetDirectoryName(resultsFileName);
+			if (!Directory.Exists(path)) {
+				Directory.CreateDirectory(path);
+			}
+		}
+		
+		bool FileExists(string fileName)
 		{
 			return fileSystem.FileExists(fileName);
 		}

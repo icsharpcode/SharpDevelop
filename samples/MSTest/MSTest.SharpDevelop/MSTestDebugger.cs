@@ -49,6 +49,7 @@ namespace ICSharpCode.MSTest
 		protected override ProcessStartInfo GetProcessStartInfo(SelectedTests selectedTests)
 		{
 			resultsFileName = new MSTestResultsFileName(selectedTests).FileName;
+			CreateDirectoryForResultsFile();
 			var mstestApplication = new MSTestApplication(selectedTests, resultsFileName);
 			return mstestApplication.ProcessStartInfo;
 		}
@@ -62,6 +63,14 @@ namespace ICSharpCode.MSTest
 			string question = "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion}";
 			string caption = "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}";
 			return messageService.AskQuestion(question, caption);
+		}
+		
+		void CreateDirectoryForResultsFile()
+		{
+			string path = Path.GetDirectoryName(resultsFileName);
+			if (!Directory.Exists(path)) {
+				Directory.CreateDirectory(path);
+			}
 		}
 		
 		void Start(ProcessStartInfo startInfo)
@@ -89,9 +98,14 @@ namespace ICSharpCode.MSTest
 		{
 			debugger.DebugStopped -= DebugStopped;
 			
-			var testResults = new MSTestResults(resultsFileName);
-			var workbench = new UnitTestWorkbench();
-			workbench.SafeThreadAsyncCall(() => UpdateTestResults(testResults));
+			if (File.Exists(resultsFileName)) {
+				var testResults = new MSTestResults(resultsFileName);
+				var workbench = new UnitTestWorkbench();
+				workbench.SafeThreadAsyncCall(() => UpdateTestResults(testResults));
+			} else {
+				messageService.ShowFormattedErrorMessage("Unable to find test results file: '{0}'.", resultsFileName);
+				OnAllTestsFinished(source, e);
+			}
 		}
 		
 		void UpdateTestResults(MSTestResults testResults)
