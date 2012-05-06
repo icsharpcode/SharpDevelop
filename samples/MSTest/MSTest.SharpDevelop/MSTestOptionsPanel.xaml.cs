@@ -31,7 +31,7 @@ namespace ICSharpCode.MSTest
 		{
 			var dialog = new OpenFileDialog();
 			if (dialog.ShowDialog() ?? false) {
-				msTestPath = dialog.FileName;
+				MSTestPath = dialog.FileName;
 			}
 		}
 		

@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="ICSharpCode.Core.Presentation">
       <HintPath>..\..\..\bin\ICSharpCode.Core.Presentation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
@@ -54,6 +55,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpDevelop.Widgets">
       <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
