@@ -381,5 +381,22 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		bool enableImeSupport;
+		
+		/// <summary>
+		/// Gets/Sets whether the support for Input Method Editors (IME)
+		/// for non-alphanumeric scripts (Chinese, Japanese, Korean, ...) is enabled.
+		/// </summary>
+		[DefaultValue(true)]
+		public virtual bool EnableImeSupport {
+			get { return enableImeSupport; }
+			set {
+				if (enableImeSupport != value) {
+					enableImeSupport = value;
+					OnPropertyChanged("EnableImeSupport");
+				}
+			}
+		}
 	}
 }
