@@ -141,8 +141,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		static Rect GetCharacterBounds(this TextView textView, TextViewPosition pos, HwndSource source)
 		{
 			VisualLine vl = textView.GetVisualLine(pos.Line);
-			if (vl == null)
-				throw new Exception();
+			if (vl == null) return Rect.Empty;
 			TextLine line = vl.GetTextLine(pos.VisualColumn);
 			double offset = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop) - textView.ScrollOffset.Y;
 			Rect r = line.GetTextBounds(pos.VisualColumn, 1).First().Rectangle;
