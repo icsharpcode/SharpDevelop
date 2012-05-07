@@ -5,20 +5,25 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+//using System.Windows.Forms;
 using System.Windows.Shapes;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Win32;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
 	/// Base class for project option panels with configuration picker.
 	/// </summary>
-	public class ProjectOptionPanel : UserControl, IOptionPanel, ICanBeDirty
+	public class ProjectOptionPanel : UserControl, IOptionPanel, ICanBeDirty,INotifyPropertyChanged
 	{
+		
 		static ProjectOptionPanel()
 		{
 			DefaultStyleKeyProperty.OverrideMetadata(typeof(ProjectOptionPanel), new FrameworkPropertyMetadata(typeof(ProjectOptionPanel)));
@@ -39,6 +44,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		StackPanel configStackPanel;
 		Line headerline;
 		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+
 		protected virtual void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			foreach (IProjectProperty p in projectProperties.Values)
@@ -284,6 +291,116 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				project.SetProperty(configuration, platform, propertyName, newValue, location, treatPropertyValueAsLiteral);
 			}
 		}
+		#endregion
+		
+		#region INotifyPropertyChanged implementation
+		
+		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			var propertyName = ExtractPropertyName(propertyExpresssion);
+			//OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			var handler = this.PropertyChanged;
+			if (handler != null)
+			{
+				handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			}
+		}
+		/*
+		protected virtual void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			var handler = this.PropertyChanged;
+			if (handler != null)
+			{
+				handler(this, e);
+			}
+		}
+		*/
+		private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
+		{
+			if (propertyExpresssion == null)
+			{
+				throw new ArgumentNullException("propertyExpresssion");
+			}
+
+			var memberExpression = propertyExpresssion.Body as MemberExpression;
+			if (memberExpression == null)
+			{
+				throw new ArgumentException("The expression is not a member access expression.", "propertyExpresssion");
+			}
+
+			var property = memberExpression.Member as PropertyInfo;
+			if (property == null)
+			{
+				throw new ArgumentException("The member access expression does not access a property.", "propertyExpresssion");
+			}
+
+			var getMethod = property.GetGetMethod(true);
+			if (getMethod.IsStatic)
+			{
+				throw new ArgumentException("The referenced property is a static property.", "propertyExpresssion");
+			}
+
+			return memberExpression.Member.Name;
+		}
+		#endregion
+		
+		
+		#region OpenFileDialog
+		
+//		protected string OpenFile(string fileFilter)
+//		{
+//			var dialog = new OpenFileDialog();
+//			
+//			//dialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
+//			var x = StringParser.Parse(fileFilter);
+//			dialog.Filter = StringParser.Parse(x);
+//			if (dialog.ShowDialog() ?? false) {
+//				return  dialog.FileName;
+//			}
+//			return String.Empty;
+//		}
+//		
+		
+		protected string BrowseForFolder(string description,string startLocation,string relativeLocation)
+		{
+			
+//			var startLocation = BaseDirectory;
+//			if (textBoxEditMode == TextBoxEditMode.EditRawProperty)
+//				string text =  StartWorkingDirectory.Value;
+//				text = MSBuildInternals.Unescape(text);
+//			
+//			if (startLocation != null) {
+//				string text = StartWorkingDirectory.Value;
+//				startLocation = FileUtility.GetAbsolutePath(startLocation, text);
+//			}
+			string startAt = startLocation;
+			if (!String.IsNullOrEmpty(relativeLocation)) {
+			    	startAt = FileUtility.GetAbsolutePath(startLocation,relativeLocation);
+			    }
+			
+			
+			using (System.Windows.Forms.FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description,startAt))
+			{
+				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+					string path = fdiag.SelectedPath;
+					if (BaseDirectory != null) {
+						path = FileUtility.GetRelativePath(BaseDirectory, path);
+					}
+					if (!path.EndsWith("\\") && !path.EndsWith("/"))
+						path += "\\";
+					
+//						if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+					////							panel.ControlDictionary[target].Text = path;
+//						} else {
+//							panel.ControlDictionary[target].Text = MSBuildInternals.Escape(path);
+					////						}
+					return path;
+				}
+				
+			}
+			return startLocation;
+		}
+		
 		#endregion
 	}
 }
