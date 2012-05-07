@@ -148,6 +148,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			double offset = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop) - textView.ScrollOffset.Y;
 			Rect r = line.GetTextBounds(pos.VisualColumn, 1).First().Rectangle;
 			r.Offset(-textView.ScrollOffset.X, offset);
+			// this may happen during layout changes in AvalonDock, so we just return an empty rectangle
+			// in those cases. It should be refreshed immediately.
+			if (!source.RootVisual.IsAncestorOf(textView)) return EMPTY_RECT;
 			Point pointOnRootVisual = textView.TransformToAncestor(source.RootVisual).Transform(r.Location);
 			Point pointOnHwnd = pointOnRootVisual.TransformToDevice(source.RootVisual);
 			r.Location = pointOnHwnd;
