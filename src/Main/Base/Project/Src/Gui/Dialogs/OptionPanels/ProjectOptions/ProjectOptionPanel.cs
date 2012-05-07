@@ -363,20 +363,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected string BrowseForFolder(string description,string startLocation,string relativeLocation)
 		{
-			
-//			var startLocation = BaseDirectory;
-//			if (textBoxEditMode == TextBoxEditMode.EditRawProperty)
-//				string text =  StartWorkingDirectory.Value;
-//				text = MSBuildInternals.Unescape(text);
-//			
-//			if (startLocation != null) {
-//				string text = StartWorkingDirectory.Value;
-//				startLocation = FileUtility.GetAbsolutePath(startLocation, text);
-//			}
 			string startAt = startLocation;
 			if (!String.IsNullOrEmpty(relativeLocation)) {
-			    	startAt = FileUtility.GetAbsolutePath(startLocation,relativeLocation);
-			    }
+				startAt = FileUtility.GetAbsolutePath(startLocation,relativeLocation);
+			}
 			
 			
 			using (System.Windows.Forms.FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description,startAt))
