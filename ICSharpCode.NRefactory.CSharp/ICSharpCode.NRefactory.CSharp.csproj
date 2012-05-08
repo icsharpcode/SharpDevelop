@@ -390,8 +390,8 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
-          <TextStylePolicy FileWidth="120" TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
+          <TextStylePolicy TabsToSpaces="False" EolMarker="Unix" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" EolMarker="Unix" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
           <CSharpFormattingPolicy IndentSwitchBody="True" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy inheritsSet="null" scope="text/x-jay" />
         </Policies>
