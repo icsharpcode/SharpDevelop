@@ -34,8 +34,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			InputMethod.SetIsInputMethodSuspended(this.textArea, true);
 			textArea.GotKeyboardFocus += TextAreaGotKeyboardFocus;
 			textArea.LostKeyboardFocus += TextAreaLostKeyboardFocus;
+			textArea.OptionChanged += TextAreaOptionChanged;
 			currentContext = IntPtr.Zero;
 			previousContext = IntPtr.Zero;
+		}
+
+		void TextAreaOptionChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == "EnableImeSupport" && textArea.IsKeyboardFocusWithin) {
+				CreateContext();
+			}
 		}
 		
 		public void Dispose()
@@ -66,10 +74,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 				return;
 			if (e.OriginalSource != this.textArea)
 				return;
+			CreateContext();
+		}
+
+		void CreateContext()
+		{
+			if (this.textArea == null)
+				return;
+			if (!textArea.Options.EnableImeSupport)
+				return;
 			hwndSource = (HwndSource)PresentationSource.FromVisual(this.textArea);
 			if (hwndSource != null) {
 				currentContext = ImeNativeWrapper.GetContext(hwndSource);
 				previousContext = ImeNativeWrapper.AssociateContext(hwndSource, currentContext);
+//				ImeNativeWrapper.SetCompositionFont(hwndSource, currentContext, textArea);
 				hwndSource.AddHook(WndProc);
 			}
 		}
@@ -85,8 +103,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 		
 		IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
 		{
-			if (msg == ImeNativeWrapper.WM_IME_COMPOSITION)
-				UpdateCompositionWindow();
+			switch (msg) {
+				case ImeNativeWrapper.WM_INPUTLANGCHANGE:
+					ClearContext();
+					CreateContext();
+					break;
+				case ImeNativeWrapper.WM_IME_COMPOSITION:
+					UpdateCompositionWindow();
+					break;
+			}
 			return IntPtr.Zero;
 		}
 		

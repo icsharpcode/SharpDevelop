@@ -16,6 +16,7 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using Draw = System.Drawing;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -70,7 +71,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 		const int CPS_CANCEL = 0x4;
 		const int NI_COMPOSITIONSTR = 0x15;
 		const int GCS_COMPSTR = 0x0008;
+		
 		public const int WM_IME_COMPOSITION = 0x10F;
+		public const int WM_INPUTLANGCHANGE = 0x51;
 		
 		[DllImport("imm32.dll")]
 		static extern IntPtr ImmAssociateContext(IntPtr hWnd, IntPtr hIMC);
@@ -85,6 +88,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 		[DllImport("imm32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool ImmSetCompositionWindow(IntPtr hIMC, ref CompositionForm form);
+		[DllImport("imm32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool ImmSetCompositionFont(IntPtr hIMC, ref LOGFONT font);
+		[DllImport("imm32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool ImmGetCompositionFont(IntPtr hIMC, out LOGFONT font);
 		
 		public static IntPtr AssociateContext(HwndSource source, IntPtr hIMC)
 		{
@@ -130,6 +139,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 			form.rcArea.right = (int)textViewBounds.Right;
 			form.rcArea.bottom = (int)textViewBounds.Bottom;
 			return ImmSetCompositionWindow(hIMC, ref form);
+		}
+		
+		public static bool SetCompositionFont(HwndSource source, IntPtr hIMC, TextArea textArea)
+		{
+			if (textArea == null)
+				throw new ArgumentNullException("textArea");
+//			LOGFONT font = new LOGFONT();
+//			ImmGetCompositionFont(hIMC, out font);
+			return false;
 		}
 		
 		static Rect GetBounds(this TextView textView)

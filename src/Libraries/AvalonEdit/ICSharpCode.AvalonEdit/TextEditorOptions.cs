@@ -382,7 +382,7 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		
-		bool enableImeSupport;
+		bool enableImeSupport = true;
 		
 		/// <summary>
 		/// Gets/Sets whether the support for Input Method Editors (IME)
