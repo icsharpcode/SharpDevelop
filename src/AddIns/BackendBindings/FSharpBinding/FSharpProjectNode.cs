@@ -66,6 +66,8 @@ namespace FSharpBinding
 					FileNode fileNode = new FileNode(item.FileName);
 					if (!File.Exists(item.FileName)) {
 						fileNode.FileNodeStatus = FileNodeStatus.Missing;
+					} else if (item.IsLink) {
+						fileNode.FileNodeStatus = FileNodeStatus.Link;
 					}
 					fileNode.ProjectItem = item;
 					fileNodeDictionary[fileName] = fileNode;

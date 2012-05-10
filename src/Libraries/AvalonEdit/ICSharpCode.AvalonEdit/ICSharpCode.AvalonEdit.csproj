@@ -82,9 +82,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
     <Compile Include="AvalonEditCommands.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
@@ -185,6 +182,10 @@
     </Compile>
     <Compile Include="Folding\NewFolding.cs" />
     <Compile Include="Folding\XmlFoldingStrategy.cs" />
+    <Compile Include="Highlighting\RegexMatcher.cs" />
+    <Compile Include="Highlighting\IMatch.cs" />
+    <Compile Include="Highlighting\IMatcher.cs" />
+    <Compile Include="Highlighting\RegexMatch.cs" />
     <Compile Include="Highlighting\DocumentHighlighter.cs" />
     <Compile Include="Highlighting\HighlightedInlineBuilder.cs" />
     <Compile Include="Highlighting\HighlightedLine.cs" />

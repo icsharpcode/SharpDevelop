@@ -1982,10 +1982,15 @@
 		
 		<MenuItem id = "Separator2" type = "Separator" />
 		-->
+        <Condition name="RefactoringProviderSupports" supports="FindUnusedUsingDeclarations">
+            <MenuItem id    = "RemoveUnusedUsings"
+                      label = "${res:SharpDevelop.Refactoring.RemoveUnusedImports}"
+                      class = "ICSharpCode.SharpDevelop.Refactoring.RemoveUnusedUsingsCommand" />
+    	</Condition>
 		<MenuItem id = "Comment"
 		          icon  = "Icons.16x16.CommentRegion"
 		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
-		          shortcut="Control|OemQuestion"
+		          shortcut="Control|K"
 		          class = "ICSharpCode.SharpDevelop.Editor.Commands.CommentRegion"/>
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"

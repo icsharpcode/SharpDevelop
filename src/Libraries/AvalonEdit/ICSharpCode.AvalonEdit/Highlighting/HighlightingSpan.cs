@@ -16,12 +16,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Gets/Sets the start expression.
 		/// </summary>
-		public Regex StartExpression { get; set; }
+        public IMatcher StartExpression { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the end expression.
 		/// </summary>
-		public Regex EndExpression { get; set; }
+        public IMatcher EndExpression { get; set; }
 		
 		/// <summary>
 		/// Gets/Sets the rule set that applies inside this span.
