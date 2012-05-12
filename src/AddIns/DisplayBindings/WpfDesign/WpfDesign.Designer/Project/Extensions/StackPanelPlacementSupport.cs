@@ -109,19 +109,20 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					DrawVerticalRectangle(offset);
 				}
 
-				ChangePostionTo(info.Item.View, _indexToInsert);
+				ChangePositionTo(info.Item, _indexToInsert);
 			}
 		}
 
-		private void ChangePostionTo(UIElement element, int index)
+		private void ChangePositionTo(DesignItem element, int index)
 		{
-			int elementIndex = 0;
-			if (_stackPanel.Children.Contains(element))
-				elementIndex = _stackPanel.Children.IndexOf(element);
-			if (index > elementIndex)
+			if (this.ExtendedItem.ContentProperty == null || !this.ExtendedItem.ContentProperty.IsCollection)
+				return;
+			var elements = this.ExtendedItem.ContentProperty.CollectionElements;
+			int elementIndex = elements.IndexOf(element);
+			if (elementIndex >= 0 && index > elementIndex)
 				index--;
-			_stackPanel.Children.Remove(element);
-			_stackPanel.Children.Insert(index, element);
+			elements.Remove(element);
+			elements.Insert(index, element);
 		}
 		
 		private double FindHorizontalRectanglePlacementOffset(Rect rect)
