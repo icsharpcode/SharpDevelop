@@ -78,7 +78,7 @@ namespace Debugger
 				return;
 			}
 			if (type.IsGenericType) {
-				AppendTypeNameWithArguments(b, type.GetElementType(), type.GetGenericArguments());
+				AppendTypeNameWithArguments(b, type, type.GetGenericArguments());
 			} else if (type.HasElementType) {
 				AppendTypeName(b, type.GetElementType());
 				if (type.IsArray) {
