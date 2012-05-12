@@ -47,7 +47,7 @@ namespace Debugger.AddIn.Visualizers.GridVisualizer
 				} else {
 					// Value is IEnumerable
 					if (shownValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-						shownValue = DebuggerHelpers.CreateListFromIEnumeralbe(shownValue);
+						shownValue = DebuggerHelpers.CreateListFromIEnumerable(shownValue);
 						iListType = DebugType.CreateFromType(shownValue.AppDomain, typeof(System.Collections.Generic.IList<>), itemType);
 					} else	{
 						// Not IList or IEnumerable<T> - can't be displayed in GridVisualizer

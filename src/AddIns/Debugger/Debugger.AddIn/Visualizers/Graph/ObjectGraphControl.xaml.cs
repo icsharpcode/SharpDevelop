@@ -78,7 +78,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 			bool isSuccess = true;
 			try	{
-				this.objectGraph = RebuildGraph(txtExpression.Text);
+				this.objectGraph = RebuildGraph();
 			} catch(DebuggerVisualizerException ex)	{
 				isSuccess = false;
 				ErrorMessage(ex.Message);
@@ -94,8 +94,8 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private ICSharpCode.NRefactory.Ast.Expression shownExpression;
-		public ICSharpCode.NRefactory.Ast.Expression ShownExpression
+		private GraphExpression shownExpression;
+		public GraphExpression ShownExpression
 		{
 			get {
 				return shownExpression;
@@ -107,23 +107,17 @@ namespace Debugger.AddIn.Visualizers.Graph
 					RefreshView();
 					return;
 				}
-				if (shownExpression == null || value.PrettyPrint() != shownExpression.PrettyPrint()) {
-					txtExpression.Text = value.PrettyPrint();
+				if (shownExpression == null || value.Expr.PrettyPrint() != shownExpression.Expr.PrettyPrint()) {
+					txtExpression.Text = value.Expr.PrettyPrint();
 					RefreshView();
 				}
 			}
 		}
 		
-		private void Inspect_Button_Click(object sender, RoutedEventArgs e)
-		{
-			RefreshView();
-		}
-		
-		ObjectGraph RebuildGraph(string expression)
+		ObjectGraph RebuildGraph()
 		{
 			this.objectGraphBuilder = new ObjectGraphBuilder(debuggerService);
-			Log.Debug("Debugger visualizer: Building graph for expression: " + txtExpression.Text);
-			return this.objectGraphBuilder.BuildGraphForExpression(expression, expanded.Expressions);
+			return this.objectGraphBuilder.BuildGraphForExpression(this.ShownExpression, expanded.Expressions);
 		}
 		
 		void LayoutGraph(ObjectGraph graph)
@@ -185,7 +179,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void node_PropertyExpanded(object sender, PositionedPropertyEventArgs e)
 		{
 			// remember this property is expanded (for later graph rebuilds)
-			expanded.Expressions.SetExpanded(e.Property.Expression);
+			expanded.Expressions.SetExpanded(e.Property.Expression.Expr);
 			
 			// add edge (+ possibly nodes) to underlying object graph (no need to fully rebuild)
 			e.Property.ObjectGraphProperty.TargetNode = this.objectGraphBuilder.ObtainNodeForExpression(e.Property.Expression);
@@ -195,7 +189,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		void node_PropertyCollapsed(object sender, PositionedPropertyEventArgs e)
 		{
 			// remember this property is collapsed (for later graph rebuilds)
-			expanded.Expressions.SetCollapsed(e.Property.Expression);
+			expanded.Expressions.SetCollapsed(e.Property.Expression.Expr);
 			
 			// just remove edge from underlying object graph (no need to fully rebuild)
 			e.Property.ObjectGraphProperty.TargetNode = null;

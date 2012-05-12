@@ -191,6 +191,7 @@
     <Compile Include="Visualizers\Graph\ExpandedPaths\ExpandedContentNodes.cs" />
     <Compile Include="Visualizers\Graph\ExpandedPaths\ExpandedExpressions.cs" />
     <Compile Include="Visualizers\Graph\ExpandedPaths\ExpandedPaths.cs" />
+    <Compile Include="Visualizers\Graph\GraphExpression.cs" />
     <Compile Include="Visualizers\Graph\Layout\GraphEdgeRouter.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\Box.cs" />
     <Compile Include="Visualizers\Graph\Layout\SplineRouting\Edge.cs" />

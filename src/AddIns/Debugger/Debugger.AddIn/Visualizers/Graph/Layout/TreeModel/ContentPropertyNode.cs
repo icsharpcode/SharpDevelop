@@ -66,7 +66,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.IsExpanded = false;			// always false, Property nodes are never expanded (they have IsPropertyExpanded)
 			this.Property = new PositionedNodeProperty(
 				sourcePropertyNode.Property, this.ContainingNode,
-				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
+				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression.Expr));
 			if (PositionedGraphNodeControl.IsShowMemberIcon) {
 				EvalMemberIcon();
 			}

@@ -354,7 +354,7 @@ namespace Debugger.AddIn.TreeModel
 						"IEnumerable",
 						"Expanding will enumerate the IEnumerable",
 						string.Empty,
-						() => GetIListChildren(() => DebuggerHelpers.CreateListFromIEnumeralbe(GetValue()))
+						() => GetIListChildren(() => DebuggerHelpers.CreateListFromIEnumerable(GetValue()))
 					);
 				}
 			}

@@ -15,6 +15,7 @@ namespace ICSharpCode.NRefactory.Ast
 {
 	public static class ExpressionExtensionMethods
 	{
+		// EXPR-EVAL (To be removed when ExpressionEvaluator is deprecated)
 		public static Value Evaluate(this Expression expression)
 		{
 			return ExpressionEvaluator.Evaluate(expression, WindowsDebugger.CurrentStackFrame);

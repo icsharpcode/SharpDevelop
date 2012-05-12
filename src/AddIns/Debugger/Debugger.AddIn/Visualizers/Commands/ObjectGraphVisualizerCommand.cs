@@ -44,8 +44,7 @@ namespace Debugger.AddIn.Visualizers
 		public override void Execute()
 		{
 			var objectGraphWindow = ObjectGraphWindow.EnsureShown();
-			// TODO: This only works on the root level
-			objectGraphWindow.ShownExpression = new IdentifierExpression(this.ValueName);
+			objectGraphWindow.ShownExpression = new GraphExpression(new IdentifierExpression(this.ValueName), this.GetValue);
 		}
 	}
 }

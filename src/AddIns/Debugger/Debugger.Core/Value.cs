@@ -227,7 +227,7 @@ namespace Debugger
 				if (deRef is ICorDebugHeapValue2) {
 					return new Value(appDomain, ((ICorDebugHeapValue2)deRef).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
 				} else {
-					// For exampe int* is a refernce not pointing to heap
+					// For exampe int* is a reference not pointing to heap
 					// TODO: It isn't permanent
 					return this;
 				}
