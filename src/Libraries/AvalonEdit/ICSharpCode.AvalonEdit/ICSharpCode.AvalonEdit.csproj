@@ -442,4 +442,7 @@
     <Resource Include="Search\next.png" />
     <Resource Include="Search\prev.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Highlighting\Resources\PowerShell.xshd" />
+  </ItemGroup>
 </Project>
