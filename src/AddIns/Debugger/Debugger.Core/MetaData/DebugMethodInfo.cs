@@ -195,6 +195,13 @@ namespace Debugger.MetaData
 			get { return this.MethodDefSig.GenericParameterCount > 0; }
 		}
 		
+		/// <summary>
+		/// Gets the number of generic parameters on this method.
+		/// </summary>
+		public int GenericParameterCount {
+			get { return this.MethodDefSig.GenericParameterCount; }
+		}
+		
 		/// <inheritdoc/>
 		public override RuntimeMethodHandle MethodHandle {
 			get { throw new NotSupportedException(); }
