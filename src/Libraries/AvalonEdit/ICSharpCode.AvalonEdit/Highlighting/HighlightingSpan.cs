@@ -43,6 +43,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public HighlightingColor EndColor { get; set; }
 		
+		/// <summary>
+		/// Gets/Sets whether the span color includes the start.
+		/// The default is <c>false</c>.
+		/// </summary>
+		public bool SpanColorIncludesStart { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets whether the span color includes the end.
+		/// The default is <c>false</c>.
+		/// </summary>
+		public bool SpanColorIncludesEnd { get; set; }
+		
 		/// <inheritdoc/>
 		public override string ToString()
 		{
