@@ -10,6 +10,10 @@ namespace Microsoft.VisualStudio.Shell
 	{
 		public static object GetGlobalService(Type serviceType)
 		{
+			//typeof(DTE)
+			//typeof(IVsSolution)
+			//typeof(SComponentModel) --> not used - console initializer.
+			//typeof(SVsExtensionManager)
 			return new SVsExtensionManager();
 		}
 	}

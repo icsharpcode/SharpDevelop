@@ -2,7 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -16,7 +16,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.projectItem = projectItem;
 		}
 		
-		public override IEnumerator<ProjectItem> GetEnumerator()
+		public override IEnumerator GetEnumerator()
 		{
 			var items = new ChildProjectItems(projectItem);
 			return items.GetEnumerator();

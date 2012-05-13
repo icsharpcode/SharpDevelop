@@ -39,29 +39,41 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			ProjectItems = new ProjectItems(this, fileService);
 		}
 		
+		public Project()
+		{
+		}
+		
 		void CreateProperties()
 		{
 			var propertyFactory = new ProjectPropertyFactory(this);
 			Properties = new Properties(propertyFactory);
 		}
 		
-		public string Name {
-			get { return MSBuildProject.Name; }
+		public virtual string Kind {
+			get { throw new NotImplementedException(); }
 		}
 		
-		public string FileName {
+		public virtual string Name {
+			get { return MSBuildProject.Name; }
+		}
+	
+		public virtual string UniqueName {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual string FileName {
 			get { return MSBuildProject.FileName; }
 		}
 		
-		public string FullName {
+		public virtual string FullName {
 			get { return FileName; }
 		}
 		
-		public ProjectObject Object { get; private set; }
-		public Properties Properties { get; private set; }
-		public ProjectItems ProjectItems { get; private set; }
+		public virtual object Object { get; private set; }
+		public virtual Properties Properties { get; private set; }
+		public virtual ProjectItems ProjectItems { get; private set; }
 		
-		public DTE DTE {
+		public virtual DTE DTE {
 			get {
 				if (dte == null) {
 					dte = new DTE(projectService, fileService);
@@ -70,7 +82,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 		}
 		
-		public string Type {
+		public virtual string Type {
 			get { return GetProjectType(); }
 		}
 		
@@ -82,12 +94,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }
 		
-		public void Save()
+		public virtual void Save()
 		{
 			projectService.Save(MSBuildProject);
 		}
 		
-		internal void AddReference(string path)
+		internal virtual void AddReference(string path)
 		{
 			if (!HasReference(path)) {
 				var referenceItem = new ReferenceProjectItem(MSBuildProject, path);
@@ -153,6 +165,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 			}
 			return names;
+		}
+		
+		public virtual CodeModel CodeModel {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual ConfigurationManager ConfigurationManager {
+			get { throw new NotImplementedException(); }
 		}
 	}
 }

@@ -35,13 +35,12 @@ namespace PackageManagement.Tests.EnvDTE
 		
 			var directoryItem = projectItems.Item("src");
 			var directoryProjectItems = directoryItem.ProjectItems;
-			var files = new List<DTE.ProjectItem>(directoryProjectItems);
 			
 			string[] expectedFiles = new string[] {
 				"program.cs"
 			};
 			
-			ProjectItemCollectionAssert.AreEqual(expectedFiles, files);
+			ProjectItemCollectionAssert.AreEqual(expectedFiles, directoryProjectItems);
 		}
 		
 		[Test]

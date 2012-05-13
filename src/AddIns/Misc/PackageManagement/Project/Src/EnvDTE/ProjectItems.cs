@@ -8,7 +8,7 @@ using System.IO;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class ProjectItems : MarshalByRefObject, IEnumerable<ProjectItem>
+	public class ProjectItems : MarshalByRefObject, IEnumerable
 	{
 		Project project;
 		IPackageManagementFileService fileService;
@@ -19,7 +19,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.fileService = fileService;
 		}
 		
-		public void AddFromFileCopy(string filePath)
+		public ProjectItems()
+		{
+		}
+		
+		public virtual object Parent {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual void AddFromFileCopy(string filePath)
 		{
 			string include = Path.GetFileName(filePath);
 			CopyFileIntoProject(filePath, include);
@@ -46,18 +54,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Path.Combine(project.MSBuildProject.Directory, fileName);
 		}
 		
-		public virtual IEnumerator<ProjectItem> GetEnumerator()
+		public virtual IEnumerator GetEnumerator()
 		{
 			var items = new ProjectItemsInsideProject(project);
 			return items.GetEnumerator();
 		}
 		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
-		
-		public ProjectItem Item(string name)
+		internal virtual ProjectItem Item(string name)
 		{
 			foreach (ProjectItem item in this) {
 				if (item.IsMatchByName(name)) {
@@ -65,6 +68,34 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 			}
 			return null;
+		}
+		
+		internal virtual ProjectItem Item(int index)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public virtual ProjectItem Item(object index)
+		{
+//			if (index is int) {
+//				return Item((int)index);
+//			}
+//			return null;
+			return Item(index as string);
+		}
+		
+		public virtual ProjectItem AddFromDirectory(string directory)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public virtual ProjectItem AddFromFile(string fileName)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public virtual int Count {
+			get { throw new NotImplementedException(); }
 		}
 	}
 }

@@ -121,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateProperties();
 			msbuildProject.SetProperty("TargetFrameworkVersion", "4.0");
 			
-			Property targetFrameworkVersionProperty = project.Properties.First(p => p.Name == "TargetFrameworkVersion");
+			Property targetFrameworkVersionProperty = PropertiesHelper.FindProperty(project.Properties, "TargetFrameworkVersion");
 			string targetFrameworkVersion = targetFrameworkVersionProperty.Value as string;
 			
 			Assert.AreEqual("4.0", targetFrameworkVersion);

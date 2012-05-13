@@ -26,7 +26,8 @@ namespace PackageManagement.Tests.EnvDTE
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
 			fakeProjectService = project.FakeProjectService;
-			references = project.Object.References;
+			ProjectObject projectObject = (ProjectObject)project.Object;
+			references = projectObject.References;
 		}
 		
 		void ReferenceCollectionAssertAreEqual(string[] expectedReferences, List<Reference> referenceList)

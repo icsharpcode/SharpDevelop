@@ -69,5 +69,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return projectService.GetOpenProjects();
 		}
+		
+		public SourceControl SourceControl {
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

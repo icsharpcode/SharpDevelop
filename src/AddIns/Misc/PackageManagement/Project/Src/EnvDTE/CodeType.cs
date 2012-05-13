@@ -2,32 +2,26 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class Solution : MarshalByRefObject
+	public class CodeType : CodeElement
 	{
-		SD.Solution solution;
+		public virtual vsCMAccess Access { get; set; }
 		
-		public Solution(SD.Solution solution)
-		{
-			this.solution = solution;
-		}
-		
-		public string FullName {
-			get { return FileName; }
-		}
-		
-		public string FileName {
-			get { return solution.FileName; }
-		}
-		
-		public bool IsOpen {
+		public virtual string FullName {
 			get { throw new NotImplementedException(); }
 		}
 		
-		public Projects Projects {
+		public virtual CodeElements Members {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual CodeElements Bases {
+			get { throw new NotImplementedException(); }
+		}
+		
+		public virtual CodeElements Attributes {
 			get { throw new NotImplementedException(); }
 		}
 	}
