@@ -8,12 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Mono.Cecil;
+
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using Mono.Cecil;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -50,7 +51,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected ListView listView;
 		CheckBox chooseSpecificVersionCheckBox;
 		TextBox filterTextBox;
-		Button searchButton;
 		ToolTip toolTip = new ToolTip();
 		ToolTip filterTextboxToolTip = new ToolTip();
 		ISelectReferenceDialog selectDialog;
@@ -93,142 +93,52 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			chooseSpecificVersionCheckBox = new CheckBox();
 			chooseSpecificVersionCheckBox.Dock = DockStyle.Left;
+			chooseSpecificVersionCheckBox.AutoSize = true;
 			chooseSpecificVersionCheckBox.Text = StringParser.Parse("${res:Dialog.SelectReferenceDialog.GacReferencePanel.ChooseSpecificAssemblyVersion}");
 			
 			chooseSpecificVersionCheckBox.CheckedChanged += delegate {
-				listView.Items.Clear();
-				if (chooseSpecificVersionCheckBox.Checked)
-					listView.Items.AddRange(fullItemList);
-				else
-					listView.Items.AddRange(shortItemList);
+				ResetList();
+				Search();
 			};
 			
-			filterTextBox = new TextBox { Width = 100, Dock = DockStyle.Right };
-			searchButton = new Button { Dock = DockStyle.Right, Width = 50, Text = "Search" };
-			toolTip.SetToolTip(searchButton, searchButton.Text);
+			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
 			filterTextboxToolTip.SetToolTip(filterTextBox, "Search by type name");
-			searchButton.Click += searchButton_Click;
+			filterTextBox.TextChanged += delegate { Search(); };
 			upperPanel.Controls.Add(chooseSpecificVersionCheckBox);
 			upperPanel.Controls.Add(filterTextBox);
-			upperPanel.Controls.Add(searchButton);
 			
 			this.Controls.Add(upperPanel);
 			
 			PrintCache();
+		}
+
+		void ResetList()
+		{
+			listView.Items.Clear();
+			if (chooseSpecificVersionCheckBox.Checked)
+				listView.Items.AddRange(fullItemList);
+			else
+				listView.Items.AddRange(shortItemList);
 			
-			worker = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
-			worker.DoWork += searchTask_DoWork;			
-			worker.RunWorkerCompleted += searchTask_RunWorkerCompleted;			
-			worker.ProgressChanged += searchTask_ProgressChanged;
-		}
-		
-		#region Search by types
-		
-		void searchTask_ProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			searchButton.Text = string.Format("{0} %", e.ProgressPercentage);
 		}
 
-		void searchTask_DoWork(object sender, DoWorkEventArgs e)
+		void Search()
 		{
-			e.Cancel = !SearchTypesName(
-				chooseSpecificVersionCheckBox.Checked ? fullItemList : shortItemList, filterTextBox.Text);
-		}
-
-		void searchButton_Click(object sender, EventArgs e)
-		{
-			string text;
-			if(!worker.IsBusy) {			
-				filterTextBox.ReadOnly = true;
-				worker.RunWorkerAsync();
-				text = "Cancel";
-			}
-			else {
-				worker.CancelAsync();
-				text = "Search";
-				filterTextBox.ReadOnly = false;
-			}
-			searchButton.Text = text;
-			this.toolTip.SetToolTip(searchButton, text);
-		}
-
-		void searchTask_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-		{
-			if (this.IsDisposed) {
-				// avoid crash when dialog is closed before search is completed
+			ResetList();
+			if (string.IsNullOrWhiteSpace(filterTextBox.Text))
 				return;
-			}
-			searchButton.Text = "Search"; this.toolTip.SetToolTip(searchButton, searchButton.Text);
-			filterTextBox.ReadOnly = false;
-			if (resultList != null && resultList.Count > 0) {
-				listView.Items.Clear();				
-				listView.Items.AddRange(resultList.ToArray());
-			}
-		}
-
-		/// <summary>
-		/// Search for type name.
-		/// </summary>
-		/// <param name="list">Array of items where to search.</param>
-		/// <param name="filter">Filter to search.</param>
-		/// <returns><c>true</c>, if call succeded, <c>false</c> otherwise.</returns>
-		bool SearchTypesName(ListViewItem[] list, string filter)
-		{
-			// return null if list is null
-			if (list == null) return false;
-			
-			// return if filter is empty
-			if (string.IsNullOrEmpty(filter)) {
-				resultList = list.ToList();
-				return true;
-			}
-			
-			// clear result
-			resultList.Clear();
-			
-			// scan the list
-			for (int i = 0; i < list.Length; ++i) {
-				ListViewItem item = list[i];
-				DomAssemblyName asm = item.Tag as DomAssemblyName;
-
-				// search path
-				if (asm.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
-					resultList.Add(item);
-				else {
-					if (worker.CancellationPending)
-					    return false;
-					
-					// search using Mono.Cecil the class/interface/structs names 
-					AssemblyDefinition currentAssembly;
-					if(!assembliesCache.ContainsKey(asm.FullName)) {	
-						try {
-							currentAssembly = resolver.Resolve(asm.FullName);
-						}
-						catch {
-							continue;
-						}
-						assembliesCache.Add(asm.FullName, currentAssembly);							
-					}
-					else
-						currentAssembly = assembliesCache[asm.FullName];
-					
-					// search types in modules
-					if (currentAssembly != null) {
-						foreach(var module in currentAssembly.Modules)
-							foreach (var type in module.Types) 
-								if (type.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 && 
-								    !resultList.Contains(item))
-									resultList.Add(item);									
-					}
-					
-					// report
-					worker.ReportProgress((int)(((i * 1.0) / list.Length) * 100));
-				}
-			}
-						
-			return true;
+			SearchItems(filterTextBox.Text);
+			listView.Items.Clear();
+			listView.Items.AddRange(resultList.ToArray());
 		}
 		
+		void SearchItems(string text)
+		{
+			var searchList = listView.Items.OfType<ListViewItem>().ToList();
+			searchList.RemoveWhere(item => item.Text.IndexOf(text, StringComparison.OrdinalIgnoreCase) < 0);
+			resultList = searchList;
+		}
+
 		/// <summary>
 		/// Clear all resources used.
 		/// </summary>
@@ -236,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			// cancel the worker
 			if (worker != null && worker.IsBusy && !worker.CancellationPending)
-				worker.CancelAsync();			
+				worker.CancelAsync();
 			worker = null;
 			
 			// clear all cached data
@@ -259,11 +169,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			GC.Collect();
 		}
 		
-		#endregion
-		
 		void columnClick(object sender, ColumnClickEventArgs e)
 		{
-			if(e.Column < 2) {
+			if (e.Column < 2) {
 				sorter.CurrentColumn = e.Column;
 				listView.Sort();
 			}
