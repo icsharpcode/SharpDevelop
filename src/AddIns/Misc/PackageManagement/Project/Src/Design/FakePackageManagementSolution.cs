@@ -108,7 +108,7 @@ namespace ICSharpCode.PackageManagement.Design
 		
 		public string FileName { get; set; }
 		
-		public List<IPackage> FakeInstalledPackages = new List<IPackage>();
+		public List<FakePackage> FakeInstalledPackages = new List<FakePackage>();
 		
 		public bool IsPackageInstalled(IPackage package)
 		{
@@ -157,6 +157,20 @@ namespace ICSharpCode.PackageManagement.Design
 			var project = new FakePackageManagementProject(projectName);
 			FakeProjects.Add(project);
 			return project;
+		}
+		
+		public FakePackage AddPackageToSharedLocalRepository(string packageId, string version)
+		{
+			var package = new FakePackage(packageId, version);
+			FakeInstalledPackages.Add(package);
+			return package;
+		}
+		
+		public FakePackage AddPackageToSharedLocalRepository(string packageId)
+		{
+			var package = new FakePackage(packageId);
+			FakeInstalledPackages.Add(package);
+			return package;
 		}
 	}
 }

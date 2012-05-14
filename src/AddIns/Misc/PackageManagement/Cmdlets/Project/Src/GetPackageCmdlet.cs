@@ -151,24 +151,36 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		IQueryable<IPackage> GetUpdatedPackages()
 		{
 			IPackageRepository aggregateRepository = registeredPackageRepositories.CreateAggregateRepository();
-			IPackageManagementProject project = GetSelectedProject(aggregateRepository);
-			var updatedPackages = new UpdatedPackages(project, aggregateRepository);
+			UpdatedPackages updatedPackages = CreateUpdatedPackages(aggregateRepository);
 			updatedPackages.SearchTerms = Filter;
 			return updatedPackages.GetUpdatedPackages().AsQueryable();
 		}
 		
-		IPackageManagementProject GetSelectedProject(IPackageRepository repository)
+		UpdatedPackages CreateUpdatedPackages(IPackageRepository aggregateRepository)
 		{
-			string projectName = GetSelectedProjectName();
-			return ConsoleHost.GetProject(repository, projectName);
+			IPackageManagementProject project = GetSelectedProject(aggregateRepository);
+			if (project != null) {
+				return new UpdatedPackages(project, aggregateRepository);
+			}
+			return new UpdatedPackages(GetSolutionPackages(), aggregateRepository);
 		}
 		
-		string GetSelectedProjectName()
+		IQueryable<IPackage> GetSolutionPackages()
 		{
-			if (ProjectName != null) {
-				return ProjectName;
+			return ConsoleHost.Solution.GetPackages();
+		}
+		
+		IPackageManagementProject GetSelectedProject(IPackageRepository repository)
+		{
+			if (HasSelectedProjectName()) {
+				return ConsoleHost.GetProject(repository, ProjectName);
 			}
-			return DefaultProject.Name;
+			return null;
+		}
+		
+		bool HasSelectedProjectName()
+		{
+			return ProjectName != null;
 		}
 		
 		IQueryable<IPackage> GetRecentPackages()
@@ -179,15 +191,25 @@ namespace ICSharpCode.PackageManagement.Cmdlets
 		
 		IQueryable<IPackage> GetInstalledPackages()
 		{
-			IPackageManagementProject project = GetSelectedProject();
-			IQueryable<IPackage> packages = project.GetPackages();
+			IQueryable<IPackage> packages = GetPackagesFromSelectedProjectOrSolution();
 			return FilterPackages(packages);
+		}
+		
+		IQueryable<IPackage> GetPackagesFromSelectedProjectOrSolution()
+		{
+			IPackageManagementProject project = GetSelectedProject();
+			if (project != null) {
+				return project.GetPackages();
+			}
+			return GetSolutionPackages();
 		}
 		
 		IPackageManagementProject GetSelectedProject()
 		{
-			string projectName = GetSelectedProjectName();
-			return ConsoleHost.GetProject(Source, projectName);
+			if (HasSelectedProjectName()) {
+				return ConsoleHost.GetProject(Source, ProjectName);
+			}
+			return null;
 		}
 		
 		void WritePackagesToOutputPipeline(IQueryable<IPackage> packages)
