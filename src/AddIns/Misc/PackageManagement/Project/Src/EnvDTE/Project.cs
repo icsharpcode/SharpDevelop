@@ -49,10 +49,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			Properties = new Properties(propertyFactory);
 		}
 		
-		public virtual string Kind {
-			get { throw new NotImplementedException(); }
-		}
-		
 		public virtual string Name {
 			get { return MSBuildProject.Name; }
 		}
@@ -88,8 +84,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetProjectType()
 		{
-			var projectType = new ProjectType(this);
-			return projectType.Type;
+			return new ProjectType(this).Type;
+		}
+		
+		public virtual string Kind {
+			get { return GetProjectKind(); }
+		}
+		
+		string GetProjectKind()
+		{
+			return new ProjectKind(this).Kind;
 		}
 		
 		internal MSBuildBasedProject MSBuildProject { get; private set; }
@@ -173,6 +177,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual ConfigurationManager ConfigurationManager {
 			get { throw new NotImplementedException(); }
+		}
+		
+		internal virtual string GetLowercaseFileExtension()
+		{
+			return Path.GetExtension(FileName).ToLowerInvariant();
 		}
 	}
 }

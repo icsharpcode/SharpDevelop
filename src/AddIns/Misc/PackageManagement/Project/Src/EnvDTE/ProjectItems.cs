@@ -95,7 +95,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual int Count {
-			get { throw new NotImplementedException(); }
+			get { return new ProjectItemsInsideProject(project).Count; }
 		}
 	}
 }

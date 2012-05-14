@@ -24,6 +24,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.ContainingProject = project;
 			this.ProjectItems = new DirectoryProjectItems(this);
 			CreateProperties();
+			Kind = Constants.VsProjectItemKindPhysicalFile;
 		}
 		
 		public ProjectItem()
@@ -40,12 +41,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return Path.GetFileName(projectItem.Include); }
 		}
 		
-		public virtual string Kind {
-			get { throw new NotImplementedException(); }
-		}
+		public virtual string Kind { get; set; }
 		
 		public Project SubProject {
-			get { throw new NotImplementedException(); }
+			get { return null; }
 		}
 		
 		public virtual Properties Properties { get; private set; }
@@ -104,6 +103,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal virtual ProjectItemRelationship GetRelationship(SD.ProjectItem msbuildProjectItem)
 		{
 			return new ProjectItemRelationship(this, msbuildProjectItem);
+		}
+		
+		/// <summary>
+		/// TODO: delete project item from project
+		/// </summary>
+		public void Delete()
+		{
 		}
 	}
 }

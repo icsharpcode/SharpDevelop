@@ -320,5 +320,16 @@ namespace PackageManagement.Tests.EnvDTE
 			bool contains = ex.Message.Contains("'test.cs'");
 			Assert.IsTrue(contains);
 		}
+		
+		[Test]
+		public void Count_ProjectHasOneFile_ReturnsOne()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"Test.cs");
+			
+			int count = projectItems.Count;
+			
+			Assert.AreEqual(1, count);
+		}
 	}
 }

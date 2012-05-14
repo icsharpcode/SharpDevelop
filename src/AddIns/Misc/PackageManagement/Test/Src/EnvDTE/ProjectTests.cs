@@ -88,5 +88,49 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("VB.NET", projectType);
 		}
+		
+		[Test]
+		public void Type_ProjectHasUnknownProjectExtension_ReturnsEmptyString()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"c:\projects\myproject\test.unknown";
+			
+			string projectType = project.Type;
+			
+			Assert.AreEqual(String.Empty, projectType);
+		}
+		
+		[Test]
+		public void Kind_ProjectIsCSharpProject_ReturnsCSharpProjectTypeGuid()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"d:\projects\myproject\test.csproj";
+			
+			string kind = project.Kind;
+			
+			Assert.AreEqual(ProjectTypeGuids.CSharp, kind);
+		}
+		
+		[Test]
+		public void Kind_ProjectIsVBNetProject_ReturnsCSharpProjectTypeGuid()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"d:\projects\myproject\test.vbproj";
+			
+			string kind = project.Kind;
+			
+			Assert.AreEqual(ProjectTypeGuids.VBNet, kind);
+		}
+		
+		[Test]
+		public void Kind_ProjectHasUnknownFileExtension_ReturnsEmptyString()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"d:\projects\myproject\test.unknown";
+			
+			string kind = project.Kind;
+			
+			Assert.AreEqual(String.Empty, kind);
+		}
 	}
 }

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement.EnvDTE;
 using Microsoft.VisualStudio.ExtensionManager;
 
 namespace Microsoft.VisualStudio.Shell
@@ -10,11 +11,15 @@ namespace Microsoft.VisualStudio.Shell
 	{
 		public static object GetGlobalService(Type serviceType)
 		{
-			//typeof(DTE)
 			//typeof(IVsSolution)
 			//typeof(SComponentModel) --> not used - console initializer.
 			//typeof(SVsExtensionManager)
-			return new SVsExtensionManager();
+			if (serviceType == typeof(DTE)) {
+				return new DTE();
+			} else if (serviceType == typeof(SVsExtensionManager)) {
+				return new SVsExtensionManager();
+			}
+			return null;
 		}
 	}
 }

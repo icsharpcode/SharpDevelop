@@ -44,6 +44,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return true;
 			}
 			return false;
-		}	
+		}
 	}
 }

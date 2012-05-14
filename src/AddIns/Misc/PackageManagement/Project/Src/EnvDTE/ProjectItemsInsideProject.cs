@@ -28,6 +28,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return projectItems.GetEnumerator();
 		}
 		
+		internal virtual int Count {
+			get { return GetProjectItems().Count(); }
+		}
+		
 		IEnumerable<ProjectItem> GetProjectItems()
 		{
 			foreach (SD.ProjectItem item in project.MSBuildProject.Items) {
@@ -124,7 +128,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var directoryItem = new FileProjectItem(project.MSBuildProject, ItemType.Folder);
 			directoryItem.Include = directoryName;
-			return new ProjectItem(project, directoryItem);
+			return new ProjectItem(project, directoryItem) { Kind = Constants.VsProjectItemKindPhysicalFolder };
 		}
 		
 		string GetFirstSubDirectoryName(string include)

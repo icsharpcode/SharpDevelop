@@ -2,34 +2,28 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class ProjectType
 	{
-		Project project;
+		public static readonly string VBNet = "VB.NET";
+		public static readonly string CSharp = "C#";
 		
 		public ProjectType(Project project)
 		{
-			this.project = project;
-			Type = String.Empty;
-			GetProjectType();
+			this.Type = GetProjectType(project);
 		}
 		
-		void GetProjectType()
+		string GetProjectType(Project project)
 		{
-			string extension = GetProjectFileExtension();
+			string extension = project.GetLowercaseFileExtension();
 			if (extension == ".csproj") {
-				Type = "C#";
+				return CSharp;
 			} else if (extension == ".vbproj") {
-				Type = "VB.NET";
+				return VBNet;
 			}
-		}
-		
-		string GetProjectFileExtension()
-		{
-			return Path.GetExtension(project.FileName).ToLowerInvariant();
+			return String.Empty;
 		}
 		
 		public string Type { get; private set; }

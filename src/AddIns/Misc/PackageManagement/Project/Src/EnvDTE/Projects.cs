@@ -4,23 +4,39 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Projects : MarshalByRefObject, IEnumerable<Project>
 	{
-		public Projects()
+		IPackageManagementProjectService projectService;
+		
+		public Projects(IPackageManagementProjectService projectService)
 		{
+			this.projectService = projectService;
 		}
 	    
         public IEnumerator<Project> GetEnumerator()
         {
-            throw new NotImplementedException();
+        	return GetProjectsInSolution().GetEnumerator();
         }
 	    
         IEnumerator IEnumerable.GetEnumerator()
         {
         	return GetEnumerator();
         }
+        
+        IEnumerable<Project> GetProjectsInSolution()
+		{
+			foreach (SD.MSBuildBasedProject msbuildProject in GetOpenMSBuildProjects()) {
+				yield return new Project(msbuildProject);
+			}
+		}
+		
+		IEnumerable<SD.IProject> GetOpenMSBuildProjects()
+		{
+			return projectService.GetOpenProjects();
+		}
 	}
 }
