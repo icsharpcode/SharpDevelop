@@ -183,5 +183,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return Path.GetExtension(FileName).ToLowerInvariant();
 		}
+		
+		internal virtual void DeleteFile(string fileName)
+		{
+			fileService.RemoveFile(fileName);
+		}
 	}
 }
