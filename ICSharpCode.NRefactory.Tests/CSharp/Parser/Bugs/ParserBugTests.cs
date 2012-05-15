@@ -348,6 +348,36 @@ class Foo
 			Assert.IsTrue(passed);
 		}
 		
+		/// <summary>
+		/// Bug 5064 - Autocomplete doesn't include object initializer properties in yield return 
+		/// </summary>
+		[Ignore("Still open")]
+		[Test]
+		public void TestBug5064()
+		{
+			string code = 
+@"public class Bar
+{
+    public IEnumerable<Foo> GetFoos()
+    {
+        yield return new Foo { }
+    }
+}";
+			var unit = CompilationUnit.Parse(code);
+			
+			bool passed = unit.GetText().Trim() == @"public class Bar
+{
+	public IEnumerable<Foo> GetFoos()
+	{
+		yield return new Foo { };
+	}
+}";
+			if (!passed) {
+				Console.WriteLine("Expected:" + code);
+				Console.WriteLine("Was:" + unit.GetText());
+			}
+			Assert.IsTrue(passed);
+		}
 	}
 }
 
