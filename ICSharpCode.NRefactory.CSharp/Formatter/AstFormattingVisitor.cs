@@ -2065,6 +2065,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				return;
 			}
 
+			var prev = keywordNode.GetPrevNode ();
+			if (prev is Comment || prev is PreProcessorDirective)
+				return;
+
 			int offset = document.GetOffset(keywordNode.StartLocation);
 			
 			int whitespaceStart = SearchWhitespaceStart(offset);
