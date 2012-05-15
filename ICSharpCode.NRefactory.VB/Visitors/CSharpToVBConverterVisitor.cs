@@ -590,7 +590,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return EndNode(
 				stackAllocExpression,
 				new InvocationExpression(
-					new IdentifierExpression() { Identifier = "__StackĄlloc" },
+					new IdentifierExpression() { Identifier = "__StackAlloc" },
 					new TypeReferenceExpression((AstType)stackAllocExpression.Type.AcceptVisitor(this, data)),
 					(Expression)stackAllocExpression.CountExpression.AcceptVisitor(this, data)
 				)
