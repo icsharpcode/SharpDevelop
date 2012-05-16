@@ -515,13 +515,33 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver previousResolver = resolver;
 			try {
-				if (parsedFile != null)
+				if (parsedFile != null) {
 					resolver = resolver.WithCurrentUsingScope(parsedFile.RootUsingScope.Resolve(resolver.Compilation));
+				} else {
+					var cv = new TypeSystemConvertVisitor(unit.FileName ?? string.Empty);
+					ApplyVisitorToUsings(cv, unit.Children);
+					PushUsingScope(cv.ParsedFile.RootUsingScope);
+				}
 				ScanChildren(unit);
 				return voidResult;
 			} finally {
 				resolver = previousResolver;
 			}
+		}
+		
+		void ApplyVisitorToUsings(TypeSystemConvertVisitor visitor, IEnumerable<AstNode> children)
+		{
+			foreach (var child in children) {
+				if (child is ExternAliasDeclaration || child is UsingDeclaration || child is UsingAliasDeclaration) {
+					child.AcceptVisitor(visitor);
+				}
+			}
+		}
+		
+		void PushUsingScope(UsingScope usingScope)
+		{
+			usingScope.Freeze();
+			resolver = resolver.WithCurrentUsingScope(new ResolvedUsingScope(resolver.CurrentTypeResolveContext, usingScope));
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration)
@@ -530,6 +550,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			try {
 				if (parsedFile != null) {
 					resolver = resolver.WithCurrentUsingScope(parsedFile.GetUsingScope(namespaceDeclaration.StartLocation).Resolve(resolver.Compilation));
+				} else {
+					string fileName = namespaceDeclaration.GetRegion().FileName ?? string.Empty;
+					// Fetch parent using scope
+					// Create root using scope if necessary
+					if (resolver.CurrentUsingScope == null)
+						PushUsingScope(new UsingScope());
+					
+					// Create child using scope
+					DomRegion region = namespaceDeclaration.GetRegion();
+					var identifiers = namespaceDeclaration.Identifiers.ToList();
+					// For all but the last identifier:
+					UsingScope usingScope;
+					for (int i = 0; i < identifiers.Count - 1; i++) {
+						usingScope = new UsingScope(resolver.CurrentUsingScope.UnresolvedUsingScope, identifiers[i].Name);
+						usingScope.Region = region;
+						PushUsingScope(usingScope);
+					}
+					// Last using scope:
+					usingScope = new UsingScope(resolver.CurrentUsingScope.UnresolvedUsingScope, identifiers.Last().Name);
+					usingScope.Region = region;
+					var cv = new TypeSystemConvertVisitor(new CSharpParsedFile(region.FileName ?? string.Empty), usingScope);
+					ApplyVisitorToUsings(cv, namespaceDeclaration.Children);
+					PushUsingScope(usingScope);
 				}
 				ScanChildren(namespaceDeclaration);
 				// merge undecided lambdas before leaving the using scope so that
@@ -591,26 +634,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Track CurrentMember
 		ResolveResult IAstVisitor<ResolveResult>.VisitFieldDeclaration(FieldDeclaration fieldDeclaration)
 		{
-			return VisitFieldOrEventDeclaration(fieldDeclaration);
+			return VisitFieldOrEventDeclaration(fieldDeclaration, EntityType.Field);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration)
 		{
-			return VisitFieldOrEventDeclaration(fixedFieldDeclaration);
+			return VisitFieldOrEventDeclaration(fixedFieldDeclaration, EntityType.Field);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitEventDeclaration(EventDeclaration eventDeclaration)
 		{
-			return VisitFieldOrEventDeclaration(eventDeclaration);
+			return VisitFieldOrEventDeclaration(eventDeclaration, EntityType.Event);
 		}
 		
-		ResolveResult VisitFieldOrEventDeclaration(EntityDeclaration fieldOrEventDeclaration)
+		ResolveResult VisitFieldOrEventDeclaration(EntityDeclaration fieldOrEventDeclaration, EntityType entityType)
 		{
 			//int initializerCount = fieldOrEventDeclaration.GetChildrenByRole(Roles.Variable).Count;
 			CSharpResolver oldResolver = resolver;
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == Roles.Variable) {
-					resolver = resolver.WithCurrentMember(GetMemberFromLocation(node.StartLocation));
+					IMember member = null;
+					if (parsedFile != null) {
+						member = GetMemberFromLocation(node.StartLocation);
+					} else if (resolver.CurrentTypeDefinition != null) {
+						string name = ((VariableInitializer)node).Name;
+						if (entityType == EntityType.Event) {
+							member = resolver.CurrentTypeDefinition.GetEvents(e => e.Name == name && !e.IsExplicitInterfaceImplementation, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+						} else {
+							member = resolver.CurrentTypeDefinition.GetFields(e => e.Name == name, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+						}
+					}
+					resolver = resolver.WithCurrentMember(member);
 					
 					Scan(node);
 					
@@ -717,21 +771,76 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult VisitMethodMember(EntityDeclaration member)
+		ResolveResult VisitMethodMember(EntityDeclaration memberDeclaration)
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				resolver = resolver.WithCurrentMember(GetMemberFromLocation(member.StartLocation));
+				IMember member = null;
+				if (parsedFile != null) {
+					member = GetMemberFromLocation(memberDeclaration.StartLocation);
+				} else if (resolver.CurrentTypeDefinition != null) {
+					// Re-discover the method:
+					EntityType entityType = memberDeclaration.EntityType;
+					var typeParameters = memberDeclaration.GetChildrenByRole(Roles.TypeParameter).ToArray();
+					var parameterTypes = TypeSystemConvertVisitor.GetParameterTypes(memberDeclaration.GetChildrenByRole(Roles.Parameter));
+					if (entityType == EntityType.Constructor) {
+						bool isStatic = memberDeclaration.HasModifier(Modifiers.Static);
+						member = resolver.CurrentTypeDefinition.Methods.FirstOrDefault(
+							m => m.EntityType == entityType && m.IsStatic == isStatic
+							&& m.Parameters.Count == parameterTypes.Count
+							&& IsMatchingMethod(m, typeParameters, parameterTypes));
+					} else {
+						string name = (entityType == EntityType.Destructor ? "Finalize" : memberDeclaration.Name);
+						AstType explicitInterfaceAstType = memberDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole);
+						bool isExplicitInterfaceImplementation = false;
+						IType explicitInterfaceType = null;
+						if (!explicitInterfaceAstType.IsNull) {
+							isExplicitInterfaceImplementation = true;
+							explicitInterfaceType = explicitInterfaceAstType.ToTypeReference().Resolve(resolver.CurrentTypeResolveContext);
+						}
+						foreach (var method in resolver.CurrentTypeDefinition.GetMethods(
+							m => m.EntityType == entityType && m.Name == name
+							&& m.TypeParameters.Count == typeParameters.Length && m.Parameters.Count == parameterTypes.Count
+							&& m.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
+							GetMemberOptions.IgnoreInheritedMembers
+						)) {
+							if (isExplicitInterfaceImplementation) {
+								if (method.ImplementedInterfaceMembers.Count != 1)
+									continue;
+								if (!explicitInterfaceType.Equals(method.ImplementedInterfaceMembers[0].DeclaringType))
+									continue;
+							}
+							if (IsMatchingMethod(method, typeParameters, parameterTypes)) {
+								member = method;
+								break;
+							}
+						}
+					}
+				}
+				resolver = resolver.WithCurrentMember(member);
+				ScanChildren(memberDeclaration);
 				
-				ScanChildren(member);
-				
-				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember, false);
+				if (member != null)
+					return new MemberResolveResult(null, member, false);
 				else
 					return errorResult;
 			} finally {
 				resolver = oldResolver;
 			}
+		}
+		
+		bool IsMatchingMethod(IMethod method, TypeParameterDeclaration[] typeParameters, IList<ITypeReference> parameterTypes)
+		{
+			for (int i = 0; i < typeParameters.Length; i++) {
+				if (method.TypeParameters[i].Name != typeParameters[i].Name)
+					return false;
+			}
+			var resolvedParameterTypes = parameterTypes.Resolve(resolver.CurrentTypeResolveContext.WithCurrentMember(method));
+			for (int i = 0; i < parameterTypes.Count; i++) {
+				if (!method.Parameters[i].Type.Equals(resolvedParameterTypes[i]))
+					return false;
+			}
+			return true;
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitMethodDeclaration(MethodDeclaration methodDeclaration)
@@ -759,20 +868,51 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				resolver = resolver.WithCurrentMember(GetMemberFromLocation(propertyOrIndexerDeclaration.StartLocation));
+				IMember member = null;
+				if (parsedFile != null) {
+					member = GetMemberFromLocation(propertyOrIndexerDeclaration.StartLocation);
+				} else if (resolver.CurrentTypeDefinition != null) {
+					// Re-discover the property:
+					string name = propertyOrIndexerDeclaration.Name;
+					var parameterTypeReferences = TypeSystemConvertVisitor.GetParameterTypes(propertyOrIndexerDeclaration.GetChildrenByRole(Roles.Parameter));
+					var parameterTypes = parameterTypeReferences.Resolve(resolver.CurrentTypeResolveContext);
+					AstType explicitInterfaceAstType = propertyOrIndexerDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole);
+					bool isExplicitInterfaceImplementation = false;
+					IType explicitInterfaceType = null;
+					if (!explicitInterfaceAstType.IsNull) {
+						isExplicitInterfaceImplementation = true;
+						explicitInterfaceType = explicitInterfaceAstType.ToTypeReference().Resolve(resolver.CurrentTypeResolveContext);
+					}
+					foreach (IProperty property in resolver.CurrentTypeDefinition.GetProperties(
+						p => p.Name == name && p.Parameters.Count == parameterTypes.Count && p.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
+						GetMemberOptions.IgnoreInheritedMembers
+					)) {
+						if (isExplicitInterfaceImplementation) {
+							if (property.ImplementedInterfaceMembers.Count != 1)
+								continue;
+							if (!explicitInterfaceType.Equals(property.ImplementedInterfaceMembers[0].DeclaringType))
+								continue;
+						}
+						if (Enumerable.SequenceEqual(parameterTypes, property.Parameters.Select(p => p.Type))) {
+							member = property;
+							break;
+						}
+					}
+				}
+				resolver = resolver.WithCurrentMember(member);
 				
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
-					if (node.Role == PropertyDeclaration.SetterRole && resolver.CurrentMember != null) {
+					if (node.Role == PropertyDeclaration.SetterRole && member != null) {
 						resolver = resolver.PushBlock();
-						resolver = resolver.AddVariable(new DefaultParameter(resolver.CurrentMember.ReturnType, "value"));
+						resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
 						Scan(node);
 						resolver = resolver.PopBlock();
 					} else {
 						Scan(node);
 					}
 				}
-				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember, false);
+				if (member != null)
+					return new MemberResolveResult(null, member, false);
 				else
 					return errorResult;
 			} finally {
@@ -794,18 +934,38 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				resolver = resolver.WithCurrentMember(GetMemberFromLocation(eventDeclaration.StartLocation));
+				IMember member = null;
+				if (parsedFile != null) {
+					member = GetMemberFromLocation(eventDeclaration.StartLocation);
+				} else if (resolver.CurrentTypeDefinition != null) {
+					string name = eventDeclaration.Name;
+					AstType explicitInterfaceAstType = eventDeclaration.PrivateImplementationType;
+					if (explicitInterfaceAstType.IsNull) {
+						member = resolver.CurrentTypeDefinition.GetEvents(
+							e => e.Name == name && !e.IsExplicitInterfaceImplementation,
+							GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+					} else {
+						IType explicitInterfaceType = explicitInterfaceAstType.ToTypeReference().Resolve(resolver.CurrentTypeResolveContext);
+						member = resolver.CurrentTypeDefinition.GetEvents(
+							e => e.Name == name && e.IsExplicitInterfaceImplementation,
+							GetMemberOptions.IgnoreInheritedMembers
+						).FirstOrDefault(
+							e => e.ImplementedInterfaceMembers.Count == 1 && explicitInterfaceType.Equals(e.ImplementedInterfaceMembers[0].DeclaringType)
+						);
+					}
+				}
+				resolver = resolver.WithCurrentMember(member);
 				
-				if (resolver.CurrentMember != null) {
+				if (member != null) {
 					resolver = resolver.PushBlock();
-					resolver = resolver.AddVariable(new DefaultParameter(resolver.CurrentMember.ReturnType, "value"));
+					resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
 					ScanChildren(eventDeclaration);
 				} else {
 					ScanChildren(eventDeclaration);
 				}
 				
-				if (resolver.CurrentMember != null)
-					return new MemberResolveResult(null, resolver.CurrentMember, false);
+				if (member != null)
+					return new MemberResolveResult(null, member, false);
 				else
 					return errorResult;
 			} finally {
@@ -876,16 +1036,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			try {
 				// Scan enum member attributes before setting resolver.CurrentMember, so that
 				// enum values used as attribute arguments have the correct type.
-				// (which an enum member, all other enum members are treated as having their underlying type)
+				// (within an enum member, all other enum members are treated as having their underlying type)
 				foreach (var attributeSection in enumMemberDeclaration.Attributes)
 					Scan(attributeSection);
 				
-				resolver = resolver.WithCurrentMember(GetMemberFromLocation(enumMemberDeclaration.StartLocation));
+				IMember member = null;
+				if (parsedFile != null) {
+					member = GetMemberFromLocation(enumMemberDeclaration.StartLocation);
+				} else if (resolver.CurrentTypeDefinition != null) {
+					string name = enumMemberDeclaration.Name;
+					member = resolver.CurrentTypeDefinition.GetFields(f => f.Name == name, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+				}
+				resolver = resolver.WithCurrentMember(member);
 				
 				if (resolverEnabled && resolver.CurrentTypeDefinition != null) {
 					ResolveAndProcessConversion(enumMemberDeclaration.Initializer, resolver.CurrentTypeDefinition.EnumUnderlyingType);
-					if (resolverEnabled && resolver.CurrentMember != null)
-						return new MemberResolveResult(null, resolver.CurrentMember, false);
+					if (resolverEnabled && member != null)
+						return new MemberResolveResult(null, member, false);
 					else
 						return errorResult;
 				} else {
@@ -1747,7 +1914,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		DomRegion MakeRegion(AstNode node)
 		{
-			return new DomRegion(parsedFile != null ? parsedFile.FileName : null, node.StartLocation, node.EndLocation);
+			if (parsedFile != null)
+				return new DomRegion(parsedFile.FileName, node.StartLocation, node.EndLocation);
+			else
+				return node.GetRegion();
 		}
 		
 		sealed class ExplicitlyTypedLambda : LambdaBase

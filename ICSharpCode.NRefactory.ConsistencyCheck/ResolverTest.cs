@@ -29,7 +29,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
 	/// <summary>
-	/// Description of ResolverTest.
+	/// Validates that no compile errors are found in valid code.
 	/// </summary>
 	public class ResolverTest
 	{
@@ -38,10 +38,10 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
 			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
-			navigator.Validate(file.CompilationUnit);
+			navigator.Validate(resolver, file.CompilationUnit);
 		}
 		
-		sealed class ValidatingResolveAllNavigator : IResolveVisitorNavigator
+		class ValidatingResolveAllNavigator : IResolveVisitorNavigator
 		{
 			string fileName;
 			bool allowErrors;
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				this.allowErrors = (fileName.Contains(".xaml") || File.Exists(Path.ChangeExtension(fileName, ".xaml")) || fileName.EndsWith("AvalonDockLayout.cs") || fileName.EndsWith("ResourcesFileTreeNode.cs") || fileName.EndsWith("ChangeMarkerMargin.cs"));
 			}
 			
-			HashSet<AstNode> resolvedNodes = new HashSet<AstNode>();
+			Dictionary<AstNode, ResolveResult> resolvedNodes = new Dictionary<AstNode, ResolveResult>();
 			HashSet<AstNode> nodesWithConversions = new HashSet<AstNode>();
 			
 			public ResolveVisitorNavigationMode Scan(AstNode node)
@@ -62,10 +62,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				return ResolveVisitorNavigationMode.Resolve;
 			}
 			
-			public void Resolved(AstNode node, ResolveResult result)
+			public virtual void Resolved(AstNode node, ResolveResult result)
 			{
-				if (!resolvedNodes.Add(node))
+				if (resolvedNodes.ContainsKey(node))
 					throw new InvalidOperationException("Duplicate Resolved() call");
+				resolvedNodes.Add(node, result);
 				if (CSharpAstResolver.IsUnresolvableNode(node))
 					throw new InvalidOperationException("Resolved unresolvable node");
 				
@@ -74,7 +75,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				}
 			}
 			
-			public void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
+			public virtual void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
 			{
 				if (!nodesWithConversions.Add(expression))
 					throw new InvalidOperationException("Duplicate ProcessConversion() call");
@@ -83,12 +84,46 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				}
 			}
 			
-			public void Validate(CompilationUnit cu)
+			public virtual void Validate(CSharpAstResolver resolver, CompilationUnit cu)
 			{
-				foreach (AstNode node in cu.DescendantsAndSelf.Except(resolvedNodes)) {
+				foreach (AstNode node in cu.DescendantsAndSelf.Except(resolvedNodes.Keys)) {
 					if (!CSharpAstResolver.IsUnresolvableNode(node)) {
 						Console.WriteLine("Forgot to resolve " + node);
 					}
+				}
+				foreach (var pair in resolvedNodes) {
+					if (resolver.Resolve(pair.Key) != pair.Value)
+						throw new InvalidOperationException("Inconsistent result");
+				}
+			}
+		}
+		
+		public static void RunTestWithoutParsedFile(CSharpFile file)
+		{
+			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
+			originalResolver.ApplyNavigator(new ValidatingResolveAllNavigator(file.FileName), CancellationToken.None);
+			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit);
+			var navigator = new ComparingResolveAllNavigator(originalResolver);
+			resolver.ApplyNavigator(navigator, CancellationToken.None);
+			navigator.Validate(resolver, file.CompilationUnit);
+		}
+		
+		sealed class ComparingResolveAllNavigator : ValidatingResolveAllNavigator
+		{
+			readonly CSharpAstResolver originalResolver;
+			
+			public ComparingResolveAllNavigator(CSharpAstResolver originalResolver)
+				: base(originalResolver.ParsedFile.FileName)
+			{
+				this.originalResolver = originalResolver;
+			}
+			
+			public override void Resolved(AstNode node, ResolveResult result)
+			{
+				base.Resolved(node, result);
+				ResolveResult originalResult = originalResolver.Resolve(node);
+				if (!RandomizedOrderResolverTest.IsEqualResolveResult(originalResult, result)) {
+					Console.WriteLine("Compiler error at " + node.GetRegion().FileName + ":" + node.StartLocation + ": Should be " + originalResult + " but was " + result);
 				}
 			}
 		}
