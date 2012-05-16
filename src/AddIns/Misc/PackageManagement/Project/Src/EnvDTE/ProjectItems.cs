@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -12,11 +13,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		Project project;
 		IPackageManagementFileService fileService;
+		object parent;
 		
-		public ProjectItems(Project project, IPackageManagementFileService fileService)
+		public ProjectItems(Project project, object parent, IPackageManagementFileService fileService)
 		{
 			this.project = project;
 			this.fileService = fileService;
+			this.parent = parent;
 		}
 		
 		public ProjectItems()
@@ -24,14 +27,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual object Parent {
-			get { throw new NotImplementedException(); }
+			get { return parent; }
 		}
 		
 		public virtual void AddFromFileCopy(string filePath)
 		{
 			string include = Path.GetFileName(filePath);
 			CopyFileIntoProject(filePath, include);
-			project.AddFile(include);
+			project.AddFileUsingPathRelativeToProject(include);
 			project.Save();
 		}
 		
@@ -72,15 +75,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		internal virtual ProjectItem Item(int index)
 		{
-			throw new NotImplementedException();
+			var items = new ProjectItemsInsideProject(project);
+			return items.GetItem(index - 1);
 		}
 		
 		public virtual ProjectItem Item(object index)
 		{
-//			if (index is int) {
-//				return Item((int)index);
-//			}
-//			return null;
+			if (index is int) {
+				return Item((int)index);
+			}
 			return Item(index as string);
 		}
 		
@@ -91,7 +94,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual ProjectItem AddFromFile(string fileName)
 		{
-			throw new NotImplementedException();
+			ProjectItem projectItem = project.AddFileUsingFullPath(fileName);
+			project.Save();
+			return projectItem;
 		}
 		
 		public virtual int Count {

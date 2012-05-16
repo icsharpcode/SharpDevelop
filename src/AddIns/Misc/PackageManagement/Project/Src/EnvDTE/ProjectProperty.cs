@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
@@ -18,32 +19,44 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected override object GetValue()
 		{
-			string value = project.MSBuildProject.GetUnevalatedProperty(Name);
+			string value = GetMSBuildProjectProperty(Name);
 			if (value != null) {
 				return value;
 			}
 			
-			if (IsTargetFrameworkMoniker(Name)) {
+			if (IsTargetFrameworkMoniker()) {
 				return GetTargetFrameworkMoniker();
-			} else if (IsFullPath(Name)) {
+			} else if (IsFullPath()) {
 				return GetFullPath();
+			} else if (IsOutputFileName()) {
+				return GetOutputFileName();
 			}
 			return EmptyStringIfNull(value);
 		}
 		
-		bool IsTargetFrameworkMoniker(string name)
+		string GetMSBuildProjectProperty(string name)
 		{
-			return IsCaseInsensitiveMatch(name, "TargetFrameworkMoniker");
+			return MSBuildProject.GetUnevalatedProperty(name);
 		}
 		
-		bool IsFullPath(string name)
+		bool IsTargetFrameworkMoniker()
 		{
-			return IsCaseInsensitiveMatch(name, "FullPath");
+			return IsCaseInsensitiveMatch(Name, "TargetFrameworkMoniker");
+		}
+		
+		bool IsFullPath()
+		{
+			return IsCaseInsensitiveMatch(Name, "FullPath");
+		}
+		
+		bool IsOutputFileName()
+		{
+			return IsCaseInsensitiveMatch(Name, "OutputFileName");
 		}
 		
 		bool IsCaseInsensitiveMatch(string a, string b)
 		{
-			return String.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		string GetTargetFrameworkMoniker()
@@ -59,6 +72,31 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string GetFullPath()
 		{
 			return MSBuildProject.Directory;
+		}
+		
+		string GetOutputFileName()
+		{
+			return String.Format("{0}{1}", MSBuildProject.AssemblyName, GetOutputTypeFileExtension());
+		}
+		
+		string GetOutputTypeFileExtension()
+		{
+			string outputTypeProperty = GetMSBuildProjectProperty("OutputType");
+			OutputType outputType = GetOutputType(outputTypeProperty);
+			return CompilableProject.GetExtension(outputType);
+		}
+		
+		OutputType GetOutputType(string outputTypeProperty)
+		{
+			if (outputTypeProperty == null) {
+				return OutputType.Exe;
+			}
+			
+			OutputType outputType = OutputType.Exe;
+			if (Enum.TryParse<OutputType>(outputTypeProperty, true, out outputType)) {
+				return outputType;
+			}
+			return OutputType.Exe;
 		}
 		
 		string EmptyStringIfNull(string value)

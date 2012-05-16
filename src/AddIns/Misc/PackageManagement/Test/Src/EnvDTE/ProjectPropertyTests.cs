@@ -152,5 +152,64 @@ namespace PackageManagement.Tests.EnvDTE
 			string expectedFullPath = @"d:\projects\MyProject";
 			Assert.AreEqual(expectedFullPath, fullPath);
 		}
+		
+		[Test]
+		public void Value_GetOutputFileNameProperty_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "Exe");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyInLowerCase_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "Library");
+			
+			string fileName = (string)project.Properties.Item("outputfilename").Value;
+			
+			Assert.AreEqual(@"MyProject.dll", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeIsMissing_ReturnsOutputAssemblyFileNameWithExeFileExtension()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			
+			string fileName = (string)project.Properties.Item("outputfilename").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeValueIsInLowerCase_ReturnsOutputAssemblyFileNameWithoutPath()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "winexe");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetOutputFileNamePropertyWhenOutputTypeValueIsInvalid_ReturnsOutputAssemblyFileNameWithExeFileExtension()
+		{
+			CreateProperties();
+			msbuildProject.AssemblyName = "MyProject";
+			msbuildProject.SetProperty("OutputType", "invalid");
+			
+			string fileName = (string)project.Properties.Item("OutputFileName").Value;
+			
+			Assert.AreEqual(@"MyProject.exe", fileName);
+		}
 	}
 }

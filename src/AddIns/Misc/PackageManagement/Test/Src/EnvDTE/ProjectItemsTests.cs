@@ -331,5 +331,102 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(1, count);
 		}
+		
+		[Test]
+		public void Parent_GetProjectItemsParentForFileProjectItem_ReturnsFileProjectItem()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("Program.cs");
+			
+			var projectItem = projectItems.Item("program.cs") as DTE.ProjectItem;
+			object parent = projectItem.ProjectItems.Parent;
+			
+			Assert.AreEqual(projectItem, parent);
+		}
+		
+		[Test]
+		public void Parent_GetProjectItemsParentForDirectoryProjectItem_ReturnsDirectoryProjectItem()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"src\Program.cs");
+			var projectItem = projectItems.Item("src") as DTE.ProjectItem;
+			
+			object parent = projectItem.ProjectItems.Parent;			
+
+			Assert.AreEqual(projectItem, parent);
+		}
+		
+		[Test]
+		public void Item_GetProjectItemByIndex_ReturnsFileInsideProject()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile("Program.cs");
+			
+			var projectItem = projectItems.Item(1) as DTE.ProjectItem;
+			string projectItemName = projectItem.Name;
+			
+			Assert.AreEqual("Program.cs", projectItemName);
+		}
+		
+		[Test]
+		public void AddFromFile_FullFileNameIsInsideProject_FileIsAddedToProject()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\tools\test.cs";
+			
+			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
+			projectItems.AddFromFile(fileName);
+			
+			var fileItem = msbuildProject.Items[0] as FileProjectItem;
+			
+			Assert.AreEqual(@"tools\test.cs", fileItem.Include);
+			Assert.AreEqual(@"d:\projects\myproject\tools\test.cs", fileItem.FileName);
+			Assert.AreEqual(ItemType.Page, fileItem.ItemType);
+			Assert.AreEqual(msbuildProject, fileItem.Project);
+		}
+		
+		[Test]
+		public void AddFromFile_FullFileNameIsInsideProject_ProjectIsSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
+			
+			projectItems.AddFromFile(fileName);
+			
+			bool saved = msbuildProject.IsSaved;
+			
+			Assert.IsTrue(saved);
+		}
+		
+		[Test]
+		public void AddFromFile_FullFileNameIsInsideProject_ProjectItemReturned()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\tools\test.cs";
+			
+			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
+			DTE.ProjectItem item = projectItems.AddFromFile(fileName);
+			
+			string fullPath = (string)item.Properties.Item("FullPath").Value;
+			
+			Assert.AreEqual("test.cs", item.Name);
+			Assert.AreEqual(@"d:\projects\myproject\tools\test.cs", fullPath);
+		}
+		
+		[Test]
+		public void AddFromFile_FullFileNameIsInsideProject_FileNameUsedToDetermineProjectItemType()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\tools\test.cs";
+			
+			projectItems.AddFromFile(fileName);
+			
+			Assert.AreEqual("test.cs", msbuildProject.FileNamePassedToGetDefaultItemType);
+		}
+		
 	}
 }

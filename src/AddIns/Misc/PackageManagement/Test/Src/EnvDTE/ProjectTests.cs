@@ -132,5 +132,38 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(String.Empty, kind);
 		}
+		
+		[Test]
+		public void UniqueName_ProjectFileNameHasFullPath_ReturnsProjectFileNameWithoutDirectoryPart()
+		{
+			CreateProject();
+			msbuildProject.FileName = @"d:\projects\myproject\MyProject.csproj";
+			
+			string name = project.UniqueName;
+			
+			Assert.AreEqual("MyProject.csproj", name);
+		}
+		
+		[Test]
+		public void ProjectItemsParent_ParentOfProjectsProjectItems_ReturnsTheProject()
+		{
+			CreateProject();
+			
+			object parent = project.ProjectItems.Parent;
+			
+			Assert.AreEqual(project, parent);
+		}
+		
+		[Test]
+		public void ConfigurationManager_ActiveConfigurationOutputPathProperty_ReturnsOutputPathForProject()
+		{
+			CreateProject();
+			msbuildProject.SetProperty("OutputPath", @"bin\debug\");
+			Configuration activeConfig = project.ConfigurationManager.ActiveConfiguration;
+			
+			string outputPath = (string)activeConfig.Properties.Item("OutputPath").Value;
+			
+			Assert.AreEqual(@"bin\debug\", outputPath);
+		}
 	}
 }

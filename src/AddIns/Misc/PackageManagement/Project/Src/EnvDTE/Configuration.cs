@@ -7,12 +7,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class Configuration : MarshalByRefObject
 	{
-		public Configuration()
+		Project project;
+		
+		public Configuration(Project project)
 		{
+			this.project = project;
 		}
 		
 		public Properties Properties {
-			get { throw new NotImplementedException(); }
+			get { return project.Properties; }
 		}
 	}
 }

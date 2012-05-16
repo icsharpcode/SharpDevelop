@@ -141,5 +141,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return GetEnumerator();
 		}
+		
+		internal ProjectItem GetItem(int index)
+		{
+			List<ProjectItem> projectItems = GetProjectItems().ToList();
+			return projectItems[index];
+		}
 	}
 }

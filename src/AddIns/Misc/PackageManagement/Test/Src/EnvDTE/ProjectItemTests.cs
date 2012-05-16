@@ -136,5 +136,19 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(@"d:\projects\myproject\src\program.cs", project.FakeFileService.PathPassedToRemoveFile);
 		}
+		
+		[Test]
+		public void Delete_ProjectItemIsFile_ProjectIsSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			msbuildProject.AddFile(@"src\program.cs");
+			ProjectItem directoryItem = projectItems.Item("src");
+			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			
+			fileItem.Delete();
+			
+			Assert.IsTrue(msbuildProject.IsSaved);
+		}
 	}
 }

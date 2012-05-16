@@ -108,6 +108,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public void Delete()
 		{
 			ContainingProject.DeleteFile(projectItem.FileName);
+			ContainingProject.Save();
 		}
 	}
 }

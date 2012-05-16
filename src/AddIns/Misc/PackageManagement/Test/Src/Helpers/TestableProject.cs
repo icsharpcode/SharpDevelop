@@ -11,6 +11,7 @@ namespace PackageManagement.Tests.Helpers
 	public class TestableProject : MSBuildBasedProject
 	{
 		public bool IsSaved;
+		string assemblyName;
 		
 		public ItemType ItemTypeToReturnFromGetDefaultItemType {
 			get { return TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType; }
@@ -60,6 +61,11 @@ namespace PackageManagement.Tests.Helpers
 			var fileProjectItem = new FileProjectItem(this, ItemType.Folder, include);
 			ProjectService.AddProjectItem(this, fileProjectItem);
 			return fileProjectItem;			
+		}
+		
+		public override string AssemblyName {
+			get { return assemblyName; }
+			set { assemblyName = value; }
 		}
 	}
 }

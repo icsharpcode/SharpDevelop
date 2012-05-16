@@ -36,7 +36,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			
 			CreateProperties();
 			Object = new ProjectObject(this);
-			ProjectItems = new ProjectItems(this, fileService);
+			ProjectItems = new ProjectItems(this, this, fileService);
 		}
 		
 		public Project()
@@ -54,7 +54,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 	
 		public virtual string UniqueName {
-			get { throw new NotImplementedException(); }
+			get { return Path.GetFileName(FileName); }
 		}
 		
 		public virtual string FileName {
@@ -136,16 +136,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			projectService.RemoveProjectItem(MSBuildProject, referenceItem);
 		}
 		
-		internal void AddFile(string include)
+		internal void AddFileUsingPathRelativeToProject(string include)
 		{
-			var fileProjectItem = CreateFileProjectItem(include);
+			var fileProjectItem = CreateFileProjectItemUsingPathRelativeToProject(include);
 			projectService.AddProjectItem(MSBuildProject, fileProjectItem);
 		}
 		
-		FileProjectItem CreateFileProjectItem(string include)
+		internal ProjectItem AddFileUsingFullPath(string path)
+		{
+			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
+			fileProjectItem.FileName = path;
+			projectService.AddProjectItem(MSBuildProject, fileProjectItem);
+			return new ProjectItem(this, fileProjectItem);
+		}
+		
+		FileProjectItem CreateFileProjectItemUsingPathRelativeToProject(string include)
 		{
 			ItemType itemType = GetDefaultItemType(include);
-			return CreateFileProjectItem(itemType, include);
+			return CreateFileProjectItemUsingPathRelativeToProject(itemType, include);
 		}
 		
 		ItemType GetDefaultItemType(string include)
@@ -153,11 +161,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return MSBuildProject.GetDefaultItemType(include);
 		}
 		
-		FileProjectItem CreateFileProjectItem(ItemType itemType, string include)
+		FileProjectItem CreateFileProjectItemUsingPathRelativeToProject(ItemType itemType, string include)
 		{
 			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
 			fileProjectItem.Include = include;
 			return fileProjectItem;
+		}
+		
+		FileProjectItem CreateFileProjectItemUsingFullPath(string path)
+		{
+			return CreateFileProjectItemUsingPathRelativeToProject(Path.GetFileName(path));
 		}
 		
 		internal IList<string> GetAllPropertyNames()
@@ -167,6 +180,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				foreach (ProjectPropertyElement propertyElement in MSBuildProject.MSBuildProjectFile.Properties) {
 					names.Add(propertyElement.Name);
 				}
+				names.Add("OutputFileName");
 			}
 			return names;
 		}
@@ -176,7 +190,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual ConfigurationManager ConfigurationManager {
-			get { throw new NotImplementedException(); }
+			get { return new ConfigurationManager(this); }
 		}
 		
 		internal virtual string GetLowercaseFileExtension()
