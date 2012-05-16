@@ -161,5 +161,30 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				ReturnType = KnownTypeReference.Void
 			};
 		}
+		
+		static readonly IUnresolvedMethod dummyConstructor = CreateDummyConstructor();
+		
+		/// <summary>
+		/// Returns a dummy constructor instance:
+		/// </summary>
+		/// <returns>
+		/// A public instance constructor with IsSynthetic=true and no declaring type.
+		/// </returns>
+		public static IUnresolvedMethod DummyConstructor {
+			get { return dummyConstructor; }
+		}
+		
+		static IUnresolvedMethod CreateDummyConstructor()
+		{
+			var m = new DefaultUnresolvedMethod {
+				EntityType = EntityType.Constructor,
+				Name = ".ctor",
+				Accessibility = Accessibility.Public,
+				IsSynthetic = true,
+				ReturnType = KnownTypeReference.Void
+			};
+			m.Freeze();
+			return m;
+		}
 	}
 }

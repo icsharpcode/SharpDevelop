@@ -1144,17 +1144,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
+		class AnonymousTypeMember
+		{
+			public readonly Expression Expression;
+			public readonly ResolveResult Initializer;
+			
+			public AnonymousTypeMember(Expression expression, ResolveResult initializer)
+			{
+				this.Expression = expression;
+				this.Initializer = initializer;
+			}
+		}
+		
 		ResolveResult IAstVisitor<ResolveResult>.VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression)
 		{
 			// 7.6.10.6 Anonymous object creation expressions
-			List<IUnresolvedProperty> properties = new List<IUnresolvedProperty>();
-			var initializers = anonymousTypeCreateExpression.Initializers;
-			foreach (var expr in initializers) {
+			List<IUnresolvedProperty> unresolvedProperties = new List<IUnresolvedProperty>();
+			List<AnonymousTypeMember> members = new List<AnonymousTypeMember>();
+			foreach (var expr in anonymousTypeCreateExpression.Initializers) {
 				Expression resolveExpr;
 				var name = GetAnonymousTypePropertyName(expr, out resolveExpr);
 				if (resolveExpr != null) {
-					var returnType = Resolve(resolveExpr).Type;
-					var returnTypeRef = returnType.ToTypeReference();
+					var initRR = Resolve(resolveExpr);
+					var returnTypeRef = initRR.Type.ToTypeReference();
 					var property = new DefaultUnresolvedProperty {
 						Name = name,
 						Accessibility = Accessibility.Public,
@@ -1165,18 +1177,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							ReturnType = returnTypeRef
 						}
 					};
-					properties.Add(property);
+					unresolvedProperties.Add(property);
+					members.Add(new AnonymousTypeMember(expr, initRR));
+				} else {
+					Scan(expr);
 				}
 			}
-			var anonymousType = new AnonymousType(resolver.Compilation, properties);
-			foreach (var pair in initializers.Zip(anonymousType.GetProperties(), (expr, prop) => new { expr = expr as NamedExpression, prop })) {
-				if (pair.expr != null) {
-					StoreCurrentState(pair.expr);
-					// pair.expr.Expression was already resolved by the first loop
-					StoreResult(pair.expr, new MemberResolveResult(new ResolveResult(anonymousType), pair.prop));
+			var anonymousType = new AnonymousType(resolver.Compilation, unresolvedProperties);
+			var properties = anonymousType.GetProperties().ToList();
+			Debug.Assert(properties.Count == members.Count);
+			List<ResolveResult> assignments = new List<ResolveResult>();
+			for (int i = 0; i < members.Count; i++) {
+				ResolveResult lhs = new MemberResolveResult(new InitializedObjectResolveResult(anonymousType), properties[i]);
+				ResolveResult rhs = members[i].Initializer;
+				ResolveResult assignment = resolver.ResolveAssignment(AssignmentOperatorType.Assign, lhs, rhs);
+				var ne = members[i].Expression as NamedExpression;
+				if (ne != null) {
+					StoreCurrentState(ne);
+					// ne.Expression was already resolved by the first loop
+					StoreResult(ne, lhs);
 				}
+				assignments.Add(assignment);
 			}
-			return new ResolveResult(anonymousType);
+			var anonymousCtor = DefaultResolvedMethod.GetDummyConstructor(resolver.Compilation, anonymousType);
+			return new InvocationResolveResult(null, anonymousCtor, initializerStatements: assignments);
 		}
 		#endregion
 		

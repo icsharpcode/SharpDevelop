@@ -202,5 +202,34 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					this.Parameters.Select(p => p.Type.ToTypeReference()).ToList());
 			}
 		}
+		
+		/// <summary>
+		/// Gets a dummy constructor for the specified compilation.
+		/// </summary>
+		/// <returns>
+		/// A public instance constructor with IsSynthetic=true and no declaring type.
+		/// </returns>
+		/// <seealso cref="DefaultUnresolvedMethod.DummyConstructor"/>
+		public static IMethod GetDummyConstructor(ICompilation compilation)
+		{
+			var dummyConstructor = DefaultUnresolvedMethod.DummyConstructor;
+			// Reuse the same IMethod instance for all dummy constructors
+			// so that two occurrences of 'new T()' refer to the same constructor.
+			return (IMethod)compilation.CacheManager.GetOrAddShared(
+				dummyConstructor, _ => dummyConstructor.CreateResolved(compilation.TypeResolveContext));
+		}
+		
+		/// <summary>
+		/// Gets a dummy constructor for the specified type.
+		/// </summary>
+		/// <returns>
+		/// A public instance constructor with IsSynthetic=true and the specified declaring type.
+		/// </returns>
+		/// <seealso cref="DefaultUnresolvedMethod.DummyConstructor"/>
+		public static IMethod GetDummyConstructor(ICompilation compilation, IType declaringType)
+		{
+			var resolvedCtor = GetDummyConstructor(compilation);
+			return new SpecializedMethod(resolvedCtor, TypeParameterSubstitution.Identity) { DeclaringType = declaringType };
+		}
 	}
 }

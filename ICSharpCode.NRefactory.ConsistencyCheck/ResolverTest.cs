@@ -100,30 +100,17 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public static void RunTestWithoutParsedFile(CSharpFile file)
 		{
-			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
-			originalResolver.ApplyNavigator(new ValidatingResolveAllNavigator(file.FileName), CancellationToken.None);
 			CSharpAstResolver resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit);
-			var navigator = new ComparingResolveAllNavigator(originalResolver);
+			var navigator = new ValidatingResolveAllNavigator(file.FileName);
 			resolver.ApplyNavigator(navigator, CancellationToken.None);
 			navigator.Validate(resolver, file.CompilationUnit);
-		}
-		
-		sealed class ComparingResolveAllNavigator : ValidatingResolveAllNavigator
-		{
-			readonly CSharpAstResolver originalResolver;
 			
-			public ComparingResolveAllNavigator(CSharpAstResolver originalResolver)
-				: base(originalResolver.ParsedFile.FileName)
-			{
-				this.originalResolver = originalResolver;
-			}
-			
-			public override void Resolved(AstNode node, ResolveResult result)
-			{
-				base.Resolved(node, result);
-				ResolveResult originalResult = originalResolver.Resolve(node);
-				if (!RandomizedOrderResolverTest.IsEqualResolveResult(originalResult, result)) {
-					Console.WriteLine("Compiler error at " + node.GetRegion().FileName + ":" + node.StartLocation + ": Should be " + originalResult + " but was " + result);
+			CSharpAstResolver originalResolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
+			foreach (var node in file.CompilationUnit.DescendantsAndSelf) {
+				var originalResult = originalResolver.Resolve(node);
+				var result = resolver.Resolve(node);
+				if (!RandomizedOrderResolverTest.IsEqualResolveResult(result, originalResult)) {
+					Console.WriteLine("Got different without IParsedFile at " + file.FileName + ":" + node.StartLocation);
 				}
 			}
 		}
