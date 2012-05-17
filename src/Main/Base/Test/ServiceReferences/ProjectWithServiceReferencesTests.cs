@@ -63,6 +63,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			return msbuildProject.GetItemsOfType(ItemType.ServiceReferences).SingleOrDefault() as ServiceReferencesProjectItem;
 		}
 		
+		int GetHowManyWCFMetadataItemsInMSBuildProject()
+		{
+			return msbuildProject.GetItemsOfType(ItemType.ServiceReferences).Count();
+		}
+		
 		ProjectItem GetFileProjectItemInMSBuildProject(string fileName)
 		{
 			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
@@ -173,6 +178,21 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ServiceReferencesProjectItem item = GetFirstWCFMetadataItemInMSBuildProject();
 			
 			Assert.AreEqual("Service References", item.Include);
+		}
+		
+		[Test]
+		public void AddServiceReferenceProxyFile_ProjectHasServiceReferences_WCFMetadataItemNotAddedToProjectForServiceReferencesRootFolder()
+		{
+			CreateProjectWithMSBuildProject();
+			var proxyFileName = new ServiceReferenceFileName() { ServiceName = "Service1" };
+			project.AddServiceReferenceProxyFile(proxyFileName);
+			proxyFileName = new ServiceReferenceFileName() { ServiceName = "Service2" };
+			
+			project.AddServiceReferenceProxyFile(proxyFileName);
+			
+			int count = GetHowManyWCFMetadataItemsInMSBuildProject();
+			
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
