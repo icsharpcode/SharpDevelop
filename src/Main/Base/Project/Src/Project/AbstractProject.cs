@@ -597,5 +597,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				return projectBehavior;
 			}
 		}
+		
+		public virtual bool HasProjectType(Guid projectTypeGuid)
+		{
+			Guid myGuid;
+			if (Guid.TryParse(this.TypeGuid, out myGuid)) {
+				return myGuid == projectTypeGuid;
+			} else {
+				return false;
+			}
+		}
 	}
 }

@@ -1625,6 +1625,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return formattedText.ToString();
 		}
-		#endregion		
+		#endregion
+		
+		public override bool HasProjectType(Guid projectTypeGuid)
+		{
+			string guidList = GetEvaluatedProperty("ProjectTypeGuids");
+			if (string.IsNullOrEmpty(guidList))
+				return base.HasProjectType(projectTypeGuid);
+			foreach (string guid in guidList.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+				Guid result;
+				if (Guid.TryParse(guid, out result) && projectTypeGuid == result)
+					return true;
+			}
+			return false;
+		}
 	}
 }

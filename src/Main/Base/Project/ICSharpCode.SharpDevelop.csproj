@@ -379,6 +379,9 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\PortableLibrary\PortableLibraryProjectBehavior.cs" />
+    <Compile Include="Src\Project\PortableLibrary\Profile.cs" />
+    <Compile Include="Src\Project\PortableLibrary\SupportedFramework.cs" />
     <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
@@ -928,6 +931,7 @@
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Src\Project\Behaviors" />
+    <Folder Include="Src\Project\PortableLibrary" />
     <Folder Include="themes" />
     <Folder Include="Src\Bookmarks\Pad\Controls" />
     <Folder Include="Src\Editor\AvalonEdit" />

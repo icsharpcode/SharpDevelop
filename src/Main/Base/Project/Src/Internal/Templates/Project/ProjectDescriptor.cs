@@ -422,6 +422,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					}
 				}
 				
+				// Add properties from <PropertyGroup>
+				// This must be done before adding <Imports>, because the import path can refer to properties.
+				if (projectProperties.Count > 0) {
+					if (!(project is MSBuildBasedProject))
+						throw new Exception("<PropertyGroup> may be only used in project templates for MSBuildBasedProjects");
+					
+					foreach (ProjectProperty p in projectProperties) {
+						((MSBuildBasedProject)project).SetProperty(
+							StringParser.Parse(p.Configuration),
+							StringParser.Parse(p.Platform),
+							StringParser.Parse(p.Name),
+							StringParser.Parse(p.Value),
+							p.Location,
+							p.ValueIsLiteral
+						);
+					}
+				}
+				
 				// Add Imports
 				if (clearExistingImports || projectImports.Count > 0) {
 					MSBuildBasedProject msbuildProject = project as MSBuildBasedProject;
@@ -447,22 +465,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							MessageService.ShowError(importsFailureMessage + "\n\n" + ex.Message);
 						}
 						return null;
-					}
-				}
-				
-				if (projectProperties.Count > 0) {
-					if (!(project is MSBuildBasedProject))
-						throw new Exception("<PropertyGroup> may be only used in project templates for MSBuildBasedProjects");
-					
-					foreach (ProjectProperty p in projectProperties) {
-						((MSBuildBasedProject)project).SetProperty(
-							StringParser.Parse(p.Configuration),
-							StringParser.Parse(p.Platform),
-							StringParser.Parse(p.Name),
-							StringParser.Parse(p.Value),
-							p.Location,
-							p.ValueIsLiteral
-						);
 					}
 				}
 				

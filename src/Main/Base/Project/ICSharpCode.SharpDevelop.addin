@@ -2362,6 +2362,8 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ProjectBehaviors">
-
+		<Condition name="ProjectBehaviorSupported" guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}">
+			<Class id="PortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.PortableLibraryProjectBehavior" />
+		</Condition>
 	</Path>
 </AddIn>

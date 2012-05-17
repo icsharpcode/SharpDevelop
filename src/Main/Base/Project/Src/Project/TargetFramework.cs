@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Project.Converter;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -115,6 +116,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Gets the previous release of this target framework.
 		/// </summary>
 		public TargetFramework BasedOn { get; set; }
+		
+		public virtual bool IsCompatibleWith(CompilerVersion compilerVersion)
+		{
+			return MinimumMSBuildVersion <= compilerVersion.MSBuildVersion;
+		}
 		
 		public bool IsBasedOn(TargetFramework potentialBase)
 		{
