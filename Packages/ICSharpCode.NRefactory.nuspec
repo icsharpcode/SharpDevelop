@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>ICSharpCode.NRefactory</id>
-    <version>5.0.0.6</version>
+    <version>5.0.1</version>
     <title>NRefactory</title>
     <authors>Daniel Grunwald, Mike Krüger</authors>
     <owners>Daniel Grunwald</owners>
@@ -11,7 +11,7 @@
     <iconUrl>http://community.sharpdevelop.net/blogs/mattward/SharpDevelop.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>NRefactory supports analysis of C# source code: it includes a parser, abstract syntax tree, type system, semantic analysis (resolver), code completion, and several refactorings.</description>
-    <releaseNotes>This is an alpha release. Expect bugs and breaking changes in the future.</releaseNotes>
+    <!--<releaseNotes></releaseNotes>-->
     <copyright>Copyright 2010-2012 AlphaSierraPapa</copyright>
     <tags>C# Parser Semantic Analysis SharpDevelop</tags>
     <dependencies>

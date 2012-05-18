@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -288,7 +288,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IEnumerable<ICompletionData> MagicKeyCompletion(char completionChar, bool controlSpace)
 		{
-			ExpressionResult expr;
 			Tuple<ResolveResult, CSharpResolver> resolveResult;
 			switch (completionChar) {
 			// Magic key completion
