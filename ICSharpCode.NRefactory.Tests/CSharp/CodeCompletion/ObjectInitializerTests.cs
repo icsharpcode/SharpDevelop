@@ -561,6 +561,32 @@ class MyTest
 			}
 			);
 		}
+
+		/// <summary>
+		/// Bug 5126 - Multiple projects including the same files don't update their typesystem properly
+		/// </summary>
+		[Test()]
+		public void TestBug5126()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+class MyList { public bool MyProp {get;set; }  public bool MyProp2 {get;set; }  }
+class MyTest
+{
+	public void Test ()
+	{
+		$new MyList { n$
+	}
+}
+", provider => {
+				Assert.IsNull(provider.Find("new"), "'new' found.");
+				Assert.IsNotNull(provider.Find("MyProp"), "'MyProp' not found.");
+				Assert.IsNotNull(provider.Find("MyProp2"), "'MyProp2' not found.");
+			}
+			);
+		}
+
 	}
 
 }
