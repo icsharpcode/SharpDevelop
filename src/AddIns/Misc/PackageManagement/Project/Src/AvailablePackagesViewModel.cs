@@ -43,13 +43,9 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
-			IEnumerable<IPackage> filteredPackages = base.GetFilteredPackagesBeforePagingResults(allPackages);
-			return GetDistinctPackagesById(filteredPackages);
-		}
-		
-		IEnumerable<IPackage> GetDistinctPackagesById(IEnumerable<IPackage> allPackages)
-		{
-			return allPackages.DistinctLast<IPackage>(PackageEqualityComparer.Id);
+			return base.GetFilteredPackagesBeforePagingResults(allPackages)
+				.Where(package => package.IsReleaseVersion())
+				.DistinctLast(PackageEqualityComparer.Id);
 		}
 	}
 }

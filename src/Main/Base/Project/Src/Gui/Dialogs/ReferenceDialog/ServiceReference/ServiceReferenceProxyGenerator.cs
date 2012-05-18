@@ -9,37 +9,29 @@ using System.ServiceModel.Description;
 namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 {
 	public class ServiceReferenceProxyGenerator : IServiceReferenceProxyGenerator
-	{		
-		IServiceReferenceCodeDomBuilder codeDomBuilder;
-		ICodeDomProvider codeDomProvider;
+	{
+		ServiceReferenceGeneratorOptions options = new ServiceReferenceGeneratorOptions();
 		
-		public ServiceReferenceProxyGenerator(ICodeDomProvider codeDomProvider)
-			: this(codeDomProvider, new ServiceReferenceCodeDomBuilder())
-		{
+		public ServiceReferenceGeneratorOptions Options {
+			get { return options; }
+			set { options = value; }
 		}
 		
-		public ServiceReferenceProxyGenerator(
-			ICodeDomProvider codeDomProvider,
-			IServiceReferenceCodeDomBuilder codeDomBuilder)
+		public void GenerateProxyFile()
 		{
-			this.codeDomProvider = codeDomProvider;
-			this.codeDomBuilder = codeDomBuilder;
+			var runner = new SvcUtilRunner(options);
+			runner.ProcessExited += OnComplete;
+			runner.Run();
 		}
 		
-		public string ServiceReferenceNamespace {
-			get { return codeDomBuilder.Namespace; }
-			set { codeDomBuilder.Namespace = value; }
-		}
+		public event EventHandler<GeneratorCompleteEventArgs> Complete;
 		
-		public void GenerateProxyFile(MetadataSet metadata, string proxyFileName)
+		void OnComplete(object sender, EventArgs e)
 		{
-			CodeCompileUnit compileUnit = codeDomBuilder.GenerateCompileUnit(metadata);
-			GenerateProxy(compileUnit, proxyFileName);
-		}
-		
-		void GenerateProxy(CodeCompileUnit compileUnit, string fileName)
-		{
-			codeDomProvider.GenerateCodeFromCompileUnit(compileUnit, fileName);
+			if (Complete != null) {
+				var runner = (SvcUtilRunner)sender;
+				Complete(this, new GeneratorCompleteEventArgs(runner.ExitCode));
+			}
 		}
 	}
 }

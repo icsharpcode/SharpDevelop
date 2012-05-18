@@ -15,6 +15,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public bool ReadXmlIdentifier { get; set; }
 		public bool IdentifierExpected { get; set; }
 		public bool NextTokenIsStartOfImportsOrAccessExpression { get; set; }
+		public int LambdaNestingDepth { get; set; }
 		public Stack<int> StateStack { get; set; }
 		public Stack<Block> BlockStack { get; set; }
 		public int CurrentState { get; set; }

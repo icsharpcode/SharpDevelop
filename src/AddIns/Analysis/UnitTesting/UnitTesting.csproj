@@ -126,7 +126,7 @@
     <Compile Include="Src\TestTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\NUnitConsoleCommandLine.cs" />
+    <Compile Include="Src\NUnitConsoleApplication.cs" />
     <Compile Include="Src\AbstractRunTestCommand.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">

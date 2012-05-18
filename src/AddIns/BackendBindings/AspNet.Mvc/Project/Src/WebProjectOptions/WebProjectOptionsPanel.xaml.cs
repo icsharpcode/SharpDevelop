@@ -26,6 +26,7 @@ namespace ICSharpCode.AspNet.Mvc
 		
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
+			base.Load(project, configuration, platform);
 			CreateWebProject(project);
 			if (!WebProjectService.IsIISOrIISExpressInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WebProjectOptionsPanel.IISNotFound");

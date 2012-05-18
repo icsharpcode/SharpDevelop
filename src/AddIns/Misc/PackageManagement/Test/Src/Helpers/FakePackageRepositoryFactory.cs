@@ -37,12 +37,14 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IPackagePathResolver PathResolverPassedToCreateSharedRepository;
 		public IFileSystem FileSystemPassedToCreateSharedRepository;
+		public IFileSystem ConfigSettingsFileSystemPassedToCreateSharedRepository;
 		public FakeSharedPackageRepository FakeSharedRepository = new FakeSharedPackageRepository();
 		
-		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
+		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem, IFileSystem configSettingsFileSystem)
 		{
 			PathResolverPassedToCreateSharedRepository = pathResolver;
 			FileSystemPassedToCreateSharedRepository = fileSystem;
+			ConfigSettingsFileSystemPassedToCreateSharedRepository = configSettingsFileSystem;
 			return FakeSharedRepository;
 		}
 		

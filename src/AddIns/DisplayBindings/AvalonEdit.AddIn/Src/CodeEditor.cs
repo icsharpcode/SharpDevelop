@@ -610,6 +610,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (errorPainter != null)
 				errorPainter.Dispose();
+			if (changeWatcher != null)
+				changeWatcher.Dispose();
 			this.Document = null;
 			DisposeTextEditor(primaryTextEditor);
 			if (secondaryTextEditor != null)

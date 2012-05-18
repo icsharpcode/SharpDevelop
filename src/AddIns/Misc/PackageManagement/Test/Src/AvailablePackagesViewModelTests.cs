@@ -358,5 +358,29 @@ namespace PackageManagement.Tests
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
 			Assert.AreEqual("Test", ex.Message);
 		}
+		
+		[Test]
+		public void ReadPackages_RepositoryHasPrereleaseAndReleasePackage_HasReleasePackageOnly()
+		{
+			CreateViewModel();
+			
+			var releasePackage = new FakePackage("Test", "1.0.0.0");
+			var prereleasePackage = new FakePackage("Test", "1.1.0-alpha");
+			
+			var packages = new FakePackage[] {
+				releasePackage, prereleasePackage
+			};
+			
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange(packages);
+			
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				releasePackage
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

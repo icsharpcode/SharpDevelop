@@ -29,20 +29,13 @@ namespace Debugger.AddIn
 				var inputWindow = new WatchInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
 				                                    StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"));
 				inputWindow.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWindow;
-				var result = inputWindow.ShowDialog();
-				if (!result.HasValue || !result.Value)
+				if (inputWindow.ShowDialog() != true)
 					return;
 				
 				string input = inputWindow.CommandText;
 				
 				if (!string.IsNullOrEmpty(input)) {
-					// get language
-					if (ProjectService.CurrentProject == null) return;
-					
-					string language = ProjectService.CurrentProject.Language;
-					
-					var text = new TextNode(null, input,
-					                        language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp).ToSharpTreeNode();
+					var text = new TextNode(null, input, inputWindow.ScriptLanguage).ToSharpTreeNode();
 					var list = pad.WatchList;
 					
 					if(!list.WatchItems.Any(n => text.Node.FullName == ((TreeNodeWrapper)n).Node.FullName))

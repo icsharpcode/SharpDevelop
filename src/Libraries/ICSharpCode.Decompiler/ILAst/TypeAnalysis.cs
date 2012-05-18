@@ -985,10 +985,22 @@ namespace ICSharpCode.Decompiler.ILAst
 				InferTypeForExpression(right, typeSystem.IntPtr);
 				return leftPreferred;
 			}
+			if (IsEnum(leftPreferred)) {
+				//E+U=E
+				left.InferredType = left.ExpectedType = leftPreferred;
+				InferTypeForExpression(right, GetEnumUnderlyingType(leftPreferred));
+				return leftPreferred;
+			}
 			TypeReference rightPreferred = DoInferTypeForExpression(right, expectedType);
 			if (rightPreferred is PointerType) {
 				InferTypeForExpression(left, typeSystem.IntPtr);
 				right.InferredType = right.ExpectedType = rightPreferred;
+				return rightPreferred;
+			}
+			if (IsEnum(rightPreferred)) {
+				//U+E=E
+				right.InferredType = right.ExpectedType = rightPreferred;
+				InferTypeForExpression(left, GetEnumUnderlyingType(rightPreferred));
 				return rightPreferred;
 			}
 			return InferBinaryArguments(left, right, expectedType, leftPreferred: leftPreferred, rightPreferred: rightPreferred);
@@ -1003,6 +1015,19 @@ namespace ICSharpCode.Decompiler.ILAst
 				left.InferredType = left.ExpectedType = leftPreferred;
 				InferTypeForExpression(right, typeSystem.IntPtr);
 				return leftPreferred;
+			}
+			if (IsEnum(leftPreferred)) {
+				if (expectedType != null && IsEnum(expectedType)) {
+					// E-U=E
+					left.InferredType = left.ExpectedType = leftPreferred;
+					InferTypeForExpression(right, GetEnumUnderlyingType(leftPreferred));
+					return leftPreferred;
+				} else {
+					// E-E=U
+					left.InferredType = left.ExpectedType = leftPreferred;
+					InferTypeForExpression(right, leftPreferred);
+					return GetEnumUnderlyingType(leftPreferred);
+				}
 			}
 			return InferBinaryArguments(left, right, expectedType, leftPreferred: leftPreferred);
 		}

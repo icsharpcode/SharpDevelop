@@ -30,11 +30,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool StorePanelContents()
 		{
 			DebuggingOptions.Instance.SymbolsSearchPaths = pathList.GetList();
-			Process proc = WindowsDebugger.CurrentProcess;
-			if (proc != null) {
-				proc.Debugger.ReloadModuleSymbols();
-				proc.Debugger.ResetJustMyCodeStatus();
-			}
+			DebuggingOptions.ResetStatus(
+				proc => {
+					proc.Debugger.ReloadModuleSymbols();
+					proc.Debugger.ResetJustMyCodeStatus();
+				});
 			return true;
 		}
 	}

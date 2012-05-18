@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -41,21 +42,28 @@ namespace ICSharpCode.AvalonEdit.Editing
 			const ModifierKeys None = ModifierKeys.None;
 			const ModifierKeys Ctrl = ModifierKeys.Control;
 			const ModifierKeys Shift = ModifierKeys.Shift;
+			const ModifierKeys Alt = ModifierKeys.Alt;
 			
 			AddBinding(EditingCommands.MoveLeftByCharacter, None, Key.Left, OnMoveCaret(CaretMovementType.CharLeft));
 			AddBinding(EditingCommands.SelectLeftByCharacter, Shift, Key.Left, OnMoveCaretExtendSelection(CaretMovementType.CharLeft));
+			AddBinding(RectangleSelection.BoxSelectLeftByCharacter, Alt | Shift, Key.Left, OnMoveCaretBoxSelection(CaretMovementType.CharLeft));
 			AddBinding(EditingCommands.MoveRightByCharacter, None, Key.Right, OnMoveCaret(CaretMovementType.CharRight));
 			AddBinding(EditingCommands.SelectRightByCharacter, Shift, Key.Right, OnMoveCaretExtendSelection(CaretMovementType.CharRight));
+			AddBinding(RectangleSelection.BoxSelectRightByCharacter, Alt | Shift, Key.Right, OnMoveCaretBoxSelection(CaretMovementType.CharRight));
 			
 			AddBinding(EditingCommands.MoveLeftByWord, Ctrl, Key.Left, OnMoveCaret(CaretMovementType.WordLeft));
 			AddBinding(EditingCommands.SelectLeftByWord, Ctrl | Shift, Key.Left, OnMoveCaretExtendSelection(CaretMovementType.WordLeft));
+			AddBinding(RectangleSelection.BoxSelectLeftByWord, Ctrl | Alt | Shift, Key.Left, OnMoveCaretBoxSelection(CaretMovementType.WordLeft));
 			AddBinding(EditingCommands.MoveRightByWord, Ctrl, Key.Right, OnMoveCaret(CaretMovementType.WordRight));
 			AddBinding(EditingCommands.SelectRightByWord, Ctrl | Shift, Key.Right, OnMoveCaretExtendSelection(CaretMovementType.WordRight));
+			AddBinding(RectangleSelection.BoxSelectRightByWord, Ctrl | Alt | Shift, Key.Right, OnMoveCaretBoxSelection(CaretMovementType.WordRight));
 			
 			AddBinding(EditingCommands.MoveUpByLine, None, Key.Up, OnMoveCaret(CaretMovementType.LineUp));
 			AddBinding(EditingCommands.SelectUpByLine, Shift, Key.Up, OnMoveCaretExtendSelection(CaretMovementType.LineUp));
+			AddBinding(RectangleSelection.BoxSelectUpByLine, Alt | Shift, Key.Up, OnMoveCaretBoxSelection(CaretMovementType.LineUp));
 			AddBinding(EditingCommands.MoveDownByLine, None, Key.Down, OnMoveCaret(CaretMovementType.LineDown));
 			AddBinding(EditingCommands.SelectDownByLine, Shift, Key.Down, OnMoveCaretExtendSelection(CaretMovementType.LineDown));
+			AddBinding(RectangleSelection.BoxSelectDownByLine, Alt | Shift, Key.Down, OnMoveCaretBoxSelection(CaretMovementType.LineDown));
 			
 			AddBinding(EditingCommands.MoveDownByPage, None, Key.PageDown, OnMoveCaret(CaretMovementType.PageDown));
 			AddBinding(EditingCommands.SelectDownByPage, Shift, Key.PageDown, OnMoveCaretExtendSelection(CaretMovementType.PageDown));
@@ -64,8 +72,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			AddBinding(EditingCommands.MoveToLineStart, None, Key.Home, OnMoveCaret(CaretMovementType.LineStart));
 			AddBinding(EditingCommands.SelectToLineStart, Shift, Key.Home, OnMoveCaretExtendSelection(CaretMovementType.LineStart));
+			AddBinding(RectangleSelection.BoxSelectToLineStart, Alt | Shift, Key.Home, OnMoveCaretBoxSelection(CaretMovementType.LineStart));
 			AddBinding(EditingCommands.MoveToLineEnd, None, Key.End, OnMoveCaret(CaretMovementType.LineEnd));
 			AddBinding(EditingCommands.SelectToLineEnd, Shift, Key.End, OnMoveCaretExtendSelection(CaretMovementType.LineEnd));
+			AddBinding(RectangleSelection.BoxSelectToLineEnd, Alt | Shift, Key.End, OnMoveCaretBoxSelection(CaretMovementType.LineEnd));
 			
 			AddBinding(EditingCommands.MoveToDocumentStart, Ctrl, Key.Home, OnMoveCaret(CaretMovementType.DocumentStart));
 			AddBinding(EditingCommands.SelectToDocumentStart, Ctrl | Shift, Key.Home, OnMoveCaretExtendSelection(CaretMovementType.DocumentStart));
@@ -127,6 +137,31 @@ namespace ICSharpCode.AvalonEdit.Editing
 				TextArea textArea = GetTextArea(target);
 				if (textArea != null && textArea.Document != null) {
 					args.Handled = true;
+					TextViewPosition oldPosition = textArea.Caret.Position;
+					MoveCaret(textArea, direction);
+					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldPosition, textArea.Caret.Position);
+					textArea.Caret.BringCaretToView();
+				}
+			};
+		}
+		
+		static ExecutedRoutedEventHandler OnMoveCaretBoxSelection(CaretMovementType direction)
+		{
+			return (target, args) => {
+				TextArea textArea = GetTextArea(target);
+				if (textArea != null && textArea.Document != null) {
+					args.Handled = true;
+					// First, convert the selection into a rectangle selection
+					// (this is required so that virtual space gets enabled for the caret movement)
+					if (textArea.Options.EnableRectangularSelection && !(textArea.Selection is RectangleSelection)) {
+						if (textArea.Selection.IsEmpty) {
+							textArea.Selection = new RectangleSelection(textArea, textArea.Caret.Position, textArea.Caret.Position);
+						} else {
+							// Convert normal selection to rectangle selection
+							textArea.Selection = new RectangleSelection(textArea, textArea.Selection.StartPosition, textArea.Caret.Position);
+						}
+					}
+					// Now move the caret and extend the selection
 					TextViewPosition oldPosition = textArea.Caret.Position;
 					MoveCaret(textArea, direction);
 					textArea.Selection = textArea.Selection.StartSelectionOrSetEndpoint(oldPosition, textArea.Caret.Position);

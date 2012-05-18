@@ -34,7 +34,7 @@ namespace UnitTesting.Tests.Tree
 		public void DebuggerStartsUnitTestApplicationWithCorrectCommandLineArguments()
 		{
 			string expectedArguments =
-				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\"";
+				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" /noxml";
 			string actualArguments = debuggerService.MockDebugger.ProcessStartInfo.Arguments;
 			
 			Assert.AreEqual(expectedArguments, actualArguments);
@@ -54,7 +54,7 @@ namespace UnitTesting.Tests.Tree
 		{
 			string expectedText = 
 				"\"D:\\SharpDevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
-				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\"\r\n";
+				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" /noxml\r\n";
 			string actualText = context.UnitTestCategory.Text;
 			
 			Assert.AreEqual(expectedText, actualText);

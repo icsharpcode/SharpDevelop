@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
-using System.IO;
 using RegistryContentPair = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Dom.ProjectContentRegistry, ICSharpCode.SharpDevelop.Dom.IProjectContent>;
 
 namespace ICSharpCode.SharpDevelop
@@ -134,7 +136,7 @@ namespace ICSharpCode.SharpDevelop
 			foreach (ProjectContentRegistryDescriptor registry in registries) {
 				if (registry.IsRegistryLoaded) {
 					foreach (IProjectContent pc in registry.Registry.GetLoadedProjectContents()) {
-						if (pc.ReferencedContents.Contains(referencedContent)) {
+						if (pc.ThreadSafeGetReferencedContents().Contains(referencedContent)) {
 							if (unloadedReferenceContents.Add(pc)) {
 								LoggingService.Debug("Mark dependent content for unloading " + pc);
 								otherContentsToUnload.Add(new RegistryContentPair(registry.Registry, pc));
@@ -148,9 +150,11 @@ namespace ICSharpCode.SharpDevelop
 				IProject project = (IProject)pc.Project;
 				if (projectsToRefresh.Contains(project))
 					continue;
-				if (pc.ReferencedContents.Remove(referencedContent)) {
-					LoggingService.Debug("UnloadReferencedContent: Mark project for reparsing " + project.Name);
-					projectsToRefresh.Add(project);
+				lock (pc.ReferencedContents) {
+					if (pc.ReferencedContents.Remove(referencedContent)) {
+						LoggingService.Debug("UnloadReferencedContent: Mark project for reparsing " + project.Name);
+						projectsToRefresh.Add(project);
+					}
 				}
 			}
 			

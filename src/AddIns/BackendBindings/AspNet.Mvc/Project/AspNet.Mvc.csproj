@@ -231,7 +231,6 @@
     <Compile Include="Src\SelectedMvcFolder.cs" />
     <Compile Include="Src\SelectedMvcViewFolder.cs" />
     <Compile Include="Src\SlideBehaviour.cs" />
-    <Compile Include="Src\ViewInBrowser.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\VisualStudioProjectExtension.cs" />
     <Compile Include="Src\WebBehavior.cs" />

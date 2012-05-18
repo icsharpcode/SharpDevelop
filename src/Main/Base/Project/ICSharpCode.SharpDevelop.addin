@@ -238,6 +238,13 @@
 		</Condition>
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
+		<MenuItem id = "OpenFolderContainingFile"
+		          label = "${res:Gui.ProjectBrowser.OpenFolderInExplorer}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolderContainingFile"/>
+		<MenuItem id = "OpenCommandPromptHere"
+		          label = "${res:OpenFileTabEventHandler.OpenCommandPromptHere}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenCommandPromptHere"/>
+		<MenuItem id = "OpenSeparator" type = "Separator"/>
 		<MenuItem id    = "CollapseAll"
 		          label = "${res:ProjectComponent.ContextMenu.CollapseAll}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAll"/>
@@ -277,7 +284,9 @@
 		<MenuItem id = "OpenFolderContainingFile"
 		          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolderContainingFile"/>
-		
+		<MenuItem id = "OpenCommandPromptHere"
+		          label = "${res:OpenFileTabEventHandler.OpenCommandPromptHere}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenCommandPromptHere"/>
 		<MenuItem id = "OpenSeparator" type = "Separator" />
 		<Include id="CutCopyRemoveRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutCopyRemoveRename"/>
 	</Path>
@@ -354,13 +363,19 @@
 		<MenuItem id = "OpenProjectOutputFolder"
 		          label = "${res:ProjectComponent.ContextMenu.OpenProjectOutputFolder}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenProjectOutputFolder"/>
-		
+		<MenuItem id = "OpenCommandPromptHere"
+		          label = "${res:OpenFileTabEventHandler.OpenCommandPromptHere}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenCommandPromptHere"/>
 		<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
 			<MenuItem id          = "Run"
 			          label       = "${res:ProjectComponent.ContextMenu.RunProject}"
 			          icon        = "Icons.16x16.RunProgramIcon"
 			          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProject"/>
 		</Condition>
+		<MenuItem id          = "RunWithoutDebugger"
+		          label       = "${res:ProjectComponent.ContextMenu.RunProjectWithoutDebugger}"
+		          icon        = "Icons.16x16.Debug.StartWithoutDebugging"
+		          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProjectWithoutDebugger"/>
 		<MenuItem id    = "SetAsStartupProject"
 		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
@@ -403,6 +418,9 @@
 			<MenuItem id = "OpenFolderContainingFile"
 			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolderContainingFile"/>
+			<MenuItem id = "OpenCommandPromptHere"
+			          label = "${res:OpenFileTabEventHandler.OpenCommandPromptHere}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenCommandPromptHere"/>
 		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "Remove"
@@ -472,7 +490,7 @@
 						<Condition name = "Ownerstate" ownerstate = "BehindFile"/>
 					</Not>
 					<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False"/>
-					<Condition name = "ViewInBrowser" extensions="aspx,asmx,html,htm,svc"/>
+					<Condition name = "ViewInBrowser" extensions="html,htm"/>
 				</And>
 				
 				<MenuItem id          = "ViewInBrowser"
@@ -620,7 +638,9 @@
 			<MenuItem id = "OpenFolder"
 			          label = "${res:Gui.ProjectBrowser.OpenFolderInExplorer}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolder"/>
-			
+			<MenuItem id = "OpenCommandPromptHere"
+			          label = "${res:OpenFileTabEventHandler.OpenCommandPromptHere}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenCommandPromptHere"/>
 			<ComplexCondition>
 				<Or>
 					<Condition name = "Ownerstate" ownerstate = "InProject"/>
@@ -1161,6 +1181,9 @@
 			<MenuItem id = "OpenFolderContainingFileFromTab"
 			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.OpenFolderContainingFile"/>
+			<MenuItem id = "OpenCommandPromptHereFromTab"
+			          label = "${res:OpenFileTabEventHandler.OpenCommandPromptHere}"
+			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.OpenCommandPromptHere"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -1217,6 +1240,9 @@
 			<OptionPanel id    = "ExternalTools"
 			             label = "${res:Dialog.Options.ExternalToolsText}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPane"/>
+			<OptionPanel id    = "ServiceReferences"
+			             label = "Service References"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ServiceReference.ServiceReferenceOptionsPanel"/>
 		</OptionPanel>
 	</Path>
 	

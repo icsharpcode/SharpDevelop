@@ -39,6 +39,16 @@ namespace Debugger.AddIn.Pads.Controls
 			get { return Node.HasChildNodes; }
 		}
 		
+		public override bool CanDelete()
+		{
+			return Parent is WatchRootNode;
+		}
+		
+		public override void Delete()
+		{
+			Parent.Children.Remove(this);
+		}
+		
 		protected override void LoadChildren()
 		{
 			if (Node.HasChildNodes) {

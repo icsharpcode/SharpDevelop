@@ -317,22 +317,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 					StartExpression = CreateRegex(span, span.BeginRegex, span.BeginRegexType),
 					EndExpression = CreateRegex(span, endRegex, span.EndRegexType),
 					RuleSet = GetRuleSet(span, span.RuleSetReference),
-					StartColor = MergeColor(wholeSpanColor, GetColor(span, span.BeginColorReference)),
+					StartColor = GetColor(span, span.BeginColorReference),
 					SpanColor = wholeSpanColor,
-					EndColor = MergeColor(wholeSpanColor, GetColor(span, span.EndColorReference)),
-				};
-			}
-			
-			static HighlightingColor MergeColor(HighlightingColor baseColor, HighlightingColor newColor)
-			{
-				if (baseColor == null)
-					return newColor;
-				if (newColor == null)
-					return baseColor;
-				return new HighlightingColor {
-					Foreground = newColor.Foreground ?? baseColor.Foreground,
-					FontWeight = newColor.FontWeight ?? baseColor.FontWeight,
-					FontStyle = newColor.FontStyle ?? baseColor.FontStyle,
+					EndColor = GetColor(span, span.EndColorReference),
+					SpanColorIncludesStart = true,
+					SpanColorIncludesEnd = true
 				};
 			}
 			

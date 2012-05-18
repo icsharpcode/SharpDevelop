@@ -337,15 +337,18 @@ namespace ICSharpCode.FormsDesigner
 			
 			foreach (var stmt in initializeComponent.Statements.OfType<CodeExpressionStatement>().Where(ces => ces.Expression is CodeMethodInvokeExpression)) {
 				CodeMethodInvokeExpression invocation = (CodeMethodInvokeExpression)stmt.Expression;
-				if (invocation.Method.TargetObject is CodeCastExpression) {
-					CodeCastExpression expr = (CodeCastExpression)invocation.Method.TargetObject;
-					CodeFieldReferenceExpression fieldRef = (CodeFieldReferenceExpression)expr.Expression;
-					if (!(fieldRef.TargetObject is CodeThisReferenceExpression))
+				CodeCastExpression expr = invocation.Method.TargetObject as CodeCastExpression;
+				if (expr != null) {
+					CodeFieldReferenceExpression fieldRef = expr.Expression as CodeFieldReferenceExpression;
+					if (fieldRef == null || !(fieldRef.TargetObject is CodeThisReferenceExpression))
 						continue;
 					if (expr.TargetType.BaseType != "System.ComponentModel.ISupportInitialize")
 						continue;
-					CodeMemberField field = formClass.Members.OfType<CodeMemberField>().First(f => this.formClass.ProjectContent.Language.NameComparer.Equals(fieldRef.FieldName, f.Name));
-					IClass fieldType = this.formClass.ProjectContent.GetClass(field.Type.BaseType, 0);
+					IField field = this.formClass.DefaultReturnType.GetFields()
+						.First(f => this.formClass.ProjectContent.Language.NameComparer.Equals(fieldRef.FieldName, f.Name));
+					if (field.ReturnType == null)
+						continue;
+					IClass fieldType = field.ReturnType.GetUnderlyingClass();
 					if (fieldType == null)
 						continue;
 					if (!fieldType.IsTypeInInheritanceTree(iSupportInitializeInterface))

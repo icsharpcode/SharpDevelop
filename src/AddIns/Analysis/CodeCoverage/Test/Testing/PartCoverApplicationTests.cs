@@ -133,7 +133,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			string expectedCommandLine =
 				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
 				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\"\" " + 
+				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
 				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
 				"--include [*]*";
 
@@ -157,7 +157,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			string expectedCommandLine =
 				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
 				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\"\" " + 
+				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
 				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
 				"--include [MyTests]* " +
 				"--include [MoreTests]* " +

@@ -23,9 +23,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public ISharedPackageRepository CreateSharedRepository(
 			IPackagePathResolver pathResolver,
-			IFileSystem fileSystem)
+			IFileSystem fileSystem,
+			IFileSystem configSettingsFileSystem)
 		{
-			return new SharedPackageRepository(pathResolver, fileSystem);
+			return new SharedPackageRepository(pathResolver, fileSystem, configSettingsFileSystem);
 		}
 		
 		public IRecentPackageRepository CreateRecentPackageRepository(

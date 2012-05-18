@@ -50,7 +50,7 @@ namespace UnitTesting.Tests.Frameworks
 		public void CommandLineArgumentsAreNUnitConsoleExeCommandLineArguments()
 		{
 			string expectedCommandLine =
-				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\"";
+				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" /noxml";
 			
 			Assert.AreEqual(expectedCommandLine, info.Arguments);
 		}

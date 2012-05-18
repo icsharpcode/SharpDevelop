@@ -62,9 +62,9 @@ namespace ICSharpCode.PackageManagement
 			return repository;
 		}
 		
-		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
+		public ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem, IFileSystem configSettingsFileSystem)
 		{
-			return factory.CreateSharedRepository(pathResolver, fileSystem);
+			return factory.CreateSharedRepository(pathResolver, fileSystem, configSettingsFileSystem);
 		}
 		
 		public IPackageRepository CreateAggregateRepository()
