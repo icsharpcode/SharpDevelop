@@ -287,8 +287,7 @@ namespace CSharpBinding.OptionPanels
 			}
 		}
 		#endregion
-		//Property DebugType
-		//void DebugSymbolsLoaded(object sender, EventArgs e)
+		
 		
 		#region FileAlignment
 		
@@ -313,7 +312,7 @@ namespace CSharpBinding.OptionPanels
 		private void BaseIntermediateOutputPathExecute ()
 		{
 			BaseIntermediateOutputPath.Value = base.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,baseIntermediateOutputPathTextBox.Text);
+			                                        base.BaseDirectory,this.baseIntermediateOutputPathTextBox.Text);
 			base.RaisePropertyChanged(()=> BaseIntermediateOutputPath);
 		}
 		
@@ -322,7 +321,7 @@ namespace CSharpBinding.OptionPanels
 		#region IntermediateOutputPath
 		
 		public System.Windows.Input.ICommand IntermediateOutputPathCommand {
-			get{return this.baseIntermediateOutputPathCommand;}
+			get{return this.intermediateOutputPathCommand;}
 			set {this.intermediateOutputPathCommand = value;
 				base.RaisePropertyChanged(() => IntermediateOutputPathCommand);}
 		}
@@ -331,7 +330,7 @@ namespace CSharpBinding.OptionPanels
 		private void IntermediateOutputPathExecute ()
 		{
 			IntermediateOutputPath.Value = base.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,baseIntermediateOutputPathTextBox.Text);
+			                                        base.BaseDirectory,this.intermediateOutputPathTextBox.Text);
 			base.RaisePropertyChanged(()=> IntermediateOutputPath);
 		}
 		#endregion
@@ -348,6 +347,7 @@ namespace CSharpBinding.OptionPanels
 		private void LoadWarningsLevel ()
 		{
 			string val = WarningLevel.Value;
+			System.Console.WriteLine(val);
 			var i = WarnLevel.FindIndex(
 				delegate(KeyItemPair pair)
 				{

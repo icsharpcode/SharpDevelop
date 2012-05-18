@@ -284,6 +284,7 @@
 								Grid.Column="1"
 								HorizontalAlignment="Right"
 								Content="{core:Localize Dialog.ProjectOptions.Build.DLLBaseAddress}"></Label>
+							
 							<!-- Hex binding -->
 							<TextBox
 								x:Name="dllBaseAddressTextBox"
@@ -294,6 +295,9 @@
 								Grid.Row="6"
 								Grid.ColumnSpan="2"
 								Content="{core:Localize Dialog.ProjectOptions.Build.BaseIntermediateOutputPath}"></Label>
+							
+						<!-- ok -->	
+							
 							<optionpanels:StorageLocationPicker
 								Grid.Row="7"
 								Location="{Binding BaseIntermediateOutputPath.Location}"
@@ -316,7 +320,7 @@
 								Content="{core:Localize Dialog.ProjectOptions.Build.IntermediateOutputPath}"></Label>
 							<optionpanels:StorageLocationPicker
 								Grid.Row="9"
-								Location="{Binding AssemblyName.Location}"
+								Location="{Binding IntermediateOutputPath.Location}"
 								DockPanel.Dock="Left" />
 							<TextBox
 								x:Name="intermediateOutputPathTextBox"
