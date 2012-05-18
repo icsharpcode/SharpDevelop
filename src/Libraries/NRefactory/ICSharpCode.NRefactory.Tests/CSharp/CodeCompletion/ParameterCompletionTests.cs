@@ -941,5 +941,39 @@ class TestClass
 ");
 			Assert.IsTrue (provider == null || provider.Count == 0);
 		}
+
+		/// <summary>
+		/// Bug 4927 - [New Resolver] Autocomplete shows non-static methods when using class name
+		/// </summary>
+		[Test()]
+		public void TestBug4927 ()
+		{
+			IParameterDataProvider provider = CreateProvider (
+@"
+public class A
+{
+  // static method
+  public static void Method(string someParameter, object anotherParameter)
+  {
+  }
+
+  // instance method
+  public void Method()
+  {
+  }
+}
+
+
+public class B
+{
+  public static void Main()
+  {
+    $A.Method($
+  }
+}
+");
+			Assert.IsNotNull (provider, "provider was not created.");
+			Assert.AreEqual (1, provider.Count);
+		}
 	}
 }

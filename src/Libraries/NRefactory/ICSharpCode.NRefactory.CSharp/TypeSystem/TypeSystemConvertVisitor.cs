@@ -1,4 +1,4 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override IUnresolvedEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
-			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
+			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(NameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		public override IUnresolvedEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
-			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(SimpleNameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
+			TypeOrNamespaceReference u = usingDeclaration.Import.ToTypeReference(NameLookupMode.TypeInUsingDeclaration) as TypeOrNamespaceReference;
 			if (u != null) {
 				if (interningProvider != null)
 					u = interningProvider.Intern(u);
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints, EntityType.TypeDefinition);
 			
 			foreach (AstType baseType in typeDeclaration.BaseTypes) {
-				td.BaseTypes.Add(baseType.ToTypeReference(SimpleNameLookupMode.BaseTypeReference));
+				td.BaseTypes.Add(baseType.ToTypeReference(NameLookupMode.BaseTypeReference));
 			}
 			
 			foreach (EntityDeclaration member in typeDeclaration.Members) {
@@ -354,6 +354,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				
 				if ((modifiers & Modifiers.Const) != 0) {
 					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
+					field.IsStatic = true;
 				}
 				
 				currentTypeDefinition.Members.Add(field);
@@ -896,11 +897,11 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 				if (nae != null) {
 					if (namedCtorArguments == null)
 						namedCtorArguments = new List<KeyValuePair<string, IConstantValue>>();
-					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Identifier, ConvertAttributeArgument(nae.Expression)));
+					namedCtorArguments.Add(new KeyValuePair<string, IConstantValue>(nae.Name, ConvertAttributeArgument(nae.Expression)));
 				} else {
 					NamedExpression namedExpression = expr as NamedExpression;
 					if (namedExpression != null) {
-						string name = namedExpression.Identifier;
+						string name = namedExpression.Name;
 						if (namedArguments == null)
 							namedArguments = new List<KeyValuePair<string, IConstantValue>>();
 						namedArguments.Add(new KeyValuePair<string, IConstantValue>(name, ConvertAttributeArgument(namedExpression.Expression)));
@@ -917,7 +918,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		
 		#region Types
 		[Obsolete("Use AstType.ToTypeReference() instead.")]
-		public static ITypeReference ConvertType(AstType type, SimpleNameLookupMode lookupMode = SimpleNameLookupMode.Type)
+		public static ITypeReference ConvertType(AstType type, NameLookupMode lookupMode = NameLookupMode.Type)
 		{
 			return type.ToTypeReference(lookupMode);
 		}
@@ -1137,6 +1138,18 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 					p.DefaultValue = ConvertConstantValue(p.Type, pd.DefaultExpression);
 				outputList.Add(p);
 			}
+		}
+		
+		internal static IList<ITypeReference> GetParameterTypes(IEnumerable<ParameterDeclaration> parameters)
+		{
+			List<ITypeReference> result = new List<ITypeReference>();
+			foreach (ParameterDeclaration pd in parameters) {
+				ITypeReference type = pd.Type.ToTypeReference();
+				if (pd.ParameterModifier == ParameterModifier.Ref || pd.ParameterModifier == ParameterModifier.Out)
+					type = new ByReferenceTypeReference(type);
+				result.Add(type);
+			}
+			return result;
 		}
 		#endregion
 		

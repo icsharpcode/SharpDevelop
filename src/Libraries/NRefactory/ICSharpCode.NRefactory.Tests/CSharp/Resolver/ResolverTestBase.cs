@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		protected static TypeOrNamespaceReference MakeReference(string namespaceName)
 		{
 			string[] nameParts = namespaceName.Split('.');
-			TypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], SimpleNameLookupMode.TypeInUsingDeclaration);
+			TypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], NameLookupMode.TypeInUsingDeclaration);
 			for (int i = 1; i < nameParts.Length; i++) {
 				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0]);
 			}

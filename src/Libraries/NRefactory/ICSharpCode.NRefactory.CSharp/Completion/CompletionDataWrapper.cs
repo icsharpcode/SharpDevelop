@@ -75,32 +75,52 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 		HashSet<string> usedTypes = new HashSet<string> ();
 
-		public void AddType (IType type, string shortType)
+		public ICompletionData AddType(IType type, string shortType)
 		{
-			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
-				return;
-			usedTypes.Add (shortType);
-			result.Add (Factory.CreateTypeCompletionData (type, shortType));
+			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
+				return null;
+			usedTypes.Add(shortType);
+			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
+			result.Add(iCompletionData);
+			return iCompletionData;
 		}
 		
-		public void AddType (IUnresolvedTypeDefinition type, string shortType)
+		public ICompletionData AddType(IUnresolvedTypeDefinition type, string shortType)
 		{
-			if (type == null || string.IsNullOrEmpty (shortType) || usedTypes.Contains (shortType))
-				return;
-			usedTypes.Add (shortType);
-			result.Add (Factory.CreateTypeCompletionData (type, shortType));
+			if (type == null || string.IsNullOrEmpty(shortType) || usedTypes.Contains(shortType))
+				return null;
+			usedTypes.Add(shortType);
+			var iCompletionData = Factory.CreateTypeCompletionData(type, shortType);
+			result.Add(iCompletionData);
+			return iCompletionData;
 		}
 			
 		Dictionary<string, List<ICompletionData>> data = new Dictionary<string, List<ICompletionData>> ();
 			
-		public void AddVariable (IVariable variable)
+		public ICompletionData AddVariable(IVariable variable)
 		{
-			if (data.ContainsKey (variable.Name))
-				return;
-			data [variable.Name] = new List<ICompletionData> ();
-			result.Add (Factory.CreateVariableCompletionData (variable));
+			if (data.ContainsKey(variable.Name))
+				return null;
+			data [variable.Name] = new List<ICompletionData>();
+			var cd = Factory.CreateVariableCompletionData(variable);
+			result.Add(cd);
+			return cd;
 		}
-			
+
+		public ICompletionData AddNamedParameterVariable(IVariable variable)
+		{
+			var name = variable.Name + ":";
+			if (data.ContainsKey(name))
+				return null;
+			data [name] = new List<ICompletionData>();
+
+			var cd = Factory.CreateVariableCompletionData(variable);
+			cd.CompletionText += ":";
+			cd.DisplayText += ":";
+			result.Add(cd);
+			return cd;
+		}
+		
 		public void AddTypeParameter (IUnresolvedTypeParameter variable)
 		{
 			if (data.ContainsKey (variable.Name))

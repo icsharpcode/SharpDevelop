@@ -917,7 +917,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression)
 		{
 			StartNode(namedArgumentExpression);
-			namedArgumentExpression.IdentifierToken.AcceptVisitor(this);
+			namedArgumentExpression.NameToken.AcceptVisitor(this);
 			WriteToken(Roles.Colon);
 			Space();
 			namedArgumentExpression.Expression.AcceptVisitor(this);
@@ -927,7 +927,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public void VisitNamedExpression(NamedExpression namedExpression)
 		{
 			StartNode(namedExpression);
-			namedExpression.IdentifierToken.AcceptVisitor(this);
+			namedExpression.NameToken.AcceptVisitor(this);
 			Space();
 			WriteToken(Roles.Assign);
 			Space();
@@ -1837,16 +1837,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				label.AcceptVisitor(this);
 				first = false;
 			}
-			if (policy.IndentCaseBody) {
+			bool isBlock = switchSection.Statements.Count == 1 && switchSection.Statements.Single() is BlockStatement;
+			if (policy.IndentCaseBody && !isBlock) {
 				formatter.Indent();
 			}
 			
-			foreach (var statement in switchSection.Statements) {
+			if (!isBlock)
 				NewLine();
+			
+			foreach (var statement in switchSection.Statements) {
 				statement.AcceptVisitor(this);
 			}
 			
-			if (policy.IndentCaseBody) {
+			if (policy.IndentCaseBody && !isBlock) {
 				formatter.Unindent();
 			}
 			

@@ -170,7 +170,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }");
 		}
 
-		
+		[Test]
+		public void TestEnumCase()
+		{
+			TestWrongContext<CreateFieldAction>(@"
+enum AEnum { A }
+class Foo
+{
+	public void Test ()
+	{
+		AEnum e;
+		e.$foo = 2;
+	}
+}
+");
+		}
 
 	}
 }

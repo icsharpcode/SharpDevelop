@@ -265,6 +265,10 @@
     <Compile Include="CSharp\Parser\Bugs\ParserBugTests.cs" />
     <Compile Include="FormattingTests\TestKeepReformattingRules.cs" />
     <Compile Include="FormattingTests\TestWrapping.cs" />
+    <Compile Include="CSharp\CodeCompletion\DelegateContextTests.cs" />
+    <Compile Include="CSharp\CodeActions\ImplementInterfaceTests.cs" />
+    <Compile Include="CSharp\CodeActions\ImplementInterfaceExplicitTests.cs" />
+    <Compile Include="CSharp\CodeActions\ImplementAbstractMembersTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -301,7 +305,7 @@
         <Policies>
           <TextStylePolicy TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/plain" />
           <TextStylePolicy FileWidth="120" TabWidth="4" EolMarker="Unix" inheritsSet="Mono" inheritsScope="text/plain" scope="text/x-csharp" />
-          <CSharpFormattingPolicy inheritsSet="1TBS" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" IfElseBraceForcement="AddBraces" ForBraceForcement="AddBraces" ForEachBraceForcement="AddBraces" WhileBraceForcement="AddBraces" UsingBraceForcement="AddBraces" FixedBraceForcement="AddBraces" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
         </Policies>
       </Properties>
     </MonoDevelop>

@@ -260,8 +260,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				this.unresolvedTypeDict = unresolved.GetTypeDictionary(compilation.NameComparer);
 				this.rootNamespace = new NS(this, unresolved.GetUnresolvedRootNamespace(compilation.NameComparer), null);
 				this.context = new SimpleTypeResolveContext(this);
-				this.AssemblyAttributes = unresolved.AssemblyAttributes.ToList().CreateResolvedAttributes(context);
-				this.ModuleAttributes = unresolved.ModuleAttributes.ToList().CreateResolvedAttributes(context);
+				this.AssemblyAttributes = unresolved.AssemblyAttributes.CreateResolvedAttributes(context);
+				this.ModuleAttributes = unresolved.ModuleAttributes.CreateResolvedAttributes(context);
 			}
 			
 			public IUnresolvedAssembly UnresolvedAssembly {

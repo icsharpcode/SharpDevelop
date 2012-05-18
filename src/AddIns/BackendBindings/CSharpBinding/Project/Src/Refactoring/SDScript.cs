@@ -76,16 +76,16 @@ namespace CSharpBinding.Refactoring
 			// TODO
 		}
 		
-		public override void InsertWithCursor(string operation, AstNode node, InsertPosition defaultPosition)
+		public override void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
 			AstNode contextNode = context.GetNode();
 			if (contextNode == null)
 				return;
 			var resolver = context.GetResolverStateBefore(contextNode);
-			InsertWithCursor(operation, node, resolver.CurrentTypeDefinition);
+			InsertWithCursor(operation, resolver.CurrentTypeDefinition, nodes);
 		}
 		
-		public override void InsertWithCursor(string operation, AstNode node, ITypeDefinition parentType)
+		public override void InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
 			if (parentType == null)
 				return;
@@ -94,8 +94,10 @@ namespace CSharpBinding.Refactoring
 				var insertionPoints = InsertionPoint.GetInsertionPoints(editor.Document, currentPart);
 				if (insertionPoints.Count > 0) {
 					int indentLevel = GetIndentLevelAt(editor.Document.GetOffset(insertionPoints[0].Location));
-					var output = OutputNode(indentLevel, node);
-					insertionPoints[0].Insert(editor.Document, output.Text);
+					foreach (var node in nodes.Reverse()) {
+						var output = OutputNode(indentLevel, node);
+						insertionPoints[0].Insert(editor.Document, output.Text);
+					}
 				}
 			}
 		}

@@ -113,18 +113,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 		IEnumerable<IMethod> CollectMethods(AstNode resolvedNode, MethodGroupResolveResult resolveResult)
 		{
-			//			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, Compilation.MainAssembly);
+			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			bool onlyStatic = false;
-			if (resolvedNode is IdentifierExpression && currentMember != null && currentMember.IsStatic) {
+			if (resolvedNode is IdentifierExpression && currentMember != null && currentMember.IsStatic || resolveResult.TargetResult is TypeResolveResult) {
 				onlyStatic = true;
 			}
-			
 			foreach (var method in resolveResult.Methods) {
 				if (method.IsConstructor) {
 					continue;
 				}
-				//				if (!lookup.IsAccessible (member, true))
-				//					continue;
+				if (!lookup.IsAccessible (method, true))
+					continue;
 				if (onlyStatic && !method.IsStatic) {
 					continue;
 				}
@@ -335,144 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		public int GetCurrentParameterIndex(int triggerOffset, int endOffset)
-		{
-			char lastChar = document.GetCharAt(endOffset - 1);
-			if (lastChar == '(' || lastChar == '<') { 
-				return 0;
-			}
-			var parameter = new Stack<int>();
-			var bracketStack = new Stack<Stack<int>>();
-			bool inSingleComment = false, inString = false, inVerbatimString = false, inChar = false, inMultiLineComment = false;
-			for (int i = triggerOffset; i < endOffset; i++) {
-				char ch = document.GetCharAt(i);
-				char nextCh = i + 1 < document.TextLength ? document.GetCharAt(i + 1) : '\0';
-				switch (ch) {
-					case '{':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						bracketStack.Push(parameter);
-						parameter = new Stack<int>();
-						break;
-					case '[':
-					case '(':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						parameter.Push(0);
-						break;
-					case '}':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (bracketStack.Count > 0) {
-							parameter = bracketStack.Pop();
-						} else {
-							return -1;
-						}
-						break;
-					case ']':
-					case ')':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (parameter.Count > 0) {
-							parameter.Pop();
-						} else {
-							return -1;
-						}
-						break;
-					case '<':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						parameter.Push(0);
-						break;
-					case '>':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (parameter.Count > 0) {
-							parameter.Pop();
-						}
-						break;
-					case ',':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (parameter.Count > 0) {
-							parameter.Push(parameter.Pop() + 1);
-						}
-						break;
-					case '/':
-						if (inString || inChar || inVerbatimString) {
-							break;
-						}
-						if (nextCh == '/') {
-							i++;
-							inSingleComment = true;
-						}
-						if (nextCh == '*') {
-							inMultiLineComment = true;
-						}
-						break;
-					case '*':
-						if (inString || inChar || inVerbatimString || inSingleComment) {
-							break;
-						}
-						if (nextCh == '/') {
-							i++;
-							inMultiLineComment = false;
-						}
-						break;
-					case '@':
-						if (inString || inChar || inVerbatimString || inSingleComment || inMultiLineComment) {
-							break;
-						}
-						if (nextCh == '"') {
-							i++;
-							inVerbatimString = true;
-						}
-						break;
-					case '\n':
-					case '\r':
-						inSingleComment = false;
-						inString = false;
-						inChar = false;
-						break;
-					case '\\':
-						if (inString || inChar) {
-							i++;
-						}
-						break;
-					case '"':
-						if (inSingleComment || inMultiLineComment || inChar) {
-							break;
-						}
-						if (inVerbatimString) {
-							if (nextCh == '"') {
-								i++;
-								break;
-							}
-							inVerbatimString = false;
-							break;
-						}
-						inString = !inString;
-						break;
-					case '\'':
-						if (inSingleComment || inMultiLineComment || inString || inVerbatimString) {
-							break;
-						}
-						inChar = !inChar;
-						break;
-				}
-			}
-			if (parameter.Count == 0 || bracketStack.Count > 0) {
-				return -1;
-			}
-			return parameter.Pop() + 1;
-		}
+	
 	}
 }
 
