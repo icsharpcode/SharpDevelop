@@ -13,10 +13,11 @@ namespace ICSharpCode.SharpDevelop
 	/// </summary>
 	public class MultiDictionary<TKey, TValue> : ILookup<TKey, TValue>
 	{
-		Dictionary<TKey, List<TValue>> dict;
+		readonly Dictionary<TKey, List<TValue>> dict;
 		
 		public MultiDictionary()
 		{
+			dict = new Dictionary<TKey, List<TValue>>();
 		}
 		
 		public MultiDictionary(IEqualityComparer<TKey> comparer)
