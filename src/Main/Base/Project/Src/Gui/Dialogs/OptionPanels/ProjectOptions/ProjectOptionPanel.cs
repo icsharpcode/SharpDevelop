@@ -295,26 +295,28 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#region INotifyPropertyChanged implementation
 		
+		protected void RaisePropertyChanged(string propertyName)
+		{
+			RaiseInternal(propertyName);
+		}
+			
+		
 		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
 		{
 			var propertyName = ExtractPropertyName(propertyExpresssion);
-			//OnPropertyChanged(new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+			RaiseInternal(propertyName);
+		}
+		
+		
+		private void RaiseInternal (string propertyName)
+		{
 			var handler = this.PropertyChanged;
 			if (handler != null)
 			{
 				handler(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 			}
 		}
-		/*
-		protected virtual void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			var handler = this.PropertyChanged;
-			if (handler != null)
-			{
-				handler(this, e);
-			}
-		}
-		*/
+		
 		private static String ExtractPropertyName<T>(Expression<Func<T>> propertyExpresssion)
 		{
 			if (propertyExpresssion == null)
@@ -342,6 +344,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 			return memberExpression.Member.Name;
 		}
+		
 		#endregion
 		
 		
