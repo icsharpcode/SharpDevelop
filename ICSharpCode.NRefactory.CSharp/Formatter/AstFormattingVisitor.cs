@@ -235,9 +235,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingDeclaration(UsingDeclaration usingDeclaration)
 		{
-			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
+			if (usingDeclaration.PrevSibling != null && !(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			} else if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
+				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 				EnsureBlankLinesAfter(usingDeclaration, policy.BlankLinesAfterUsings);
 			} else {
 				FixIndentationForceNewLine(usingDeclaration.StartLocation);
@@ -246,9 +247,10 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public override void VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration)
 		{
-			if (!(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
+			if (usingDeclaration.PrevSibling != null && !(usingDeclaration.PrevSibling is UsingDeclaration || usingDeclaration.PrevSibling  is UsingAliasDeclaration)) {
 				EnsureBlankLinesBefore(usingDeclaration, policy.BlankLinesBeforeUsings);
 			} else if (!(usingDeclaration.NextSibling is UsingDeclaration || usingDeclaration.NextSibling  is UsingAliasDeclaration)) {
+				FixIndentationForceNewLine(usingDeclaration.StartLocation);
 				EnsureBlankLinesAfter(usingDeclaration, policy.BlankLinesAfterUsings);
 			} else {
 				FixIndentationForceNewLine(usingDeclaration.StartLocation);
