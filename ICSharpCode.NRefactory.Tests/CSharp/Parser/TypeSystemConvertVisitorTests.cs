@@ -108,6 +108,17 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		}
 		
 		[Test]
+		public void ExplicitImplementationOfUnifiedMethods_ToMemberReference()
+		{
+			IType type = compilation.FindType(typeof(ExplicitGenericInterfaceImplementationWithUnifiableMethods<int, int>));
+			Assert.AreEqual(2, type.GetMethods(m => m.IsExplicitInterfaceImplementation).Count());
+			foreach (IMethod method in type.GetMethods(m => m.IsExplicitInterfaceImplementation)) {
+				IMethod resolvedMethod = (IMethod)method.ToMemberReference().Resolve(compilation.TypeResolveContext);
+				Assert.AreEqual(method, resolvedMethod);
+			}
+		}
+		
+		[Test]
 		public void PartialMethodWithImplementation()
 		{
 			var t = compilation.FindType(typeof(PartialClass));

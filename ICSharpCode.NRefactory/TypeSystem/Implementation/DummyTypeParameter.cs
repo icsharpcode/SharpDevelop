@@ -138,6 +138,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public override string ToString()
+		{
+			return ReflectionName + " (dummy)";
+		}
+		
 		public override bool? IsReferenceType {
 			get { return null; }
 		}

@@ -56,17 +56,24 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		{
 			foreach (var project in solution.Projects) {
 				var compilation = project.Compilation;
-				var context = new SimpleTypeResolveContext(compilation.MainAssembly);
+				var assemblyContext = new SimpleTypeResolveContext(compilation.MainAssembly);
 				foreach (var typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
 					foreach (var part in typeDef.Parts) {
-						if (!typeDef.Equals(part.Resolve(context)))
+						if (!typeDef.Equals(part.Resolve(assemblyContext)))
 							throw new InvalidOperationException();
 					}
 					foreach (var member in typeDef.Members) {
-						var resolvedMember = member.UnresolvedMember.Resolve(context);
+						var resolvedMember = member.UnresolvedMember.Resolve(assemblyContext);
 						if (!member.Equals(resolvedMember))
 							throw new InvalidOperationException();
 					}
+					// ToMemberReference() requires an appropriate generic context if the member
+					// contains open generics; otherwise the main context of the compilation is sufficient.
+					ITypeResolveContext context;
+					if (typeDef.TypeParameterCount > 0)
+						context = new SimpleTypeResolveContext(typeDef);
+					else
+						context = compilation.TypeResolveContext;
 					// Include (potentially specialized) inherited members when testing ToMemberReference()
 					foreach (var member in typeDef.GetMembers()) {
 						var resolvedMember = member.ToMemberReference().Resolve(context);

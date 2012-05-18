@@ -213,7 +213,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 							return method;
 					} else if (method.IsExplicitInterfaceImplementation && method.ImplementedInterfaceMembers.Count == 1) {
 						IType explicitInterfaceType = explicitInterfaceTypeReference.Resolve(contextForMethod);
-						if (explicitInterfaceTypeReference.Equals(method.ImplementedInterfaceMembers[0].DeclaringType))
+						if (explicitInterfaceType.Equals(method.ImplementedInterfaceMembers[0].DeclaringType))
 							return method;
 					}
 				}
