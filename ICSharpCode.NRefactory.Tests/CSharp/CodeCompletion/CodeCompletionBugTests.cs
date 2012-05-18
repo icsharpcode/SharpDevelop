@@ -5212,5 +5212,39 @@ public class TestFoo
 			Assert.IsNull(provider.Find("split_char"), "'split_char' found.");
 		}
 
+
+		/// <summary>
+		/// Bug 4961 - Code completion for enumerations in static classes doesn't work.
+		/// </summary>
+		[Test()]
+		public void TestBug4961()
+		{
+			CombinedProviderTest(
+@"using System;
+using System.Collections.Generic;
+
+namespace EnumerationProblem
+{
+	public enum Options
+	{
+		GiveCompletion,
+		IwouldLoveIt,
+	}
+	
+	static class Converter
+	{
+		private static Dictionary<Options, string> options = new Dictionary<Options, string> () 
+		{
+			${ Options.$
+		};
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("GiveCompletion"));
+				Assert.IsNotNull(provider.Find("IwouldLoveIt"));
+			});
+		}
+
 	}
 }

@@ -780,7 +780,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						newField.AddChild (variable, FixedFieldDeclaration.VariableRole);
 					}
 				}
-				if (location != null)
+				if (location != null && location.Count > 1)
 					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
 				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 				
@@ -820,8 +820,8 @@ namespace ICSharpCode.NRefactory.CSharp
 						newField.AddChild (variable, Roles.Variable);
 					}
 				}
-				if (location != null)
-					newField.AddChild (new CSharpTokenNode (Convert (location [location.Count - 1])), Roles.Semicolon);
+				if (location != null && location.Count > 1)
+					newField.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Semicolon);
 
 				typeStack.Peek ().AddChild (newField, Roles.TypeMemberRole);
 			}
