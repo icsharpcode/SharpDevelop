@@ -319,7 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			return this.ReflectionName;
+			return this.ReflectionName + " (owner=" + owner + ")";
 		}
 	}
 }

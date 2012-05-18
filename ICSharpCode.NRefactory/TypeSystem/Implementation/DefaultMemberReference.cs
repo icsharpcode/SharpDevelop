@@ -26,6 +26,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// References an entity by its type and name.
 	/// This class can be used to refer to fields, events, and parameterless properties.
 	/// </summary>
+	/// <remarks>
+	/// Resolving a DefaultMemberReference requires a context that provides enough information for resolving the declaring type reference
+	/// and the parameter types references.
+	/// </remarks>
 	[Serializable]
 	public sealed class DefaultMemberReference : IMemberReference, ISupportsInterning
 	{
@@ -50,6 +54,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.parameterTypes = parameterTypes ?? EmptyList<ITypeReference>.Instance;
 		}
 		
+		public ITypeReference DeclaringTypeReference {
+			get { return typeReference; }
+		}
+		
 		public IMember Resolve(ITypeResolveContext context)
 		{
 			IType type = typeReference.Resolve(context);
@@ -66,14 +74,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			var resolvedParameterTypes = parameterTypes.Resolve(context);
 			foreach (IMember member in members) {
 				IParameterizedMember parameterizedMember = member as IParameterizedMember;
-				if (parameterTypes.Count == 0) {
-					if (parameterizedMember == null || parameterizedMember.Parameters.Count == 0)
+				if (parameterizedMember == null) {
+					if (parameterTypes.Count == 0)
 						return member;
 				} else if (parameterTypes.Count == parameterizedMember.Parameters.Count) {
 					bool signatureMatches = true;
 					for (int i = 0; i < parameterTypes.Count; i++) {
-						IType type1 = ParameterListComparer.Instance.NormalizeMethodTypeParameters(resolvedParameterTypes[i]);
-						IType type2 = ParameterListComparer.Instance.NormalizeMethodTypeParameters(parameterizedMember.Parameters[i].Type);
+						IType type1 = DummyTypeParameter.NormalizeAllTypeParameters(resolvedParameterTypes[i]);
+						IType type2 = DummyTypeParameter.NormalizeAllTypeParameters(parameterizedMember.Parameters[i].Type);
 						if (!type1.Equals(type2)) {
 							signatureMatches = false;
 							break;

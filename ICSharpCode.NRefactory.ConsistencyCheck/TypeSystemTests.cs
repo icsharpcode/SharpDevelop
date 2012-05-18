@@ -25,9 +25,9 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
-	public class IDStringConsistencyCheck
+	public class TypeSystemTests
 	{
-		public static void Run(Solution solution)
+		public static void IDStringConsistencyCheck(Solution solution)
 		{
 			foreach (var project in solution.Projects) {
 				var compilation = project.Compilation;
@@ -50,6 +50,31 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			IEntity resolvedEntity = IdStringProvider.FindEntity(id, context);
 			if (resolvedEntity != entity)
 				throw new InvalidOperationException(id);
+		}
+		
+		public static void ResolvedUnresolvedMembers(Solution solution)
+		{
+			foreach (var project in solution.Projects) {
+				var compilation = project.Compilation;
+				var context = new SimpleTypeResolveContext(compilation.MainAssembly);
+				foreach (var typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
+					foreach (var part in typeDef.Parts) {
+						if (!typeDef.Equals(part.Resolve(context)))
+							throw new InvalidOperationException();
+					}
+					foreach (var member in typeDef.Members) {
+						var resolvedMember = member.UnresolvedMember.Resolve(context);
+						if (!member.Equals(resolvedMember))
+							throw new InvalidOperationException();
+					}
+					// Include (potentially specialized) inherited members when testing ToMemberReference()
+					foreach (var member in typeDef.GetMembers()) {
+						var resolvedMember = member.ToMemberReference().Resolve(context);
+						if (!member.Equals(resolvedMember))
+							throw new InvalidOperationException();
+					}
+				}
+			}
 		}
 	}
 }

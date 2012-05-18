@@ -24,6 +24,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// References a member that is an explicit interface implementation.
 	/// </summary>
+	/// <remarks>
+	/// Resolving an ExplicitInterfaceImplementationMemberReference requires a context
+	/// that provides enough information for resolving the declaring type reference
+	/// and the interface member reference.
+	/// </remarks>
 	[Serializable]
 	public sealed class ExplicitInterfaceImplementationMemberReference : IMemberReference
 	{
@@ -38,6 +43,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("interfaceMemberReference");
 			this.typeReference = typeReference;
 			this.interfaceMemberReference = interfaceMemberReference;
+		}
+		
+		public ITypeReference DeclaringTypeReference {
+			get { return typeReference; }
 		}
 		
 		public IMember Resolve(ITypeResolveContext context)

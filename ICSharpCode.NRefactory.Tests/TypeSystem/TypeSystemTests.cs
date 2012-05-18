@@ -189,6 +189,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(1, constraint.TypeParameterCount);
 			Assert.AreEqual(1, constraint.TypeArguments.Count);
 			Assert.AreSame(m.TypeParameters[0], constraint.TypeArguments[0]);
+			Assert.AreSame(m.TypeParameters[0], m.Parameters[0].Type);
 		}
 		
 		[Test]
@@ -210,6 +211,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(1, constraint.TypeParameterCount);
 			Assert.AreEqual(1, constraint.TypeArguments.Count);
 			Assert.AreSame(m.TypeParameters[0], constraint.TypeArguments[0]);
+			Assert.AreSame(m.TypeParameters[0], m.Parameters[0].Type);
 		}
 		
 		[Test]
@@ -236,6 +238,38 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				new[] { compilation.FindType(KnownTypeCode.Int32) }
 			));
 			Assert.AreEqual(m12, m2);
+		}
+		
+		[Test]
+		public void Specialized_GetIndex_ToTypeReference()
+		{
+			var method = compilation.FindType(typeof(GenericClass<string, object>)).GetMethods(m => m.Name == "GetIndex").Single();
+			Assert.AreSame(method.TypeParameters[0], method.Parameters[0].Type);
+			Assert.AreSame(method, method.TypeParameters[0].Owner);
+			Assert.IsInstanceOf<SpecializedMethod>(method);
+			Assert.AreEqual(0, ((SpecializedMethod)method).TypeArguments.Count); // the method itself is not specialized
+			var methodReference = method.ToMemberReference();
+			var resolvedMethod = methodReference.Resolve(compilation.TypeResolveContext);
+			Assert.AreEqual(method, resolvedMethod);
+		}
+		
+		[Test]
+		public void Specialized_GetIndex_SpecializeWithIdentityHasNoEffect()
+		{
+			var genericClass = compilation.FindType(typeof(GenericClass<string, object>));
+			IType[] methodTypeArguments = { DummyTypeParameter.GetMethodTypeParameter(0) };
+			var method = (SpecializedMethod)genericClass.GetMethods(methodTypeArguments, m => m.Name == "GetIndex").Single();
+			// GenericClass<string,object>.GetIndex<!!0>()
+			Assert.AreSame(method, method.TypeParameters[0].Owner);
+			Assert.AreNotEqual(method.TypeParameters[0], method.TypeArguments[0]);
+			Assert.IsNull(((ITypeParameter)method.TypeArguments[0]).Owner);
+			// Now apply identity substitution:
+			var method2 = new SpecializedMethod(method, TypeParameterSubstitution.Identity);
+			Assert.AreSame(method2, method2.TypeParameters[0].Owner);
+			Assert.AreNotEqual(method2.TypeParameters[0], method2.TypeArguments[0]);
+			Assert.IsNull(((ITypeParameter)method2.TypeArguments[0]).Owner);
+			
+			Assert.AreEqual(method, method2);
 		}
 		
 		[Test]
@@ -726,7 +760,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(1.0, arg.ConstantValue);
 		}
 		
-		[Test, Ignore("Getting implicit interface implementations is not yet implemented.")]
+		[Test]
 		public void ImplicitImplementationOfUnifiedMethods()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(ImplementationOfUnifiedMethods));

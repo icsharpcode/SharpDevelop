@@ -653,16 +653,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			CSharpResolver oldResolver = resolver;
 			for (AstNode node = fieldOrEventDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == Roles.Variable) {
-					IMember member = null;
+					IMember member;
 					if (parsedFile != null) {
 						member = GetMemberFromLocation(node.StartLocation);
-					} else if (resolver.CurrentTypeDefinition != null) {
+					} else {
 						string name = ((VariableInitializer)node).Name;
-						if (entityType == EntityType.Event) {
-							member = resolver.CurrentTypeDefinition.GetEvents(e => e.Name == name && !e.IsExplicitInterfaceImplementation, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
-						} else {
-							member = resolver.CurrentTypeDefinition.GetFields(e => e.Name == name, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
-						}
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, entityType, name);
 					}
 					resolver = resolver.WithCurrentMember(member);
 					
@@ -775,46 +771,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				IMember member = null;
+				IMember member;
 				if (parsedFile != null) {
 					member = GetMemberFromLocation(memberDeclaration.StartLocation);
-				} else if (resolver.CurrentTypeDefinition != null) {
+				} else {
 					// Re-discover the method:
 					EntityType entityType = memberDeclaration.EntityType;
-					var typeParameters = memberDeclaration.GetChildrenByRole(Roles.TypeParameter).ToArray();
 					var parameterTypes = TypeSystemConvertVisitor.GetParameterTypes(memberDeclaration.GetChildrenByRole(Roles.Parameter));
 					if (entityType == EntityType.Constructor) {
-						bool isStatic = memberDeclaration.HasModifier(Modifiers.Static);
-						member = resolver.CurrentTypeDefinition.Methods.FirstOrDefault(
-							m => m.EntityType == entityType && m.IsStatic == isStatic
-							&& m.Parameters.Count == parameterTypes.Count
-							&& IsMatchingMethod(m, typeParameters, parameterTypes));
+						string name = memberDeclaration.HasModifier(Modifiers.Static) ? ".cctor" : ".ctor";
+						member = AbstractUnresolvedMember.Resolve(
+							resolver.CurrentTypeResolveContext, entityType, name,
+							parameterTypeReferences: parameterTypes);
+					} else if (entityType == EntityType.Destructor) {
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, entityType, "Finalize");
 					} else {
-						string name = (entityType == EntityType.Destructor ? "Finalize" : memberDeclaration.Name);
+						string[] typeParameterNames = memberDeclaration.GetChildrenByRole(Roles.TypeParameter).Select(tp => tp.Name).ToArray();
 						AstType explicitInterfaceAstType = memberDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole);
-						bool isExplicitInterfaceImplementation = false;
-						IType explicitInterfaceType = null;
+						ITypeReference explicitInterfaceType = null;
 						if (!explicitInterfaceAstType.IsNull) {
-							isExplicitInterfaceImplementation = true;
-							explicitInterfaceType = explicitInterfaceAstType.ToTypeReference().Resolve(resolver.CurrentTypeResolveContext);
+							explicitInterfaceType = explicitInterfaceAstType.ToTypeReference();
 						}
-						foreach (var method in resolver.CurrentTypeDefinition.GetMethods(
-							m => m.EntityType == entityType && m.Name == name
-							&& m.TypeParameters.Count == typeParameters.Length && m.Parameters.Count == parameterTypes.Count
-							&& m.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
-							GetMemberOptions.IgnoreInheritedMembers
-						)) {
-							if (isExplicitInterfaceImplementation) {
-								if (method.ImplementedInterfaceMembers.Count != 1)
-									continue;
-								if (!explicitInterfaceType.Equals(method.ImplementedInterfaceMembers[0].DeclaringType))
-									continue;
-							}
-							if (IsMatchingMethod(method, typeParameters, parameterTypes)) {
-								member = method;
-								break;
-							}
-						}
+						member = AbstractUnresolvedMember.Resolve(
+							resolver.CurrentTypeResolveContext, entityType, memberDeclaration.Name,
+							explicitInterfaceType, typeParameterNames, parameterTypes);
 					}
 				}
 				resolver = resolver.WithCurrentMember(member);
@@ -827,20 +807,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} finally {
 				resolver = oldResolver;
 			}
-		}
-		
-		bool IsMatchingMethod(IMethod method, TypeParameterDeclaration[] typeParameters, IList<ITypeReference> parameterTypes)
-		{
-			for (int i = 0; i < typeParameters.Length; i++) {
-				if (method.TypeParameters[i].Name != typeParameters[i].Name)
-					return false;
-			}
-			var resolvedParameterTypes = parameterTypes.Resolve(resolver.CurrentTypeResolveContext.WithCurrentMember(method));
-			for (int i = 0; i < parameterTypes.Count; i++) {
-				if (!method.Parameters[i].Type.Equals(resolvedParameterTypes[i]))
-					return false;
-			}
-			return true;
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitMethodDeclaration(MethodDeclaration methodDeclaration)
@@ -868,36 +834,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				IMember member = null;
+				IMember member;
 				if (parsedFile != null) {
 					member = GetMemberFromLocation(propertyOrIndexerDeclaration.StartLocation);
-				} else if (resolver.CurrentTypeDefinition != null) {
+				} else {
 					// Re-discover the property:
 					string name = propertyOrIndexerDeclaration.Name;
 					var parameterTypeReferences = TypeSystemConvertVisitor.GetParameterTypes(propertyOrIndexerDeclaration.GetChildrenByRole(Roles.Parameter));
-					var parameterTypes = parameterTypeReferences.Resolve(resolver.CurrentTypeResolveContext);
 					AstType explicitInterfaceAstType = propertyOrIndexerDeclaration.GetChildByRole(EntityDeclaration.PrivateImplementationTypeRole);
-					bool isExplicitInterfaceImplementation = false;
-					IType explicitInterfaceType = null;
+					ITypeReference explicitInterfaceType = null;
 					if (!explicitInterfaceAstType.IsNull) {
-						isExplicitInterfaceImplementation = true;
-						explicitInterfaceType = explicitInterfaceAstType.ToTypeReference().Resolve(resolver.CurrentTypeResolveContext);
+						explicitInterfaceType = explicitInterfaceAstType.ToTypeReference();
 					}
-					foreach (IProperty property in resolver.CurrentTypeDefinition.GetProperties(
-						p => p.Name == name && p.Parameters.Count == parameterTypes.Count && p.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
-						GetMemberOptions.IgnoreInheritedMembers
-					)) {
-						if (isExplicitInterfaceImplementation) {
-							if (property.ImplementedInterfaceMembers.Count != 1)
-								continue;
-							if (!explicitInterfaceType.Equals(property.ImplementedInterfaceMembers[0].DeclaringType))
-								continue;
-						}
-						if (Enumerable.SequenceEqual(parameterTypes, property.Parameters.Select(p => p.Type))) {
-							member = property;
-							break;
-						}
-					}
+					member = AbstractUnresolvedMember.Resolve(
+						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.EntityType, name,
+						explicitInterfaceType, parameterTypeReferences: parameterTypeReferences);
 				}
 				resolver = resolver.WithCurrentMember(member);
 				
@@ -934,24 +885,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CSharpResolver oldResolver = resolver;
 			try {
-				IMember member = null;
+				IMember member;
 				if (parsedFile != null) {
 					member = GetMemberFromLocation(eventDeclaration.StartLocation);
-				} else if (resolver.CurrentTypeDefinition != null) {
+				} else {
 					string name = eventDeclaration.Name;
 					AstType explicitInterfaceAstType = eventDeclaration.PrivateImplementationType;
 					if (explicitInterfaceAstType.IsNull) {
-						member = resolver.CurrentTypeDefinition.GetEvents(
-							e => e.Name == name && !e.IsExplicitInterfaceImplementation,
-							GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, EntityType.Event, name);
 					} else {
-						IType explicitInterfaceType = explicitInterfaceAstType.ToTypeReference().Resolve(resolver.CurrentTypeResolveContext);
-						member = resolver.CurrentTypeDefinition.GetEvents(
-							e => e.Name == name && e.IsExplicitInterfaceImplementation,
-							GetMemberOptions.IgnoreInheritedMembers
-						).FirstOrDefault(
-							e => e.ImplementedInterfaceMembers.Count == 1 && explicitInterfaceType.Equals(e.ImplementedInterfaceMembers[0].DeclaringType)
-						);
+						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, EntityType.Event, name,
+						                                          explicitInterfaceAstType.ToTypeReference());
 					}
 				}
 				resolver = resolver.WithCurrentMember(member);

@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -145,6 +146,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override IMember CreateResolved(ITypeResolveContext context)
 		{
 			return new DefaultResolvedMethod(this, context);
+		}
+		
+		public override IMember Resolve(ITypeResolveContext context)
+		{
+			ITypeReference interfaceTypeReference = null;
+			if (this.IsExplicitInterfaceImplementation && this.ExplicitInterfaceImplementations.Count == 1)
+				interfaceTypeReference = this.ExplicitInterfaceImplementations[0].DeclaringTypeReference;
+			return Resolve(ExtendContextForType(context, this.DeclaringTypeDefinition),
+			               this.EntityType, this.Name, interfaceTypeReference,
+			               this.TypeParameters.Select(tp => tp.Name).ToList(),
+			               this.Parameters.Select(p => p.Type).ToList());
+		}
+		
+		IMethod IUnresolvedMethod.Resolve(ITypeResolveContext context)
+		{
+			return (IMethod)Resolve(context);
 		}
 		
 		public static DefaultUnresolvedMethod CreateDefaultConstructor(IUnresolvedTypeDefinition typeDefinition)
