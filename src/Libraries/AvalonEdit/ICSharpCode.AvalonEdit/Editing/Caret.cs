@@ -23,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	{
 		readonly TextArea textArea;
 		readonly TextView textView;
+		readonly ImeSupport ime;
 		readonly CaretLayer caretAdorner;
 		bool visible;
 		
@@ -31,6 +32,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			this.textArea = textArea;
 			this.textView = textArea.TextView;
 			position = new TextViewPosition(1, 1, 0);
+			ime = new ImeSupport(textArea);
 			
 			caretAdorner = new CaretLayer(textView);
 			textView.InsertLayer(caretAdorner, KnownLayer.Caret, LayerInsertionPosition.Replace);
@@ -442,6 +444,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				} else {
 					caretAdorner.Hide();
 				}
+				ime.UpdateCompositionWindow();
 			}
 		}
 		

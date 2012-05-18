@@ -273,8 +273,8 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 	<head>
 		<title>@ViewBag.Title</title>
 		<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css">
-		<script src="@Url.Content("~/Scripts/modernizer-1.7.min.js")" type="text/javascript"></script>
-		<script src="@Url.Content("~/Scripts/jquery-1.6.1.min.js")" type="text/javascript"></script>
+		<script src="@Url.Content("~/Scripts/modernizr-2.5.3.js")" type="text/javascript"></script>
+		<script src="@Url.Content("~/Scripts/jquery-1.7.2.min.js")" type="text/javascript"></script>
 	</head>
 	<body>
 		<div id="page">
@@ -300,8 +300,8 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			<File name="packages.config">
 <![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <packages>
-  <package id="jQuery" version="1.6.1" />
-  <package id="Modernizr" version="1.7" />
+  <package id="jQuery" version="1.7.2" />
+  <package id="Modernizr" version="2.5.3" />
 </packages>
 ]]>
 			</File>

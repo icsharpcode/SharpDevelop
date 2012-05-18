@@ -25,7 +25,7 @@ namespace Debugger.AddIn.Pads.Controls
 {
 	public partial class WatchListAutoCompleteCell : UserControl
 	{
-		private string language;
+		string language;
 		
 		protected ConsoleControl console;
 		
@@ -33,7 +33,7 @@ namespace Debugger.AddIn.Pads.Controls
 			DependencyProperty.Register("CommandText", typeof(string), typeof(WatchListAutoCompleteCell),
 			                            new UIPropertyMetadata(null, new PropertyChangedCallback(OnCommandTextChanged)));
 		
-		private NRefactoryResolver resolver;
+		NRefactoryResolver resolver;
 		
 		public event EventHandler CommandEntered;
 		
@@ -72,7 +72,7 @@ namespace Debugger.AddIn.Pads.Controls
 			this.Process = debugger.DebuggedProcess;
 		}
 		
-		private Process Process { get; set; }
+		Process Process { get; set; }
 		
 		/// <summary>
 		/// Gets/sets the command text displayed at the command prompt.
@@ -82,13 +82,13 @@ namespace Debugger.AddIn.Pads.Controls
 			set { console.CommandText = value; }
 		}
 		
-		private ITextEditor TextEditor {
+		ITextEditor TextEditor {
 			get {
 				return console.TextEditor;
 			}
 		}
 		
-		private void console_TextAreaPreviewKeyDown(object sender, KeyEventArgs e)
+		void console_TextAreaPreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Return || e.Key == Key.Escape) {
 				
@@ -106,7 +106,7 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 		}
 		
-		private void console_LostFocus(object sender, RoutedEventArgs e)
+		void console_LostFocus(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrEmpty(CommandText) || !this.CheckSyntax())
 				return;
@@ -115,7 +115,7 @@ namespace Debugger.AddIn.Pads.Controls
 				CommandEntered(this, EventArgs.Empty);
 		}
 		
-		private bool CheckSyntax()
+		bool CheckSyntax()
 		{
 			string command = CommandText;
 			
@@ -139,7 +139,7 @@ namespace Debugger.AddIn.Pads.Controls
 			return true;
 		}
 		
-		private void consoleControl_TextAreaTextEntered(object sender, TextCompositionEventArgs e)
+		void consoleControl_TextAreaTextEntered(object sender, TextCompositionEventArgs e)
 		{
 			foreach (char ch in e.Text) {
 				if (ch == '.') {
@@ -148,21 +148,15 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 		}
 		
-		private void ShowDotCompletion(string currentText)
+		void ShowDotCompletion(string currentText)
 		{
 			var seg = Process.SelectedStackFrame.NextStatement;
-			
 			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
 			var info = ParserService.GetParseInformation(seg.Filename);
-			
 			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
-			
 			int currentOffset = TextEditor.Caret.Offset - console.CommandOffset - 1;
-			
 			var expr = expressionFinder.FindExpression(currentText, currentOffset);
-			
 			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
-			
 			var rr = resolver.Resolve(expr, info, text);
 			
 			if (rr != null) {
@@ -170,9 +164,12 @@ namespace Debugger.AddIn.Pads.Controls
 			}
 		}
 		
-		private static void OnCommandTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+		static void OnCommandTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
 			var cell = d as WatchListAutoCompleteCell;
-			cell.CommandText = e.NewValue.ToString();
+			if (cell != null && e.NewValue != null) {
+				cell.CommandText = e.NewValue.ToString();
+			}
 		}
 	}
 }

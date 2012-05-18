@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Editing
@@ -20,6 +21,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public override Selection UpdateOnDocumentChange(DocumentChangeEventArgs e)
 		{
 			return this;
+		}
+		
+		public override TextViewPosition StartPosition {
+			get { return new TextViewPosition(TextLocation.Empty); }
+		}
+		
+		public override TextViewPosition EndPosition {
+			get { return new TextViewPosition(TextLocation.Empty); }
 		}
 		
 		public override ISegment SurroundingSegment {

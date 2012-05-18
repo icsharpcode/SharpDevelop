@@ -29,6 +29,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			ItemOperations = new ItemOperations(fileService);
 		}
 		
+		public string Version {
+			get { return "10.0"; }
+		}
+		
 		public Solution Solution {
 			get {
 				if (IsSolutionOpen) {

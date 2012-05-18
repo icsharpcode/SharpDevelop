@@ -16,6 +16,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		IProjectWithServiceReferences project;
 		IServiceReferenceFileGenerator fileGenerator;
 		IFileSystem fileSystem;
+		IActiveTextEditors activeTextEditors;
+		string tempAppConfigFileName;
+		ServiceReferenceFileName referenceFileName;
 		
 		public ServiceReferenceGenerator(IProject project)
 			: this(new ProjectWithServiceReferences(project))
@@ -26,18 +29,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			: this(
 				project,
 				new ServiceReferenceFileGenerator(),
-				new ServiceReferenceFileSystem())
+				new ServiceReferenceFileSystem(),
+				new ActiveTextEditors())
 		{
 		}
 		
 		public ServiceReferenceGenerator(
 			IProjectWithServiceReferences project,
 			IServiceReferenceFileGenerator fileGenerator,
-			IFileSystem fileSystem)
+			IFileSystem fileSystem,
+			IActiveTextEditors activeTextEditors)
 		{
 			this.project = project;
 			this.fileGenerator = fileGenerator;
 			this.fileSystem = fileSystem;
+			this.activeTextEditors = activeTextEditors;
 		}
 		
 		public ServiceReferenceGeneratorOptions Options {
@@ -45,39 +51,55 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { fileGenerator.Options = value; }
 		}
 		
-		public void AddServiceReference()
-		{
-			GenerateServiceReferenceProxy();
-			project.AddAssemblyReference("System.ServiceModel");
-			project.Save();
-		}
+		public event EventHandler<GeneratorCompleteEventArgs> Complete;
 		
-		void GenerateServiceReferenceProxy()
+		void OnComplete(GeneratorCompleteEventArgs e)
 		{
-			ServiceReferenceFileName referenceFileName = GenerateProxyFile();
-			ServiceReferenceMapFileName mapFileName = CreateServiceReferenceMapFile();
-			project.AddServiceReferenceProxyFile(referenceFileName);
-			project.AddServiceReferenceMapFile(mapFileName);
-			if (!project.HasAppConfigFile()) {
-				project.AddAppConfigFile();
+			if (Complete != null) {
+				Complete(this, e);
 			}
 		}
 		
-		ServiceReferenceFileName GenerateProxyFile()
+		public void AddServiceReference()
+		{
+			referenceFileName = StartProxyFileGeneration();
+		}
+		
+		ServiceReferenceFileName StartProxyFileGeneration()
 		{
 			ServiceReferenceFileName referenceFileName = project.GetServiceReferenceFileName(fileGenerator.Options.ServiceName);
 			CreateFolderForFileIfFolderMissing(referenceFileName.Path);
 			
+			CreateTempAppConfigFileIfOpenInTextEditor();
+			
 			Options.OutputFileName = referenceFileName.Path;
-			Options.AppConfigFileName = project.GetAppConfigFileName();
+			Options.AppConfigFileName = GetAppConfigFileName();
 			Options.NoAppConfig = false;
 			Options.MergeAppConfig = project.HasAppConfigFile();
 			Options.MapProjectLanguage(project.Language);
 			Options.GenerateNamespace(project.RootNamespace);
 			Options.AddProjectReferencesIfUsingTypesFromProjectReferences(project.GetReferences());
+			
+			fileGenerator.Complete += ProxyFileGenerationComplete;
 			fileGenerator.GenerateProxyFile();
 			
 			return referenceFileName;
+		}
+		
+		string GetAppConfigFileName()
+		{
+			if (tempAppConfigFileName != null) {
+				return tempAppConfigFileName;
+			}
+			return project.GetAppConfigFileName();
+		}
+		
+		void CreateTempAppConfigFileIfOpenInTextEditor()
+		{
+			string appConfigText = activeTextEditors.GetTextForOpenFile(project.GetAppConfigFileName());
+			if (appConfigText != null) {
+				tempAppConfigFileName = fileSystem.CreateTempFile(appConfigText);
+			}
 		}
 		
 		ServiceReferenceMapFileName CreateServiceReferenceMapFile()
@@ -92,6 +114,52 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		{
 			string folder = Path.GetDirectoryName(fileName);
 			fileSystem.CreateDirectoryIfMissing(folder);
+		}
+		
+		void ProxyFileGenerationComplete(object sender, GeneratorCompleteEventArgs e)
+		{
+			if (e.IsSuccess) {
+				UpdateProjectWithGeneratedServiceReference();
+			}
+			
+			if (tempAppConfigFileName != null) {
+				if (e.IsSuccess) {
+					UpdateAppConfigInTextEditor();
+				}
+				DeleteTempAppConfigFile();
+			}
+			OnComplete(e);
+		}
+		
+		void UpdateProjectWithGeneratedServiceReference()
+		{
+			ServiceReferenceMapFileName mapFileName = CreateServiceReferenceMapFile();
+			project.AddServiceReferenceProxyFile(referenceFileName);
+			project.AddServiceReferenceMapFile(mapFileName);
+			
+			project.AddAssemblyReference("System.Runtime.Serialization");
+			project.AddAssemblyReference("System.ServiceModel");
+			
+			if (!project.HasAppConfigFile()) {
+				project.AddAppConfigFile();
+			}
+			
+			project.Save();
+		}
+		
+		void DeleteTempAppConfigFile()
+		{
+			fileSystem.DeleteFile(tempAppConfigFileName);
+		}
+		
+		void UpdateAppConfigInTextEditor()
+		{
+			string text = fileSystem.ReadAllFileText(tempAppConfigFileName);
+			if (activeTextEditors.IsFileOpen(project.GetAppConfigFileName())) {
+				activeTextEditors.UpdateTextForOpenFile(project.GetAppConfigFileName(), text);
+			} else {
+				fileSystem.WriteAllText(project.GetAppConfigFileName(), text);
+			}
 		}
 		
 		public IEnumerable<CheckableAssemblyReference> GetCheckableAssemblyReferences()

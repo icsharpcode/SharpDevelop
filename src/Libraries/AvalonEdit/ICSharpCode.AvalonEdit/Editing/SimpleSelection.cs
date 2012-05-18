@@ -70,18 +70,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 			}
 		}
 		
-		/// <summary>
-		/// Gets the start offset.
-		/// </summary>
-		public int StartOffset {
-			get { return startOffset; }
+		public override TextViewPosition StartPosition {
+			get { return start; }
 		}
 		
-		/// <summary>
-		/// Gets the end offset.
-		/// </summary>
-		public int EndOffset {
-			get { return endOffset; }
+		public override TextViewPosition EndPosition {
+			get { return end; }
 		}
 		
 		/// <inheritdoc/>

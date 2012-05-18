@@ -55,12 +55,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList = new WatchList(WatchListType.Watch);
 			watchList.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			
-			watchList.MouseDoubleClick += watchList_DoubleClick;
-			watchList.KeyUp += watchList_KeyUp;
+			watchList.MouseDoubleClick += WatchListDoubleClick;
 			watchList.WatchItems.CollectionChanged += OnWatchItemsCollectionChanged;
 			
 			panel.Children.Add(watchList);
-			panel.KeyUp += new KeyEventHandler(panel_KeyUp);
+			panel.KeyDown += PanelKeyDown;
 			
 			// wire events that influence the items
 			LoadSavedNodes();
@@ -122,23 +121,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		#endregion
 		
-		void panel_KeyUp(object sender, KeyEventArgs e)
+		void PanelKeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Insert) {
 				AddNewWatch();
 				e.Handled = true;
 			}
 		}
-
-		void watchList_KeyUp(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Delete) {
-				RemoveWatchCommand cmd = new RemoveWatchCommand { Owner = this };
-				cmd.Run();
-			}
-		}
 		
-		void watchList_DoubleClick(object sender, MouseEventArgs e)
+		void WatchListDoubleClick(object sender, MouseEventArgs e)
 		{
 			if (watchList.SelectedNode == null)
 			{

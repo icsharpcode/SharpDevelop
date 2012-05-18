@@ -312,11 +312,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 				Debug.Assert(position == firstMatch.Index);
 				
 				if (firstMatch == endSpanMatch) {
-					PopColor(); // pop SpanColor
 					HighlightingSpan poppedSpan = spanStack.Peek();
+					if (!poppedSpan.SpanColorIncludesEnd)
+						PopColor(); // pop SpanColor
 					PushColor(poppedSpan.EndColor);
 					position = firstMatch.Index + firstMatch.Length;
 					PopColor(); // pop EndColor
+					if (poppedSpan.SpanColorIncludesEnd)
+						PopColor(); // pop SpanColor
 					spanStack = spanStack.Pop();
 					currentRuleSet = this.CurrentRuleSet;
 					//FreeMatchArray(matches);
@@ -342,10 +345,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 					currentRuleSet = this.CurrentRuleSet;
 					storedMatchArrays.Push(matches);
 					matches = AllocateMatchArray(currentRuleSet.Spans.Count);
+					if (newSpan.SpanColorIncludesStart)
+						PushColor(newSpan.SpanColor);
 					PushColor(newSpan.StartColor);
 					position = firstMatch.Index + firstMatch.Length;
 					PopColor();
-					PushColor(newSpan.SpanColor);
+					if (!newSpan.SpanColorIncludesStart)
+						PushColor(newSpan.SpanColor);
 				}
 				endSpanMatch = null;
 			}

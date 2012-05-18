@@ -643,6 +643,14 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return document.GetLineByNumber(lineNumber);
 		}
+		
+		/// <summary>
+		/// Obsolete. Use GetLineByOffset() instead.
+		/// </summary>
+		public static IDocumentLine GetLineForOffset(this IDocument document, int offset)
+		{
+			return document.GetLineByOffset(offset);
+		}
 		#endregion
 	}
 }

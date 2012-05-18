@@ -146,7 +146,9 @@
     <Compile Include="Editing\EmptySelection.cs">
       <DependentUpon>Selection.cs</DependentUpon>
     </Compile>
+    <Compile Include="Editing\ImeNativeWrapper.cs" />
     <Compile Include="Editing\SelectionSegment.cs" />
+    <Compile Include="Editing\ImeSupport.cs" />
     <Compile Include="Folding\AbstractFoldingStrategy.cs" />
     <Compile Include="Folding\FoldingElementGenerator.cs" />
     <Compile Include="Folding\FoldingManager.cs" />
@@ -439,5 +441,8 @@
     <Resource Include="CodeCompletion\Images\StaticClass.png" />
     <Resource Include="CodeCompletion\Images\Struct.png" />
     <Resource Include="CodeCompletion\Images\VirtualMethod.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Highlighting\Resources\PowerShell.xshd" />
   </ItemGroup>
 </Project>

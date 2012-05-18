@@ -128,7 +128,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			try {
 				// load dependencies of current assembly
-				foreach (IProjectContent rpc in pc.ReferencedContents) {
+				foreach (IProjectContent rpc in pc.ThreadSafeGetReferencedContents()) {
 					if (rpc is ParseProjectContent) {
 						LoadAssembly(rpc);
 					} else if (rpc is ReflectionProjectContent) {

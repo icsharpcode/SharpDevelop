@@ -20,7 +20,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public void GenerateProxyFile()
 		{
 			var runner = new SvcUtilRunner(options);
+			runner.ProcessExited += OnComplete;
 			runner.Run();
+		}
+		
+		public event EventHandler<GeneratorCompleteEventArgs> Complete;
+		
+		void OnComplete(object sender, EventArgs e)
+		{
+			if (Complete != null) {
+				var runner = (SvcUtilRunner)sender;
+				Complete(this, new GeneratorCompleteEventArgs(runner.ExitCode));
+			}
 		}
 	}
 }

@@ -344,8 +344,11 @@ namespace ICSharpCode.FormsDesigner
 						continue;
 					if (expr.TargetType.BaseType != "System.ComponentModel.ISupportInitialize")
 						continue;
-					CodeMemberField field = formClass.Members.OfType<CodeMemberField>().First(f => this.formClass.ProjectContent.Language.NameComparer.Equals(fieldRef.FieldName, f.Name));
-					IClass fieldType = this.formClass.ProjectContent.GetClass(field.Type.BaseType, 0);
+					IField field = this.formClass.DefaultReturnType.GetFields()
+						.First(f => this.formClass.ProjectContent.Language.NameComparer.Equals(fieldRef.FieldName, f.Name));
+					if (field.ReturnType == null)
+						continue;
+					IClass fieldType = field.ReturnType.GetUnderlyingClass();
 					if (fieldType == null)
 						continue;
 					if (!fieldType.IsTypeInInheritanceTree(iSupportInitializeInterface))
