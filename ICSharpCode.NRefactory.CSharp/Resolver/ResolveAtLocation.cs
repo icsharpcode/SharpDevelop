@@ -79,11 +79,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			InvocationExpression parentInvocation = null;
-			if (node is IdentifierExpression || node is MemberReferenceExpression || node is PointerReferenceExpression) {
+			if ((node is IdentifierExpression || node is MemberReferenceExpression || node is PointerReferenceExpression) && node.Role != Roles.Argument) {
 				// we also need to resolve the invocation
 				parentInvocation = node.Parent as InvocationExpression;
 			}
-			
+
 			CSharpAstResolver resolver = new CSharpAstResolver(compilation, cu, parsedFile);
 			resolver.ApplyNavigator(new NodeListResolveVisitorNavigator(node), cancellationToken);
 			ResolveResult rr = resolver.Resolve(node, cancellationToken);
