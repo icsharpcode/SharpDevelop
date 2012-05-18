@@ -64,6 +64,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 		}
 		
 		/// <summary>
+		/// Gets the start position of the selection.
+		/// </summary>
+		public abstract TextViewPosition StartPosition { get; }
+		
+		/// <summary>
+		/// Gets the end position of the selection.
+		/// </summary>
+		public abstract TextViewPosition EndPosition { get; }
+		
+		/// <summary>
 		/// Gets the selected text segments.
 		/// </summary>
 		public abstract IEnumerable<SelectionSegment> Segments { get; }

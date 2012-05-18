@@ -32,6 +32,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
+			app.NoXmlOutputFile = false;
 			app.Results = @"C:\results.txt";
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /results=\"C:\\results.txt\"";
@@ -45,6 +46,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = true;
 			app.ShadowCopy = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /nologo";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -57,6 +59,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
 			app.ShadowCopy = false;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /noshadow";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -70,6 +73,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.NoThread = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /nothread";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -83,6 +87,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.NoDots = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /nodots";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -96,6 +101,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.Labels = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /labels";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -109,6 +115,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.Fixture = "TestFixture";
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -122,6 +129,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.NamespaceFilter = "TestFixture";
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -135,8 +143,23 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.XmlOutputFile = @"C:\NUnit.xml";
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /xml=\"C:\\NUnit.xml\"";
+			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+		}
+		
+		[Test]
+		public void NoXmlWhenXmlOutputFileSpecified()
+		{
+			SelectedTests selectedTests = new SelectedTests(project);
+			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
+			app.NoLogo = false;
+			app.ShadowCopy = true;
+			app.XmlOutputFile = @"C:\NUnit.xml";
+			app.NoXmlOutputFile = true;
+			
+			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /noxml";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
 		}
 		
@@ -149,6 +172,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.ShadowCopy = true;
 			app.Fixture = "TestFixture";
 			app.Test = "Test";
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture.Test\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -163,6 +187,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"TestFixture.Test\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -175,6 +200,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" /run=\"Project.MyTests\"";
 			Assert.AreEqual(expectedCommandLine, app.GetArguments());
@@ -187,6 +213,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = true;
 			app.ShadowCopy = true;
+			app.NoXmlOutputFile = false;
 			
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 			
@@ -211,6 +238,7 @@ namespace UnitTesting.Tests.Frameworks
 			app.NoLogo = false;
 			app.ShadowCopy = true;
 			app.Results = @"C:\results.txt";
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = 
 				"\"C:\\Projects\\MyTests\\MyTests.dll\" " +
@@ -235,6 +263,7 @@ namespace UnitTesting.Tests.Frameworks
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests);
 			app.NoLogo = false;
 			app.ShadowCopy = true;
+			app.NoXmlOutputFile = false;
 			
 			string expectedCommandLine = "\"C:\\Projects\\MyTests\\MyTests.dll\" " +
 				"/run=\"MyTests.TestFixture+InnerTest\"";

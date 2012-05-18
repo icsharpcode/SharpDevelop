@@ -80,6 +80,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
+			SolutionNode solutionNode = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
+			if (solutionNode != null) {
+				OpenContainingFolderInExplorer(solutionNode.Solution.FileName);
+				return;
+			}
+			
 			SolutionItemNode solutionItemNode = ProjectBrowserPad.Instance.SelectedNode as SolutionItemNode;
 			if (solutionItemNode != null) {
 				OpenContainingFolderInExplorer(solutionItemNode.FileName);
@@ -104,6 +110,56 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (fileName != null && File.Exists(fileName)) {
 				Process.Start("explorer", "/select,\"" + fileName + "\"");
 			}
+		}
+	}
+	
+	/// <summary>
+	/// Opens a command prompt at the selected location.
+	/// </summary>
+	public class OpenCommandPromptHere : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			SolutionNode solutionNode = ProjectBrowserPad.Instance.SelectedNode as SolutionNode;
+			if (solutionNode != null) {
+				OpenCommandPrompt(solutionNode.Solution.FileName);
+				return;
+			}
+			
+			SolutionItemNode solutionItemNode = ProjectBrowserPad.Instance.SelectedNode as SolutionItemNode;
+			if (solutionItemNode != null) {
+				OpenCommandPrompt(solutionItemNode.FileName);
+				return;
+			}
+			
+			DirectoryNode directoryNode = ProjectBrowserPad.Instance.SelectedNode as DirectoryNode;
+			if (directoryNode != null) {
+				OpenCommandPrompt(directoryNode.Directory);
+				return;
+			}
+			
+			FileNode fileNode = ProjectBrowserPad.Instance.SelectedNode as FileNode;
+			if (fileNode != null) {
+				OpenCommandPrompt(fileNode.FileName);
+				return;
+			}
+			
+			ProjectNode projectNode = ProjectBrowserPad.Instance.SelectedNode as ProjectNode;
+			if (projectNode != null) {
+				OpenCommandPrompt(projectNode.Project.FileName);
+				return;
+			}
+		}
+		
+		public static void OpenCommandPrompt(string fileName)
+		{
+			if (fileName == null)
+				return;
+			if (File.Exists(fileName))
+				fileName = Path.GetDirectoryName(fileName);
+			else if (!Directory.Exists(fileName))
+				return;
+			Process.Start("cmd.exe", "/k cd \"" + fileName + "\"");
 		}
 	}
 	

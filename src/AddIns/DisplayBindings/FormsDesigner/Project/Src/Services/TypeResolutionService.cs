@@ -122,9 +122,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (!projectContentsCurrentlyLoadingAssembly.Add(pc))
 				return null;
 			
+			Assembly sdAssembly;
+			if (IsSharpDevelopAssembly(pc, out sdAssembly))
+				return sdAssembly;
+			
 			try {
 				// load dependencies of current assembly
-				foreach (IProjectContent rpc in pc.ReferencedContents) {
+				foreach (IProjectContent rpc in pc.ThreadSafeGetReferencedContents()) {
 					if (rpc is ParseProjectContent) {
 						LoadAssembly(rpc);
 					} else if (rpc is ReflectionProjectContent) {
@@ -149,6 +153,20 @@ namespace ICSharpCode.FormsDesigner.Services
 			} else {
 				return null;
 			}
+		}
+		
+		readonly string sharpDevelopRoot = Directory.GetParent(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).FullName;
+		
+		bool IsSharpDevelopAssembly(IProjectContent pc, out Assembly assembly)
+		{
+			assembly = null;
+			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				if (!asm.IsDynamic && asm.Location.StartsWith(sharpDevelopRoot, StringComparison.OrdinalIgnoreCase) && pc.AssemblyName == asm.GetName().Name) {
+					assembly = asm;
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		static string GetHash(string fileName)

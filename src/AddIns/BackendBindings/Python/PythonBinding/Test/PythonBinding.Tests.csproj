@@ -265,6 +265,7 @@
     <Compile Include="Designer\LoadFontTestFixture.cs" />
     <Compile Include="Designer\LoadFormTestFixtureBase.cs" />
     <Compile Include="Designer\LoadFormWithBooleanPropertiesSetTestFixture.cs" />
+    <Compile Include="Designer\LoadFormWithButtonFollowedByTimerTestFixture.cs" />
     <Compile Include="Designer\LoadFormWithSysPathAppendStatementTestFixture.cs" />
     <Compile Include="Designer\LoadInheritedProtectedPanelFormTestFixture.cs" />
     <Compile Include="Designer\LoadInheritedPublicPanelFormTestFixture.cs" />

@@ -13,7 +13,9 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Services;
@@ -25,8 +27,12 @@ namespace Debugger.AddIn.Pads
 	/// </summary>
 	public partial class WatchInputBox : BaseWatchBox
 	{
-		private NRefactoryResolver resolver;	
-		private string language;
+		NRefactoryResolver resolver;
+		SupportedLanguage language;
+		
+		public SupportedLanguage ScriptLanguage {
+			get { return language; }
+		}
 		
 		public WatchInputBox(string text, string caption) : base()
 		{
@@ -37,18 +43,20 @@ namespace Debugger.AddIn.Pads
 			this.Title = StringParser.Parse(caption);
 			this.ConsolePanel.Content = console;
 
-			if (ProjectService.CurrentProject == null) return;
+			if (ProjectService.CurrentProject == null)
+				language = GetLanguageFromActiveViewContent();
+			else
+				language = GetLanguage(ProjectService.CurrentProject.Language);
 			
-			// get language
-			language = ProjectService.CurrentProject.Language;
-			resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language));
+			resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language.ToString()));
 			
-			// FIXME set language
-			if (language == "VB" || language == "VBNet") {
-				console.SetHighlighting("VBNET");
-			} else {
-				language = "C#";
-				console.SetHighlighting("C#");
+			switch (language) {
+				case SupportedLanguage.CSharp:
+					console.SetHighlighting("C#");
+					break;
+				case SupportedLanguage.VBNet:
+					console.SetHighlighting("VBNET");
+					break;
 			}
 			
 			// get process
@@ -72,7 +80,7 @@ namespace Debugger.AddIn.Pads
 			}
 		}
 		
-		private void ShowDotCompletion(string currentText)
+		void ShowDotCompletion(string currentText)
 		{
 			var seg = Process.SelectedStackFrame.NextStatement;
 			
@@ -94,20 +102,15 @@ namespace Debugger.AddIn.Pads
 			}
 		}
 		
-		private bool CheckSyntax()
+		bool CheckSyntax()
 		{
 			string command = console.CommandText.Trim();
 			
 			// FIXME workaround the NRefactory issue that needs a ; at the end
-			if (language == "C#") {
-				if(!command.EndsWith(";"))
-					command += ";";
-				// FIXME only one string should be available; highlighting expects C#, supproted language, CSharp
-				language = "CSharp";
-			}
+			if (language == SupportedLanguage.CSharp && !command.EndsWith(";"))
+				command += ";";
 			
-			SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language, true);
-			using (var parser = ParserFactory.CreateParser(supportedLanguage, new StringReader(command))) {
+			using (var parser = ParserFactory.CreateParser(language, new StringReader(command))) {
 				parser.ParseExpression();
 				if (parser.Errors.Count > 0) {
 					MessageService.ShowError(parser.Errors.ErrorOutput);
@@ -118,7 +121,38 @@ namespace Debugger.AddIn.Pads
 			return true;
 		}
 		
-		private void AcceptButton_Click(object sender, RoutedEventArgs e)
+		SupportedLanguage GetLanguage(string language)
+		{
+			if ("VBNet".Equals(language, StringComparison.OrdinalIgnoreCase)
+			    || "VB".Equals(language, StringComparison.OrdinalIgnoreCase)
+			    || "VB.NET".Equals(language, StringComparison.OrdinalIgnoreCase))
+				return SupportedLanguage.VBNet;
+			
+			return SupportedLanguage.CSharp;
+		}
+		
+		/// <summary>
+		/// Gets the language used in the currently active view content. This is useful, when there is no project
+		/// opened and we still want to add watches (i.e. the debugger is attached to an existing process without a solution).
+		/// </summary>
+		SupportedLanguage GetLanguageFromActiveViewContent()
+		{
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			
+			if (provider != null && provider.TextEditor != null) {
+				string extension = Path.GetExtension(provider.TextEditor.FileName).ToLowerInvariant();
+				switch (extension) {
+					case ".cs":
+						return SupportedLanguage.CSharp;
+					case ".vb":
+						return SupportedLanguage.VBNet;
+				}
+			}
+			
+			return SupportedLanguage.CSharp;
+		}
+		
+		void AcceptButton_Click(object sender, RoutedEventArgs e)
 		{
 			if (!this.CheckSyntax())
 				return;
@@ -127,7 +161,7 @@ namespace Debugger.AddIn.Pads
 			this.Close();
 		}
 		
-		private void CancelButton_Click(object sender, RoutedEventArgs e)
+		void CancelButton_Click(object sender, RoutedEventArgs e)
 		{
 			DialogResult = false;
 			this.Close();

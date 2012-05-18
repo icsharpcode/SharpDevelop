@@ -38,7 +38,7 @@ namespace SharpRefactoring
 			
 			SearchAllExtensionMethodsWithName(results, context.ProjectContent, rr.CallName);
 			
-			foreach (IProjectContent content in context.ProjectContent.ReferencedContents)
+			foreach (IProjectContent content in context.ProjectContent.ThreadSafeGetReferencedContents())
 				SearchAllExtensionMethodsWithName(results, content, rr.CallName);
 			
 			if (!results.Any())

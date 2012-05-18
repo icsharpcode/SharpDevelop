@@ -198,8 +198,10 @@ namespace ICSharpCode.AvalonEdit.Search
 			if (currentDocument != null)
 				currentDocument.TextChanged -= textArea_Document_TextChanged;
 			currentDocument = textArea.Document;
-			if (currentDocument != null)
+			if (currentDocument != null) {
 				currentDocument.TextChanged += textArea_Document_TextChanged;
+				DoSearch(false);
+			}
 		}
 
 		void textArea_Document_TextChanged(object sender, EventArgs e)

@@ -1,0 +1,30 @@
+﻿<AddIn
+	name="MSTest"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	description="MSTest support">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.MSTest"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="$ICSharpCode.UnitTesting/UnitTesting.dll"/>
+		<Import assembly="MSTest.SharpDevelop.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
+		<TestFramework
+			id="mstest"
+			class="ICSharpCode.MSTest.MSTestFramework"
+			supportedProjects=".csproj"/>
+	</Path>
+
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel
+			id="MSTestOptionsPanel"
+			label="MS Test"
+			class="ICSharpCode.MSTest.MSTestOptionsPanel"/>
+	</Path>
+</AddIn>

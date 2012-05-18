@@ -125,14 +125,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		readonly ICompilation compilation;
 		readonly ResolveResult[] arguments;
 		readonly string[] argumentNames;
-		readonly Conversions conversions;
+		readonly CSharpConversions conversions;
 		//List<Candidate> candidates = new List<Candidate>();
 		Candidate bestCandidate;
 		Candidate bestCandidateAmbiguousWith;
 		IType[] explicitlyGivenTypeArguments;
 		
 		#region Constructor
-		public OverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, Conversions conversions = null)
+		public OverloadResolution(ICompilation compilation, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null, CSharpConversions conversions = null)
 		{
 			if (compilation == null)
 				throw new ArgumentNullException("compilation");
@@ -150,7 +150,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments != null && typeArguments.Length > 0)
 				this.explicitlyGivenTypeArguments = typeArguments;
 			
-			this.conversions = conversions ?? Conversions.Get(compilation);
+			this.conversions = conversions ?? CSharpConversions.Get(compilation);
 			this.AllowExpandingParams = true;
 		}
 		#endregion
@@ -301,20 +301,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		internal void LogCandidateAddingResult(string text, IParameterizedMember method, OverloadResolutionErrors errors)
 		{
 			#if DEBUG
-			StringBuilder b = new StringBuilder(text);
-			b.Append(' ');
-			b.Append(method);
-			b.Append(" = ");
-			if (errors == OverloadResolutionErrors.None)
-				b.Append("Success");
-			else
-				b.Append(errors);
-			if (this.BestCandidate == method) {
-				b.Append(" (best candidate so far)");
-			} else if (this.BestCandidateAmbiguousWith == method) {
-				b.Append(" (ambiguous)");
-			}
-			Log.WriteLine(b.ToString());
+			Log.WriteLine(string.Format("{0} {1} = {2}{3}",
+			                            text, method,
+			                            errors == OverloadResolutionErrors.None ? "Success" : errors.ToString(),
+			                            this.BestCandidate == method ? " (best candidate so far)" :
+			                            this.BestCandidateAmbiguousWith == method ? " (ambiguous)" : ""
+			                           ));
 			#endif
 		}
 		#endregion
@@ -400,7 +392,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		sealed class ConstraintValidatingSubstitution : TypeParameterSubstitution
 		{
-			readonly Conversions conversions;
+			readonly CSharpConversions conversions;
 			public bool ConstraintsValid = true;
 			
 			public ConstraintValidatingSubstitution(IList<IType> classTypeArguments, IList<IType> methodTypeArguments, OverloadResolution overloadResolution)
@@ -418,42 +410,75 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (newParameterizedType != null) {
 						// C# 4.0 spec: §4.4.4 Satisfying constraints
 						var typeParameters = newParameterizedType.GetDefinition().TypeParameters;
+						var substitution = newParameterizedType.GetSubstitution();
 						for (int i = 0; i < typeParameters.Count; i++) {
-							ITypeParameter tp = typeParameters[i];
-							IType typeArg = newParameterizedType.GetTypeArgument(i);
-							switch (typeArg.Kind) { // void, null, and pointers cannot be used as type arguments
-								case TypeKind.Void:
-								case TypeKind.Null:
-								case TypeKind.Pointer:
-									ConstraintsValid = false;
-									break;
-							}
-							if (tp.HasReferenceTypeConstraint) {
-								if (typeArg.IsReferenceType != true)
-									ConstraintsValid = false;
-							}
-							if (tp.HasValueTypeConstraint) {
-								if (!NullableType.IsNonNullableValueType(typeArg))
-									ConstraintsValid = false;
-							}
-							if (tp.HasDefaultConstructorConstraint) {
-								ITypeDefinition def = typeArg.GetDefinition();
-								if (def != null && def.IsAbstract)
-									ConstraintsValid = false;
-								ConstraintsValid &= typeArg.GetConstructors(
-									m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public,
-									GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
-								).Any();
-							}
-							foreach (IType constraintType in tp.DirectBaseTypes) {
-								IType c = constraintType.AcceptVisitor(newParameterizedType.GetSubstitution());
-								ConstraintsValid &= conversions.IsConstraintConvertible(typeArg, c);
+							if (!ValidateConstraints(typeParameters[i], newParameterizedType.GetTypeArgument(i), substitution, conversions)) {
+								ConstraintsValid = false;
+								break;
 							}
 						}
 					}
 				}
 				return newType;
 			}
+		}
+		#endregion
+		
+		#region Validate Constraints
+		/// <summary>
+		/// Validates whether the given type argument satisfies the constraints for the given type parameter.
+		/// </summary>
+		/// <param name="typeParameter">The type parameter.</param>
+		/// <param name="typeArgument">The type argument.</param>
+		/// <param name="substitution">The substitution that defines how type parameters are replaced with type arguments.
+		/// The substitution is used to check constraints that depend on other type parameters (or recursively on the same type parameter).</param>
+		/// <returns>True if the constraints are satisfied; false otherwise.</returns>
+		public static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution)
+		{
+			if (typeParameter == null)
+				throw new ArgumentNullException("typeParameter");
+			if (typeParameter.Owner == null)
+				throw new ArgumentNullException("typeParameter.Owner");
+			if (typeArgument == null)
+				throw new ArgumentNullException("typeArgument");
+			return ValidateConstraints(typeParameter, typeArgument, substitution, CSharpConversions.Get(typeParameter.Owner.Compilation));
+		}
+		
+		internal static bool ValidateConstraints(ITypeParameter typeParameter, IType typeArgument, TypeVisitor substitution, CSharpConversions conversions)
+		{
+			switch (typeArgument.Kind) { // void, null, and pointers cannot be used as type arguments
+				case TypeKind.Void:
+				case TypeKind.Null:
+				case TypeKind.Pointer:
+					return false;
+			}
+			if (typeParameter.HasReferenceTypeConstraint) {
+				if (typeArgument.IsReferenceType != true)
+					return false;
+			}
+			if (typeParameter.HasValueTypeConstraint) {
+				if (!NullableType.IsNonNullableValueType(typeArgument))
+					return false;
+			}
+			if (typeParameter.HasDefaultConstructorConstraint) {
+				ITypeDefinition def = typeArgument.GetDefinition();
+				if (def != null && def.IsAbstract)
+					return false;
+				var ctors = typeArgument.GetConstructors(
+					m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public,
+					GetMemberOptions.IgnoreInheritedMembers | GetMemberOptions.ReturnMemberDefinitions
+				);
+				if (!ctors.Any())
+					return false;
+			}
+			foreach (IType constraintType in typeParameter.DirectBaseTypes) {
+				IType c = constraintType;
+				if (substitution != null)
+					c = c.AcceptVisitor(substitution);
+				if (!conversions.IsConstraintConvertible(typeArgument, c))
+					return false;
+			}
+			return true;
 		}
 		#endregion
 		
@@ -485,7 +510,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// Test whether argument passing mode matches the parameter passing mode
 			for (int i = 0; i < arguments.Length; i++) {
 				int parameterIndex = candidate.ArgumentToParameterMap[i];
-				if (parameterIndex < 0) continue;
+				if (parameterIndex < 0) {
+					candidate.ArgumentConversions[i] = Conversion.None;
+					continue;
+				}
 				
 				ByReferenceResolveResult brrr = arguments[i] as ByReferenceResolveResult;
 				if (brrr != null) {
@@ -503,7 +531,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (!(c == Conversion.IdentityConversion || c == Conversion.ImplicitReferenceConversion || c == Conversion.BoxingConversion))
 						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 				} else {
-					if (!c.IsValid)
+					if (!c.IsValid && parameterType.Kind != TypeKind.Unknown)
 						candidate.AddError(OverloadResolutionErrors.ArgumentTypeMismatch);
 				}
 			}
@@ -728,7 +756,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (bestCandidate != null && bestCandidate.ArgumentConversions != null)
 					return bestCandidate.ArgumentConversions;
 				else
-					return new Conversion[arguments.Length];
+					return Enumerable.Repeat(Conversion.None, arguments.Length).ToList();
 			}
 		}
 		
@@ -750,11 +778,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (bestCandidate == null)
 				return arguments;
+			else
+				return GetArgumentsWithConversions(null);
+		}
+		
+		IList<ResolveResult> GetArgumentsWithConversions(ResolveResult targetResolveResult)
+		{
 			var conversions = this.ArgumentConversions;
 			ResolveResult[] args = new ResolveResult[arguments.Length];
 			for (int i = 0; i < args.Length; i++) {
+				var argument = arguments[i];
+				if (this.IsExtensionMethodInvocation && i == 0 && targetResolveResult != null)
+					argument = targetResolveResult;
 				if (conversions[i] == Conversion.IdentityConversion) {
-					args[i] = arguments[i];
+					args[i] = argument;
 				} else {
 					int parameterIndex = bestCandidate.ArgumentToParameterMap[i];
 					IType parameterType;
@@ -764,9 +801,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						parameterType = SpecialType.UnknownType;
 					}
 					if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
-						args[i] = new CSharpResolver(compilation).ResolveCast(parameterType, arguments[i]);
+						args[i] = new CSharpResolver(compilation).ResolveCast(parameterType, argument);
 					} else {
-						args[i] = new ConversionResolveResult(parameterType, arguments[i], conversions[i]);
+						args[i] = new ConversionResolveResult(parameterType, argument, conversions[i]);
 					}
 				}
 			}
@@ -779,27 +816,47 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 			IMethod method = bestCandidate.Member as IMethod;
 			if (method != null && method.TypeParameters.Count > 0) {
-				return new SpecializedMethod(method.DeclaringType, (IMethod)method.MemberDefinition, bestCandidate.InferredTypes);
+				SpecializedMethod sm = method as SpecializedMethod;
+				if (sm != null) {
+					// Do not compose the substitutions, but merge them.
+					// This is required for InvocationTests.SubstituteClassAndMethodTypeParametersAtOnce
+					return new SpecializedMethod(
+						(IMethod)method.MemberDefinition,
+						new TypeParameterSubstitution(sm.Substitution.ClassTypeArguments, bestCandidate.InferredTypes));
+				} else {
+					return new SpecializedMethod(method, new TypeParameterSubstitution(null, bestCandidate.InferredTypes));
+				}
 			} else {
 				return bestCandidate.Member;
 			}
 		}
 		
-		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult)
+		/// <summary>
+		/// Creates a ResolveResult representing the result of overload resolution.
+		/// </summary>
+		/// <param name="targetResolveResult">
+		/// The target expression of the call. May be <c>null</c> for static methods/constructors.
+		/// </param>
+		/// <param name="initializerStatements">
+		/// Statements for Objects/Collections initializer.
+		/// <see cref="InvocationResolveResult.InitializerStatements"/>
+		/// </param>
+		public CSharpInvocationResolveResult CreateResolveResult(ResolveResult targetResolveResult, IList<ResolveResult> initializerStatements = null)
 		{
 			IParameterizedMember member = GetBestCandidateWithSubstitutedTypeArguments();
 			if (member == null)
 				throw new InvalidOperationException();
 			
 			return new CSharpInvocationResolveResult(
-				targetResolveResult,
+				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
-				GetArgumentsWithConversions(),
+				GetArgumentsWithConversions(targetResolveResult),
 				this.BestCandidateErrors,
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,
 				isDelegateInvocation: false,
-				argumentToParameterMap: this.GetArgumentToParameterMap());
+				argumentToParameterMap: this.GetArgumentToParameterMap(),
+				initializerStatements: initializerStatements);
 		}
 	}
 }

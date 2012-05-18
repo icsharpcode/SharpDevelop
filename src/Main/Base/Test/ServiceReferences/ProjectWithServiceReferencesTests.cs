@@ -37,6 +37,12 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			project = new ProjectWithServiceReferences(msbuildProject);
 		}
 		
+		void CreateProjectWithVisualBasicMSBuildProject()
+		{
+			msbuildProject = WebReferenceTestHelper.CreateTestProject("VBNet");
+			project = new ProjectWithServiceReferences(msbuildProject);			
+		}
+		
 		void SetProjectDirectory(string directory)
 		{
 			fakeProject.Stub(p => p.Directory).Return(directory);			
@@ -55,6 +61,11 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		ServiceReferencesProjectItem GetFirstWCFMetadataItemInMSBuildProject()
 		{
 			return msbuildProject.GetItemsOfType(ItemType.ServiceReferences).SingleOrDefault() as ServiceReferencesProjectItem;
+		}
+		
+		ProjectItem GetFileProjectItemInMSBuildProject(string fileName)
+		{
+			return msbuildProject.Items.SingleOrDefault(item => item.FileName == fileName);
 		}
 		
 		ServiceReferenceProjectItem GetFirstWCFMetadataStorageItemInMSBuildProject()
@@ -80,6 +91,19 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			ProjectService.AddProjectItem(msbuildProject, item);
 		}
 		
+		void AddFileToMSBuildProject(string include)
+		{
+			var fileItem = new FileProjectItem(msbuildProject, ItemType.None, include);
+			ProjectService.AddProjectItem(msbuildProject, fileItem);
+		}
+		
+		ReferenceProjectItem AddGacReferenceToProject(string name)
+		{
+			var referenceItem = new ReferenceProjectItem(msbuildProject, name);
+			ProjectService.AddProjectItem(msbuildProject, referenceItem);
+			return referenceItem;
+		}
+		
 		int CountAssemblyReferencesInMSBuildProject()
 		{
 			return msbuildProject.GetItemsOfType(ItemType.Reference).Count();
@@ -95,18 +119,6 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			string expectedFolder = @"d:\projects\MyProject\Service References";
 			
 			Assert.AreEqual(expectedFolder, folder);
-		}
-		
-		[Test]
-		public void CodeDomProvider_UnderlyingProjectUsesCSharpCodeDomProvider_ProjectUsesCSharpCodeDomProvider()
-		{
-			CreateProject();
-			SetProjectCodeDomProvider(LanguageProperties.CSharp);
-			
-			ICodeDomProvider codeDomProvider = project.CodeDomProvider;
-			string fileExtension = codeDomProvider.FileExtension;
-			
-			Assert.AreEqual("cs", fileExtension);
 		}
 		
 		[Test]
@@ -259,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 		}
 		
 		[Test]
-		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReferenceUsingFullAssemblyNa_AssemblyReferenceIsNotAdded()
+		public void AddAssemblyReference_SystemServiceModelAddedToProjectThatHasSystemServiceModelReferenceUsingFullAssemblyName_AssemblyReferenceIsNotAdded()
 		{
 			CreateProjectWithMSBuildProject();
 			AddAssemblyReferenceToMSBuildProject("System.ServiceModel, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
@@ -269,6 +281,131 @@ namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 			int count = CountAssemblyReferencesInMSBuildProject();
 			
 			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void Language_CSharpProject_CSharpLanguageReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			
+			Assert.AreEqual("C#", project.Language);
+		}
+		
+		[Test]
+		public void Language_VisualBasicProject_VisualBasicLanguageReturned()
+		{
+			CreateProjectWithVisualBasicMSBuildProject();
+			
+			Assert.AreEqual("VBNet", project.Language);
+		}
+		
+		[Test]
+		public void RootNamespace_MSBuildProjectHasRootNamespace_RootNamespaceReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.RootNamespace = "Test";
+			
+			Assert.AreEqual("Test", project.RootNamespace);
+		}
+		
+		[Test]
+		public void RootNamespace_MSBuildProjectHasNullRootNamespace_EmptyStringReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.Name = null;
+			
+			Assert.AreEqual(String.Empty, project.RootNamespace);
+		}
+		
+		[Test]
+		public void AddAppConfigFile_ProjectHasNoAppConfig_ProjectItemAddedToProjectForAppConfig()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			
+			project.AddAppConfigFile();
+			
+			ProjectItem item = GetFileFromMSBuildProject(@"d:\projects\MyProject\app.config");
+			
+			Assert.IsNotNull(item);
+			Assert.AreEqual(ItemType.None, item.ItemType);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasNoAppConfig_ReturnsFalse()
+		{
+			CreateProjectWithMSBuildProject();
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasAppConfig_ReturnsTrue()
+		{
+			CreateProjectWithMSBuildProject();
+			project.AddAppConfigFile();
+			
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasAppConfigInSubFolder_ReturnsTrue()
+		{
+			CreateProjectWithMSBuildProject();
+			AddFileToMSBuildProject(@"SubFolder\app.config");
+			
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void HasAppConfigFile_ProjectHasAppConfigInUpperCase_ReturnsTrue()
+		{
+			CreateProjectWithMSBuildProject();
+			AddFileToMSBuildProject(@"APP.CONFIG");
+			
+			bool result = project.HasAppConfigFile();
+			
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void GetAppConfigFileName_ProjectHasNoAppConfig_DefaultAppConfigFileNameReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			
+			string fileName = project.GetAppConfigFileName();
+			
+			Assert.AreEqual(@"d:\projects\MyProject\app.config", fileName);
+		}
+		
+		[Test]
+		public void GetAppConfigFileName_ProjectHasAppConfigInSubFolder_AppConfigFileNameReturned()
+		{
+			CreateProjectWithMSBuildProject();
+			msbuildProject.FileName = @"d:\projects\MyProject\myproject.csproj";
+			AddFileToMSBuildProject(@"SubFolder\app.config");
+			string fileName = project.GetAppConfigFileName();
+			
+			Assert.AreEqual(@"d:\projects\MyProject\SubFolder\app.config", fileName);
+		}
+		
+		[Test]
+		public void GetReferences_ProjectHasGacReference_ReturnsGacReference()
+		{
+			CreateProjectWithMSBuildProject();
+			ReferenceProjectItem refItem = AddGacReferenceToProject("System.Xml");
+			IEnumerable<ReferenceProjectItem> references = project.GetReferences();
+			
+			var expectedReferences = new ReferenceProjectItem[] {
+				refItem
+			};
+			CollectionAssert.AreEqual(expectedReferences, references);
 		}
 	}
 }

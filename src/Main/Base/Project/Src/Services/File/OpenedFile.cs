@@ -123,19 +123,24 @@ namespace ICSharpCode.SharpDevelop
 			if (view == null)
 				throw new ArgumentNullException("view");
 			
-			if (currentView != view) {
-				if (currentView == null) {
-					SwitchedToView(view);
-				} else {
-					try {
-						inLoadOperation = true;
-						using (Stream sourceStream = OpenRead()) {
-							view.Load(this, sourceStream);
+			try {
+				if (currentView != view) {
+					if (currentView == null) {
+						SwitchedToView(view);
+					} else {
+						try {
+							inLoadOperation = true;
+							using (Stream sourceStream = OpenRead()) {
+								view.Load(this, sourceStream);
+							}
+						} finally {
+							inLoadOperation = false;
 						}
-					} finally {
-						inLoadOperation = false;
 					}
 				}
+			} catch (Exception) {
+				view.Dispose();
+				throw;
 			}
 		}
 		
@@ -276,8 +281,6 @@ namespace ICSharpCode.SharpDevelop
 					currentView = newView;
 					return;
 				}
-			}
-			if (currentView != null) {
 				SaveCurrentView();
 			}
 			try {

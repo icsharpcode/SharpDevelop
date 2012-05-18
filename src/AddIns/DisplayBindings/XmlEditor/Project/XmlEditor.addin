@@ -24,7 +24,7 @@
 	<Path name="/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding
 			id="Xml"
-			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"
+			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj;.ps1xml"
 			class="ICSharpCode.XmlEditor.XmlCodeCompletionBinding"/>
 	</Path>
 	
@@ -55,7 +55,7 @@
 		<LanguageBinding
 			id="Xml"
 			class="ICSharpCode.XmlEditor.XmlLanguageBinding"
-			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj" />
+			extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj;.ps1xml" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/DisplayBindings">
@@ -68,7 +68,7 @@
 	<!-- Extra project browser icons -->
 	<Path name="/Workspace/Icons">
 		<Icon id="ExtraXmlFileIcon"
-			extensions=".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj"
+			extensions=".manifest;.config;.xshd;.wxs;.wxi;.wxl;.proj;.csproj;.vbproj;.ilproj;.xfrm;.targets;.xpt;.xft;.map;.wsdl;.disco;.xaml;.nuspec;.booproj;.fsproj;.pyproj;.rbproj;.vcxproj;.wixproj;.ps1xml"
 			resource="FileIcons.XmlIcon" />
 	</Path>
 	

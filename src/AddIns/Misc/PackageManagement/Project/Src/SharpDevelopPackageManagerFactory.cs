@@ -55,10 +55,5 @@ namespace ICSharpCode.PackageManagement
 		{
 			return projectSystemFactory.CreateProjectSystem(project);
 		}
-		
-		ISharedPackageRepository CreateSharedRepository(IPackagePathResolver pathResolver, IFileSystem fileSystem)
-		{
-			return packageRepositoryFactory.CreateSharedRepository(pathResolver, fileSystem);
-		}
 	}
 }

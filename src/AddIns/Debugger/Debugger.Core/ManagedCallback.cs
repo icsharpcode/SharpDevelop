@@ -74,7 +74,7 @@ namespace Debugger
 		void EnterCallback(PausedReason pausedReason, string name, ICorDebugThread pThread)
 		{
 			EnterCallback(pausedReason, name, pThread.GetProcess());
-			process.SelectedThread = process.Threads[pThread];
+			process.SelectedThread = process.GetThread(pThread);
 		}
 		
 		void ExitCallback()
@@ -128,7 +128,7 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.StepComplete, "StepComplete (" + reason.ToString() + ")", pThread);
 			
-			Thread thread = process.Threads[pThread];
+			Thread thread = process.GetThread(pThread);
 			Stepper stepper = process.GetStepper(pStepper);
 			
 			StackFrame currentStackFrame = process.SelectedThread.MostRecentStackFrame;
@@ -378,7 +378,7 @@ namespace Debugger
 				
 				EnterCallback(PausedReason.Other, "NameChange: pThread", pThread);
 				
-				Thread thread = process.Threads[pThread];
+				Thread thread = process.GetThread(pThread);
 				thread.NotifyNameChanged();
 				
 				ExitCallback();
@@ -445,7 +445,7 @@ namespace Debugger
 			if (process.Threads.Contains(pThread)) {
 				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), pThread);
 				
-				process.Threads[pThread].NotifyExited();
+				process.GetThread(pThread).NotifyExited();
 			} else {
 				EnterCallback(PausedReason.Other, "ExitThread " + pThread.GetID(), process.CorProcess);
 				

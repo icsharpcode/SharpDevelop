@@ -3,6 +3,7 @@
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -18,14 +19,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		public static readonly string DefaultServiceReferencesFolderName = "Service References";
 		
 		public ProjectWithServiceReferences(IProject project)
-			: this(project, new ServiceReferenceCodeDomProvider(project))
-		{
-		}
-		
-		public ProjectWithServiceReferences(IProject project, ICodeDomProvider codeDomProvider)
 		{
 			this.project = project;
-			this.CodeDomProvider = codeDomProvider;
 		}
 		
 		public string ServiceReferencesFolder {
@@ -42,7 +37,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			serviceReferencesFolder = Path.Combine(project.Directory, DefaultServiceReferencesFolderName);
 		}
 		
-		public ICodeDomProvider CodeDomProvider { get; private set; }
+		public string Language {
+			get { return project.Language; }
+		}
+		
+		public string RootNamespace {
+			get {
+				if (project.RootNamespace != null) {
+					return project.RootNamespace;
+				}
+				return String.Empty;
+			}
+		}
 		
 		public ServiceReferenceFileName GetServiceReferenceFileName(string serviceReferenceName)
 		{
@@ -122,6 +128,50 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 		static bool IsMatchIgnoringCase(string a, string b)
 		{
 			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public bool HasAppConfigFile()
+		{
+			return GetAppConfigFile() != null;
+		}
+		
+		ProjectItem GetAppConfigFile()
+		{
+			return project.Items.SingleOrDefault(item => IsAppConfigFile(item));
+		}
+		
+		bool IsAppConfigFile(ProjectItem item)
+		{
+			string fileNameWithoutPath = Path.GetFileName(item.FileName);
+			return String.Equals(fileNameWithoutPath, "app.config", StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public string GetAppConfigFileName()
+		{
+			ProjectItem item = GetAppConfigFile();
+			if (item != null) {
+				return item.FileName;
+			}
+			return GetDefaultAppConfigFileName();
+		}
+		
+		public void AddAppConfigFile()
+		{
+			var item = new FileProjectItem(project, ItemType.None);
+			item.FileName = GetDefaultAppConfigFileName();
+			AddProjectItemToProject(item);
+		}
+		
+		string GetDefaultAppConfigFileName()
+		{
+			return Path.Combine(project.Directory, "app.config");
+		}
+		
+		public IEnumerable<ReferenceProjectItem> GetReferences()
+		{
+			foreach (ReferenceProjectItem item in project.GetItemsOfType(ItemType.Reference)) {
+				yield return item;
+			}
 		}
 	}
 }

@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -31,21 +31,64 @@ namespace SearchAndReplace
 		public static IObservable<SearchedFile> FindAllParallel(ISearchStrategy strategy, SearchLocation location, IProgressMonitor progressMonitor)
 		{
 			currentSearchRegion = null;
-			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
+			SearchableFileContentFinder fileFinder = new SearchableFileContentFinder();
 			return new SearchRun(strategy, fileFinder, location.GenerateFileList(), progressMonitor) { Target = location.Target, Selection = location.Selection };
 		}
 		
 		public static IEnumerable<SearchedFile> FindAll(ISearchStrategy strategy, SearchLocation location, IProgressMonitor progressMonitor)
 		{
 			currentSearchRegion = null;
-			ParseableFileContentFinder fileFinder = new ParseableFileContentFinder();
+			SearchableFileContentFinder fileFinder = new SearchableFileContentFinder();
 			return new SearchRun(strategy, fileFinder, location.GenerateFileList(), progressMonitor) { Target = location.Target, Selection = location.Selection }.GetResults();
+		}
+		
+		class SearchableFileContentFinder
+		{
+			FileName[] viewContentFileNamesCollection = WorkbenchSingleton.SafeThreadFunction(() => FileService.OpenedFiles.Select(f => f.FileName).ToArray());
+			
+			static ITextBuffer ReadFile(FileName fileName)
+			{
+				OpenedFile openedFile = FileService.GetOpenedFile(fileName);
+				if (openedFile == null)
+					return null;
+				IFileDocumentProvider provider = FileService.GetOpenFile(fileName) as IFileDocumentProvider;
+				if (provider == null)
+					return null;
+				IDocument doc = provider.GetDocumentForFile(openedFile);
+				if (doc == null)
+					return null;
+				return doc.CreateSnapshot();
+			}
+			
+			public ITextBuffer Create(FileName fileName)
+			{
+				try {
+					foreach (FileName name in viewContentFileNamesCollection) {
+						if (FileUtility.IsEqualFileName(name, fileName)) {
+							ITextBuffer buffer = WorkbenchSingleton.SafeThreadFunction(ReadFile, fileName);
+							if (buffer != null)
+								return buffer;
+						}
+					}
+					using (Stream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
+						if (MimeTypeDetection.FindMimeType(stream).StartsWith("text/")) {
+							stream.Position = 0;
+							return new StringTextBuffer(ICSharpCode.AvalonEdit.Utils.FileReader.ReadFileContent(stream, Encoding.Default));
+						}
+					}
+					return null;
+				} catch (IOException) {
+					return null;
+				} catch (UnauthorizedAccessException) {
+					return null;
+				}
+			}
 		}
 		
 		class SearchRun : IObservable<SearchedFile>, IDisposable
 		{
 			ISearchStrategy strategy;
-			ParseableFileContentFinder fileFinder;
+			SearchableFileContentFinder fileFinder;
 			IEnumerable<FileName> fileList;
 			IProgressMonitor monitor;
 			CancellationTokenSource cts;
@@ -54,7 +97,7 @@ namespace SearchAndReplace
 			
 			public ISegment Selection { get; set; }
 			
-			public SearchRun(ISearchStrategy strategy, ParseableFileContentFinder fileFinder, IEnumerable<FileName> fileList, IProgressMonitor monitor)
+			public SearchRun(ISearchStrategy strategy, SearchableFileContentFinder fileFinder, IEnumerable<FileName> fileList, IProgressMonitor monitor)
 			{
 				this.strategy = strategy;
 				this.fileFinder = fileFinder;
@@ -151,8 +194,6 @@ namespace SearchAndReplace
 				
 				ThrowIfCancellationRequested();
 				
-				if (!MimeTypeDetection.FindMimeType(buffer).StartsWith("text/", StringComparison.Ordinal))
-					return null;
 				var source = DocumentUtilitites.GetTextSource(buffer);
 				TextDocument document = null;
 				DocumentHighlighter highlighter = null;
@@ -213,7 +254,7 @@ namespace SearchAndReplace
 			public SearchResultMatch FindNext()
 			{
 				// Setup search inside current or first file.
-				ParseableFileContentFinder finder = new ParseableFileContentFinder();
+				SearchableFileContentFinder finder = new SearchableFileContentFinder();
 				int index = GetCurrentFileIndex();
 				int i = 0;
 				int searchOffset = 0;

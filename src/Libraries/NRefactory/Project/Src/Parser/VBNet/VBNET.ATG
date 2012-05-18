@@ -1263,6 +1263,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			Parameters = parameters,
 			TypeReference = returnType,
 			OverloadableOperator = operatorType,
+			Name = GetReflectionNameForOperator(operatorType, opConversionType),
 			ConversionType = opConversionType,
 			Body = (BlockStatement)stmt,
 			StartLocation = m.GetDeclarationLocation(startPos),
@@ -1298,6 +1299,8 @@ OverloadableOperator<out OverloadableOperatorType operatorType>
 	"Or"		(. operatorType = OverloadableOperatorType.BitwiseOr; .)
 	|
 	"Xor"		(. operatorType = OverloadableOperatorType.ExclusiveOr; .)
+	|
+	"Not"		(. operatorType = OverloadableOperatorType.BitNot; .)
 	|
 	"^"			(. operatorType = OverloadableOperatorType.Power; .)
 	|

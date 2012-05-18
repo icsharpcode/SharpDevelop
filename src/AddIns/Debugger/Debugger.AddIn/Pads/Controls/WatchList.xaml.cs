@@ -69,17 +69,18 @@ namespace Debugger.AddIn.Pads.Controls
 		
 		void WatchListAutoCompleteCellCommandEntered(object sender, EventArgs e)
 		{
-			if (SelectedNode == null) return;
+			var selectedNode = SelectedNode;
+			if (selectedNode == null) return;
 			if (WatchType != WatchListType.Watch) return;
 			
 			var cell = ((WatchListAutoCompleteCell)sender);
 			
-			SelectedNode.Node.Name = cell.CommandText;
+			selectedNode.Node.Name = cell.CommandText;
 			myList.UnselectAll();
 			if (WatchType == WatchListType.Watch && WatchPad.Instance != null) {
 				WatchPad.Instance.InvalidatePad();
 			}
-			SelectedNode.IsEditing = false;
+			selectedNode.IsEditing = false;
 		}
 		
 		void MyListPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)

@@ -18,6 +18,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -30,8 +32,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		protected new readonly IUnresolvedMember unresolved;
 		protected readonly ITypeResolveContext context;
 		volatile IType returnType;
-		IList<IMember> interfaceImplementations;
-			
+		IList<IMember> implementedInterfaceMembers;
+		
 		protected AbstractResolvedMember(IUnresolvedMember unresolved, ITypeResolveContext parentContext)
 			: base(unresolved, parentContext)
 		{
@@ -53,24 +55,46 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return unresolved; }
 		}
 		
-		public IList<IMember> InterfaceImplementations {
+		public IList<IMember> ImplementedInterfaceMembers {
 			get {
-				IList<IMember> result = this.interfaceImplementations;
+				IList<IMember> result = LazyInit.VolatileRead(ref this.implementedInterfaceMembers);
 				if (result != null) {
-					LazyInit.ReadBarrier();
 					return result;
 				} else {
-					return LazyInit.GetOrSet(ref interfaceImplementations, FindInterfaceImplementations());
+					return LazyInit.GetOrSet(ref implementedInterfaceMembers, FindImplementedInterfaceMembers());
 				}
 			}
 		}
 		
-		IList<IMember> FindInterfaceImplementations()
+		IList<IMember> FindImplementedInterfaceMembers()
 		{
 			if (unresolved.IsExplicitInterfaceImplementation) {
-				return unresolved.ExplicitInterfaceImplementations.Resolve(context);
+				List<IMember> result = new List<IMember>();
+				foreach (var memberReference in unresolved.ExplicitInterfaceImplementations) {
+					IMember member = memberReference.Resolve(context);
+					if (member != null)
+						result.Add(member);
+				}
+				return result.ToArray();
+			} else if (unresolved.IsStatic) {
+				return EmptyList<IMember>.Instance;
 			} else {
-				throw new NotImplementedException();
+				// TODO: implement interface member mappings correctly
+				return InheritanceHelper.GetBaseMembers(this, true)
+					.Where(m => m.DeclaringTypeDefinition != null && m.DeclaringTypeDefinition.Kind == TypeKind.Interface)
+					.ToArray();
+			}
+		}
+		
+		public override DocumentationComment Documentation {
+			get {
+				IUnresolvedDocumentationProvider docProvider = unresolved.ParsedFile as IUnresolvedDocumentationProvider;
+				if (docProvider != null) {
+					var doc = docProvider.GetDocumentation(unresolved, this);
+					if (doc != null)
+						return doc;
+				}
+				return base.Documentation;
 			}
 		}
 		
@@ -92,16 +116,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public virtual IMemberReference ToMemberReference()
 		{
-			return new DefaultMemberReference(this.EntityType, this.DeclaringType.ToTypeReference(), this.Name);
+			var declTypeRef = this.DeclaringType.ToTypeReference();
+			if (IsExplicitInterfaceImplementation && ImplementedInterfaceMembers.Count == 1) {
+				return new ExplicitInterfaceImplementationMemberReference(declTypeRef, ImplementedInterfaceMembers[0].ToMemberReference());
+			} else {
+				return new DefaultMemberReference(this.EntityType, declTypeRef, this.Name);
+			}
 		}
 		
 		internal IMethod GetAccessor(ref IMethod accessorField, IUnresolvedMethod unresolvedAccessor)
 		{
 			if (unresolvedAccessor == null)
 				return null;
-			IMethod result = accessorField;
+			IMethod result = LazyInit.VolatileRead(ref accessorField);
 			if (result != null) {
-				LazyInit.ReadBarrier();
 				return result;
 			} else {
 				return LazyInit.GetOrSet(ref accessorField, (IMethod)unresolvedAccessor.CreateResolved(context));

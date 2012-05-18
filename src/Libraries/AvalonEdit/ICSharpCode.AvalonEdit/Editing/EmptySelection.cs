@@ -20,6 +20,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			return this;
 		}
 		
+		public override TextViewPosition StartPosition {
+			get { return new TextViewPosition(TextLocation.Empty); }
+		}
+		
+		public override TextViewPosition EndPosition {
+			get { return new TextViewPosition(TextLocation.Empty); }
+		}
+		
 		public override ISegment SurroundingSegment {
 			get { return null; }
 		}

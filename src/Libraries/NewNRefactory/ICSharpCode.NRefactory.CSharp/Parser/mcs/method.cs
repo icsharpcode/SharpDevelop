@@ -18,6 +18,8 @@ using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using System.Linq;
+using Mono.CompilerServices.SymbolWriter;
+using System.Runtime.CompilerServices;
 
 #if NET_2_1
 using XmlElement = System.Object;
@@ -37,8 +39,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 #endif
 
-using Mono.CompilerServices.SymbolWriter;
-
 namespace Mono.CSharp {
 
 	public abstract class MethodCore : InterfaceMemberBase, IParametersMember
@@ -47,7 +47,7 @@ namespace Mono.CSharp {
 		protected ToplevelBlock block;
 		protected MethodSpec spec;
 
-		public MethodCore (TypeContainer parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod,
+		public MethodCore (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod,
 			MemberName name, Attributes attrs, ParametersCompiled parameters)
 			: base (parent, type, mod, allowed_mod, name, attrs)
 		{
@@ -517,7 +517,7 @@ namespace Mono.CSharp {
 
 		static readonly string[] attribute_targets = new string [] { "method", "return" };
 
-		protected MethodOrOperator (TypeContainer parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name,
+		protected MethodOrOperator (TypeDefinition parent, FullNamedExpression type, Modifiers mod, Modifiers allowed_mod, MemberName name,
 				Attributes attrs, ParametersCompiled parameters)
 			: base (parent, type, mod, allowed_mod, name, attrs, parameters)
 		{
@@ -534,10 +534,13 @@ namespace Mono.CSharp {
 			}
 
 			if (a.Type == pa.MethodImpl) {
-				is_external_implementation = a.IsInternalCall ();
-			}
+				if ((ModFlags & Modifiers.ASYNC) != 0 && (a.GetMethodImplOptions () & MethodImplOptions.Synchronized) != 0) {
+					Report.Error (4015, a.Location, "`{0}': Async methods cannot use `MethodImplOptions.Synchronized'",
+						GetSignatureForError ());
+				}
 
-			if (a.Type == pa.DllImport) {
+				is_external_implementation = a.IsInternalCall ();
+			} else if (a.Type == pa.DllImport) {
 				const Modifiers extern_static = Modifiers.EXTERN | Modifiers.STATIC;
 				if ((ModFlags & extern_static) != extern_static) {
 					Report.Error (601, a.Location, "The DllImport attribute must be specified on a method marked `static' and `extern'");
@@ -565,9 +568,9 @@ namespace Mono.CSharp {
 			return Parent.MemberCache.CheckExistingMembersOverloads (this, parameters);
 		}
 
-		public virtual EmitContext CreateEmitContext (ILGenerator ig)
+		public virtual EmitContext CreateEmitContext (ILGenerator ig, SourceMethodBuilder sourceMethod)
 		{
-			return new EmitContext (this, ig, MemberType);
+			return new EmitContext (this, ig, MemberType, sourceMethod);
 		}
 
 		public override bool Define ()
@@ -634,7 +637,7 @@ namespace Mono.CSharp {
 			if ((ModFlags & Modifiers.PARTIAL) != 0) {
 				for (int i = 0; i < parameters.Count; ++i) {
 					IParameterData p = parameters.FixedParameters [i];
-					if (p.ModFlags == Parameter.Modifier.OUT) {
+					if ((p.ModFlags & Parameter.Modifier.OUT) != 0) {
 						Report.Error (752, Location, "`{0}': A partial method parameters cannot use `out' modifier",
 							GetSignatureForError ());
 					}
@@ -691,7 +694,6 @@ namespace Mono.CSharp {
 				MethodData.Emit (Parent);
 
 			Block = null;
-			MethodData = null;
 		}
 
 		protected void Error_ConditionalAttributeIsNotValid ()
@@ -774,72 +776,12 @@ namespace Mono.CSharp {
 			return conditions;
 		}
 
-		public virtual void EmitExtraSymbolInfo (SourceMethod source)
-		{ }
-
 		#endregion
 
-	}
-
-	public class SourceMethod : IMethodDef
-	{
-		MethodBase method;
-		SourceMethodBuilder builder;
-
-		protected SourceMethod (TypeContainer parent, MethodBase method, ICompileUnit file)
+		public override void WriteDebugSymbol (MonoSymbolFile file)
 		{
-			this.method = method;
-			
-			builder = SymbolWriter.OpenMethod (file, parent.NamespaceEntry.SymbolFileID, this);
-		}
-
-		public string Name {
-			get { return method.Name; }
-		}
-
-		public int Token {
-			get {
-				MethodToken token;
-				var mb = method as MethodBuilder;
-				if (mb != null)
-					token = mb.GetToken ();
-				else
-					token = ((ConstructorBuilder) method).GetToken ();
-#if STATIC
-				if (token.IsPseudoToken)
-					return ((ModuleBuilder) method.Module).ResolvePseudoToken (token.Token);
-#endif
-				return token.Token;
-			}
-		}
-
-		public void CloseMethod ()
-		{
-			SymbolWriter.CloseMethod ();
-		}
-
-		public void SetRealMethodName (string name)
-		{
-			if (builder != null)
-				builder.SetRealMethodName (name);
-		}
-
-		public static SourceMethod Create (TypeContainer parent, MethodBase method, Block block)
-		{
-			if (!SymbolWriter.HasSymbolWriter)
-				return null;
-			if (block == null)
-				return null;
-
-			Location start_loc = block.StartLocation;
-			if (start_loc.IsNull)
-				return null;
-
-			ICompileUnit compile_unit = start_loc.CompilationUnit;
-			if (compile_unit == null)
-				return null;
-
-			return new SourceMethod (parent, method, compile_unit);
+			if (MethodData != null)
+				MethodData.WriteDebugSymbol (file);
 		}
 	}
 
@@ -847,7 +789,7 @@ namespace Mono.CSharp {
 	{
 		Method partialMethodImplementation;
 
-		public Method (TypeContainer parent, FullNamedExpression return_type, Modifiers mod, MemberName name, ParametersCompiled parameters, Attributes attrs)
+		public Method (TypeDefinition parent, FullNamedExpression return_type, Modifiers mod, MemberName name, ParametersCompiled parameters, Attributes attrs)
 			: base (parent, return_type, mod,
 				parent.PartialContainer.Kind == MemberKind.Interface ? AllowedModifiersInterface :
 				parent.PartialContainer.Kind == MemberKind.Struct ? AllowedModifiersStruct | Modifiers.ASYNC :
@@ -856,7 +798,7 @@ namespace Mono.CSharp {
 		{
 		}
 
-		protected Method (TypeContainer parent, FullNamedExpression return_type, Modifiers mod, Modifiers amod,
+		protected Method (TypeDefinition parent, FullNamedExpression return_type, Modifiers mod, Modifiers amod,
 					MemberName name, ParametersCompiled parameters, Attributes attrs)
 			: base (parent, return_type, mod, amod, name, attrs, parameters)
 		{
@@ -889,7 +831,7 @@ namespace Mono.CSharp {
 			visitor.Visit (this);
 		}
 
-		public static Method Create (TypeContainer parent, FullNamedExpression returnType, Modifiers mod,
+		public static Method Create (TypeDefinition parent, FullNamedExpression returnType, Modifiers mod,
 				   MemberName name, ParametersCompiled parameters, Attributes attrs, bool hasConstraints)
 		{
 			var m = new Method (parent, returnType, mod, name, parameters, attrs);
@@ -950,7 +892,7 @@ namespace Mono.CSharp {
 
 			var ac = parameters.Types [0] as ArrayContainer;
 			return ac != null && ac.Rank == 1 && ac.Element.BuiltinType == BuiltinTypeSpec.Type.String &&
-					(parameters[0].ModFlags & ~Parameter.Modifier.PARAMS) == Parameter.Modifier.NONE;
+					(parameters[0].ModFlags & Parameter.Modifier.RefOutMask) == 0;
 		}
 
 		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, LookupMode mode, Location loc)
@@ -998,7 +940,7 @@ namespace Mono.CSharp {
 				}
 
 				for (int i = 0; i < parameters.Count; ++i) {
-					if (parameters.FixedParameters [i].ModFlags == Parameter.Modifier.OUT) {
+					if ((parameters.FixedParameters [i].ModFlags & Parameter.Modifier.OUT) != 0) {
 						Report.Error (685, Location, "Conditional method `{0}' cannot have an out parameter", GetSignatureForError ());
 						return;
 					}
@@ -1254,7 +1196,8 @@ namespace Mono.CSharp {
 						Report.Error (1983, Location, "The return type of an async method must be void, Task, or Task<T>");
 					}
 
-					AsyncInitializer.Create (this, block, parameters, Parent.PartialContainer, ReturnType, Location);
+					block = (ToplevelBlock) block.ConvertToAsyncTask (this, Parent.PartialContainer, parameters, ReturnType, Location);
+					ModFlags |= Modifiers.DEBUGGER_HIDDEN;
 				}
 			}
 
@@ -1357,10 +1300,6 @@ namespace Mono.CSharp {
 
 		public override bool EnableOverloadChecks (MemberCore overload)
 		{
-			// TODO: It can be deleted when members will be defined in correct order
-			if (overload is Operator)
-				return overload.EnableOverloadChecks (this);
-
 			if (overload is Indexer)
 				return false;
 
@@ -1484,7 +1423,7 @@ namespace Mono.CSharp {
 				ec.Report.Error (516, loc, "Constructor `{0}' cannot call itself",
 					caller_builder.GetSignatureForError ());
 			}
-						
+
 			return this;
 		}
 
@@ -1494,8 +1433,6 @@ namespace Mono.CSharp {
 			if (base_ctor == null)
 				return;
 			
-			ec.Mark (loc);
-
 			var call = new CallEmitter ();
 			call.InstanceExpression = new CompilerGeneratedThis (type, loc); 
 			call.EmitPredefined (ec, base_ctor, argument_list);
@@ -1528,11 +1465,13 @@ namespace Mono.CSharp {
 		}
 	}
 	
-	public class Constructor : MethodCore, IMethodData {
+	public class Constructor : MethodCore, IMethodData
+	{
 		public ConstructorBuilder ConstructorBuilder;
 		public ConstructorInitializer Initializer;
 		SecurityType declarative_security;
 		bool has_compliant_args;
+		SourceMethodBuilder debug_builder;
 
 		// <summary>
 		//   Modifiers allowed for a constructor.
@@ -1551,7 +1490,7 @@ namespace Mono.CSharp {
 		public static readonly string ConstructorName = ".ctor";
 		public static readonly string TypeConstructorName = ".cctor";
 
-		public Constructor (TypeContainer parent, string name, Modifiers mod, Attributes attrs, ParametersCompiled args, Location loc)
+		public Constructor (TypeDefinition parent, string name, Modifiers mod, Attributes attrs, ParametersCompiled args, Location loc)
 			: base (parent, null, mod, AllowedModifiers, new MemberName (name, loc), attrs, args)
 		{
 		}
@@ -1569,9 +1508,9 @@ namespace Mono.CSharp {
 		}
 
 		bool IMethodData.IsAccessor {
-			get {
-				return false;
-			}
+		    get {
+		        return false;
+		    }
 		}
 
 		//
@@ -1615,6 +1554,9 @@ namespace Mono.CSharp {
 					return false;
 				}
 
+				if ((caching_flags & Flags.MethodOverloadsExist) != 0)
+					Parent.MemberCache.CheckExistingMembersOverloads (this, parameters);
+
 				// the rest can be ignored
 				return true;
 			}
@@ -1645,20 +1587,14 @@ namespace Mono.CSharp {
 			if (ConstructorBuilder != null)
 				return true;
 
-			var ca = MethodAttributes.RTSpecialName | MethodAttributes.SpecialName;
-			
-			if ((ModFlags & Modifiers.STATIC) != 0) {
-				ca |= MethodAttributes.Static | MethodAttributes.Private;
-			} else {
-				ca |= ModifiersExtensions.MethodAttr (ModFlags);
-			}
-
 			if (!CheckAbstractAndExtern (block != null))
 				return false;
 			
 			// Check if arguments were correct.
 			if (!CheckBase ())
 				return false;
+
+			var ca = ModifiersExtensions.MethodAttr (ModFlags) | MethodAttributes.RTSpecialName | MethodAttributes.SpecialName;
 
 			ConstructorBuilder = Parent.TypeBuilder.DefineConstructor (
 				ca, CallingConventions,
@@ -1703,49 +1639,49 @@ namespace Mono.CSharp {
 			base.Emit ();
 			parameters.ApplyAttributes (this, ConstructorBuilder);
 
-			//
-			// If we use a "this (...)" constructor initializer, then
-			// do not emit field initializers, they are initialized in the other constructor
-			//
-			bool emit_field_initializers = ((ModFlags & Modifiers.STATIC) != 0) ||
-				!(Initializer is ConstructorThisInitializer);
 
 			BlockContext bc = new BlockContext (this, block, Compiler.BuiltinTypes.Void);
 			bc.Set (ResolveContext.Options.ConstructorScope);
 
-			if (emit_field_initializers)
+			//
+			// If we use a "this (...)" constructor initializer, then
+			// do not emit field initializers, they are initialized in the other constructor
+			//
+			if (!(Initializer is ConstructorThisInitializer))
 				Parent.PartialContainer.ResolveFieldInitializers (bc);
 
 			if (block != null) {
-				// If this is a non-static `struct' constructor and doesn't have any
-				// initializer, it must initialize all of the struct's fields.
-				if ((Parent.PartialContainer.Kind == MemberKind.Struct) &&
-					((ModFlags & Modifiers.STATIC) == 0) && (Initializer == null))
-					block.AddThisVariable (bc);
-
-				if ((ModFlags & Modifiers.STATIC) == 0){
-					if (Parent.PartialContainer.Kind == MemberKind.Class && Initializer == null)
-						Initializer = new GeneratedBaseInitializer (Location);
+				if (!IsStatic) {
+					if (Initializer == null) {
+						if (Parent.PartialContainer.Kind == MemberKind.Struct) {
+							//
+							// If this is a non-static `struct' constructor and doesn't have any
+							// initializer, it must initialize all of the struct's fields.
+							//
+							block.AddThisVariable (bc);
+						} else if (Parent.PartialContainer.Kind == MemberKind.Class) {
+							Initializer = new GeneratedBaseInitializer (Location);
+						}
+					}
 
 					if (Initializer != null) {
+						//
+						// mdb format does not support reqions. Try to workaround this by emitting the
+						// sequence point at initializer. Any breakpoint at constructor header should
+						// be adjusted to this sequence point as it's the next one which follows.
+						//
 						block.AddScopeStatement (new StatementExpression (Initializer));
 					}
 				}
-			}
 
-			SourceMethod source = SourceMethod.Create (Parent, ConstructorBuilder, block);
-
-			if (block != null) {
 				if (block.Resolve (null, bc, this)) {
-					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType);
+					debug_builder = Parent.CreateMethodSymbolEntry ();
+					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType, debug_builder);
 					ec.With (EmitContext.Options.ConstructorScope, true);
 
 					block.Emit (ec);
 				}
 			}
-
-			if (source != null)
-				source.CloseMethod ();
 
 			if (declarative_security != null) {
 				foreach (var de in declarative_security) {
@@ -1765,6 +1701,11 @@ namespace Mono.CSharp {
 			// Is never override
 			bestCandidate = null;
 			return null;
+		}
+
+		public override string GetCallerMemberName ()
+		{
+			return IsStatic ? TypeConstructorName : ConstructorName;
 		}
 
 		public override string GetSignatureForDocumentation ()
@@ -1801,6 +1742,21 @@ namespace Mono.CSharp {
 			return true;
 		}
 
+		public override void WriteDebugSymbol (MonoSymbolFile file)
+		{
+			if (debug_builder == null)
+				return;
+
+			var token = ConstructorBuilder.GetToken ();
+			int t = token.Token;
+#if STATIC
+			if (token.IsPseudoToken)
+				t = Module.Builder.ResolvePseudoToken (t);
+#endif
+
+			debug_builder.DefineMethod (file, t);
+		}
+
 		#region IMethodData Members
 
 		public MemberName MethodName {
@@ -1815,18 +1771,10 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public EmitContext CreateEmitContext (ILGenerator ig)
+		EmitContext IMethodData.CreateEmitContext (ILGenerator ig, SourceMethodBuilder sourceMethod)
 		{
 			throw new NotImplementedException ();
 		}
-
-		public bool IsExcluded()
-		{
-			return false;
-		}
-
-		void IMethodData.EmitExtraSymbolInfo (SourceMethod source)
-		{ }
 
 		#endregion
 	}
@@ -1847,8 +1795,7 @@ namespace Mono.CSharp {
 		Attributes OptAttributes { get; }
 		ToplevelBlock Block { get; set; }
 
-		EmitContext CreateEmitContext (ILGenerator ig);
-		void EmitExtraSymbolInfo (SourceMethod source);
+		EmitContext CreateEmitContext (ILGenerator ig, SourceMethodBuilder sourceMethod);
 	}
 
 	//
@@ -1875,6 +1822,7 @@ namespace Mono.CSharp {
 		protected MethodAttributes flags;
 		protected TypeSpec declaring_type;
 		protected MethodSpec parent_method;
+		SourceMethodBuilder debug_builder;
 
 		MethodBuilder builder;
 		public MethodBuilder MethodBuilder {
@@ -1902,16 +1850,14 @@ namespace Mono.CSharp {
 		public MethodData (InterfaceMemberBase member,
 				   Modifiers modifiers, MethodAttributes flags, 
 				   IMethodData method, MethodBuilder builder,
-				   //GenericMethod generic, 
 				   MethodSpec parent_method)
 			: this (member, modifiers, flags, method)
 		{
 			this.builder = builder;
-			//this.GenericMethod = generic;
 			this.parent_method = parent_method;
 		}
 
-		public bool Define (TypeContainer container, string method_full_name)
+		public bool Define (TypeDefinition container, string method_full_name)
 		{
 			PendingImplementation pending = container.PendingImplementations;
 			MethodSpec ambig_iface_method;
@@ -2083,7 +2029,7 @@ namespace Mono.CSharp {
 		/// <summary>
 		/// Create the MethodBuilder for the method 
 		/// </summary>
-		void DefineMethodBuilder (TypeContainer container, string method_name, ParametersCompiled param)
+		void DefineMethodBuilder (TypeDefinition container, string method_name, ParametersCompiled param)
 		{
 			var return_type = method.ReturnType.GetMetaInfo ();
 			var p_types = param.GetMetaInfo ();
@@ -2119,28 +2065,37 @@ namespace Mono.CSharp {
 		//
 		// Emits the code
 		// 
-		public void Emit (TypeContainer parent)
+		public void Emit (TypeDefinition parent)
 		{
 			var mc = (IMemberContext) method;
 
 			method.ParameterInfo.ApplyAttributes (mc, MethodBuilder);
 
-			SourceMethod source = SourceMethod.Create (parent, MethodBuilder, method.Block);
-
 			ToplevelBlock block = method.Block;
 			if (block != null) {
 				BlockContext bc = new BlockContext (mc, block, method.ReturnType);
 				if (block.Resolve (null, bc, method)) {
-					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator ());
+					debug_builder = member.Parent.CreateMethodSymbolEntry ();
+					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator (), debug_builder);
 
 					block.Emit (ec);
 				}
 			}
+		}
 
-			if (source != null) {
-				method.EmitExtraSymbolInfo (source);
-				source.CloseMethod ();
-			}
+		public void WriteDebugSymbol (MonoSymbolFile file)
+		{
+			if (debug_builder == null)
+				return;
+
+			var token = builder.GetToken ();
+			int t = token.Token;
+#if STATIC
+			if (token.IsPseudoToken)
+				t = member.Module.Builder.ResolvePseudoToken (t);
+#endif
+
+			debug_builder.DefineMethod (file, t);
 		}
 	}
 
@@ -2154,7 +2109,12 @@ namespace Mono.CSharp {
 
 		public static readonly string MetadataName = "Finalize";
 
-		public Destructor (TypeContainer parent, Modifiers mod, ParametersCompiled parameters, Attributes attrs, Location l)
+		public string Identifier {
+			get;
+			set;
+		}
+		
+		public Destructor (TypeDefinition parent, Modifiers mod, ParametersCompiled parameters, Attributes attrs, Location l)
 			: base (parent, null, mod, AllowedModifiers, new MemberName (MetadataName, l), attrs, parameters)
 		{
 			ModFlags &= ~Modifiers.PRIVATE;
@@ -2195,15 +2155,19 @@ namespace Mono.CSharp {
 				MethodGroupExpr method_expr = MethodGroupExpr.CreatePredefined (base_dtor, base_type, Location);
 				method_expr.InstanceExpression = new BaseThis (base_type, Location);
 
-				var try_block = new ExplicitBlock (block, block.StartLocation, block.EndLocation);
-				var finaly_block = new ExplicitBlock (block, Location, Location);
+				var try_block = new ExplicitBlock (block, block.StartLocation, block.EndLocation) {
+					IsCompilerGenerated = true
+				};
+				var finaly_block = new ExplicitBlock (block, Location, Location) {
+					IsCompilerGenerated = true
+				};
 
 				//
 				// 0-size arguments to avoid CS0250 error
 				// TODO: Should use AddScopeStatement or something else which emits correct
 				// debugger scope
 				//
-				finaly_block.AddStatement (new StatementExpression (new Invocation (method_expr, new Arguments (0))));
+				finaly_block.AddStatement (new StatementExpression (new Invocation (method_expr, new Arguments (0)), Location.Null));
 
 				var tf = new TryFinally (try_block, finaly_block, Location);
 				block.WrapIntoDestructor (tf, try_block);
@@ -2275,20 +2239,15 @@ namespace Mono.CSharp {
 			}
 		}
 
-		public EmitContext CreateEmitContext (ILGenerator ig)
+		public EmitContext CreateEmitContext (ILGenerator ig, SourceMethodBuilder sourceMethod)
 		{
-			return new EmitContext (this, ig, ReturnType);
+			return new EmitContext (this, ig, ReturnType, sourceMethod);
 		}
 
 		public bool IsAccessor {
 			get {
 				return true;
 			}
-		}
-
-		public bool IsExcluded ()
-		{
-			return false;
 		}
 
 		public MemberName MethodName {
@@ -2349,7 +2308,7 @@ namespace Mono.CSharp {
 			throw new NotSupportedException ();
 		}
 
-		public virtual void Emit (TypeContainer parent)
+		public virtual void Emit (TypeDefinition parent)
 		{
 			method_data.Emit (parent);
 
@@ -2397,6 +2356,11 @@ namespace Mono.CSharp {
 			return false;
 		}
 
+		public override string GetCallerMemberName ()
+		{
+			return base.GetCallerMemberName ().Substring (prefix.Length);
+		}
+
 		public override string GetSignatureForDocumentation ()
 		{
 			// should not be called
@@ -2408,6 +2372,12 @@ namespace Mono.CSharp {
 			return false;
 		}
 
+		public override void WriteDebugSymbol (MonoSymbolFile file)
+		{
+			if (method_data != null)
+				method_data.WriteDebugSymbol (file);
+		}
+
 		public MethodSpec Spec { get; protected set; }
 
 		//
@@ -2416,9 +2386,6 @@ namespace Mono.CSharp {
 		public override string DocCommentHeader {
 			get { throw new InvalidOperationException ("Unexpected attempt to get doc comment from " + this.GetType () + "."); }
 		}
-
-		void IMethodData.EmitExtraSymbolInfo (SourceMethod source)
-		{ }
 	}
 
 	public class Operator : MethodOrOperator {
@@ -2504,8 +2471,8 @@ namespace Mono.CSharp {
 			names [(int) OpType.Implicit] = new string [] { "implicit", "op_Implicit" };
 			names [(int) OpType.Explicit] = new string [] { "explicit", "op_Explicit" };
 		}
-		
-		public Operator (TypeContainer parent, OpType type, FullNamedExpression ret_type, Modifiers mod_flags, ParametersCompiled parameters,
+
+		public Operator (TypeDefinition parent, OpType type, FullNamedExpression ret_type, Modifiers mod_flags, ParametersCompiled parameters,
 				 ToplevelBlock block, Attributes attrs, Location loc)
 			: base (parent, ret_type, mod_flags, AllowedModifiers, new MemberName (GetMetadataName (type), loc), attrs, parameters)
 		{

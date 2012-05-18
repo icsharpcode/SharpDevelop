@@ -18,8 +18,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Globalization;
+
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.compilation = owner.Compilation;
 			this.ownerType = owner.EntityType;
 			this.index = index;
-			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString());
+			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
 			this.region = region;
 			this.variance = variance;
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.compilation = compilation;
 			this.ownerType = ownerType;
 			this.index = index;
-			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString());
+			this.name = name ?? ((this.OwnerType == EntityType.Method ? "!!" : "!") + index.ToString(CultureInfo.InvariantCulture));
 			this.attributes = attributes ?? EmptyList<IAttribute>.Instance;
 			this.region = region;
 			this.variance = variance;
@@ -198,7 +198,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public string ReflectionName {
 			get {
-				return (this.OwnerType == EntityType.Method ? "``" : "`") + index.ToString();
+				return (this.OwnerType == EntityType.Method ? "``" : "`") + index.ToString(CultureInfo.InvariantCulture);
 			}
 		}
 		
@@ -247,13 +247,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return m;
 		}
 		
+		static IMethod GetDummyConstructor(ICompilation compilation)
+		{
+			// Reuse the same IMethod instance for all dummy constructors
+			// so that two occurrences of 'new T()' refer to the same constructor.
+			return (IMethod)compilation.CacheManager.GetOrAddShared(
+				dummyConstructor, _ => dummyConstructor.CreateResolved(compilation.TypeResolveContext));
+		}
+		
 		public IEnumerable<IMethod> GetConstructors(Predicate<IUnresolvedMethod> filter = null, GetMemberOptions options = GetMemberOptions.IgnoreInheritedMembers)
 		{
 			if ((options & GetMemberOptions.IgnoreInheritedMembers) == GetMemberOptions.IgnoreInheritedMembers) {
 				if (this.HasDefaultConstructorConstraint || this.HasValueTypeConstraint) {
 					if (filter == null || filter(dummyConstructor)) {
-						var resolvedCtor = (IMethod)dummyConstructor.CreateResolved(compilation.TypeResolveContext);
-						IMethod m = new SpecializedMethod(this, resolvedCtor, EmptyList<IType>.Instance);
+						var resolvedCtor = GetDummyConstructor(compilation);
+						IMethod m = new SpecializedMethod(resolvedCtor, TypeParameterSubstitution.Identity) { DeclaringType = this };
 						return new [] { m };
 					}
 				}

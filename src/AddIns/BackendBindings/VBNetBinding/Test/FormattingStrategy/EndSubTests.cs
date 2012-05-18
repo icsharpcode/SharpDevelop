@@ -173,5 +173,52 @@ namespace ICSharpCode.VBNetBinding.Tests
 			
 			RunTest(code, cursorOffset, expectedCode, expectedOffset, '\n');
 		}
+		
+		[Test]
+		public void AutomaticPropertyWithInitializer()
+		{
+			string code = "Public Class Foo\r\n" +
+				"\tPublic Property Bar As Boolean = True\r\n" +
+				"\r\n" + // This extra new line is required. This is the new line just entered by the user.
+				"End Class";
+			
+			string bar = "= True\r\n";
+			int cursorOffset = code.IndexOf(bar) + bar.Length;
+			
+			string expectedCode = "Public Class Foo\r\n" +
+				"\tPublic Property Bar As Boolean = True\r\n" +
+				"\t\r\n" +
+				"End Class";
+			
+			int expectedOffset = ("Public Class Foo\r\n" +
+			                      "\tPublic Property Bar As Boolean = True\r\n" +
+			                      "\t").Length;
+			
+			RunTest(code, cursorOffset, expectedCode, expectedOffset, '\n');
+		}
+		
+		[Test]
+		public void StandardProperty()
+		{
+			string code = "Public Class Foo\r\n" +
+				"\tPublic Property Bar As Boolean\r\n" +
+				"\r\n" + // This extra new line is required. This is the new line just entered by the user.
+				"End Class";
+			
+			string bar = "As Boolean\r\n";
+			int cursorOffset = code.IndexOf(bar) + bar.Length;
+			
+			string expectedCode = "Public Class Foo\r\n" +
+				"\tPublic Property Bar As Boolean\r\n" +
+				"\t\t\r\n" +
+				"\tEnd Property\r\n" +
+				"End Class";
+			
+			int expectedOffset = ("Public Class Foo\r\n" +
+			                      "\tPublic Property Bar As Boolean\r\n" +
+			                      "\t\t").Length;
+			
+			RunTest(code, cursorOffset, expectedCode, expectedOffset, '\n');
+		}
 	}
 }

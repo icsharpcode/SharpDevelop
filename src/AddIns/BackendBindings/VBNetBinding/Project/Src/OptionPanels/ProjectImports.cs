@@ -35,7 +35,7 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 			}
 			
 			IProjectContent projectContent = ParserService.GetProjectContent(project);
-			foreach(IProjectContent refProjectContent in projectContent.ReferencedContents) {
+			foreach(IProjectContent refProjectContent in projectContent.ThreadSafeGetReferencedContents()) {
 				AddNamespaces(refProjectContent);
 				
 			}

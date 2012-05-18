@@ -4033,6 +4033,12 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken.Description" xml:space="preserve">
     <value>Das öffentliche Schlüsseltoken der Assembly</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly" xml:space="preserve">
+    <value>Assembly referenzieren</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.ReferenceOutputAssembly.Description" xml:space="preserve">
+    <value>Wenn auf false gesetzt, gibt diese Referenz nur eine Build-Reihenfolgenabhängigkeit an und fügt keine Assembly-Referenz zum Projekt hinzu.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion" xml:space="preserve">
     <value>Festgelegte Version</value>
   </data>
@@ -4979,6 +4985,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.Debug.LocalVariables.CopyToClipboard" xml:space="preserve">
     <value>Kopiere Wert in Zwischenablage</value>
   </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.NameColumn" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.NonPublicMembers" xml:space="preserve">
     <value>Nicht-öffentliche Mitglieder</value>
   </data>
@@ -4999,6 +5008,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Statische Mitglieder</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.TypeColumn" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.ValueColumn" xml:space="preserve">
+    <value>Wert</value>
   </data>
   <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
     <value>Speicher</value>
@@ -5375,6 +5390,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Öffne beinhaltenden Ordner im Explorer</value>
   </data>
+  <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
+    <value>Kommandozeile hier öffnen</value>
+  </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Alle Knoten einklappen</value>
   </data>
@@ -5509,6 +5527,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
     <value>Projekt sta&amp;rten</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.RunProjectWithoutDebugger" xml:space="preserve">
+    <value>Projekt ohne Debugger starten</value>
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Als St&amp;artprojekt festlegen</value>

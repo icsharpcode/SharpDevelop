@@ -618,6 +618,13 @@ namespace ICSharpCode.SharpDevelop
 			return new Location(region.EndColumn, region.EndLine);
 		}
 		
+		public static IEnumerable<IProjectContent> ThreadSafeGetReferencedContents(this IProjectContent pc)
+		{
+			lock (pc.ReferencedContents) {
+				return pc.ReferencedContents.ToList();
+			}
+		}
+		
 		public static int PositionToOffset(this IDocument document, Location location)
 		{
 			return document.PositionToOffset(location.Line, location.Column);

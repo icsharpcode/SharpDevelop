@@ -233,6 +233,18 @@ namespace Debugger
 			return written;
 		}
 		
+		internal Thread GetThread(ICorDebugThread corThread)
+		{
+			foreach(Thread thread in this.Threads) {
+				if (thread.CorThread == corThread) {
+					return thread;
+				}
+			}
+			Thread t = new Thread(this, corThread);
+			this.Threads.Add(t);
+			return t;
+		}
+		
 		#region Exceptions
 		
 		public event EventHandler<ExceptionEventArgs> ExceptionThrown;

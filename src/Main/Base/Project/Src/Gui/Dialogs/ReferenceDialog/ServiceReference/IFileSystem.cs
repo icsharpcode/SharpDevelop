@@ -8,5 +8,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	public interface IFileSystem
 	{
 		void CreateDirectoryIfMissing(string path);
+		string CreateTempFile(string text);
+		string ReadAllFileText(string fileName);
+		void DeleteFile(string fileName);
+		void WriteAllText(string fileName, string text);
 	}
 }

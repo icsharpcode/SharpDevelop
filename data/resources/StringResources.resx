@@ -5270,6 +5270,9 @@ Stop/terminate the debuggee.</comment>
     <value>Copy value to clipboard</value>
     <comment>Item in variable's context menu</comment>
   </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.NameColumn" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.NonPublicMembers" xml:space="preserve">
     <value>Non-Public members</value>
   </data>
@@ -5296,6 +5299,12 @@ Shows the full callstack of the error.</comment>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
     <value>Static members</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.TypeColumn" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables.ValueColumn" xml:space="preserve">
+    <value>Value</value>
   </data>
   <data name="MainWindow.Windows.Debug.MemoryPad" xml:space="preserve">
     <value>Memory</value>
@@ -5686,6 +5695,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Open containing folder in Explorer</value>
     <comment>String for the editor tab context menu that will open the directory in which a documents file is contained in Windows Explorer.</comment>
   </data>
+  <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
+    <value>Open command prompt here</value>
+  </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Collapse all nodes</value>
   </data>
@@ -5829,6 +5841,9 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
     <value>&amp;Run Project</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.RunProjectWithoutDebugger" xml:space="preserve">
+    <value>Run Project without Debugger</value>
   </data>
   <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
     <value>Set as St&amp;artUp Project</value>

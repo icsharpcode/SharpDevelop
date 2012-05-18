@@ -52,7 +52,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		Assembly FindAssemblyInProjectReferences(IProjectContent pc, string name)
 		{
-			foreach (IProjectContent referencedProjectContent in pc.ReferencedContents) {
+			foreach (IProjectContent referencedProjectContent in pc.ThreadSafeGetReferencedContents()) {
 				if (name == referencedProjectContent.AssemblyName) {
 					return this.typeResolutionService.LoadAssembly(referencedProjectContent);
 				}

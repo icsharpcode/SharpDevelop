@@ -50,19 +50,7 @@ namespace Debugger.AddIn.Options
 		public override bool SaveOptions()
 		{
 			bool result = base.SaveOptions();
-			Process proc = WindowsDebugger.CurrentProcess;
-			// debug session is running
-			if (proc != null) {
-				bool wasPausedNow = false;
-				// if it is not paused, break execution
-				if (!proc.IsPaused) {
-					proc.Break();
-					wasPausedNow = true;
-				}
-				proc.Debugger.ResetJustMyCodeStatus();
-				// continue if it was not paused before
-				if (wasPausedNow) proc.AsyncContinue();
-			}
+			DebuggingOptions.ResetStatus(proc => proc.Debugger.ResetJustMyCodeStatus());
 			return result;
 		}
 	}

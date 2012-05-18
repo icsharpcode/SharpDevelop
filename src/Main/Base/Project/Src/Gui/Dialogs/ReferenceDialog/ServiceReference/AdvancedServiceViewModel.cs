@@ -39,38 +39,71 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 	
 	public enum DictionaryCollectionTypes
 	{
+		[Description("System.Collections.Generic.Dictionary")]
 		Dictionary,
+		[Description("System.Collections.Generic.SortedList")]
 		SortedList,
+		[Description("System.Collections.Generic.SortedDictionary")]
 		SortedDictionary,
+		[Description("System.Collections.Hashtable")]
 		HashTable,
+		[Description("System.Collections.ObjectModel.KeyedCollection")]
 		KeyedCollection,
+		[Description("System.Collections.SortedList")]
 		SortedList_2,
+		[Description("System.Collections.Specialized.HybridDictionary")]
 		HybridDictionary,
+		[Description("System.Collections.Specialized.ListDictionary")]
 		ListDictionary,
+		[Description("System.Collections.Specialized.OrderedDictionary")]
 		OrderedDictionary
 	}	
 	
 	internal class AdvancedServiceViewModel : ViewModelBase
 	{
-		string compatibilityText = "Add a Web Reference instead of a Service Reference. ";
-		string c_2 = "This will generate code based on .NET Framework 2.0 Web Services technology.";
 		string accesslevel = "Access level for generated classes:";
+		ServiceReferenceGeneratorOptions options;
 		
-		public AdvancedServiceViewModel()
+		public AdvancedServiceViewModel(ServiceReferenceGeneratorOptions options)
 		{
-			Title ="Service Reference Settings";
-			UseReferencedAssemblies = true;
-			BitmapSource image = PresentationResourceService.GetBitmapSource("Icons.16x16.Reference");
-			AssembliesToReference = new ObservableCollection<CheckableImageAndDescription>();
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "Microsoft.CSharp"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "mscorlib"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Core"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Data"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Data.DataSetExtensions"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Runtime.Serialization"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.ServiceModel"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Xml"));
-			AssembliesToReference.Add(new CheckableImageAndDescription(image, "System.Xml.Linq"));
+			this.options = options;
+			UpdateSettingsFromOptions();
+			Title = "Service Reference Settings";
+			AssembliesToReference = new ObservableCollection<CheckableAssemblyReference>();
+		}
+		
+		public ServiceReferenceGeneratorOptions Options {
+			get { return options; }
+		}
+		
+		void UpdateSettingsFromOptions()
+		{
+			UpdateSelectedModifier();
+			UpdateReferencedTypes();
+		}
+		
+		void UpdateReferencedTypes()
+		{
+			if (options.UseTypesInProjectReferences) {
+				this.ReuseTypes = true;
+				this.UseReferencedAssemblies = true;
+			} else if (options.UseTypesInSpecifiedAssemblies) {
+				this.ReuseReferencedTypes = true;
+				this.UseReferencedAssemblies = true;
+			} else {
+				this.ReuseReferencedTypes = false;
+				this.ReuseTypes = false;
+				this.UseReferencedAssemblies = false;
+			}
+		}
+		
+		void UpdateSelectedModifier()
+		{
+			if (options.GenerateInternalClasses) {
+				SelectedModifier = Modifiers.Internal;
+			} else {
+				SelectedModifier = Modifiers.Public;
+			}
 		}
 		
 		public string Title { get; set; }
@@ -85,46 +118,44 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			get { return selectedModifier; }
 			set {
 				selectedModifier = value;
+				UpdateClassGenerationModifier();
 				base.RaisePropertyChanged(() => SelectedModifier);
 			}
 		}
 		
-		bool generateAsyncOperations;
+		void UpdateClassGenerationModifier()
+		{
+			options.GenerateInternalClasses = (selectedModifier == Modifiers.Internal);
+		}
 		
 		public bool GenerateAsyncOperations {
-			get { return generateAsyncOperations; }
+			get { return options.GenerateAsyncOperations; }
 			set {
-				generateAsyncOperations = value;
+				options.GenerateAsyncOperations = value;
 				base.RaisePropertyChanged(() => GenerateAsyncOperations);
 			}
 		}
 		
-		bool generateMessageContract;
-		
 		public bool GenerateMessageContract {
-			get { return generateMessageContract; }
+			get { return options.GenerateMessageContract; }
 			set {
-				generateMessageContract = value;
+				options.GenerateMessageContract = value;
 				base.RaisePropertyChanged(() => GenerateMessageContract);
 			}
 		}
 		
-		CollectionTypes collectionType;
-		
 		public CollectionTypes CollectionType {
-			get { return collectionType; }
+			get { return options.ArrayCollectionType; }
 			set {
-				collectionType = value;
+				options.ArrayCollectionType = value;
 				base.RaisePropertyChanged(() => CollectionType);
 			}
 		}
 		
-		DictionaryCollectionTypes dictionaryCollectionType;
-		
 		public DictionaryCollectionTypes DictionaryCollectionType {
-			get { return dictionaryCollectionType; }
+			get { return options.DictionaryCollectionType; }
 			set {
-				dictionaryCollectionType = value;
+				options.DictionaryCollectionType = value;
 				base.RaisePropertyChanged(() => DictionaryCollectionType);
 			}
 		}
@@ -136,26 +167,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			set { 
 				useReferencedAssemblies = value;
 				ReuseTypes = useReferencedAssemblies;
+				if (!useReferencedAssemblies)
+					ReuseReferencedTypes = false;
 				base.RaisePropertyChanged(() => UseReferencedAssemblies);
 			}
 		}
 		
-		bool reuseTypes;
-		
 		public bool ReuseTypes {
-			get { return reuseTypes; }
+			get { return options.UseTypesInProjectReferences; }
 			set {
-				reuseTypes = value;
+				options.UseTypesInProjectReferences = value;
 				base.RaisePropertyChanged(() => ReuseTypes);
 			}
 		}
 		
-		bool reuseReferencedTypes;
-		
 		public bool ReuseReferencedTypes {
-			get { return reuseReferencedTypes; }
+			get { return options.UseTypesInSpecifiedAssemblies; }
 			set { 
-				reuseReferencedTypes = value;
+				options.UseTypesInSpecifiedAssemblies = value;
 				ListViewEnable = value;
 				base.RaisePropertyChanged(() => ReuseReferencedTypes);
 			}
@@ -171,11 +200,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 			}
 		}
 		
-		public ObservableCollection <CheckableImageAndDescription> AssembliesToReference { get; private set; }
-		
-		public string CompatibilityText 
-		{
-			get { return compatibilityText + c_2; }
-		}	
+		public ObservableCollection <CheckableAssemblyReference> AssembliesToReference { get; private set; }	
 	}
 }
