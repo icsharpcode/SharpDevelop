@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		string activeConfiguration;
 		string activePlatform;
 		bool resettingIndex;
+		bool isLoaded;
 		
 		StackPanel configStackPanel;
 		Line headerline;
@@ -152,6 +153,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			else
 				activePlatform = project.ActivePlatform;
 			
+			isLoaded = true;
 			Load(project, activeConfiguration, activePlatform);
 		}
 		
@@ -173,11 +175,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public string BaseDirectory
-		{
-			get {return project.Directory;}
+		public string BaseDirectory {
+			get { return project.Directory; }
 		}
-			
+		
 		public event EventHandler IsDirtyChanged;
 		
 		#region Manage MSBuild properties
@@ -194,6 +195,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			bool treatAsLiteral = (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty);
 			ProjectProperty<string> newProperty = new ProjectProperty<string>(this, propertyName, defaultValue, defaultLocation, treatAsLiteral);
 			projectProperties.Add(propertyName, newProperty);
+			if (isLoaded)
+				newProperty.Load(project, activeConfiguration, activePlatform);
 			return newProperty;
 		}
 		
@@ -206,6 +209,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			ProjectProperty<T> newProperty = new ProjectProperty<T>(this, propertyName, defaultValue, defaultLocation, true);
 			projectProperties.Add(propertyName, newProperty);
+			if (isLoaded)
+				newProperty.Load(project, activeConfiguration, activePlatform);
 			return newProperty;
 		}
 		
@@ -224,6 +229,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			readonly bool treatPropertyValueAsLiteral;
 			T val;
 			PropertyStorageLocations location;
+			bool isLoading;
 			
 			public ProjectProperty(ProjectOptionPanel parentPanel, string propertyName, T defaultValue, PropertyStorageLocations defaultLocation, bool treatPropertyValueAsLiteral)
 			{
@@ -249,7 +255,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						if (PropertyChanged != null)
 							PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Value"));
 						
-						parentPanel.IsDirty = true;
+						if (!isLoading)
+							parentPanel.IsDirty = true;
 					}
 				}
 			}
@@ -262,7 +269,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						if (PropertyChanged != null)
 							PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("Location"));
 						
-						parentPanel.IsDirty = true;
+						if (!isLoading)
+							parentPanel.IsDirty = true;
 					}
 				}
 			}
@@ -281,8 +289,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (newLocation == PropertyStorageLocations.Unknown)
 					newLocation = defaultLocation;
 				
-				this.Value = GenericConverter.FromString(v, defaultValue);
-				this.Location = newLocation;
+				isLoading = true;
+				try {
+					this.Value = GenericConverter.FromString(v, defaultValue);
+					this.Location = newLocation;
+				} finally {
+					isLoading = false;
+				}
 			}
 			
 			public void Save(MSBuildBasedProject project, string configuration, string platform)
@@ -299,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			RaiseInternal(propertyName);
 		}
-			
+		
 		
 		protected void RaisePropertyChanged<T>(Expression<Func<T>> propertyExpresssion)
 		{
@@ -353,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 //		protected string OpenFile(string fileFilter)
 //		{
 //			var dialog = new OpenFileDialog();
-//			
+//
 //			//dialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
 //			var x = StringParser.Parse(fileFilter);
 //			dialog.Filter = StringParser.Parse(x);
@@ -362,7 +375,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 //			}
 //			return String.Empty;
 //		}
-//		
+//
 		
 		protected string BrowseForFolder(string description,string startLocation,string relativeLocation)
 		{
