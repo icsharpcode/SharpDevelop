@@ -134,14 +134,27 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void UniqueName_ProjectFileNameHasFullPath_ReturnsProjectFileNameWithoutDirectoryPart()
+		public void UniqueName_ProjectInSameFolderAsSolution_ReturnsProjectFileNameWithoutDirectoryPart()
 		{
 			CreateProject();
+			msbuildProject.ParentSolution.FileName = @"d:\projects\myproject\MyProject.sln";
 			msbuildProject.FileName = @"d:\projects\myproject\MyProject.csproj";
 			
 			string name = project.UniqueName;
 			
 			Assert.AreEqual("MyProject.csproj", name);
+		}
+		
+		[Test]
+		public void UniqueName_ProjectInSubDirectoryOfSolutionFolder_ReturnsProjectFileNameWithContainsSubFolder()
+		{
+			CreateProject();
+			msbuildProject.ParentSolution.FileName = @"d:\projects\myproject\MyProject.sln";
+			msbuildProject.FileName = @"d:\projects\myproject\SubFolder\MyProject.csproj";
+			
+			string name = project.UniqueName;
+			
+			Assert.AreEqual(@"SubFolder\MyProject.csproj", name);
 		}
 		
 		[Test]

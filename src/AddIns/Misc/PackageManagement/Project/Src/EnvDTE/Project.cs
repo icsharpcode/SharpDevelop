@@ -56,7 +56,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 	
 		public virtual string UniqueName {
-			get { return Path.GetFileName(FileName); }
+			get { return GetUniqueName(); }
+		}
+		
+		string GetUniqueName()
+		{
+			return FileUtility.GetRelativePath(MSBuildProject.ParentSolution.Directory, FileName);
 		}
 		
 		public virtual string FileName {
