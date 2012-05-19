@@ -30,6 +30,16 @@ namespace PackageManagement.Tests.EnvDTE
 			fakeFileService = project.FakeFileService;
 		}
 		
+		void AddFileToFakeFileSystem(string directory, string relativeFileName)
+		{
+			fakeFileService.AddFilesToFakeFileSystem(directory, relativeFileName);
+		}
+		
+		void AddDirectoryToFakeFileSystem(string parentDirectory, string childDirectory)
+		{
+			fakeFileService.AddDirectoryToFakeFileSystem(parentDirectory, childDirectory);
+		}
+		
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsIncludedInProjectInProjectFolder()
 		{
@@ -390,7 +400,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void AddFromFile_FullFileNameIsInsideProject_ProjectIsSaved()
 		{
 			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
 			
 			projectItems.AddFromFile(fileName);
@@ -404,7 +414,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void AddFromFile_FullFileNameIsInsideProject_ProjectItemReturned()
 		{
 			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
@@ -420,7 +430,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void AddFromFile_FullFileNameIsInsideProject_FileNameUsedToDetermineProjectItemType()
 		{
 			CreateProjectItems();
-			msbuildProject.FileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
 			string fileName = @"d:\projects\myproject\tools\test.cs";
 			
 			projectItems.AddFromFile(fileName);
@@ -428,5 +438,157 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("test.cs", msbuildProject.FileNamePassedToGetDefaultItemType);
 		}
 		
+		[Test]
+		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectIsSaved()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools";
+			
+			projectItems.AddFromDirectory(directory);
+			
+			bool saved = msbuildProject.IsSaved;
+			
+			Assert.IsTrue(saved);
+		}
+		
+		[Test]
+		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectItemIsReturnedForNewDirectory()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools";
+			
+			DTE.ProjectItem item = projectItems.AddFromDirectory(directory);
+			string name = item.Name;
+			
+			Assert.AreEqual("tools", name);
+			Assert.AreEqual(project, item.ContainingProject);
+			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+		}
+		
+		[Test]
+		public void AddFromDirectory_EmptyDirectoryInsideProject_FolderProjectItemAddedToProject()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools";
+			
+			projectItems.AddFromDirectory(directory);
+			
+			var item = msbuildProject.Items[0] as FileProjectItem;
+			
+			Assert.AreEqual("tools", item.Include);
+			Assert.AreEqual(ItemType.Folder, item.ItemType);
+		}
+		
+		[Test]
+		public void AddFromDirectory_EmptyDirectoryIsTwoLevelsInsideProject_FolderProjectItemAddedToProject()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools\packages";
+			
+			projectItems.AddFromDirectory(directory);
+			
+			var item = msbuildProject.Items[0] as FileProjectItem;
+			
+			Assert.AreEqual(@"tools\packages", item.Include);
+			Assert.AreEqual(ItemType.Folder, item.ItemType);
+		}
+		
+		[Test]
+		public void AddFromDirectory_DirectoryContainsOneFile_FileAddedToMSBuildProjectButNoFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools";
+			AddFileToFakeFileSystem(directory, "a.txt");
+			project.TestableProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.None;
+			
+			projectItems.AddFromDirectory(directory);
+			
+			var item = msbuildProject.Items[0] as FileProjectItem;
+			
+			Assert.AreEqual(@"tools\a.txt", item.Include);
+			Assert.AreEqual(ItemType.None, item.ItemType);
+			Assert.AreEqual(@"d:\projects\myproject\tools\a.txt", item.FileName);
+			Assert.AreEqual(1, msbuildProject.Items.Count);
+		}
+		
+		[Test]
+		public void AddFromDirectory_DirectoryContainsOneFile_ProjectItemReturnedHasDirectoryName()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools";
+			AddFileToFakeFileSystem(directory, "a.txt");
+			
+			DTE.ProjectItem item = projectItems.AddFromDirectory(directory);
+			string name = item.Name;
+			
+			Assert.AreEqual("tools", name);
+			Assert.AreEqual(project, item.ContainingProject);
+			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+		}
+		
+		[Test]
+		public void AddFromDirectory_DirectoryContainsChildDirectoryWithNoFiles_DirectoryProjectItemReturnedForParentDirectory()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string parentDirectory = @"d:\projects\myproject\tools";
+			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
+			
+			DTE.ProjectItem item = projectItems.AddFromDirectory(parentDirectory);
+			string name = item.Name;
+			
+			DTE.ProjectItem childItem = item.ProjectItems.Item("packages");
+			
+			Assert.AreEqual("tools", name);
+			Assert.AreEqual(project, item.ContainingProject);
+			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, item.Kind);
+			Assert.AreEqual(1, item.ProjectItems.Count);
+			Assert.AreEqual(Constants.VsProjectItemKindPhysicalFolder, childItem.Kind);
+		}
+		
+		[Test]
+		public void AddFromDirectory_DirectoryContainsChildDirectoryWithNoFiles_MSBuildProjectItemAddedForChildDirectoryButNotParent()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string parentDirectory = @"d:\projects\myproject\tools";
+			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
+			
+			projectItems.AddFromDirectory(parentDirectory);
+			
+			var item = msbuildProject.Items[0] as FileProjectItem;
+			
+			Assert.AreEqual(@"tools\packages", item.Include);
+			Assert.AreEqual(ItemType.Folder, item.ItemType);
+			Assert.AreEqual(@"d:\projects\myproject\tools\packages", item.FileName);
+			Assert.AreEqual(1, msbuildProject.Items.Count);
+		}
+		
+		[Test]
+		public void AddFromDirectory_DirectoryContainsChildDirectoryWithOneFile_MSBuildProjectItemAddedForFileButNotForParentNorChildDirectory()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string parentDirectory = @"d:\projects\myproject\tools";
+			string childDirectory = @"d:\projects\myproject\tools\packages";
+			AddDirectoryToFakeFileSystem(parentDirectory, "packages");
+			AddFileToFakeFileSystem(childDirectory, "a.txt");
+			project.TestableProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.None;			
+			
+			projectItems.AddFromDirectory(parentDirectory);
+			
+			var item = msbuildProject.Items[0] as FileProjectItem;
+			
+			Assert.AreEqual(@"tools\packages\a.txt", item.Include);
+			Assert.AreEqual(ItemType.None, item.ItemType);
+			Assert.AreEqual(@"d:\projects\myproject\tools\packages\a.txt", item.FileName);
+			Assert.AreEqual(1, msbuildProject.Items.Count);
+		}
 	}
 }

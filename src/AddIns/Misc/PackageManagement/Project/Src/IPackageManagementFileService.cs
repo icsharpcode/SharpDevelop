@@ -12,5 +12,7 @@ namespace ICSharpCode.PackageManagement
 		void OpenFile(string fileName);
 		void CopyFile(string oldFileName, string newFileName);
 		bool FileExists(string fileName);
+		string[] GetFiles(string path);
+		string[] GetDirectories(string path);
 	}
 }

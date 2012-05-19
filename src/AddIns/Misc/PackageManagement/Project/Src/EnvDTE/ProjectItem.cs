@@ -24,7 +24,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.ContainingProject = project;
 			this.ProjectItems = new DirectoryProjectItems(this);
 			CreateProperties();
-			Kind = Constants.VsProjectItemKindPhysicalFile;
+			Kind = GetKindFromFileProjectItemType();
+		}
+		
+		string GetKindFromFileProjectItemType()
+		{
+			if (projectItem.ItemType == ItemType.Folder) {
+				return Constants.VsProjectItemKindPhysicalFolder;
+			}
+			return Constants.VsProjectItemKindPhysicalFile;
 		}
 		
 		public ProjectItem()

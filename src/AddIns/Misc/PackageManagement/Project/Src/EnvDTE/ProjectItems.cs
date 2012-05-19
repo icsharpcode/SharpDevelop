@@ -34,7 +34,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			string include = Path.GetFileName(filePath);
 			CopyFileIntoProject(filePath, include);
-			project.AddFileUsingPathRelativeToProject(include);
+			project.AddFileProjectItemUsingPathRelativeToProject(include);
 			project.Save();
 		}
 		
@@ -89,12 +89,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual ProjectItem AddFromDirectory(string directory)
 		{
-			throw new NotImplementedException();
+			ProjectItem directoryItem = project.AddDirectoryProjectItemUsingFullPath(directory);
+			project.Save();
+			return directoryItem;
 		}
 		
 		public virtual ProjectItem AddFromFile(string fileName)
 		{
-			ProjectItem projectItem = project.AddFileUsingFullPath(fileName);
+			ProjectItem projectItem = project.AddFileProjectItemUsingFullPath(fileName);
 			project.Save();
 			return projectItem;
 		}

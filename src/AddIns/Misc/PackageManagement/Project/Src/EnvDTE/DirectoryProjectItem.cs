@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
 
@@ -29,7 +30,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		static string GetLastDirectoryName(string relativePath)
 		{
 			string[] directoryNames = relativePath.Split('\\');
-			return directoryNames[1];
+			if (directoryNames.Length > 1) {
+				return directoryNames[1];
+			}
+			return relativePath;
 		}
 		
 		public DirectoryProjectItem(Project project, FileProjectItem projectItem)
@@ -44,6 +48,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return true;
 			}
 			return false;
+		}
+		
+		public static DirectoryProjectItem CreateDirectoryProjectItemFromFullPath(Project project, string directory)
+		{
+			string relativePath = project.GetRelativePath(directory);
+			return new DirectoryProjectItem(project, relativePath);
 		}
 	}
 }

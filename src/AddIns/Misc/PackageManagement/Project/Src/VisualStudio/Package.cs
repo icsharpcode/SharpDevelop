@@ -13,7 +13,6 @@ namespace Microsoft.VisualStudio.Shell
 		{
 			//typeof(IVsSolution)
 			//typeof(SComponentModel) --> not used - console initializer.
-			//typeof(SVsExtensionManager)
 			if (serviceType == typeof(DTE)) {
 				return new DTE();
 			} else if (serviceType == typeof(SVsExtensionManager)) {

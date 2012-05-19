@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -107,7 +109,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			if (!HasReference(path)) {
 				var referenceItem = new ReferenceProjectItem(MSBuildProject, path);
-				projectService.AddProjectItem(MSBuildProject, referenceItem);
+				AddProjectItemToMSBuildProject(referenceItem);
 			}
 		}
 		
@@ -119,6 +121,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				}
 			}
 			return false;
+		}
+		
+		void AddProjectItemToMSBuildProject(SD.ProjectItem projectItem)
+		{
+			projectService.AddProjectItem(MSBuildProject, projectItem);
 		}
 		
 		internal IEnumerable<SD.ProjectItem> GetReferences()
@@ -136,17 +143,17 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			projectService.RemoveProjectItem(MSBuildProject, referenceItem);
 		}
 		
-		internal void AddFileUsingPathRelativeToProject(string include)
+		internal void AddFileProjectItemUsingPathRelativeToProject(string include)
 		{
-			var fileProjectItem = CreateFileProjectItemUsingPathRelativeToProject(include);
-			projectService.AddProjectItem(MSBuildProject, fileProjectItem);
+			FileProjectItem fileProjectItem = CreateFileProjectItemUsingPathRelativeToProject(include);
+			AddProjectItemToMSBuildProject(fileProjectItem);
 		}
 		
-		internal ProjectItem AddFileUsingFullPath(string path)
+		internal ProjectItem AddFileProjectItemUsingFullPath(string path)
 		{
 			FileProjectItem fileProjectItem = CreateFileProjectItemUsingFullPath(path);
 			fileProjectItem.FileName = path;
-			projectService.AddProjectItem(MSBuildProject, fileProjectItem);
+			AddProjectItemToMSBuildProject(fileProjectItem);
 			return new ProjectItem(this, fileProjectItem);
 		}
 		
@@ -158,19 +165,20 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		ItemType GetDefaultItemType(string include)
 		{
-			return MSBuildProject.GetDefaultItemType(include);
+			return MSBuildProject.GetDefaultItemType(Path.GetFileName(include));
 		}
 		
 		FileProjectItem CreateFileProjectItemUsingPathRelativeToProject(ItemType itemType, string include)
 		{
-			var fileProjectItem = new FileProjectItem(MSBuildProject, itemType);
-			fileProjectItem.Include = include;
-			return fileProjectItem;
+			return new FileProjectItem(MSBuildProject, itemType) {
+				Include = include
+			};
 		}
 		
 		FileProjectItem CreateFileProjectItemUsingFullPath(string path)
 		{
-			return CreateFileProjectItemUsingPathRelativeToProject(Path.GetFileName(path));
+			string relativePath = GetRelativePath(path);
+			return CreateFileProjectItemUsingPathRelativeToProject(relativePath);
 		}
 		
 		internal IList<string> GetAllPropertyNames()
@@ -201,6 +209,47 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal virtual void DeleteFile(string fileName)
 		{
 			fileService.RemoveFile(fileName);
+		}
+		
+		public ProjectItem AddDirectoryProjectItemUsingFullPath(string directory)
+		{
+			AddDirectoryProjectItemsRecursively(directory);
+			return DirectoryProjectItem.CreateDirectoryProjectItemFromFullPath(this, directory);
+		}
+		
+		void AddDirectoryProjectItemsRecursively(string directory)
+		{
+			string[] files = fileService.GetFiles(directory);
+			string[] childDirectories = fileService.GetDirectories(directory);
+			if (files.Any()) {
+				foreach (string file in files) {
+					AddFileProjectItemUsingFullPath(file);
+				}
+			} else if (!childDirectories.Any()) {
+				AddDirectoryProjectItemToMSBuildProject(directory);
+			}
+			
+			foreach (string childDirectory in childDirectories) {
+				AddDirectoryProjectItemsRecursively(childDirectory);
+			}
+		}
+		
+		void AddDirectoryProjectItemToMSBuildProject(string directory)
+		{
+			FileProjectItem projectItem = CreateMSBuildProjectItemForDirectory(directory);
+			AddProjectItemToMSBuildProject(projectItem);
+		}
+		
+		FileProjectItem CreateMSBuildProjectItemForDirectory(string directory)
+		{
+			return new FileProjectItem(MSBuildProject, ItemType.Folder) {
+				FileName = directory
+			};
+		}
+		
+		internal string GetRelativePath(string path)
+		{
+			return FileUtility.GetRelativePath(MSBuildProject.Directory, path);
 		}
 	}
 }
