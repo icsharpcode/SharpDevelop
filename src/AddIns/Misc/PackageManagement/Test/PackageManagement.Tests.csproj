@@ -268,8 +268,10 @@
     <Compile Include="Src\UpdatePackageActionTests.cs" />
     <Compile Include="Src\UpdatePackageInAllProjectsTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
+    <Compile Include="Src\VisualStudio\FlavoredProjectTests.cs" />
     <Compile Include="Src\VisualStudio\PackageTests.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManagerTests.cs" />
+    <Compile Include="Src\VisualStudio\VsSolutionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

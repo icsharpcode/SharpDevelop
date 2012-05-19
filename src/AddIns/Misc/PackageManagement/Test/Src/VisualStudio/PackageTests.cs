@@ -5,6 +5,7 @@ using System;
 using ICSharpCode.PackageManagement.EnvDTE;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using NUnit.Framework;
 
 namespace PackageManagement.Tests.VisualStudio
@@ -34,6 +35,14 @@ namespace PackageManagement.Tests.VisualStudio
 			object instance = Package.GetGlobalService(typeof(PackageTests));
 			
 			Assert.IsNull(instance);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetIVsSolution_ReturnsIVsSolution()
+		{
+			object solution = Package.GetGlobalService(typeof(IVsSolution)) as IVsSolution;
+			
+			Assert.IsInstanceOf(typeof(IVsSolution), solution);
 		}
 	}
 }

@@ -405,6 +405,8 @@
     <Compile Include="Src\VisualStudio\Package.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
     <Compile Include="Src\VisualStudio\ThreadHelper.cs" />
+    <Compile Include="Src\VisualStudio\VsConstants.cs" />
+    <Compile Include="Src\VisualStudio\VsSolution.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\ManagePackagesView.xaml" />

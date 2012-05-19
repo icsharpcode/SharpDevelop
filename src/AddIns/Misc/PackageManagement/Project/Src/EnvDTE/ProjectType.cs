@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -13,6 +14,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public ProjectType(Project project)
 		{
 			this.Type = GetProjectType(project);
+		}
+		
+		public ProjectType(MSBuildBasedProject project)
+			: this(new Project(project))
+		{
 		}
 		
 		string GetProjectType(Project project)
