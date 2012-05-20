@@ -2,13 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeModel : MarshalByRefObject
 	{
-		public CodeModel()
+		IProjectContent projectContent;
+		
+		public CodeModel(IProjectContent projectContent)
 		{
+			this.projectContent = projectContent;
 		}
 		
 		public CodeElements CodeElements {
@@ -17,7 +21,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public CodeType CodeTypeFromFullName(string name)
 		{
-			throw new NotImplementedException();
+			IClass matchedClass = projectContent.GetClass(name, 0);
+			if (matchedClass != null) {
+				return CreateCodeTypeForClass(matchedClass);
+			}
+			return null;
+		}
+		
+		CodeType CreateCodeTypeForClass(IClass @class)
+		{
+			if (@class.ClassType == ClassType.Interface) {
+				return new CodeInterface(@class);
+			}
+			return new CodeClass2(@class);
 		}
 	}
 }

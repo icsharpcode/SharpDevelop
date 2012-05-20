@@ -199,7 +199,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeModel CodeModel {
-			get { throw new NotImplementedException(); }
+			get { return new CodeModel(projectService.GetProjectContent(MSBuildProject) ); }
 		}
 		
 		public virtual ConfigurationManager ConfigurationManager {

@@ -7,6 +7,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public enum vsCMInfoLocation
 	{
-		vsCMInfoLocationProject = 1
+		vsCMInfoLocationProject = 1,
+		vsCMInfoLocationExternal = 2
 	}
 }

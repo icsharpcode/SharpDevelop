@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
@@ -66,6 +68,11 @@ namespace ICSharpCode.PackageManagement
 			} else {
 				project.Save();
 			}
+		}
+		
+		public IProjectContent GetProjectContent(IProject project)
+		{
+			return ParserService.GetProjectContent(project);
 		}
 		
 		public event ProjectEventHandler ProjectAdded {
