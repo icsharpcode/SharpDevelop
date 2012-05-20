@@ -48,10 +48,6 @@ namespace CSharpBinding.OptionPanels
 		public BuildOptionsXaml()
 		{
 			InitializeComponent();
-		}
-		
-		private void Initialize()
-		{
 			this.serializationInfo = new List<KeyItemPair>();
 			
 			this.serializationInfo.Add (new KeyItemPair("Off",StringParser.Parse("${res:Dialog.ProjectOptions.Build.Off}")));
@@ -64,7 +60,6 @@ namespace CSharpBinding.OptionPanels
 			this.targetCPU.Add(new KeyItemPair( "x86",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x86}")));
 			this.targetCPU.Add(new KeyItemPair( "x64",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.x64}")));
 			this.targetCPU.Add(new KeyItemPair( "Itanium",StringParser.Parse("${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}")));
-			
 			this.TargetCPU = targetCPU;
 			
 			
@@ -74,16 +69,7 @@ namespace CSharpBinding.OptionPanels
 			fileAlignment.Add(new KeyItemPair("2048", "2048"));
 			fileAlignment.Add(new KeyItemPair("4096", "4096"));
 			fileAlignment.Add(new KeyItemPair("8192", "8192"));
-			
 			FileAlign = fileAlignment;
-			
-			
-			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
-			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
-			UpdateTargetFrameworkCombo();
-			XmlDocHelper();
-			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
-			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			
 			this.warnLevel = new List<KeyItemPair>();
 			this.warnLevel.Add(new KeyItemPair("0","0"));
@@ -92,6 +78,16 @@ namespace CSharpBinding.OptionPanels
 			this.warnLevel.Add(new KeyItemPair("3","3"));
 			this.warnLevel.Add(new KeyItemPair("4","4"));
 			this.WarnLevel = warnLevel;   
+		}
+		
+		private void Initialize()
+		{
+			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
+			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
+			UpdateTargetFrameworkCombo();
+			XmlDocHelper();
+			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
+			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			SetTreatWarningAsErrorRadioButtons();
 			base.RaisePropertyChanged(string.Empty);
 		}
@@ -138,6 +134,16 @@ namespace CSharpBinding.OptionPanels
 		
 		public ProjectProperty<string> RegisterForComInterop {
 			get {return GetProperty("RegisterForComInterop","",TextBoxEditMode.EditRawProperty ); }
+		}
+		
+		
+		public ProjectProperty<string> GenerateSerializationAssemblies {
+			get {return GetProperty("GenerateSerializationAssemblies","",TextBoxEditMode.EditRawProperty ); }
+		}
+		
+		
+		public ProjectProperty<string> PlatformTarget {
+			get {return GetProperty("PlatformTarget","",TextBoxEditMode.EditRawProperty ); }
 		}
 		
 		public ProjectProperty<string> FileAlignment {
@@ -282,7 +288,7 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		#endregion
-		
+	
 		
 		#region TargetCPU
 		
@@ -293,7 +299,6 @@ namespace CSharpBinding.OptionPanels
 			}
 		}
 		#endregion
-		
 		
 		#region FileAlignment
 		
