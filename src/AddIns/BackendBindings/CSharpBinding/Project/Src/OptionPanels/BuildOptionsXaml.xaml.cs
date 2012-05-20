@@ -5,6 +5,7 @@
  * Time: 19:54
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -92,7 +93,6 @@ namespace CSharpBinding.OptionPanels
 			this.warnLevel.Add(new KeyItemPair("4","4"));
 			this.WarnLevel = warnLevel;   
 			SetTreatWarningAsErrorRadioButtons();
-			LoadWarningsLevel();
 			base.RaisePropertyChanged(string.Empty);
 		}
 		
@@ -139,6 +139,12 @@ namespace CSharpBinding.OptionPanels
 		public ProjectProperty<string> RegisterForComInterop {
 			get {return GetProperty("RegisterForComInterop","",TextBoxEditMode.EditRawProperty ); }
 		}
+		
+		public ProjectProperty<string> FileAlignment {
+			get {return GetProperty("FileAlignment","",TextBoxEditMode.EditRawProperty ); }
+		}
+		
+		
 		// Fehlt noch
 		public ProjectProperty<string> BaseAddress {
 			get {return GetProperty("BaseAddress","0x400000",TextBoxEditMode.EditRawProperty ); }
@@ -298,6 +304,16 @@ namespace CSharpBinding.OptionPanels
 			}
 		}
 		
+		
+		public string SelectedFileAlign
+		{
+			get {return this.FileAlignment.Value;}
+			set {this.FileAlignment.Value = value;
+				base.RaisePropertyChanged(()=> SelectedFileAlign);
+			}
+		}
+		
+		
 		#endregion
 		
 		#region BaseIntermediateOutputPath
@@ -344,23 +360,16 @@ namespace CSharpBinding.OptionPanels
 			}
 		}
 		
-		private void LoadWarningsLevel ()
-		{
-			string val = WarningLevel.Value;
-			System.Console.WriteLine(val);
-			var i = WarnLevel.FindIndex(
-				delegate(KeyItemPair pair)
-				{
-					return pair.Key == val;
-				}
-			);
+			
+		public string SelectedWarningLevel {
+			get {
+				return this.WarningLevel.Value; }
+			set {
+				WarningLevel.Value = value;
+				base.RaisePropertyChanged(() => SelectedWarningLevel);
+			}
 		}
-			
-			
-		private void SaveWarningsLevel()
-		{
-			
-		}
+
 		#endregion
 		
 		#region SpecificWarnings TreatWarningsAsErrors

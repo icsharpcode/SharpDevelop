@@ -271,11 +271,14 @@
 								Grid.Column="1"
 								HorizontalAlignment="Right"
 								Content="{core:Localize Dialog.ProjectOptions.Build.FileAlignment}"></Label>
+							<!-- ????? -->
+							
 							<ComboBox
 								x:Name="fileAlignmentComboBox"
 								Grid.Row="3"
 								Grid.Column="2"
 								ItemsSource="{Binding Path=DataContext.FileAlign}"
+								SelectedValue="{Binding Path=SelectedFileAlign}"
 								DisplayMemberPath="DisplayValue"
 								SelectedValuePath="Key"
 								SelectedIndex="3"></ComboBox>
@@ -359,13 +362,14 @@
 					<Label
 						Grid.Column="1"
 						Content="{core:Localize Dialog.ProjectOptions.Build.WarningLevel}"></Label>
-					<!-- Bad Ischl -->
+	
 					<ComboBox
 						x:Name="warningLevelComboBox"
 						Width="50"
 						Grid.Column="2"
 						HorizontalAlignment="Left"
 						ItemsSource="{Binding Path=DataContext.WarnLevel}"
+						SelectedValue="{Binding Path=DataContext.SelectedWarningLevel}"
 						DisplayMemberPath="DisplayValue"
 						SelectedValuePath="Key"
 						SelectedIndex="4"></ComboBox>
