@@ -97,7 +97,7 @@
 		</Span>
 		
 		<Span color="String" multiline="true">
-			<Begin color="String">@"</Begin>
+			<Begin>@"</Begin>
 			<End>"</End>
 			<RuleSet>
 				<!-- span for escape sequences -->

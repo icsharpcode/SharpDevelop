@@ -1,4 +1,11 @@
-﻿<gui:OptionPanel x:Class="ICSharpCode.AvalonEdit.AddIn.Options.HighlightingOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
+﻿<gui:OptionPanel x:Class="ICSharpCode.AvalonEdit.AddIn.Options.HighlightingOptions"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+                 xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+                 xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                 xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
+                 xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
 	<FrameworkElement.Resources>
 		<BooleanToVisibilityConverter x:Key="boolToVisibility" />
 	</FrameworkElement.Resources>
@@ -39,6 +46,10 @@
 			<core:RestrictDesiredSize Height="50" MinWidth="200">
 				<avalonedit:TextEditor Name="textEditor" IsReadOnly="True" />
 			</core:RestrictDesiredSize>
+			<widgets:StackPanelWithSpacing Orientation="Vertical" SpaceBetweenItems="5" Margin="0,5">
+				<Button Click="ImportButtonClick" Content="{core:Localize Dialog.HighlightingEditor.Import}" />
+				<Button Click="ExportButtonClick" Content="{core:Localize Dialog.HighlightingEditor.Export}" />
+			</widgets:StackPanelWithSpacing>
 		</StackPanel>
 		<ComboBox Name="languageComboBox" DockPanel.Dock="Top" SelectionChanged="LanguageComboBox_SelectionChanged">
 			<ComboBox.ItemTemplate>

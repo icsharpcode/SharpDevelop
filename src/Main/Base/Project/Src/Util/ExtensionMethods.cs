@@ -91,6 +91,12 @@ namespace ICSharpCode.SharpDevelop
 				list.Add(o);
 		}
 		
+		public static void AddRange(this IList arrayList, IEnumerable elements)
+		{
+			foreach (object o in elements)
+				arrayList.Add(o);
+		}
+		
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this IList<T> arr)
 		{
 			return new ReadOnlyCollection<T>(arr);

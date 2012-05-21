@@ -538,6 +538,36 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			get { return (Brush)GetValue(NonPrintableCharacterBrushProperty); }
 			set { SetValue(NonPrintableCharacterBrushProperty, value); }
 		}
+		
+		/// <summary>
+		/// LinkTextForegroundBrush dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LinkTextForegroundBrushProperty =
+			DependencyProperty.Register("LinkTextForegroundBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.Blue));
+		
+		/// <summary>
+		/// Gets/sets the Brush used for displaying link texts.
+		/// </summary>
+		public Brush LinkTextForegroundBrush {
+			get { return (Brush)GetValue(LinkTextForegroundBrushProperty); }
+			set { SetValue(LinkTextForegroundBrushProperty, value); }
+		}
+		
+		/// <summary>
+		/// LinkTextBackgroundBrush dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LinkTextBackgroundBrushProperty =
+			DependencyProperty.Register("LinkTextBackgroundBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.Transparent));
+		
+		/// <summary>
+		/// Gets/sets the Brush used for the background of link texts.
+		/// </summary>
+		public Brush LinkTextBackgroundBrush {
+			get { return (Brush)GetValue(LinkTextBackgroundBrushProperty); }
+			set { SetValue(LinkTextBackgroundBrushProperty, value); }
+		}
 		#endregion
 		
 		#region Redraw methods / VisualLine invalidation

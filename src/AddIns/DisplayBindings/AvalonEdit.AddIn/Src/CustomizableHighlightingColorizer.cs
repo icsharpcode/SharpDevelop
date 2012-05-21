@@ -12,6 +12,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -24,6 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public const string SelectedText = "Selected text";
 		public const string NonPrintableCharacters = "Non-printable characters";
 		public const string LineNumbers = "Line numbers";
+		public const string LinkText = "Link text";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
@@ -42,6 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			bool assignedSelectedText = false;
 			bool assignedNonPrintableCharacter = false;
 			bool assignedLineNumbers = false;
+			bool assignedLinkText = false;
 			foreach (CustomizedHighlightingColor color in customizations) {
 				switch (color.Name) {
 					case DefaultTextAndBackground:
@@ -87,6 +90,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						
 						if (color.Foreground != null)
 							textEditor.LineNumbersForeground = CreateFrozenBrush(color.Foreground.Value);
+						break;
+					case LinkText:
+						if (assignedLinkText)
+							continue;
+						assignedLinkText = true;
+						if (color.Foreground != null)
+							textEditor.TextArea.TextView.LinkTextForegroundBrush = CreateFrozenBrush(color.Foreground.Value);
+						if (color.Background != null)
+							textEditor.TextArea.TextView.LinkTextBackgroundBrush = CreateFrozenBrush(color.Background.Value);
 						break;
 				}
 			}

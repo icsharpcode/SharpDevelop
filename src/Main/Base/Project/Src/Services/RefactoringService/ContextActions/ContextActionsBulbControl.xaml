@@ -227,9 +227,9 @@
 		</Border>
 		
 		<!-- Content -->
-		<Border x:Name="ContentBorder" Padding="0 0 8 8" Grid.Row="1" Grid.Column="0" MinWidth="200" Background="White">
+		<Border x:Name="ContentBorder" Padding="0 0 8 8" Grid.Row="1" Grid.Column="0" MinWidth="200">
 			<aero:SystemDropShadowChrome>
-				<Border BorderThickness="1" Padding="0" Margin="0" BorderBrush="{StaticResource OuterBorderBrush}">
+				<Border BorderThickness="1" Padding="0" Margin="0" Background="White" BorderBrush="{StaticResource OuterBorderBrush}">
 					<StackPanel Orientation="Vertical">
 						<local:ContextActionsControl x:Name="ActionsTreeView"
 							DataContext="{Binding Actions}">

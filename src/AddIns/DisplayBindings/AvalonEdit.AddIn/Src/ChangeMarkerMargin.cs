@@ -43,6 +43,35 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		#region Brushes
+		public static readonly DependencyProperty AddedLineBrushProperty =
+			DependencyProperty.Register("AddedLineBrush", typeof(Brush), typeof(ChangeMarkerMargin),
+			                            new FrameworkPropertyMetadata(Brushes.LightGreen));
+		
+		public Brush AddedLineBrush {
+			get { return (Brush)GetValue(AddedLineBrushProperty); }
+			set { SetValue(AddedLineBrushProperty, value); }
+		}
+		
+		public static readonly DependencyProperty ChangedLineBrushProperty =
+			DependencyProperty.Register("ChangedLineBrush", typeof(Brush), typeof(ChangeMarkerMargin),
+			                            new FrameworkPropertyMetadata(Brushes.LightBlue));
+		
+		public Brush ChangedLineBrush {
+			get { return (Brush)GetValue(ChangedLineBrushProperty); }
+			set { SetValue(ChangedLineBrushProperty, value); }
+		}
+		
+		public static readonly DependencyProperty UnsavedLineBrushProperty =
+			DependencyProperty.Register("UnsavedLineBrush", typeof(Brush), typeof(ChangeMarkerMargin),
+			                            new FrameworkPropertyMetadata(Brushes.Yellow));
+		
+		public Brush UnsavedLineBrush {
+			get { return (Brush)GetValue(UnsavedLineBrushProperty); }
+			set { SetValue(UnsavedLineBrushProperty, value); }
+		}
+		#endregion
+		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			Size renderSize = this.RenderSize;
@@ -52,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var zeroLineInfo = changeWatcher.GetChange(0);
 				
 				foreach (VisualLine line in textView.VisualLines) {
-					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
+					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y - 1, 5, line.Height + 2);
 					
 					LineChangeInfo info = changeWatcher.GetChange(line.FirstDocumentLine.LineNumber);
 					
@@ -64,14 +93,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						case ChangeType.None:
 							break;
 						case ChangeType.Added:
-							drawingContext.DrawRectangle(Brushes.LightGreen, null, rect);
+							drawingContext.DrawRectangle(AddedLineBrush, null, rect);
 							break;
 						case ChangeType.Deleted:
 						case ChangeType.Modified:
-							drawingContext.DrawRectangle(Brushes.LightBlue, null, rect);
+							drawingContext.DrawRectangle(ChangedLineBrush, null, rect);
 							break;
 						case ChangeType.Unsaved:
-							drawingContext.DrawRectangle(Brushes.Yellow, null, rect);
+							drawingContext.DrawRectangle(UnsavedLineBrush, null, rect);
 							break;
 						default:
 							throw new Exception("Invalid value for ChangeType");
