@@ -640,7 +640,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							// May happen in variable names
 							return controlSpace ? DefaultControlSpaceItems(identifierStart) : null;
 						}
-	
 						if (identifierStart.Node is VariableInitializer && location <= ((VariableInitializer)identifierStart.Node).NameToken.EndLocation) {
 							return controlSpace ? HandleAccessorContext() ?? DefaultControlSpaceItems(identifierStart) : null;
 						}
@@ -1118,15 +1117,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				rr = ResolveExpression(node, unit);
 			}
 
-			if (node is Expression) {
-				var astResolver = new CSharpAstResolver(GetState(), xp.Unit, CSharpParsedFile);
-				foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)node)) {
-					if (type.Kind == TypeKind.Enum) {
-						AddEnumMembers(wrapper, type, rr.Item2);
-					}
-				}
-			}
-
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
@@ -1290,6 +1280,14 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
+			if (node is Expression) {
+				var astResolver = new CSharpAstResolver(state, unit, CSharpParsedFile);
+				foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)node)) {
+					if (type.Kind == TypeKind.Enum) {
+						AddEnumMembers(wrapper, type, state);
+					}
+				}
+			}
 		}
 		
 		static bool IsInSwitchContext(AstNode node)

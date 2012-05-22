@@ -1181,7 +1181,7 @@ class TestClass
 		[Test()]
 		public void TestEnumInBinaryOperatorExpression ()
 		{
-			CompletionDataList provider = CodeCompletionBugTests.CreateCtrlSpaceProvider (
+			CodeCompletionBugTests.CombinedProviderTest (
 @"
 [Flags]
 public enum TestEnum { A, B, C}
@@ -1190,14 +1190,14 @@ class TestClass
 {
 	public void Foo ()
 	{
-		$TestEnum test = TestEnum.A | $
+		$TestEnum test = TestEnum.A | T$
 	}
-}");
-			Assert.IsNotNull (provider, "provider not found.");
+}", provider => {
 			Assert.IsNotNull (provider.Find ("TestEnum"), "enum 'TestEnum' not found.");
 			Assert.IsNotNull (provider.Find ("TestEnum.A"), "enum 'TestEnum.A' not found.");
 			Assert.IsNotNull (provider.Find ("TestEnum.B"), "enum 'TestEnum.B' not found.");
 			Assert.IsNotNull (provider.Find ("TestEnum.C"), "enum 'TestEnum.C' not found.");
+			});
 		}
 		
 		[Test()]
