@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Controls;
@@ -85,11 +86,25 @@ namespace CSharpBinding.OptionPanels
 			this.UpdateProjectCommand  = new RelayCommand(UpdateProjectExecute);
 			this.ChangeOutputPath = new RelayCommand(ChangeOutputPathExecute);
 			UpdateTargetFrameworkCombo();
+			if (DocumentationFile.Value.Length > 0) {
+				documentFileIsChecked = true;
+			}
 			XmlDocHelper();
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			SetTreatWarningAsErrorRadioButtons();
+			this.DefineConstants.Location = PropertyStorageLocations.ConfigurationSpecific;
+			this.Optimize.Location = PropertyStorageLocations.ConfigurationSpecific;
+			this.AllowUnsafeBlocks.Location = PropertyStorageLocations.ConfigurationSpecific;
+			this.CheckForOverflowUnderflow.Location = PropertyStorageLocations.ConfigurationSpecific;
 			base.RaisePropertyChanged(string.Empty);
+			var s = BaseAddress.Value;
+			int val;
+			if (!int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
+					val = 32;
+				}
+			var x = val;
+			var y = "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
 		}
 		
 		#region properties

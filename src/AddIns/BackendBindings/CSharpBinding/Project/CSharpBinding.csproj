@@ -80,6 +80,7 @@
       <DependentUpon>BuildOptionsXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\OptionPanels\HexValidator.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\RemoveMembersInRangeVisitor.cs" />
     <Compile Include="Src\Project\VBNetToCSharpConvertVisitorWithMyFormsSupport.cs" />
