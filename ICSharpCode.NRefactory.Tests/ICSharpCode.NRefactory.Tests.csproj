@@ -81,6 +81,7 @@
     </Compile>
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertIfToSwtichTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
@@ -291,13 +292,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CSharp\" />
-    <Folder Include="CSharp\Parser\" />
-    <Folder Include="CSharp\CodeIssues\" />
-    <Folder Include="CSharp\CodeActions\" />
-    <Folder Include="CSharp\Parser\Bugs\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
