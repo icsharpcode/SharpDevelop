@@ -1118,6 +1118,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				rr = ResolveExpression(node, unit);
 			}
 
+			if (node is Expression) {
+				var astResolver = new CSharpAstResolver(GetState(), xp.Unit, CSharpParsedFile);
+				foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)node)) {
+					if (type.Kind == TypeKind.Enum) {
+						AddEnumMembers(wrapper, type, rr.Item2);
+					}
+				}
+			}
+
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
 				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
