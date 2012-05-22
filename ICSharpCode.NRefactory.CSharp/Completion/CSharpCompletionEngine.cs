@@ -1712,7 +1712,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		string GetLineIndent(int lineNr)
 		{
 			var line = document.GetLineByNumber(lineNr);
-			for (int j = offset; j < line.EndOffset; j++) {
+			for (int j = line.Offset; j < line.EndOffset; j++) {
 				char ch = document.GetCharAt(j);
 				if (!char.IsWhiteSpace(ch)) {
 					return document.GetText(line.Offset, j - line.Offset - 1);
