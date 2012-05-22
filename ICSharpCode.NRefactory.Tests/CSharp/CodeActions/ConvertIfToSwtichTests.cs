@@ -433,6 +433,39 @@ class TestClass
 	}
 }");
 		}
+
+		[Test]
+		public void TestNoElse()
+		{
+			Test<ConvertIfToSwitchAction> (@"
+class TestClass
+{
+	void TestMethod (int a)
+	{
+		int b;
+		if$ (a == 0) {
+			b = 0;
+		} else if (a == 1) {
+			b = 1;
+		}
+	}
+}", @"
+class TestClass
+{
+	void TestMethod (int a)
+	{
+		int b;
+		switch (a) {
+		case 0:
+			b = 0;
+			break;
+		case 1:
+			b = 1;
+			break;
+		}
+	}
+}");
+		}
 	
 	}
 }

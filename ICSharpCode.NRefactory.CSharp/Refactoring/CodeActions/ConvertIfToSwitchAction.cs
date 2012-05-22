@@ -121,6 +121,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			CollectSwitchSectionStatements (section.Statements, context, ifStatement.TrueStatement);
 			result.Add (section);
 
+			if (ifStatement.FalseStatement.IsNull)
+				return true;
+
 			// else if
 			var falseStatement = ifStatement.FalseStatement as IfElseStatement;
 			if (falseStatement != null)
