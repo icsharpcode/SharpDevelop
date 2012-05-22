@@ -524,6 +524,54 @@ End Module";
 			RunFormatTest(code, expected);
 		}
 		
+		[Test]
+		public void ForNextOneLine()
+		{
+			string expected = @"Module Core
+	Sub Main
+		Dim a = 1
+		For i = 0 To 10 : Console.WriteLine(i) : Next
+		Dim b = 2
+	End Sub
+End Module";
+			
+			string code = @"Module Core
+Sub Main
+Dim a = 1
+For i = 0 To 10 : Console.WriteLine(i) : Next
+Dim b = 2
+End Sub
+End Module";
+			
+			RunFormatTest(code, expected);
+		}
+		
+		[Test]
+		public void RandomNext()
+		{
+			string expected = @"Module Core
+	Public Function GetRandomNumber( _
+		Optional ByVal Low As Integer = 1, _
+		Optional ByVal High As Integer = 100) As Integer
+		' Returns a random number,
+		' between the optional Low and High parameters
+		Return objRandom.Next(Low, High + 1)
+	End Function
+End Module";
+			
+			string code = @"Module Core
+Public Function GetRandomNumber( _
+Optional ByVal Low As Integer = 1, _
+Optional ByVal High As Integer = 100) As Integer
+' Returns a random number,
+' between the optional Low and High parameters
+Return objRandom.Next(Low, High + 1)
+End Function
+End Module";
+			
+			RunFormatTest(code, expected);
+		}
+		
 		void RunFormatTest(string code, string expectedCode)
 		{
 			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());

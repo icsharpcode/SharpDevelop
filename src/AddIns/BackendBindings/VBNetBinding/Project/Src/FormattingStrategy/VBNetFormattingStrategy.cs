@@ -833,10 +833,10 @@ namespace ICSharpCode.VBNetBinding
 		internal static bool IsBlockEnd(Token current, Token prev)
 		{
 			if (current.Kind == Tokens.Next)
-				return prev.Kind == Tokens.EOL;
+				return prev.Kind == Tokens.EOL || prev.Kind == Tokens.Colon;
 			
 			if (current.Kind == Tokens.Loop)
-				return prev.Kind == Tokens.EOL;
+				return prev.Kind == Tokens.EOL || prev.Kind == Tokens.Colon;
 			
 			if (blockTokens.Contains(current.Kind))
 				return prev.Kind == Tokens.End;
