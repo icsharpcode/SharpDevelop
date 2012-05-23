@@ -82,6 +82,7 @@
     <Compile Include="CSharp\Analysis\DefiniteAssignmentTests.cs" />
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertIfToSwtichTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertSwitchToIfTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
