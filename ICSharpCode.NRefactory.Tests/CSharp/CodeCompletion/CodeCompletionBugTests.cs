@@ -5246,5 +5246,34 @@ namespace EnumerationProblem
 			});
 		}
 
+		/// <summary>
+		/// Bug 5191 - Creating extension method problem when typing "this" 
+		/// </summary>
+		[Test()]
+		public void TestBug5191()
+		{
+			CombinedProviderTest(
+@"using System;
+
+static class Ext
+{
+	$public static void Foo(t$
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("this"), "'this' not found.");
+			});
+
+			CombinedProviderTest(
+@"using System;
+
+static class Ext
+{
+	$public static void Foo(int foo, t$
+}
+", provider => {
+				Assert.IsNull(provider.Find("this"), "'this' found.");
+			});
+		}
+
 	}
 }
