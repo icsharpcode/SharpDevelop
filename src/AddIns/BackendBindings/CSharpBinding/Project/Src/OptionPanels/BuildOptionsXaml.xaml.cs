@@ -97,14 +97,8 @@ namespace CSharpBinding.OptionPanels
 			this.Optimize.Location = PropertyStorageLocations.ConfigurationSpecific;
 			this.AllowUnsafeBlocks.Location = PropertyStorageLocations.ConfigurationSpecific;
 			this.CheckForOverflowUnderflow.Location = PropertyStorageLocations.ConfigurationSpecific;
-			base.RaisePropertyChanged(string.Empty);
-			var s = BaseAddress.Value;
-			int val;
-			if (!int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out val)) {
-					val = 32;
-				}
-			var x = val;
-			var y = "0x" + val.ToString("x", NumberFormatInfo.InvariantInfo);
+			//base.RaisePropertyChanged(string.Empty);
+			//IsDirty = false;
 		}
 		
 		#region properties
@@ -146,7 +140,7 @@ namespace CSharpBinding.OptionPanels
 			get {return GetProperty("DebugType",ICSharpCode.SharpDevelop.Project.DebugSymbolType.Full ); }
 		}
 		
-		
+		// used in multibinding
 		public ProjectProperty<string> RegisterForComInterop {
 			get {return GetProperty("RegisterForComInterop","",TextBoxEditMode.EditRawProperty ); }
 		}
@@ -165,8 +159,7 @@ namespace CSharpBinding.OptionPanels
 			get {return GetProperty("FileAlignment","",TextBoxEditMode.EditRawProperty ); }
 		}
 		
-		
-		// Fehlt noch
+	
 		public ProjectProperty<string> BaseAddress {
 			get {return GetProperty("BaseAddress","0x400000",TextBoxEditMode.EditRawProperty ); }
 		}
@@ -291,7 +284,6 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		#endregion
-		
 		
 		#region SerializationInfo
 		

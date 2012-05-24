@@ -11,6 +11,8 @@
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	
 	<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StorageLocationConverter
+			x:Key="converter" />
 		<optionpanels:StringToBoolConverter
 			x:Key="strTobool"></optionpanels:StringToBoolConverter>
 	</optionpanels:ProjectOptionPanel.Resources>
@@ -186,7 +188,7 @@
 							Margin="3,0,3,0"></Button>
 					</StackPanel>
 					<GroupBox Grid.Row="5" Grid.ColumnSpan="3" Margin="5,10,0,0"
-						Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
+					          Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
 						<Grid>
 							<Grid.RowDefinitions>
 								<RowDefinition
@@ -220,12 +222,25 @@
 									Width="50"></ColumnDefinition>
 							</Grid.ColumnDefinitions>
 							
-							<!-- location multibinding http://dotnet-forum.de/blogs/larsschmitt/archive/2009/11/07/wpf-multibinding.aspx -->
 							
-								<optionpanels:StorageLocationPicker
-								Grid.Row="2"
-								Location="{Binding dddddd.Location}"
-								DockPanel.Dock="Left" />
+							<optionpanels:StorageLocationPicker Grid.Row="1" VerticalAlignment="Center">
+								<optionpanels:StorageLocationPicker.Location>
+									<MultiBinding
+										Converter="{StaticResource converter}">
+										<Binding
+											Path="RegisterForComInterop.Location" />
+										<Binding
+											Path="GenerateSerializationAssemblies.Location" />
+										<Binding
+											Path="PlatformTarget.Location" />
+										<Binding
+											Path="FileAlignment.Location" />
+										<Binding
+											Path="BaseAddress.Location" />
+									</MultiBinding>
+								</optionpanels:StorageLocationPicker.Location>
+							
+							</optionpanels:StorageLocationPicker>
 							
 							<CheckBox
 								x:Name="registerCOMInteropCheckBox"
@@ -247,7 +262,7 @@
 								DisplayMemberPath="DisplayValue"
 								SelectedValuePath="Key"
 								SelectedIndex="2"></ComboBox>
-	
+							
 							<Label
 								Grid.Row="2"
 								Grid.Column="1"
@@ -296,7 +311,7 @@
 											<local:HexValidator />
 										</Binding.ValidationRules>
 									</Binding>
-								</TextBox.Text>																					
+								</TextBox.Text>
 							</TextBox>
 							
 							<!-- location multibinding -->

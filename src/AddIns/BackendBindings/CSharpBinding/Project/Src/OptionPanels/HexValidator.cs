@@ -24,7 +24,7 @@ namespace CSharpBinding.OptionPanels
 			var y = 0;
 			var res = Int32.TryParse(str,NumberStyles.HexNumber,CultureInfo.InvariantCulture,out y);
 			if (!res) {
-				 result = new ValidationResult(false, "No Valid hex Digit");
+				 result = new ValidationResult(false, "No valid Hex Digit");
 			}
 			return result;
 		}
