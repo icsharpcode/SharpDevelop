@@ -85,6 +85,7 @@
     <Compile Include="CSharp\CodeActions\ConvertCastToAsTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertIfToSwtichTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertSwitchToIfTests.cs" />
+    <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
