@@ -241,6 +241,8 @@
     <Compile Include="Parser\mcs\typespec.cs" />
     <Compile Include="Parser\mcs\visit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertAsToCastAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertCastToAsAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertIfToSwitchAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertSwitchToIfAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
