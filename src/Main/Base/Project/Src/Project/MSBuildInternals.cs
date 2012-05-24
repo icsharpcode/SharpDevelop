@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Util;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
+using Microsoft.Build.Logging;
 using MSBuild = Microsoft.Build;
 using ProjectCollection = Microsoft.Build.Evaluation.ProjectCollection;
 
@@ -169,6 +171,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProjectInstance project = baseProject.CreateProjectInstance();
 			project.SetProperty("BuildingProject", "false");
+			project.SetProperty("DesignTimeBuild", "true");
 			
 			List<ProjectItemInstance> references = (
 				from item in project.Items
@@ -201,9 +204,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			string[] targets = { "ResolveAssemblyReferences" };
-			BuildRequestData requestData = new BuildRequestData(project, targets, new HostServices());
+			List<string> targets = new List<string>();
+			if (baseProject.HasProjectType(ProjectTypeGuids.PortableLibrary)) {
+				targets.Add("ResolveReferences");
+				targets.Add("DesignTimeResolveAssemblyReferences");
+			} else {
+				targets.Add("ResolveAssemblyReferences");
+			}
+			BuildRequestData requestData = new BuildRequestData(project, targets.ToArray(), new HostServices());
 			List<ILogger> loggers = new List<ILogger>();
+			//loggers.Add(new ConsoleLogger(LoggerVerbosity.Diagnostic));
 			if (logErrorsToOutputPad)
 				loggers.Add(new SimpleErrorLogger());
 			lock (SolutionProjectCollectionLock) {
@@ -231,6 +241,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				CopyLocal = bool.Parse(msbuildItem.GetMetadataValue("CopyLocal")),
 				ReferenceItems = referenceItems
 			};
+			// HACK: mscorlib is reported twice for portable library projects (even if we don't specify it as additionalReference)
+			query = query.DistinctBy(asm => asm.FullPath);
 			List<ReferenceProjectItem> resolvedAssemblies = new List<ReferenceProjectItem>();
 			List<ReferenceProjectItem> handledReferenceItems = new List<ReferenceProjectItem>();
 			foreach (var assembly in query) {

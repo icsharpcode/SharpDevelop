@@ -22,6 +22,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Util;
 using WinForms = System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop
@@ -158,6 +159,11 @@ namespace ICSharpCode.SharpDevelop
 			T[] result = new T[length];
 			Array.Copy(array, startIndex, result, 0, length);
 			return result;
+		}
+		
+		public static IEnumerable<T> DistinctBy<T, K>(this IEnumerable<T> input, Func<T, K> keySelector)
+		{
+			return input.Distinct(KeyComparer.Create(keySelector));
 		}
 		
 		/// <summary>
