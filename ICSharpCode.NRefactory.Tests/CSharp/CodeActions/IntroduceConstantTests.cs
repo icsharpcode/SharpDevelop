@@ -83,7 +83,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }", @"class TestClass
 {
 	const string HelloWorld = ""Hello World"";
-
 	public void Hello ()
 	{
 		System.Console.WriteLine (HelloWorld);
