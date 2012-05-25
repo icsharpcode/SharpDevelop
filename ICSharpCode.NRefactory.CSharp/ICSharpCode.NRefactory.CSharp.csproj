@@ -247,6 +247,7 @@
     <Compile Include="Refactoring\CodeActions\ConvertSwitchToIfAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateCustomEventImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateOverloadWithoutParameterAction.cs" />
+    <Compile Include="Refactoring\CodeActions\SplitDeclarationListAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Refactoring\PatternHelper.cs" />
