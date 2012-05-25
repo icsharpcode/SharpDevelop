@@ -29,16 +29,6 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			helper.AddClassToProjectContent(namespaceName, className);
 		}
-		
-		void AddNamespaceToProjectContent(string name)
-		{
-			helper.AddNamespaceNameToProjectContent(name);
-		}
-		
-		void NoClassesInNamespace(string name)
-		{
-			helper.AddEmptyNamespaceContents(name);
-		}
 				
 		void AddUnknownCompletionEntryToNamespace(string namespaceName)
 		{
@@ -49,7 +39,6 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Members_NamespaceHasOneClass_ReturnsOneClass()
 		{
 			CreateProjectContent();
-			AddNamespaceToProjectContent("Tests");
 			AddClassToProjectContent("Tests", "Tests.MyClass");
 			CreateCodeNamespace("Tests");
 			
@@ -64,9 +53,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Members_NamespaceHasOneChildNamespace_ReturnsOneChildNamespace()
 		{
 			CreateProjectContent();
-			AddNamespaceToProjectContent("First.Second");
-			NoClassesInNamespace("First");
-			NoClassesInNamespace("First.Second");
+			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
 			CreateCodeNamespace("First");
 			
 			CodeElements members = codeNamespace.Members;
@@ -91,10 +78,9 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Members_NamespaceHasOneChildNamespaceWithThreeNamespaceParts_ReturnsOneChildNamespaceWhichHasOneChildNamespace()
 		{
 			CreateProjectContent();
-			AddNamespaceToProjectContent("First.Second.Third");
-			NoClassesInNamespace("First");
-			NoClassesInNamespace("First.Second");
-			NoClassesInNamespace("First.Second.Third");
+			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
+			helper.AddNamespaceCompletionEntryInNamespace("First.Second", "Third");
+			helper.NoCompletionItemsInNamespace("First.Second.Third");
 			CreateCodeNamespace("First");
 			
 			CodeElements members = codeNamespace.Members;
@@ -114,12 +100,8 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Members_ProjectHasTwoNamespacesWithCommonFirstAndSecondPartOfThreePartNamespace_ReturnsOneChildNamespaceWhichHasOneChildNamespace()
 		{
 			CreateProjectContent();
-			AddNamespaceToProjectContent("First.Second.Third");
-			AddNamespaceToProjectContent("First.Second.Different");
-			NoClassesInNamespace("First");
-			NoClassesInNamespace("First.Second");
-			NoClassesInNamespace("First.Second.Third");
-			NoClassesInNamespace("First.Second.Different");
+			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
+			helper.AddNamespaceCompletionEntriesInNamespace("First.Second", "Third", "Different");
 			CreateCodeNamespace("First");
 			
 			CodeElements members = codeNamespace.Members;
@@ -136,7 +118,6 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Members_NamespaceHasUnknownNamespaceEntryType_ReturnsNoItems()
 		{
 			CreateProjectContent();
-			AddNamespaceToProjectContent("Tests");
 			AddUnknownCompletionEntryToNamespace("Tests");
 			CreateCodeNamespace("Tests");
 			

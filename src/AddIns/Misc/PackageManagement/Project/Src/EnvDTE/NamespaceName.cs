@@ -7,20 +7,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class NamespaceName
 	{
+		public NamespaceName(string parentNamespace, string name)
+			: this(GetQualifiedNamespaceName(parentNamespace, name))
+		{
+		}
+		
+		static string GetQualifiedNamespaceName(string parentNamespace, string name)
+		{
+			if (String.IsNullOrEmpty(parentNamespace)) {
+				return name;
+			}
+			return String.Format("{0}.{1}", parentNamespace, name);
+		}
+		
 		public NamespaceName(string qualifiedName)
 		{
 			this.QualifiedName = qualifiedName;
-			FirstPart = GetFirstPartOfNamespace();
 			LastPart = GetLastPartOfNamespace();
-		}
-		
-		string GetFirstPartOfNamespace()
-		{
-			int index = QualifiedName.IndexOf('.');
-			if (index >= 0) {
-				return QualifiedName.Substring(0, index);
-			}
-			return QualifiedName;
 		}
 		
 		string GetLastPartOfNamespace()
@@ -29,33 +32,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return QualifiedName.Substring(index + 1);
 		}
 		
-		public string FirstPart { get; private set; }
 		public string LastPart { get; private set; }
 		public string QualifiedName { get; private set; }
 		
-		public string GetChildNamespaceName(string namespaceName)
+		public NamespaceName CreateChildNamespaceName(string name)
 		{
-			if (QualifiedName == String.Empty) {
-				return GetChildNamespaceNameForRootNamespace(namespaceName);
-			}
-			
-			string dottedQualifiedName = QualifiedName + ".";
-			if (namespaceName.StartsWith(dottedQualifiedName)) {
-				int nextIndex = namespaceName.IndexOf('.', dottedQualifiedName.Length);
-				if (nextIndex >= 0) {
-					return namespaceName.Substring(0, nextIndex);
-				}
-				return namespaceName;
-			}
-			return null;
-		}
-		
-		string GetChildNamespaceNameForRootNamespace(string namespaceName)
-		{
-			if (!String.IsNullOrEmpty(namespaceName)) {
-				return new NamespaceName(namespaceName).FirstPart;
-			}
-			return null;
+			return new NamespaceName(QualifiedName, name);
 		}
 	}
 }

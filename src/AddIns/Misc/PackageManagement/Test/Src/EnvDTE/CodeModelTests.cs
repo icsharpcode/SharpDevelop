@@ -39,21 +39,6 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddInterfaceToProjectContent(interfaceName);
 		}
 		
-		void AddNamespaceToProjectContent(string name)
-		{
-			helper.AddNamespaceNameToProjectContent(name);
-		}
-				
-		void AddEmptyNamespaceContentsForRootNamespace()
-		{
-			helper.AddEmptyNamespaceContentsForRootNamespace();
-		}
-		
-		void AddEmptyNamespaceContents(string namespaceName)
-		{
-			helper.AddEmptyNamespaceContents(namespaceName);
-		}
-		
 		[Test]
 		public void CodeTypeFromFullName_NoSuchTypeInProject_ReturnsNull()
 		{
@@ -102,8 +87,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void CodeElements_OneNamespaceInProject_ReturnsOneCodeNamespaceItem()
 		{
 			CreateCodeModel();
-			AddNamespaceToProjectContent("Test");
-			AddEmptyNamespaceContentsForRootNamespace();
+			helper.AddNamespaceCompletionEntryInNamespace(String.Empty, "Test");
 			
 			CodeElements codeElements = codeModel.CodeElements;
 			CodeNamespace codeNamespace = codeElements.FirstOrDefault() as CodeNamespace;
@@ -117,8 +101,8 @@ namespace PackageManagement.Tests.EnvDTE
 		public void CodeElements_OneNamespaceInProjectWithTwoPartsToName_ReturnsOneCodeNamespaceItemWithFirstPartOfNamespaceAsName()
 		{
 			CreateCodeModel();
-			AddNamespaceToProjectContent("First.Second");
-			AddEmptyNamespaceContentsForRootNamespace();
+			helper.AddNamespaceCompletionEntryInNamespace(String.Empty, "First");
+			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
 			
 			CodeElements codeElements = codeModel.CodeElements;
 			CodeNamespace codeNamespace = codeElements.FirstOrDefault() as CodeNamespace;
@@ -145,10 +129,10 @@ namespace PackageManagement.Tests.EnvDTE
 		public void CodeElements_TwoNamespacesInProjectWithFirstPartsTheName_ReturnsOneParentNamespaceWithTwoChildNamespaces()
 		{
 			CreateCodeModel();
-			AddNamespaceToProjectContent("First.A");
-			AddNamespaceToProjectContent("First.B");
-			AddEmptyNamespaceContentsForRootNamespace();
-			AddEmptyNamespaceContents("First");
+			helper.AddNamespaceCompletionEntryInNamespace(String.Empty, "First");
+			helper.AddNamespaceCompletionEntriesInNamespace("First", "A", "B");
+			helper.NoCompletionItemsInNamespace("First.A");
+			helper.NoCompletionItemsInNamespace("First.B");
 			
 			CodeElements codeElements = codeModel.CodeElements;
 			CodeNamespace codeNamespace = codeElements.FirstOrDefault() as CodeNamespace;
@@ -168,10 +152,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void CodeElements_ProjectHasEmptyNamespaceName_EmptyNamespaceNameNotIncludedInMembers()
 		{
 			CreateCodeModel();
-			AddNamespaceToProjectContent(String.Empty);
-			AddNamespaceToProjectContent("Tests");
-			AddEmptyNamespaceContentsForRootNamespace();
-			AddEmptyNamespaceContents("Tests");
+			helper.AddNamespaceCompletionEntriesInNamespace(String.Empty, String.Empty, "Tests");
 			
 			CodeElements members = codeModel.CodeElements;
 			CodeNamespace codeNamespace = members.ToList().FirstOrDefault() as CodeNamespace;

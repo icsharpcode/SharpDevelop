@@ -9,7 +9,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeModel : MarshalByRefObject
 	{
 		IProjectContent projectContent;
-		ProjectCodeElements codeElements;
+		CodeElementsInNamespace codeElements;
 		
 		public CodeModel(IProjectContent projectContent)
 		{
@@ -19,7 +19,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeElements CodeElements {
 			get {
 				if (codeElements == null) {
-					codeElements = new ProjectCodeElements(projectContent);
+					codeElements = new CodeElementsInNamespace(projectContent, String.Empty);
 				}
 				return codeElements;
 			}

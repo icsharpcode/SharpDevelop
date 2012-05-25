@@ -10,13 +10,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		NamespaceName namespaceName;
 		IProjectContent projectContent;
-		CodeNamespaceMembers members;
+		CodeElementsInNamespace members;
 		
 		public CodeNamespace(IProjectContent projectContent, string qualifiedName)
+			: this(projectContent, new NamespaceName(qualifiedName))
+		{
+		}
+		
+		public CodeNamespace(IProjectContent projectContent, NamespaceName namespaceName)
 			: base(null)
 		{
 			this.projectContent = projectContent;
-			this.namespaceName = new NamespaceName(qualifiedName);
+			this.namespaceName = namespaceName;
 			this.InfoLocation = vsCMInfoLocation.vsCMInfoLocationExternal;
 		}
 		
@@ -39,15 +44,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeElements Members {
 			get { 
 				if (members == null) {
-					members = new CodeNamespaceMembers(projectContent, this);
+					members = new CodeElementsInNamespace(projectContent, namespaceName);
 				}
 				return members;
 			}
-		}
-		
-		internal string GetChildNamespaceName(string qualifiedName)
-		{
-			return namespaceName.GetChildNamespaceName(qualifiedName);
 		}
 	}
 }

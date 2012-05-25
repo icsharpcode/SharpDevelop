@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
 using Rhino.Mocks;
 
@@ -24,19 +25,19 @@ namespace PackageManagement.Tests.Helpers
 			IClass fakeClass = AddClassToProjectContent(className);
 			var namespaceContents = new List<ICompletionEntry>();
 			namespaceContents.Add(fakeClass);
-			AddNamespaceContents(namespaceName, namespaceContents);
+			AddCompletionEntriesToNamespace(namespaceName, namespaceContents);
 			
 			return fakeClass;
 		}
 		
-		public void AddNamespaceContents(string namespaceName, List<ICompletionEntry> namespaceContents)
+		public void AddCompletionEntriesToNamespace(string namespaceName, List<ICompletionEntry> namespaceContents)
 		{
 			FakeProjectContent.Stub(pc => pc.GetNamespaceContents(namespaceName)).Return(namespaceContents);
 		}
 		
-		public void AddEmptyNamespaceContents(string namespaceName)
+		public void NoCompletionItemsInNamespace(string namespaceName)
 		{
-			AddNamespaceContents(namespaceName, new List<ICompletionEntry>());
+			AddCompletionEntriesToNamespace(namespaceName, new List<ICompletionEntry>());
 		}
 		
 		public IClass AddClassToProjectContent(string className)
@@ -67,9 +68,9 @@ namespace PackageManagement.Tests.Helpers
 			NamespaceNames.Add(name);
 		}
 		
-		public void AddEmptyNamespaceContentsForRootNamespace()
+		public void NoCompletionEntriesForRootNamespace()
 		{
-			AddEmptyNamespaceContents(String.Empty);
+			NoCompletionItemsInNamespace(String.Empty);
 		}
 		
 		public void AddUnknownCompletionEntryTypeToNamespace(string namespaceName)
@@ -77,7 +78,20 @@ namespace PackageManagement.Tests.Helpers
 			var unknownEntry = MockRepository.GenerateStub<ICompletionEntry>();
 			var namespaceContents = new List<ICompletionEntry>();
 			namespaceContents.Add(unknownEntry);
-			AddNamespaceContents(namespaceName, namespaceContents);			
+			AddCompletionEntriesToNamespace(namespaceName, namespaceContents);
+		}
+		
+		public void AddNamespaceCompletionEntryInNamespace(string parentNamespaceName, string namespaceName)
+		{
+			AddNamespaceCompletionEntriesInNamespace(parentNamespaceName, new string[] { namespaceName });
+		}
+		
+		public void AddNamespaceCompletionEntriesInNamespace(string parentNamespaceName, params string[] childNamespaceNames)
+		{
+			List<ICompletionEntry> entries = childNamespaceNames
+				.Select(name => new NamespaceEntry(name) as ICompletionEntry)
+				.ToList();
+			AddCompletionEntriesToNamespace(parentNamespaceName, entries);
 		}
 	}
 }
