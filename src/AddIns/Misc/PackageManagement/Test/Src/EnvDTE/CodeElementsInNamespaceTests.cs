@@ -110,5 +110,27 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("GrandChild", grandChildNamespace.Name);
 		}
+		
+		[Test]
+		public void Item_OneClassCompletionEntryAndFirstItemSelected_ReturnsOneCodeClass()
+		{
+			helper.AddClassToProjectContent("Test", "Test.MyClass");
+			CreateCodeElements("Test");
+			
+			CodeClass2 codeClass = codeElements.Item(1) as CodeClass2;
+			
+			Assert.AreEqual("Test.MyClass", codeClass.FullName);
+		}
+		
+		[Test]
+		public void Item_OneClassCompletionEntryAndItemSelectedByName_ReturnsOneCodeClass()
+		{
+			helper.AddClassToProjectContent("Test", "Test.MyClass");
+			CreateCodeElements("Test");
+			
+			CodeClass2 codeClass = codeElements.Item("MyClass") as CodeClass2;
+			
+			Assert.AreEqual("Test.MyClass", codeClass.FullName);
+		}
 	}
 }

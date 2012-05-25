@@ -11,5 +11,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		new IEnumerator GetEnumerator();
 		
 		int Count { get; }
+		
+		CodeElement Item(object index);
 	}
 }

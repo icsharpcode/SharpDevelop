@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -70,6 +71,24 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public IEnumerator GetEnumerator()
 		{
 			return codeElements.GetEnumerator();
+		}
+		
+		public CodeElement Item(object index)
+		{
+			if (index is int) {
+				return Item((int)index);
+			}
+			return Item((string)index);
+		}
+		
+		CodeElement Item(int index)
+		{
+			return codeElements[index - 1];
+		}
+		
+		CodeElement Item(string name)
+		{
+			return codeElements.Single(element => element.Name == name);
 		}
 	}
 }
