@@ -2332,8 +2332,8 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
-		<Class id="AddDotNet35ReferencesIfTargetFrameworkIs35"
-		       class="ICSharpCode.SharpDevelop.Project.Commands.AddDotNet35ReferencesIfTargetFrameworkIs35Command"/>
+		<Class id="CheckPortableLibraryInstalled"
+		       class="ICSharpCode.SharpDevelop.Project.PortableLibrary.CheckPortableLibraryInstalled"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextSpecificProperties">

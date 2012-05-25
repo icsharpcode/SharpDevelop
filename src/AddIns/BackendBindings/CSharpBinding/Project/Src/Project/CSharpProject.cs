@@ -80,37 +80,6 @@ namespace CSharpBinding
 			}
 		}
 		
-		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "C# 2.0");
-		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "C# 3.0");
-		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), DotnetDetection.IsDotnet45Installed() ? "C# 5.0" : "C# 4.0");
-		
-		public override CompilerVersion CurrentCompilerVersion {
-			get {
-				switch (MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
-						return msbuild20;
-					case Solution.SolutionVersionVS2008:
-						return msbuild35;
-					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS11:
-						return msbuild40;
-					default:
-						throw new NotSupportedException();
-				}
-			}
-		}
-		
-		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
-		{
-			List<CompilerVersion> versions = new List<CompilerVersion>();
-			if (DotnetDetection.IsDotnet35SP1Installed()) {
-				versions.Add(msbuild20);
-				versions.Add(msbuild35);
-			}
-			versions.Add(msbuild40);
-			return versions;
-		}
-		
 		/*
 		protected override void AddOrRemoveExtensions()
 		{
@@ -169,6 +138,37 @@ namespace CSharpBinding
 				return ItemType.Compile;
 			else
 				return base.GetDefaultItemType(fileName);
+		}
+		
+		static readonly CompilerVersion msbuild20 = new CompilerVersion(new Version(2, 0), "C# 2.0");
+		static readonly CompilerVersion msbuild35 = new CompilerVersion(new Version(3, 5), "C# 3.0");
+		static readonly CompilerVersion msbuild40 = new CompilerVersion(new Version(4, 0), DotnetDetection.IsDotnet45Installed() ? "C# 5.0" : "C# 4.0");
+		
+		public override CompilerVersion CurrentCompilerVersion {
+			get {
+				switch (Project.MinimumSolutionVersion) {
+					case Solution.SolutionVersionVS2005:
+						return msbuild20;
+					case Solution.SolutionVersionVS2008:
+						return msbuild35;
+					case Solution.SolutionVersionVS2010:
+					case Solution.SolutionVersionVS11:
+						return msbuild40;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+		}
+		
+		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
+		{
+			List<CompilerVersion> versions = new List<CompilerVersion>();
+			if (DotnetDetection.IsDotnet35SP1Installed()) {
+				versions.Add(msbuild20);
+				versions.Add(msbuild35);
+			}
+			versions.Add(msbuild40);
+			return versions;
 		}
 	}
 }

@@ -124,8 +124,12 @@ End Class
 		</SolutionFolder>
 		
 		<Project name = "${ProjectName}" directory = "." language = "C#">
+			<PreCreateActions>
+				<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/CheckPortableLibraryInstalled"/>
+			</PreCreateActions>
+			
 			<CreateActions>
-				<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
+				<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/PostCreationAction_Owner_Is_IProject"/>
 			</CreateActions>
 			
 			<ProjectItems>

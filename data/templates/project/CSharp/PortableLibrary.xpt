@@ -16,6 +16,10 @@
 	
 	<!-- Template Content -->
 	<Project language="C#">
+		<PreCreateActions>
+			<RunCommand path="/SharpDevelop/BackendBindings/TemplateCommands/CheckPortableLibraryInstalled"/>
+		</PreCreateActions>
+	
 		<PropertyGroup>
 			<OutputType>Library</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>

@@ -56,6 +56,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		List<ProjectItem> projectItems = new List<ProjectItem>();
 		List<ProjectProperty> projectProperties = new List<ProjectProperty>();
 		List<Action<IProject>> createActions = new List<Action<IProject>>();
+		List<Action<ProjectCreateInformation>> preCreateActions = new List<Action<ProjectCreateInformation>>();
 		
 		/// <summary>
 		/// Creates a project descriptor for the project node specified by the xml element.
@@ -109,6 +110,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				case "CreateActions":
 					LoadCreateActions(node);
 					break;
+				case "PreCreateActions":
+					LoadPreCreateActions(node);
+					break;
 				case "ProjectItems":
 					LoadProjectItems(node);
 					break;
@@ -151,7 +155,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		static Action<IProject> ReadAction(XmlElement el)
+		void LoadPreCreateActions(XmlElement preCreateActionsElement)
+		{
+			foreach (XmlElement el in preCreateActionsElement) {
+				Action<ProjectCreateInformation> action = ReadAction(el);
+				if (action != null)
+					preCreateActions.Add(action);
+			}
+		}
+		
+		static Action<object> ReadAction(XmlElement el)
 		{
 			switch (el.Name) {
 				case "RunCommand":
@@ -310,6 +323,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				projectCreateInformation.OutputProjectFileName = projectLocation;
 				projectCreateInformation.RootNamespace = standardNamespace.ToString();
 				projectCreateInformation.ProjectName = newProjectName;
+				
+				RunPreCreateActions(projectCreateInformation);
 				
 				StringParserPropertyContainer.FileCreation["StandardNamespace"] = projectCreateInformation.RootNamespace;
 				
@@ -502,6 +517,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				// set back outerProjectBasePath
 				projectCreateInformation.ProjectBasePath = outerProjectBasePath;
 				projectCreateInformation.ProjectName = outerProjectName;
+			}
+		}
+		
+		void RunPreCreateActions(ProjectCreateInformation projectCreateInformation)
+		{
+			foreach (var action in preCreateActions) {
+				action(projectCreateInformation);
 			}
 		}
 		
