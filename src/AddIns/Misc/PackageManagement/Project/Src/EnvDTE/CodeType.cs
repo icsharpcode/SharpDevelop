@@ -14,6 +14,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.Class = c;
 		}
 		
+		public CodeType()
+		{
+		}
+		
 		protected IClass Class { get; private set; }
 		
 		public virtual vsCMAccess Access { get; set; }

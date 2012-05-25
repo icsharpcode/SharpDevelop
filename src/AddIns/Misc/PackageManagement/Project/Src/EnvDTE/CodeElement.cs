@@ -42,7 +42,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			throw new NotImplementedException();
 		}
 		
-		public virtual vsCMInfoLocation InfoLocation { get; private set; }
+		public virtual vsCMInfoLocation InfoLocation { get; protected set; }
 		public virtual DTE DTE { get; private set; }
 	}
 }

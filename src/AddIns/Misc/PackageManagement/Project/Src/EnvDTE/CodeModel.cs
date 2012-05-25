@@ -9,6 +9,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeModel : MarshalByRefObject
 	{
 		IProjectContent projectContent;
+		ProjectCodeElements codeElements;
 		
 		public CodeModel(IProjectContent projectContent)
 		{
@@ -16,7 +17,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeElements CodeElements {
-			get { throw new NotImplementedException(); }
+			get {
+				if (codeElements == null) {
+					codeElements = new ProjectCodeElements(projectContent);
+				}
+				return codeElements;
+			}
 		}
 		
 		public CodeType CodeTypeFromFullName(string name)

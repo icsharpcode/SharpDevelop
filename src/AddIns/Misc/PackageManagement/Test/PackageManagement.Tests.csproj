@@ -73,7 +73,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\EnvDTE\CodeModelTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
+    <Compile Include="Src\Helpers\CodeElementsHelpers.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="Src\Helpers\FakeUpdatePackageActions.cs" />

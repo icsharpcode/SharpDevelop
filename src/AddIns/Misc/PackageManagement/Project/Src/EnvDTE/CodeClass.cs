@@ -13,6 +13,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		public CodeClass()
+		{
+		}
+		
 		public virtual CodeElements ImplementedInterfaces {
 			get { throw new NotImplementedException(); }
 		}

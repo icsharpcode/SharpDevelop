@@ -74,6 +74,7 @@
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
+    <Compile Include="Src\EnvDTE\ChildCodeNamespaces.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArgument.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />
+    <Compile Include="Src\EnvDTE\CodeNamespaceMembers.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2.cs" />
     <Compile Include="Src\EnvDTE\CodeStruct.cs" />
@@ -97,10 +99,13 @@
     <Compile Include="Src\EnvDTE\Configuration.cs" />
     <Compile Include="Src\EnvDTE\Constants.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
+    <Compile Include="Src\EnvDTE\NamespaceName.cs" />
+    <Compile Include="Src\EnvDTE\ProjectCodeElements.cs" />
     <Compile Include="Src\EnvDTE\ProjectKind.cs" />
     <Compile Include="Src\EnvDTE\Projects.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
+    <Compile Include="Src\EnvDTE\CodeTypesInNamespace.cs" />
     <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
     <Compile Include="Src\EnvDTE\vsCMFunction.cs" />
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
