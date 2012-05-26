@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TestRefactoringContext.cs
 //  
 // Author:
@@ -246,8 +246,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			var doc = new StringBuilderDocument (content);
 			var parser = new CSharpParser ();
 			var unit = parser.Parse (content, "program.cs");
-			if (parser.HasErrors)
-				parser.ErrorPrinter.Errors.ForEach (e => Console.WriteLine (e.Message));
+			foreach (var error in parser.Errors)
+				Console.WriteLine (error.Message);
 			Assert.IsFalse (parser.HasErrors, "File contains parsing errors.");
 			unit.Freeze ();
 			var parsedFile = unit.ToTypeSystem ();
