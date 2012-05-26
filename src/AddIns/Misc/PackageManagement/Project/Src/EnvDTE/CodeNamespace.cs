@@ -18,11 +18,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeNamespace(IProjectContent projectContent, NamespaceName namespaceName)
-			: base(null)
 		{
 			this.projectContent = projectContent;
 			this.namespaceName = namespaceName;
 			this.InfoLocation = vsCMInfoLocation.vsCMInfoLocationExternal;
+			this.Language = GetLanguage(projectContent);
 		}
 		
 		internal string QualifiedName {

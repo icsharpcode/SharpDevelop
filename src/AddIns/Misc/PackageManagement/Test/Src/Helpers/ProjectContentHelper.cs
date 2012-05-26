@@ -138,5 +138,19 @@ namespace PackageManagement.Tests.Helpers
 			entries.Add(fakeClass);
 			AddCompletionEntriesToNamespace(namespaceName, entries);			
 		}
+		
+		public void ProjectContentIsForCSharpProject()
+		{
+			TestableProject project = ProjectHelper.CreateTestProject();
+			project.FileName = @"c:\projects\myproject.csproj";
+			SetProjectForProjectContent(project);
+		}
+		
+		public void ProjectContentIsForVisualBasicProject()
+		{
+			TestableProject project = ProjectHelper.CreateTestProject();
+			project.FileName = @"c:\projects\myproject.vbproj";
+			SetProjectForProjectContent(project);
+		}
 	}
 }

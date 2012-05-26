@@ -3,18 +3,33 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeElement : MarshalByRefObject
 	{
+		DTE dte;
+			
+		public CodeElement()
+		{
+		}
+		
 		public CodeElement(IEntity entity)
 		{
 			this.Entity = entity;
+			this.Language = GetLanguage(entity.ProjectContent);
 		}
 		
-		public CodeElement()
+		protected string GetLanguage(IProjectContent projectContent)
 		{
+			if (projectContent.Project != null) {
+				var projectType = new ProjectType(projectContent.Project as MSBuildBasedProject);
+				if (projectType.Type == ProjectType.VBNet) {
+					return CodeModelLanguageConstants.vsCMLanguageVB;
+				}
+			}
+			return CodeModelLanguageConstants.vsCMLanguageCSharp;
 		}
 		
 		protected IEntity Entity { get; private set; }
@@ -29,7 +44,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Entity.FullyQualifiedName.Substring(index + 1);
 		}
 		
-		public virtual string Language { get; private set; }
+		public virtual string Language { get; protected set; }
 		
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual TextPoint GetStartPoint()
@@ -43,6 +58,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual vsCMInfoLocation InfoLocation { get; protected set; }
-		public virtual DTE DTE { get; private set; }
+		
+		public virtual DTE DTE {
+			get {
+				if (dte == null) {
+					dte = new DTE();
+				}
+				return dte;
+			}
+		}
 	}
 }

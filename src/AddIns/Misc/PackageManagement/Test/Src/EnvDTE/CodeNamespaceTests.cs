@@ -125,5 +125,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(0, members.Count);
 		}
+		
+		[Test]
+		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
+		{
+			CreateProjectContent();
+			helper.ProjectContentIsForCSharpProject();
+			CreateCodeNamespace(String.Empty);
+			
+			string language = codeNamespace.Language;
+			
+			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageCSharp, language);
+		}
+		
+		[Test]
+		public void Language_VisualBasicProject_ReturnsVisualBasicModelLanguage()
+		{
+			CreateProjectContent();
+			helper.ProjectContentIsForVisualBasicProject();
+			CreateCodeNamespace(String.Empty);
+			
+			string language = codeNamespace.Language;
+			
+			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageVB, language);
+		}
 	}
 }
