@@ -278,8 +278,8 @@ namespace CSharpBinding.OptionPanels
 		}
 		private void ChangeOutputPathExecute()
 		{
-			OutputPath.Value = base.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,outputPathTextBox.Text);
+			OutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
+			                                        base.BaseDirectory,base.BaseDirectory,outputPathTextBox.Text);
 			base.RaisePropertyChanged(()=> OutputPath);
 		}
 		
@@ -339,8 +339,8 @@ namespace CSharpBinding.OptionPanels
 		
 		private void BaseIntermediateOutputPathExecute ()
 		{
-			BaseIntermediateOutputPath.Value = base.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,this.baseIntermediateOutputPathTextBox.Text);
+			BaseIntermediateOutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
+			                                        base.BaseDirectory,base.BaseDirectory,this.baseIntermediateOutputPathTextBox.Text);
 			base.RaisePropertyChanged(()=> BaseIntermediateOutputPath);
 		}
 		
@@ -357,8 +357,8 @@ namespace CSharpBinding.OptionPanels
 		
 		private void IntermediateOutputPathExecute ()
 		{
-			IntermediateOutputPath.Value = base.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
-			                                        base.BaseDirectory,this.intermediateOutputPathTextBox.Text);
+			IntermediateOutputPath.Value = OptionsHelper.BrowseForFolder("${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}",
+			                                        base.BaseDirectory,base.BaseDirectory,this.intermediateOutputPathTextBox.Text);
 			base.RaisePropertyChanged(()=> IntermediateOutputPath);
 		}
 		#endregion

@@ -279,6 +279,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\KeyValuePair.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\OptionsHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePathsXAML.xaml.cs">
       <DependentUpon>ReferencePathsXAML.xaml</DependentUpon>

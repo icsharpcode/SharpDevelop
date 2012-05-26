@@ -9,12 +9,17 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-//using System.Windows.Forms;
 using System.Windows.Shapes;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Win32;
+
+//using System.Windows.Forms;
+
+
+
+
+
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
@@ -360,53 +365,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		#endregion
 		
-		
-		#region OpenFileDialog
-		
-//		protected string OpenFile(string fileFilter)
-//		{
-//			var dialog = new OpenFileDialog();
-//
-//			//dialog.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
-//			var x = StringParser.Parse(fileFilter);
-//			dialog.Filter = StringParser.Parse(x);
-//			if (dialog.ShowDialog() ?? false) {
-//				return  dialog.FileName;
-//			}
-//			return String.Empty;
-//		}
-//
-		
-		protected string BrowseForFolder(string description,string startLocation,string relativeLocation)
-		{
-			string startAt = startLocation;
-			if (!String.IsNullOrEmpty(relativeLocation)) {
-				startAt = FileUtility.GetAbsolutePath(startLocation,relativeLocation);
-			}
-			
-			
-			using (System.Windows.Forms.FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description,startAt))
-			{
-				if (fdiag.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-					string path = fdiag.SelectedPath;
-					if (BaseDirectory != null) {
-						path = FileUtility.GetRelativePath(BaseDirectory, path);
-					}
-					if (!path.EndsWith("\\") && !path.EndsWith("/"))
-						path += "\\";
-					
-//						if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
-					////							panel.ControlDictionary[target].Text = path;
-//						} else {
-//							panel.ControlDictionary[target].Text = MSBuildInternals.Escape(path);
-					////						}
-					return path;
-				}
-				
-			}
-			return startLocation;
-		}
-		
-		#endregion
+
 	}
 }
