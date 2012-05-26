@@ -90,11 +90,11 @@ class TestClass
 		public void TestFixedField ()
 		{
 			Test<SplitDeclarationListAction> (@"
-class TestClass
+struct TestStruct
 {
 	unsafe fixed int $a[10], b[10], c[10];
 }", @"
-class TestClass
+struct TestStruct
 {
 	unsafe fixed int a[10];
 	unsafe fixed int b[10];
