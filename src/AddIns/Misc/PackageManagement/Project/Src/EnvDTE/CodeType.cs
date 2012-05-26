@@ -8,10 +8,19 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement
 	{
-		public CodeType(IClass c)
+		public CodeType(IProjectContent projectContent, IClass c)
 			: base(c)
 		{
 			this.Class = c;
+			InfoLocation = GetInfoLocation(projectContent, c);
+		}
+		
+		vsCMInfoLocation GetInfoLocation(IProjectContent projectContent, IClass c)
+		{
+			if (projectContent.Project == c.ProjectContent.Project) {
+				return vsCMInfoLocation.vsCMInfoLocationProject;
+			}
+			return vsCMInfoLocation.vsCMInfoLocationExternal;
 		}
 		
 		public CodeType()

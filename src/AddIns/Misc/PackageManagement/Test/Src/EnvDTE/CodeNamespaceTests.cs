@@ -27,7 +27,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void AddClassToProjectContent(string namespaceName, string className)
 		{
-			helper.AddClassToProjectContent(namespaceName, className);
+			helper.AddClassToProjectContentAndCompletionEntries(namespaceName, className);
 		}
 				
 		void AddUnknownCompletionEntryToNamespace(string namespaceName)

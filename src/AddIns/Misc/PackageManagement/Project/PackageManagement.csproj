@@ -103,7 +103,6 @@
     <Compile Include="Src\EnvDTE\Projects.cs" />
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
-    <Compile Include="Src\EnvDTE\CodeTypesInNamespace.cs" />
     <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
     <Compile Include="Src\EnvDTE\vsCMFunction.cs" />
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />

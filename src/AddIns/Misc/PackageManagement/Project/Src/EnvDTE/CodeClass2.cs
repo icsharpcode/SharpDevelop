@@ -8,8 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeClass2 : CodeClass
 	{
-		public CodeClass2(IClass c)
-			: base(c)
+		public CodeClass2(IProjectContent projectContent, IClass c)
+			: base(projectContent, c)
 		{
 		}
 		

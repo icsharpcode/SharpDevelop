@@ -8,8 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeInterface : CodeType
 	{
-		public CodeInterface(IClass c)
-			: base(c)
+		public CodeInterface(IProjectContent projectContent, IClass c)
+			: base(projectContent, c)
 		{
 		}
 		

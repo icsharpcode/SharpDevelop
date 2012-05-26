@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
@@ -20,7 +22,12 @@ namespace PackageManagement.Tests.Helpers
 			FakeProjectContent.Stub(pc => pc.NamespaceNames).Return(NamespaceNames);
 		}
 		
-		public IClass AddClassToProjectContent(string namespaceName, string className)
+		public void SetProjectForProjectContent(IProject project)
+		{
+			FakeProjectContent.Stub(pc => pc.Project).Return(project);
+		}
+		
+		public IClass AddClassToProjectContentAndCompletionEntries(string namespaceName, string className)
 		{
 			IClass fakeClass = AddClassToProjectContent(className);
 			var namespaceContents = new List<ICompletionEntry>();
@@ -42,23 +49,41 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IClass AddClassToProjectContent(string className)
 		{
-			IClass fakeClass = AddClassToProjectContentCommon(className);
+			IClass fakeClass = AddClassToProjectContentCommon(FakeProjectContent, className);
 			fakeClass.Stub(c => c.ClassType).Return(ClassType.Class);
 			
 			return fakeClass;
 		}
+		
+		public void AddClassToDifferentProjectContent(string className)
+		{
+			IProjectContent differentProjectContent = MockRepository.GenerateStub<IProjectContent>();
+			AddClassToProjectContentCommon(differentProjectContent, className);
+		}
 
-		IClass AddClassToProjectContentCommon(string className)
+		IClass AddClassToProjectContentCommon(IProjectContent projectContent, string className)
 		{
 			IClass fakeClass = MockRepository.GenerateMock<IClass, IEntity>();
 			FakeProjectContent.Stub(pc => pc.GetClass(className, 0)).Return(fakeClass);
 			fakeClass.Stub(c => c.FullyQualifiedName).Return(className);
+			fakeClass.Stub(c => c.ProjectContent).Return(projectContent);
 			return fakeClass;
 		}
 		
 		public IClass AddInterfaceToProjectContent(string interfaceName)
 		{
-			IClass fakeClass = AddClassToProjectContentCommon(interfaceName);
+			return AddInterfaceToProjectContent(FakeProjectContent, interfaceName);
+		}
+		
+		public IClass AddInterfaceToDifferentProjectContent(string interfaceName)
+		{
+			IProjectContent projectContent = MockRepository.GenerateStub<IProjectContent>();
+			return AddInterfaceToProjectContent(projectContent, interfaceName);
+		}
+		
+		public IClass AddInterfaceToProjectContent(IProjectContent projectContent, string interfaceName)
+		{
+			IClass fakeClass = AddClassToProjectContentCommon(projectContent, interfaceName);
 			fakeClass.Stub(c => c.ClassType).Return(ClassType.Interface);
 			return fakeClass;
 		}
@@ -92,6 +117,26 @@ namespace PackageManagement.Tests.Helpers
 				.Select(name => new NamespaceEntry(name) as ICompletionEntry)
 				.ToList();
 			AddCompletionEntriesToNamespace(parentNamespaceName, entries);
+		}
+		
+		public void AddClassCompletionEntriesInDifferentProjectContent(string namespaceName, string className)
+		{
+			IProjectContent differentProjectContent = MockRepository.GenerateStub<IProjectContent>();
+			AddClassToCompletionEntries(differentProjectContent, namespaceName, className);
+		}
+		
+		public void AddClassToCompletionEntries(string namespaceName, string className)
+		{
+			AddClassToCompletionEntries(FakeProjectContent, namespaceName, className);
+		}
+		
+		void AddClassToCompletionEntries(IProjectContent projectContent, string namespaceName, string className)
+		{
+			IClass fakeClass = MockRepository.GenerateStub<IClass>();
+			fakeClass.Stub(c => c.ProjectContent).Return(projectContent);
+			var entries = new List<ICompletionEntry>();
+			entries.Add(fakeClass);
+			AddCompletionEntriesToNamespace(namespaceName, entries);			
 		}
 	}
 }

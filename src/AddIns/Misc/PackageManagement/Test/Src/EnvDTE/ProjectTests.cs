@@ -38,6 +38,16 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddClassToProjectContent(className);
 		}
 		
+		void SetProjectForProjectContent()
+		{
+			helper.SetProjectForProjectContent(msbuildProject);
+		}
+		
+		void SetDifferentProjectForProjectContent()
+		{
+			helper.SetProjectForProjectContent(ProjectHelper.CreateTestProject());
+		}
+		
 		[Test]
 		public void Name_ProjectNameIsMyApp_ReturnsMyApp()
 		{
@@ -215,6 +225,30 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeType codeType = project.CodeModel.CodeTypeFromFullName("Tests.MyClass");
 			
 			Assert.IsNotNull(codeType);
+		}
+		
+		[Test]
+		public void CodeModel_ClassExistsInProjectContentForProject_ReturnsClassWithLocationSetToInProject()
+		{
+			CreateProject();
+			SetProjectForProjectContent();
+			helper.AddClassToCompletionEntries(String.Empty, "MyClass");
+			
+			CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, element.InfoLocation);
+		}
+		
+		[Test]
+		public void CodeModel_ClassExistsInProjectContentForDifferentProject_ReturnsClassWithLocationSetToExternal()
+		{
+			CreateProject();
+			SetProjectForProjectContent();
+			helper.AddClassCompletionEntriesInDifferentProjectContent(String.Empty, "MyClass");
+			
+			CodeElement element = project.CodeModel.CodeElements.FirstOrDefault();
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, element.InfoLocation);
 		}
 	}
 }

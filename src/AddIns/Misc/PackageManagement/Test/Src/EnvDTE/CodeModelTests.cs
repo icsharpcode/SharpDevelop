@@ -17,10 +17,13 @@ namespace PackageManagement.Tests.EnvDTE
 	{
 		CodeModel codeModel;
 		ProjectContentHelper helper;
+		TestableProject msbuildProject;
 		
 		void CreateCodeModel()
 		{
 			helper = new ProjectContentHelper();
+			msbuildProject = ProjectHelper.CreateTestProject();
+			helper.SetProjectForProjectContent(msbuildProject);
 			codeModel = new CodeModel(helper.FakeProjectContent);
 		}
 		
@@ -29,14 +32,24 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddClassToProjectContent(className);
 		}
 		
+		void AddClassToDifferentProjectContent(string className)
+		{
+			helper.AddClassToDifferentProjectContent(className);
+		}
+		
 		void AddClassToProjectContent(string namespaceName, string className)
 		{
-			helper.AddClassToProjectContent(namespaceName, className);
+			helper.AddClassToProjectContentAndCompletionEntries(namespaceName, className);
 		}
 		
 		void AddInterfaceToProjectContent(string interfaceName)
 		{
 			helper.AddInterfaceToProjectContent(interfaceName);
+		}
+		
+		void AddInterfaceToDifferentProjectContent(string interfaceName)
+		{
+			helper.AddInterfaceToDifferentProjectContent(interfaceName);
 		}
 		
 		[Test]
@@ -159,6 +172,50 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(1, members.Count);
 			Assert.AreEqual("Tests", codeNamespace.Name);
+		}
+		
+		[Test]
+		public void CodeTypeFromFullName_ClassExistsInProject_InfoLocationIsLocalProject()
+		{
+			CreateCodeModel();
+			AddClassToProjectContent("Tests.TestClass");
+			
+			var codeClass = codeModel.CodeTypeFromFullName("Tests.TestClass") as CodeClass2;
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, codeClass.InfoLocation);
+		}
+				
+		[Test]
+		public void CodeTypeFromFullName_ClassExistsInDifferentProject_InfoLocationIsExternal()
+		{
+			CreateCodeModel();
+			AddClassToDifferentProjectContent("Tests.TestClass");
+			
+			var codeClass = codeModel.CodeTypeFromFullName("Tests.TestClass") as CodeClass2;
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, codeClass.InfoLocation);
+		}
+		
+		[Test]
+		public void CodeTypeFromFullName_InterfaceExistsInProject_InfoLocationIsLocalProject()
+		{
+			CreateCodeModel();
+			AddInterfaceToProjectContent("Tests.ITest");
+			
+			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, codeInterface.InfoLocation);
+		}
+		
+		[Test]
+		public void CodeTypeFromFullName_InterfaceExistsInDifferentProject_InfoLocationIsExternal()
+		{
+			CreateCodeModel();
+			AddInterfaceToDifferentProjectContent("Tests.ITest");
+			
+			var codeInterface = codeModel.CodeTypeFromFullName("Tests.ITest") as CodeInterface;
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, codeInterface.InfoLocation);
 		}
 	}
 }

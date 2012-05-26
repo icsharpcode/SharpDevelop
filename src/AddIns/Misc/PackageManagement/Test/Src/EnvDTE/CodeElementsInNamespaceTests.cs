@@ -65,7 +65,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void GetEnumerator_OneClassCompletionEntryInNamespace_ReturnsOneCodeClass()
 		{
-			helper.AddClassToProjectContent("Test", "Test.MyClass");
+			helper.AddClassToProjectContentAndCompletionEntries("Test", "Test.MyClass");
 			CreateCodeElements("Test");
 			
 			CodeClass2 codeClass = codeElements.ToList().FirstOrDefault() as CodeClass2;
@@ -114,7 +114,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Item_OneClassCompletionEntryAndFirstItemSelected_ReturnsOneCodeClass()
 		{
-			helper.AddClassToProjectContent("Test", "Test.MyClass");
+			helper.AddClassToProjectContentAndCompletionEntries("Test", "Test.MyClass");
 			CreateCodeElements("Test");
 			
 			CodeClass2 codeClass = codeElements.Item(1) as CodeClass2;
@@ -125,7 +125,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Item_OneClassCompletionEntryAndItemSelectedByName_ReturnsOneCodeClass()
 		{
-			helper.AddClassToProjectContent("Test", "Test.MyClass");
+			helper.AddClassToProjectContentAndCompletionEntries("Test", "Test.MyClass");
 			CreateCodeElements("Test");
 			
 			CodeClass2 codeClass = codeElements.Item("MyClass") as CodeClass2;

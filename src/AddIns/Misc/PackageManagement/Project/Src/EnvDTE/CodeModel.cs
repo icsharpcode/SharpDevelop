@@ -34,12 +34,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return null;
 		}
 		
-		CodeType CreateCodeTypeForClass(IClass @class)
+		CodeType CreateCodeTypeForClass(IClass c)
 		{
-			if (@class.ClassType == ClassType.Interface) {
-				return new CodeInterface(@class);
+			if (c.ClassType == ClassType.Interface) {
+				return new CodeInterface(projectContent, c);
 			}
-			return new CodeClass2(@class);
+			return new CodeClass2(projectContent, c);
 		}
 	}
 }
