@@ -42,6 +42,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		string name;
 		string relativePath;
+		string defaultPlatform;
 		
 		/// <summary>
 		/// The language of the project.
@@ -84,6 +85,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			if (string.IsNullOrEmpty(languageName)) {
 				ProjectTemplate.WarnAttributeMissing(element, "language");
 			}
+			defaultPlatform = element.GetAttribute("defaultPlatform");
 			
 			LoadElementChildren(element, hintPath);
 		}
@@ -323,6 +325,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				projectCreateInformation.OutputProjectFileName = projectLocation;
 				projectCreateInformation.RootNamespace = standardNamespace.ToString();
 				projectCreateInformation.ProjectName = newProjectName;
+				if (!string.IsNullOrEmpty(defaultPlatform))
+					projectCreateInformation.Platform = defaultPlatform;
 				
 				RunPreCreateActions(projectCreateInformation);
 				

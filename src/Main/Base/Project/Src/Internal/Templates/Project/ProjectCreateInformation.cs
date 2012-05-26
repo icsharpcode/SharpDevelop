@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public ProjectCreateInformation(IEnumerable<IProject> projects)
 		{
-			Platform = "x86";
+			Platform = "AnyCPU";
 			createdProjects.AddRange(projects);
 		}		
 		
