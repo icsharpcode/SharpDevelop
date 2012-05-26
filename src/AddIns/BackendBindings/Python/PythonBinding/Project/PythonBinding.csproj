@@ -214,7 +214,6 @@
     <None Include="PythonBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\PythonOptionsPanel.xfrm" />
     <EmbeddedResource Include="Resources\ApplicationSettingsPanel.xfrm" />
     <EmbeddedResource Include="Resources\CompilingOptionsPanel.xfrm" />
     <None Include="Templates\ConsoleProject.xpt">
@@ -275,6 +274,10 @@
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>

@@ -3,12 +3,11 @@
 
 using System;
 using System.ComponentModel;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Widgets;
-using Microsoft.Win32;
 using SDCore = ICSharpCode.Core;
 
 namespace ICSharpCode.PythonBinding
@@ -34,7 +33,7 @@ namespace ICSharpCode.PythonBinding
 			get { return pythonFileName; }
 			set {
 				pythonFileName = value;
-				OnPropertyChanged("PythonFileName");
+				base.RaisePropertyChanged(() => PythonFileName);
 			}
 		}
 		
@@ -45,11 +44,10 @@ namespace ICSharpCode.PythonBinding
 		
 		void Browse()
 		{
-			var dialog = new OpenFileDialog();
-			dialog.Filter = SDCore.StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
-			if (dialog.ShowDialog() ?? false) {
-				PythonFileName = dialog.FileName;
-			}
+			var str = OptionsHelper.OpenFile (SDCore.StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe"));
+			if (String.IsNullOrEmpty(str))
+				return;
+			PythonFileName = str;
 		}
 		
 		public override bool SaveOptions()
@@ -57,15 +55,6 @@ namespace ICSharpCode.PythonBinding
 			options.PythonFileName = pythonFileName;
 			options.PythonLibraryPath = pythonLibraryPath;
 			return true;
-		}
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		void OnPropertyChanged(string name)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(name));
-			}
 		}
 	}
 }
