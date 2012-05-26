@@ -296,7 +296,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
+			if (!ReadOnly)
+				GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
 		}
 		
 		public static FileName GetAppConfigFile(IProject project, bool createIfNotExists)

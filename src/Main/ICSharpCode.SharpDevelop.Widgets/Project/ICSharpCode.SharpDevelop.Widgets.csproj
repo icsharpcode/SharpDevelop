@@ -62,6 +62,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BoolToVisibilityConverter.cs" />
     <Compile Include="CollapsiblePanel.cs" />
     <Compile Include="ColorHelper.cs" />
     <Compile Include="ColorPicker.xaml.cs">

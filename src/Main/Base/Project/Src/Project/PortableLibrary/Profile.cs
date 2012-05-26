@@ -44,10 +44,11 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 			}
 		}
 		
-		public readonly string TargetFrameworkVersion;
-		public readonly string TargetFrameworkProfile;
-		public readonly string DisplayName;
-		public readonly IList<SupportedFramework> SupportedFrameworks;
+		// These must be properties for WPF data binding
+		public string TargetFrameworkVersion { get; private set; }
+		public string TargetFrameworkProfile { get; private set; }
+		public string DisplayName { get; private set; }
+		public IList<SupportedFramework> SupportedFrameworks { get; private set; }
 		
 		public Profile(string targetFrameworkVersion, string targetFrameworkProfile, IList<SupportedFramework> supportedFrameworks)
 		{
@@ -61,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 		public bool Supports(IList<SupportedFramework> frameworks)
 		{
 			return frameworks.All(
-				requiredFx => SupportedFrameworks.Any(fx => fx.Identifier == requiredFx.Identifier && fx.MinimumVersion >= requiredFx.MinimumVersion)
+				requiredFx => SupportedFrameworks.Any(fx => fx.IsMoreGeneralThan(requiredFx))
 			);
 		}
 	}

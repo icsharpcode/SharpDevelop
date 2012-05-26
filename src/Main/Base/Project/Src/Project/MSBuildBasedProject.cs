@@ -1630,6 +1630,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		#region HasProjectType
 		public override bool HasProjectType(Guid projectTypeGuid)
 		{
 			string guidList = GetEvaluatedProperty("ProjectTypeGuids");
@@ -1642,5 +1643,30 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return false;
 		}
+		
+		public void AddProjectType(Guid projectTypeGuid)
+		{
+			string guidList = GetEvaluatedProperty("ProjectTypeGuids");
+			if (string.IsNullOrEmpty(guidList))
+				guidList = this.TypeGuid;
+			SetProperty("ProjectTypeGuids", guidList + ";" + projectTypeGuid.ToString("B").ToUpperInvariant(), false);
+			InvalidateBehavior();
+		}
+		
+		public void RemoveProjectType(Guid projectTypeGuid)
+		{
+			string guidList = GetEvaluatedProperty("ProjectTypeGuids");
+			if (!string.IsNullOrEmpty(guidList)) {
+				List<string> remainingGuids = new List<string>();
+				foreach (string guid in guidList.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+					Guid result;
+					if (!(Guid.TryParse(guid, out result) && projectTypeGuid == result))
+						remainingGuids.Add(guid);
+				}
+				SetProperty("ProjectTypeGuids", string.Join(";", remainingGuids), false);
+				InvalidateBehavior();
+			}
+		}
+		#endregion
 	}
 }
