@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
-	x:Class="CSharpBinding.OptionPanels.BuildOptionsXaml"
+	x:Class="CSharpBinding.OptionPanels.BuildOptions"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
@@ -384,7 +384,7 @@
 	
 					<ComboBox
 						x:Name="warningLevelComboBox"
-						Width="50"
+						Width="40"
 						Grid.Column="2"
 						HorizontalAlignment="Left"
 						ItemsSource="{Binding Path=DataContext.WarnLevel}"

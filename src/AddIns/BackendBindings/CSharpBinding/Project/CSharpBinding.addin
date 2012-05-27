@@ -93,13 +93,10 @@
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
 		
-		<OptionPanel id    = "BuildOptions"
-		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
-		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
 		
 		<OptionPanel id    = "BuildOptions1"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
-		             class = "CSharpBinding.OptionPanels.BuildOptionsXaml"/>
+		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
 		
 		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"

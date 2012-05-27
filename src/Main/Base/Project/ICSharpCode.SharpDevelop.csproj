@@ -747,9 +747,6 @@
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_ApplicationSettings.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <EmbeddedResource Include="Resources\ProjectOptions\old_ApplicationSettings.xfrm" />
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />

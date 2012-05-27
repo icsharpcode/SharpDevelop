@@ -73,11 +73,8 @@
     <Compile Include="Src\EventHandlerCompletionItemProvider.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
-    <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\BuildOptionsXaml.xaml.cs">
-      <DependentUpon>BuildOptionsXaml.xaml</DependentUpon>
+    <Compile Include="Src\OptionPanels\BuildOptions.xaml.cs">
+      <DependentUpon>BuildOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\HexValidator.cs" />
@@ -136,7 +133,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\OptionPanels\BuildOptionsXaml.xaml" />
+    <Page Include="Src\OptionPanels\BuildOptions.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

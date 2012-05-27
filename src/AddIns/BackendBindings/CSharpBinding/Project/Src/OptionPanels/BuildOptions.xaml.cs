@@ -31,7 +31,7 @@ namespace CSharpBinding.OptionPanels
 	/// </summary>
 	/// SYST
 	
-	public partial class BuildOptionsXaml : ProjectOptionPanel
+	public partial class BuildOptions : ProjectOptionPanel
 	{
 
 		private List<KeyItemPair> serializationInfo;
@@ -46,7 +46,7 @@ namespace CSharpBinding.OptionPanels
 		
 		private MSBuildBasedProject project;
 		
-		public BuildOptionsXaml()
+		public BuildOptions()
 		{
 			InitializeComponent();
 			this.serializationInfo = new List<KeyItemPair>();
@@ -97,8 +97,6 @@ namespace CSharpBinding.OptionPanels
 			this.Optimize.Location = PropertyStorageLocations.ConfigurationSpecific;
 			this.AllowUnsafeBlocks.Location = PropertyStorageLocations.ConfigurationSpecific;
 			this.CheckForOverflowUnderflow.Location = PropertyStorageLocations.ConfigurationSpecific;
-			//base.RaisePropertyChanged(string.Empty);
-			//IsDirty = false;
 		}
 		
 		#region properties
