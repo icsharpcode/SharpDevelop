@@ -8,11 +8,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -684,6 +686,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		#region SDSettings
 		void LoadSDSettings(XDocument document)
 		{
+			var version = document.Root.Attribute("version");
+			if (version != null && version.Value != Properties.Version1.ToString()) {
+				Core.MessageService.ShowError("Settings version not supported!");
+				return;
+			}
 			var p = Properties.Load(document.CreateReader());
 			customizationList = p.Get("CustomizedHighlightingRules", new List<CustomizedHighlightingColor>());
 			LanguageComboBox_SelectionChanged(null, null);
@@ -697,9 +704,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			};
 			if (dialog.ShowDialog() != true)
 				return;
+			Save(dialog.FileName);
+		}
+		
+		void Save(string fileName)
+		{
 			Properties p = new Properties();
 			p.Set("CustomizedHighlightingRules", customizationList);
-			p.Save(dialog.FileName);
+			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				writer.WriteStartElement("Properties");
+				writer.WriteAttributeString("version", Properties.Version1.ToString());
+				p.WriteProperties(writer);
+				writer.WriteEndElement();
+			}
 		}
 	}
 }
