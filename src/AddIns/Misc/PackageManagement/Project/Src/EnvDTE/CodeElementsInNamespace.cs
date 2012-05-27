@@ -10,9 +10,8 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElementsInNamespace : CodeElements
+	public class CodeElementsInNamespace : CodeElementsList
 	{
-		List<CodeElement> codeElements = new List<CodeElement>();
 		IProjectContent projectContent;
 		NamespaceName namespaceName;
 		
@@ -57,38 +56,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		void AddCodeClass(IClass c)
 		{
 			AddCodeElement(new CodeClass2(projectContent, c));
-		}
-		
-		void AddCodeElement(CodeElement codeElement)
-		{
-			codeElements.Add(codeElement);
-		}
-		
-		public int Count {
-			get { return codeElements.Count; }
-		}
-		
-		public IEnumerator GetEnumerator()
-		{
-			return codeElements.GetEnumerator();
-		}
-		
-		public CodeElement Item(object index)
-		{
-			if (index is int) {
-				return Item((int)index);
-			}
-			return Item((string)index);
-		}
-		
-		CodeElement Item(int index)
-		{
-			return codeElements[index - 1];
-		}
-		
-		CodeElement Item(string name)
-		{
-			return codeElements.Single(element => element.Name == name);
 		}
 	}
 }

@@ -78,12 +78,14 @@
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArgument.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArguments.cs" />
+    <Compile Include="Src\EnvDTE\CodeAttributes.cs" />
     <Compile Include="Src\EnvDTE\CodeClass.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegate.cs" />
     <Compile Include="Src\EnvDTE\CodeElement.cs" />
     <Compile Include="Src\EnvDTE\CodeElements.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespace.cs" />
+    <Compile Include="Src\EnvDTE\CodeElementsList.cs" />
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />

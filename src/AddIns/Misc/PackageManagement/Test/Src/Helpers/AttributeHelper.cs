@@ -17,8 +17,14 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void CreateAttribute(string fullName)
 		{
+			CreateAttribute(fullName, fullName);
+		}
+		
+		public void CreateAttribute(string fullName, string shortName)
+		{
 			AttributeType = MockRepository.GenerateStub<IReturnType>();
 			AttributeType.Stub(at => at.FullyQualifiedName).Return(fullName);
+			AttributeType.Stub(at => at.Name).Return(shortName);
 			Attribute = MockRepository.GenerateStub<IAttribute>();
 			Attribute.Stub(a => a.AttributeType).Return(AttributeType);
 			Attribute.Stub(a => a.PositionalArguments).Return(PositionalArguments);
@@ -33,6 +39,13 @@ namespace PackageManagement.Tests.Helpers
 		public void AddNamedArgument(string name, object value)
 		{
 			NamedArguments.Add(name, value);
+		}
+		
+		public void AddAttributeToClass(IClass @class)
+		{
+			var attributes = new List<IAttribute>();
+			attributes.Add(Attribute);
+			@class.Stub(c => c.Attributes).Return(attributes);
 		}
 	}
 }

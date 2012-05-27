@@ -10,10 +10,28 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeAttribute : CodeElement
 	{
 		IAttribute attribute;
+		static readonly string AttributeEndName = "Attribute";
 		
 		public CodeAttribute(IAttribute attribute)
 		{
 			this.attribute = attribute;
+		}
+		
+		public override string Name {
+			get { return GetShortName(); }
+		}
+		
+		string GetShortName()
+		{
+			return GetShortName(attribute.AttributeType.Name);
+		}
+		
+		string GetShortName(string name)
+		{
+			if (name.EndsWith(AttributeEndName)) {
+				return name.Substring(0, name.Length - AttributeEndName.Length);
+			}
+			return name;
 		}
 		
 		public virtual string FullName {

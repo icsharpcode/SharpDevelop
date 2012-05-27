@@ -22,19 +22,35 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateMSBuildAttribute(string fullName)
 		{
+			CreateMSBuildAttribute(fullName, fullName);
+		}
+		
+		void CreateMSBuildAttribute(string fullName, string shortName)
+		{
 			helper = new AttributeHelper();
-			helper.CreateAttribute(fullName);
+			helper.CreateAttribute(fullName, shortName);
 		}
 		
 		[Test]
 		public void FullName_AttributeIsDataAnnotationsDisplayColumnAttribute_ReturnsDisplayColumnAttributeFullyQualifiedName()
 		{
-			CreateMSBuildAttribute("System.ComponentModel.DataAnnotations.DisplayColumn");
+			CreateMSBuildAttribute("System.ComponentModel.DataAnnotations.DisplayColumnAttribute");
 			CreateAttribute();
 			
 			string name = codeAttribute.FullName;
 			
-			Assert.AreEqual("System.ComponentModel.DataAnnotations.DisplayColumn", name);
+			Assert.AreEqual("System.ComponentModel.DataAnnotations.DisplayColumnAttribute", name);
+		}
+		
+		[Test]
+		public void Name_AttributeIsDataAnnotationsDisplayColumnAttribute_ReturnsShortDisplayColumnAttributeNameWithoutTheAttributePart()
+		{
+			CreateMSBuildAttribute("System.ComponentModel.DataAnnotations.DisplayColumnAttribute", "DisplayColumnAttribute");
+			CreateAttribute();
+			
+			string name = codeAttribute.Name;
+			
+			Assert.AreEqual("DisplayColumn", name);
 		}
 		
 		[Test]
@@ -131,6 +147,17 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeAttributeArgument arg = args.Item("Two") as CodeAttributeArgument;
 			
 			Assert.AreEqual("False", arg.Value);
+		}
+		
+		[Test]
+		public void Name_AttributeIsNotLastPartOfName_ReturnsShortNameContainingAttributePart()
+		{
+			CreateMSBuildAttribute("Tests.TestAttributeColumn", "TestAttributeColumn");
+			CreateAttribute();
+			
+			string name = codeAttribute.Name;
+			
+			Assert.AreEqual("TestAttributeColumn", name);
 		}
 	}
 }

@@ -8,6 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement
 	{
+		CodeAttributes attributes;
+		
 		public CodeType(IProjectContent projectContent, IClass c)
 			: base(c)
 		{
@@ -44,7 +46,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Attributes {
-			get { throw new NotImplementedException(); }
+			get {
+				if (attributes == null) {
+					attributes = new CodeAttributes(Class);
+				}
+				return attributes;
+			}
 		}
 	}
 }
