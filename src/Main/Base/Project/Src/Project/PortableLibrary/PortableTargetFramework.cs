@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 		public readonly string TargetFrameworkProfile;
 		
 		public PortableTargetFramework(string targetFrameworkVersion, string targetFrameworkProfile)
-			: base(targetFrameworkVersion + "-" + targetFrameworkProfile, ".NET Portable Subset (" + targetFrameworkVersion + "-" + targetFrameworkProfile + ")")
+			: base(targetFrameworkVersion + "-" + targetFrameworkProfile, Profile.PortableSubsetDisplayName + " (" + targetFrameworkVersion + "-" + targetFrameworkProfile + ")")
 		{
 			this.TargetFrameworkVersion = targetFrameworkVersion;
 			this.TargetFrameworkProfile = targetFrameworkProfile;

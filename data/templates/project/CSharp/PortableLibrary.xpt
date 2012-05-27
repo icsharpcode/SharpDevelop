@@ -3,10 +3,10 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Portable Library</Name>
+		<Name>${res:Templates.Project.PortableLibrary.Name}</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.Library</Icon>
-		<Description>Library that can be used on Windows, Silverlight, Windows Phone, and Xbox.</Description>
+		<Description>${res:Templates.Project.PortableLibrary.Description}</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

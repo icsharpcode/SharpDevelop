@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 {
@@ -50,13 +51,22 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 		public string DisplayName { get; private set; }
 		public IList<SupportedFramework> SupportedFrameworks { get; private set; }
 		
+		/// <summary>
+		/// Returns ".NET Portable Subset" localized
+		/// </summary>
+		public static string PortableSubsetDisplayName {
+			get {
+				return StringParser.Parse("${res:PortableLibrary.PortableSubset}");
+			}
+		}
+		
 		public Profile(string targetFrameworkVersion, string targetFrameworkProfile, IList<SupportedFramework> supportedFrameworks)
 		{
 			this.TargetFrameworkVersion = targetFrameworkVersion;
 			this.TargetFrameworkProfile = targetFrameworkProfile;
 			this.SupportedFrameworks = supportedFrameworks;
 			
-			this.DisplayName = ".NET Portable Subset (" + string.Join(", ", supportedFrameworks) + ")";
+			this.DisplayName = PortableSubsetDisplayName + " (" + string.Join(", ", supportedFrameworks) + ")";
 		}
 		
 		public bool Supports(IList<SupportedFramework> frameworks)

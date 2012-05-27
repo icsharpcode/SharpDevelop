@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Converter;
 
@@ -17,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 	sealed class PickPortableTargetFramework : TargetFramework
 	{
 		public PickPortableTargetFramework()
-			: base("PickPortableTargetFramework", ".NET Portable Subset (choose target frameworks)")
+			: base("PickPortableTargetFramework", Profile.PortableSubsetDisplayName + StringParser.Parse(" (${res:PortableLibrary.ChooseTargetFrameworks})"))
 		{
 			this.MinimumMSBuildVersion = new Version(4, 0);
 		}

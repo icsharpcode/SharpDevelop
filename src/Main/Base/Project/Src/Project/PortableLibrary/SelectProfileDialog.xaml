@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Project.PortableLibrary"
         xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-        Title="Select Portable Library Profile" MinWidth="300" MinHeight="200" Height="350" Width="400" WindowStartupLocation="CenterOwner"
+        Title="{core:Localize PortableLibrary.SelectProfileDialog.Title}" 
+        MinWidth="300" MinHeight="200" Height="350" Width="400" WindowStartupLocation="CenterOwner"
         Style="{x:Static core:GlobalStyles.DialogWindowStyle}">
 	<Grid>
 		<Grid.Resources>
@@ -44,10 +45,10 @@
 			</ItemsControl>
 		</ScrollViewer>
 		<TextBlock Grid.Row="1" TextWrapping="WrapWithOverflow" Visibility="{Binding HasTwoOrMoreFrameworksSelected, Converter={StaticResource showWhenTrue}}">
-			<Bold>Selected profile:</Bold> <Run Text="{Binding SelectedProfile.DisplayName, Mode=OneWay}"/>
+			<Bold><Run Text="{core:Localize PortableLibrary.SelectedProfile}"/></Bold> <Run Text="{Binding SelectedProfile.DisplayName, Mode=OneWay}"/>
 		</TextBlock>
 		<TextBlock Grid.Row="1" TextWrapping="WrapWithOverflow" Visibility="{Binding HasTwoOrMoreFrameworksSelected, Converter={StaticResource showWhenFalse}}">
-			<Bold>Two or more frameworks must be selected.</Bold>
+			<Bold><Run Text="{core:Localize PortableLibrary.SelectAtLeastTwoFrameworks}"/></Bold>
 		</TextBlock>
 		<widgets:UniformGridWithSpacing Columns="2" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right" Margin="0,4,12,12">
 			<Button

@@ -19,8 +19,9 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 		{
 			if (!ProfileList.IsPortableLibraryInstalled()) {
 				using (ToolNotFoundDialog dlg = new ToolNotFoundDialog(
-					"Could not find Portable Class Library Tools." + Environment.NewLine + Environment.NewLine +
-					"To install the Portable Class Library Tools without installing Visual Studio, save the download file (PortableLibraryTools.exe) on your computer, and run the installation program from a Command Prompt window. Include the /buildmachine switch on the command line.",
+					StringParser.Parse(
+						"${res:PortableLibrary.CouldNotFindTools}" + Environment.NewLine + Environment.NewLine +
+						"${res:PortableLibrary.ToolsInstallationHelp}"),
 					"http://go.microsoft.com/fwlink/?LinkId=210823"
 				)) {
 					// our message is long, so make the window bigger than usual
