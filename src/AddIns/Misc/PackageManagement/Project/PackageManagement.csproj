@@ -77,6 +77,7 @@
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArgument.cs" />
+    <Compile Include="Src\EnvDTE\CodeAttributeArguments.cs" />
     <Compile Include="Src\EnvDTE\CodeClass.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2.cs" />
     <Compile Include="Src\EnvDTE\CodeDelegate.cs" />

@@ -72,12 +72,14 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\EnvDTE\CodeAttribute2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeClass2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeModelTests.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
+    <Compile Include="Src\Helpers\AttributeHelper.cs" />
     <Compile Include="Src\Helpers\CodeElementsHelpers.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />

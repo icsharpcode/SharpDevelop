@@ -2,15 +2,45 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeAttribute : CodeElement
 	{
-		public CodeAttribute()
+		IAttribute attribute;
+		
+		public CodeAttribute(IAttribute attribute)
 		{
+			this.attribute = attribute;
 		}
 		
-		public virtual string Value { get; set; }
+		public virtual string FullName {
+			get { return attribute.AttributeType.FullyQualifiedName; }
+		}
+		
+		public virtual string Value {
+			get { return GetValue(); }
+			set { }
+		}
+		
+		string GetValue()
+		{
+			return String.Join(", ", GetArgumentValues());
+		}
+		
+		string[] GetArgumentValues()
+		{
+			return attribute
+				.PositionalArguments
+				.Select(arg => GetArgumentValue(arg))
+				.ToArray();
+		}
+		
+		string GetArgumentValue(object argument)
+		{
+			return new CodeAttributeArgument(String.Empty, argument).Value;
+		}
 	}
 }

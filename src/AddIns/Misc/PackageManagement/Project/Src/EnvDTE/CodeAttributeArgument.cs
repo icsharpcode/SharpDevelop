@@ -5,18 +5,31 @@ using System;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeAttributeArgument : MarshalByRefObject
+	public class CodeAttributeArgument : CodeElement
 	{
-		public CodeAttributeArgument()
+		string name;
+		string value;
+		
+		public CodeAttributeArgument(string name, object value)
 		{
+			this.name = name;
+			this.value = GetValue(value);
 		}
 		
-		public virtual string Name {
-			get { throw new NotImplementedException(); }
+		string GetValue(object value)
+		{
+			if (value is string) {
+				return String.Format("\"{0}\"", value);
+			}
+			return value.ToString();
+		}
+		
+		public override string Name {
+			get { return name; }
 		}
 		
 		public virtual string Value {
-			get { throw new NotImplementedException(); }
+			get { return value; }
 		}
 	}
 }

@@ -2,21 +2,28 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeAttribute2 : CodeAttribute
 	{
-		public CodeAttribute2()
-		{
-		}
+		CodeAttributeArguments arguments;
+		IAttribute attribute;
 		
-		public virtual string FullName {
-			get { throw new NotImplementedException(); }
+		public CodeAttribute2(IAttribute attribute)
+			: base(attribute)
+		{
+			this.attribute = attribute;
 		}
 		
 		public virtual CodeElements Arguments {
-			get { throw new NotImplementedException(); }
+			get {
+				if (arguments == null) {
+					arguments = new CodeAttributeArguments(attribute);
+				}
+				return arguments;
+			}
 		}
 	}
 }
