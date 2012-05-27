@@ -579,7 +579,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
 			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
 			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, FetchCustomizations(language));
-			HighlightingOptions.ApplyToFolding(this, FetchCustomizations(language));
+			HighlightingOptions.ApplyToRendering(this, FetchCustomizations(language));
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 		
