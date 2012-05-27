@@ -16,14 +16,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeProperty(IProperty property)
+			: base(property)
 		{
 			this.property = property;
 		}
 		
-		public virtual vsCMAccess Access { get; set; }
+		public virtual vsCMAccess Access {
+			get { return GetAccess(); }
+			set { }
+		}
 		
 		public virtual CodeClass Parent {
-			get { throw new NotImplementedException(); }
+			get { return new CodeClass(property.ProjectContent, property.DeclaringType); }
 		}
 		
 		public virtual CodeElements Attributes {

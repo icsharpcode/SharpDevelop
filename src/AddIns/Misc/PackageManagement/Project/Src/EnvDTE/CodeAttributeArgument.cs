@@ -10,6 +10,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		string name;
 		string value;
 		
+		public CodeAttributeArgument()
+		{
+		}
+		
 		public CodeAttributeArgument(string name, object value)
 		{
 			this.name = name;

@@ -25,13 +25,24 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateClass(string name)
 		{
 			fakeClass = helper.AddClassToProjectContent(name);
-			codeClass = new CodeClass2(helper.FakeProjectContent, fakeClass);
+			CreateClass();
 		}
 		
-		void CreateMSBuildClass(string name)
+		void CreatePublicClass(string name)
 		{
-			fakeClass = MockRepository.GenerateStub<IClass>();
-			fakeClass.Stub(c => c.FullyQualifiedName).Return(name);
+			fakeClass = helper.AddPublicClassToProjectContent(name);
+			CreateClass();
+		}
+		
+		void CreatePrivateClass(string name)
+		{
+			fakeClass = helper.AddPrivateClassToProjectContent(name);
+			CreateClass();
+		}
+		
+		void CreateClass()
+		{
+			codeClass = new CodeClass2(helper.FakeProjectContent, fakeClass);
 		}
 		
 		[Test]
@@ -56,6 +67,28 @@ namespace PackageManagement.Tests.EnvDTE
 			string language = codeClass.Language;
 			
 			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageVB, language);
+		}
+		
+		[Test]
+		public void Access_PublicClass_ReturnsPublic()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			vsCMAccess access = codeClass.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+		}
+		
+		[Test]
+		public void Access_PrivateClass_ReturnsPrivate()
+		{
+			CreateProjectContent();
+			CreatePrivateClass("MyClass");
+			
+			vsCMAccess access = codeClass.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
 		}
 	}
 }

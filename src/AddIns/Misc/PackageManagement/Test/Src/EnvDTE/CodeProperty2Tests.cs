@@ -39,5 +39,50 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, attributes.Count);
 			Assert.AreEqual("Tests.TestAttribute", attribute.FullName);
 		}
+		
+		[Test]
+		public void Name_PropertyCalledMyProperty_ReturnsMyProperty()
+		{
+			helper.CreateProperty("MyProperty");
+			CreateCodeProperty2();
+			
+			string name = property.Name;
+			
+			Assert.AreEqual("MyProperty", name);
+		}
+		
+		[Test]
+		public void Parent_Class1ContainsProperty_ReturnsClass1()
+		{
+			helper.CreateProperty("MyProperty");
+			helper.AddParentClass("Tests.Class1");
+			CreateCodeProperty2();
+			
+			CodeClass parentClass = property.Parent;
+			
+			Assert.AreEqual("Tests.Class1", parentClass.FullName);
+		}
+		
+		[Test]
+		public void Access_PublicProperty_AccessIsPublic()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			CreateCodeProperty2();
+			
+			vsCMAccess access = property.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+		}
+		
+		[Test]
+		public void Access_PrivateProperty_AccessIsPrivate()
+		{
+			helper.CreatePrivateProperty("MyProperty");
+			CreateCodeProperty2();
+			
+			vsCMAccess access = property.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
 	}
 }

@@ -2,11 +2,19 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeDelegate : CodeElement
+	public class CodeDelegate : CodeType
 	{
-		public vsCMAccess Access { get; set; }
+		public CodeDelegate(IProjectContent projectContent, IClass c)
+			: base(projectContent, c)
+		{
+		}
+		
+		public CodeDelegate()
+		{
+		}
 	}
 }

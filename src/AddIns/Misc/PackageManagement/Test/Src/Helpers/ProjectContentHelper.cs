@@ -50,9 +50,13 @@ namespace PackageManagement.Tests.Helpers
 		public IClass AddClassToProjectContent(string className)
 		{
 			IClass fakeClass = AddClassToProjectContentCommon(FakeProjectContent, className);
-			fakeClass.Stub(c => c.ClassType).Return(ClassType.Class);
-			
+			SetClassType(fakeClass, ClassType.Class);
 			return fakeClass;
+		}
+		
+		public void SetClassType(IClass fakeClass, ClassType classType)
+		{
+			fakeClass.Stub(c => c.ClassType).Return(classType);
 		}
 		
 		public void AddClassToDifferentProjectContent(string className)
@@ -84,7 +88,7 @@ namespace PackageManagement.Tests.Helpers
 		public IClass AddInterfaceToProjectContent(IProjectContent projectContent, string interfaceName)
 		{
 			IClass fakeClass = AddClassToProjectContentCommon(projectContent, interfaceName);
-			fakeClass.Stub(c => c.ClassType).Return(ClassType.Interface);
+			SetClassType(fakeClass, ClassType.Interface);
 			return fakeClass;
 		}
 		
@@ -151,6 +155,73 @@ namespace PackageManagement.Tests.Helpers
 			TestableProject project = ProjectHelper.CreateTestProject();
 			project.FileName = @"c:\projects\myproject.vbproj";
 			SetProjectForProjectContent(project);
+		}
+		
+		public IClass AddPublicClassToProjectContent(string name)
+		{
+			IClass fakeClass = AddClassToProjectContent(name);
+			MakeClassPublic(fakeClass);
+			return fakeClass;
+		}
+		
+		public IClass AddPrivateClassToProjectContent(string name)
+		{
+			IClass fakeClass = AddClassToProjectContent(name);
+			MakeClassPrivate(fakeClass);
+			return fakeClass;
+		}
+		
+		public IClass AddPublicStructToProjectContent(string name)
+		{
+			IClass fakeStruct = AddStructToProjectContent(name);
+			MakeClassPublic(fakeStruct);
+			return fakeStruct;
+		}
+		
+		public IClass AddStructToProjectContent(string name)
+		{
+			IClass fakeStruct = AddClassToProjectContentCommon(FakeProjectContent, name);
+			SetClassType(fakeStruct, ClassType.Struct);
+			return fakeStruct;
+		}
+		
+		public IClass AddPrivateStructToProjectContent(string name)
+		{
+			IClass fakeStruct = AddStructToProjectContent(name);
+			MakeClassPrivate(fakeStruct);
+			return fakeStruct;
+		}
+		
+		public IClass AddPublicDelegateToProjectContent(string name)
+		{
+			IClass fakeDelegate = AddDelegateToProjectContent(name);
+			MakeClassPublic(fakeDelegate);
+			return fakeDelegate;
+		}
+		
+		public IClass AddDelegateToProjectContent(string name)
+		{
+			IClass fakeDelegate = AddClassToProjectContentCommon(FakeProjectContent, name);
+			SetClassType(fakeDelegate, ClassType.Delegate);
+			return fakeDelegate;
+		}
+		
+		public void MakeClassPublic(IClass fakeClass)
+		{
+			fakeClass.Stub(c => c.IsPublic).Return(true);
+		}
+		
+		public void MakeClassPrivate(IClass fakeClass)
+		{
+			fakeClass.Stub(c => c.IsPublic).Return(false);
+			fakeClass.Stub(c => c.IsPrivate).Return(true);
+		}
+		
+		public IClass AddPrivateDelegateToProjectContent(string name)
+		{
+			IClass fakeDelegate = AddDelegateToProjectContent(name);
+			MakeClassPrivate(fakeDelegate);
+			return fakeDelegate;
 		}
 	}
 }

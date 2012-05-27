@@ -67,5 +67,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return dte;
 			}
 		}
+		
+		protected vsCMAccess GetAccess()
+		{
+			if (Entity.IsPublic) {
+				return vsCMAccess.vsCMAccessPublic;
+			}
+			return vsCMAccess.vsCMAccessPrivate;
+		}
 	}
 }

@@ -7,6 +7,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public enum vsCMAccess
 	{
-		vsCMAccessPublic = 1
+		vsCMAccessPublic = 1,
+		vsCMAccessPrivate = 2
 	}
 }

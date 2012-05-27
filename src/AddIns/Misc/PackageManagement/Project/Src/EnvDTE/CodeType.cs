@@ -10,6 +10,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		CodeAttributes attributes;
 		
+		/// <summary>
+		/// Note that projectContent may be different to the IClass.ProjectContent since the class
+		/// is retrieved from the namespace contents and could belong to a separate project or
+		/// referenced assembly.
+		/// </summary>
 		public CodeType(IProjectContent projectContent, IClass c)
 			: base(c)
 		{
@@ -31,7 +36,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected IClass Class { get; private set; }
 		
-		public virtual vsCMAccess Access { get; set; }
+		public virtual vsCMAccess Access {
+			get { return GetAccess(); }
+			set { }
+		}
 		
 		public virtual string FullName {
 			get { return Class.FullyQualifiedName; }

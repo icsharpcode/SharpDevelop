@@ -11,6 +11,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		CodeAttributeArguments arguments;
 		IAttribute attribute;
 		
+		public CodeAttribute2()
+		{
+		}
+		
 		public CodeAttribute2(IAttribute attribute)
 			: base(attribute)
 		{

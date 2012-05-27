@@ -8,6 +8,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeProperty2 : CodeProperty
 	{
+		public CodeProperty2()
+		{
+		}
+		
 		public CodeProperty2(IProperty property)
 			: base(property)
 		{

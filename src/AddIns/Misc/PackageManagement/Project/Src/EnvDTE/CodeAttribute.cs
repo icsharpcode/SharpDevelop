@@ -12,6 +12,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		IAttribute attribute;
 		static readonly string AttributeEndName = "Attribute";
 		
+		public CodeAttribute()
+		{
+		}
+		
 		public CodeAttribute(IAttribute attribute)
 		{
 			this.attribute = attribute;
