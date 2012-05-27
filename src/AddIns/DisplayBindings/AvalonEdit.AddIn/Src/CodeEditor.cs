@@ -33,20 +33,11 @@ using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
-	public interface ICodeEditor
-	{
-		TextDocument Document { get; }
-		
-		void Redraw(ISegment segment, DispatcherPriority priority);
-		
-		event EventHandler DocumentChanged;
-	}
-	
 	/// <summary>
 	/// Integrates AvalonEdit with SharpDevelop.
 	/// Also provides support for Split-View (showing two AvalonEdit instances using the same TextDocument)
 	/// </summary>
-	public class CodeEditor : Grid, IDisposable, ICodeEditor
+	public class CodeEditor : Grid, IDisposable
 	{
 		const string contextMenuPath = "/SharpDevelop/ViewContent/AvalonEdit/ContextMenu";
 		
@@ -153,9 +144,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			ParserService.ParseInformationUpdated += ParserServiceParseInformationUpdated;
 			
 			this.FlowDirection = FlowDirection.LeftToRight; // code editing is always left-to-right
+			this.document = new TextDocument();
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
-			
-			textMarkerService = new TextMarkerService(this);
+			textMarkerService = new TextMarkerService(document);
 			iconBarManager = new IconBarManager();
 			if (CodeEditorOptions.Instance.EnableChangeMarkerMargin) {
 				changeWatcher = new DefaultChangeWatcher();
@@ -164,9 +155,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditorAdapter = (CodeEditorAdapter)primaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 			Debug.Assert(primaryTextEditorAdapter != null);
 			activeTextEditor = primaryTextEditor;
-			
-			this.Document = primaryTextEditor.Document;
-			primaryTextEditor.SetBinding(TextEditor.DocumentProperty, new Binding("Document") { Source = this });
 			
 			this.ColumnDefinitions.Add(new ColumnDefinition());
 			this.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -199,6 +187,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CodeEditorView codeEditorView = new CodeEditorView();
 			CodeEditorAdapter adapter = new CodeEditorAdapter(this, codeEditorView);
 			codeEditorView.Adapter = adapter;
+			codeEditorView.Document = document;
 			TextView textView = codeEditorView.TextArea.TextView;
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
@@ -340,8 +329,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				secondaryTextEditorAdapter = (CodeEditorAdapter)secondaryTextEditor.TextArea.GetService(typeof(ITextEditor));
 				Debug.Assert(primaryTextEditorAdapter != null);
 				
-				secondaryTextEditor.SetBinding(TextEditor.DocumentProperty,
-				                               new Binding(TextEditor.DocumentProperty.Name) { Source = primaryTextEditor });
 				secondaryTextEditor.SetBinding(TextEditor.IsReadOnlyProperty,
 				                               new Binding(TextEditor.IsReadOnlyProperty.Name) { Source = primaryTextEditor });
 				secondaryTextEditor.SyntaxHighlighting = primaryTextEditor.SyntaxHighlighting;

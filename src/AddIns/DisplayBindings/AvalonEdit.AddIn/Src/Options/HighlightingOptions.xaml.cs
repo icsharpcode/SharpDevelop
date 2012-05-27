@@ -43,10 +43,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			bracketHighlighter = new BracketHighlightRenderer(textEditor.TextArea.TextView);
 			foldingManager = FoldingManager.Install(textEditor.TextArea);
 			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
+			textMarkerService = new TextMarkerService(textEditor.Document);
+			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			textEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 		}
 		
 		BracketHighlightRenderer bracketHighlighter;
 		FoldingManager foldingManager;
+		TextMarkerService textMarkerService;
+		ITextMarker marker;
 		List<CustomizedHighlightingColor> customizationList;
 		
 		public const string FoldingControls = "Folding controls";
@@ -361,7 +367,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				ErrorPainter.ErrorColorName,
 				ta => {
 					ta.Document.Text = "some error";
-					// TODO : attach error painter/text marker service
+					marker = textMarkerService.Create(0, 5);
 				})
 			{
 				Foreground = Colors.Red
@@ -374,7 +380,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				ErrorPainter.WarningColorName,
 				ta => {
 					ta.Document.Text = "some warning";
-					// TODO : attach error painter/text marker service
+					marker = textMarkerService.Create(0, 5);
 				})
 			{
 				Foreground = Colors.Orange
@@ -387,7 +393,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				ErrorPainter.MessageColorName,
 				ta => {
 					ta.Document.Text = "some message";
-					// TODO : attach error painter/text marker service
+					marker = textMarkerService.Create(0, 5);
 				})
 			{
 				Foreground = Colors.Blue
@@ -432,6 +438,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				var item = (IHighlightingItem)listBox.SelectedItem;
 				TextView textView = textEditor.TextArea.TextView;
 				foldingManager.Clear();
+				textMarkerService.RemoveAll(m => true);
+				marker = null;
 				textView.LineTransformers.Remove(colorizer);
 				colorizer = null;
 				if (item != null) {
@@ -442,6 +450,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					textEditor.Select(0, 0);
 					bracketHighlighter.SetHighlight(null);
 					item.ShowExample(textEditor.TextArea);
+					if (marker != null) {
+						marker.MarkerType = TextMarkerType.SquigglyUnderline;
+						marker.MarkerColor = item.Foreground;
+					}
 				}
 			}
 		}
@@ -687,7 +699,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		void LoadSDSettings(XDocument document)
 		{
 			var version = document.Root.Attribute("version");
-			if (version != null && version.Value != Properties.Version1.ToString()) {
+			if (version != null && version.Value != Properties.CurrentVersion.ToString()) {
 				Core.MessageService.ShowError("Settings version not supported!");
 				return;
 			}
@@ -714,7 +726,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartElement("Properties");
-				writer.WriteAttributeString("version", Properties.Version1.ToString());
+				writer.WriteAttributeString("version", Properties.CurrentVersion.ToString());
 				p.WriteProperties(writer);
 				writer.WriteEndElement();
 			}

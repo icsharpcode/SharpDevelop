@@ -73,9 +73,9 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		public const string ErrorColorName = "Error Marker";
-		public const string WarningColorName = "Warning Marker";
-		public const string MessageColorName = "Message Marker";
+		public const string ErrorColorName = "Error marker";
+		public const string WarningColorName = "Warning marker";
+		public const string MessageColorName = "Message marker";
 		
 		Color errorColor;
 		
