@@ -837,7 +837,7 @@
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
 									<Directory Id="CSharpProjectTemplatesFolder" Name="CSharp">
-										<Component Guid="888085CF-91C6-4669-97AF-BA99B3D9D38B" Id="CSharpProjectTemplates" DiskId="1">
+										<Component Guid="6261E8DA-6374-40B8-93EF-CFE031488C08" Id="CSharpProjectTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFNavigationApplication.xpt" Id="CSharpWPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Id="CSharpConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ControlLibrary.xpt" Id="CSharpControlLibrary.xpt" Name="ControlLibrary.xpt" />
@@ -853,6 +853,8 @@
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Id="CSharpWebpageProject.xpt" Name="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Id="CSharpWPFApplication.xpt" Name="WPFApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SilverlightApplication.xpt" Id="CSharpSilverlightApplication.xpt" Name="SilverlightApplication.xpt" />
+											<File Id="PortableAssemblyInfo.cs" Name="PortableAssemblyInfo.cs" Source="..\..\data\templates\project\CSharp\PortableAssemblyInfo.cs" />
+											<File Id="PortableLibrary.xpt" Name="PortableLibrary.xpt" Source="..\..\data\templates\project\CSharp\PortableLibrary.xpt" />
 										</Component>
 										<Component Guid="9D156515-C54F-4DAB-AD66-40E44C28E56C" Id="CSharpProjectSharpDevelopCustomToolTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Id="SharpDevelopCustomTool.xpt" Name="SharpDevelopCustomTool.xpt" />

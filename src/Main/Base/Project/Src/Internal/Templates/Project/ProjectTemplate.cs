@@ -312,7 +312,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					string solutionLocation = projectCreateInformation.Solution.FileName;
 					if (createNewSolution) {
 						projectCreateInformation.Solution.AddFolder(project);
-						projectCreateInformation.Solution.FixSolutionConfiguration(new IProject[] {project});
 						projectCreateInformation.Solution.Save();
 						ProjectService.OnSolutionCreated(new SolutionEventArgs(projectCreateInformation.Solution));
 						projectCreateInformation.Solution.Dispose();

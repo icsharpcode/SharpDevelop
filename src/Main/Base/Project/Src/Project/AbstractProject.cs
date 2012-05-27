@@ -598,6 +598,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		protected virtual void InvalidateBehavior()
+		{
+			lock (SyncRoot) {
+				projectBehavior = null;
+			}
+		}
+		
 		public virtual bool HasProjectType(Guid projectTypeGuid)
 		{
 			Guid myGuid;

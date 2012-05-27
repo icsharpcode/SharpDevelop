@@ -5,6 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 {
@@ -13,33 +17,53 @@ namespace ICSharpCode.SharpDevelop.Project.PortableLibrary
 	/// </summary>
 	public class Profile
 	{
-		#region Load List of Profiles
-		static string GetPortableLibraryPath()
+		public static Profile LoadProfile(string targetFrameworkVersion, string targetFrameworkProfile)
 		{
-			string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-			return Path.Combine(programFiles, @"Reference Assemblies\Microsoft\Framework\.NETPortable");
+			string profileDir = Path.Combine(ProfileList.GetPortableLibraryPath(), targetFrameworkVersion, "Profile", targetFrameworkProfile);
+			return LoadProfile(targetFrameworkVersion, targetFrameworkProfile, profileDir);
 		}
 		
-		public static IList<Profile> LoadProfiles()
+		internal static Profile LoadProfile(string targetFrameworkVersion, string targetFrameworkProfile, string profileDir)
 		{
-			throw new NotImplementedException();
+			try {
+				List<SupportedFramework> frameworks = new List<SupportedFramework>();
+				foreach (string frameworkFile in Directory.GetFiles(Path.Combine(profileDir, "SupportedFrameworks"), "*.xml")) {
+					XDocument doc = XDocument.Load(frameworkFile);
+					frameworks.Add(new SupportedFramework(doc.Root));
+				}
+				if (frameworks.Count > 0)
+					return new Profile(targetFrameworkVersion, targetFrameworkProfile, frameworks);
+				else
+					return null;
+			} catch (XmlException) {
+				return null;
+			} catch (IOException) {
+				return null;
+			} catch (UnauthorizedAccessException) {
+				return null;
+			}
 		}
 		
-		public static bool IsPortableLibraryInstalled()
-		{
-			return Directory.Exists(GetPortableLibraryPath());
-		}
-		#endregion
-		
-		public readonly string TargetFrameworkVersion;
-		public readonly string TargetFrameworkProfile;
-		public readonly IList<SupportedFramework> SupportedFrameworks;
+		// These must be properties for WPF data binding
+		public string TargetFrameworkVersion { get; private set; }
+		public string TargetFrameworkProfile { get; private set; }
+		public string DisplayName { get; private set; }
+		public IList<SupportedFramework> SupportedFrameworks { get; private set; }
 		
 		public Profile(string targetFrameworkVersion, string targetFrameworkProfile, IList<SupportedFramework> supportedFrameworks)
 		{
 			this.TargetFrameworkVersion = targetFrameworkVersion;
 			this.TargetFrameworkProfile = targetFrameworkProfile;
 			this.SupportedFrameworks = supportedFrameworks;
+			
+			this.DisplayName = ".NET Portable Subset (" + string.Join(", ", supportedFrameworks) + ")";
+		}
+		
+		public bool Supports(IList<SupportedFramework> frameworks)
+		{
+			return frameworks.All(
+				requiredFx => SupportedFrameworks.Any(fx => fx.IsMoreGeneralThan(requiredFx))
+			);
 		}
 	}
 }

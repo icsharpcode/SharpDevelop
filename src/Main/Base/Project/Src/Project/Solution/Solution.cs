@@ -270,22 +270,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			IProject project = folder as IProject;
 			if (project != null && !isLoading) {
-				var projectConfigurations = project.ConfigurationNames;
-				var solutionConfigurations = this.GetConfigurationNames();
-				var projectPlatforms = project.PlatformNames;
-				var solutionPlatforms = this.GetPlatformNames();
-				foreach (string config in solutionConfigurations) {
-					string projectConfig = config;
-					if (!projectConfigurations.Contains(projectConfig))
-						projectConfig = projectConfigurations.FirstOrDefault() ?? "Debug";
-					foreach (string platform in solutionPlatforms) {
-						string projectPlatform = FixPlatformNameForProject(platform);
-						if (!projectPlatforms.Contains(projectPlatform))
-							projectPlatform = projectPlatforms.FirstOrDefault() ?? "AnyCPU";
-						
-						CreateMatchingItem(config, platform, project, projectConfig + "|" + FixPlatformNameForSolution(projectPlatform));
-					}
-				}
+				FixSolutionConfiguration(new[] { project });
 			}
 		}
 		
@@ -694,38 +679,59 @@ namespace ICSharpCode.SharpDevelop.Project
 			return new SolutionItem("Debug|Any CPU", "Debug|Any CPU");
 		}
 		
+		/// <summary>
+		/// Repairs the solution configuration to project configuration mapping for the specified projects.
+		/// </summary>
 		public bool FixSolutionConfiguration(IEnumerable<IProject> projects)
 		{
 			ProjectSection solSec = GetSolutionConfigurationsSection();
 			ProjectSection prjSec = GetProjectConfigurationsSection();
 			bool changed = false;
-			SortedSet<string> configurations = new SortedSet<string>();
-
-			foreach (IProject project in projects) {
-				string guid = project.IdGuid.ToUpperInvariant();
-				string platform = FixPlatformNameForSolution(project.ActivePlatform);
-				foreach (string configuration in new string[]{"Debug", "Release"}) {
-					string key = configuration + "|" + platform;
-					configurations.Add(key);
-					
-					string searchKey = guid + "." + key + ".Build.0";
-					if (!prjSec.Items.Exists(item => item.Name == searchKey)) {
-						prjSec.Items.Add(new SolutionItem(searchKey, key));
-						changed = true;
-					}
-					
-					searchKey = guid + "." + key + ".ActiveCfg";
-					if (!prjSec.Items.Exists(item => item.Name == searchKey)) {
-						prjSec.Items.Add(new SolutionItem(searchKey, key));
+			var solutionConfigurations = this.GetConfigurationNames();
+			var solutionPlatforms = this.GetPlatformNames();
+			
+			// Create configurations/platforms if none exist
+			if (solutionConfigurations.Count == 0) {
+				solutionConfigurations.Add("Debug");
+				solutionConfigurations.Add("Release");
+			}
+			if (solutionPlatforms.Count == 0) {
+				solutionPlatforms.Add("Any CPU");
+			}
+			
+			// Ensure all solution configurations/platforms exist in the SolutionConfigurationPlatforms section:
+			foreach (string config in solutionConfigurations) {
+				foreach (string platform in solutionPlatforms) {
+					string key = config + "|" + platform;
+					if (!solSec.Items.Exists(item => key.Equals(item.Location, StringComparison.OrdinalIgnoreCase) && key.Equals(item.Name, StringComparison.OrdinalIgnoreCase))) {
+						solSec.Items.Add(new SolutionItem(key, key));
 						changed = true;
 					}
 				}
 			}
 			
-			foreach (string key in configurations) {
-				if (!solSec.Items.Exists(item => item.Location == key && item.Name == key)) {
-					solSec.Items.Add(new SolutionItem(key, key));
-					changed = true;
+			// Ensure all solution configurations/platforms are mapped to a project configuration:
+			foreach (var project in projects) {
+				string guid = project.IdGuid.ToUpperInvariant();
+				var projectConfigurations = project.ConfigurationNames;
+				var projectPlatforms = project.PlatformNames;
+				foreach (string config in solutionConfigurations) {
+					string projectConfig = config;
+					if (!projectConfigurations.Contains(projectConfig))
+						projectConfig = projectConfigurations.FirstOrDefault() ?? "Debug";
+					foreach (string platform in solutionPlatforms) {
+						string activeCfgKey = guid + "." + config + "|" + platform + ".ActiveCfg";
+						// Only add the mapping if the ActiveCfg is not specified.
+						// If ActiveCfg is specific but Build.0 isn't, we don't add the Build.0.
+						if (!prjSec.Items.Exists(item => activeCfgKey.Equals(item.Name, StringComparison.OrdinalIgnoreCase))) {
+							string projectPlatform = FixPlatformNameForProject(platform);
+							if (!projectPlatforms.Contains(projectPlatform))
+								projectPlatform = projectPlatforms.FirstOrDefault() ?? "AnyCPU";
+							
+							changed = true;
+							CreateMatchingItem(config, platform, project, projectConfig + "|" + FixPlatformNameForSolution(projectPlatform));
+						}
+					}
 				}
 			}
 			

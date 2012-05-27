@@ -221,8 +221,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			TargetFramework selectedFramework = newFrameworkComboBox.SelectedValue as TargetFramework;
 			if (selectedCompiler is UnchangedCompilerVersion)
 				selectedCompiler = null;
-			if (selectedFramework is UnchangedTargetFramework)
-				selectedFramework = null;
+			if (selectedFramework != null) {
+				// Show dialog for picking target frameworks for portable library.
+				// This also handles UnchangedTargetFramework
+				selectedFramework = selectedFramework.PickFramework(listView.SelectedItems.Cast<Entry>().Select(entry => entry.Project).ToList());
+			}
 			
 			
 			foreach (Entry entry in listView.SelectedItems) {
@@ -259,6 +262,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			public UnchangedTargetFramework() : base(string.Empty, Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
 			{
+			}
+			
+			public override TargetFramework PickFramework(IEnumerable<IUpgradableProject> selectedProjects)
+			{
+				return null;
 			}
 			
 			public override bool Equals(object obj)

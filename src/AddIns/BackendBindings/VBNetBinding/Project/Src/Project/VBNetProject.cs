@@ -49,8 +49,7 @@ namespace ICSharpCode.VBNetBinding
 			InitVB();
 		}
 		
-		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets";
-		public const string ExtendedTargetsFile = @"$(SharpDevelopBinPath)\SharpDevelop.Build.VisualBasic.targets";
+		public const string DefaultTargetsFile = @"$(MSBuildToolsPath)\Microsoft.VisualBasic.targets";
 		
 		public VBNetProject(ProjectCreateInformation info)
 			: base(info)
@@ -107,43 +106,6 @@ namespace ICSharpCode.VBNetBinding
 				base.StartBuild(options, feedbackSink);
 			}
 		}
-		
-		/*
-		protected override void AddOrRemoveExtensions()
-		{
-			// Test if SharpDevelop-Build extensions are required
-			bool needExtensions = false;
-			
-			foreach (var p in GetAllProperties("TargetFrameworkVersion")) {
-				if (p.IsImported == false) {
-					if (p.Value.StartsWith("CF")) {
-						needExtensions = true;
-					}
-				}
-			}
-			
-			foreach (Microsoft.Build.BuildEngine.Import import in MSBuildProject.Imports) {
-				if (needExtensions) {
-					if (DefaultTargetsFile.Equals(import.ProjectPath, StringComparison.OrdinalIgnoreCase)) {
-						//import.ProjectPath = extendedTargets;
-						MSBuildInternals.SetImportProjectPath(this, import, ExtendedTargetsFile);
-						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
-						// when necessary.
-						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-						break;
-					}
-				} else {
-					if (ExtendedTargetsFile.Equals(import.ProjectPath, StringComparison.OrdinalIgnoreCase)) {
-						//import.ProjectPath = defaultTargets;
-						MSBuildInternals.SetImportProjectPath(this, import, DefaultTargetsFile);
-						// Workaround for SD2-1490. It would be better if the project browser could refresh itself
-						// when necessary.
-						ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
-						break;
-					}
-				}
-			}
-		}*/
 		
 		public Nullable<bool> OptionInfer {
 			get { return GetValue("OptionInfer", false); }

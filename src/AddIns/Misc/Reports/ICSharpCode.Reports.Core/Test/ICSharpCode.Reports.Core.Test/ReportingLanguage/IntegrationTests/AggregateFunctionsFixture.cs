@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 {
 	[TestFixture]
 
-//	[SetCulture("de-DE")]
+	[SetCulture("en-US")]
 	public class AggregateFunctionsFromTableFixture
 	{
 		
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 			const string expression = "=max(amount)";
 			//var s = this.evaluator.Evaluate(expression);
 			Assert.That(this.evaluator.Evaluate(expression),
-			            Is.EqualTo("400,5"));
+			            Is.EqualTo("400.5"));
 		}
 		
 		

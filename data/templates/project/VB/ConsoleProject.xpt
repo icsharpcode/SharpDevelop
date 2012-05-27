@@ -20,7 +20,7 @@
 	
 
 	<!-- Template Content -->
-	<Project language = "VBNet">
+	<Project language = "VBNet" defaultPlatform="x86">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />
