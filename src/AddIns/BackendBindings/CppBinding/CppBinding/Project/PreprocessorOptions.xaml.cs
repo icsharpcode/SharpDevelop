@@ -19,7 +19,7 @@ namespace ICSharpCode.CppBinding.Project
 	/// <summary>
 	/// Interaction logic for PreprocessorOptionsXaml.xaml
 	/// </summary>
-	public partial class PreprocessorOptions : ProjectOptionPanel,INotifyPropertyChanged
+	public partial class PreprocessorOptions : ProjectOptionPanel
 	{
 		private const string metaElement ="ClCompile";
 		private MSBuildBasedProject project;

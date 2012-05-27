@@ -19,7 +19,7 @@ namespace ICSharpCode.CppBinding.Project
 	/// <summary>
 	/// Interaction logic for LinkerOptionsXaml.xaml
 	/// </summary>
-	public partial class LinkerOptions :  ProjectOptionPanel,INotifyPropertyChanged
+	public partial class LinkerOptions :  ProjectOptionPanel
 	{
 		private const string metaElement ="Link";
 		private MSBuildBasedProject project;
