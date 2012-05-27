@@ -2,13 +2,22 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeProperty : CodeElement
 	{
+		IProperty property;
+		CodeElements attributes;
+		
 		public CodeProperty()
 		{
+		}
+		
+		public CodeProperty(IProperty property)
+		{
+			this.property = property;
 		}
 		
 		public virtual vsCMAccess Access { get; set; }
@@ -18,7 +27,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Attributes {
-			get { throw new NotImplementedException(); }
+			get {
+				if (attributes == null) {
+					attributes = new CodeAttributes(property);
+				}
+				return attributes;
+			}
 		}
 		
 		public virtual CodeTypeRef Type {

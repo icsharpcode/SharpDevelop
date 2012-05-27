@@ -2,12 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeProperty2 : CodeProperty
 	{
-		public CodeProperty2()
+		public CodeProperty2(IProperty property)
+			: base(property)
 		{
 		}
 		
