@@ -43,7 +43,7 @@
 		<Span color="Preprocessor">
 			<Begin>\#</Begin>
 			<RuleSet name="PreprocessorSet">
-				<Span> <!-- preprocessor directives that allow comments -->
+				<Span> <!-- preprocessor directives that allows comments -->
 					<Begin fontWeight="bold">
 						(define|undef|if|elif|else|endif|line)\b
 					</Begin>
