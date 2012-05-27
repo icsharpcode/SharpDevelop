@@ -23,7 +23,6 @@ namespace ICSharpCode.CppBinding.Project
 	{
 		private const string metaElement ="ClCompile";
 		private MSBuildBasedProject project;
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 		
 		public PreprocessorOptions()
 		{
@@ -65,9 +64,8 @@ namespace ICSharpCode.CppBinding.Project
 			set
 			{
 				checkBoxChecked = value;
-				if (PropertyChanged != null)
-					PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("UnCheck"));
 				IsDirty = true;
+				base.RaisePropertyChanged(() => CheckBoxChecked);
 			}
 		}
 		

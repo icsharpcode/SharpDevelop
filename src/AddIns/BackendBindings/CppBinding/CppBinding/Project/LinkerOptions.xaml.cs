@@ -23,7 +23,6 @@ namespace ICSharpCode.CppBinding.Project
 	{
 		private const string metaElement ="Link";
 		private MSBuildBasedProject project;
-		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 		
 		public LinkerOptions()
 		{
@@ -35,7 +34,6 @@ namespace ICSharpCode.CppBinding.Project
 		{
 			var msDefGroup = new MSBuildItemDefinitionGroup(project, project.ActiveConfiguration, project.ActivePlatform);
 			                                                                  
-			
 			this.additionalLibsTextBox.Text = GetElementMetaData(msDefGroup,"AdditionalDependencies");
 			
 			this.addModuleTextBox.Text = GetElementMetaData(msDefGroup,"AddModuleNamesToAssembly");
@@ -70,9 +68,8 @@ namespace ICSharpCode.CppBinding.Project
 			set
 			{
 				checkBoxChecked = value;
-				if (PropertyChanged != null)
-					PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs("UnCheck"));
 				IsDirty = true;
+				base.RaisePropertyChanged(() => CheckBoxChecked);
 			}
 		}
 		
@@ -175,7 +172,6 @@ namespace ICSharpCode.CppBinding.Project
 			string[] strings = textBox.Text.Split(';');
 			stringListDialog.LoadList (strings);
 			stringListDialog.ShowDialog();
-		//	if (stringListDialog.DialogResult.HasValue && stringListDialog.DialogResult.Value)
 			if (stringListDialog.DialogResult ?? false) {
 				textBox.Text = String.Join(";",stringListDialog.GetList());
 			}

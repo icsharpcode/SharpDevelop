@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public static string OpenFile (string filter)
 		{
 			var dialog = new OpenFileDialog();
-			dialog.Filter = filter;
+			dialog.Filter = StringParser.Parse(filter);
 			if (dialog.ShowDialog() ?? false) {
 				return dialog.FileName;
 			}

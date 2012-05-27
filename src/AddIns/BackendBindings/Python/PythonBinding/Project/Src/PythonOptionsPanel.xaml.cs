@@ -44,7 +44,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void Browse()
 		{
-			var str = OptionsHelper.OpenFile (SDCore.StringParser.Parse("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe"));
+			string str = OptionsHelper.OpenFile ("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe");
 			if (String.IsNullOrEmpty(str))
 				return;
 			PythonFileName = str;

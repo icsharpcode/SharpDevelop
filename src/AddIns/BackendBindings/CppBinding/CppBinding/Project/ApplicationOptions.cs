@@ -347,8 +347,7 @@ namespace ICSharpCode.CppBinding.Project
 		
 		void ApplicationIconButton_Click(object sender, RoutedEventArgs e)
 		{
-			var filter  = StringParser.Parse(iconsfilter);
-			string fileName = BrowseForFile(filter);
+			string fileName = OptionsHelper.OpenFile(iconsfilter);
 			if (!String.IsNullOrEmpty(fileName))
 			{
 				this.applicationIconTextBox.Text = fileName;
@@ -410,7 +409,7 @@ namespace ICSharpCode.CppBinding.Project
 		void BrowseForManifest()
 		{
 			applicationManifestComboBox.SelectedIndex = -1;
-			var fileName = BrowseForFile(manifestFilter);
+			var fileName = OptionsHelper.OpenFile(manifestFilter);
 			if (!String.IsNullOrEmpty(fileName)) {
 				this.applicationManifestComboBox.Items.Insert(0,fileName);
 				this.applicationManifestComboBox.SelectedIndex = 0;
@@ -448,22 +447,5 @@ namespace ICSharpCode.CppBinding.Project
 		}
 		
 		#endregion
-		
-		#region openFile
-		
-		string BrowseForFile (string filter)
-		{
-			OpenFileDialog fileDialog = new OpenFileDialog {
-				Filter = filter,
-				Multiselect = false
-			};
-
-			if (fileDialog.ShowDialog() != true || fileDialog.FileNames.Length == 0)
-				return String.Empty;
-			return fileDialog.FileName;
-		}
-		
-		#endregion
-		
 	}
 }
