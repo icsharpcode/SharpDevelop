@@ -24,6 +24,15 @@ namespace ICSharpCode.UnitTesting
 			get { return name; }
 		}
 		
+		public string FullNamespace {
+			get {
+				TestProject p = GetProject();
+				if (p != null)
+					return p.Project.RootNamespace + "." + name;
+				return name;
+			}
+		}
+		
 		public NamespaceUnitTestNode(string name)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -46,6 +55,16 @@ namespace ICSharpCode.UnitTesting
 					return TestResultType.Ignored;
 				return TestResultType.Success;
 			}
+		}
+		
+		public TestProject GetProject()
+		{
+			UnitTestBaseNode parent = this;
+			while (parent is NamespaceUnitTestNode)
+				parent = (UnitTestBaseNode)parent.Parent;
+			if (parent is ProjectUnitTestNode)
+				return ((ProjectUnitTestNode)parent).Project;
+			return null;
 		}
 	}
 }

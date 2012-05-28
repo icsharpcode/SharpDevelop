@@ -31,8 +31,8 @@ namespace ICSharpCode.UnitTesting
 		public static IMethod GetMethod(object caller)
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null) {
-				return testTreeView.SelectedMethod;
+			if (testTreeView != null && testTreeView.SelectedMethod != null) {
+				return testTreeView.SelectedMethod.Resolve();
 			}
 //			MemberNode memberNode = caller as MemberNode;
 //			if (memberNode != null)

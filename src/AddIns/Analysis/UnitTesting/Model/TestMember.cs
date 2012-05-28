@@ -3,6 +3,8 @@
 
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.UnitTesting
@@ -18,11 +20,17 @@ namespace ICSharpCode.UnitTesting
 			get { return method; }
 		}
 		
-		public TestMember(IUnresolvedMethod method)
+		public TestProject Project { get; private set; }
+		
+		public bool IsTestCase { get; private set; }
+		
+		public TestMember(TestProject project, IUnresolvedMethod method, bool isTestCase)
 		{
 			if (method == null)
 				throw new ArgumentNullException("method");
 			this.method = method;
+			this.Project = project;
+			this.IsTestCase = isTestCase;
 		}
 
 		TestResultType testResult;
@@ -30,11 +38,22 @@ namespace ICSharpCode.UnitTesting
 		public TestResultType TestResult {
 			get { return testResult; }
 			set {
-				if (testResult != value) {
+				if (testResult < value) {
 					testResult = value;
 					OnPropertyChanged();
 				}
 			}
+		}
+		
+		public void ResetTestResult()
+		{
+			testResult = TestResultType.None;
+		}
+		
+		public IMethod Resolve()
+		{
+			ICompilation compilation = SD.ParserService.GetCompilation(Project.Project);
+			return method.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly));
 		}
 		
 		public override string ToString()

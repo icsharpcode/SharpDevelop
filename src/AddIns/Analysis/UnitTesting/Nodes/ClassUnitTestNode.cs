@@ -24,9 +24,11 @@ namespace ICSharpCode.UnitTesting
 			this.testClass.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
 				if (e.PropertyName == "TestResult") {
 					RaisePropertyChanged("Icon");
+					RaisePropertyChanged("ExpandedIcon");
 					var parentNode = Parent;
 					while (parentNode is NamespaceUnitTestNode) {
 						parentNode.RaisePropertyChanged("Icon");
+						parentNode.RaisePropertyChanged("ExpandedIcon");
 						parentNode = parentNode.Parent;
 					}
 				}

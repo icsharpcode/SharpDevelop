@@ -20,12 +20,12 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// The test failed.
 		/// </summary>
-		Failure = 2,
+		Failure = 3,
 		
 		/// <summary>
 		/// The test was ignored.
 		/// </summary>
-		Ignored = 3
+		Ignored = 2
 	}
 	
 	/// <summary>
@@ -33,15 +33,27 @@ namespace ICSharpCode.UnitTesting
 	/// </summary>
 	public class TestResult
 	{
-		string name = String.Empty;
-		string message = String.Empty;
-		string stackTrace = String.Empty;
+		string name = string.Empty;
+		string values = string.Empty;
+		string message = string.Empty;
+		string stackTrace = string.Empty;
 		TestResultType resultType = TestResultType.None;
 		DomRegion stackTraceFilePosition = DomRegion.Empty;
 		
 		public TestResult(string name)
 		{
-			this.name = name;
+			this.name = ParseName(name, out values);
+		}
+		
+		string ParseName(string name, out string values)
+		{
+			int i = name.IndexOf('(');
+			values = "";
+			if (i > -1) {
+				values = name.Substring(i);
+				return name.Substring(0, i);
+			} else
+				return name;
 		}
 		
 		public string Name {

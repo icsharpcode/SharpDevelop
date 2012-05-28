@@ -20,7 +20,7 @@ namespace ICSharpCode.UnitTesting
 {
 	public class UnitTestsPad : AbstractPadContent
 	{
-		SharpTreeView treeView;
+		TestTreeView treeView;
 		bool disposed;
 		DockPanel panel;
 		ToolBar toolBar;
@@ -42,9 +42,7 @@ namespace ICSharpCode.UnitTesting
 			panel.Children.Add(toolBar);
 			DockPanel.SetDock(toolBar, Dock.Top);
 			
-			treeView = new SharpTreeView();
-			treeView.MouseDoubleClick += TestTreeViewDoubleClick;
-//			treeView.KeyDown += TestTreeViewKeyPress;
+			treeView = new TestTreeView(testFrameworks);
 			panel.Children.Add(treeView);
 			
 			// Add the load solution projects thread ended handler before
@@ -55,7 +53,6 @@ namespace ICSharpCode.UnitTesting
 
 			treeView.Root = new RootUnitTestNode();
 			
-			SD.ParserService.ParseInformationUpdated += ParseInformationUpdated;
 			ProjectService.SolutionClosed += SolutionClosed;
 			ProjectService.SolutionFolderRemoved += SolutionFolderRemoved;
 			ProjectService.ProjectAdded += ProjectAdded;
@@ -83,7 +80,6 @@ namespace ICSharpCode.UnitTesting
 				ProjectService.ProjectAdded -= ProjectAdded;
 				ProjectService.SolutionFolderRemoved -= SolutionFolderRemoved;
 				ProjectService.SolutionClosed -= SolutionClosed;
-				SD.ParserService.ParseInformationUpdated -= ParseInformationUpdated;
 				SD.ParserService.LoadSolutionProjectsThread.Finished -= LoadSolutionProjectsThreadFinished;
 			}
 		}
@@ -248,30 +244,6 @@ namespace ICSharpCode.UnitTesting
 			WorkbenchSingleton.SafeThreadAsyncCall(UpdateToolbar);
 			Solution solution = ProjectService.OpenSolution;
 //			WorkbenchSingleton.SafeThreadAsyncCall(SolutionLoaded, solution);
-		}
-		
-		void ParseInformationUpdated(object source, ParseInformationEventArgs e)
-		{
-			lock (pending) {
-				var files = Tuple.Create(e.OldParsedFile, e.NewParsedFile);
-				pending.Add(files);
-			}
-			WorkbenchSingleton.SafeThreadAsyncCall(UpdateParseInfo);
-		}
-		
-		void UpdateParseInfo()
-		{
-			lock (pending) {
-				foreach (var files in pending) {
-					UpdateParseInfo(files.Item1, files.Item2);
-				}
-				pending.Clear();
-			}
-		}
-		
-		void TestTreeViewDoubleClick(object source, EventArgs e)
-		{
-			GotoDefinition();
 		}
 		
 //		void TestTreeViewKeyPress(object source, KeyPressEventArgs e)

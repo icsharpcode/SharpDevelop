@@ -7,6 +7,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TreeView;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -40,14 +41,14 @@ namespace ICSharpCode.UnitTesting
 	
 	public class GotoDefinitionCommand : AbstractMenuCommand
 	{
-		IUnitTestFileService fileService;
+		IFileService fileService;
 		
 		public GotoDefinitionCommand()
-			: this(new UnitTestFileService())
+			: this(SD.FileService)
 		{
 		}
 		
-		public GotoDefinitionCommand(IUnitTestFileService fileService)
+		public GotoDefinitionCommand(IFileService fileService)
 		{
 			this.fileService = fileService;
 		}
@@ -56,46 +57,32 @@ namespace ICSharpCode.UnitTesting
 		{
 			ITestTreeView treeView = Owner as ITestTreeView;
 			if (treeView != null) {
-				IMember member = GetMember(treeView);
-				IClass c = treeView.SelectedClass;
-				if (member != null) {
-					GotoMember(member);
+				IMethod method = treeView.SelectedMethod.Resolve();
+				ITypeDefinition c = treeView.SelectedClass;
+				if (method != null) {
+					GotoMember(method);
 				} else if (c != null) {
 					GotoClass(c);
 				}
 			}
 		}
 		
-		IMember GetMember(ITestTreeView treeView)
-		{
-			IMember member = treeView.SelectedMember;
-			if (member != null) {
-				BaseTestMember baseTestMethod = member as BaseTestMember;
-				if (baseTestMethod != null) {
-					return baseTestMethod.Member;
-				}
-			}
-			return member;
-		}
-		
 		void GotoMember(IMember member)
 		{
-			MemberResolveResult resolveResult = new MemberResolveResult(null, null, member);
-			GotoFilePosition(resolveResult.GetDefinitionPosition());
+			GotoFilePosition(member.Region);
 		}
 		
-		void GotoClass(IClass c)
+		void GotoClass(ITypeDefinition c)
 		{
-			TypeResolveResult resolveResult = new TypeResolveResult(null, null, c);
-			GotoFilePosition(resolveResult.GetDefinitionPosition());
+			GotoFilePosition(c.Region);
 		}
 		
 		void GotoFilePosition(DomRegion filePosition)
 		{
-			if (filePosition.Position.IsEmpty) {
-				fileService.OpenFile(filePosition.FileName);
+			if (filePosition.IsEmpty) {
+				fileService.OpenFile(new FileName(filePosition.FileName));
 			} else {
-				fileService.JumpToFilePosition(filePosition.FileName, filePosition.Line - 1, filePosition.Column - 1);
+				fileService.JumpToFilePosition(new FileName(filePosition.FileName), filePosition.BeginLine, filePosition.BeginColumn);
 			}
 		}
 	}
@@ -104,14 +91,14 @@ namespace ICSharpCode.UnitTesting
 	{
 		public override void Run()
 		{
-			if (!(this.Owner is TreeView))
+			if (!(this.Owner is SharpTreeView))
 				return;
 			
-			var treeView = (TreeView)this.Owner;
-			treeView.CollapseAll();
+			var treeView = (SharpTreeView)this.Owner;
+			NRefactory.Utils.TreeTraversal.PreOrder(treeView.Root, n => n.Children).ForEach(n => n.IsExpanded = false);
 			
-			if (treeView.Nodes.Count > 0) {
-				treeView.Nodes[0].Expand();
+			if (treeView.Root.Children.Count > 0) {
+				treeView.Root.IsExpanded = true;
 			}
 		}
 	}

@@ -40,6 +40,15 @@ namespace ICSharpCode.UnitTesting
 			return false;
 		}
 		
+		public bool IsTestCase(IMethod method, ICompilation compilation)
+		{
+			ITestFramework testFramework = GetTestFramework(method, compilation);
+			if (testFramework != null) {
+				return testFramework.IsTestCase(method, compilation);
+			}
+			return false;
+		}
+		
 		public IEnumerable<IMethod> GetTestMethodsFor(ITypeDefinition type, ICompilation compilation)
 		{
 			ITestFramework testFramework = GetTestFramework(type, compilation);

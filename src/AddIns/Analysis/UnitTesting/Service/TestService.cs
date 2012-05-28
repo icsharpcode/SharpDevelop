@@ -112,5 +112,10 @@ namespace ICSharpCode.UnitTesting
 				return Enumerable.Empty<TestProject>();
 			return ProjectService.OpenSolution.Projects.Where(p => RegisteredTestFrameworks.IsTestProject(p)).Select(p => new TestProject(p));
 		}
+		
+		public static TestProject GetTestProject(IProject currentProject)
+		{
+			return testableProjects.FirstOrDefault(p => p.Project == currentProject);
+		}
 	}
 }

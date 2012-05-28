@@ -35,8 +35,10 @@ namespace ICSharpCode.UnitTesting
 
 		void ProjectPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "TestResult")
+			if (e.PropertyName == "TestResult") {
 				RaisePropertyChanged("Icon");
+				RaisePropertyChanged("ExpandedIcon");
+			}
 		}
 
 		void TestClassesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

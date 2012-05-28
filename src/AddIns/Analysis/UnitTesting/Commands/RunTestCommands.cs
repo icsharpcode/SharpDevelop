@@ -527,7 +527,7 @@ namespace ICSharpCode.UnitTesting
 			base.Run();
 		}
 		
-		public IMethod SelectedMethod {
+		public TestMember SelectedMethod {
 			get { return null; }
 		}
 		

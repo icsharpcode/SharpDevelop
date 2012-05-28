@@ -24,6 +24,7 @@ namespace ICSharpCode.UnitTesting
 			this.testMember.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
 				if (e.PropertyName == "TestResult") {
 					RaisePropertyChanged("Icon");
+					RaisePropertyChanged("ExpandedIcon");
 				}
 			};
 		}

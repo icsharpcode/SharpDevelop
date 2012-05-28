@@ -15,6 +15,7 @@ namespace ICSharpCode.UnitTesting
 		ITestRunner CreateTestDebugger(IProject project);
 		
 		bool IsTestMethod(IMethod method, ICompilation compilation);
+		bool IsTestCase(IMethod method, ICompilation compilation);
 		bool IsTestClass(ITypeDefinition typeDefinition, ICompilation compilation);
 		bool IsTestProject(IProject project);
 		

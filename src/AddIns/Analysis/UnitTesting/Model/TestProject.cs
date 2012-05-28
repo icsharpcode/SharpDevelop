@@ -37,7 +37,7 @@ namespace ICSharpCode.UnitTesting
 				.Resolve(compilation.TypeResolveContext)
 				.TopLevelTypeDefinitions
 				.Where(td => testFrameworks.IsTestClass(td, compilation))
-				.Select(g => new TestClass(testFrameworks, g.ReflectionName, g));
+				.Select(g => new TestClass(this, testFrameworks, g.ReflectionName, g));
 			testClasses = new ObservableCollection<TestClass>(classes);
 		}
 
@@ -49,7 +49,7 @@ namespace ICSharpCode.UnitTesting
 				@new = e.NewParsedFile.TopLevelTypeDefinitions.Select(utd => utd.Resolve(context).GetDefinition()).Where(x => x != null && testFrameworks.IsTestClass(x, SD.ParserService.GetCompilation(project)));
 			else
 				@new = Enumerable.Empty<ITypeDefinition>();
-			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.ParsedFile.FileName == e.OldParsedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList(), null);
+			testClasses.UpdateTestClasses(testFrameworks, testClasses.Where(tc => tc.Parts.Any(td => td.ParsedFile.FileName == e.OldParsedFile.FileName)).Select(tc => new DefaultResolvedTypeDefinition(context, tc.Parts.ToArray())).ToList(), @new.ToList(), null, this);
 		}
 		
 		public IProject Project {

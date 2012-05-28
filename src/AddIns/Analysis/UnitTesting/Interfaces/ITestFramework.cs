@@ -11,6 +11,7 @@ namespace ICSharpCode.UnitTesting
 	public interface ITestFramework
 	{
 		bool IsTestMethod(IMethod method, ICompilation compilation);
+		bool IsTestCase(IMethod method, ICompilation compilation);
 		bool IsTestClass(ITypeDefinition testClass, ICompilation compilation);
 		bool IsTestProject(IProject project);
 		

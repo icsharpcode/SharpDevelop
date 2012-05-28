@@ -50,8 +50,15 @@ namespace ICSharpCode.UnitTesting
 			if (method == null)
 				throw new ArgumentNullException("method");
 			var testAttribute = NUnitTestFramework.testAttribute.Resolve(compilation.TypeResolveContext);
+			return IsTestCase(method, compilation) || method.Attributes.Any(a => a.AttributeType.Equals(testAttribute));
+		}
+		
+		public bool IsTestCase(IMethod method, ICompilation compilation)
+		{
+			if (method == null)
+				throw new ArgumentNullException("method");
 			var testCaseAttribute = NUnitTestFramework.testCaseAttribute.Resolve(compilation.TypeResolveContext);
-			return method.Attributes.Any(a => a.AttributeType.Equals(testAttribute) || a.AttributeType.Equals(testCaseAttribute));
+			return method.Attributes.Any(a => a.AttributeType.Equals(testCaseAttribute));
 		}
 		
 		public bool IsTestClass(ITypeDefinition type, ICompilation compilation)

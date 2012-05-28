@@ -13,7 +13,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the selected member in the test tree view.
 		/// </summary>
-		IMethod SelectedMethod {get;}
+		TestMember SelectedMethod {get;}
 		
 		/// <summary>
 		/// Gets the selected class in the test tree view.

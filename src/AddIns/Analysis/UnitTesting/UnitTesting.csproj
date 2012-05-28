@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\RunTestCommands.cs" />
+    <Compile Include="Commands\UnitTestCommands.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Gui\EmptyUnitTestsPad.cs" />
     <Compile Include="Gui\UnitTestingOptionsPanel.xaml.cs">
@@ -138,6 +139,7 @@
     <Compile Include="TestResultsMonitor.cs" />
     <Compile Include="TestResultsReader.cs" />
     <Compile Include="TestResultTask.cs" />
+    <Compile Include="TestTreeView.cs" />
     <Compile Include="UnitTestApplicationStartHelper.cs" />
     <Compile Include="UnitTestingOptions.cs" />
     <Compile Include="UnitTestProcessRunner.cs" />
