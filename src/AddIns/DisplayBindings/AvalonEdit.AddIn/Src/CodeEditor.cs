@@ -304,11 +304,29 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
 		}
 		
+		bool documentFirstLoad = true;
+		bool clearUndoStackOnSwitch = true;
+		
+		/// <summary>
+		/// Gets/Sets whether to clear the undo stack when reloading the document.
+		/// The default is true.
+		/// http://community.sharpdevelop.net/forums/t/15816.aspx
+		/// </summary>
+		public bool ClearUndoStackOnSwitch {
+			get { return clearUndoStackOnSwitch; }
+			set { clearUndoStackOnSwitch = value; }
+		}
+		
 		void ReloadDocument(TextDocument document, string newContent)
 		{
 			var diff = new MyersDiffAlgorithm(new StringSequence(document.Text), new StringSequence(newContent));
 			document.Replace(0, document.TextLength, newContent, diff.GetEdits().ToOffsetChangeMap());
-			document.UndoStack.ClearAll();
+			
+			if (this.ClearUndoStackOnSwitch || documentFirstLoad)
+				document.UndoStack.ClearAll();
+			
+			if (documentFirstLoad)
+				documentFirstLoad = false;
 		}
 		
 		public event EventHandler LoadedFileContent;
