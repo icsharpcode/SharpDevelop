@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace Microsoft.VisualStudio.Shell
 {
@@ -19,7 +20,7 @@ namespace Microsoft.VisualStudio.Shell
 		
 		public T Invoke<T>(Func<T> method)
 		{
-			return method();
+			return WorkbenchSingleton.SafeThreadFunction<T>(method);
 		}
 	}
 }
