@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 

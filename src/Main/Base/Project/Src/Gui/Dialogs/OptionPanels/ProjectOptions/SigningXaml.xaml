@@ -1,6 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <optionpanels:ProjectOptionPanel
-	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.SigningXaml" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels" xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels" xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project" xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	x:Class="ICSharpCode.SharpDevelop.Gui.OptionPanels.SigningXaml"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:optionpanels="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
+	xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project"
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+	<optionpanels:ProjectOptionPanel.Resources>
+		<optionpanels:StringToBoolConverter
+			x:Key="strTobool"></optionpanels:StringToBoolConverter>
+	</optionpanels:ProjectOptionPanel.Resources>	
 	<StackPanel
 		Orientation="Vertical">
 		<GroupBox
@@ -37,11 +47,8 @@ Command="{Binding DataContext.Cmd, RelativeSource={RelativeSource FindAncestor,
 					x:Name="signAssemblyCheckBox"
 					Grid.Column="1"
 					VerticalAlignment="Center"
-					Command="{Binding DataContext.Cmd, RelativeSource={RelativeSource FindAncestor,
-					AncestorType={x:Type UserControl}}}"
-					
-					CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked}"
-					Content="{core:Localize Dialog.ProjectOptions.Signing.SignAssembly}">
+					IsChecked="{Binding SignAssembly.Value,Converter={StaticResource strTobool}}"
+				>
 				</CheckBox>
 				<Label
 					Grid.Row="1"

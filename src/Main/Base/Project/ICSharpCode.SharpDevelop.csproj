@@ -281,8 +281,8 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\KeyValuePair.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\OptionsHelper.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePathsXAML.xaml.cs">
-      <DependentUpon>ReferencePathsXAML.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.xaml.cs">
+      <DependentUpon>ReferencePaths.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\SigningXaml.xaml.cs">
@@ -747,7 +747,6 @@
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
-    <EmbeddedResource Include="Resources\ProjectOptions\old_ApplicationSettings.xfrm" />
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
     <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
@@ -913,7 +912,7 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePathsXAML.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\SigningXaml.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />

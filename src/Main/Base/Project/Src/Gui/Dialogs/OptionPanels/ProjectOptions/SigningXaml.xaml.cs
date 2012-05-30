@@ -35,15 +35,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 
 		}
 		
-		private void Initialize()
-		{
-			Cmd = new RelayCommand<bool>(CheckExecute);
-		}
-		
-		
-		
 		public ProjectProperty<String> SignAssembly {
-			get { return GetProperty("SignAssembly","", TextBoxEditMode.EditEvaluatedProperty); }
+			get { return GetProperty("SignAssembly","false", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
 		
@@ -51,29 +44,5 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			get { return GetProperty("AssemblyOriginatorKeyFile","", TextBoxEditMode.EditEvaluatedProperty); }
 		}
 		
-		
-		#region overrides
-		
-		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
-		{
-			base.Load(project, configuration, platform);
-			Console.WriteLine("sign {0}",SignAssembly.Value.ToString());
-			//this.project = project;
-			Console.WriteLine("sign {0}",SignAssembly.Value.ToString());
-			Initialize();				
-			string prop  = GetProperty("SignAssembly", "", TextBoxEditMode.EditRawProperty).Value.ToString();
-		}
-		#endregion
-		
-		public RelayCommand<bool> Cmd {get;set;}
-		
-		
-		private void CheckExecute(bool isChecked)
-		{
-			Console.WriteLine(" Checkbox ischecked {0}",isChecked);
-			IsDirty = true;
-			SignAssembly.Value = "False";
-		}
-			
 	}
 }

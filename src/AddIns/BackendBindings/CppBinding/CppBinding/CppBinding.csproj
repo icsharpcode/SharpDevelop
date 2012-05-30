@@ -96,10 +96,7 @@
     <Compile Include="Project\ResourceScript.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
     <Compile Include="Project\CppProject.cs" />
-    <Compile Include="Project\StringListEditorDialog.xaml.cs">
-      <DependentUpon>StringListEditorDialog.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Project\StringListEditorDialog.xaml.cs" />
     <None Include="CppBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
