@@ -45,6 +45,26 @@ namespace PackageManagement.Tests.EnvDTE
 			codeClass = new CodeClass2(helper.FakeProjectContent, fakeClass);
 		}
 		
+		void AddInterfaceToProjectContent(string fullName)
+		{
+			helper.AddInterfaceToProjectContent(fullName);
+		}
+		
+		void AddClassToProjectContent(string fullName)
+		{
+			helper.AddClassToProjectContent(fullName);
+		}
+		
+		void AddBaseTypeInterfaceToClass(string fullName, string dotNetName)
+		{
+			helper.AddInterfaceToClassBaseTypes(fakeClass, fullName, dotNetName);
+		}
+		
+		void AddBaseTypeClassToClass(string fullName)
+		{
+			helper.AddClassToClassBaseTypes(fakeClass, fullName);
+		}
+		
 		[Test]
 		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
 		{
@@ -89,6 +109,32 @@ namespace PackageManagement.Tests.EnvDTE
 			vsCMAccess access = codeClass.Access;
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
+		[Test]
+		public void ImplementedInterfaces_ClassImplementsGenericICollectionOfString_ReturnsCodeInterfaceForICollection()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			AddBaseTypeInterfaceToClass("System.Collections.Generic.ICollection", "System.Collections.Generic.ICollection{System.String}");
+			
+			CodeElements codeElements = codeClass.ImplementedInterfaces;
+			CodeInterface codeInterface = codeElements.FirstOrDefault() as CodeInterface;
+			
+			Assert.AreEqual(1, codeElements.Count);
+			Assert.AreEqual("System.Collections.Generic.ICollection<System.String>", codeInterface.FullName);
+		}
+		
+		[Test]
+		public void ImplementedInterfaces_ClassHasBaseTypeButNoInterfaces_ReturnsNoItems()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			AddBaseTypeClassToClass("MyNamespace.MyBaseClass");
+			
+			CodeElements codeElements = codeClass.ImplementedInterfaces;			
+			
+			Assert.AreEqual(0, codeElements.Count);
 		}
 	}
 }

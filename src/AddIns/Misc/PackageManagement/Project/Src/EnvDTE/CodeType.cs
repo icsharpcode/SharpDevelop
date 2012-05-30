@@ -19,6 +19,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			: base(c)
 		{
 			this.Class = c;
+			this.ProjectContent = projectContent;
 			InfoLocation = GetInfoLocation(projectContent, c);
 		}
 		
@@ -35,6 +36,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		protected IClass Class { get; private set; }
+		protected IProjectContent ProjectContent { get; private set; }
 		
 		public virtual vsCMAccess Access {
 			get { return GetAccess(); }

@@ -18,7 +18,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements ImplementedInterfaces {
-			get { throw new NotImplementedException(); }
+			get { return new ImplementedInterfacesOnClass(ProjectContent, Class); }
 		}
 		
 		public virtual CodeVariable AddVariable(string name, object type, object Position = null, vsCMAccess Access = vsCMAccess.vsCMAccessPublic, object Location = null)
