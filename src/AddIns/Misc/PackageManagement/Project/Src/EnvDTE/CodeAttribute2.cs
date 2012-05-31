@@ -8,7 +8,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeAttribute2 : CodeAttribute
 	{
-		CodeAttributeArguments arguments;
 		IAttribute attribute;
 		
 		public CodeAttribute2()
@@ -22,12 +21,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Arguments {
-			get {
-				if (arguments == null) {
-					arguments = new CodeAttributeArguments(attribute);
-				}
-				return arguments;
-			}
+			get { return new CodeAttributeArguments(attribute); }
 		}
 	}
 }

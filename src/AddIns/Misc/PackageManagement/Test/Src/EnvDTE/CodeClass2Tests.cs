@@ -55,14 +55,19 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddClassToProjectContent(fullName);
 		}
 		
-		void AddBaseTypeInterfaceToClass(string fullName, string dotNetName)
+		void AddInterfaceToClassBaseTypes(string fullName, string dotNetName)
 		{
 			helper.AddInterfaceToClassBaseTypes(fakeClass, fullName, dotNetName);
 		}
 		
-		void AddBaseTypeClassToClass(string fullName)
+		void AddClassToClassBaseTypes(string fullName)
 		{
 			helper.AddClassToClassBaseTypes(fakeClass, fullName);
+		}
+		
+		void AddBaseTypeToClass(string fullName)
+		{
+			helper.AddBaseTypeToClass(fakeClass, fullName);
 		}
 		
 		[Test]
@@ -116,7 +121,7 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
-			AddBaseTypeInterfaceToClass("System.Collections.Generic.ICollection", "System.Collections.Generic.ICollection{System.String}");
+			AddInterfaceToClassBaseTypes("System.Collections.Generic.ICollection", "System.Collections.Generic.ICollection{System.String}");
 			
 			CodeElements codeElements = codeClass.ImplementedInterfaces;
 			CodeInterface codeInterface = codeElements.FirstOrDefault() as CodeInterface;
@@ -130,11 +135,26 @@ namespace PackageManagement.Tests.EnvDTE
 		{
 			CreateProjectContent();
 			CreatePublicClass("MyClass");
-			AddBaseTypeClassToClass("MyNamespace.MyBaseClass");
+			AddClassToClassBaseTypes("MyNamespace.MyBaseClass");
 			
 			CodeElements codeElements = codeClass.ImplementedInterfaces;			
 			
 			Assert.AreEqual(0, codeElements.Count);
+		}
+		
+		[Test]
+		public void BaseTypes_ClassBaseTypeIsSystemObject_ReturnsSystemObject()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			AddBaseTypeToClass("System.Object");
+			
+			CodeElements codeElements = codeClass.Bases;
+			CodeClass2 baseClass = codeElements.FirstOrDefault() as CodeClass2;
+			
+			Assert.AreEqual(1, codeElements.Count);
+			Assert.AreEqual("System.Object", baseClass.FullName);
+			Assert.AreEqual("Object", baseClass.Name);
 		}
 	}
 }

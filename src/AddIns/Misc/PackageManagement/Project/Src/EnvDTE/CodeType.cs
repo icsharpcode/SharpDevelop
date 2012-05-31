@@ -8,8 +8,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement
 	{
-		CodeAttributes attributes;
-		
 		/// <summary>
 		/// Note that projectContent may be different to the IClass.ProjectContent since the class
 		/// is retrieved from the namespace contents and could belong to a separate project or
@@ -52,16 +50,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Bases {
-			get { throw new NotImplementedException(); }
+			get { return new CodeTypeBaseTypes(ProjectContent, Class); }
 		}
 		
 		public virtual CodeElements Attributes {
-			get {
-				if (attributes == null) {
-					attributes = new CodeAttributes(Class);
-				}
-				return attributes;
-			}
+			get { return new CodeAttributes(Class); }
 		}
 	}
 }
