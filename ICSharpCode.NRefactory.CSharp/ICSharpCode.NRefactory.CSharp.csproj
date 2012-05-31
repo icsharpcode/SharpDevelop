@@ -243,7 +243,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertAsToCastAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertCastToAsAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertExplicitToImplicitImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertIfToSwitchAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertImplicitToExplicitImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertSwitchToIfAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateCustomEventImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateOverloadWithoutParameterAction.cs" />

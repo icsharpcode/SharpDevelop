@@ -83,7 +83,9 @@
     <Compile Include="CSharp\AstStructureTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertAsToCastTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertCastToAsTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertExplicitToImplicitImplementationTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertIfToSwtichTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertImplicitToExplicittImplementationTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertSwitchToIfTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateCustomEventImplementationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
