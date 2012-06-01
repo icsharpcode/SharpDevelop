@@ -57,6 +57,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				{
 					var implicitImpl = (MethodDeclaration)node.Clone ();
 					implicitImpl.PrivateImplementationType = AstType.Null;
+
+					// remove visibility modifier, in case the code contains error
+					implicitImpl.Modifiers &= ~Modifiers.VisibilityMask;
+
+					implicitImpl.Modifiers |= Modifiers.Public;
 					script.Replace (node, implicitImpl);
 				});
 		}

@@ -52,7 +52,7 @@ interface ITest
 }
 class TestClass : ITest
 {
-	void Method ()
+	public void Method ()
 	{
 	}
 }");
