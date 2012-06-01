@@ -7,7 +7,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public enum vsCMPropertyKind
 	{
+		vsCMPropertyKindReadWrite = 0,
 		vsCMPropertyKindReadOnly = 1,
-		vsCMPropertyKindWriteOnly = 2
+		vsCMPropertyKindWriteOnly = 2,
 	}
 }

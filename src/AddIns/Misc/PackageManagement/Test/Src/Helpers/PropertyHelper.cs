@@ -50,5 +50,31 @@ namespace PackageManagement.Tests.Helpers
 			Property.Stub(p => p.IsPublic).Return(false);
 			Property.Stub(p => p.IsPrivate).Return(true);
 		}
+		
+		public void HasGetterAndSetter()
+		{
+			HasGetter = true;
+			HasSetter = true;
+		}
+		
+		public bool HasSetter {
+			set { Property.Stub(p => p.CanSet).Return(value); }
+		}
+		
+		public bool HasGetter {
+			set { Property.Stub(p => p.CanGet).Return(value); }
+		}
+		
+		public void HasGetterOnly()
+		{
+			HasGetter = true;
+			HasSetter = false;
+		}
+		
+		public void HasSetterOnly()
+		{
+			HasGetter = false;
+			HasSetter = true;
+		}
 	}
 }

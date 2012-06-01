@@ -8,7 +8,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeProperty : CodeElement
 	{
-		IProperty property;
 		CodeElements attributes;
 		
 		public CodeProperty()
@@ -18,8 +17,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeProperty(IProperty property)
 			: base(property)
 		{
-			this.property = property;
+			this.Property = property;
 		}
+		
+		protected IProperty Property { get; private set; }
 		
 		public virtual vsCMAccess Access {
 			get { return GetAccess(); }
@@ -27,13 +28,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeClass Parent {
-			get { return new CodeClass(property.ProjectContent, property.DeclaringType); }
+			get { return new CodeClass(Property.ProjectContent, Property.DeclaringType); }
 		}
 		
 		public virtual CodeElements Attributes {
 			get {
 				if (attributes == null) {
-					attributes = new CodeAttributes(property);
+					attributes = new CodeAttributes(Property);
 				}
 				return attributes;
 			}

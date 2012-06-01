@@ -17,12 +17,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public CodeElements Members {
-			get { throw new NotImplementedException(); }
+		public vsCMPropertyKind ReadWrite { 
+			get { return GetPropertyKind(); }
 		}
 		
-		public vsCMPropertyKind ReadWrite { 
-			get { throw new NotImplementedException(); }
+		vsCMPropertyKind GetPropertyKind()
+		{
+			if (Property.CanSet && Property.CanGet) {
+				return vsCMPropertyKind.vsCMPropertyKindReadWrite;
+			} else if (Property.CanSet) {
+				return vsCMPropertyKind.vsCMPropertyKindWriteOnly;
+			}
+			return vsCMPropertyKind.vsCMPropertyKindReadOnly;
 		}
 		
 		public CodeElements Parameters {

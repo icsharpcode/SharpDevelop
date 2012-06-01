@@ -84,5 +84,41 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
 		}
+		
+		[Test]
+		public void ReadWrite_PropertyHasGetterAndSetter_ReturnsReadWriteProperty()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasGetterAndSetter();
+			CreateCodeProperty2();
+			
+			vsCMPropertyKind kind = property.ReadWrite;
+			
+			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindReadWrite, kind);
+		}
+		
+		[Test]
+		public void ReadWrite_PropertyHasGetterOnly_ReturnsReadOnlyProperty()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasGetterOnly();
+			CreateCodeProperty2();
+			
+			vsCMPropertyKind kind = property.ReadWrite;
+			
+			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindReadOnly, kind);
+		}
+		
+		[Test]
+		public void ReadWrite_PropertyHasSetterOnly_ReturnsWriteOnlyProperty()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasSetterOnly();
+			CreateCodeProperty2();
+			
+			vsCMPropertyKind kind = property.ReadWrite;
+			
+			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindWriteOnly, kind);
+		}
 	}
 }
