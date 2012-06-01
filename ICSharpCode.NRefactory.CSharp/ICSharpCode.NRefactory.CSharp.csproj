@@ -252,6 +252,7 @@
     <Compile Include="Refactoring\CodeActions\MergeNestedIfAction.cs" />
     <Compile Include="Refactoring\CodeActions\PutInsideUsingAction.cs" />
     <Compile Include="Refactoring\CodeActions\SplitDeclarationListAction.cs" />
+    <Compile Include="Refactoring\CodeActions\UseStringFormatAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
     <Compile Include="Refactoring\PatternHelper.cs" />
