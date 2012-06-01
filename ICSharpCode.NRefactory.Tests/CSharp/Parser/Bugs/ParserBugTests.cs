@@ -378,6 +378,38 @@ class Foo
 			}
 			Assert.IsTrue(passed);
 		}
+
+		/// <summary>
+		/// Bug 5389 - Code completion does not work well inside a dictionary initializer
+		/// </summary>
+		[Ignore("Still open")]
+		[Test()]
+		public void TestBug5389()
+		{
+			string code = 
+@"class Foo
+{
+	static Dictionary<Tuple<Type, string>, string> CreatePropertyMap ()
+	{
+		return new Dictionary<Tuple<Type, string>, string> {
+			{ Tuple.Create (typeof (MainClass), ""Prop1""), ""Prop2"" },
+			{ Tuple.C }
+		}
+	}
+}
+";
+			var unit = CompilationUnit.Parse(code);
+			
+			var type = unit.Members.First() as TypeDeclaration;
+			var method = type.Members.First() as MethodDeclaration;
+			var stmt = method.Body.Statements.First () as ReturnStatement;
+			bool passed = stmt.Expression is ObjectCreateExpression;
+			if (!passed) {
+				Console.WriteLine("Expected:" + code);
+				Console.WriteLine("Was:" + unit.GetText());
+			}
+			Assert.IsTrue(passed);
+		}
 	}
 }
 
