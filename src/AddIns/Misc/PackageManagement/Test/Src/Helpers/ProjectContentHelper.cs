@@ -223,43 +223,5 @@ namespace PackageManagement.Tests.Helpers
 			MakeClassPrivate(fakeDelegate);
 			return fakeDelegate;
 		}
-		
-		public void AddInterfaceToClassBaseTypes(IClass fakeClass, string interfaceFullName, string dotNetName)
-		{
-			IClass interfaceClass = AddInterfaceToProjectContent(interfaceFullName);
-			AddClassToClassBaseTypes(fakeClass, interfaceClass, interfaceFullName, dotNetName);
-		}
-		
-		public void AddClassToClassBaseTypes(IClass fakeClass, IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
-		{
-			IReturnType baseType = CreateBaseType(baseTypeClass, baseTypeFullName, baseTypeDotNetName);
-			var baseTypes = new List<IReturnType>();
-			baseTypes.Add(baseType);
-			
-			fakeClass.Stub(c => c.BaseTypes).Return(baseTypes);
-		}
-		
-		IReturnType CreateBaseType(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
-		{
-			IReturnType baseType = MockRepository.GenerateStub<IReturnType>();
-			baseType.Stub(b => b.GetUnderlyingClass()).Return(baseTypeClass);
-			baseType.Stub(b => b.FullyQualifiedName).Return(baseTypeFullName);
-			baseType.Stub(b => b.DotNetName).Return(baseTypeDotNetName);
-			return baseType;
-		}
-		
-		public void AddClassToClassBaseTypes(IClass fakeClass, string fullName)
-		{
-			IClass baseTypeClass = AddClassToProjectContent(fullName);
-			AddClassToClassBaseTypes(fakeClass, baseTypeClass, fullName, fullName);
-		}
-		
-		public void AddBaseTypeToClass(IClass fakeClass, string fullName)
-		{
-			IClass baseTypeClass = AddClassToProjectContent(fullName);
-			IReturnType baseType = CreateBaseType(baseTypeClass, fullName, fullName);
-			
-			fakeClass.Stub(c => c.BaseType).Return(baseType);
-		}
 	}
 }

@@ -14,55 +14,35 @@ namespace PackageManagement.Tests.EnvDTE
 	public class CodeFunctionTests
 	{
 		CodeFunction codeFunction;
-		IMethod method;
-		ProjectContentHelper helper;
+		MethodHelper helper;
 		
 		[SetUp]
 		public void Init()
 		{
-			helper = new ProjectContentHelper();
-		}
-		
-		void CreateMSBuildMethod(string name)
-		{
-			method = MockRepository.GenerateMock<IMethod, IEntity>();
-			method.Stub(m => m.ProjectContent).Return(helper.FakeProjectContent);
-		}
-		
-		void CreateMSBuildPublicMethod(string name)
-		{
-			CreateMSBuildMethod(name);
-			method.Stub(m => m.IsPublic).Return(true);
-		}
-		
-		void CreateMSBuildPrivateMethod(string name)
-		{
-			CreateMSBuildMethod(name);
-			method.Stub(m => m.IsPublic).Return(false);
-			method.Stub(m => m.IsPrivate).Return(true);
+			helper = new MethodHelper();
 		}
 		
 		void CreatePublicFunction(string name)
 		{
-			CreateMSBuildPublicMethod(name);
+			helper.CreatePublicMethod(name);
 			CreateFunction();
 		}
 		
 		void CreatePrivateFunction(string name)
 		{
-			CreateMSBuildPrivateMethod(name);
+			helper.CreatePrivateMethod(name);
 			CreateFunction();
 		}
 		
 		void CreateFunction()
 		{
-			codeFunction = new CodeFunction(method);
+			codeFunction = new CodeFunction(helper.Method);
 		}
 		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
-			CreatePublicFunction("MyFunction");
+			CreatePublicFunction("Class1.MyFunction");
 			
 			vsCMAccess access = codeFunction.Access;
 			
@@ -72,7 +52,7 @@ namespace PackageManagement.Tests.EnvDTE
 		[Test]
 		public void Access_PrivateFunction_ReturnsPrivate()
 		{
-			CreatePrivateFunction("MyFunction");
+			CreatePrivateFunction("Class1.MyFunction");
 			
 			vsCMAccess access = codeFunction.Access;
 			

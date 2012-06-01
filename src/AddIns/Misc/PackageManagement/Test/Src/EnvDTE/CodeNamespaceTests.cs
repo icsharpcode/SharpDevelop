@@ -43,7 +43,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeNamespace("Tests");
 			
 			CodeElements members = codeNamespace.Members;
-			CodeClass2 codeClass = members.FirstOrDefault() as CodeClass2;
+			CodeClass2 codeClass = members.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, members.Count);
 			Assert.AreEqual("Tests.MyClass", codeClass.FullName); 
@@ -57,7 +57,7 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeNamespace("First");
 			
 			CodeElements members = codeNamespace.Members;
-			CodeNamespace childNamespace = members.FirstOrDefault() as CodeNamespace;
+			CodeNamespace childNamespace = members.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual("First", codeNamespace.Name);
 			Assert.AreEqual(1, members.Count);
@@ -84,8 +84,8 @@ namespace PackageManagement.Tests.EnvDTE
 			CreateCodeNamespace("First");
 			
 			CodeElements members = codeNamespace.Members;
-			CodeNamespace secondNamespace = members.FirstOrDefault() as CodeNamespace;
-			CodeNamespace thirdNamespace = secondNamespace.Members.FirstOrDefault() as CodeNamespace;
+			CodeNamespace secondNamespace = members.FirstCodeNamespaceOrDefault();
+			CodeNamespace thirdNamespace = secondNamespace.Members.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual("First", codeNamespace.Name);
 			Assert.AreEqual(1, members.Count);

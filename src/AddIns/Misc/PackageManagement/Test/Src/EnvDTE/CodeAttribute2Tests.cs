@@ -98,7 +98,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			CodeElements args = codeAttribute.Arguments;
 			
-			CodeAttributeArgument attributeArg = args.ToList().FirstOrDefault() as CodeAttributeArgument;
+			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
 			
 			Assert.AreEqual(1, args.Count);
 			Assert.AreEqual(String.Empty, attributeArg.Name);
@@ -114,7 +114,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			CodeElements args = codeAttribute.Arguments;
 			
-			CodeAttributeArgument attributeArg = args.ToList().FirstOrDefault() as CodeAttributeArgument;
+			CodeAttributeArgument attributeArg = args.FirstCodeAttributeArgumentOrDefault();
 			
 			Assert.AreEqual("Name", attributeArg.Name);
 			Assert.AreEqual("\"StringValue\"", attributeArg.Value);

@@ -46,7 +46,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Members {
-			get { throw new NotImplementedException(); }
+			get { return new CodeTypeMembers(ProjectContent, Class); }
 		}
 		
 		public virtual CodeElements Bases {

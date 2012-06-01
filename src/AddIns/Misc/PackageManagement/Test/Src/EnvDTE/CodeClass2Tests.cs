@@ -14,67 +14,81 @@ namespace PackageManagement.Tests.EnvDTE
 	public class CodeClass2Tests
 	{
 		CodeClass2 codeClass;
-		ProjectContentHelper helper;
-		IClass fakeClass;
+		ClassHelper helper;
 		
 		void CreateProjectContent()
 		{
-			helper = new ProjectContentHelper();
+			helper = new ClassHelper();
 		}
 		
 		void CreateClass(string name)
 		{
-			fakeClass = helper.AddClassToProjectContent(name);
+			helper.CreateClass(name);
 			CreateClass();
 		}
 		
 		void CreatePublicClass(string name)
 		{
-			fakeClass = helper.AddPublicClassToProjectContent(name);
+			helper.CreatePublicClass(name);
 			CreateClass();
 		}
 		
 		void CreatePrivateClass(string name)
 		{
-			fakeClass = helper.AddPrivateClassToProjectContent(name);
+			helper.CreatePrivateClass(name);
 			CreateClass();
 		}
 		
 		void CreateClass()
 		{
-			codeClass = new CodeClass2(helper.FakeProjectContent, fakeClass);
+			codeClass = new CodeClass2(helper.ProjectContentHelper.FakeProjectContent, helper.Class);
 		}
 		
 		void AddInterfaceToProjectContent(string fullName)
 		{
-			helper.AddInterfaceToProjectContent(fullName);
+			helper.ProjectContentHelper.AddInterfaceToProjectContent(fullName);
 		}
 		
 		void AddClassToProjectContent(string fullName)
 		{
-			helper.AddClassToProjectContent(fullName);
+			helper.CreateClass(fullName);
 		}
 		
 		void AddInterfaceToClassBaseTypes(string fullName, string dotNetName)
 		{
-			helper.AddInterfaceToClassBaseTypes(fakeClass, fullName, dotNetName);
+			helper.AddInterfaceToClassBaseTypes(fullName, dotNetName);
 		}
 		
 		void AddClassToClassBaseTypes(string fullName)
 		{
-			helper.AddClassToClassBaseTypes(fakeClass, fullName);
+			helper.AddClassToClassBaseTypes(fullName);
 		}
 		
 		void AddBaseTypeToClass(string fullName)
 		{
-			helper.AddBaseTypeToClass(fakeClass, fullName);
+			helper.AddBaseTypeToClass(fullName);
+		}
+		
+		void AddMethodToClass(string fullyQualifiedName)
+		{
+			helper.AddMethodToClass(fullyQualifiedName);
+		}
+		
+		void AddPropertyToClass(string fullyQualifiedName)
+		{
+			helper.AddPropertyToClass(fullyQualifiedName);
+		}
+		
+		void AddFieldToClass(string fullyQualifiedName)
+		{
+			helper.AddFieldToClass(fullyQualifiedName);
 		}
 		
 		[Test]
 		public void Language_CSharpProject_ReturnsCSharpModelLanguage()
 		{
 			CreateProjectContent();
-			helper.ProjectContentIsForCSharpProject();
+			helper.ProjectContentHelper.ProjectContentIsForCSharpProject();
 			CreateClass("MyClass");
 			
 			string language = codeClass.Language;
@@ -86,7 +100,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Language_VisualBasicProject_ReturnsVisualBasicModelLanguage()
 		{
 			CreateProjectContent();
-			helper.ProjectContentIsForVisualBasicProject();
+			helper.ProjectContentHelper.ProjectContentIsForVisualBasicProject();
 			CreateClass("MyClass");
 			
 			string language = codeClass.Language;
@@ -124,7 +138,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddInterfaceToClassBaseTypes("System.Collections.Generic.ICollection", "System.Collections.Generic.ICollection{System.String}");
 			
 			CodeElements codeElements = codeClass.ImplementedInterfaces;
-			CodeInterface codeInterface = codeElements.FirstOrDefault() as CodeInterface;
+			CodeInterface codeInterface = codeElements.FirstCodeInterfaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("System.Collections.Generic.ICollection<System.String>", codeInterface.FullName);
@@ -150,11 +164,53 @@ namespace PackageManagement.Tests.EnvDTE
 			AddBaseTypeToClass("System.Object");
 			
 			CodeElements codeElements = codeClass.Bases;
-			CodeClass2 baseClass = codeElements.FirstOrDefault() as CodeClass2;
+			CodeClass2 baseClass = codeElements.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("System.Object", baseClass.FullName);
 			Assert.AreEqual("Object", baseClass.Name);
+		}
+		
+		[Test]
+		public void Members_ClassHasOneMethod_ReturnsOneMethod()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			AddMethodToClass("MyClass.MyMethod");
+			
+			CodeElements codeElements = codeClass.Members;
+			CodeFunction codeFunction = codeElements.FirstCodeFunctionOrDefault();
+			
+			Assert.AreEqual(1, codeElements.Count);
+			Assert.AreEqual("MyMethod", codeFunction.Name);
+		}
+		
+		[Test]
+		public void Members_ClassHasOneProperty_ReturnsOneProperty()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			AddPropertyToClass("MyClass.MyProperty");
+			
+			CodeElements codeElements = codeClass.Members;
+			CodeProperty2 codeFunction = codeElements.FirstCodeProperty2OrDefault();
+			
+			Assert.AreEqual(1, codeElements.Count);
+			Assert.AreEqual("MyProperty", codeFunction.Name);
+		}
+		
+		[Test]
+		public void Members_ClassHasOneField_ReturnsOneField()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			AddFieldToClass("MyClass.MyField");
+			
+			CodeElements codeElements = codeClass.Members;
+			CodeVariable codeVariable = codeElements.FirstCodeVariableOrDefault();
+			
+			Assert.AreEqual(1, codeElements.Count);
+			Assert.AreEqual("MyField", codeVariable.Name);
 		}
 	}
 }

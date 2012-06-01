@@ -14,49 +14,29 @@ namespace PackageManagement.Tests.EnvDTE
 	public class CodeVariableTests
 	{
 		CodeVariable codeVariable;
-		IField field;
-		ProjectContentHelper helper;
+		FieldHelper helper;
 		
 		[SetUp]
 		public void Init()
 		{
-			helper = new ProjectContentHelper();
+			helper = new FieldHelper();
 		}
-		
-		void CreateMSBuildField(string name)
-		{
-			field = MockRepository.GenerateMock<IField, IEntity>();
-			field.Stub(f => f.ProjectContent).Return(helper.FakeProjectContent);
-		}
-		
-		void CreateMSBuildPublicField(string name)
-		{
-			CreateMSBuildField(name);
-			field.Stub(f => f.IsPublic).Return(true);
-		}
-		
-		void CreateMSBuildPrivateField(string name)
-		{
-			CreateMSBuildField(name);
-			field.Stub(f => f.IsPublic).Return(false);
-			field.Stub(f => f.IsPrivate).Return(true);
-		}
-		
+				
 		void CreatePublicVariable(string name)
 		{
-			CreateMSBuildPublicField(name);
+			helper.CreatePublicField(name);
 			CreateVariable();
 		}
 		
 		void CreatePrivateVariable(string name)
 		{
-			CreateMSBuildPrivateField(name);
+			helper.CreatePrivateField(name);
 			CreateVariable();
 		}
 		
 		void CreateVariable()
 		{
-			codeVariable = new CodeVariable(field);
+			codeVariable = new CodeVariable(helper.Field);
 		}
 		
 		[Test]

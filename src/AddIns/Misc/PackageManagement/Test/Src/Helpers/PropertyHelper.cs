@@ -14,11 +14,13 @@ namespace PackageManagement.Tests.Helpers
 		public List<IAttribute> Attributes = new List<IAttribute>();
 		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
 		
-		public void CreateProperty(string name)
+		/// <summary>
+		/// Property name should include class prefix (e.g. "Class1.MyProperty")
+		/// </summary>
+		public void CreateProperty(string fullyQualifiedName)
 		{
 			Property = MockRepository.GenerateMock<IProperty, IEntity>();
-			Property.Stub(p => p.Name).Return(name);
-			Property.Stub(p => p.FullyQualifiedName).Return(name);
+			Property.Stub(p => p.FullyQualifiedName).Return(fullyQualifiedName);
 			Property.Stub(p => p.Attributes).Return(Attributes);
 			Property.Stub(p => p.ProjectContent).Return(ProjectContentHelper.FakeProjectContent);
 		}

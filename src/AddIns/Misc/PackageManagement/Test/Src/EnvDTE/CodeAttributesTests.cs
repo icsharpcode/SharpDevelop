@@ -14,31 +14,28 @@ namespace PackageManagement.Tests.EnvDTE
 	[TestFixture]
 	public class CodeAttributesTests
 	{
-		IClass fakeClass;
 		CodeAttributes attributes;
-		ProjectContentHelper helper;
+		ClassHelper helper;
 		
 		[SetUp]
 		public void Init()
 		{
-			helper = new ProjectContentHelper();
+			helper = new ClassHelper();
 		}
 		
 		void CreateCodeAttributes()
 		{
-			attributes = new CodeAttributes(fakeClass);
+			attributes = new CodeAttributes(helper.Class);
 		}
 		
 		void CreateMSBuildClass()
 		{
-			fakeClass = helper.AddClassToProjectContent("MyClass");
+			helper.CreateClass("MyClass");
 		}
 		
 		void AddAttributeToClass(string name)
 		{
-			var attributeHelper = new AttributeHelper();
-			attributeHelper.CreateAttribute(name);
-			attributeHelper.AddAttributeToClass(fakeClass);
+			helper.AddAttributeToClass(name);
 		}
 		
 		List<CodeElement> GetEnumerator()
@@ -53,11 +50,9 @@ namespace PackageManagement.Tests.EnvDTE
 			AddAttributeToClass("TestAttribute");
 			CreateCodeAttributes();
 		
-			List<CodeElement> attributeList = GetEnumerator();
+			CodeAttribute2 attribute = attributes.FirstCodeAttribute2OrDefault();
 			
-			CodeAttribute2 attribute = attributeList.FirstOrDefault() as CodeAttribute2;
-			
-			Assert.AreEqual(1, attributeList.Count);
+			Assert.AreEqual(1, attributes.Count);
 			Assert.AreEqual("Test", attribute.Name);
 		}
 		

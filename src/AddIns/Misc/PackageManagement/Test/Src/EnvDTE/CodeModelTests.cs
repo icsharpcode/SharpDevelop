@@ -103,7 +103,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntryInNamespace(String.Empty, "Test");
 			
 			CodeElements codeElements = codeModel.CodeElements;
-			CodeNamespace codeNamespace = codeElements.FirstOrDefault() as CodeNamespace;
+			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("Test", codeNamespace.FullName);
@@ -118,7 +118,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntryInNamespace("First", "Second");
 			
 			CodeElements codeElements = codeModel.CodeElements;
-			CodeNamespace codeNamespace = codeElements.FirstOrDefault() as CodeNamespace;
+			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("First", codeNamespace.FullName);
@@ -132,7 +132,7 @@ namespace PackageManagement.Tests.EnvDTE
 			AddClassToProjectContent(String.Empty, "TestClass");
 			
 			CodeElements codeElements = codeModel.CodeElements;
-			CodeClass2 codeClass = codeElements.FirstOrDefault() as CodeClass2;
+			CodeClass2 codeClass = codeElements.FirstCodeClass2OrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("TestClass", codeClass.FullName);
@@ -148,11 +148,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.NoCompletionItemsInNamespace("First.B");
 			
 			CodeElements codeElements = codeModel.CodeElements;
-			CodeNamespace codeNamespace = codeElements.FirstOrDefault() as CodeNamespace;
+			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
-			List<CodeElement> members = codeNamespace.Members.ToList();
-			CodeNamespace firstChildNamespace = members.FirstOrDefault() as CodeNamespace;
-			CodeNamespace secondChildNamespace = members.LastOrDefault() as CodeNamespace;
+			CodeElements members = codeNamespace.Members;
+			CodeNamespace firstChildNamespace = members.FirstCodeNamespaceOrDefault();
+			CodeNamespace secondChildNamespace = members.LastCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("First", codeNamespace.FullName);
@@ -168,7 +168,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntriesInNamespace(String.Empty, String.Empty, "Tests");
 			
 			CodeElements members = codeModel.CodeElements;
-			CodeNamespace codeNamespace = members.ToList().FirstOrDefault() as CodeNamespace;
+			CodeNamespace codeNamespace = members.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, members.Count);
 			Assert.AreEqual("Tests", codeNamespace.Name);

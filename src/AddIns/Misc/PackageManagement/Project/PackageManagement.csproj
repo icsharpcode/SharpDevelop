@@ -96,6 +96,7 @@
     <Compile Include="Src\EnvDTE\CodeStruct.cs" />
     <Compile Include="Src\EnvDTE\CodeType.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeBaseTypes.cs" />
+    <Compile Include="Src\EnvDTE\CodeTypeMembers.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef2.cs" />
     <Compile Include="Src\EnvDTE\CodeVariable.cs" />

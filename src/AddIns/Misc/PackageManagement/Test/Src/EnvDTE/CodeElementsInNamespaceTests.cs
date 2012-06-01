@@ -55,7 +55,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddNamespaceCompletionEntryInNamespace("Parent", "Child");
 			CreateCodeElements("Parent");
 			
-			CodeNamespace codeNamespace = codeElements.ToList().FirstOrDefault() as CodeNamespace;
+			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("Child", codeNamespace.Name);
@@ -105,8 +105,8 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.NoCompletionItemsInNamespace("Parent.Child.GrandChild");
 			CreateCodeElements("Parent");
 			
-			CodeNamespace codeNamespace = codeElements.ToList().FirstOrDefault() as CodeNamespace;
-			CodeNamespace grandChildNamespace = codeNamespace.Members.ToList().FirstOrDefault() as CodeNamespace;
+			CodeNamespace codeNamespace = codeElements.FirstCodeNamespaceOrDefault();
+			CodeNamespace grandChildNamespace = codeNamespace.Members.FirstCodeNamespaceOrDefault();
 			
 			Assert.AreEqual("GrandChild", grandChildNamespace.Name);
 		}

@@ -13,29 +13,26 @@ namespace PackageManagement.Tests.EnvDTE
 	public class CodeTypeTests
 	{
 		CodeType codeType;
-		ProjectContentHelper helper;
-		IClass fakeClass;
+		ClassHelper helper;
 		
 		void CreateProjectContent()
 		{
-			helper = new ProjectContentHelper();
+			helper = new ClassHelper();
 		}
 		
 		void CreateClass(string name)
 		{
-			fakeClass = helper.AddClassToProjectContent(name);
+			helper.CreateClass(name);
 		}
 		
 		void CreateCodeType()
 		{
-			codeType = new CodeType(helper.FakeProjectContent, fakeClass);
+			codeType = new CodeType(helper.ProjectContentHelper.FakeProjectContent, helper.Class);
 		}
 		
 		void AddAttributeToClass(string name)
 		{
-			var attributeHelper = new AttributeHelper();
-			attributeHelper.CreateAttribute(name);
-			attributeHelper.AddAttributeToClass(fakeClass);
+			helper.AddAttributeToClass(name);
 		}
 		
 		[Test]
