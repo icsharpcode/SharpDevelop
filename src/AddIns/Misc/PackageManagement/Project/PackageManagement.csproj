@@ -91,8 +91,10 @@
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeModelLanguageConstants.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />
+    <Compile Include="Src\EnvDTE\CodeParameter.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2.cs" />
+    <Compile Include="Src\EnvDTE\CodePropertyParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeStruct.cs" />
     <Compile Include="Src\EnvDTE\CodeType.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeBaseTypes.cs" />

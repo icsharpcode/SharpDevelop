@@ -32,7 +32,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeElements Parameters {
-			get { throw new NotImplementedException(); }
+			get { return new CodePropertyParameters(Property); }
 		}
 	}
 }
