@@ -246,6 +246,8 @@
     <Compile Include="Refactoring\CodeActions\ConvertExplicitToImplicitImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertIfToSwitchAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertImplicitToExplicitImplementationAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertLambdaBodyExpressionToStatementAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertLambdaBodyStatementToExpressionAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertSwitchToIfAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateCustomEventImplementationAction.cs" />
     <Compile Include="Refactoring\CodeActions\CreateOverloadWithoutParameterAction.cs" />
