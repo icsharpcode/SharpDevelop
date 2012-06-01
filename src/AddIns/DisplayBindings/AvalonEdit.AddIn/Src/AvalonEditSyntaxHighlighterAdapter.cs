@@ -3,12 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public class AvalonEditSyntaxHighlighterAdapter : ISyntaxHighlighter
 	{
@@ -34,6 +37,17 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			} else {
 				return Enumerable.Empty<string>();
 			}
+		}
+		
+		public HighlightingColor GetNamedColor(string name)
+		{
+			TextEditor editor = textEditor.GetService(typeof(TextEditor)) as TextEditor;
+			if (editor == null)
+				return null;
+			var highlighting = editor.SyntaxHighlighting;
+			if (highlighting == null)
+				return null;
+			return CustomizableHighlightingColorizer.CustomizeColor(name, CustomizedHighlightingColor.FetchCustomizations(highlighting.Name));
 		}
 	}
 }

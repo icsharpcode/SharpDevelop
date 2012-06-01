@@ -12,6 +12,8 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -26,6 +28,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public const string NonPrintableCharacters = "Non-printable characters";
 		public const string LineNumbers = "Line numbers";
 		public const string LinkText = "Link text";
+		public const string BreakpointMarker = "Breakpoint";
+		public const string InstructionPointerMarker = "Current statement";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
@@ -144,36 +148,42 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			{
 				HighlightedLine line = baseHighlighter.HighlightLine(lineNumber);
 				foreach (HighlightedSection section in line.Sections) {
-					section.Color = CustomizeColor(section.Color);
+					section.Color = CustomizeColor(section.Color, customizations);
 				}
 				return line;
 			}
-			
-			HighlightingColor CustomizeColor(HighlightingColor color)
-			{
-				if (color == null || color.Name == null)
-					return color;
-				foreach (CustomizedHighlightingColor customization in customizations) {
-					if (customization.Name == color.Name) {
-						return new HighlightingColor {
-							Name = color.Name,
-							Background = CreateBrush(customization.Background),
-							Foreground = CreateBrush(customization.Foreground),
-							FontWeight = customization.Bold ? FontWeights.Bold : FontWeights.Normal,
-							FontStyle = customization.Italic ? FontStyles.Italic : FontStyles.Normal
-						};
-					}
-				}
+
+		}
+		
+		internal static HighlightingColor CustomizeColor(HighlightingColor color, IEnumerable<CustomizedHighlightingColor> customizations)
+		{
+			if (color == null || color.Name == null)
 				return color;
+			return CustomizeColor(color.Name, customizations) ?? color;
+		}
+		
+		internal static HighlightingColor CustomizeColor(string name, IEnumerable<CustomizedHighlightingColor> customizations)
+		{
+			foreach (CustomizedHighlightingColor customization in customizations) {
+				if (customization.Name == name) {
+					return new HighlightingColor {
+						Name = name,
+						Background = CreateBrush(customization.Background),
+						Foreground = CreateBrush(customization.Foreground),
+						FontWeight = customization.Bold ? FontWeights.Bold : FontWeights.Normal,
+						FontStyle = customization.Italic ? FontStyles.Italic : FontStyles.Normal
+					};
+				}
 			}
-			
-			static HighlightingBrush CreateBrush(Color? color)
-			{
-				if (color == null)
-					return null;
-				else
-					return new CustomizedBrush(color.Value);
-			}
+			return null;
+		}
+		
+		static HighlightingBrush CreateBrush(Color? color)
+		{
+			if (color == null)
+				return null;
+			else
+				return new CustomizedBrush(color.Value);
 		}
 		
 		sealed class CustomizedBrush : HighlightingBrush

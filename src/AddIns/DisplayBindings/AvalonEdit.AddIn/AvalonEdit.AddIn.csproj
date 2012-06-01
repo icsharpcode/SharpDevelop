@@ -75,6 +75,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\AvalonEditSyntaxHighlighterAdapter.cs" />
     <Compile Include="Src\DocumentSequence.cs" />
     <Compile Include="Src\Snippets\CodeSnippetComparer.cs" />
     <Compile Include="Src\Utils.cs" />

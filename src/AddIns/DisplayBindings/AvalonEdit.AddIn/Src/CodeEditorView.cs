@@ -15,7 +15,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Document;
@@ -24,6 +23,7 @@ using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -585,12 +585,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
 		{
-			// Access CustomizedHighlightingColor.ActiveColors within enumerator so that always the latest version is used.
-			// Using CustomizedHighlightingColor.ActiveColors.Where(...) would not work correctly!
-			foreach (CustomizedHighlightingColor color in CustomizedHighlightingColor.ActiveColors) {
-				if (color.Language == null || color.Language == languageName)
-					yield return color;
-			}
+			return CustomizedHighlightingColor.FetchCustomizations(languageName);
 		}
 	}
 }

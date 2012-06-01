@@ -5,6 +5,7 @@ using ICSharpCode.NRefactory;
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -96,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		static void OnAdded(BookmarkEventArgs e)
 		{
 			if (Added != null) {
-				 Added(null, e);
+				Added(null, e);
 			}
 		}
 		
@@ -139,8 +140,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			for(int index = bookmarks.Count - 1; index >= 0; --index){
 				SDBookmark bookmark = bookmarks[index];
 				if(match(bookmark)) {
-				   bookmarks.RemoveAt(index);
-				   OnRemoved(new BookmarkEventArgs(bookmark));
+					bookmarks.RemoveAt(index);
+					OnRemoved(new BookmarkEventArgs(bookmark));
 				}
 			}
 		}

@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		protected abstract ITextMarker CreateMarker(ITextMarkerService markerService);
 		
-		void SetMarker()
+		public void SetMarker()
 		{
 			RemoveMarker();
 			if (this.Document != null) {
