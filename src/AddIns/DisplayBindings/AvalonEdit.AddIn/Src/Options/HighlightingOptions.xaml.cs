@@ -415,6 +415,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			breakpointMarker = new CustomizedHighlightingItem(customizationList, breakpointMarker, language, canSetFont: false);
 			breakpointMarker.PropertyChanged += item_PropertyChanged;
 			items.Add(breakpointMarker);
+			
+			IHighlightingItem currentStatementMarker = new SimpleHighlightingItem(
+				CurrentLineBookmark.Name,
+				ta => {
+					ta.Document.Text = "current statement line";
+					marker = textMarkerService.Create(0, ta.Document.TextLength);
+				})
+			{
+				Background = CurrentLineBookmark.DefaultBackground,
+				Foreground = CurrentLineBookmark.DefaultForeground
+			};
+			currentStatementMarker = new CustomizedHighlightingItem(customizationList, currentStatementMarker, language, canSetFont: false);
+			currentStatementMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(currentStatementMarker);
 		}
 
 		void item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
