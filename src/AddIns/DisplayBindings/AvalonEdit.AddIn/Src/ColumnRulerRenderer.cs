@@ -16,14 +16,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		
 		Pen pen;
-		
 		int column;
-		
-		public int Column {
-			get { return column; }
-			set { column = value; }
-		}
-		
 		TextView textView;
 		
 		public ColumnRulerRenderer(TextView textView)
@@ -31,8 +24,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			
-			Pen pen = new Pen(Brushes.LightGray, 1);
-			pen.Freeze();
+			this.pen = new Pen(Brushes.LightGray, 1);
+			this.pen.Freeze();
 			this.textView = textView;
 			this.textView.BackgroundRenderers.Add(this);
 		}
@@ -52,6 +45,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (pen.Brush != brush) {
 				this.pen = new Pen(brush, 1);
 				this.pen.Freeze();
+				textView.InvalidateLayer(this.Layer);
 			}
 		}
 		
@@ -64,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			System.Windows.Size pixelSize = PixelSnapHelpers.GetPixelSize(textView);
 			double markerXPos = PixelSnapHelpers.PixelAlign(offset, pixelSize.Width);
 			Point start = new Point(markerXPos, 0);
-			Point end = new Point(markerXPos, textView.DocumentHeight);
+			Point end = new Point(markerXPos, Math.Max(textView.DocumentHeight, textView.ActualHeight));
 			
 			drawingContext.DrawLine(pen, start, end);
 		}
