@@ -1907,7 +1907,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// and we need to re-measure the font metrics:
 				InvalidateDefaultTextMetrics();
 			} else if (e.Property == Control.ForegroundProperty
-			           || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			           || e.Property == TextView.NonPrintableCharacterBrushProperty
+			           || e.Property == TextView.LinkTextBackgroundBrushProperty
+			           || e.Property == TextView.LinkTextForegroundBrushProperty)
 			{
 				// changing brushes requires recreating the cached elements
 				RecreateCachedElements();

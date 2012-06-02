@@ -40,6 +40,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.ClearValue(TextArea.SelectionBrushProperty);
 			textEditor.TextArea.ClearValue(TextArea.SelectionForegroundProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.NonPrintableCharacterBrushProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextForegroundBrushProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextBackgroundBrushProperty);
 			
 			// 'assigned' flags are used so that the first matching customization wins.
 			// This is necessary because more specific customizations come first in the list
