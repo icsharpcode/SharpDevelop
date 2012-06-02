@@ -14,7 +14,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Document;
@@ -45,6 +47,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CaretReferencesRenderer caretReferencesRenderer;
 		ContextActionsRenderer contextActionsRenderer;
 		HiddenDefinition.HiddenDefinitionRenderer hiddenDefinitionRenderer;
+		ColumnRulerRenderer columnRoulerRenderer;
 		
 		public CodeEditorView()
 		{
@@ -54,6 +57,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
 			this.hiddenDefinitionRenderer = new HiddenDefinition.HiddenDefinitionRenderer(this);
+			this.columnRoulerRenderer = new ColumnRulerRenderer(this.TextArea.TextView);
 			
 			UpdateCustomizedHighlighting();
 			
@@ -94,6 +98,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			else if (e.PropertyName == "HighlightSymbol") {
 				if (this.caretReferencesRenderer != null)
 					this.caretReferencesRenderer.ClearHighlight();
+			}
+			else if(e.PropertyName == "ShowColumnRuler")
+			{
+				
 			}
 		}
 		
@@ -586,6 +594,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
 		{
 			return CustomizedHighlightingColor.FetchCustomizations(languageName);
+		}
+		
+		public static readonly DependencyProperty ColumnRulerBrushProperty =
+			DependencyProperty.Register("ColumnRulerBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata());
+		
+		public Brush ColumnRulerBrush {
+			get { return (Brush)GetValue(ColumnRulerBrushProperty); }
+			set { SetValue(ColumnRulerBrushProperty, value); }
 		}
 	}
 }
