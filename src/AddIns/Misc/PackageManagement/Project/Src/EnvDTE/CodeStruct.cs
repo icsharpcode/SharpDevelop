@@ -16,5 +16,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			: base(projectContent, c)
 		{
 		}
+		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementStruct; }
+		}
 	}
 }

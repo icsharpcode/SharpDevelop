@@ -20,6 +20,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		protected IProperty Property { get; private set; }
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementProperty; }
+		}
+		
 		public virtual vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }

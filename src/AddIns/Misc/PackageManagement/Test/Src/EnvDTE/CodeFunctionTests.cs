@@ -82,5 +82,15 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(4, offset);
 		}
+		
+		[Test]
+		public void Kind_PublicFunction_ReturnsFunction()
+		{
+			CreatePublicFunction("MyFunction");
+			
+			vsCMElement kind = codeFunction.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementFunction, kind);
+		}
 	}
 }

@@ -266,5 +266,15 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(property, parent);
 		}
+		
+		[Test]
+		public void Kind_PublicProperty_ReturnsProperty()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			
+			vsCMElement kind = property.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementProperty, kind);
+		}
 	}
 }

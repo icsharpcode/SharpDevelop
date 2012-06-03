@@ -25,6 +25,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.Language = GetLanguage(projectContent);
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementNamespace; }
+		}
+		
 		internal string QualifiedName {
 			get { return namespaceName.QualifiedName; }
 		}

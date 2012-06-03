@@ -212,5 +212,16 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("MyField", codeVariable.Name);
 		}
+		
+		[Test]
+		public void Kind_PublicClass_ReturnsClass()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			
+			vsCMElement kind = codeClass.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementClass, kind);
+		}
 	}
 }

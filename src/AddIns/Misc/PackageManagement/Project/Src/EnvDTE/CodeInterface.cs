@@ -22,6 +22,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			fullName = type.GetFullName();
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementInterface; }
+		}
+		
 		/// <summary>
 		/// Returns null if base type is not an interface.
 		/// </summary>

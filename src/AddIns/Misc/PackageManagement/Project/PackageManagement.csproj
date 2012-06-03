@@ -117,6 +117,7 @@
     <Compile Include="Src\EnvDTE\SourceControl.cs" />
     <Compile Include="Src\EnvDTE\TextPoint.cs" />
     <Compile Include="Src\EnvDTE\vsCMAccess.cs" />
+    <Compile Include="Src\EnvDTE\vsCMElement.cs" />
     <Compile Include="Src\EnvDTE\vsCMFunction.cs" />
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
     <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />

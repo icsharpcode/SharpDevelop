@@ -15,6 +15,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.parameter = parameter;
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementParameter; }
+		}
+		
 		public override string Name {
 			get { return parameter.Name; }
 		}

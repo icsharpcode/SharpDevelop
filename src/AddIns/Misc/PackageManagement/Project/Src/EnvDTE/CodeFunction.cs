@@ -25,6 +25,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementFunction; }
+		}
+		
 		public virtual vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }

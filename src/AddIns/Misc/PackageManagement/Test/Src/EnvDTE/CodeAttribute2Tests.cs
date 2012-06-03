@@ -159,5 +159,16 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("TestAttributeColumn", name);
 		}
+		
+		[Test]
+		public void Kind_AttributeIsDataAnnotationsDisplayColumnAttribute_ReturnsAttribute()
+		{
+			CreateMSBuildAttribute("System.ComponentModel.DataAnnotations.DisplayColumnAttribute");
+			CreateAttribute();
+			
+			vsCMElement kind = codeAttribute.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementAttribute, kind);
+		}
 	}
 }

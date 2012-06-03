@@ -92,5 +92,15 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(10, offset);
 		}
+		
+		[Test]
+		public void Kind_PublicVariable_ReturnsVariable()
+		{
+			CreatePublicVariable("MyVariable");
+			
+			vsCMElement kind = codeVariable.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementVariable, kind);
+		}
 	}
 }

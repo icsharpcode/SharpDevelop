@@ -78,8 +78,10 @@
     <Compile Include="Src\EnvDTE\CodeDelegateTests.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeFunctionTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeInterfaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeModelTests.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeParameterTests.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeStructTests.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeRef2Tests.cs" />

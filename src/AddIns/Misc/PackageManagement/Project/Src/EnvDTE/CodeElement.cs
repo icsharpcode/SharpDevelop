@@ -75,5 +75,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			}
 			return vsCMAccess.vsCMAccessPrivate;
 		}
+		
+		public virtual vsCMElement Kind {
+			get { return vsCMElement.vsCMElementOther; }
+		}
 	}
 }

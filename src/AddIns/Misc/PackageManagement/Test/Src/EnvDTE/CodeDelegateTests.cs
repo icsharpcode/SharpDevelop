@@ -58,5 +58,15 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
 		}
+		
+		[Test]
+		public void Kind_PublicDelegate_ReturnsClass()
+		{
+			CreatePublicDelegate("MyDelegate");
+			
+			vsCMElement kind = codeDelegate.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementDelegate, kind);
+		}
 	}
 }

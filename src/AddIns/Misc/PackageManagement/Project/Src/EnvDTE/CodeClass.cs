@@ -17,6 +17,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementClass; }
+		}
+		
 		public virtual CodeElements ImplementedInterfaces {
 			get { return new ImplementedInterfacesOnClass(ProjectContent, Class); }
 		}

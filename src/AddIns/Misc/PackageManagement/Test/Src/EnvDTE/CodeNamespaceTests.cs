@@ -149,5 +149,16 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(CodeModelLanguageConstants.vsCMLanguageVB, language);
 		}
+		
+		[Test]
+		public void Kind_EmptyStringNamespace_ReturnsNamespace()
+		{
+			CreateProjectContent();
+			CreateCodeNamespace(String.Empty);
+			
+			vsCMElement kind = codeNamespace.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementNamespace, kind);
+		}
 	}
 }

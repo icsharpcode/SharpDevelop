@@ -21,6 +21,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.attribute = attribute;
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementAttribute; }
+		}
+		
 		public override string Name {
 			get { return GetShortName(); }
 		}

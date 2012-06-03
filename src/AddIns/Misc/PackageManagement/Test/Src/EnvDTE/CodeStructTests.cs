@@ -58,5 +58,15 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
 		}
+		
+		[Test]
+		public void Kind_PublicStruct_ReturnsStruct()
+		{
+			CreatePublicStruct("MyStruct");
+			
+			vsCMElement kind = codeStruct.Kind;
+			
+			Assert.AreEqual(vsCMElement.vsCMElementStruct, kind);
+		}
 	}
 }

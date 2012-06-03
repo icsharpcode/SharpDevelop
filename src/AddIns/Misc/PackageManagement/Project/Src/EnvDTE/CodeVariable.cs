@@ -20,6 +20,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.field = field;
 		}
 		
+		public override vsCMElement Kind {
+			get { return vsCMElement.vsCMElementVariable; }
+		}
+		
 		public vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
