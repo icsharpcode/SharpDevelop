@@ -11,8 +11,10 @@ namespace PackageManagement.Tests.Helpers
 	public class PropertyHelper
 	{
 		public IProperty Property;
-		public List<IAttribute> Attributes = new List<IAttribute>();
 		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
+		
+		List<IAttribute> attributes = new List<IAttribute>();
+		List<IParameter> parameters = new List<IParameter>();
 		
 		/// <summary>
 		/// Property name should include class prefix (e.g. "Class1.MyProperty")
@@ -21,7 +23,8 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Property = MockRepository.GenerateMock<IProperty, IEntity>();
 			Property.Stub(p => p.FullyQualifiedName).Return(fullyQualifiedName);
-			Property.Stub(p => p.Attributes).Return(Attributes);
+			Property.Stub(p => p.Attributes).Return(attributes);
+			Property.Stub(p => p.Parameters).Return(parameters);
 			Property.Stub(p => p.ProjectContent).Return(ProjectContentHelper.FakeProjectContent);
 		}
 		
@@ -29,7 +32,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			var attributeHelper = new AttributeHelper();
 			attributeHelper.CreateAttribute(fullName, shortName);
-			Attributes.Add(attributeHelper.Attribute);
+			attributes.Add(attributeHelper.Attribute);
 		}
 		
 		public void AddParentClass(string className)
@@ -75,6 +78,41 @@ namespace PackageManagement.Tests.Helpers
 		{
 			HasGetter = false;
 			HasSetter = true;
+		}
+		
+		public void AddParameterToProperty(string name)
+		{
+			IParameter parameter = MockRepository.GenerateStub<IParameter>();
+			parameter.Stub(p => p.Name).Return(name);
+			parameters.Add(parameter);
+		}
+		
+		public void GetterModifierIsPrivate()
+		{
+			GetterModifier = ModifierEnum.Private;
+		}
+		
+		ModifierEnum GetterModifier {
+			set { Property.Stub(p => p.GetterModifiers).Return(value); }
+		}
+			
+		public void GetterModifierIsNone()
+		{
+			GetterModifier = ModifierEnum.None;
+		}
+		
+		public void SetterModifierIsPrivate()
+		{
+			SetterModifier = ModifierEnum.Private;
+		}
+		
+		ModifierEnum SetterModifier {
+			set { Property.Stub(p => p.SetterModifiers).Return(value); }
+		}
+			
+		public void SetterModifierIsNone()
+		{
+			GetterModifier = ModifierEnum.None;
 		}
 	}
 }

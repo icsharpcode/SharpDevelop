@@ -120,5 +120,125 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMPropertyKind.vsCMPropertyKindWriteOnly, kind);
 		}
+		
+		[Test]
+		public void Parameters_PropertyIsIndexerWithOneParameter_ReturnsOneParameter()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.AddParameterToProperty("item");
+			CreateCodeProperty2();
+			
+			CodeElements parameters = property.Parameters;
+			CodeParameter parameter = parameters.FirstCodeParameterOrDefault();
+			
+			Assert.AreEqual(1, parameters.Count);
+			Assert.AreEqual("item", parameter.Name);
+		}
+		
+		[Test]
+		public void Getter_PublicGetter_ReturnsPublicGetterCodeFunction()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasGetterOnly();
+			helper.GetterModifierIsNone();
+			CreateCodeProperty2();
+			
+			CodeFunction getter = property.Getter;
+			vsCMAccess access = getter.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+		}
+		
+		[Test]
+		public void Getter_PrivateGetter_ReturnsPrivateGetterCodeFunction()
+		{
+			helper.CreatePrivateProperty("MyProperty");
+			helper.HasGetterOnly();
+			helper.GetterModifierIsNone();
+			CreateCodeProperty2();
+			
+			CodeFunction getter = property.Getter;
+			vsCMAccess access = getter.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
+		[Test]
+		public void Getter_NoGetter_ReturnsNull()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			CreateCodeProperty2();
+			
+			CodeFunction getter = property.Getter;
+			
+			Assert.IsNull(getter);
+		}
+		
+		[Test]
+		public void Getter_PublicPropertyButPrivateGetter_ReturnsPrivateGetterCodeFunction()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasGetterAndSetter();
+			helper.GetterModifierIsPrivate();
+			CreateCodeProperty2();
+			
+			CodeFunction getter = property.Getter;
+			vsCMAccess access = getter.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
+		[Test]
+		public void Setter_PublicSetter_ReturnsPublicSetterCodeFunction()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasSetterOnly();
+			helper.SetterModifierIsNone();
+			CreateCodeProperty2();
+			
+			CodeFunction setter = property.Setter;
+			vsCMAccess access = setter.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPublic, access);
+		}
+		
+		[Test]
+		public void Setter_PrivateSetter_ReturnsPrivateSetterCodeFunction()
+		{
+			helper.CreatePrivateProperty("MyProperty");
+			helper.HasSetterOnly();
+			helper.SetterModifierIsNone();
+			CreateCodeProperty2();
+			
+			CodeFunction setter = property.Setter;
+			vsCMAccess access = setter.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
+		[Test]
+		public void Setter_NoSetter_ReturnsNull()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			CreateCodeProperty2();
+			
+			CodeFunction setter = property.Setter;
+			
+			Assert.IsNull(setter);
+		}
+		
+		[Test]
+		public void Setter_PublicPropertyButPrivateSetter_ReturnsPrivateSetterCodeFunction()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.HasGetterAndSetter();
+			helper.SetterModifierIsPrivate();
+			CreateCodeProperty2();
+			
+			CodeFunction setter = property.Setter;
+			vsCMAccess access = setter.Access;
+			
+			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
 	}
 }

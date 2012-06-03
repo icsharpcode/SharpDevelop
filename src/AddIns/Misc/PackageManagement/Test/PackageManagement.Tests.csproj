@@ -88,7 +88,7 @@
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\AttributeHelper.cs" />
     <Compile Include="Src\Helpers\ClassHelper.cs" />
-    <Compile Include="Src\Helpers\CodeElementsHelpers.cs" />
+    <Compile Include="Src\Helpers\CodeElementsExtensions.cs" />
     <Compile Include="Src\Helpers\FieldHelper.cs" />
     <Compile Include="Src\Helpers\FakeSelectProjectsService.cs" />
     <Compile Include="Src\Helpers\FakeSolutionPackageRepositoryFactory.cs" />

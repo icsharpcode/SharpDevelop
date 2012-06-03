@@ -6,25 +6,11 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeFunction : CodeElement
+	public class CodeGetterFunction : CodeGetterOrSetterFunction
 	{
-		public CodeFunction(IMethod method)
-			: base(method)
+		public CodeGetterFunction(IProperty property)
+			: base(property, property.GetterModifiers)
 		{
-		}
-		
-		public CodeFunction()
-		{
-		}
-		
-		public CodeFunction(IProperty property)
-			: base(property)
-		{
-		}
-		
-		public virtual vsCMAccess Access {
-			get { return GetAccess(); }
-			set { }
 		}
 	}
 }

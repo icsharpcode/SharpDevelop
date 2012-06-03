@@ -8,8 +8,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeProperty : CodeElement
 	{
-		CodeElements attributes;
-		
 		public CodeProperty()
 		{
 		}
@@ -32,12 +30,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Attributes {
-			get {
-				if (attributes == null) {
-					attributes = new CodeAttributes(Property);
-				}
-				return attributes;
-			}
+			get { return new CodeAttributes(Property); }
 		}
 		
 		public virtual CodeTypeRef Type {
@@ -45,11 +38,27 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeFunction Getter {
-			get { throw new NotImplementedException(); }
+			get { return GetGetter(); }
+		}
+		
+		CodeFunction GetGetter()
+		{
+			if (Property.CanGet) {
+				return new CodeGetterFunction(Property);
+			}
+			return null;
 		}
 		
 		public virtual CodeFunction Setter {
-			get { throw new NotImplementedException(); }
+			get { return GetSetter(); }
+		}
+		
+		CodeFunction GetSetter()
+		{
+			if (Property.CanSet) {
+				return new CodeSetterFunction(Property);
+			}
+			return null;
 		}
 	}
 }
