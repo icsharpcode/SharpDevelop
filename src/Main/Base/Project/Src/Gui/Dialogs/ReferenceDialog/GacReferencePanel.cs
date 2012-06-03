@@ -104,6 +104,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			filterTextBox = new TextBox { Width = 150, Dock = DockStyle.Right };
 			filterTextboxToolTip.SetToolTip(filterTextBox, "Search by type name");
 			filterTextBox.TextChanged += delegate { Search(); };
+			
+			IButtonControl defaultButton = null;
+			filterTextBox.Enter += delegate { defaultButton = ((Form)selectDialog).AcceptButton; ((Form)selectDialog).AcceptButton = null; };
+			filterTextBox.Leave += delegate { ((Form)selectDialog).AcceptButton = defaultButton; };
+			
 			upperPanel.Controls.Add(chooseSpecificVersionCheckBox);
 			upperPanel.Controls.Add(filterTextBox);
 			

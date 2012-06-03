@@ -14,7 +14,9 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Document;
@@ -87,13 +89,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override void OnOptionChanged(PropertyChangedEventArgs e)
 		{
 			base.OnOptionChanged(e);
-			if (e.PropertyName == "HighlightBrackets")
-				HighlightBrackets(null, e);
-			else if (e.PropertyName == "EnableFolding")
-				UpdateParseInformationForFolding();
-			else if (e.PropertyName == "HighlightSymbol") {
-				if (this.caretReferencesRenderer != null)
-					this.caretReferencesRenderer.ClearHighlight();
+			switch (e.PropertyName) {
+				case "HighlightBrackets":
+					HighlightBrackets(null, e);
+					break;
+				case "EnableFolding":
+					UpdateParseInformationForFolding();
+					break;
+				case "HighlightSymbol":
+					if (this.caretReferencesRenderer != null)
+						this.caretReferencesRenderer.ClearHighlight();
+					break;
 			}
 		}
 		
