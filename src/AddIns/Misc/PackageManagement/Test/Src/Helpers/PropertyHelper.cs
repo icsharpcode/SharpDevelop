@@ -12,6 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public IProperty Property;
 		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
+		public ReturnTypeHelper ReturnTypeHelper = new ReturnTypeHelper();
 		
 		List<IAttribute> attributes = new List<IAttribute>();
 		List<IParameter> parameters = new List<IParameter>();
@@ -113,6 +114,13 @@ namespace PackageManagement.Tests.Helpers
 		public void SetterModifierIsNone()
 		{
 			GetterModifier = ModifierEnum.None;
+		}
+		
+		public void SetPropertyReturnType(string fullName)
+		{
+			ReturnTypeHelper.CreateReturnType(fullName);
+			ReturnTypeHelper.AddDotNetName(fullName);
+			Property.Stub(p => p.ReturnType).Return(ReturnTypeHelper.ReturnType);
 		}
 	}
 }

@@ -110,6 +110,7 @@
     <Compile Include="Src\EnvDTE\Constants.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
+    <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
     <Compile Include="Src\EnvDTE\NamespaceName.cs" />
     <Compile Include="Src\EnvDTE\ProjectKind.cs" />
     <Compile Include="Src\EnvDTE\Projects.cs" />

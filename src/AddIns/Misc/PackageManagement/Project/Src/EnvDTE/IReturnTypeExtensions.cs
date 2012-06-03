@@ -6,15 +6,14 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeTypeRef2 : CodeTypeRef
+	public static class IReturnTypeExtensions
 	{
-		public CodeTypeRef2(IProjectContent projectContent, CodeElement parent, IReturnType returnType)
-			: base(projectContent, parent, returnType)
+		public static string GetFullName(this IReturnType returnType)
 		{
-		}
-		
-		public bool IsGeneric {
-			get { return ReturnType.DotNetName.Contains("{"); }
+			return returnType
+				.DotNetName
+				.Replace('{', '<')
+				.Replace('}', '>');
 		}
 	}
 }

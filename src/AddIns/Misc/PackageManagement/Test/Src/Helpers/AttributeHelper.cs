@@ -22,9 +22,11 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void CreateAttribute(string fullName, string shortName)
 		{
-			AttributeType = MockRepository.GenerateStub<IReturnType>();
-			AttributeType.Stub(at => at.FullyQualifiedName).Return(fullName);
-			AttributeType.Stub(at => at.Name).Return(shortName);
+			var returnTypeHelper = new ReturnTypeHelper();
+			returnTypeHelper.CreateReturnType(fullName);
+			returnTypeHelper.AddShortName(shortName);
+			AttributeType = returnTypeHelper.ReturnType;
+			
 			Attribute = MockRepository.GenerateStub<IAttribute>();
 			Attribute.Stub(a => a.AttributeType).Return(AttributeType);
 			Attribute.Stub(a => a.PositionalArguments).Return(PositionalArguments);

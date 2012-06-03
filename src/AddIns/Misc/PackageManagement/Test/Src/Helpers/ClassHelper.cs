@@ -66,11 +66,11 @@ namespace PackageManagement.Tests.Helpers
 		
 		IReturnType CreateBaseType(IClass baseTypeClass, string baseTypeFullName, string baseTypeDotNetName)
 		{
-			IReturnType baseType = MockRepository.GenerateStub<IReturnType>();
-			baseType.Stub(b => b.GetUnderlyingClass()).Return(baseTypeClass);
-			baseType.Stub(b => b.FullyQualifiedName).Return(baseTypeFullName);
-			baseType.Stub(b => b.DotNetName).Return(baseTypeDotNetName);
-			return baseType;
+			var returnTypeHelper = new ReturnTypeHelper();
+			returnTypeHelper.CreateReturnType(baseTypeFullName);
+			returnTypeHelper.AddUnderlyingClass(baseTypeClass);
+			returnTypeHelper.AddDotNetName(baseTypeDotNetName);
+			return returnTypeHelper.ReturnType;
 		}
 		
 		public void AddClassToClassBaseTypes(string fullName)

@@ -240,5 +240,31 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
 		}
+		
+		[Test]
+		public void Type_PropertyTypeIsSystemString_ReturnsSystemString()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.SetPropertyReturnType("System.String");
+			CreateCodeProperty2();
+			
+			CodeTypeRef typeRef = property.Type;
+			string fullName = typeRef.AsFullName;
+			
+			Assert.AreEqual("System.String", fullName);
+		}
+		
+		[Test]
+		public void Type_PropertyTypeIsSystemString_TypesParentIsProperty()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.SetPropertyReturnType("System.String");
+			CreateCodeProperty2();
+			
+			CodeTypeRef typeRef = property.Type;
+			CodeElement parent = typeRef.Parent;
+			
+			Assert.AreEqual(property, parent);
+		}
 	}
 }

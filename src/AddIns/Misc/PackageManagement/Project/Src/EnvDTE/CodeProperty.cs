@@ -34,7 +34,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeTypeRef Type {
-			get { throw new NotImplementedException(); }
+			get { return new CodeTypeRef2(null, this, Property.ReturnType); }
 		}
 		
 		public virtual CodeFunction Getter {

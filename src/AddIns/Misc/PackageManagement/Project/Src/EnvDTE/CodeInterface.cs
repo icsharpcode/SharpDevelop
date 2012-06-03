@@ -19,12 +19,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeInterface(IProjectContent projectContent, IReturnType type, IClass c)
 			: base(projectContent, c)
 		{
-			fullName = GetFullName(type);
-		}
-		
-		string GetFullName(IReturnType type)
-		{
-			return type.DotNetName.Replace("{", "<").Replace("}", ">");
+			fullName = type.GetFullName();
 		}
 		
 		/// <summary>

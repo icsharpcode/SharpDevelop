@@ -82,6 +82,7 @@
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeProperty2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeStructTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeTypeRef2Tests.cs" />
     <Compile Include="Src\EnvDTE\CodeTypeTests.cs" />
     <Compile Include="Src\EnvDTE\CodeVariableTests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Src\Helpers\ProjectContentHelper.cs" />
     <Compile Include="Src\Helpers\PropertiesHelper.cs" />
     <Compile Include="Src\Helpers\PropertyHelper.cs" />
+    <Compile Include="Src\Helpers\ReturnTypeHelper.cs" />
     <Compile Include="Src\Helpers\SelectedProjectCollectionAssert.cs" />
     <Compile Include="Src\Helpers\TestableInstalledPackageViewModel.cs" />
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />

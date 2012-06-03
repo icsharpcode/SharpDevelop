@@ -2,25 +2,38 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeTypeRef : MarshalByRefObject
 	{
+		IProjectContent projectContent;
+		CodeElement parent;
+		
 		public CodeTypeRef()
 		{
 		}
 		
-		public virtual string AsFullName {
-			get { throw new NotImplementedException(); }
+		public CodeTypeRef(IProjectContent projectContent, CodeElement parent, IReturnType returnType)
+		{
+			this.parent = parent;
+			this.projectContent = projectContent;
+			this.ReturnType = returnType;
 		}
 		
-		public virtual object Parent {
-			get { throw new NotImplementedException(); }
+		protected IReturnType ReturnType { get; private set; }
+		
+		public virtual string AsFullName {
+			get { return ReturnType.GetFullName(); }
+		}
+		
+		public virtual CodeElement Parent {
+			get { return parent; }
 		}
 		
 		public virtual CodeType CodeType {
-			get { throw new NotImplementedException(); }
+			get { return new CodeClass2(projectContent, ReturnType.GetUnderlyingClass()); }
 		}
 	}
 }
