@@ -9,15 +9,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeVariable : CodeElement
 	{
 		IField field;
+		IDocumentLoader documentLoader;
 		
 		public CodeVariable()
 		{
 		}
 		
 		public CodeVariable(IField field)
+			: this(field, new DocumentLoader())
+		{
+		}
+		
+		public CodeVariable(IField field, IDocumentLoader documentLoader)
 			: base(field)
 		{
 			this.field = field;
+			this.documentLoader = documentLoader;
 		}
 		
 		public override vsCMElement Kind {
@@ -31,12 +38,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public override TextPoint GetStartPoint()
 		{
-			return TextPoint.CreateStartPoint(field.Region);
+			return new TextPoint(field.GetStartPosition(), documentLoader);
 		}
 		
 		public override TextPoint GetEndPoint()
 		{
-			return TextPoint.CreateEndPoint(field.Region);
+			return new TextPoint(field.GetEndPosition(), documentLoader);
 		}
 	}
 }

@@ -9,11 +9,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class CodeFunction : CodeElement
 	{
 		IMethodOrProperty method;
+		IDocumentLoader documentLoader;
 		
 		public CodeFunction(IMethod method)
+			: this(method, new DocumentLoader())
+		{
+		}
+		
+		public CodeFunction(IMethod method, IDocumentLoader documentLoader)
 			: base(method)
 		{
 			this.method = method;
+			this.documentLoader = documentLoader;
 		}
 		
 		public CodeFunction()
@@ -36,12 +43,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public override TextPoint GetStartPoint()
 		{
-			return TextPoint.CreateStartPoint(method.Region);
+			return new TextPoint(method.GetStartPosition(), documentLoader);
 		}
 		
 		public override TextPoint GetEndPoint()
 		{
-			return TextPoint.CreateEndPoint(method.BodyRegion);
+			return new TextPoint(method.GetEndPosition(), documentLoader);
 		}
 	}
 }

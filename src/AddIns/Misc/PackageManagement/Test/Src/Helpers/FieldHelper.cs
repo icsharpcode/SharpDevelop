@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.SharpDevelop.Dom;
 using Rhino.Mocks;
 
@@ -46,10 +47,29 @@ namespace PackageManagement.Tests.Helpers
 			SetRegion(region);
 		}
 		
+		public void VariableStartsAtLine(int line)
+		{
+			var region = new DomRegion(line, 1);
+			SetRegion(region);
+		}
+		
 		public void VariableEndsAtColumn(int column)
 		{
 			var region = new DomRegion(1, 1, 1, column);
 			SetRegion(region);
+		}
+		
+		public void VariableEndsAtLine(int line)
+		{
+			var region = new DomRegion(1, 1, line, 1);
+			SetRegion(region);
+		}
+		
+		public void SetCompilationUnitFileName(string fileName)
+		{
+			ICompilationUnit unit = MockRepository.GenerateStub<ICompilationUnit>();
+			unit.FileName = fileName;
+			Field.Stub(f => f.CompilationUnit).Return(unit);
 		}
 	}
 }

@@ -2,12 +2,17 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class EditPoint : TextPoint
 	{
-		public EditPoint()
+		IDocument document;
+		
+		internal EditPoint(FilePosition filePosition, IDocumentLoader documentLoader)
+			: base(filePosition, documentLoader)
 		{
 		}
 		
@@ -16,9 +21,27 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			ReplaceText((TextPoint)pointOrCount, text, (vsEPReplaceTextOptions)flags);
 		}
 		
-		void ReplaceText(TextPoint point, string text, vsEPReplaceTextOptions textFormatOptions)
+		void ReplaceText(TextPoint endPoint, string text, vsEPReplaceTextOptions textFormatOptions)
 		{
-			
+			OpenDocument();
+			int offset = GetStartOffset();
+			int endOffset = GetEndOffset(endPoint);
+			document.Replace(offset, endOffset - offset, text);
+		}
+		
+		void OpenDocument()
+		{
+			document = DocumentLoader.LoadDocument(FilePosition.FileName);
+		}
+		
+		int GetStartOffset()
+		{
+			return document.PositionToOffset(Line, LineCharOffset);
+		}
+		
+		int GetEndOffset(TextPoint endPoint)
+		{
+			return document.PositionToOffset(endPoint.Line, endPoint.LineCharOffset);
 		}
 	}
 }

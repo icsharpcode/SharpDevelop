@@ -8,25 +8,36 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class TextPoint : MarshalByRefObject
 	{
-		public TextPoint()
+		internal TextPoint(FilePosition filePosition, IDocumentLoader documentLoader)
 		{
+			this.FilePosition = filePosition;
+			this.DocumentLoader = documentLoader;
 		}
 		
-		public int LineCharOffset { get; private set; }
+		protected IDocumentLoader DocumentLoader { get; private set; }
+		protected FilePosition FilePosition { get; private set; }
+		
+		public int LineCharOffset {
+			get { return FilePosition.Column; }
+		}
+		
+		public int Line {
+			get { return FilePosition.Line; }
+		}
 		
 		public EditPoint CreateEditPoint()
 		{
-			throw new NotImplementedException();
+			return new EditPoint(FilePosition, DocumentLoader);
 		}
 		
-		internal static TextPoint CreateStartPoint(DomRegion region)
+		internal static TextPoint CreateStartPoint(FilePosition position, IDocumentLoader documentLoader)
 		{
-			return new TextPoint { LineCharOffset = region.BeginColumn };
+			return new TextPoint(position, documentLoader);
 		}
 		
-		internal static TextPoint CreateEndPoint(DomRegion region)
+		internal static TextPoint CreateEndPoint(FilePosition position, IDocumentLoader documentLoader)
 		{
-			return new TextPoint { LineCharOffset = region.EndColumn };
+			return new TextPoint(position, documentLoader);
 		}
 	}
 }

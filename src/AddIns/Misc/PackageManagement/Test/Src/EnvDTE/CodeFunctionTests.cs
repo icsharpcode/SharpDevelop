@@ -72,7 +72,19 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void GetEndPoint_FunctionBodyAtColumn4_ReturnsPointWithOffset4()
+		public void GetStartPoint_FunctionStartsAtLine2_ReturnsPointWithLine2()
+		{
+			CreatePublicFunction("Class1.MyFunction");
+			helper.FunctionStartsAtLine(2);
+			
+			TextPoint point = codeFunction.GetStartPoint();
+			int line = point.Line;
+			
+			Assert.AreEqual(2, line);
+		}
+		
+		[Test]
+		public void GetEndPoint_FunctionBodyEndsAtColumn4_ReturnsPointWithOffset4()
 		{
 			CreatePublicFunction("Class1.MyFunction");
 			helper.FunctionBodyEndsAtColumn(4);
@@ -81,6 +93,18 @@ namespace PackageManagement.Tests.EnvDTE
 			int offset = point.LineCharOffset;
 			
 			Assert.AreEqual(4, offset);
+		}
+		
+		[Test]
+		public void GetEndPoint_FunctionBodyEndsAtLine4_ReturnsPointWithLine4()
+		{
+			CreatePublicFunction("Class1.MyFunction");
+			helper.FunctionBodyEndsAtLine(4);
+			
+			TextPoint point = codeFunction.GetEndPoint();
+			int line = point.Line;
+			
+			Assert.AreEqual(4, line);
 		}
 		
 		[Test]

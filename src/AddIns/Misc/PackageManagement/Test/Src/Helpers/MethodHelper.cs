@@ -38,13 +38,52 @@ namespace PackageManagement.Tests.Helpers
 		public void FunctionStartsAtColumn(int column)
 		{
 			var region = new DomRegion(1, column);
+			FunctionStartsAt(region);
+		}
+		
+		public void FunctionStartsAt(DomRegion region)
+		{
 			Method.Stub(m => m.Region).Return(region);
+		}
+		
+		public void FunctionStartsAtLine(int line)
+		{
+			var region = new DomRegion(line, 1);
+			FunctionStartsAt(region);
 		}
 		
 		public void FunctionBodyEndsAtColumn(int column)
 		{
 			var region = new DomRegion(1, 1, 1, column);
+			FunctionBodyEndsAt(region);
+		}
+		
+		void FunctionBodyEndsAt(DomRegion region)
+		{
 			Method.Stub(m => m.BodyRegion).Return(region);
+		}
+		
+		public void FunctionBodyEndsAtLine(int line)
+		{
+			var region = new DomRegion(1, 1, line, 1);
+			FunctionBodyEndsAt(region);
+		}
+		
+		public void SetRegion(DomRegion region)
+		{
+			Method.Stub(m => m.Region).Return(region);
+		}
+		
+		public void SetBodyRegion(DomRegion region)
+		{
+			Method.Stub(m => m.BodyRegion).Return(region);
+		}
+		
+		public void SetCompilationUnitFileName(string fileName)
+		{
+			ICompilationUnit unit = MockRepository.GenerateStub<ICompilationUnit>();
+			unit.FileName = fileName;
+			Method.Stub(m => m.CompilationUnit).Return(unit);
 		}
 	}
 }

@@ -74,6 +74,8 @@
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
+    <Compile Include="Src\DocumentLoader.cs" />
+    <Compile Include="Src\DomRegionExtensions.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
     <Compile Include="Src\EnvDTE\CodeAttributeArgument.cs" />
@@ -122,6 +124,9 @@
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
     <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
     <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
+    <Compile Include="Src\IFieldExtensions.cs" />
+    <Compile Include="Src\IDocumentLoader.cs" />
+    <Compile Include="Src\IMethodOrPropertyExtensions.cs" />
     <Compile Include="Src\InstalledPackageViewModel.cs" />
     <Compile Include="Src\InstalledPackageViewModelFactory.cs" />
     <Compile Include="Src\IPackageManagementSelectedProject.cs" />
@@ -364,6 +369,7 @@
     <Compile Include="Src\EnvDTE\Project.cs" />
     <Compile Include="Src\Scripting\RunPackageScriptsAction.cs" />
     <Compile Include="Src\SolutionPackageRepository.cs" />
+    <Compile Include="Src\ThreadSafeDocument.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdateAllPackagesInProject.cs" />
@@ -440,6 +446,11 @@
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

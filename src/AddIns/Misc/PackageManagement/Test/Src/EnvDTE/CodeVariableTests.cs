@@ -44,9 +44,19 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.VariableStartsAtColumn(column);
 		}
 		
+		void VariableStartsAtLine(int line)
+		{
+			helper.VariableStartsAtLine(line);
+		}
+		
 		void VariableEndsAtColumn(int column)
 		{
 			helper.VariableEndsAtColumn(column);
+		}
+		
+		void VariableEndsAtLine(int line)
+		{
+			helper.VariableEndsAtLine(line);
 		}
 		
 		[Test]
@@ -82,6 +92,18 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void GetStartPoint_VariableStartsAtLine1_ReturnsTextPointWithLine1()
+		{
+			CreatePublicVariable("MyVariable");
+			VariableStartsAtLine(1);
+			
+			TextPoint point = codeVariable.GetStartPoint();
+			int line = point.Line;
+			
+			Assert.AreEqual(1, line);
+		}
+		
+		[Test]
 		public void GetEndPoint_VariableEndsAtColumn10_ReturnsTextPointWithLineCharOffset10()
 		{
 			CreatePublicVariable("MyVariable");
@@ -91,6 +113,18 @@ namespace PackageManagement.Tests.EnvDTE
 			int offset = point.LineCharOffset;
 			
 			Assert.AreEqual(10, offset);
+		}
+		
+		[Test]
+		public void GetEndPoint_VariableEndsAtLine2_ReturnsTextPointWithLine2()
+		{
+			CreatePublicVariable("MyVariable");
+			VariableEndsAtLine(2);
+			
+			TextPoint point = codeVariable.GetEndPoint();
+			int line = point.Line;
+			
+			Assert.AreEqual(2, line);
 		}
 		
 		[Test]
