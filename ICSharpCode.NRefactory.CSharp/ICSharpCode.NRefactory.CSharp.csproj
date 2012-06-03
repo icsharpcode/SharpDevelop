@@ -373,6 +373,7 @@
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceExplicitAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementAbstractMembersAction.cs" />
+    <Compile Include="Refactoring\CodeActions\RemoveRedundantCatchTypeAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

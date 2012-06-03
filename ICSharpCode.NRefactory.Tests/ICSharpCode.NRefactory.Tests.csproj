@@ -269,6 +269,7 @@
     <Compile Include="CSharp\CodeActions\ImplementInterfaceTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementInterfaceExplicitTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementAbstractMembersTest.cs" />
+    <Compile Include="CSharp\CodeActions\RemoveRedundantCatchTypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
