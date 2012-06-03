@@ -47,7 +47,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CaretReferencesRenderer caretReferencesRenderer;
 		ContextActionsRenderer contextActionsRenderer;
 		HiddenDefinition.HiddenDefinitionRenderer hiddenDefinitionRenderer;
-		ColumnRulerRenderer columnRulerRenderer;
 		
 		public CodeEditorView()
 		{
@@ -57,8 +56,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
 			this.hiddenDefinitionRenderer = new HiddenDefinition.HiddenDefinitionRenderer(this);
-			this.columnRulerRenderer = new ColumnRulerRenderer(this.TextArea.TextView);
-			this.columnRulerRenderer.SetRuler(CodeEditorOptions.Instance.ColumnRulerPosition, ColumnRulerBrush);
 			
 			UpdateCustomizedHighlighting();
 			
@@ -102,13 +99,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				case "HighlightSymbol":
 					if (this.caretReferencesRenderer != null)
 						this.caretReferencesRenderer.ClearHighlight();
-					break;
-				case "ShowColumnRuler":
-				case "ColumRulerPosition":
-					if (CodeEditorOptions.Instance.ShowColumnRuler)
-						columnRulerRenderer.SetRuler(CodeEditorOptions.Instance.ColumnRulerPosition, ColumnRulerBrush);
-					else
-						columnRulerRenderer.SetRuler(-1, ColumnRulerBrush);
 					break;
 			}
 		}
@@ -602,21 +592,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
 		{
 			return CustomizedHighlightingColor.FetchCustomizations(languageName);
-		}
-		
-		public static readonly DependencyProperty ColumnRulerBrushProperty =
-			DependencyProperty.Register("ColumnRulerBrush", typeof(Brush), typeof(CodeEditorView),
-			                            new FrameworkPropertyMetadata(Brushes.LightGray, OnUpdateBrushes));
-		
-		public Brush ColumnRulerBrush {
-			get { return (Brush)GetValue(ColumnRulerBrushProperty); }
-			set { SetValue(ColumnRulerBrushProperty, value); }
-		}
-		
-		static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			if (e.Property.Name == ColumnRulerBrushProperty.Name)
-				((CodeEditorView)d).columnRulerRenderer.SetRuler(CodeEditorOptions.Instance.ColumnRulerPosition, (Brush)e.NewValue);
 		}
 	}
 }

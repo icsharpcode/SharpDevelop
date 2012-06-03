@@ -66,38 +66,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
-		bool showColumnRuler = false;
-		
-		/// <summary>
-		/// Gets/Sets whether the column ruler should be shown.
-		/// </summary>
-		[DefaultValue(false)]
-		public virtual bool ShowColumnRuler {
-			get { return showColumnRuler; }
-			set {
-				if (showColumnRuler != value) {
-					showColumnRuler = value;
-					OnPropertyChanged("ShowColumnRuler");
-				}
-			}
-		}
-		
-		int columnRulerPosition = 80;
-		
-		/// <summary>
-		/// Gets/Sets where the column ruler should be shown.
-		/// </summary>
-		[DefaultValue(80)]
-		public virtual int ColumnRulerPosition {
-			get { return columnRulerPosition; }
-			set {
-				if (columnRulerPosition != value) {
-					columnRulerPosition = value;
-					OnPropertyChanged("ColumnRulerPosition");
-				}
-			}
-		}
-		
 		bool enableChangeMarkerMargin = true;
 		
 		[DefaultValue(true)]

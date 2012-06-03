@@ -233,6 +233,7 @@
     <Compile Include="Rendering\ColorizingTransformer.cs">
       <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\ColumnRulerRenderer.cs" />
     <Compile Include="Rendering\DocumentColorizingTransformer.cs">
       <DependentUpon>IVisualLineTransformer.cs</DependentUpon>
     </Compile>

@@ -7,7 +7,7 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.AvalonEdit
 {
 	/// <summary>
 	/// Redners a ruler at a certain colum
