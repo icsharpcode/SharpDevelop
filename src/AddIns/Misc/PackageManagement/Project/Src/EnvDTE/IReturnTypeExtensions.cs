@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public static class IReturnTypeExtensions
+	internal static class IReturnTypeExtensions
 	{
 		public static string GetFullName(this IReturnType returnType)
 		{

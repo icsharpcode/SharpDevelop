@@ -34,5 +34,17 @@ namespace PackageManagement.Tests.Helpers
 			Method.Stub(m => m.IsPublic).Return(false);
 			Method.Stub(m => m.IsPrivate).Return(true);
 		}
+		
+		public void FunctionStartsAtColumn(int column)
+		{
+			var region = new DomRegion(1, column);
+			Method.Stub(m => m.Region).Return(region);
+		}
+		
+		public void FunctionBodyEndsAtColumn(int column)
+		{
+			var region = new DomRegion(1, 1, 1, column);
+			Method.Stub(m => m.BodyRegion).Return(region);
+		}
 	}
 }

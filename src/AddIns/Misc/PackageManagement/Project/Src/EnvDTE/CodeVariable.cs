@@ -8,6 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeVariable : CodeElement
 	{
+		IField field;
+		
 		public CodeVariable()
 		{
 		}
@@ -15,11 +17,22 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public CodeVariable(IField field)
 			: base(field)
 		{
+			this.field = field;
 		}
 		
 		public vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
+		}
+		
+		public override TextPoint GetStartPoint()
+		{
+			return TextPoint.CreateStartPoint(field.Region);
+		}
+		
+		public override TextPoint GetEndPoint()
+		{
+			return TextPoint.CreateEndPoint(field.Region);
 		}
 	}
 }

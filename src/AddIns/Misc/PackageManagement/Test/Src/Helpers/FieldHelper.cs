@@ -34,5 +34,22 @@ namespace PackageManagement.Tests.Helpers
 			Field.Stub(f => f.IsPublic).Return(false);
 			Field.Stub(f => f.IsPrivate).Return(true);
 		}
+		
+		public void SetRegion(DomRegion region)
+		{
+			Field.Stub(f => f.Region).Return(region);
+		}
+		
+		public void VariableStartsAtColumn(int column)
+		{
+			var region = new DomRegion(1, column);
+			SetRegion(region);
+		}
+		
+		public void VariableEndsAtColumn(int column)
+		{
+			var region = new DomRegion(1, 1, 1, column);
+			SetRegion(region);
+		}
 	}
 }

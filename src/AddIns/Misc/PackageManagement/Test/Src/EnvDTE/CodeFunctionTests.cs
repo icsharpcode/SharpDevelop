@@ -58,5 +58,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
 		}
+		
+		[Test]
+		public void GetStartPoint_FunctionStartsAtColumn3_ReturnsPointWithOffset3()
+		{
+			CreatePublicFunction("Class1.MyFunction");
+			helper.FunctionStartsAtColumn(3);
+			
+			TextPoint point = codeFunction.GetStartPoint();
+			int offset = point.LineCharOffset;
+			
+			Assert.AreEqual(3, offset);
+		}
+		
+		[Test]
+		public void GetEndPoint_FunctionBodyAtColumn4_ReturnsPointWithOffset4()
+		{
+			CreatePublicFunction("Class1.MyFunction");
+			helper.FunctionBodyEndsAtColumn(4);
+			
+			TextPoint point = codeFunction.GetEndPoint();
+			int offset = point.LineCharOffset;
+			
+			Assert.AreEqual(4, offset);
+		}
 	}
 }

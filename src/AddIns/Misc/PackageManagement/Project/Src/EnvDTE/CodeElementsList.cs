@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public abstract class CodeElementsList : CodeElements
+	public class CodeElementsList : CodeElements
 	{
 		List<CodeElement> elements = new List<CodeElement>();
 		

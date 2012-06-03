@@ -39,6 +39,16 @@ namespace PackageManagement.Tests.EnvDTE
 			codeVariable = new CodeVariable(helper.Field);
 		}
 		
+		void VariableStartsAtColumn(int column)
+		{
+			helper.VariableStartsAtColumn(column);
+		}
+		
+		void VariableEndsAtColumn(int column)
+		{
+			helper.VariableEndsAtColumn(column);
+		}
+		
 		[Test]
 		public void Access_PublicVariable_ReturnsPublic()
 		{
@@ -57,6 +67,30 @@ namespace PackageManagement.Tests.EnvDTE
 			vsCMAccess access = codeVariable.Access;
 			
 			Assert.AreEqual(vsCMAccess.vsCMAccessPrivate, access);
+		}
+		
+		[Test]
+		public void GetStartPoint_VariableStartsAtColumn5_ReturnsTextPointWithLineCharOffset5()
+		{
+			CreatePublicVariable("MyVariable");
+			VariableStartsAtColumn(5);
+			
+			TextPoint point = codeVariable.GetStartPoint();
+			int offset = point.LineCharOffset;
+			
+			Assert.AreEqual(5, offset);
+		}
+		
+		[Test]
+		public void GetEndPoint_VariableEndsAtColumn10_ReturnsTextPointWithLineCharOffset10()
+		{
+			CreatePublicVariable("MyVariable");
+			VariableEndsAtColumn(10);
+			
+			TextPoint point = codeVariable.GetEndPoint();
+			int offset = point.LineCharOffset;
+			
+			Assert.AreEqual(10, offset);
 		}
 	}
 }

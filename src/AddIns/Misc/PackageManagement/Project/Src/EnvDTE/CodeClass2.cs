@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeElements PartialClasses {
-			get { throw new NotImplementedException(); }
+			get { return new CodeElementsList(); }
 		}
 		
 		public static CodeClass2 CreateFromBaseType(IProjectContent projectContent, IReturnType baseType)

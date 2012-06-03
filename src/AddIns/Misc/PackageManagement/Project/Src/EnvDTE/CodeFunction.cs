@@ -8,9 +8,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeFunction : CodeElement
 	{
+		IMethodOrProperty method;
+		
 		public CodeFunction(IMethod method)
 			: base(method)
 		{
+			this.method = method;
 		}
 		
 		public CodeFunction()
@@ -25,6 +28,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual vsCMAccess Access {
 			get { return GetAccess(); }
 			set { }
+		}
+		
+		public override TextPoint GetStartPoint()
+		{
+			return TextPoint.CreateStartPoint(method.Region);
+		}
+		
+		public override TextPoint GetEndPoint()
+		{
+			return TextPoint.CreateEndPoint(method.BodyRegion);
 		}
 	}
 }

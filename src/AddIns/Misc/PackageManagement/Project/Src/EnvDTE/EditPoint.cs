@@ -11,9 +11,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 		}
 		
-		public void ReplaceText(object pointOrCount, string text, int Flags)
+		public void ReplaceText(object pointOrCount, string text, int flags)
 		{
-			throw new NotImplementedException();
+			ReplaceText((TextPoint)pointOrCount, text, (vsEPReplaceTextOptions)flags);
+		}
+		
+		void ReplaceText(TextPoint point, string text, vsEPReplaceTextOptions textFormatOptions)
+		{
+			
 		}
 	}
 }

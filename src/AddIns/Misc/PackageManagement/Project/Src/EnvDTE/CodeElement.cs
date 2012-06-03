@@ -49,12 +49,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		// default is vsCMPart.vsCMPartWholeWithAttributes
 		public virtual TextPoint GetStartPoint()
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public virtual TextPoint GetEndPoint()
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public virtual vsCMInfoLocation InfoLocation { get; protected set; }
