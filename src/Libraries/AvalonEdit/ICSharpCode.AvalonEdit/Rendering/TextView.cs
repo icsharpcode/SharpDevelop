@@ -40,6 +40,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			FocusableProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(Boxes.False));
 		}
 		
+		ColumnRulerRenderer columnRulerRenderer;
+		
 		/// <summary>
 		/// Creates a new TextView instance.
 		/// </summary>
@@ -59,6 +61,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.hoverLogic = new MouseHoverLogic(this);
 			this.hoverLogic.MouseHover += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverEvent, MouseHoverEvent);
 			this.hoverLogic.MouseHoverStopped += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
+			this.columnRulerRenderer = new ColumnRulerRenderer(this);
+			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
 		}
 
 		#endregion
@@ -198,6 +202,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (OptionChanged != null) {
 				OptionChanged(this, e);
 			}
+			
+			if (e.PropertyName == "ColumRulerPosition" || e.PropertyName == "ShowColumnRuler") {
+				if (Options.ShowColumnRuler)
+					columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
+				else
+					columnRulerRenderer.SetRuler(-1, ColumnRulerBrush);
+			}
+			
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
 		}
@@ -1928,5 +1940,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				Redraw();
 			}
 		}
+		
+		public static readonly DependencyProperty ColumnRulerBrushProperty =
+			DependencyProperty.Register("ColumnRulerBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.LightGray, OnUpdateBrushes));
+		
+		public Brush ColumnRulerBrush {
+			get { return (Brush)GetValue(ColumnRulerBrushProperty); }
+			set { SetValue(ColumnRulerBrushProperty, value); }
+		}
+		
+		public static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TextView view = d as TextView;
+			if (view == null) return;
+			if (e.Property == ColumnRulerBrushProperty)
+				view.columnRulerRenderer.SetRuler(view.Options.ColumnRulerPosition, (Brush)e.NewValue);
+		}
+		
 	}
 }
