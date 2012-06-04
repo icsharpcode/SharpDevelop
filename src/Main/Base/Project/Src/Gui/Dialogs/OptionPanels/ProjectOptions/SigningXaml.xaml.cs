@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
-			if (signAssemblyCheckBox.IsChecked) {
+			if (signAssemblyCheckBox.IsChecked == true) {
 				this.AssemblyOriginatorKeyFile.Value = "File";
 			}
 			return base.Save(project, configuration, platform);
