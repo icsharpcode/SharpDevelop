@@ -26,7 +26,7 @@ namespace PackageManagement.Tests.Helpers
 			Property.Stub(p => p.FullyQualifiedName).Return(fullyQualifiedName);
 			Property.Stub(p => p.Attributes).Return(attributes);
 			Property.Stub(p => p.Parameters).Return(parameters);
-			Property.Stub(p => p.ProjectContent).Return(ProjectContentHelper.FakeProjectContent);
+			Property.Stub(p => p.ProjectContent).Return(ProjectContentHelper.ProjectContent);
 		}
 		
 		public void AddAttribute(string fullName, string shortName)

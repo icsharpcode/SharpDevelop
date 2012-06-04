@@ -36,7 +36,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateStruct()
 		{
-			codeStruct = new CodeStruct(helper.FakeProjectContent, fakeStruct);
+			codeStruct = new CodeStruct(helper.ProjectContent, fakeStruct);
 		}
 
 		[Test]

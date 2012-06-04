@@ -36,7 +36,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateDelegate()
 		{
-			codeDelegate = new CodeDelegate(helper.FakeProjectContent, fakeDelegate);
+			codeDelegate = new CodeDelegate(helper.ProjectContent, fakeDelegate);
 		}
 
 		[Test]

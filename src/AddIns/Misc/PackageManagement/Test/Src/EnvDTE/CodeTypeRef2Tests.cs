@@ -33,7 +33,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateCodeTypeRef2()
 		{
-			typeRef = new CodeTypeRef2(classHelper.ProjectContentHelper.FakeProjectContent, parent, helper.ReturnType);
+			typeRef = new CodeTypeRef2(classHelper.ProjectContentHelper.ProjectContent, parent, helper.ReturnType);
 		}
 		
 		void ReturnTypeUsesDifferentProjectContent()
@@ -48,6 +48,16 @@ namespace PackageManagement.Tests.EnvDTE
 			classHelper.ProjectContentHelper.SetProjectForProjectContent(project);
 		}
 		
+		void ProjectContentIsForVisualBasicProject()
+		{
+			classHelper.ProjectContentHelper.ProjectContentIsForVisualBasicProject();
+		}
+		
+		void ProjectContentIsForCSharpProject()
+		{
+			classHelper.ProjectContentHelper.ProjectContentIsForCSharpProject();
+		}
+
 		[Test]
 		public void CodeType_ReturnTypeIsSystemString_ReturnsCodeClass2ForSystemStringType()
 		{
@@ -123,6 +133,59 @@ namespace PackageManagement.Tests.EnvDTE
 			string name = typeRef.AsFullName;
 			
 			Assert.AreEqual("System.Nullable<System.String>", name);
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsSystemStringInCSharpProject_ReturnsString()
+		{
+			helper.CreateReturnType("System.String");
+			ProjectContentIsForCSharpProject();
+			AddUnderlyingClassToReturnType("System.String");
+			CreateCodeTypeRef2();
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("string", name);
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsSystemInt32InCSharpProject_ReturnsInt()
+		{
+			helper.CreateReturnType("System.Int32");
+			AddUnderlyingClassToReturnType("System.Int32");
+			ProjectContentIsForCSharpProject();
+			CreateCodeTypeRef2();
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("int", name);
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsSystemInt32InVisualBasicProject_ReturnsInteger()
+		{
+			helper.CreateReturnType("System.Int32");
+			AddUnderlyingClassToReturnType("System.Int32");
+			ProjectContentIsForVisualBasicProject();
+			CreateCodeTypeRef2();
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("Integer", name);
+		}
+		
+		[Test]
+		public void AsString_ReturnTypeIsCustomType_ReturnsFullTypeName()
+		{
+			helper.CreateReturnType("Test.MyClass");
+			AddUnderlyingClassToReturnType("Test.MyClass");
+			ProjectContentIsForCSharpProject();
+			helper.AddDotNetName("Test.MyClass");
+			CreateCodeTypeRef2();
+			
+			string name = typeRef.AsString;
+			
+			Assert.AreEqual("Test.MyClass", name);
 		}
 	}
 }

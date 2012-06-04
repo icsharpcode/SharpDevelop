@@ -10,6 +10,7 @@ namespace PackageManagement.Tests.Helpers
 	public class ReturnTypeHelper
 	{
 		public IReturnType ReturnType;
+		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
 		
 		public void CreateReturnType(string fullyQualifiedName)
 		{
@@ -31,5 +32,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			ReturnType.Stub(t => t.GetUnderlyingClass()).Return(c);
 		}
+		
+		
 	}
 }

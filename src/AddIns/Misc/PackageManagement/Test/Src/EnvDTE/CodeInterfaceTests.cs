@@ -24,7 +24,7 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateInterface()
 		{
 			IClass c = helper.AddInterfaceToProjectContent("MyInterface");
-			codeInterface = new CodeInterface(helper.FakeProjectContent, c);
+			codeInterface = new CodeInterface(helper.ProjectContent, c);
 		}
 		
 		[Test]

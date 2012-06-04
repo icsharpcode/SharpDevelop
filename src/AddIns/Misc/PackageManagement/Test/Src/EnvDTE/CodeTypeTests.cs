@@ -27,7 +27,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateCodeType()
 		{
-			codeType = new CodeType(helper.ProjectContentHelper.FakeProjectContent, helper.Class);
+			codeType = new CodeType(helper.ProjectContentHelper.ProjectContent, helper.Class);
 		}
 		
 		void AddAttributeToClass(string name)

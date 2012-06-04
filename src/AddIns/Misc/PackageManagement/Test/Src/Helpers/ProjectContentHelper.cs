@@ -13,18 +13,18 @@ namespace PackageManagement.Tests.Helpers
 {
 	public class ProjectContentHelper
 	{
-		public IProjectContent FakeProjectContent;
+		public IProjectContent ProjectContent;
 		public List<string> NamespaceNames = new List<string>();
 		
 		public ProjectContentHelper()
 		{
-			FakeProjectContent = MockRepository.GenerateStub<IProjectContent>();
-			FakeProjectContent.Stub(pc => pc.NamespaceNames).Return(NamespaceNames);
+			ProjectContent = MockRepository.GenerateStub<IProjectContent>();
+			ProjectContent.Stub(pc => pc.NamespaceNames).Return(NamespaceNames);
 		}
 		
 		public void SetProjectForProjectContent(IProject project)
 		{
-			FakeProjectContent.Stub(pc => pc.Project).Return(project);
+			ProjectContent.Stub(pc => pc.Project).Return(project);
 		}
 		
 		public IClass AddClassToProjectContentAndCompletionEntries(string namespaceName, string className)
@@ -39,7 +39,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddCompletionEntriesToNamespace(string namespaceName, List<ICompletionEntry> namespaceContents)
 		{
-			FakeProjectContent.Stub(pc => pc.GetNamespaceContents(namespaceName)).Return(namespaceContents);
+			ProjectContent.Stub(pc => pc.GetNamespaceContents(namespaceName)).Return(namespaceContents);
 		}
 		
 		public void NoCompletionItemsInNamespace(string namespaceName)
@@ -49,7 +49,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IClass AddClassToProjectContent(string className)
 		{
-			IClass fakeClass = AddClassToProjectContentCommon(FakeProjectContent, className);
+			IClass fakeClass = AddClassToProjectContentCommon(ProjectContent, className);
 			SetClassType(fakeClass, ClassType.Class);
 			return fakeClass;
 		}
@@ -68,7 +68,7 @@ namespace PackageManagement.Tests.Helpers
 		IClass AddClassToProjectContentCommon(IProjectContent projectContent, string className)
 		{
 			IClass fakeClass = MockRepository.GenerateMock<IClass, IEntity>();
-			FakeProjectContent.Stub(pc => pc.GetClass(className, 0)).Return(fakeClass);
+			ProjectContent.Stub(pc => pc.GetClass(className, 0)).Return(fakeClass);
 			fakeClass.Stub(c => c.FullyQualifiedName).Return(className);
 			fakeClass.Stub(c => c.ProjectContent).Return(projectContent);
 			return fakeClass;
@@ -76,7 +76,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IClass AddInterfaceToProjectContent(string interfaceName)
 		{
-			return AddInterfaceToProjectContent(FakeProjectContent, interfaceName);
+			return AddInterfaceToProjectContent(ProjectContent, interfaceName);
 		}
 		
 		public IClass AddInterfaceToDifferentProjectContent(string interfaceName)
@@ -131,7 +131,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddClassToCompletionEntries(string namespaceName, string className)
 		{
-			AddClassToCompletionEntries(FakeProjectContent, namespaceName, className);
+			AddClassToCompletionEntries(ProjectContent, namespaceName, className);
 		}
 		
 		void AddClassToCompletionEntries(IProjectContent projectContent, string namespaceName, string className)
@@ -147,6 +147,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
 			project.FileName = @"c:\projects\myproject.csproj";
+			ProjectContent.Stub(pc => pc.Language).Return(LanguageProperties.CSharp);
 			SetProjectForProjectContent(project);
 		}
 		
@@ -154,6 +155,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			TestableProject project = ProjectHelper.CreateTestProject();
 			project.FileName = @"c:\projects\myproject.vbproj";
+			ProjectContent.Stub(pc => pc.Language).Return(LanguageProperties.VBNet);
 			SetProjectForProjectContent(project);
 		}
 		
@@ -180,7 +182,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IClass AddStructToProjectContent(string name)
 		{
-			IClass fakeStruct = AddClassToProjectContentCommon(FakeProjectContent, name);
+			IClass fakeStruct = AddClassToProjectContentCommon(ProjectContent, name);
 			SetClassType(fakeStruct, ClassType.Struct);
 			return fakeStruct;
 		}
@@ -201,7 +203,7 @@ namespace PackageManagement.Tests.Helpers
 		
 		public IClass AddDelegateToProjectContent(string name)
 		{
-			IClass fakeDelegate = AddClassToProjectContentCommon(FakeProjectContent, name);
+			IClass fakeDelegate = AddClassToProjectContentCommon(ProjectContent, name);
 			SetClassType(fakeDelegate, ClassType.Delegate);
 			return fakeDelegate;
 		}

@@ -18,7 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		public void CreateMethod(string fullyQualifiedName)
 		{
 			Method = MockRepository.GenerateMock<IMethod, IEntity>();
-			Method.Stub(m => m.ProjectContent).Return(ProjectContentHelper.FakeProjectContent);
+			Method.Stub(m => m.ProjectContent).Return(ProjectContentHelper.ProjectContent);
 			Method.Stub(m => m.FullyQualifiedName).Return(fullyQualifiedName);
 		}
 		

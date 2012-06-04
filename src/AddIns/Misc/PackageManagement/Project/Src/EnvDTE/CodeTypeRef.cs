@@ -28,6 +28,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return ReturnType.GetFullName(); }
 		}
 		
+		public virtual string AsString {
+			get {
+				if (projectContent.Language == LanguageProperties.VBNet) {
+					return ReturnType.AsVisualBasicString();
+				}
+				return ReturnType.AsCSharpString();
+			}
+		}
+		
 		public virtual CodeElement Parent {
 			get { return parent; }
 		}

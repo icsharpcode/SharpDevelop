@@ -17,7 +17,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateCodeNamespace(string namespaceName)
 		{
-			codeNamespace = new CodeNamespace(helper.FakeProjectContent, namespaceName);
+			codeNamespace = new CodeNamespace(helper.ProjectContent, namespaceName);
 		}
 		
 		void CreateProjectContent()

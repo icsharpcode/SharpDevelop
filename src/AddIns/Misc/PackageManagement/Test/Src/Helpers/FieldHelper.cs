@@ -19,7 +19,7 @@ namespace PackageManagement.Tests.Helpers
 		public void CreateField(string fullyQualifiedName)
 		{
 			Field = MockRepository.GenerateMock<IField, IEntity>();
-			Field.Stub(f => f.ProjectContent).Return(ProjectContentHelper.FakeProjectContent);
+			Field.Stub(f => f.ProjectContent).Return(ProjectContentHelper.ProjectContent);
 			Field.Stub(f => f.FullyQualifiedName).Return(fullyQualifiedName);
 		}
 		

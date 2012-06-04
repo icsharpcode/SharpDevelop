@@ -24,7 +24,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateCodeElements(string namespaceName)
 		{
-			codeElements = new CodeElementsInNamespace(helper.FakeProjectContent, namespaceName);
+			codeElements = new CodeElementsInNamespace(helper.ProjectContent, namespaceName);
 		}
 		
 		[Test]

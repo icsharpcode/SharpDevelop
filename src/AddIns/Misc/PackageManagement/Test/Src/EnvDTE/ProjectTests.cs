@@ -27,7 +27,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper = new ProjectContentHelper();
 			
 			fakeProjectService = MockRepository.GenerateStub<IPackageManagementProjectService>();
-			fakeProjectService.Stub(service => service.GetProjectContent(msbuildProject)).Return(helper.FakeProjectContent);
+			fakeProjectService.Stub(service => service.GetProjectContent(msbuildProject)).Return(helper.ProjectContent);
 			
 			fakeFileService = MockRepository.GenerateStub<IPackageManagementFileService>();
 			project = new Project(msbuildProject, fakeProjectService, fakeFileService);

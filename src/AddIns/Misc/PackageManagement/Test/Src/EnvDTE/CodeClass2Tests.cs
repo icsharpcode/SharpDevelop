@@ -41,7 +41,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateClass()
 		{
-			codeClass = new CodeClass2(helper.ProjectContentHelper.FakeProjectContent, helper.Class);
+			codeClass = new CodeClass2(helper.ProjectContentHelper.ProjectContent, helper.Class);
 		}
 		
 		void AddInterfaceToProjectContent(string fullName)

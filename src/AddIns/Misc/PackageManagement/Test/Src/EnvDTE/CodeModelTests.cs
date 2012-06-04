@@ -24,7 +24,7 @@ namespace PackageManagement.Tests.EnvDTE
 			helper = new ProjectContentHelper();
 			msbuildProject = ProjectHelper.CreateTestProject();
 			helper.SetProjectForProjectContent(msbuildProject);
-			codeModel = new CodeModel(helper.FakeProjectContent);
+			codeModel = new CodeModel(helper.ProjectContent);
 		}
 		
 		void AddClassToProjectContent(string className)
