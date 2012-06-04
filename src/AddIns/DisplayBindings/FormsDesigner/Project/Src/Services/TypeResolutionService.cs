@@ -361,6 +361,19 @@ namespace ICSharpCode.FormsDesigner.Services
 			return GetType(name, throwOnError, false);
 		}
 		
+		#if DEBUG
+		int count = 0;
+		#endif
+		
+		Dictionary<string, Type> typeCache = new Dictionary<string, Type>(StringComparer.Ordinal);
+		Dictionary<string, Type> typeCacheIgnoreCase = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+		
+		public void ClearCaches()
+		{
+			typeCacheIgnoreCase.Clear();
+			typeCache.Clear();
+		}
+		
 		public Type GetType(string name, bool throwOnError, bool ignoreCase)
 		{
 			if (name == null || name.Length == 0) {
@@ -369,9 +382,19 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (IgnoreType(name)) {
 				return null;
 			}
+			if (ignoreCase) {
+				Type cachedType;
+				if (typeCacheIgnoreCase.TryGetValue(name, out cachedType))
+					return cachedType;
+			} else {
+				Type cachedType;
+				if (typeCache.TryGetValue(name, out cachedType))
+					return cachedType;
+			}
 			#if DEBUG
 			if (!name.StartsWith("System.")) {
-				LoggingService.Debug("TypeResolutionService: Looking for " + name);
+				count++;
+				LoggingService.Debug(count + " TypeResolutionService: Looking for " + name);
 			}
 			#endif
 			try {
@@ -436,6 +459,7 @@ namespace ICSharpCode.FormsDesigner.Services
 							try {
 								Type t = asm.GetType(name, false);
 								if (t != null) {
+									AddToCache(name, t, ignoreCase);
 									return t;
 								}
 							} catch (FileNotFoundException) {
@@ -449,12 +473,23 @@ namespace ICSharpCode.FormsDesigner.Services
 				
 				if (throwOnError && type == null)
 					throw new TypeLoadException(name + " not found by TypeResolutionService");
-				
+				AddToCache(name, type, ignoreCase);
 				return type;
 			} catch (Exception e) {
 				LoggingService.Error(e);
 			}
 			return null;
+		}
+		
+		void AddToCache(string name, Type type, bool ignoreCase)
+		{
+			if (type == null)
+				return;
+			if (ignoreCase) {
+				typeCacheIgnoreCase.Add(name, type);
+			} else {
+				typeCache.Add(name, type);
+			}
 		}
 		
 		public void ReferenceAssembly(AssemblyName name)
