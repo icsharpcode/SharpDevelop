@@ -183,7 +183,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			                            new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
-		/// Gets/Sets the document displayed by the text editor.
+		/// Gets/Sets the options used by the text editor.
 		/// </summary>
 		public TextEditorOptions Options {
 			get { return (TextEditorOptions)GetValue(OptionsProperty); }

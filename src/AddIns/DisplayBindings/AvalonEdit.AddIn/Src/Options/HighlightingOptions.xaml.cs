@@ -39,10 +39,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			InitializeComponent();
 			textEditor.Document.UndoStack.SizeLimit = 0;
-			textEditor.Options = CodeEditorOptions.Instance;
+			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
+			textEditor.Options = new TextEditorOptions(CodeEditorOptions.Instance);
 			bracketHighlighter = new BracketHighlightRenderer(textEditor.TextArea.TextView);
 			foldingManager = FoldingManager.Install(textEditor.TextArea);
-			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
 			textMarkerService = new TextMarkerService(textEditor.Document);
 			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
 			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
@@ -429,6 +429,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			currentStatementMarker = new CustomizedHighlightingItem(customizationList, currentStatementMarker, language, canSetFont: false);
 			currentStatementMarker.PropertyChanged += item_PropertyChanged;
 			items.Add(currentStatementMarker);
+			
+			IHighlightingItem columnRuler = new SimpleHighlightingItem(
+				ColumnRulerRenderer.Name,
+				ta => {
+					ta.Document.Text = "some line with a lot of text";
+					ta.TextView.Options.ColumnRulerPosition = 15;
+					ta.TextView.Options.ShowColumnRuler = true;
+				})
+			{
+				Foreground = ColumnRulerRenderer.DefaultForeground
+			};
+			columnRuler = new CustomizedHighlightingItem(customizationList, columnRuler, language, canSetFont: false, canSetBackground: false);
+			columnRuler.PropertyChanged += item_PropertyChanged;
+			items.Add(columnRuler);
 		}
 
 		void item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

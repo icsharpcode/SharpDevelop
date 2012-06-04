@@ -42,6 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.TextView.ClearValue(TextView.NonPrintableCharacterBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextForegroundBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextBackgroundBrushProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.ColumnRulerBrushProperty);
 			
 			// 'assigned' flags are used so that the first matching customization wins.
 			// This is necessary because more specific customizations come first in the list
@@ -51,6 +52,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			bool assignedNonPrintableCharacter = false;
 			bool assignedLineNumbers = false;
 			bool assignedLinkText = false;
+			bool assignedColumnRulerColor = false;
+			
 			foreach (CustomizedHighlightingColor color in customizations) {
 				switch (color.Name) {
 					case DefaultTextAndBackground:
@@ -105,6 +108,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							textEditor.TextArea.TextView.LinkTextForegroundBrush = CreateFrozenBrush(color.Foreground.Value);
 						if (color.Background != null)
 							textEditor.TextArea.TextView.LinkTextBackgroundBrush = CreateFrozenBrush(color.Background.Value);
+						break;
+					case ColumnRulerRenderer.Name:
+						if (assignedColumnRulerColor)
+							continue;
+						assignedColumnRulerColor = true;
+						if (color.Foreground != null)
+							textEditor.TextArea.TextView.ColumnRulerBrush = CreateFrozenBrush(color.Foreground.Value); 
 						break;
 				}
 			}
