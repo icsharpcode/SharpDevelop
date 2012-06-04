@@ -15,8 +15,7 @@
 		Orientation="Vertical">
 		<GroupBox
 			Header="{core:Localize Dialog.ProjectOptions.Signing.StrongName}">
-			<Grid
-				ShowGridLines="True">
+			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition
 						Height="30"></RowDefinition>
@@ -37,19 +36,13 @@
 					<ColumnDefinition
 						Width="*"></ColumnDefinition>
 				</Grid.ColumnDefinitions>
-				<!--
-Command="{Binding DataContext.Cmd, RelativeSource={RelativeSource FindAncestor,
-					AncestorType={x:Type UserControl}}}"
-					
-					CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked}"
--->
-				<CheckBox
-					x:Name="signAssemblyCheckBox"
-					Grid.Column="1"
-					VerticalAlignment="Center"
-					IsChecked="{Binding SignAssembly.Value,Converter={StaticResource strTobool}}"
-				>
+			
+				<CheckBox x:Name="signAssemblyCheckBox"
+					Grid.Column="1" VerticalAlignment="Center"
+					Content="{core:Localize Dialog.ProjectOptions.Signing.SignAssembly}"
+					IsChecked="{Binding SignAssembly.Value,Converter={StaticResource strTobool}}">
 				</CheckBox>
+				
 				<Label
 					Grid.Row="1"
 					Grid.Column="1"
@@ -60,22 +53,32 @@ Command="{Binding DataContext.Cmd, RelativeSource={RelativeSource FindAncestor,
 					x:Name="keyFileComboBox"
 					Grid.Row="2"
 					Grid.Column="1"
-					Margin="0,0,0,0"></ComboBox>
+					Margin="3,3,3,3"
+					IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
+					SelectionChanged="KeyFileComboBox_SelectionChanged"
+					ItemsSource="{Binding KeyFile}"
+					SelectedValue="{Binding Path=SelectedKey}">
+				</ComboBox>
 				<Button
 					x:Name="changePasswordButton"
 					Grid.Row="2"
 					Grid.Column="3"
+					IsEnabled="False"
 					Content="{core:Localize Dialog.ProjectOptions.Signing.ChangePassword}"
-					Margin="10,0,10,0"></Button>
+					Margin="10,3,10,3"></Button>
 				<CheckBox
 					x:Name="delaySignOnlyCheckBox"
 					Grid.Row="3"
 					Grid.Column="1"
 					VerticalAlignment="Center"
-					Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignOnly}"></CheckBox>
+					IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
+					Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignOnly}"
+					IsChecked="{Binding DelaySign.Value,Converter={StaticResource strTobool}}">
+				</CheckBox>
 				<Label
 					Grid.Row="4"
 					Grid.Column="1"
+					IsEnabled="{Binding ElementName=signAssemblyCheckBox, Path=IsChecked}"
 					Content="{core:Localize Dialog.ProjectOptions.Signing.DelaySignWarning}"></Label>
 			</Grid>
 		</GroupBox>
