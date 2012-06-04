@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		protected override CodeAction GetAction (RefactoringContext context, IfElseStatement node)
 		{
-			if (!node.Contains (context.Location))
+			if (!node.IfToken.Contains (context.Location))
 				return null;
 
 			IfElseStatement outerIfStatement;
