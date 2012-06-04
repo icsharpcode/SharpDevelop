@@ -65,10 +65,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		public override bool CanToggle {
-			get {
-				return false;
-			}
+			get { return false; }
 		}
+		
+		public const string Name = "Current statement";
+		
+		public static readonly Color DefaultBackground = Colors.Yellow;
+		public static readonly Color DefaultForeground = Colors.Blue;
 		
 		public override int ZOrder {
 			get { return 100; }
@@ -90,8 +93,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			IDocumentLine line = this.Document.GetLine(startLine);
 			ITextMarker marker = markerService.Create(line.Offset + startColumn - 1, Math.Max(endColumn - startColumn, 1));
-			marker.BackgroundColor = Colors.Yellow;
-			marker.ForegroundColor = Colors.Blue;
+			ISyntaxHighlighter highlighter = this.Document.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+			marker.BackgroundColor = DefaultBackground;
+			marker.ForegroundColor = DefaultForeground;
+			
+			if (highlighter != null) {
+				var color = highlighter.GetNamedColor(Name);
+				if (color != null) {
+					marker.BackgroundColor = color.Background.GetColor(null);
+					marker.ForegroundColor = color.Foreground.GetColor(null);
+				}
+			}
 			return marker;
 		}
 		

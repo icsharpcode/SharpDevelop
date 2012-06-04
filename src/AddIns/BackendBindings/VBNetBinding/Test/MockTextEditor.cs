@@ -49,7 +49,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 				}
 			}
 			
-			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
+//			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
 			this.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("VBNet");
 			
 			new VBNetLanguageBinding().Attach(this);

@@ -63,6 +63,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		public static IEnumerable<CustomizedHighlightingColor> FetchCustomizations(string languageName)
+		{
+			// Access CustomizedHighlightingColor.ActiveColors within enumerator so that always the latest version is used.
+			// Using CustomizedHighlightingColor.ActiveColors.Where(...) would not work correctly!
+			foreach (CustomizedHighlightingColor color in CustomizedHighlightingColor.ActiveColors) {
+				if (color.Language == null || color.Language == languageName)
+					yield return color;
+			}
+		}
+		
 		/// <summary>
 		/// Occurs when the set of customized highlighting colors was changed.
 		/// </summary>

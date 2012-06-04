@@ -14,7 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Linq;
-
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -23,6 +22,7 @@ using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
@@ -39,10 +39,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			InitializeComponent();
 			textEditor.Document.UndoStack.SizeLimit = 0;
-			textEditor.Options = CodeEditorOptions.Instance;
+			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
+			textEditor.Options = new TextEditorOptions(CodeEditorOptions.Instance);
 			bracketHighlighter = new BracketHighlightRenderer(textEditor.TextArea.TextView);
 			foldingManager = FoldingManager.Install(textEditor.TextArea);
-			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
 			textMarkerService = new TextMarkerService(textEditor.Document);
 			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
 			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
@@ -80,7 +80,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			bool assignedErrorColor = false;
 			bool assignedWarningColor = false;
 			bool assignedMessageColor = false;
-			
+
 			foreach (var instance in ErrorPainter.Instances) {
 				instance.ErrorColor = Colors.Red;
 				instance.WarningColor = Colors.Orange;
@@ -401,6 +401,48 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			messageMarker = new CustomizedHighlightingItem(customizationList, messageMarker, language, canSetFont: false, canSetBackground: false);
 			messageMarker.PropertyChanged += item_PropertyChanged;
 			items.Add(messageMarker);
+			
+			IHighlightingItem breakpointMarker = new SimpleHighlightingItem(
+				BreakpointBookmark.BreakpointMarker,
+				ta => {
+					ta.Document.Text = "some code with a breakpoint";
+					marker = textMarkerService.Create(0, ta.Document.TextLength);
+				})
+			{
+				Background = BreakpointBookmark.DefaultBackground,
+				Foreground = BreakpointBookmark.DefaultForeground
+			};
+			breakpointMarker = new CustomizedHighlightingItem(customizationList, breakpointMarker, language, canSetFont: false);
+			breakpointMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(breakpointMarker);
+			
+			IHighlightingItem currentStatementMarker = new SimpleHighlightingItem(
+				CurrentLineBookmark.Name,
+				ta => {
+					ta.Document.Text = "current statement line";
+					marker = textMarkerService.Create(0, ta.Document.TextLength);
+				})
+			{
+				Background = CurrentLineBookmark.DefaultBackground,
+				Foreground = CurrentLineBookmark.DefaultForeground
+			};
+			currentStatementMarker = new CustomizedHighlightingItem(customizationList, currentStatementMarker, language, canSetFont: false);
+			currentStatementMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(currentStatementMarker);
+			
+			IHighlightingItem columnRuler = new SimpleHighlightingItem(
+				ColumnRulerRenderer.Name,
+				ta => {
+					ta.Document.Text = "some line with a lot of text";
+					ta.TextView.Options.ColumnRulerPosition = 15;
+					ta.TextView.Options.ShowColumnRuler = true;
+				})
+			{
+				Foreground = ColumnRulerRenderer.DefaultForeground
+			};
+			columnRuler = new CustomizedHighlightingItem(customizationList, columnRuler, language, canSetFont: false, canSetBackground: false);
+			columnRuler.PropertyChanged += item_PropertyChanged;
+			items.Add(columnRuler);
 		}
 
 		void item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -451,8 +493,20 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					bracketHighlighter.SetHighlight(null);
 					item.ShowExample(textEditor.TextArea);
 					if (marker != null) {
-						marker.MarkerType = TextMarkerType.SquigglyUnderline;
-						marker.MarkerColor = item.Foreground;
+						switch (item.Name) {
+							case ErrorPainter.ErrorColorName:
+							case ErrorPainter.WarningColorName:
+							case ErrorPainter.MessageColorName:
+								marker.MarkerType = TextMarkerType.SquigglyUnderline;
+								marker.ForegroundColor = item.Foreground;
+								marker.BackgroundColor = item.Background;
+								break;
+							default:
+								marker.MarkerType = TextMarkerType.None;
+								marker.ForegroundColor = item.Foreground;
+								marker.BackgroundColor = item.Background;
+								break;
+						}
 					}
 				}
 			}

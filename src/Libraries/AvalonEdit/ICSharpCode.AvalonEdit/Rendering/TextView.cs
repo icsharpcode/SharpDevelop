@@ -40,6 +40,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			FocusableProperty.OverrideMetadata(typeof(TextView), new FrameworkPropertyMetadata(Boxes.False));
 		}
 		
+		ColumnRulerRenderer columnRulerRenderer;
+		
 		/// <summary>
 		/// Creates a new TextView instance.
 		/// </summary>
@@ -50,7 +52,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
+			columnRulerRenderer = new ColumnRulerRenderer(this);
 			this.Options = new TextEditorOptions();
+			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
+			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
 			layers = new LayerCollection(this);
@@ -178,7 +183,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			                            new FrameworkPropertyMetadata(OnOptionsChanged));
 		
 		/// <summary>
-		/// Gets/Sets the document displayed by the text editor.
+		/// Gets/Sets the options used by the text editor.
 		/// </summary>
 		public TextEditorOptions Options {
 			get { return (TextEditorOptions)GetValue(OptionsProperty); }
@@ -198,6 +203,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (OptionChanged != null) {
 				OptionChanged(this, e);
 			}
+			
+			// PropertyName == null means all properties are changed
+			if (e.PropertyName == null || e.PropertyName == "ColumnRulerPosition" || e.PropertyName == "ShowColumnRuler") {
+				if (Options.ShowColumnRuler)
+					columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
+				else
+					columnRulerRenderer.SetRuler(-1, ColumnRulerBrush);
+			}
+			
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
 		}
@@ -1907,7 +1921,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				// and we need to re-measure the font metrics:
 				InvalidateDefaultTextMetrics();
 			} else if (e.Property == Control.ForegroundProperty
-			           || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			           || e.Property == TextView.NonPrintableCharacterBrushProperty
+			           || e.Property == TextView.LinkTextBackgroundBrushProperty
+			           || e.Property == TextView.LinkTextForegroundBrushProperty)
 			{
 				// changing brushes requires recreating the cached elements
 				RecreateCachedElements();
@@ -1926,5 +1942,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				Redraw();
 			}
 		}
+		
+		public static readonly DependencyProperty ColumnRulerBrushProperty =
+			DependencyProperty.Register("ColumnRulerBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.LightGray, OnUpdateBrushes));
+		
+		public Brush ColumnRulerBrush {
+			get { return (Brush)GetValue(ColumnRulerBrushProperty); }
+			set { SetValue(ColumnRulerBrushProperty, value); }
+		}
+		
+		public static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TextView view = d as TextView;
+			if (view == null) return;
+			if (e.Property == ColumnRulerBrushProperty)
+				view.columnRulerRenderer.SetRuler(view.Options.ColumnRulerPosition, (Brush)e.NewValue);
+		}
+		
 	}
 }

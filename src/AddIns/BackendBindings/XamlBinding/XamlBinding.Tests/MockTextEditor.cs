@@ -51,7 +51,7 @@ namespace ICSharpCode.XamlBinding.Tests
 				}
 			}
 			
-			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
+//			this.TextEditor.TextArea.TextView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(this.TextEditor));
 			this.TextEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("XML");
 			
 			new XamlLanguageBinding().Attach(this);

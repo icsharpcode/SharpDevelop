@@ -177,6 +177,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			primaryTextEditor.UpdateCustomizedHighlighting();
 			if (secondaryTextEditor != null)
 				secondaryTextEditor.UpdateCustomizedHighlighting();
+			foreach (var bookmark in BookmarkManager.GetBookmarks(fileName).OfType<SDMarkerBookmark>())
+				bookmark.SetMarker();
 		}
 		
 		/// <summary>
