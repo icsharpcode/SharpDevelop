@@ -52,7 +52,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			elementGenerators = new ObserveAddRemoveCollection<VisualLineElementGenerator>(ElementGenerator_Added, ElementGenerator_Removed);
 			lineTransformers = new ObserveAddRemoveCollection<IVisualLineTransformer>(LineTransformer_Added, LineTransformer_Removed);
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
+			columnRulerRenderer = new ColumnRulerRenderer(this);
 			this.Options = new TextEditorOptions();
+			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
+			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
 			layers = new LayerCollection(this);
@@ -61,8 +64,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.hoverLogic = new MouseHoverLogic(this);
 			this.hoverLogic.MouseHover += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverEvent, MouseHoverEvent);
 			this.hoverLogic.MouseHoverStopped += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
-			this.columnRulerRenderer = new ColumnRulerRenderer(this);
-			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
 		}
 
 		#endregion
@@ -203,7 +204,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				OptionChanged(this, e);
 			}
 			
-			if (e.PropertyName == "ColumRulerPosition" || e.PropertyName == "ShowColumnRuler") {
+			// PropertyName == null means all properties are changed
+			if (e.PropertyName == null || e.PropertyName == "ColumnRulerPosition" || e.PropertyName == "ShowColumnRuler") {
 				if (Options.ShowColumnRuler)
 					columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
 				else
