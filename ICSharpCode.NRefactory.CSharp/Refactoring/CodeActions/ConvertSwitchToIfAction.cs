@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		protected override CodeAction GetAction (RefactoringContext context, SwitchStatement node)
 		{
-			if (!node.Contains (context.Location))
+			if (!node.SwitchToken.Contains (context.Location))
 				return null;
 
 			// empty switch
