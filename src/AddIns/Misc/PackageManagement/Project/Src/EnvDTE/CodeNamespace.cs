@@ -10,7 +10,6 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	{
 		NamespaceName namespaceName;
 		IProjectContent projectContent;
-		CodeElementsInNamespace members;
 		
 		public CodeNamespace(IProjectContent projectContent, string qualifiedName)
 			: this(projectContent, new NamespaceName(qualifiedName))
@@ -29,16 +28,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return vsCMElement.vsCMElementNamespace; }
 		}
 		
-		internal string QualifiedName {
-			get { return namespaceName.QualifiedName; }
-		}
-		
 		internal NamespaceName NamespaceName {
 			get { return namespaceName; }
 		}
 		
 		public string FullName {
-			get { return this.Name; }
+			get { return namespaceName.QualifiedName; }
 		}
 		
 		public override string Name {
@@ -46,12 +41,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeElements Members {
-			get { 
-				if (members == null) {
-					members = new CodeElementsInNamespace(projectContent, namespaceName);
-				}
-				return members;
-			}
+			get { return new CodeElementsInNamespace(projectContent, namespaceName); }
 		}
 	}
 }

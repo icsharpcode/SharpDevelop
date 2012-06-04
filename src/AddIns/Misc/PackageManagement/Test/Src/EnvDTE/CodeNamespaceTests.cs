@@ -62,7 +62,7 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("First", codeNamespace.Name);
 			Assert.AreEqual(1, members.Count);
 			Assert.AreEqual("Second", childNamespace.Name);
-			Assert.AreEqual("Second", childNamespace.FullName);
+			Assert.AreEqual("First.Second", childNamespace.FullName);
 		}
 		
 		[Test]
@@ -90,9 +90,9 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("First", codeNamespace.Name);
 			Assert.AreEqual(1, members.Count);
 			Assert.AreEqual("Second", secondNamespace.Name);
-			Assert.AreEqual("Second", secondNamespace.FullName);
+			Assert.AreEqual("First.Second", secondNamespace.FullName);
 			Assert.AreEqual(1, secondNamespace.Members.Count);
-			Assert.AreEqual("Third", thirdNamespace.FullName);
+			Assert.AreEqual("First.Second.Third", thirdNamespace.FullName);
 			Assert.AreEqual(0, thirdNamespace.Members.Count);
 		}
 		
@@ -110,7 +110,7 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual("First", codeNamespace.Name);
 			Assert.AreEqual(1, members.Count);
 			Assert.AreEqual("Second", secondNamespace.Name);
-			Assert.AreEqual("Second", secondNamespace.FullName);
+			Assert.AreEqual("First.Second", secondNamespace.FullName);
 			Assert.AreEqual(2, secondNamespace.Members.Count);
 		}
 		

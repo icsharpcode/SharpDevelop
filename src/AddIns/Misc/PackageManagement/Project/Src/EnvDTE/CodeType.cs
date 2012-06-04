@@ -56,5 +56,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual CodeElements Attributes {
 			get { return new CodeAttributes(Class); }
 		}
+		
+		public virtual CodeNamespace Namespace {
+			get { return new CodeNamespace(ProjectContent, Class.Namespace); }
+		}
 	}
 }

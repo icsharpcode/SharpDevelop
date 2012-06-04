@@ -59,7 +59,7 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(1, codeElements.Count);
 			Assert.AreEqual("Child", codeNamespace.Name);
-			Assert.AreEqual("Child", codeNamespace.FullName);
+			Assert.AreEqual("Parent.Child", codeNamespace.FullName);
 		}
 		
 		[Test]

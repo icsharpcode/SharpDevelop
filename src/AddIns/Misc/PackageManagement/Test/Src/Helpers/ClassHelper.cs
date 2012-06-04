@@ -121,5 +121,10 @@ namespace PackageManagement.Tests.Helpers
 			
 			fields.Add(helper.Field);
 		}
+		
+		public void AddClassNamespace(string name)
+		{
+			Class.Stub(c => c.Namespace).Return(name);
+		}
 	}
 }

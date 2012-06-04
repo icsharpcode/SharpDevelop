@@ -223,5 +223,18 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(vsCMElement.vsCMElementClass, kind);
 		}
+		
+		[Test]
+		public void Namespace_PublicClass_ReturnsClassNamespace()
+		{
+			CreateProjectContent();
+			helper.CreatePublicClass("MyNamespace.Test.MyClass");
+			helper.AddClassNamespace("MyNamespace.Test");
+			CreateClass();
+			
+			CodeNamespace codeNamespace = codeClass.Namespace;
+			
+			Assert.AreEqual("MyNamespace.Test", codeNamespace.FullName);
+		}
 	}
 }
