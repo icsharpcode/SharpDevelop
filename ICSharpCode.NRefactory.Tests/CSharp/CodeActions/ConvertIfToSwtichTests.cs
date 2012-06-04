@@ -42,7 +42,7 @@ class TestClass
 	void TestMethod (int a)
 	{
 		int b;
-		if$ (a == 0) {
+		$if (a == 0) {
 			b = 0;
 		} else if (a == 1) {
 			b = 1;
@@ -85,7 +85,7 @@ class TestClass
 {
 	int TestMethod (int a)
 	{
-		if$ (a == 0) {
+		$if (a == 0) {
 			int b = 1;
 			return b + 1;
 		} else if (a == 2 || a == 3) {
@@ -121,7 +121,7 @@ class TestClass
 {
 	int TestMethod (int? a)
 	{
-		if$ (a == (1 == 1 ? 11 : 12)) {
+		$if (a == (1 == 1 ? 11 : 12)) {
 			return 1;
 		} else if (a == (2 * 3) + 1 || a == 6 / 2) {
 			return 2;
@@ -161,7 +161,7 @@ class TestClass
 	int TestMethod (int a)
 	{
 		const int c = 1;
-		if$ (a == b) {
+		$if (a == b) {
 			return 1;
 		} else if (a == b + c) {
 			return 0;
@@ -196,7 +196,7 @@ class TestClass
 {
 	int TestMethod (int a)
 	{
-		if$ (a == 0) {
+		$if (a == 0) {
 			return 1;
 		} else if ((a == 2 || a == 4) || (a == 3 || a == 5)) {
 			return 2;
@@ -232,7 +232,7 @@ class TestClass
 {
 	int TestMethod (int a, int b)
 	{
-		if$ (a + b == 0) {
+		$if (a + b == 0) {
 			return 1;
 		} else if (1 == a + b) {
 			return 0;
@@ -266,7 +266,7 @@ class TestClass
 	void TestMethod (int a, int c)
 	{
 		int b;
-		if$ (a == 0) {
+		$if (a == 0) {
 			b = 0;
 		} else if (a == c) {
 			b = 1;
@@ -283,7 +283,7 @@ class TestClass
 	void TestMethod (int a, int c)
 	{
 		int b;
-		if$ (a == c) {
+		$if (a == c) {
 			b = 0;
 		} else if (a == 1) {
 			b = 1;
@@ -300,7 +300,7 @@ class TestClass
 	void TestMethod (int a, int c)
 	{
 		int b;
-		if$ (a == 0) {
+		$if (a == 0) {
 			b = 0;
 		} else if (a == 1) {
 			b = 1;
@@ -322,7 +322,7 @@ class TestClass
 	void TestMethod (int a)
 	{
 		int b;
-		if$ (a == 0) {
+		$if (a == 0) {
 			b = 0;
 		} else if (a > 4) {
 			b = 1;
@@ -349,7 +349,7 @@ class TestClass
 {
 	int TestMethod (TestEnum a)
 	{
-		if$ (a == TestEnum.First) {
+		$if (a == TestEnum.First) {
 			return 1;
 		} else {
 			return -1;
@@ -395,7 +395,7 @@ class TestClass
 {
 	int TestMethod (" + type + @" a)
 	{
-		if$ (a == " + caseValue + @") {
+		$if (a == " + caseValue + @") {
 			return 1;
 		} else {
 			return -1;
@@ -425,7 +425,7 @@ class TestClass
 	void TestMethod (double a)
 	{
 		int b;
-		if$ (a == 0) {
+		$if (a == 0) {
 			b = 0;
 		} else {
 			b = 3;
@@ -443,7 +443,7 @@ class TestClass
 	void TestMethod (int a)
 	{
 		int b;
-		if$ (a == 0) {
+		$if (a == 0) {
 			b = 0;
 		} else if (a == 1) {
 			b = 1;
