@@ -121,6 +121,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			set { readXmlIdentifier = value; }
 		}
 		
+		public bool XmlAllowed {
+			get { return xmlAllowed; }
+		}
+		
 		public bool NextTokenIsStartOfImportsOrAccessExpression {
 			get { return nextTokenIsStartOfImportsOrAccessExpression; }
 		}

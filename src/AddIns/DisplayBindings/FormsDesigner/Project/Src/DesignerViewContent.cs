@@ -159,6 +159,9 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Debug("Forms designer: Load " + file.FileName + "; inMasterLoadOperation=" + this.inMasterLoadOperation);
 			
+			if (this.typeResolutionService != null)
+				this.typeResolutionService.ClearCaches();
+			
 			if (inMasterLoadOperation) {
 				
 				if (this.sourceCodeStorage.ContainsFile(file)) {

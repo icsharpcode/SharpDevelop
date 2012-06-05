@@ -37,6 +37,7 @@ partial class ExpressionFinder {
 	bool wasQualifierTokenAtStart = false;
 	bool nextTokenIsPotentialStartOfExpression = false;
 	bool readXmlIdentifier = false;
+	bool xmlAllowed = true;
 	bool identifierExpected = false;
 	bool nextTokenIsStartOfImportsOrAccessExpression = false;
 	bool isMissingModifier = false;

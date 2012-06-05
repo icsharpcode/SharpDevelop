@@ -39,6 +39,20 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			SwitchSection sec = switchStmt.SwitchSections[0];
 			Assert.AreEqual(0, sec.SwitchLabels.Count);
 		}
+		
+		[Test]
+		public void SpecialCaseStatement()
+		{
+			SwitchStatement stmt = ParseUtilVBNet.ParseStatement<SwitchStatement>("Select Case a\nCase < 50\nCase > 20, < 10\nEnd Select");
+			Assert.AreEqual("a", ((IdentifierExpression)stmt.SwitchExpression).Identifier);
+		}
+		
+		[Test]
+		public void SpecialCaseStatement2()
+		{
+			SwitchStatement stmt = ParseUtilVBNet.ParseStatement<SwitchStatement>("Select Case a\nCase < 50\nEnd Select");
+			Assert.AreEqual("a", ((IdentifierExpression)stmt.SwitchExpression).Identifier);
+		}
 		#endregion
 	}
 }

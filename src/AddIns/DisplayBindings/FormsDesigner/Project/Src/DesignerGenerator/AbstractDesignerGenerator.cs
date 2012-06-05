@@ -317,7 +317,7 @@ namespace ICSharpCode.FormsDesigner
 		/// code that is not supported in a previous version of .NET. (3.5 and below)
 		/// Currently it fixes:
 		///  - remove calls to ISupportInitialize.BeginInit/EndInit, if the interface is not implemented by the type in the target framework.
-		/// </summary> 
+		/// </summary>
 		/// <remarks>When adding new workarounds make sure that the code does not remove too much code!</remarks>
 		void RemoveUnsupportedCode(CodeTypeDeclaration formClass, CodeMemberMethod initializeComponent)
 		{
@@ -339,16 +339,9 @@ namespace ICSharpCode.FormsDesigner
 				CodeMethodInvokeExpression invocation = (CodeMethodInvokeExpression)stmt.Expression;
 				CodeCastExpression expr = invocation.Method.TargetObject as CodeCastExpression;
 				if (expr != null) {
-					CodeFieldReferenceExpression fieldRef = expr.Expression as CodeFieldReferenceExpression;
-					if (fieldRef == null || !(fieldRef.TargetObject is CodeThisReferenceExpression))
-						continue;
 					if (expr.TargetType.BaseType != "System.ComponentModel.ISupportInitialize")
 						continue;
-					IField field = this.formClass.DefaultReturnType.GetFields()
-						.First(f => this.formClass.ProjectContent.Language.NameComparer.Equals(fieldRef.FieldName, f.Name));
-					if (field.ReturnType == null)
-						continue;
-					IClass fieldType = field.ReturnType.GetUnderlyingClass();
+					var fieldType = GetTypeOfControl(expr.Expression, initializeComponent, formClass);
 					if (fieldType == null)
 						continue;
 					if (!fieldType.IsTypeInInheritanceTree(iSupportInitializeInterface))
@@ -359,6 +352,31 @@ namespace ICSharpCode.FormsDesigner
 			foreach (var stmt in stmtsToRemove) {
 				initializeComponent.Statements.Remove(stmt);
 			}
+		}
+		
+		/// <summary>
+		/// Tries to find the type of the expression.
+		/// </summary>
+		IClass GetTypeOfControl(CodeExpression expression, CodeMemberMethod initializeComponentMethod, CodeTypeDeclaration formTypeDeclaration)
+		{
+			StringComparer comparer = formClass.ProjectContent.Language.NameComparer;
+			if (expression is CodeVariableReferenceExpression) {
+				string name = ((CodeVariableReferenceExpression)expression).VariableName;
+				var decl = initializeComponentMethod.Statements.OfType<CodeVariableDeclarationStatement>().Single(v => comparer.Equals(v.Name, name));
+				return formClass.ProjectContent.GetClass(decl.Type.BaseType, 0);
+			}
+			if (expression is CodeFieldReferenceExpression && ((CodeFieldReferenceExpression)expression).TargetObject is CodeThisReferenceExpression) {
+				string name = ((CodeFieldReferenceExpression)expression).FieldName;
+				var decl = formTypeDeclaration.Members.OfType<CodeMemberField>().FirstOrDefault(f => comparer.Equals(name, f.Name));
+				if (decl != null)
+					return formClass.ProjectContent.GetClass(decl.Type.BaseType, 0);
+				var field = formClass.DefaultReturnType.GetFields()
+					.First(f => comparer.Equals(f.Name, name));
+				if (field.ReturnType == null)
+					return null;
+				return field.ReturnType.GetUnderlyingClass();
+			}
+			return null;
 		}
 		
 		/// <summary>

@@ -783,7 +783,7 @@ End If";
 		public void SelectStatement()
 		{
 			string statement = @"Select Case <Test />
-	Case <Test />, <Test />
+	Case < 1, (<Test />)
 	Case Else
 End Select";
 			
@@ -792,8 +792,8 @@ End Select";
 			CheckHead(lexer);
 			
 			CheckTokens(lexer, Tokens.Select, Tokens.Case, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
-			            Tokens.Case, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.Comma,
-			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.EOL,
+			            Tokens.Case, Tokens.LessThan, Tokens.LiteralInteger, Tokens.Comma, Tokens.OpenParenthesis,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement, Tokens.CloseParenthesis, Tokens.EOL,
 			            Tokens.Case, Tokens.Else, Tokens.EOL,
 			            Tokens.End, Tokens.Select
 			           );

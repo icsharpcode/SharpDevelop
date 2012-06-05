@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Web.Services.Discovery;
 using System.Windows.Forms;
@@ -178,54 +179,70 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			return webReferencesNode;
 		}
-	}
+	}	
 	
-	
-	public class ShowServiceInBrowser: AbstractMenuCommand
+	public class ShowServiceInBrowser : AbstractMenuCommand
 	{
-		private static string NodePath = "//system.serviceModel//client//endpoint";
+		static string NodePath = "//system.serviceModel//client//endpoint";
 		
 		public override void Run()
 		{
-			//	hack try  url fvoid  = LoadConfigDocument(f);
-			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
-			var f = CompilableProject.GetAppConfigFile(node.Project,false);
-			if (!String.IsNullOrEmpty(f))
-			{
-				
-		var configFile = LoadConfigDocument(f);
-			var endPoint = configFile.SelectSingleNode(NodePath).Attributes["address"].Value;
-				ProcessStartInfo startInfo = new ProcessStartInfo("IExplore.exe");
-				startInfo.WindowStyle = ProcessWindowStyle.Normal;
-				startInfo.Arguments = endPoint;
-
-				Process.Start(startInfo);
-				
-				
-				
-			} else
-			{
-				MessageService.ShowError("No app.config File found");
+			XmlDocument appConfig = LoadAppConfig();
+			if (appConfig != null) {
+				string endpointAddress = FindEndPointAddress(appConfig);
+				if (endpointAddress != null) {
+					StartInternetExplorer(endpointAddress);
+				} else {
+					MessageService.ShowError("No service found.");
+				}
+			} else {
+				MessageService.ShowError("No app.config file found.");
 			}
 		}
 		
-		static XmlDocument LoadConfigDocument(string fileName)
+		XmlDocument LoadAppConfig()
 		{
-			XmlDocument doc = null;
-			try
-			{
-				doc = new XmlDocument();
-				
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
+			FileName appConfigFileName = CompilableProject.GetAppConfigFile(node.Project, false);
+			if (!String.IsNullOrEmpty(appConfigFileName)) {				
+				return LoadAppConfig(appConfigFileName);
+			}
+			return null;
+		}
+		
+		static XmlDocument LoadAppConfig(string fileName)
+		{
+			try {
+				var doc = new XmlDocument();
 				doc.Load(fileName);
 				return doc;
+			} catch (FileNotFoundException ex) {
+				LoggingService.Debug("LoadConfigDocument: " + fileName + ": " + ex.Message);
 			}
-			catch (System.IO.FileNotFoundException e)
-			{
-				throw new Exception("No configuration file found.", e);
+			return null;
+		}
+		
+		string FindEndPointAddress(XmlDocument appConfig)
+		{
+			XmlNode endPoint = appConfig.SelectSingleNode(NodePath);
+			if (endPoint != null) {
+				XmlAttribute addressAttribute = endPoint.Attributes["address"];
+				if (addressAttribute != null) {
+					return addressAttribute.Value;
+				}
 			}
+			return null;
+		}
+		
+		void StartInternetExplorer(string arguments)
+		{
+			var startInfo = new ProcessStartInfo("IExplore.exe") {
+				WindowStyle = ProcessWindowStyle.Normal,
+				Arguments = arguments
+			};
+			Process.Start(startInfo);
 		}
 	}
-
 	
 	public class AddServiceReferenceToProject : AbstractMenuCommand
 	{
@@ -247,14 +264,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	
 	public class RefreshReference : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			ReferenceNode node = Owner as ReferenceNode;
-			if (node != null)
-			{
+			var node = Owner as ReferenceNode;
+			if (node != null) {
 				ReferenceProjectItem item = node.ReferenceProjectItem;
 				if (item != null) {
 					AssemblyParserService.RefreshProjectContentForReference(item);

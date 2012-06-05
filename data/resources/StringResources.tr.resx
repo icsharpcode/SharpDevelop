@@ -608,7 +608,7 @@
     <value>{0} arayüz ekle</value>
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
-    <value>Taşma operatörü ekle</value>
+    <value>Aşırı yükleme operatörü ekle</value>
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
     <value>${otherMethod} geçersiz ekleme</value>
@@ -1019,7 +1019,7 @@ Oluşturulan stili yenisiyle değiştirmek istiyor musunuz?</value>
     <value>Temel sınıf kategorisindeki nesne üyelerini göster</value>
   </data>
   <data name="ComponentInspector.CustomObjectPanel.ShowPublicMembersCheckBox" xml:space="preserve">
-    <value>Sadece genel üyeler</value>
+    <value>Sadece public üyeler</value>
   </data>
   <data name="ComponentInspector.ErrorDialog.LessInformationButton" xml:space="preserve">
     <value>Kısa Bilgilendirme</value>
@@ -1069,7 +1069,7 @@ Olayları kayıt etmek için, Nesneler panelinden bir nesne yada olay seçip, ya
     <value>Tüm seviyeler</value>
   </data>
   <data name="ComponentInspector.FindDialog.AssembliesRadioButton" xml:space="preserve">
-    <value>Çevirmeler/Türler</value>
+    <value>Derlemeler/Türler</value>
   </data>
   <data name="ComponentInspector.FindDialog.ContainsRadioButton" xml:space="preserve">
     <value>İçerir</value>
@@ -1317,7 +1317,7 @@ Bir ActiveX / COM nesnesi oluşturmak / değiştirmek için, nesne ağacı veya 
     <value>Özellik/Olay erişim yöntemleri</value>
   </data>
   <data name="ComponentInspector.ObjectTreeOptionsPanel.ShowPublicMembersOnlyCheckBox" xml:space="preserve">
-    <value>Sadece genel üyeler</value>
+    <value>Sadece public üyeler</value>
   </data>
   <data name="ComponentInspector.OutputList.OutputColumnHeader" xml:space="preserve">
     <value>Çıktı</value>
@@ -1470,7 +1470,7 @@ Bir ActiveX / COM nesnesi oluşturmak / değiştirmek için, nesne ağacı veya 
     <value>&lt;Boş&gt;</value>
   </data>
   <data name="Dialog.EditAvailableConfigurationsDialog.EnterNewName" xml:space="preserve">
-    <value>Yeni adı girin:</value>
+    <value>Yeni ad girin:</value>
   </data>
   <data name="Dialog.EditAvailableConfigurationsDialog.InvalidName" xml:space="preserve">
     <value>Ad geçersiz.</value>
@@ -1497,6 +1497,12 @@ Satır numaraları, sınıf yada dosya adları girebilirsiniz.
   </data>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>İtalik</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Renk vurgulamayı dışa aktar</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Renk vurgulaması al</value>
   </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Değer</value>
@@ -1861,7 +1867,7 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>İstisnalar</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.PauseOnHandledExceptions" xml:space="preserve">
-    <value>Tanıtıcı istisnaları duraklat</value>
+    <value>Yakalanan istisnaları duraklat</value>
   </data>
   <data name="Dialog.Options.IDEOptions.Debugging.Stepping" xml:space="preserve">
     <value>Adımlama</value>
@@ -2182,10 +2188,13 @@ Yeni dosyayı, ${CurrentProjectName} projesine eklemek istiyor musunuz?</value>
     <value>Hiçbiri</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>İşaretleyiciler ve Cetveller</value>
+    <value>İşaretleyiciler</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>İşaretleyiciler ve Cetveller</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Cetveller</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Gizli tanımları (sadece parentezler) göster</value>
@@ -4717,7 +4726,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>parametre</value>
   </data>
   <data name="MainWindow.Editor.Tooltip.UnresolvedOverload" xml:space="preserve">
-    <value>Taşma</value>
+    <value>Aşırı yükleme</value>
   </data>
   <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
     <value>Geçerli değişiklikleri kaydetmek istiyor musunuz?</value>
@@ -4765,16 +4774,16 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Diğer Üyeleri Göster</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowPrivateMembers.Label" xml:space="preserve">
-    <value>Gizli Üyeleri Göster</value>
+    <value>Private Üyeleri Göster</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowProjectReferences.Label" xml:space="preserve">
     <value>Proje Referanslarını Göster</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowProtectedMembers.Label" xml:space="preserve">
-    <value>Korunmuş Üyeleri Göster</value>
+    <value>Protected Üyeleri Göster</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowPublicMembers.Label" xml:space="preserve">
-    <value>Genel Üyeleri Göster</value>
+    <value>Public Üyeleri Göster</value>
   </data>
   <data name="MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip" xml:space="preserve">
     <value>Sınıf Görünüm Ayarları</value>
@@ -4912,7 +4921,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>İstisnaya müdahale edilemedi. Hata ayıklaması yapılan program daha fazla devam edemez.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Error.CannotInterceptHandledException" xml:space="preserve">
-    <value>İşlenen istisnaya müdahale edilemedi. Hata ayıklama sembolleri istisna kaynağı için mevcut olmayabilir.</value>
+    <value>Yakalanan istisnaya müdahale edilemedi. Hata ayıklama sembolleri istisna kaynağı için mevcut olmayabilir.</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.HideExceptionDetails" xml:space="preserve">
     <value>İstisna Detaylarını Gizle</value>
@@ -4939,10 +4948,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>İstisna</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Title.Handled" xml:space="preserve">
-    <value>İşlenen istisna</value>
+    <value>Yakalanan istisna</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Title.Unhandled" xml:space="preserve">
-    <value>İşlenmeyen istisna</value>
+    <value>Bilinmeyen istisna</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionHistory" xml:space="preserve">
     <value>İstisna geçmişi</value>
@@ -4984,16 +4993,16 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Ad</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.NonPublicMembers" xml:space="preserve">
-    <value>Genel üyeler dışında</value>
+    <value>Public üyeler dışında</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers" xml:space="preserve">
-    <value>Genel sabit üyeler dışında</value>
+    <value>Public Static üyeler dışında</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.PrivateMembers" xml:space="preserve">
-    <value>Özel üyeler</value>
+    <value>Private üyeler</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.PrivateStaticMembers" xml:space="preserve">
-    <value>Özel Sabit Üyeler</value>
+    <value>Private Static Üyeler</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.ShowFullError" xml:space="preserve">
     <value>Hatanın tümünü göster...</value>
@@ -5002,7 +5011,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Değerleri onaltılık göster</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.StaticMembers" xml:space="preserve">
-    <value>Sabit üyeler</value>
+    <value>Static üyeler</value>
   </data>
   <data name="MainWindow.Windows.Debug.LocalVariables.TypeColumn" xml:space="preserve">
     <value>Tür</value>
@@ -5323,7 +5332,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Doğrulama: başarılı</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.CancelItem" xml:space="preserve">
-    <value>Test çevirmeleri yüklenemiyor, kendiliğinden yükleme iptal edildi.</value>
+    <value>Test derlemeleri yüklenemiyor, kendiliğinden yükleme iptal edildi.</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel" xml:space="preserve">
     <value>Tanimlamaya &amp;git</value>
@@ -5332,7 +5341,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Mevcut seçili projedeki NUnit 'e referans ekle</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.RefreshItem" xml:space="preserve">
-    <value>Test çevirmelerini yeniden yükler</value>
+    <value>Test derlemelerini yeniden yükler</value>
   </data>
   <data name="NUnitPad.NUnitPadContent.RunAllTests" xml:space="preserve">
     <value>Bütün testleri çalıştır</value>
@@ -5359,25 +5368,25 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Test durumu '${TestCase}' yürütülemedi.</value>
   </data>
   <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
-    <value>Çevirme Yükle...</value>
+    <value>Derleme Yükle...</value>
   </data>
   <data name="ObjectBrowser.Menu.LoadRef" xml:space="preserve">
-    <value>Referanslı Çevirmeleri Yükle</value>
+    <value>Referanslı Derlemeleri Yükle</value>
   </data>
   <data name="ObjectBrowser.Menu.LoadStd" xml:space="preserve">
-    <value>Standart Çevirmeleri Yükle</value>
+    <value>Standart Derlemeleri Yükle</value>
   </data>
   <data name="OpenFileTabEventHandler.ContextMenu.Close" xml:space="preserve">
-    <value>&amp;Kapat</value>
+    <value>Kapat</value>
   </data>
   <data name="OpenFileTabEventHandler.ContextMenu.CloseAllButThis" xml:space="preserve">
     <value>Bu hariç hepsini kapat</value>
   </data>
   <data name="OpenFileTabEventHandler.ContextMenu.Save" xml:space="preserve">
-    <value>K&amp;aydet</value>
+    <value>Kaydet</value>
   </data>
   <data name="OpenFileTabEventHandler.ContextMenu.SaveAs" xml:space="preserve">
-    <value>Farklı Ka&amp;ydet...</value>
+    <value>Farklı Kaydet...</value>
   </data>
   <data name="OpenFileTabEventHandler.CopyPathName" xml:space="preserve">
     <value>Dosya yolunu/adını kopyala</value>
@@ -5387,6 +5396,27 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
   </data>
   <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
     <value>Burada komut istemi aç</value>
+  </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>hedef çalışmaçerçevesini seçin</value>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>Taşınabilir Sınıf Kitaplığı Araçları bulunamadı.</value>
+  </data>
+  <data name="PortableLibrary.PortableSubset" xml:space="preserve">
+    <value>.NET Taşınabilir AltSeti</value>
+  </data>
+  <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
+    <value>İki veya daha fazla çerçevenin seçilmesi gerekir.</value>
+  </data>
+  <data name="PortableLibrary.SelectedProfile" xml:space="preserve">
+    <value>Seçili profil:</value>
+  </data>
+  <data name="PortableLibrary.SelectProfileDialog.Title" xml:space="preserve">
+    <value>Taşınabilir Kitaplık Profili seç</value>
+  </data>
+  <data name="PortableLibrary.ToolsInstallationHelp" xml:space="preserve">
+    <value>Visual Studio yüklemeden Taşınabilir Sınıf Kitaplığı Araçları'nı yüklemek için,bilgisayarınıza dosyayı(PortableLibraryTools.exe)indirip kaydedin ve bir komut istemi penceresinde kurulum programını çalıştırın.Komut satırında /buildmachine anahtarı ekleyin.</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Bütün düğümleri daralt</value>
@@ -5422,7 +5452,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Web Referansı Ekle</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Build" xml:space="preserve">
-    <value>D&amp;erle</value>
+    <value>Derle</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>Temizle</value>
@@ -5542,10 +5572,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Tüm web referanslarını sil</value>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
-    <value>Çevirmeler (*.dll)|*.dll</value>
+    <value>Derlemeler (*.dll)|*.dll</value>
   </data>
   <data name="RegExpTk.MainDialog.Assembly" xml:space="preserve">
-    <value>Çevirme</value>
+    <value>Derleme</value>
   </data>
   <data name="RegExpTk.MainDialog.Classname" xml:space="preserve">
     <value>Sınıf adı</value>
@@ -5554,7 +5584,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Derle</value>
   </data>
   <data name="RegExpTk.MainDialog.CreateAssembly" xml:space="preserve">
-    <value>Çevirme oluştur</value>
+    <value>Derleme oluştur</value>
   </data>
   <data name="RegExpTk.MainDialog.ECMA" xml:space="preserve">
     <value>ECMA betiği</value>
@@ -5584,7 +5614,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Çok satırlı</value>
   </data>
   <data name="RegExpTk.MainDialog.Namespace" xml:space="preserve">
-    <value>Adalanı</value>
+    <value>Ad alanı</value>
   </data>
   <data name="RegExpTk.MainDialog.PublicVisible" xml:space="preserve">
     <value>Açıkça görünür</value>
@@ -5659,7 +5689,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFXCompiler, WixNetFxExtension<
     <value>Sözcük olmayan karakter değeri</value>
   </data>
   <data name="RegExpTk.RegExpMenu.UngreedyStar" xml:space="preserve">
-    <value>Tok yıldız</value>
+    <value>Dolu yıldız</value>
   </data>
   <data name="RegExpTk.RegExpMenu.WhitespaceCharacter" xml:space="preserve">
     <value>Boşluk karakteri</value>
@@ -6305,7 +6335,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Yapılandırma Eleman Koleksiyonundan türeme sınıf.</value>
   </data>
   <data name="Templates.File.ConfigurationElementCollection.Name" xml:space="preserve">
-    <value>Nesne Yığını Ayarları</value>
+    <value>Yapılandırma Elemanı Koleksiyonu</value>
   </data>
   <data name="Templates.File.ConfigurationSection.Description" xml:space="preserve">
     <value>ConfigurationSection gerçeklemesi yapan sınıf</value>
@@ -6326,10 +6356,10 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Boş Dosya</value>
   </data>
   <data name="Templates.File.Exception.Description" xml:space="preserve">
-    <value>Yeni bir Kuraldışı Sınıf oluştur.</value>
+    <value>Yeni bir istisna Sınıf oluştur.</value>
   </data>
   <data name="Templates.File.Exception.Name" xml:space="preserve">
-    <value>Kuraldışı Durum</value>
+    <value>İstisna</value>
   </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Bir Gtk# uygulaması için pencere</value>
@@ -6368,7 +6398,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>MSBuild dosyası</value>
   </data>
   <data name="Templates.File.MyExtensionClass.Description" xml:space="preserve">
-    <value>"My" alanadını uzatan sınıf için bir şablon.</value>
+    <value>"My" ad alanını uzatan sınıf için bir şablon.</value>
   </data>
   <data name="Templates.File.MyExtensionClass.Name" xml:space="preserve">
     <value>"My" uzantılar</value>
@@ -6605,7 +6635,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Başka uygulamalarda kullanılabilen sınıflar oluşturan bir proje.</value>
   </data>
   <data name="Templates.Project.ClassLibrary.Name" xml:space="preserve">
-    <value>Sınıf Kütüphanesi</value>
+    <value>Sınıf Kitaplığı</value>
   </data>
   <data name="Templates.Project.ConsoleProject.Description" xml:space="preserve">
     <value>Komut satırı uygulaması oluşturan proje.</value>
@@ -6642,6 +6672,12 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   </data>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Gtk# Uygulaması</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Description" xml:space="preserve">
+    <value>Windows, Silverlight, Windows Phone ve Xbox kullanılabilir Kitaplığı.</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
+    <value>Taşınabilir Sınıf Kitaplığı</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>MSI Installer oluşturabilmek için bir Windows Installer projesi.</value>
@@ -6728,7 +6764,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Kenarçubuğu Yapılandır...</value>
   </data>
   <data name="XML.MainMenu.Analysis" xml:space="preserve">
-    <value>&amp;Analiz</value>
+    <value>Analiz</value>
   </data>
   <data name="XML.MainMenu.BuildMenu" xml:space="preserve">
     <value>Derle</value>
@@ -6788,13 +6824,13 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Hata ayıklamaya devam et</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Continue.Description" xml:space="preserve">
-    <value>İşlemin yürütülmesine devam eder.</value>
+    <value>İşlemin yürütülmesine devam edilir.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Detach" xml:space="preserve">
     <value>Bırak</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
-    <value>Programın .NET Framework sürüm numarası bulunamadı. Programın yönetilen çevirici olup olmadığını kontrol edin.</value>
+    <value>Programın .NET Framework sürüm numarası bulunamadı. Programın yönetilen derleme olup olmadığını kontrol edin.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
     <value>İşleme eklenemiyor.</value>
@@ -6827,7 +6863,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Önceki derlemeyi çalıştır</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
-    <value>Hata ayıklayıcı olmadan çalıştır</value>
+    <value>Hata ayıklamadan çalıştır</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug.Description" xml:space="preserve">
     <value>Programı normal olarak çalıştırır.</value>
@@ -7235,7 +7271,7 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
     <value>Tüm Yer İmlerini Temizle</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.ClrBookmark.Description" xml:space="preserve">
-    <value>Mevcut tampondaki tüm yer imlerini temizle</value>
+    <value>Mevcut tampondaki tüm yer imlerini temizler</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Find" xml:space="preserve">
     <value>Bul...</value>
@@ -7326,7 +7362,7 @@ Başlatma hatası:</value>
     <value>Kurulum</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.SetupMenu.DialogsMenu" xml:space="preserve">
-    <value>Diyaloglar</value>
+    <value>İletişim Kutuları</value>
   </data>
   <data name="XML.MainMenu.ViewMenu.SetupMenu.FilesMenu" xml:space="preserve">
     <value>Dosyalar</value>

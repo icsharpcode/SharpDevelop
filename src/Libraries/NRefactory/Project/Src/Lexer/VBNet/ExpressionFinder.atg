@@ -1137,10 +1137,19 @@ MultilineIfRemainder =
 SelectStatement =
 	"Select" [ "Case" ] Expression StatementTerminator
 	{
-		"Case" (
+		// HACK: '<' is recognized as XML literal, if occurring at the start of an expression
+		// in the CaseClause however it can only be a less-than-sign and vbc does not allow XML literals.
+		// we use a simple xmlAllowed flag:
+		// the flag is only set to false immetiately before the expression is parsed and set to true once '<'
+		// is recognized as less-than-sign to allow normal behavior of the lexer in later expressions.
+		"Case" (. xmlAllowed = false; .) (
 			"Else" |
-			( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression )
-				{ "," ( [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix | Expression ) }
+			( (. xmlAllowed = true; .) [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix
+			  | (. xmlAllowed = true; .) Expression )
+				{ "," (. xmlAllowed = false; .)
+				  ( (. xmlAllowed = true; .) [ "Is" ] ComparisonOperator SimpleExpressionWithSuffix
+				  | (. xmlAllowed = true; .) Expression )
+				}
 		)
 		StatementTerminatorAndBlock
 	}
