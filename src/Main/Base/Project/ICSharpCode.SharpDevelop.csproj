@@ -754,11 +754,6 @@
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
     <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_Signing.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_Publish.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -788,10 +783,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_CreateKey.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <EmbeddedResource Include="Resources\ProjectOptions\CreateKey.xfrm" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractBuildOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
