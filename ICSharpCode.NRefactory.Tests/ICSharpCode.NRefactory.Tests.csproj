@@ -272,6 +272,7 @@
     <Compile Include="CSharp\CodeActions\RemoveRedundantCatchTypeTests.cs" />
     <Compile Include="CSharp\CodeActions\AddCatchTypeTests.cs" />
     <Compile Include="CSharp\CodeIssues\SetterDoesNotUseValueParameterTests.cs" />
+    <Compile Include="CSharp\CodeIssues\IncorrectExceptionParameterOrderingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

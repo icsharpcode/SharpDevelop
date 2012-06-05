@@ -376,6 +376,7 @@
     <Compile Include="Refactoring\CodeActions\RemoveRedundantCatchTypeAction.cs" />
     <Compile Include="Refactoring\CodeActions\AddCatchTypeAction.cs" />
     <Compile Include="Refactoring\CodeIssues\SetterDoesNotUseValueParameterIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\IncorrectExceptionParameterOrderingIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
