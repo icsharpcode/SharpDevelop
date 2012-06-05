@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class Signing : AbstractXmlFormsProjectOptionPanel
+	public class old_Signing : AbstractXmlFormsProjectOptionPanel
 	{
 		ComboBox keyFile;
 		ConfigurationGuiBinding signAssemblyBinding;
@@ -97,8 +97,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void CreateKeyFile()
 		{
-			if (File.Exists(CreateKeyForm.StrongNameTool)) {
-				using (CreateKeyForm createKey = new CreateKeyForm(baseDirectory)) {
+			if (File.Exists(old_CreateKeyForm.StrongNameTool)) {
+				using (old_CreateKeyForm createKey = new old_CreateKeyForm(baseDirectory)) {
 					createKey.KeyFile = project.Name;
 					if (createKey.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 						keyFile.Text = MSBuildInternals.Escape(createKey.KeyFile);

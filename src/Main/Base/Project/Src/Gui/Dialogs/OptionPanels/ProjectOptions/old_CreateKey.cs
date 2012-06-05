@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
     /// <summary>
     /// A form that creates keys for assembly signing.
     /// </summary>
-	public class CreateKeyForm : BaseSharpDevelopForm
+	public class old_CreateKeyForm : BaseSharpDevelopForm
 	{
 		string baseDirectory;
 		
@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		/// location specified.
 		/// </summary>
 		/// <param name="baseDirectory">The folder for placing the key.</param>
-		public CreateKeyForm(string baseDirectory)
+		public old_CreateKeyForm(string baseDirectory)
 		{
 			this.baseDirectory = baseDirectory;
 			SetupFromXmlResource("ProjectOptions.CreateKey.xfrm");

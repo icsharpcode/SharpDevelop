@@ -80,13 +80,14 @@
 		<OptionPanel id    = "ReferencePaths"
 		             label = "${res:Dialog.ProjectOptions.ReferencePaths}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
+		
 		<OptionPanel id    = "Signing"
 		             label = "${res:Dialog.ProjectOptions.Signing}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
 		
-		<OptionPanel id    = "Signing1"
+		<!--<OptionPanel id    = "Signing1"
 		             label = "${res:Dialog.ProjectOptions.Signing}"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SigningXaml"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SigningXaml"/>-->
 		
 		
 		<OptionPanel id    = "BuildEvents"

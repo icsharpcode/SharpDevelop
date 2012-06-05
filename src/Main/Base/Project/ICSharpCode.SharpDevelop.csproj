@@ -274,8 +274,8 @@
       <DependentUpon>ApplicationSettings.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKeyXaml.xaml.cs">
-      <DependentUpon>CreateKeyXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.xaml.cs">
+      <DependentUpon>CreateKey.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml.cs">
@@ -289,8 +289,8 @@
       <DependentUpon>ReferencePaths.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\SigningXaml.xaml.cs">
-      <DependentUpon>SigningXaml.xaml</DependentUpon>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.xaml.cs">
+      <DependentUpon>Signing.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
@@ -756,7 +756,7 @@
     <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_Signing.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_Publish.cs">
@@ -788,7 +788,7 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractXmlFormsProjectOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs">
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_CreateKey.cs">
       <SubType>Form</SubType>
     </Compile>
     <EmbeddedResource Include="Resources\ProjectOptions\CreateKey.xfrm" />
@@ -912,13 +912,13 @@
     <Page Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptionsl.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKeyXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.xaml" />
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ProjectOptionPanel.xaml">
       <DependentUpon>ProjectOptionPanel.cs</DependentUpon>
     </Page>
     <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.xaml" />
-    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\SigningXaml.xaml" />
+    <Page Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml" />

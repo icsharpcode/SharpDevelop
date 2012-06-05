@@ -25,20 +25,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for CreateKeyXaml.xaml
 	/// </summary>
-	public partial class CreateKeyXaml : Window,INotifyPropertyChanged
+	public partial class CreateKey : Window,INotifyPropertyChanged
 	{
 		
 		private bool checkBoxChecked;
 		private string keyFile;
 		private string baseDirectory;
 		
-		public CreateKeyXaml()
+		public CreateKey()
 		{
 			InitializeComponent();
 			DataContext = this;
 		}
 		
-		public CreateKeyXaml (string baseDirectory):this()
+		public CreateKey (string baseDirectory):this()
 		{
 			this.baseDirectory = baseDirectory;
 		}
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			if (!KeyFile.EndsWith(".snk") && !KeyFile.EndsWith(".pfx"))
 				KeyFile += ".snk";
-			if (CreateKey(Path.Combine(baseDirectory, KeyFile))) {
+			if (CreateKeyInternal(Path.Combine(baseDirectory, KeyFile))) {
 				this.DialogResult = true;
 				Close();
 			}
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
         /// </summary>
         /// <param name="keyPath">The path of the key to create.</param>
         /// <returns>True if the key was created correctly.</returns>
-		private static bool CreateKey(string keyPath)
+		private static bool CreateKeyInternal(string keyPath)
 		{
 			if (File.Exists(keyPath)) {
 				string question = "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}";

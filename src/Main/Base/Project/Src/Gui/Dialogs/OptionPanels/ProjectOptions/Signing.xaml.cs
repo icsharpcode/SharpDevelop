@@ -27,14 +27,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	/// <summary>
 	/// Interaction logic for SigningXaml.xaml
 	/// </summary>
-	public partial class SigningXaml : ProjectOptionPanel
+	public partial class Signing : ProjectOptionPanel
 	{
 		private const string KeyFileExtensions = "*.snk;*.pfx;*.key";
 		private List<string> keyFile = new List<string>();
 		private MSBuildBasedProject project;
 		
 		
-		public SigningXaml()
+		public Signing()
 		{
 			InitializeComponent();
 		}
@@ -157,8 +157,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		private void CreateKeyFile()
 		{
-			if (File.Exists(CreateKeyXaml.StrongNameTool)) {
-				CreateKeyXaml createKey = new CreateKeyXaml(base.BaseDirectory);
+			if (File.Exists(CreateKey.StrongNameTool)) {
+				CreateKey createKey = new CreateKey(base.BaseDirectory);
 				createKey.KeyFile = project.Name;
 				createKey.ShowDialog();
 				if (createKey.DialogResult.HasValue && createKey.DialogResult.Value)
