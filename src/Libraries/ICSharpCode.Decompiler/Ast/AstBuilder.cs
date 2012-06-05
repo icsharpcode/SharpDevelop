@@ -81,6 +81,8 @@ namespace ICSharpCode.Decompiler.Ast
 						return true;
 					if (settings.YieldReturn && YieldReturnDecompiler.IsCompilerGeneratorEnumerator(type))
 						return true;
+					if (settings.AsyncAwait && AsyncDecompiler.IsCompilerGeneratedStateMachine(type))
+						return true;
 				} else if (type.IsCompilerGenerated()) {
 					if (type.Name.StartsWith("<PrivateImplementationDetails>", StringComparison.Ordinal))
 						return true;
@@ -770,6 +772,10 @@ namespace ICSharpCode.Decompiler.Ast
 						SetNewModifier(astMethod);
 				}
 				astMethod.Body = CreateMethodBody(methodDef, astMethod.Parameters);
+				if (context.CurrentMethodIsAsync) {
+					astMethod.Modifiers |= Modifiers.Async;
+					context.CurrentMethodIsAsync = false;
+				}
 			}
 			ConvertAttributes(astMethod, methodDef);
 			if (methodDef.HasCustomAttributes && astMethod.Parameters.Count > 0) {
@@ -1342,6 +1348,7 @@ namespace ICSharpCode.Decompiler.Ast
 		
 		static void ConvertCustomAttributes(AstNode attributedNode, ICustomAttributeProvider customAttributeProvider, string attributeTarget = null)
 		{
+			EntityDeclaration entityDecl = attributedNode as EntityDeclaration;
 			if (customAttributeProvider.HasCustomAttributes) {
 				var attributes = new List<ICSharpCode.NRefactory.CSharp.Attribute>();
 				foreach (var customAttribute in customAttributeProvider.CustomAttributes.OrderBy(a => a.AttributeType.FullName)) {
@@ -1352,6 +1359,15 @@ namespace ICSharpCode.Decompiler.Ast
 					if (customAttribute.AttributeType.Name == "ParamArrayAttribute" && customAttribute.AttributeType.Namespace == "System") {
 						// don't show the ParamArrayAttribute (it's converted to the 'params' modifier)
 						continue;
+					}
+					// if the method is async, remove [DebuggerStepThrough] and [Async
+					if (entityDecl != null && entityDecl.HasModifier(Modifiers.Async)) {
+						if (customAttribute.AttributeType.Name == "DebuggerStepThroughAttribute" && customAttribute.AttributeType.Namespace == "System.Diagnostics") {
+							continue;
+						}
+						if (customAttribute.AttributeType.Name == "AsyncStateMachineAttribute" && customAttribute.AttributeType.Namespace == "System.Runtime.CompilerServices") {
+							continue;
+						}
 					}
 					
 					var attribute = new ICSharpCode.NRefactory.CSharp.Attribute();

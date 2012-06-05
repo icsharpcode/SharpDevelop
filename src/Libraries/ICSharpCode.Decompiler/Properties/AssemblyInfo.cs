@@ -19,8 +19,8 @@ using System.Runtime.InteropServices;
 // If you need to expose a type to COM, use [ComVisible(true)] on that type.
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("2.0.0.1595")]
-[assembly: AssemblyInformationalVersion("2.0.0.1595-5773d3d2")]
+[assembly: AssemblyVersion("2.1.0.1603")]
+[assembly: AssemblyInformationalVersion("2.1.0.1603-1170e2f8")]
 [assembly: NeutralResourcesLanguage("en-US")]
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2243:AttributeStringLiteralsShouldParseCorrectly",
