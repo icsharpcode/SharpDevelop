@@ -273,6 +273,7 @@
     <Compile Include="CSharp\CodeActions\AddCatchTypeTests.cs" />
     <Compile Include="CSharp\CodeIssues\SetterDoesNotUseValueParameterTests.cs" />
     <Compile Include="CSharp\CodeIssues\IncorrectExceptionParameterOrderingTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CallToVirtualFunctionFromConstructorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
