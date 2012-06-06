@@ -22,5 +22,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public const string WebApplication = "{349C5851-65DF-11DA-9384-00065B846F21}";
 		public const string WebSite = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}";
 		public const string Silverlight = "{A1591282-1198-4647-A2B1-27E5FF5F6F3B}";
+		public static readonly Guid PortableLibrary = Guid.Parse("{786C830F-07A1-408B-BD7F-6EE04809D6DB}");
 	}
 }

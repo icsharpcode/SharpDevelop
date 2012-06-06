@@ -2282,8 +2282,8 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/TemplateCommands">
-		<Class id="AddDotNet35ReferencesIfTargetFrameworkIs35"
-		       class="ICSharpCode.SharpDevelop.Project.Commands.AddDotNet35ReferencesIfTargetFrameworkIs35Command"/>
+		<Class id="CheckPortableLibraryInstalled"
+		       class="ICSharpCode.SharpDevelop.Project.PortableLibrary.CheckPortableLibraryInstalled"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextSpecificProperties">
@@ -2312,6 +2312,20 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ProjectBehaviors">
-	
+		<Condition name="ProjectBehaviorSupported" guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}">
+			<Class id="PortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.PortableLibraryProjectBehavior" />
+		</Condition>
+		<ComplexCondition>
+			<And>
+				<Not> <!-- not already portable -->
+					<Condition name="ProjectBehaviorSupported" guid="{786C830F-07A1-408B-BD7F-6EE04809D6DB}" />
+				</Not>
+				<Or> <!-- and either a C# or VB project -->
+					<Condition name = "ProjectActive" activeproject="C#" />
+					<Condition name = "ProjectActive" activeproject="VBNet" />
+				</Or>
+			</And>
+			<Class id="ConvertToPortableLibraryBehavior" class="ICSharpCode.SharpDevelop.Project.PortableLibrary.ConvertToPortableLibraryProjectBehavior" />
+		</ComplexCondition>
 	</Path>
 </AddIn>

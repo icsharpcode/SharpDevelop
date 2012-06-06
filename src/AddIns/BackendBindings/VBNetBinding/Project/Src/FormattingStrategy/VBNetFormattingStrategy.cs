@@ -832,22 +832,14 @@ namespace ICSharpCode.VBNetBinding
 		
 		internal static bool IsBlockEnd(Token current, Token prev)
 		{
-			if (current.Kind == Tokens.Next) {
-				if (prev.Kind == Tokens.Resume)
-					return false;
-				else
-					return true;
-			}
+			if (current.Kind == Tokens.Next)
+				return prev.Kind == Tokens.EOL || prev.Kind == Tokens.Colon;
 			
 			if (current.Kind == Tokens.Loop)
-				return true;
+				return prev.Kind == Tokens.EOL || prev.Kind == Tokens.Colon;
 			
-			if (blockTokens.Contains(current.Kind)) {
-				if (prev.Kind == Tokens.End)
-					return true;
-				else
-					return false;
-			}
+			if (blockTokens.Contains(current.Kind))
+				return prev.Kind == Tokens.End;
 			
 			return IsSpecialCase(current, prev);
 		}

@@ -30,6 +30,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (optionPanels == null)
 				throw new ArgumentNullException("optionPanels");
 			InitializeComponent();
+			
+			ICSharpCode.SharpDevelop.Gui.FormLocationHelper.ApplyWindow(this, "TreeViewOptionsDialog.WindowBounds", true);
+			
 			var list = optionPanels.Select(op => new OptionPanelNode(op, this)).ToList();
 			treeView.ItemsSource = list;
 			if (list.Count > 0) {

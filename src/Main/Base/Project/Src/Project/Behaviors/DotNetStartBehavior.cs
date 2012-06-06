@@ -126,6 +126,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			return base.GetDefaultItemType(fileName);
 		}
 		
+		public override CompilerVersion CurrentCompilerVersion {
+			get {
+				switch (Project.MinimumSolutionVersion) {
+					case Solution.SolutionVersionVS2005:
+						return CompilerVersion.MSBuild20;
+					case Solution.SolutionVersionVS2008:
+						return CompilerVersion.MSBuild35;
+					case Solution.SolutionVersionVS2010:
+					case Solution.SolutionVersionVS11:
+						return CompilerVersion.MSBuild40;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+		}
+		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
 			List<CompilerVersion> versions = new List<CompilerVersion>();
@@ -135,6 +151,28 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			versions.Add(CompilerVersion.MSBuild40);
 			return versions;
+		}
+		
+		public override TargetFramework CurrentTargetFramework {
+			get {
+				string fxVersion = Project.TargetFrameworkVersion;
+				string fxProfile = Project.TargetFrameworkProfile;
+				if (string.Equals(fxProfile, "Client", StringComparison.OrdinalIgnoreCase)) {
+					foreach (ClientProfileTargetFramework fx in TargetFramework.TargetFrameworks.OfType<ClientProfileTargetFramework>())
+						if (fx.FullFramework.Name == fxVersion)
+							return fx;
+				} else {
+					foreach (TargetFramework fx in TargetFramework.TargetFrameworks)
+						if (fx.Name == fxVersion)
+							return fx;
+				}
+				return null;
+			}
+		}
+		
+		public override IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
+		{
+			return TargetFramework.TargetFrameworks.Where(fx => fx.IsAvailable());
 		}
 		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)

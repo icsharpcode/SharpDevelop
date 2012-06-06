@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<Template originator = "Daniel Grunwald" created = "05/17/2012">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.PortableLibrary.Name}</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.Library</Icon>
+		<Description>${res:Templates.Project.PortableLibrary.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MyClass.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language="C#">
+		<PreCreateActions>
+			<RunCommand path="/SharpDevelop/BackendBindings/TemplateCommands/CheckPortableLibraryInstalled"/>
+		</PreCreateActions>
+	
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<AppDesignerFolder>Properties</AppDesignerFolder>
+			<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+			<TargetFrameworkProfile>Profile1</TargetFrameworkProfile>
+		</PropertyGroup>
+		
+		<PropertyGroup escapeValue="False">
+			<ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		</PropertyGroup>
+		
+		<ProjectItems />
+		
+		<Imports clear="True">
+			<Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+		</Imports>
+		
+		<Files>
+			<File name="MyClass.cs"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Collections.Generic;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of MyClass.
+	/// </summary>
+	public class MyClass
+	{
+		
+	}
+}]]></File>
+			<File name="Properties\AssemblyInfo.cs" src="PortableAssemblyInfo.cs"/>
+		</Files>
+	</Project>
+</Template>

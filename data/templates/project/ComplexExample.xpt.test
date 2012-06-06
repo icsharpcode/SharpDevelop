@@ -16,6 +16,8 @@
 	<!-- Actions -->
 	<Actions>
 		<Open filename = "Main.cs"/>
+		<!-- Runs a command from the AddIn Tree. ICommand.Owner will be the ProjectCreateInformation -->
+		<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/PostCreationAction"/>
 	</Actions>
 	
 	<!-- Template Content -->
@@ -33,7 +35,17 @@
 			<!-- Solution folders can contain: nested solution folders and projects -->
 			<SolutionFolder name = "Nested Sub Folder"/>
 			
-			<Project name = "VBNetProject" directory = "VBNetSubProject" language="VBNet">
+			<Project name = "VBNetProject" directory = "VBNetSubProject" language="VBNet" defaultPlatform="x86">
+				<!-- Actions that get executed before the project is created. ICommand.Owner will be the ProjectCreateInformation. -->
+				<PreCreateActions>
+					<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/CheckPortableLibraryInstalled"/>
+				</PreCreateActions>
+				
+				<!-- Actions that get executed after the project was created. ICommand.Owner will be the IProject. -->
+				<CreateActions>
+					<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/PostCreationAction"/>
+				</CreateActions>
+			
 				<!-- add a PropertyGroup to the project to set MSBuild properties -->
 				<PropertyGroup>
 					<OutputType>WinExe</OutputType>
@@ -123,11 +135,7 @@ End Class
 			</Project>
 		</SolutionFolder>
 		
-		<Project name = "${ProjectName}" directory = "." language = "C#">
-			<CreateActions>
-				<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-			</CreateActions>
-			
+		<Project name = "${ProjectName}" directory = "." language = "C#" defaultPlatform="AnyCPU">
 			<ProjectItems>
 				<Reference Include="System" />
 				<Reference Include="System.Data" />

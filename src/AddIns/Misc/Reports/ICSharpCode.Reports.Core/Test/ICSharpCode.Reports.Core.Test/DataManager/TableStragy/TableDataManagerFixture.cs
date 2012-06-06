@@ -320,8 +320,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		{
 			
 			if (this.table != null) {	
-				this.table = null;
 				this.table.Dispose();
+				this.table = null;
 			}
 		}
 		

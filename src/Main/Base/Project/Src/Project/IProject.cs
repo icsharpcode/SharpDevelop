@@ -256,6 +256,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		void SaveProjectExtensions(string name, XElement element);
 		
+		// TODO:
+		bool HasProjectType(Guid projectTypeGuid);
+		
 		/// <summary>
 		/// Gets the project content associated with this project.
 		/// </summary>

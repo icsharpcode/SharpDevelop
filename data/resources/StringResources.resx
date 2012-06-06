@@ -1550,6 +1550,12 @@ Examples: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Italic</value>
   </data>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Export highlighting colors</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Import highlighting colors</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Value</value>
   </data>
@@ -2256,10 +2262,13 @@ system. I don't think that it needs translation.</comment>
     <value>None</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>Markers and Rulers</value>
+    <value>Markers</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Markers and Rulers</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Rulers</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Show &amp;hidden definitions (brackets only)</value>
@@ -5698,6 +5707,32 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
     <value>Open command prompt here</value>
   </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>choose target frameworks</value>
+    <comment>Option in the "target framework" combobox in the "project upgrade" view that causes the "select portable profile" dialog to appear</comment>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>Could not find Portable Class Library Tools.</value>
+  </data>
+  <data name="PortableLibrary.PortableSubset" xml:space="preserve">
+    <value>.NET Portable Subset</value>
+    <comment>Name for the portable target framework, shown in Project Upgrade view</comment>
+  </data>
+  <data name="PortableLibrary.SelectAtLeastTwoFrameworks" xml:space="preserve">
+    <value>Two or more frameworks must be selected.</value>
+    <comment>Label shown when only 0 or 1 frameworks are selected</comment>
+  </data>
+  <data name="PortableLibrary.SelectedProfile" xml:space="preserve">
+    <value>Selected profile:</value>
+    <comment>Label that shows the selected portable library profile</comment>
+  </data>
+  <data name="PortableLibrary.SelectProfileDialog.Title" xml:space="preserve">
+    <value>Select Portable Library Profile</value>
+    <comment>Title of the dialog used to pick the target frameworks for a portable library project</comment>
+  </data>
+  <data name="PortableLibrary.ToolsInstallationHelp" xml:space="preserve">
+    <value>To install the Portable Class Library Tools without installing Visual Studio, save the download file (PortableLibraryTools.exe) on your computer, and run the installation program from a Command Prompt window. Include the /buildmachine switch on the command line.</value>
+  </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Collapse all nodes</value>
   </data>
@@ -7011,6 +7046,12 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
     <value>Gtk# Application</value>
     <comment>Name of Gtk# project template.</comment>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Description" xml:space="preserve">
+    <value>Library that can be used on Windows, Silverlight, Windows Phone, and Xbox.</value>
+  </data>
+  <data name="Templates.Project.PortableLibrary.Name" xml:space="preserve">
+    <value>Portable Class Library</value>
   </data>
   <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
     <value>A windows installer project for creating a MSI installer.</value>

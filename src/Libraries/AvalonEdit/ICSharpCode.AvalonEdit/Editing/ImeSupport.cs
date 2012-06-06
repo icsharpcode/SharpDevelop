@@ -51,6 +51,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea != null) {
 				textArea.GotKeyboardFocus -= TextAreaGotKeyboardFocus;
 				textArea.LostKeyboardFocus -= TextAreaLostKeyboardFocus;
+				textArea.OptionChanged -= TextAreaOptionChanged;
 				textArea = null;
 			}
 			ClearContext();

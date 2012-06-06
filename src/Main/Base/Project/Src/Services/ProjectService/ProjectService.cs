@@ -205,7 +205,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				newProject.IdGuid = Guid.NewGuid().ToString().ToUpperInvariant();
 			}
 			solutionFolderNode.Container.AddFolder(newProject);
-			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
 			OnProjectAdded(new ProjectEventArgs(newProject));
 		}
 		
@@ -402,19 +401,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			solution.AddFolder(project);
-			ProjectSection configSection = solution.GetSolutionConfigurationsSection();
-			foreach (string configuration in project.ConfigurationNames) {
-				foreach (string platform in project.PlatformNames) {
-					string key;
-					if (platform == "AnyCPU") { // Fix for SD2-786
-						key = configuration + "|Any CPU";
-					} else {
-						key = configuration + "|" + platform;
-					}
-					configSection.Items.Add(new SolutionItem(key, key));
-				}
-			}
-			solution.FixSolutionConfiguration(new IProject[] { project });
 			
 			if (FileUtility.ObservedSave((NamedFileOperationDelegate)solution.Save, solutionFile) == FileOperationResult.OK) {
 				// only load when saved succesfully

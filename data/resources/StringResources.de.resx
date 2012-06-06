@@ -1498,6 +1498,12 @@ Beispiele: "120", "MainClass", "Main.cs, 120".</value>
   <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
     <value>Kursiv</value>
   </data>
+  <data name="Dialog.HighlightingEditor.Export" xml:space="preserve">
+    <value>Hervorhebungsfarben exportieren</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Import" xml:space="preserve">
+    <value>Hervorhebungsfarben importieren</value>
+  </data>
   <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
     <value>Wert</value>
   </data>
@@ -2181,10 +2187,13 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
     <value>Deaktiviert</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
-    <value>Markierungen und Liniale</value>
+    <value>Markierungen</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
     <value>Markierungen und Liniale</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.RulersGroupBox" xml:space="preserve">
+    <value>Lineale</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.ShowHiddenDefinitionsCheckBox" xml:space="preserve">
     <value>Verdeckte Definitionen anzeigen (nur geschweifte Klammern)</value>
@@ -5392,6 +5401,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="OpenFileTabEventHandler.OpenCommandPromptHere" xml:space="preserve">
     <value>Kommandozeile hier öffnen</value>
+  </data>
+  <data name="PortableLibrary.ChooseTargetFrameworks" xml:space="preserve">
+    <value>Ziel-Frameworks wählen</value>
+  </data>
+  <data name="PortableLibrary.CouldNotFindTools" xml:space="preserve">
+    <value>Konnte die Portable Class Library Tools nicht finden.</value>
   </data>
   <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
     <value>Alle Knoten einklappen</value>

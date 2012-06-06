@@ -40,6 +40,11 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class Properties : INotifyPropertyChanged, ICloneable
 	{
+		/// <summary>
+		/// Gets the version number of the XML file format.
+		/// </summary>
+		public static readonly Version FileVersion = new Version(2, 0, 0);
+		
 		// Properties instances form a tree due to the nested properties containers.
 		// All nodes in such a tree share the same syncRoot in order to simplify synchronization.
 		// When an existing node is added to a tree, its syncRoot needs to change.

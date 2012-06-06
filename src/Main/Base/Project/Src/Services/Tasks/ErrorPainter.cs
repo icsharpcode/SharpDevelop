@@ -2,11 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -20,6 +22,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		public ErrorPainter(ITextEditor textEditor)
 		{
+			instances.Add(this);
 			this.textEditor = textEditor;
 			this.markerService = this.textEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			
@@ -32,6 +35,10 @@ namespace ICSharpCode.SharpDevelop
 			DebuggerService.DebugStarted += OnDebugStartedStopped;
 			DebuggerService.DebugStopped += OnDebugStartedStopped;
 			textEditor.Options.PropertyChanged += textEditor_Options_PropertyChanged;
+			
+			ErrorColor = Colors.Red;
+			WarningColor = Colors.Orange;
+			MessageColor = Colors.Blue;
 			
 			UpdateEnabled();
 		}
@@ -54,6 +61,56 @@ namespace ICSharpCode.SharpDevelop
 			DebuggerService.DebugStopped -= OnDebugStartedStopped;
 			textEditor.Options.PropertyChanged -= textEditor_Options_PropertyChanged;
 			ClearErrors();
+			instances.Remove(this);
+		}
+		
+		static readonly List<ErrorPainter> instances = new List<ErrorPainter>();
+		
+		public static IEnumerable<ErrorPainter> Instances {
+			get {
+				WorkbenchSingleton.AssertMainThread();
+				return instances;
+			}
+		}
+		
+		public const string ErrorColorName = "Error marker";
+		public const string WarningColorName = "Warning marker";
+		public const string MessageColorName = "Message marker";
+		
+		Color errorColor;
+		
+		public Color ErrorColor {
+			get { return errorColor; }
+			set {
+				if (errorColor != value) {
+					errorColor = value;
+					UpdateErrors();
+				}
+			}
+		}
+		
+		Color warningColor;
+		
+		public Color WarningColor {
+			get { return warningColor; }
+			set {
+				if (warningColor != value) {
+					warningColor = value;
+					UpdateErrors();
+				}
+			}
+		}
+		
+		Color messageColor;
+		
+		public Color MessageColor {
+			get { return messageColor; }
+			set {
+				if (messageColor != value) {
+					messageColor = value;
+					UpdateErrors();
+				}
+			}
 		}
 		
 		bool isEnabled;
@@ -149,13 +206,13 @@ namespace ICSharpCode.SharpDevelop
 				
 				switch (task.TaskType) {
 					case TaskType.Error:
-						markerColor = Colors.Red;
+						markerColor = ErrorColor;
 						break;
 					case TaskType.Message:
-						markerColor = Colors.Blue;
+						markerColor = MessageColor;
 						break;
 					case TaskType.Warning:
-						markerColor = Colors.Orange;
+						markerColor = WarningColor;
 						break;
 				}
 				

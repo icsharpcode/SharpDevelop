@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using System.Windows.Media;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
@@ -90,6 +91,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.condition = script;
 		}
 		
+		public const string BreakpointMarker = "Breakpoint";
+		
+		public static readonly Color DefaultBackground = Color.FromRgb(180, 38, 38);
+		public static readonly Color DefaultForeground = Colors.White;
+		
 		public static readonly IImage BreakpointImage = new ResourceServiceImage("Bookmarks.Breakpoint");
 		public static readonly IImage BreakpointConditionalImage = new ResourceServiceImage("Bookmarks.BreakpointConditional");
 		public static readonly IImage DisabledBreakpointImage = new ResourceServiceImage("Bookmarks.DisabledBreakpoint");
@@ -111,10 +117,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			IDocumentLine line = this.Document.GetLineByNumber(this.LineNumber);
 			ITextMarker marker = markerService.Create(line.Offset, line.Length);
-			marker.BackgroundColor = Color.FromRgb(180, 38, 38);
-			marker.ForegroundColor = Colors.White;
-			marker.MarkerColor = Color.FromRgb(180, 38, 38);
+			ISyntaxHighlighter highlighter = this.Document.GetService(typeof(ISyntaxHighlighter)) as ISyntaxHighlighter;
+			marker.BackgroundColor = DefaultBackground;
+			marker.ForegroundColor = DefaultForeground;
+			marker.MarkerColor = DefaultBackground;
 			marker.MarkerTypes = TextMarkerTypes.CircleInScrollBar;
+			
+			if (highlighter != null) {
+				var color = highlighter.GetNamedColor(BreakpointMarker);
+				if (color != null) {
+					marker.BackgroundColor = color.Background.GetColor(null);
+					marker.MarkerColor = color.Background.GetColor(null) ?? DefaultBackground;
+					marker.ForegroundColor = color.Foreground.GetColor(null);
+				}
+			}
 			return marker;
 		}
 		

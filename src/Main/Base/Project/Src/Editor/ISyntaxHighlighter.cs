@@ -21,6 +21,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		IEnumerable<string> GetSpanColorNamesFromLineStart(int lineNumber);
 		
 		/// <summary>
+		/// Retrieves the HighlightingColor with the specified name. Returns null if no color matching the name is found.
+		/// </summary>
+		HighlightingColor GetNamedColor(string name);
+		
+		/// <summary>
 		/// Gets the highlighting definition that is being used.
 		/// </summary>
 		IHighlightingDefinition HighlightingDefinition { get; }
