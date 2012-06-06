@@ -25,6 +25,10 @@
 // THE SOFTWARE.
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
+using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -48,6 +52,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
+
+
 			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 			{
 				FindIssuesInNode(indexerDeclaration.Setter.Body);
@@ -58,34 +64,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				FindIssuesInNode(propertyDeclaration.Setter.Body);
 			}
 
+			CompilationUnit compilationUnit;
+
+			public override void VisitCompilationUnit(CompilationUnit unit)
+			{
+				compilationUnit = unit;
+				base.VisitCompilationUnit(unit);
+			}
+
 			void FindIssuesInNode(AstNode node)
 			{
-				var setterVisitor = new ReferenceFinderVisitor(context, "value");
-				node.AcceptVisitor(setterVisitor);
-				if (!setterVisitor.FoundReference)
+				var variable = context.GetResolverStateBefore(node).LocalVariables
+					.Where(v => v.Name == "value").FirstOrDefault();
+				if (variable == null)
+					return;
+
+				bool referenceFound = false;
+				var findRef = new FindReferences();
+				findRef.FindLocalReferences(variable, context.ParsedFile, compilationUnit, context.Compilation, (n, entity) => {
+					referenceFound = true;
+				}, CancellationToken.None);
+
+				if(!referenceFound)
 					AddIssue(node, context.TranslateString("The setter does not use the 'value' parameter."));
-			}
-		}
-
-		class ReferenceFinderVisitor: DepthFirstAstVisitor
-		{
-			readonly BaseRefactoringContext context;
-			readonly string variableName;
-
-			public ReferenceFinderVisitor(BaseRefactoringContext context, string variableName)
-			{
-				this.context = context;
-				this.variableName = variableName;
-			}
-
-			public bool FoundReference { get; private set; }
-
-			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
-			{
-				var resolvedIdentifier = context.Resolve(identifierExpression) as LocalResolveResult;
-				if (resolvedIdentifier != null)
-					FoundReference |= resolvedIdentifier.Variable.Name == variableName;
-				base.VisitIdentifierExpression(identifierExpression);
 			}
 		}
 	}

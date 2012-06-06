@@ -23,11 +23,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
 using System;
 using ICSharpCode.NRefactory.Semantics;
+using System.Threading;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {	
@@ -46,9 +48,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var exceptionType = context.ResolveType(catchClause.Type);
 			if (exceptionType != context.Compilation.FindType(typeof(Exception)))
 				yield break;
+			var compilationUnit = context.RootNode as CompilationUnit ?? context.GetNode<CompilationUnit>();
+			if (compilationUnit == null)
+				yield break;
 			var exceptionIdentifierRR = context.Resolve(catchClause.VariableNameToken) as LocalResolveResult;
 			if (exceptionIdentifierRR != null &&
-				IsReferenced(exceptionIdentifierRR.Variable, catchClause.Body, context))
+				IsReferenced(exceptionIdentifierRR.Variable, catchClause.Body, compilationUnit, context))
 				yield break;
 			yield return new CodeAction(context.TranslateString("Remove type specifier"), script => {
 				script.Replace(catchClause, new CatchClause() {
@@ -57,33 +62,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
-		bool IsReferenced(IVariable variable, AstNode node, RefactoringContext context)
+		bool IsReferenced(IVariable variable, AstNode node, CompilationUnit unit, RefactoringContext context)
 		{
-			var visitor = new ReferenceFinderVisitor(context, variable);
-			node.AcceptVisitor(visitor);
-			return visitor.FoundReference;
-		}
+			int referencesFound = 0;
+			var findRef = new FindReferences();
+			findRef.FindLocalReferences(variable, context.ParsedFile, unit, context.Compilation, (n, entity) => {
+				referencesFound++;
+			}, CancellationToken.None);
 
-		class ReferenceFinderVisitor: DepthFirstAstVisitor
-		{
-			RefactoringContext context;
-			IVariable variable;
-
-			public ReferenceFinderVisitor(RefactoringContext context, IVariable variable)
-			{
-				this.context = context;
-				this.variable = variable;
-			}
-
-			public bool FoundReference { get; private set; }
-
-			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
-			{
-				var resolvedIdentifier = context.Resolve(identifierExpression) as LocalResolveResult;
-				if (resolvedIdentifier != null)
-					FoundReference |= resolvedIdentifier.Variable == variable;
-				base.VisitIdentifierExpression(identifierExpression);
-			}
+			// One reference is the declaration, and that does not count
+			return referencesFound > 1;
 		}
 
 		#endregion
