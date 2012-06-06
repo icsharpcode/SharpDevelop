@@ -50,7 +50,6 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				this.context = context;
 				rules = new Dictionary<string, Func<int, int, bool>>();
-				new ArgumentNullException();
 				rules [typeof(ArgumentException).FullName] = (left, right) => left > right;
 				rules [typeof(ArgumentNullException).FullName] = (left, right) => left < right;
 				rules [typeof(ArgumentOutOfRangeException).FullName] = (left, right) => left < right;
