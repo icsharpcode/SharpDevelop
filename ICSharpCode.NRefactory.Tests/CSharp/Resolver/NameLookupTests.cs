@@ -295,6 +295,7 @@ class Color {
 			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.String", result.Type.FullName);
 			Assert.AreEqual("value", result.Variable.Name);
+			Assert.AreEqual(new DomRegion(3, 7, 3, 7), result.Variable.Region);
 		}
 		
 		[Test]
@@ -312,6 +313,7 @@ class Color {
 			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.EventHandler", result.Type.FullName);
 			Assert.AreEqual("value", result.Variable.Name);
+			Assert.AreEqual(new DomRegion(3, 7, 3, 7), result.Variable.Region);
 		}
 		
 		[Test]
@@ -328,6 +330,7 @@ class Color {
 			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.String", result.Type.FullName);
 			Assert.AreEqual("value", result.Variable.Name);
+			Assert.AreEqual(new DomRegion(3, 7, 3, 7), result.Variable.Region);
 		}
 		
 		[Test]

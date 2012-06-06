@@ -855,7 +855,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == PropertyDeclaration.SetterRole && member != null) {
 						resolver = resolver.PushBlock();
-						resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
+						var setter = node as Accessor;
+						var setterRegion = setter.Body.GetRegion();
+						var valueRegion = new DomRegion(setterRegion.BeginLine, setterRegion.BeginColumn,
+						                                setterRegion.BeginLine, setterRegion.BeginColumn);
+						resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value", valueRegion));
 						Scan(node);
 						resolver = resolver.PopBlock();
 					} else {
@@ -902,7 +906,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				if (member != null) {
 					resolver = resolver.PushBlock();
-					resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
+					var adderRegion = eventDeclaration.AddAccessor.Body.GetRegion();
+					var valueRegion = new DomRegion(adderRegion.BeginLine, adderRegion.BeginColumn,
+					                                adderRegion.BeginLine, adderRegion.BeginColumn);
+					resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value", valueRegion));
 					ScanChildren(eventDeclaration);
 				} else {
 					ScanChildren(eventDeclaration);
