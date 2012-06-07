@@ -34,8 +34,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			Assert.AreEqual(-1, snapshot1.Version.CompareAge(snapshot2.Version));
 			TextChangeEventArgs[] arr = snapshot1.Version.GetChangesTo(snapshot2.Version).ToArray();
 			Assert.AreEqual(2, arr.Length);
-			Assert.AreEqual("nw", arr[0].InsertedText);
-			Assert.AreEqual("e", arr[1].InsertedText);
+			Assert.AreEqual("nw", arr[0].InsertedText.Text);
+			Assert.AreEqual("e", arr[1].InsertedText.Text);
 			
 			Assert.AreEqual("initial text", snapshot1.Text);
 			Assert.AreEqual("new text", snapshot2.Text);
@@ -52,8 +52,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			Assert.AreEqual(1, snapshot2.Version.CompareAge(snapshot1.Version));
 			TextChangeEventArgs[] arr = snapshot2.Version.GetChangesTo(snapshot1.Version).ToArray();
 			Assert.AreEqual(2, arr.Length);
-			Assert.AreEqual("", arr[0].InsertedText);
-			Assert.AreEqual("initial", arr[1].InsertedText);
+			Assert.AreEqual("", arr[0].InsertedText.Text);
+			Assert.AreEqual("initial", arr[1].InsertedText.Text);
 			
 			Assert.AreEqual("initial text", snapshot1.Text);
 			Assert.AreEqual("new text", snapshot2.Text);

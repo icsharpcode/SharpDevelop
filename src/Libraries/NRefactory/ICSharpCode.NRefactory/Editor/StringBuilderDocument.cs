@@ -192,7 +192,7 @@ namespace ICSharpCode.NRefactory.Editor
 					documentSnapshot = null;
 					cachedText = null;
 					b.Remove(change.Offset, change.RemovalLength);
-					b.Insert(change.Offset, change.InsertedText);
+					b.Insert(change.Offset, change.InsertedText.Text);
 					versionProvider.AppendChange(change);
 					
 					// Update anchors and fire Deleted events

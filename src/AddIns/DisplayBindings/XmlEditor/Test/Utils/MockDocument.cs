@@ -223,5 +223,20 @@ namespace XmlEditor.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void Insert(int offset, ITextSource text)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Insert(int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public void Replace(int offset, int length, ITextSource newText)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
