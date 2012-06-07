@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ICSharpCode.NRefactory.Editor;
 
 namespace ICSharpCode.AvalonEdit.Document
 {
@@ -181,7 +182,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		#endregion
 		
 		#region Insert
-		public void Insert(int offset, string text)
+		public void Insert(int offset, ITextSource text)
 		{
 			DocumentLine line = documentLineTree.GetByOffset(offset);
 			int lineOffset = line.Offset;
@@ -202,7 +203,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (ds == SimpleSegment.Invalid) {
 				// no newline is being inserted, all text is inserted in a single line
 				//line.InsertedLinePart(offset - line.Offset, text.Length);
-				SetLineLength(line, line.TotalLength + text.Length);
+				SetLineLength(line, line.TotalLength + text.TextLength);
 				return;
 			}
 			//DocumentLine firstLine = line;
@@ -224,9 +225,9 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			//firstLine.SplitTo(line);
 			// insert rest after last delimiter
-			if (lastDelimiterEnd != text.Length) {
+			if (lastDelimiterEnd != text.TextLength) {
 				//line.InsertedLinePart(0, text.Length - lastDelimiterEnd);
-				SetLineLength(line, line.TotalLength + text.Length - lastDelimiterEnd);
+				SetLineLength(line, line.TotalLength + text.TextLength - lastDelimiterEnd);
 			}
 		}
 		

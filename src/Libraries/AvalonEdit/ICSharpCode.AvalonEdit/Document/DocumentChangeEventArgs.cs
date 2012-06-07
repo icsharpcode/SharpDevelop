@@ -71,14 +71,24 @@ namespace ICSharpCode.AvalonEdit.Document
 		public DocumentChangeEventArgs(int offset, string removedText, string insertedText, OffsetChangeMap offsetChangeMap)
 			: base(offset, removedText, insertedText)
 		{
-			ThrowUtil.CheckNotNegative(offset, "offset");
-			ThrowUtil.CheckNotNull(removedText, "removedText");
-			ThrowUtil.CheckNotNull(insertedText, "insertedText");
-			
+			SetOffsetChangeMap(offsetChangeMap);
+		}
+		
+		/// <summary>
+		/// Creates a new DocumentChangeEventArgs object.
+		/// </summary>
+		public DocumentChangeEventArgs(int offset, ITextSource removedText, ITextSource insertedText, OffsetChangeMap offsetChangeMap)
+			: base(offset, removedText, insertedText)
+		{
+			SetOffsetChangeMap(offsetChangeMap);
+		}
+		
+		void SetOffsetChangeMap(OffsetChangeMap offsetChangeMap)
+		{
 			if (offsetChangeMap != null) {
 				if (!offsetChangeMap.IsFrozen)
 					throw new ArgumentException("The OffsetChangeMap must be frozen before it can be used in DocumentChangeEventArgs");
-				if (!offsetChangeMap.IsValidForDocumentChange(offset, removedText.Length, insertedText.Length))
+				if (!offsetChangeMap.IsValidForDocumentChange(this.Offset, this.RemovalLength, this.InsertionLength))
 					throw new ArgumentException("OffsetChangeMap is not valid for this document change", "offsetChangeMap");
 				this.offsetChangeMap = offsetChangeMap;
 			}

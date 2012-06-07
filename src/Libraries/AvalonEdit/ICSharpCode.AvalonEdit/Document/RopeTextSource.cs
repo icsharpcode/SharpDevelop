@@ -11,6 +11,7 @@ namespace ICSharpCode.AvalonEdit.Document
 	/// <summary>
 	/// Implements the ITextSource interface using a rope.
 	/// </summary>
+	[Serializable]
 	public sealed class RopeTextSource : ITextSource
 	{
 		readonly Rope<char> rope;

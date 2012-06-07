@@ -105,14 +105,32 @@ namespace ICSharpCode.NRefactory.Editor
 		}
 		
 		/// <inheritdoc/>
+		public void Insert(int offset, ITextSource text)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			Replace(offset, 0, text.Text);
+		}
+		
+		/// <inheritdoc/>
 		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
 		{
 			if (offset < 0 || offset > this.TextLength)
 				throw new ArgumentOutOfRangeException("offset");
+			if (text == null)
+				throw new ArgumentNullException("text");
 			if (defaultAnchorMovementType == AnchorMovementType.BeforeInsertion)
 				PerformChange(new InsertionWithMovementBefore(offset, text));
 			else
 				Replace(offset, 0, text);
+		}
+		
+		/// <inheritdoc/>
+		public void Insert(int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			Insert(offset, text.Text, defaultAnchorMovementType);
 		}
 		
 		[Serializable]
@@ -147,6 +165,14 @@ namespace ICSharpCode.NRefactory.Editor
 			if (newText == null)
 				throw new ArgumentNullException("newText");
 			PerformChange(new TextChangeEventArgs(offset, b.ToString(offset, length), newText));
+		}
+		
+		/// <inheritdoc/>
+		public void Replace(int offset, int length, ITextSource newText)
+		{
+			if (newText == null)
+				throw new ArgumentNullException("newText");
+			Replace(offset, length, newText.Text);
 		}
 		
 		bool isInChange;
