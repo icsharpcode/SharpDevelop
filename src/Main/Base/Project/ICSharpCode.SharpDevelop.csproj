@@ -753,10 +753,6 @@
     <Compile Include="Src\Project\MSBuildEnums.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
-    <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\old_Publish.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>BuildEvents.xaml</DependentUpon>
