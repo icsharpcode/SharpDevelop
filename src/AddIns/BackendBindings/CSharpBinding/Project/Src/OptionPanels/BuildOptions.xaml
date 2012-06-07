@@ -25,22 +25,15 @@
 				Header="{core:Localize Dialog.ProjectOptions.BuildOptions.General}">
 				<Grid>
 					<Grid.RowDefinitions>
-						<RowDefinition
-							Height="30"></RowDefinition>
-						<RowDefinition
-							Height="30"></RowDefinition>
-						<RowDefinition
-							Height="30"></RowDefinition>
-						<RowDefinition
-							Height="30"></RowDefinition>
-						<RowDefinition
-							Height="30"></RowDefinition>
-						<RowDefinition
-							Height="30"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition
-							Width="30"></ColumnDefinition>
+						<ColumnDefinition Width="30"></ColumnDefinition>
 						<ColumnDefinition></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 					<Label
@@ -105,27 +98,18 @@
 				Header="{core:Localize Dialog.ProjectOptions.Build.Output}">
 				<Grid>
 					<Grid.RowDefinitions>
-						<RowDefinition
-							Height="25"></RowDefinition>
-						<RowDefinition
-							Height="25"></RowDefinition>
-						<RowDefinition
-							Height="25"></RowDefinition>
-						<RowDefinition
-							Height="25"></RowDefinition>
-						<RowDefinition
-							Height="25"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
 						<RowDefinition></RowDefinition>
 					</Grid.RowDefinitions>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition
-							Width="25"></ColumnDefinition>
-						<ColumnDefinition
-							Width="*"></ColumnDefinition>
-						<ColumnDefinition
-							Width="3*"></ColumnDefinition>
-						<ColumnDefinition
-							Width="50"></ColumnDefinition>
+						<ColumnDefinition Width="25"></ColumnDefinition>
+						<ColumnDefinition Width="*"></ColumnDefinition>
+						<ColumnDefinition Width="3*"></ColumnDefinition>
+						<ColumnDefinition Width="50"></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 					
 					<Label Grid.ColumnSpan="2" Content="{core:Localize Dialog.ProjectOptions.Build.OutputPath}"></Label>
@@ -185,36 +169,26 @@
 							Width="100"
 							Content="Change"
 							Command="{Binding UpdateProjectCommand}"
+							Style="{x:Static core:GlobalStyles.ButtonStyle}"
 							Margin="3,0,3,0"></Button>
 					</StackPanel>
 					<GroupBox Grid.Row="5" Grid.ColumnSpan="3" Margin="5,10,0,0"
 					          Header="{core:Localize Dialog.ProjectOptions.Build.Advanced}">
 						<Grid>
 							<Grid.RowDefinitions>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
-								<RowDefinition
-									Height="25"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
+								<RowDefinition Height="Auto"></RowDefinition>
 							</Grid.RowDefinitions>
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition
-									Width="25"></ColumnDefinition>
+								<ColumnDefinition Width="25"></ColumnDefinition>
 								<ColumnDefinition></ColumnDefinition>
 								<ColumnDefinition></ColumnDefinition>
 								<ColumnDefinition></ColumnDefinition>
@@ -365,18 +339,13 @@
 				Header="{core:Localize Dialog.ProjectOptions.Build.ErrorsAndWarnings}">
 				<Grid>
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition
-							Width="25"></ColumnDefinition>
-						<ColumnDefinition
-							Width="*"></ColumnDefinition>
-						<ColumnDefinition
-							Width="3*"></ColumnDefinition>
+						<ColumnDefinition Width="25"></ColumnDefinition>
+						<ColumnDefinition Width="*"></ColumnDefinition>
+						<ColumnDefinition Width="3*"></ColumnDefinition>
 					</Grid.ColumnDefinitions>
 					<Grid.RowDefinitions>
-						<RowDefinition
-							Height="25"></RowDefinition>
-						<RowDefinition
-							Height="25"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
+						<RowDefinition Height="Auto"></RowDefinition>
 					</Grid.RowDefinitions>
 					<Label
 						Grid.Column="1"
@@ -417,10 +386,14 @@
 						<ColumnDefinition Width="3*"></ColumnDefinition>							
 					</Grid.ColumnDefinitions>
 					<Grid.RowDefinitions>
-						<RowDefinition Height="30"></RowDefinition>							
-						<RowDefinition Height="30"></RowDefinition>							
-						<RowDefinition Height="30"></RowDefinition>							
+						<RowDefinition Height="Auto"></RowDefinition>							
+						<RowDefinition Height="Auto"></RowDefinition>							
+						<RowDefinition Height="Auto"></RowDefinition>							
 					</Grid.RowDefinitions>
+						
+					<optionpanels:StorageLocationPicker Grid.Row="1"
+						Location="{Binding TreatWarningsAsErrors.Location}">
+					</optionpanels:StorageLocationPicker>
 					<RadioButton
 						x:Name="noneRadioButton"
 						Grid.Column="1"
