@@ -81,5 +81,20 @@ class Test {
 			Assert.IsInstanceOf<InitializedObjectResolveResult>(target);
 			Assert.AreEqual(rr.Type, target.Type);
 		}
+
+		[Test]
+		public void NestingAnonymousTypesShouldWork()
+		{
+			string program = @"using System;
+class TestClass {
+	void F() {
+		var o = $new { a = 0, b = 1, c = new { d = 2, e = 3, f = 4 } }$;
+	}
+}";
+			
+			var result = Resolve<InvocationResolveResult>(program);
+			Assert.That(result.Type.GetProperties().Select(p => p.Name), Is.EquivalentTo(new[] { "a", "b", "c" }));
+			Assert.That(result.Type.GetProperties().Single(p => p.Name == "c").ReturnType.GetProperties().Select(p => p.Name), Is.EquivalentTo(new[] { "d", "e", "f" }));
+		}
 	}
 }
