@@ -118,21 +118,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			CheckNaming (input, output);
 		}
 
-		[Test]
-		public void TestPrivateFieldName ()
-		{
-			var input = @"class AClass { int Field; }";
-			var output = @"class AClass { int field; }";
-			CheckNaming (input, output);
-		}
+//		[Test]
+//		public void TestPrivateFieldName ()
+//		{
+//			var input = @"class AClass { int Field; }";
+//			var output = @"class AClass { int field; }";
+//			CheckNaming (input, output);
+//		}
 		
-		[Test]
-		public void TestUnderscoreFieldName ()
-		{
-			var input = @"class AClass { int _Field; }";
-			var output = @"class AClass { int _field; }";
-			CheckNaming (input, output);
-		}
+//		[Test]
+//		public void TestUnderscoreFieldName ()
+//		{
+//			var input = @"class AClass { int _Field; }";
+//			var output = @"class AClass { int _field; }";
+//			CheckNaming (input, output);
+//		}
 		
 		[Test]
 		public void TestPublicFieldName ()
@@ -190,13 +190,13 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			CheckNaming (input, output);
 		}
 		
-		[Test]
-		public void TestPrivateReadOnlyFieldName ()
-		{
-			var input = @"class AClass { readonly int Field; }";
-			var output = @"class AClass { readonly int field; }";
-			CheckNaming (input, output);
-		}
+//		[Test]
+//		public void TestPrivateReadOnlyFieldName ()
+//		{
+//			var input = @"class AClass { readonly int Field; }";
+//			var output = @"class AClass { readonly int field; }";
+//			CheckNaming (input, output);
+//		}
 		
 		[Test]
 		public void TestPublicConstantFieldName ()
