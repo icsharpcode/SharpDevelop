@@ -43,6 +43,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public ProjectNode(IProject project)
 		{
+			if (project == null)
+				throw new ArgumentNullException("project");
 			sortOrder = 1;
 			
 			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode";
@@ -191,6 +193,15 @@ namespace ICSharpCode.SharpDevelop.Project
 //				}
 //			}
 			string newFileName = Path.Combine(project.Directory, newName + Path.GetExtension(project.FileName));
+			
+			// see issue #2 on http://community.sharpdevelop.net/forums/t/15800.aspx:
+			// The name of the project and the file name might differ. So if the FileName is
+			// already the same as the new project file name, just update the name in the solution.
+			if (FileUtility.IsEqualFileName(newFileName, project.FileName)) {
+				project.Name = newName;
+				ProjectService.SaveSolution();
+				return;
+			}
 			
 			if (!FileService.RenameFile(project.FileName, newFileName, false)) {
 				return;

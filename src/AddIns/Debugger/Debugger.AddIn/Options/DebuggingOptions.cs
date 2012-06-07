@@ -40,5 +40,26 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		// Properties for the DebuggeeExceptionForm
 		public FormWindowState DebuggeeExceptionWindowState { get; set; }
+		
+		/// <summary>
+		/// Used to update status of some debugger properties while debugger is running.
+		/// </summary>
+		internal static void ResetStatus(Action<Process> resetStatus)
+		{
+			Process proc = WindowsDebugger.CurrentProcess;
+			// debug session is running
+			if (proc != null) {
+				bool wasPausedNow = false;
+				// if it is not paused, break execution
+				if (!proc.IsPaused) {
+					proc.Break();
+					wasPausedNow = true;
+				}
+				resetStatus(proc);
+				// continue if it was not paused before
+				if (wasPausedNow)
+					proc.AsyncContinue();
+			}
+		}
 	}
 }

@@ -18,7 +18,7 @@
 		<Open filename = "MainForm.cs"/>
 	</Actions>
 	
-	<Project language = "C#">
+	<Project language = "C#" defaultPlatform="x86">
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

@@ -35,6 +35,16 @@ namespace Debugger.AddIn.Pads.Controls
 			get { return this.Node.GetChildren != null; }
 		}
 		
+		public override bool CanDelete()
+		{
+			return this.Node.CanDelete;
+		}
+		
+		public override void Delete()
+		{
+			Parent.Children.Remove(this);
+		}
+		
 		protected override void LoadChildren()
 		{
 			if (this.Node.GetChildren != null) {

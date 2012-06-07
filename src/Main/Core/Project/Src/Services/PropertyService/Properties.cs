@@ -37,6 +37,8 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class Properties
 	{
+		public static readonly Version CurrentVersion = new Version(1, 0, 0, 0);
+		
 		/// <summary> Needed for support of late deserialization </summary>
 		class SerializedValue {
 			string content;

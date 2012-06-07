@@ -9,8 +9,6 @@ using System.Linq;
 using System.Xml.Linq;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Util;
 
@@ -32,11 +30,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 		}
 		
+		new protected CompilableProject Project {
+			get { return (CompilableProject)base.Project; }
+		}
+		
 		public override bool IsStartable {
 			get {
 				switch (StartAction) {
 					case StartAction.Project:
-						return ((CompilableProject)Project).OutputType == OutputType.Exe || ((CompilableProject)Project).OutputType == OutputType.WinExe;
+						return Project.OutputType == OutputType.Exe || Project.OutputType == OutputType.WinExe;
 					case StartAction.Program:
 						return StartProgram.Length > 0;
 					case StartAction.StartURL:
@@ -102,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ProjectCreationComplete()
 		{
-			TargetFramework fx = ((CompilableProject)Project).CurrentTargetFramework;
+			TargetFramework fx = Project.CurrentTargetFramework;
 			if (fx != null && (fx.IsBasedOn(TargetFramework.Net35) || fx.IsBasedOn(TargetFramework.Net35Client))) {
 				AddDotnet35References();
 			}
@@ -124,6 +126,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			return base.GetDefaultItemType(fileName);
 		}
 		
+		public override CompilerVersion CurrentCompilerVersion {
+			get {
+				switch (Project.MinimumSolutionVersion) {
+					case Solution.SolutionVersionVS2005:
+						return CompilerVersion.MSBuild20;
+					case Solution.SolutionVersionVS2008:
+						return CompilerVersion.MSBuild35;
+					case Solution.SolutionVersionVS2010:
+					case Solution.SolutionVersionVS11:
+						return CompilerVersion.MSBuild40;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+		}
+		
 		public override IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
 		{
 			List<CompilerVersion> versions = new List<CompilerVersion>();
@@ -135,13 +153,35 @@ namespace ICSharpCode.SharpDevelop.Project
 			return versions;
 		}
 		
+		public override TargetFramework CurrentTargetFramework {
+			get {
+				string fxVersion = Project.TargetFrameworkVersion;
+				string fxProfile = Project.TargetFrameworkProfile;
+				if (string.Equals(fxProfile, "Client", StringComparison.OrdinalIgnoreCase)) {
+					foreach (ClientProfileTargetFramework fx in TargetFramework.TargetFrameworks.OfType<ClientProfileTargetFramework>())
+						if (fx.FullFramework.Name == fxVersion)
+							return fx;
+				} else {
+					foreach (TargetFramework fx in TargetFramework.TargetFrameworks)
+						if (fx.Name == fxVersion)
+							return fx;
+				}
+				return null;
+			}
+		}
+		
+		public override IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
+		{
+			return TargetFramework.TargetFrameworks.Where(fx => fx.IsAvailable());
+		}
+		
 		public override void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
 			if (!Project.ReadOnly) {
 				lock (Project.SyncRoot) {
-					TargetFramework oldFramework = ((CompilableProject)Project).CurrentTargetFramework;
+					TargetFramework oldFramework = Project.CurrentTargetFramework;
 					if (newVersion != null && GetAvailableCompilerVersions().Contains(newVersion)) {
-						((CompilableProject)Project).SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
+						Project.SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
 					}
 					if (newFramework != null) {
 						UpdateAppConfig(newFramework);
@@ -170,6 +210,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					AddOrRemoveExtensions();
 					Project.Save();
+					ResXConverter.UpdateResourceFiles(Project);
 				}
 			}
 		}
@@ -227,7 +268,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			// When changing the target framework, update any existing app.config
 			// Also, for applications (not libraries), create an app.config is it is required for the target framework
-			bool createAppConfig = newFramework.RequiresAppConfigEntry && (((CompilableProject)Project).OutputType != OutputType.Library && ((CompilableProject)Project).OutputType != OutputType.Module);
+			bool createAppConfig = newFramework.RequiresAppConfigEntry && (Project.OutputType != OutputType.Library && Project.OutputType != OutputType.Module);
 			
 			string appConfigFileName = CompilableProject.GetAppConfigFile(Project, createAppConfig);
 			if (appConfigFileName == null)
@@ -368,3 +409,4 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 	}
 }
+

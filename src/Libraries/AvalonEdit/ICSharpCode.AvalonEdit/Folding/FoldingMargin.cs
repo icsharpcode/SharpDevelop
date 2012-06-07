@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -92,10 +92,16 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
+			FoldingMargin m = null;
+			if (d is FoldingMargin)
+				m = (FoldingMargin)d;
+			else if (d is TextEditor)
+				m = ((TextEditor)d).TextArea.LeftMargins.FirstOrDefault(c => c is FoldingMargin) as FoldingMargin;
+			if (m == null) return;
 			if (e.Property.Name == FoldingMarkerBrushProperty.Name)
-				foldingControlPen = MakeFrozenPen((Brush)e.NewValue);
+				m.foldingControlPen = MakeFrozenPen((Brush)e.NewValue);
 			if (e.Property.Name == SelectedFoldingMarkerBrushProperty.Name)
-				selectedFoldingControlPen = MakeFrozenPen((Brush)e.NewValue);
+				m.selectedFoldingControlPen = MakeFrozenPen((Brush)e.NewValue);
 		}
 		#endregion
 		
@@ -181,8 +187,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 			return markers[index];
 		}
 		
-		static Pen foldingControlPen = MakeFrozenPen((Brush)FoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
-		static Pen selectedFoldingControlPen = MakeFrozenPen((Brush)SelectedFoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
+		Pen foldingControlPen = MakeFrozenPen((Brush)FoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
+		Pen selectedFoldingControlPen = MakeFrozenPen((Brush)SelectedFoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
 		
 		static Pen MakeFrozenPen(Brush brush)
 		{

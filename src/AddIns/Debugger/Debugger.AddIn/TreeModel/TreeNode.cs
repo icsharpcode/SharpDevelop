@@ -25,7 +25,9 @@ namespace Debugger.AddIn.TreeModel
 		string name;
 		string value;
 		string type;
-				
+		
+		public bool CanDelete { get; set; }
+		
 		public IImage Image {
 			get {
 				OnPropertyRead("Image");

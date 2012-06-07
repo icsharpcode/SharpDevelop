@@ -7,8 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -20,20 +21,70 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// </summary>
 	public sealed class RectangleSelection : Selection
 	{
+		#region Commands
+		/// <summary>
+		/// Expands the selection left by one character, creating a rectangular selection.
+		/// Key gesture: Alt+Shift+Left
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectLeftByCharacter = Command("BoxSelectLeftByCharacter");
+		
+		/// <summary>
+		/// Expands the selection right by one character, creating a rectangular selection.
+		/// Key gesture: Alt+Shift+Right
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectRightByCharacter = Command("BoxSelectRightByCharacter");
+		
+		/// <summary>
+		/// Expands the selection left by one word, creating a rectangular selection.
+		/// Key gesture: Ctrl+Alt+Shift+Left
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectLeftByWord = Command("BoxSelectLeftByWord");
+		
+		/// <summary>
+		/// Expands the selection left by one word, creating a rectangular selection.
+		/// Key gesture: Ctrl+Alt+Shift+Right
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectRightByWord = Command("BoxSelectRightByWord");
+		
+		/// <summary>
+		/// Expands the selection up by one line, creating a rectangular selection.
+		/// Key gesture: Alt+Shift+Up
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectUpByLine = Command("BoxSelectUpByLine");
+		
+		/// <summary>
+		/// Expands the selection up by one line, creating a rectangular selection.
+		/// Key gesture: Alt+Shift+Down
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectDownByLine = Command("BoxSelectDownByLine");
+		
+		/// <summary>
+		/// Expands the selection to the start of the line, creating a rectangular selection.
+		/// Key gesture: Alt+Shift+Home
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectToLineStart = Command("BoxSelectToLineStart");
+		
+		/// <summary>
+		/// Expands the selection to the end of the line, creating a rectangular selection.
+		/// Key gesture: Alt+Shift+End
+		/// </summary>
+		public static readonly RoutedUICommand BoxSelectToLineEnd = Command("BoxSelectToLineEnd");
+		
+		static RoutedUICommand Command(string name)
+		{
+			return new RoutedUICommand(name, name, typeof(RectangleSelection));
+		}
+		#endregion
+		
 		TextDocument document;
 		readonly int startLine, endLine;
 		readonly double startXPos, endXPos;
 		readonly int topLeftOffset, bottomRightOffset;
+		readonly TextViewPosition start, end;
 		
 		readonly List<SelectionSegment> segments = new List<SelectionSegment>();
 		
-		void InitDocument()
-		{
-			document = textArea.Document;
-			if (document == null)
-				throw ThrowUtil.NoDocumentAssigned();
-		}
-		
+		#region Constructors
 		/// <summary>
 		/// Creates a new rectangular selection.
 		/// </summary>
@@ -48,6 +99,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			CalculateSegments();
 			this.topLeftOffset = this.segments.First().StartOffset;
 			this.bottomRightOffset = this.segments.Last().EndOffset;
+			
+			this.start = start;
+			this.end = end;
 		}
 		
 		private RectangleSelection(TextArea textArea, int startLine, double startXPos, TextViewPosition end)
@@ -61,6 +115,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			CalculateSegments();
 			this.topLeftOffset = this.segments.First().StartOffset;
 			this.bottomRightOffset = this.segments.Last().EndOffset;
+			
+			this.start = GetStart();
+			this.end = end;
 		}
 		
 		private RectangleSelection(TextArea textArea, TextViewPosition start, int endLine, double endXPos)
@@ -74,6 +131,16 @@ namespace ICSharpCode.AvalonEdit.Editing
 			CalculateSegments();
 			this.topLeftOffset = this.segments.First().StartOffset;
 			this.bottomRightOffset = this.segments.Last().EndOffset;
+			
+			this.start = start;
+			this.end = GetEnd();
+		}
+		
+		void InitDocument()
+		{
+			document = textArea.Document;
+			if (document == null)
+				throw ThrowUtil.NoDocumentAssigned();
 		}
 		
 		static double GetXPos(TextArea textArea, TextViewPosition pos)
@@ -85,11 +152,43 @@ namespace ICSharpCode.AvalonEdit.Editing
 			return visualLine.GetTextLineVisualXPosition(textLine, vc);
 		}
 		
-		int GetVisualColumnFromXPos(int line, double xPos)
+		void CalculateSegments()
 		{
-			var vl = textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(line));
-			return vl.GetVisualColumn(new Point(xPos, 0), true);
+			DocumentLine nextLine = document.GetLineByNumber(Math.Min(startLine, endLine));
+			do {
+				VisualLine vl = textArea.TextView.GetOrConstructVisualLine(nextLine);
+				int startVC = vl.GetVisualColumn(new Point(startXPos, 0), true);
+				int endVC = vl.GetVisualColumn(new Point(endXPos, 0), true);
+				
+				int baseOffset = vl.FirstDocumentLine.Offset;
+				int startOffset = baseOffset + vl.GetRelativeOffset(startVC);
+				int endOffset = baseOffset + vl.GetRelativeOffset(endVC);
+				segments.Add(new SelectionSegment(startOffset, startVC, endOffset, endVC));
+				
+				nextLine = vl.LastDocumentLine.NextLine;
+			} while (nextLine != null && nextLine.LineNumber <= Math.Max(startLine, endLine));
 		}
+		
+		TextViewPosition GetStart()
+		{
+			SelectionSegment segment = (startLine < endLine ? segments.First() : segments.Last());
+			if (startXPos < endXPos) {
+				return new TextViewPosition(document.GetLocation(segment.StartOffset), segment.StartVisualColumn);
+			} else {
+				return new TextViewPosition(document.GetLocation(segment.EndOffset), segment.EndVisualColumn);
+			}
+		}
+		
+		TextViewPosition GetEnd()
+		{
+			SelectionSegment segment = (startLine < endLine ? segments.Last() : segments.First());
+			if (startXPos < endXPos) {
+				return new TextViewPosition(document.GetLocation(segment.EndOffset), segment.EndVisualColumn);
+			} else {
+				return new TextViewPosition(document.GetLocation(segment.StartOffset), segment.StartVisualColumn);
+			}
+		}
+		#endregion
 		
 		/// <inheritdoc/>
 		public override string GetText()
@@ -133,22 +232,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 			get { return segments; }
 		}
 		
+		/// <inheritdoc/>
+		public override TextViewPosition StartPosition {
+			get { return start; }
+		}
 		
-		void CalculateSegments()
-		{
-			DocumentLine nextLine = document.GetLineByNumber(Math.Min(startLine, endLine));
-			do {
-				VisualLine vl = textArea.TextView.GetOrConstructVisualLine(nextLine);
-				int startVC = vl.GetVisualColumn(new Point(startXPos, 0), true);
-				int endVC = vl.GetVisualColumn(new Point(endXPos, 0), true);
-				
-				int baseOffset = vl.FirstDocumentLine.Offset;
-				int startOffset = baseOffset + vl.GetRelativeOffset(startVC);
-				int endOffset = baseOffset + vl.GetRelativeOffset(endVC);
-				segments.Add(new SelectionSegment(startOffset, startVC, endOffset, endVC));
-				
-				nextLine = vl.LastDocumentLine.NextLine;
-			} while (nextLine != null && nextLine.LineNumber <= Math.Max(startLine, endLine));
+		/// <inheritdoc/>
+		public override TextViewPosition EndPosition {
+			get { return end; }
 		}
 		
 		/// <inheritdoc/>
@@ -171,6 +262,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public override Selection SetEndpoint(TextViewPosition endPosition)
 		{
 			return new RectangleSelection(textArea, startLine, startXPos, endPosition);
+		}
+		
+		int GetVisualColumnFromXPos(int line, double xPos)
+		{
+			var vl = textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(line));
+			return vl.GetVisualColumn(new Point(xPos, 0), true);
 		}
 		
 		/// <inheritdoc/>

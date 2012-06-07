@@ -12,13 +12,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			AbstractProjectBrowserTreeNode node  = ProjectBrowserPad.Instance.SelectedNode;
 			Solution solution = ProjectService.OpenSolution;
-			if (node == null || solution == null) {
+			IProject project = ProjectService.CurrentProject;
+			if (solution == null || project == null)
 				return;
-			}
-			if (node.Project.IsStartable) {
-				solution.Preferences.StartupProject = node.Project;
+			if (project.IsStartable) {
+				solution.Preferences.StartupProject = project;
 			} else {
 				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 			}
@@ -29,21 +28,33 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			AbstractProjectBrowserTreeNode node  = ProjectBrowserPad.Instance.SelectedNode;
-			if (node == null) {
+			DoRunProject();
+		}
+
+		internal static void DoRunProject(bool withDebugging = true)
+		{
+			IProject project = ProjectService.CurrentProject;
+			if (project == null)
 				return;
-			}
-			if (node.Project.IsStartable) {
-				BuildProjectBeforeExecute build = new BuildProjectBeforeExecute(node.Project);
+			if (project.IsStartable) {
+				BuildProjectBeforeExecute build = new BuildProjectBeforeExecute(project);
 				build.BuildComplete += delegate {
 					if (build.LastBuildResults.ErrorCount == 0) {
-						node.Project.Start(true);
+						project.Start(withDebugging);
 					}
 				};
 				build.Run();
 			} else {
 				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 			}
+		}
+	}
+	
+	public class RunProjectWithoutDebugger : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			RunProject.DoRunProject(false);
 		}
 	}
 }

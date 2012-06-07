@@ -837,7 +837,7 @@
 								</Directory>
 								<Directory Id="ProjectTemplatesFolder" Name="project">
 									<Directory Id="CSharpProjectTemplatesFolder" Name="CSharp">
-										<Component Guid="888085CF-91C6-4669-97AF-BA99B3D9D38B" Id="CSharpProjectTemplates" DiskId="1">
+										<Component Guid="6261E8DA-6374-40B8-93EF-CFE031488C08" Id="CSharpProjectTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFNavigationApplication.xpt" Id="CSharpWPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Id="CSharpConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ControlLibrary.xpt" Id="CSharpControlLibrary.xpt" Name="ControlLibrary.xpt" />
@@ -853,6 +853,8 @@
 											<File Source="..\..\data\templates\project\CSharp\WebpageProject.xpt" Id="CSharpWebpageProject.xpt" Name="WebpageProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\WPFApplication.xpt" Id="CSharpWPFApplication.xpt" Name="WPFApplication.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\SilverlightApplication.xpt" Id="CSharpSilverlightApplication.xpt" Name="SilverlightApplication.xpt" />
+											<File Id="PortableAssemblyInfo.cs" Name="PortableAssemblyInfo.cs" Source="..\..\data\templates\project\CSharp\PortableAssemblyInfo.cs" />
+											<File Id="PortableLibrary.xpt" Name="PortableLibrary.xpt" Source="..\..\data\templates\project\CSharp\PortableLibrary.xpt" />
 										</Component>
 										<Component Guid="9D156515-C54F-4DAB-AD66-40E44C28E56C" Id="CSharpProjectSharpDevelopCustomToolTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\SharpDevelopCustomTool.xpt" Id="SharpDevelopCustomTool.xpt" Name="SharpDevelopCustomTool.xpt" />
@@ -939,11 +941,11 @@
 									</Component>
 								</Directory>
 								<Directory Id="ProjectTemplatePackages" Name="packages">
-									<Component Id="JQuery161NuGetPackage" Guid="E3651407-A9CF-4CE9-8603-1C9ABA7ED173" DiskId="1">
-										<File Id="jQuery.1.6.1.nupkg" Name="jQuery.1.6.1.nupkg" Source="..\..\data\templates\packages\jQuery.1.6.1.nupkg" KeyPath="yes" />
+									<Component Id="JQuery172NuGetPackage" Guid="80CBCC4A-E30C-4BE6-8E35-A7EFDABA939D" DiskId="1">
+										<File Id="jQuery.1.7.2.nupkg" Name="jQuery.1.7.2.nupkg" Source="..\..\data\templates\packages\jQuery.1.7.2.nupkg" KeyPath="yes" />
 									</Component>
-									<Component Id="Modernizr17NuGetPackage" Guid="0913F3F6-C4A6-4E3C-B80D-CA61A91E0213" DiskId="1">
-										<File Id="Modernizr.1.7.nupkg" Name="Modernizr.1.7.nupkg" Source="..\..\data\templates\packages\Modernizr.1.7.nupkg" KeyPath="yes" />
+									<Component Id="Modernizr253NuGetPackage" Guid="0D39E685-992C-4D36-9964-1DE907AF25A3" DiskId="1">
+										<File Id="Modernizr.2.5.3.nupkg" Name="Modernizr.2.5.3.nupkg" Source="..\..\data\templates\packages\Modernizr.2.5.3.nupkg" KeyPath="yes" />
 									</Component>
 								</Directory>
 							</Directory>
@@ -1917,7 +1919,7 @@
 			</Directory>
 			<!-- SharpDevelop Start menu folder -->
 			<Directory Id="ProgramMenuFolder" Name="Programs">
-				<Component Id="SharpDevelopProgramMenuItems" Guid="E7C5EA6C-D3D2-4567-BA9F-377D6D6BCB66">
+				<Component Id="SharpDevelopProgramMenuItems" Guid="D0C47C33-1DD1-41DF-BB48-968C7B4F7C08">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp
@@ -1928,7 +1930,7 @@
 			</Directory>
 			<!-- Desktop shortcuts -->
 			<Directory Id="DesktopFolder" Name="Desktop">
-				<Component Id="DesktopFolderItems" Guid="2C49B793-F6B6-4AF9-BDD5-7C8D61270FD9">
+				<Component Id="DesktopFolderItems" Guid="1443FDA1-E22B-4B84-B321-F12960D3FF36">
 					<!--
 						Fix ICE 38 by adding a dummy registry key that is the key for this shortcut.
 						http://msdn.microsoft.com/library/en-us/msi/setup/ice38.asp

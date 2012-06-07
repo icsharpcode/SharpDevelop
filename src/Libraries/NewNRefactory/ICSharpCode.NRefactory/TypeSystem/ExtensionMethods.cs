@@ -67,6 +67,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region GetAllBaseTypeDefinitions
 		/// <summary>
 		/// Gets all base type definitions.
+		/// The output is ordered so that base types occur before derived types.
 		/// </summary>
 		/// <remarks>
 		/// This is equivalent to type.GetAllBaseTypes().Select(t => t.GetDefinition()).Where(d => d != null).Distinct().
@@ -76,27 +77,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null)
 				throw new ArgumentNullException("type");
 			
-			HashSet<ITypeDefinition> typeDefinitions = new HashSet<ITypeDefinition>();
-			Func<ITypeDefinition, IEnumerable<ITypeDefinition>> recursion =
-				t => t.DirectBaseTypes.Select(b => b.GetDefinition()).Where(d => d != null && typeDefinitions.Add(d));
-			
-			ITypeDefinition typeDef = type.GetDefinition();
-			if (typeDef != null) {
-				typeDefinitions.Add(typeDef);
-				return TreeTraversal.PreOrder(typeDef, recursion);
-			} else {
-				return TreeTraversal.PreOrder(
-					type.DirectBaseTypes.Select(b => b.GetDefinition()).Where(d => d != null && typeDefinitions.Add(d)),
-					recursion);
-			}
+			return type.GetAllBaseTypes().Select(t => t.GetDefinition()).Where(d => d != null).Distinct();
 		}
 		
 		/// <summary>
-		/// Gets whether this type definition is derived from the base type defintiion.
+		/// Gets whether this type definition is derived from the base type definition.
 		/// </summary>
 		public static bool IsDerivedFrom(this ITypeDefinition type, ITypeDefinition baseType)
 		{
-			return GetAllBaseTypeDefinitions(type).Contains(baseType);
+			if (type.Compilation != baseType.Compilation) {
+				throw new InvalidOperationException("Both arguments to IsDerivedFrom() must be from the same compilation.");
+			}
+			return type.GetAllBaseTypeDefinitions().Contains(baseType);
 		}
 		#endregion
 		
@@ -178,6 +170,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
+		/// Imports an entity from another compilation.
+		/// </summary>
+		public static IEntity Import(this ICompilation compilation, IEntity entity)
+		{
+			if (compilation == null)
+				throw new ArgumentNullException("compilation");
+			if (entity == null)
+				return null;
+			if (entity.Compilation == compilation)
+				return entity;
+			if (entity is IMember)
+				return ((IMember)entity).ToMemberReference().Resolve(compilation.TypeResolveContext);
+			else if (entity is ITypeDefinition)
+				return ((ITypeDefinition)entity).ToTypeReference().Resolve(compilation.TypeResolveContext).GetDefinition();
+			else
+				throw new NotSupportedException("Unknown entity type");
+		}
+		
+		/// <summary>
 		/// Imports a member from another compilation.
 		/// </summary>
 		public static IMember Import(this ICompilation compilation, IMember member)
@@ -235,26 +246,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
-			ITypeDefinition def = type.GetDefinition();
-			if (def != null && def.Kind == TypeKind.Delegate) {
-				foreach (IMember member in def.Members) {
-					if (member.Name == "Invoke" && member is IMethod) {
-						ParameterizedType pt = type as ParameterizedType;
-						if (pt != null) {
-							return new SpecializedMethod(pt, (IMethod)member);
-						}
-						return (IMethod)member;
-					}
-				}
-			}
-			return null;
+			if (type.Kind == TypeKind.Delegate)
+				return type.GetMethods(m => m.Name == "Invoke", GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();
+			else
+				return null;
 		}
 		#endregion
 		
 		#region GetType/Member
+		/// <summary>
+		/// Gets all unresolved type definitions from the file.
+		/// For partial classes, each part is returned.
+		/// </summary>
 		public static IEnumerable<IUnresolvedTypeDefinition> GetAllTypeDefinitions (this IParsedFile file)
 		{
 			return TreeTraversal.PreOrder(file.TopLevelTypeDefinitions, t => t.NestedTypes);
+		}
+		
+		/// <summary>
+		/// Gets all unresolved type definitions from the assembly.
+		/// For partial classes, each part is returned.
+		/// </summary>
+		public static IEnumerable<IUnresolvedTypeDefinition> GetAllTypeDefinitions (this IUnresolvedAssembly assembly)
+		{
+			return TreeTraversal.PreOrder(assembly.TopLevelTypeDefinitions, t => t.NestedTypes);
 		}
 		
 		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this IAssembly assembly)
@@ -262,10 +277,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return TreeTraversal.PreOrder(assembly.TopLevelTypeDefinitions, t => t.NestedTypes);
 		}
 		
+		/// <summary>
+		/// Gets all type definitions in the compilation.
+		/// This may include types from referenced assemblies that are not accessible in the main assembly.
+		/// </summary>
 		public static IEnumerable<ITypeDefinition> GetAllTypeDefinitions (this ICompilation compilation)
 		{
-			return compilation.MainAssembly.GetAllTypeDefinitions()
-				.Concat(compilation.ReferencedAssemblies.SelectMany(a => a.GetAllTypeDefinitions()));
+			return compilation.Assemblies.SelectMany(a => a.GetAllTypeDefinitions());
 		}
 		
 		/// <summary>
@@ -328,15 +346,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ProjectedList<ITypeResolveContext, ITypeReference, IType>(context, typeReferences, (c, t) => t.Resolve(c));
 		}
 		
-		public static IList<IMember> Resolve(this IList<IMemberReference> memberReferences, ITypeResolveContext context)
-		{
-			if (memberReferences == null)
-				throw new ArgumentNullException("memberReferences");
-			if (memberReferences.Count == 0)
-				return EmptyList<IMember>.Instance;
-			else
-				return new ProjectedList<ITypeResolveContext, IMemberReference, IMember>(context, memberReferences, (c, t) => t.Resolve(c));
-		}
+		// There is intentionally no Resolve() overload for IList<IMemberReference>: the resulting IList<Member> would
+		// contains nulls when there are resolve errors.
 		
 		public static IList<ResolveResult> Resolve(this IList<IConstantValue> constantValues, ITypeResolveContext context)
 		{
@@ -366,6 +377,32 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (var contextType in baseType.Compilation.GetAllTypeDefinitions ()) {
 				if (contextType.IsDerivedFrom (baseType))
 					yield return contextType;
+			}
+		}
+		#endregion
+		
+		#region IAssembly.GetTypeDefinition()
+		/// <summary>
+		/// Gets the type definition for the specified unresolved type.
+		/// Returns null if the unresolved type does not belong to this assembly.
+		/// </summary>
+		public static ITypeDefinition GetTypeDefinition(this IAssembly assembly, IUnresolvedTypeDefinition unresolved)
+		{
+			if (assembly == null)
+				throw new ArgumentNullException("assembly");
+			if (unresolved == null)
+				return null;
+			if (unresolved.DeclaringTypeDefinition != null) {
+				ITypeDefinition parentType = GetTypeDefinition(assembly, unresolved.DeclaringTypeDefinition);
+				if (parentType == null)
+					return null;
+				foreach (var nestedType in parentType.NestedTypes) {
+					if (nestedType.Name == unresolved.Name && nestedType.TypeParameterCount == unresolved.TypeParameters.Count)
+						return nestedType;
+				}
+				return null;
+			} else {
+				return assembly.GetTypeDefinition(unresolved.Namespace, unresolved.Name, unresolved.TypeParameters.Count);
 			}
 		}
 		#endregion

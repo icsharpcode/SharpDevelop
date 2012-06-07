@@ -790,8 +790,17 @@ namespace ICSharpCode.Decompiler.ILAst
 				case ILCode.YieldBreak:
 					return null;
 				case ILCode.Ret:
-					if (forceInferChildren && expr.Arguments.Count == 1)
-						InferTypeForExpression(expr.Arguments[0], context.CurrentMethod.ReturnType);
+					if (forceInferChildren && expr.Arguments.Count == 1) {
+						TypeReference returnType = context.CurrentMethod.ReturnType;
+						if (context.CurrentMethodIsAsync && returnType != null && returnType.Namespace == "System.Threading.Tasks") {
+							if (returnType.Name == "Task") {
+								returnType = typeSystem.Void;
+							} else if (returnType.Name == "Task`1" && returnType.IsGenericInstance) {
+								returnType = ((GenericInstanceType)returnType).GenericArguments[0];
+							}
+						}
+						InferTypeForExpression(expr.Arguments[0], returnType);
+					}
 					return null;
 				case ILCode.YieldReturn:
 					if (forceInferChildren) {
@@ -803,6 +812,14 @@ namespace ICSharpCode.Decompiler.ILAst
 						}
 					}
 					return null;
+				case ILCode.Await:
+					{
+						TypeReference taskType = InferTypeForExpression(expr.Arguments[0], null);
+						if (taskType.Name == "Task`1" && taskType.IsGenericInstance && taskType.Namespace == "System.Threading.Tasks") {
+							return ((GenericInstanceType)taskType).GenericArguments[0];
+						}
+						return null;
+					}
 					#endregion
 				case ILCode.Pop:
 					return null;
@@ -985,10 +1002,22 @@ namespace ICSharpCode.Decompiler.ILAst
 				InferTypeForExpression(right, typeSystem.IntPtr);
 				return leftPreferred;
 			}
+			if (IsEnum(leftPreferred)) {
+				//E+U=E
+				left.InferredType = left.ExpectedType = leftPreferred;
+				InferTypeForExpression(right, GetEnumUnderlyingType(leftPreferred));
+				return leftPreferred;
+			}
 			TypeReference rightPreferred = DoInferTypeForExpression(right, expectedType);
 			if (rightPreferred is PointerType) {
 				InferTypeForExpression(left, typeSystem.IntPtr);
 				right.InferredType = right.ExpectedType = rightPreferred;
+				return rightPreferred;
+			}
+			if (IsEnum(rightPreferred)) {
+				//U+E=E
+				right.InferredType = right.ExpectedType = rightPreferred;
+				InferTypeForExpression(left, GetEnumUnderlyingType(rightPreferred));
 				return rightPreferred;
 			}
 			return InferBinaryArguments(left, right, expectedType, leftPreferred: leftPreferred, rightPreferred: rightPreferred);
@@ -1003,6 +1032,19 @@ namespace ICSharpCode.Decompiler.ILAst
 				left.InferredType = left.ExpectedType = leftPreferred;
 				InferTypeForExpression(right, typeSystem.IntPtr);
 				return leftPreferred;
+			}
+			if (IsEnum(leftPreferred)) {
+				if (expectedType != null && IsEnum(expectedType)) {
+					// E-U=E
+					left.InferredType = left.ExpectedType = leftPreferred;
+					InferTypeForExpression(right, GetEnumUnderlyingType(leftPreferred));
+					return leftPreferred;
+				} else {
+					// E-E=U
+					left.InferredType = left.ExpectedType = leftPreferred;
+					InferTypeForExpression(right, leftPreferred);
+					return GetEnumUnderlyingType(leftPreferred);
+				}
 			}
 			return InferBinaryArguments(left, right, expectedType, leftPreferred: leftPreferred);
 		}

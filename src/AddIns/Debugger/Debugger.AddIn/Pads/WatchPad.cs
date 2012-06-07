@@ -46,12 +46,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.tree.ShowRoot = false;
 			this.tree.View = (GridView)res["variableGridView"];
 			this.tree.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
-			this.tree.KeyUp += delegate(object sender, KeyEventArgs e) {
-				if (e.Key == Key.Delete) {
-					RemoveWatchCommand cmd = new RemoveWatchCommand { Owner = this };
-					cmd.Run();
-				}
-			};
 			this.tree.MouseDoubleClick += delegate(object sender, MouseButtonEventArgs e) {
 				if (this.tree.SelectedItem == null) {
 					AddWatchCommand cmd = new AddWatchCommand { Owner = this };
@@ -103,6 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			} catch (GetValueException e) {
 				node = new TreeNode("Icons.16x16.Error", name, e.Message, string.Empty, null);
 			}
+			node.CanDelete = true;
 			node.CanSetName = true;
 			node.PropertyChanged += (s, e) => { if (e.PropertyName == "Name") WindowsDebugger.RefreshPads(); };
 			return node.ToSharpTreeNode();

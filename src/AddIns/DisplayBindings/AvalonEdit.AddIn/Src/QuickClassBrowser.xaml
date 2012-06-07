@@ -6,7 +6,7 @@
 	<UserControl.Resources>
 		<DataTemplate x:Key="comboBoxItemTemplate">
 			<StackPanel Orientation="Horizontal">
-				<Image Source="{Binding Image}" Width="16" Height="16" Margin="0,0,2,0"/>
+				<Image Source="{Binding Image}" Width="16" Height="16" Margin="0,-1,2,-1"/>
 				<TextBlock Text="{Binding Text}" Name="textBlock"/>
 			</StackPanel>
 			<DataTemplate.Triggers>

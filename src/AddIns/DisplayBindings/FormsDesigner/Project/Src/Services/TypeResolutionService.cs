@@ -122,9 +122,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (!projectContentsCurrentlyLoadingAssembly.Add(pc))
 				return null;
 			
+			Assembly sdAssembly;
+			if (IsSharpDevelopAssembly(pc, out sdAssembly))
+				return sdAssembly;
+			
 			try {
 				// load dependencies of current assembly
-				foreach (IProjectContent rpc in pc.ReferencedContents) {
+				foreach (IProjectContent rpc in pc.ThreadSafeGetReferencedContents()) {
 					if (rpc is ParseProjectContent) {
 						LoadAssembly(rpc);
 					} else if (rpc is ReflectionProjectContent) {
@@ -149,6 +153,20 @@ namespace ICSharpCode.FormsDesigner.Services
 			} else {
 				return null;
 			}
+		}
+		
+		readonly string sharpDevelopRoot = Directory.GetParent(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).FullName;
+		
+		bool IsSharpDevelopAssembly(IProjectContent pc, out Assembly assembly)
+		{
+			assembly = null;
+			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				if (!asm.IsDynamic && asm.Location.StartsWith(sharpDevelopRoot, StringComparison.OrdinalIgnoreCase) && pc.AssemblyName == asm.GetName().Name) {
+					assembly = asm;
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		static string GetHash(string fileName)
@@ -343,6 +361,19 @@ namespace ICSharpCode.FormsDesigner.Services
 			return GetType(name, throwOnError, false);
 		}
 		
+		#if DEBUG
+		int count = 0;
+		#endif
+		
+		Dictionary<string, Type> typeCache = new Dictionary<string, Type>(StringComparer.Ordinal);
+		Dictionary<string, Type> typeCacheIgnoreCase = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+		
+		public void ClearCaches()
+		{
+			typeCacheIgnoreCase.Clear();
+			typeCache.Clear();
+		}
+		
 		public Type GetType(string name, bool throwOnError, bool ignoreCase)
 		{
 			if (name == null || name.Length == 0) {
@@ -351,9 +382,19 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (IgnoreType(name)) {
 				return null;
 			}
+			if (ignoreCase) {
+				Type cachedType;
+				if (typeCacheIgnoreCase.TryGetValue(name, out cachedType))
+					return cachedType;
+			} else {
+				Type cachedType;
+				if (typeCache.TryGetValue(name, out cachedType))
+					return cachedType;
+			}
 			#if DEBUG
 			if (!name.StartsWith("System.")) {
-				LoggingService.Debug("TypeResolutionService: Looking for " + name);
+				count++;
+				LoggingService.Debug(count + " TypeResolutionService: Looking for " + name);
 			}
 			#endif
 			try {
@@ -418,6 +459,7 @@ namespace ICSharpCode.FormsDesigner.Services
 							try {
 								Type t = asm.GetType(name, false);
 								if (t != null) {
+									AddToCache(name, t, ignoreCase);
 									return t;
 								}
 							} catch (FileNotFoundException) {
@@ -431,12 +473,23 @@ namespace ICSharpCode.FormsDesigner.Services
 				
 				if (throwOnError && type == null)
 					throw new TypeLoadException(name + " not found by TypeResolutionService");
-				
+				AddToCache(name, type, ignoreCase);
 				return type;
 			} catch (Exception e) {
 				LoggingService.Error(e);
 			}
 			return null;
+		}
+		
+		void AddToCache(string name, Type type, bool ignoreCase)
+		{
+			if (type == null)
+				return;
+			if (ignoreCase) {
+				typeCacheIgnoreCase.Add(name, type);
+			} else {
+				typeCache.Add(name, type);
+			}
 		}
 		
 		public void ReferenceAssembly(AssemblyName name)

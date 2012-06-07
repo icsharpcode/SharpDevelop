@@ -57,7 +57,7 @@ namespace UnitTesting.Tests.Tree
 			StartTestDebugger();
 			string expectedArguments = 
 				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" " +
-				"/noshadow " +
+				"/noshadow /noxml " +
 				"/results=\"c:\\temp\\tmp66.tmp\" " +
 				"/run=\"MyTests.MyTestClass.MyTestMethod\"";
 			
@@ -167,7 +167,7 @@ namespace UnitTesting.Tests.Tree
 			
 			string commandLine = "\"C:\\SharpDevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " + 
 				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" " +
-				"/noshadow " +
+				"/noshadow /noxml " +
 				"/results=\"c:\\temp\\tmp66.tmp\" " +
 				"/run=\"MyTests.MyTestClass.MyTestMethod\"";
 			Assert.AreEqual(commandLine, message);

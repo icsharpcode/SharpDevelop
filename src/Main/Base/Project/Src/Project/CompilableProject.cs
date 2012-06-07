@@ -277,36 +277,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public virtual CompilerVersion CurrentCompilerVersion {
-			get {
-				switch (MinimumSolutionVersion) {
-					case Solution.SolutionVersionVS2005:
-						return CompilerVersion.MSBuild20;
-					case Solution.SolutionVersionVS2008:
-						return CompilerVersion.MSBuild35;
-					case Solution.SolutionVersionVS2010:
-					case Solution.SolutionVersionVS11:
-						return CompilerVersion.MSBuild40;
-					default:
-						throw new NotSupportedException();
-				}
-			}
+			get { return GetOrCreateBehavior().CurrentCompilerVersion; }
 		}
 		
 		public virtual TargetFramework CurrentTargetFramework {
-			get {
-				string fxVersion = this.TargetFrameworkVersion;
-				string fxProfile = this.TargetFrameworkProfile;
-				if (string.Equals(fxProfile, "Client", StringComparison.OrdinalIgnoreCase)) {
-					foreach (ClientProfileTargetFramework fx in TargetFramework.TargetFrameworks.OfType<ClientProfileTargetFramework>())
-						if (fx.FullFramework.Name == fxVersion)
-							return fx;
-				} else {
-					foreach (TargetFramework fx in TargetFramework.TargetFrameworks)
-						if (fx.Name == fxVersion)
-							return fx;
-				}
-				return null;
-			}
+			get { return GetOrCreateBehavior().CurrentTargetFramework; }
 		}
 		
 		public virtual IEnumerable<CompilerVersion> GetAvailableCompilerVersions()
@@ -314,9 +289,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			return GetOrCreateBehavior().GetAvailableCompilerVersions();
 		}
 		
+		public virtual IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
+		{
+			return GetOrCreateBehavior().GetAvailableTargetFrameworks();
+		}
+		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
-			GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
+			if (!ReadOnly)
+				GetOrCreateBehavior().UpgradeProject(newVersion, newFramework);
 		}
 		
 		public static FileName GetAppConfigFile(IProject project, bool createIfNotExists)

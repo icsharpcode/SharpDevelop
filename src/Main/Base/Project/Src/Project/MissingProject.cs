@@ -30,5 +30,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				return projectBehavior;
 			}
 		}
+		
+		public override bool HasProjectType(Guid projectTypeGuid)
+		{
+			return false;
+		}
 	}
 }

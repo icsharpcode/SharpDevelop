@@ -36,7 +36,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 	/// <summary>
 	/// Equivalent to AE.AddIn CodeEditor, but without editing capabilities.
 	/// </summary>
-	class CodeView : Grid, IDisposable, ICodeEditor, IPositionable
+	class CodeView : Grid, IDisposable, IPositionable
 	{
 		public event EventHandler DocumentChanged;
 		
@@ -59,7 +59,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			this.adapter.TextEditor.TextArea.TextView.VisualLinesChanged += delegate { iconMargin.InvalidateVisual(); };
 			
 			// add marker service
-			this.textMarkerService = new TextMarkerService(this);
+			this.textMarkerService = new TextMarkerService(adapter.TextEditor.Document);
 			this.adapter.TextEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
 			this.adapter.TextEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
 			this.adapter.TextEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);

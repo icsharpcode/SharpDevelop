@@ -149,12 +149,7 @@ namespace ICSharpCode.XmlEditor
 						else
 							newText = currentIndentation + lineText.Trim();
 						
-						if (newText != lineText) {
-							int extraCharsToBeAddedAtStartedOfLine = newText.Length - lineText.Length;
-							document.Replace(line.Offset, line.Length, newText);
-							Location caretPosition = document.OffsetToPosition(line.Offset + extraCharsToBeAddedAtStartedOfLine);
-							editor.Caret.Position = caretPosition;
-						}
+						document.SmartReplaceLine(line, newText);
 						nextLine++;
 					}
 					if (r.LineNumber > end)

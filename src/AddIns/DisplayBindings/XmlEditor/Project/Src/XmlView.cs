@@ -141,8 +141,9 @@ namespace ICSharpCode.XmlEditor
 		{
 			if (editor == null) return false;
 			try {
-				XmlDocument Document = new XmlDocument();
-				Document.LoadXml(editor.Document.Text);
+				XmlDocument document = new XmlDocument();
+				document.XmlResolver = null;
+				document.LoadXml(editor.Document.Text);
 				return true;
 			} catch (XmlException ex) {
 				AddTask(editor.FileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);

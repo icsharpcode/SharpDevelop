@@ -245,7 +245,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		}
 		
 		int ITextEditorOptions.VerticalRulerColumn {
-			get { return 120; }
+			get { return ColumnRulerPosition; }
 		}
 	}
 }

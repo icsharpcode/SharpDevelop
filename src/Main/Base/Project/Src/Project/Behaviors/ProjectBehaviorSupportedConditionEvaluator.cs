@@ -16,35 +16,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!Guid.TryParse(condition.Properties["guid"], out conditionGuid))
 				return true;
 			
-			string guidString;
-			if (owner is IProject)
-				guidString = FindGuidInProject((IProject)owner);
-			else if (ProjectService.CurrentProject != null)
-				guidString = FindGuidInProject(ProjectService.CurrentProject);
-			else
+			IProject project = owner as IProject ?? ProjectService.CurrentProject;
+			if (project == null)
 				return false;
-			
-			Guid result;
-			foreach (string guid in guidString.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
-				if (Guid.TryParse(guid, out result) && conditionGuid == result)
-					return true;
+			// TODO: simplify this once HasProjectType() is part of IProject
+			AbstractProject p2 = project as AbstractProject;
+			if (p2 != null) {
+				return p2.HasProjectType(conditionGuid);
+			} else {
+				Guid projectGuid;
+				if (Guid.TryParse(project.TypeGuid, out projectGuid))
+					return conditionGuid == projectGuid;
+				else
+					return false;
 			}
-			
-			return false;
-		}
-
-		string FindGuidInProject(IProject project)
-		{
-			if (project is MSBuildBasedProject) {
-				string guid = ((MSBuildBasedProject)project).GetEvaluatedProperty("ProjectTypeGuids");
-				if (!string.IsNullOrEmpty(guid))
-					return guid;
-			} else if (project is UnknownProject || project is MissingProject) {
-				// don't return any GUID for projects that could not be loaded
-				return string.Empty;
-			}
-			
-			return project.TypeGuid;
 		}
 	}
 }

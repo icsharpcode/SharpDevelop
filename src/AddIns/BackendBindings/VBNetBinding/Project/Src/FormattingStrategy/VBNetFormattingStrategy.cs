@@ -143,7 +143,7 @@ namespace ICSharpCode.VBNetBinding
 				InsertDocumentationComments(editor, lineNr, cursorOffset);
 			}
 			
-			if (ch == '\n' && lineAboveText != null) {
+			if (ch == '\n' && lineAbove != null) {
 				if (LanguageUtils.IsInsideDocumentationComment(editor, lineAbove, lineAbove.EndOffset)) {
 					editor.Document.Insert(cursorOffset, "''' ");
 					return;
@@ -410,7 +410,7 @@ namespace ICSharpCode.VBNetBinding
 			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)
 					prevToken = currentToken;
-				if (IsBlockStart(lexer, currentToken, prevToken)) {
+				if (IsBlockStart(lexer, currentToken, prevToken) && !IsAutomaticPropertyWithDefaultValue(lexer, currentToken, prevToken)) {
 					if ((tokens.Count > 0 && tokens.Peek().Kind != Tokens.Interface) || IsDeclaration(currentToken.Kind))
 						tokens.Push(currentToken);
 				}
@@ -436,6 +436,30 @@ namespace ICSharpCode.VBNetBinding
 				return GetClosestMissing(missingEnds, statement, editor, lineNr) != null;
 			else
 				return false;
+		}
+		
+		static bool IsAutomaticPropertyWithDefaultValue(ILexer lexer, Token currentToken, Token prevToken)
+		{
+			if (currentToken.Kind != Tokens.Property)
+				return false;
+			lexer.StartPeek();
+			
+			int parenthesesNesting = 0;
+			
+			// look for parameter list, = or EOL
+			Token t;
+			while ((t = lexer.Peek()).Kind != Tokens.EOF) {
+				if (t.Kind == Tokens.OpenParenthesis)
+					parenthesesNesting++;
+				if (t.Kind == Tokens.CloseParenthesis)
+					parenthesesNesting--;
+				if (parenthesesNesting == 0 && t.Kind == Tokens.Assign)
+					return true;
+				if (t.Kind == Tokens.EOL)
+					return false;
+			}
+			
+			return false;
 		}
 		
 		static Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, ITextEditor editor, int lineNr)
@@ -612,7 +636,7 @@ namespace ICSharpCode.VBNetBinding
 							Indent(editor, indentation, new string(' ', endColumn - startColumn - 1));
 					}
 					
-					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate) {
+					if (!inInterface && !isMustOverride && !isDeclare && !isDelegate && !IsAutomaticPropertyWithDefaultValue(lexer, currentToken, prevToken)) {
 						Indent(editor, indentation);
 						
 						if (currentToken.Kind == Tokens.Select)
@@ -808,22 +832,14 @@ namespace ICSharpCode.VBNetBinding
 		
 		internal static bool IsBlockEnd(Token current, Token prev)
 		{
-			if (current.Kind == Tokens.Next) {
-				if (prev.Kind == Tokens.Resume)
-					return false;
-				else
-					return true;
-			}
+			if (current.Kind == Tokens.Next)
+				return prev.Kind == Tokens.EOL || prev.Kind == Tokens.Colon;
 			
 			if (current.Kind == Tokens.Loop)
-				return true;
+				return prev.Kind == Tokens.EOL || prev.Kind == Tokens.Colon;
 			
-			if (blockTokens.Contains(current.Kind)) {
-				if (prev.Kind == Tokens.End)
-					return true;
-				else
-					return false;
-			}
+			if (blockTokens.Contains(current.Kind))
+				return prev.Kind == Tokens.End;
 			
 			return IsSpecialCase(current, prev);
 		}

@@ -79,7 +79,7 @@ namespace UnitTesting.Tests.Tree
 		{
 			runCommand.Run();
 			buildProject.FireBuildCompleteEvent();
-			string expectedArgs = "\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\"";
+			string expectedArgs = "\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" /noxml";
 			
 			Assert.AreEqual(expectedArgs, processRunner.CommandArgumentsPassedToStartMethod);			
 		}

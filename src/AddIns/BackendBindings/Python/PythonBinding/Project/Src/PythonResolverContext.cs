@@ -4,6 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
@@ -118,7 +120,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public bool PartialNamespaceExistsInProjectReferences(string name)
 		{
-			foreach (IProjectContent referencedContent in projectContent.ReferencedContents) {
+			foreach (IProjectContent referencedContent in projectContent.ThreadSafeGetReferencedContents()) {
 				if (PartialNamespaceExists(referencedContent, name)) {
 					return true;
 				}

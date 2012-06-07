@@ -81,6 +81,7 @@
     <Compile Include="GetElementByReflectionNameTests.cs" />
     <Compile Include="Highlighting\AddInHighlightingResourceTests.cs" />
     <Compile Include="Highlighting\SyntaxDoozerAddsHighlightingToHighlightingManagerTestFixture.cs" />
+    <Compile Include="MimeDetectionTests.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
     <Compile Include="CollectionClassOverridesTestFixture.cs" />
     <Compile Include="OutputTextLineParserTests.cs" />
@@ -101,14 +102,13 @@
     <Compile Include="ServiceReferences\MSBuildBasedProjectTests.cs" />
     <Compile Include="ServiceReferences\ProjectWithServiceReferencesTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceFileNameTests.cs" />
+    <Compile Include="ServiceReferences\ServiceReferenceGeneratorOptionsTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceMapFileTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceMapFileGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferenceNodeTests.cs" />
-    <Compile Include="ServiceReferences\ServiceReferenceProxyGeneratorTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesFolderNodeTests.cs" />
     <Compile Include="ServiceReferences\ServiceReferencesProjectItemTests.cs" />
-    <Compile Include="ServiceReferences\WebServiceMetadataSetTests.cs" />
     <Compile Include="SolutionTests.cs" />
     <Compile Include="StringTagProvider\MockProjectForTagProvider.cs" />
     <Compile Include="StringTagProvider\NullProjectStringTagProviderTestFixture.cs" />
@@ -194,6 +194,10 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="mime_utf-16_be_test.txt" />
+    <EmbeddedResource Include="mime_utf-16_le_test.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -14,5 +14,28 @@ namespace ICSharpCode.SharpDevelop.Gui.Dialogs.ReferenceDialog.ServiceReference
 				Directory.CreateDirectory(path);
 			}
 		}
+		
+		public string CreateTempFile(string text)
+		{
+			string folder = Path.GetTempPath();
+			string fileName = Path.Combine(folder, "app.config");
+			File.WriteAllText(fileName, text);
+			return fileName;
+		}
+		
+		public string ReadAllFileText(string fileName)
+		{
+			return File.ReadAllText(fileName);
+		}
+		
+		public void DeleteFile(string fileName)
+		{
+			File.Delete(fileName);
+		}
+		
+		public void WriteAllText(string fileName, string text)
+		{
+			File.WriteAllText(fileName, text);
+		}
 	}
 }

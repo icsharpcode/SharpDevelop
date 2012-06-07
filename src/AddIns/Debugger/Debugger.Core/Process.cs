@@ -191,7 +191,8 @@ namespace Debugger
 			throw new DebuggerException("Eval not found for given ICorDebugEval");
 		}
 		
-		public Module GetModule(string filename) {
+		public Module GetModule(string filename)
+		{
 			foreach(Module module in this.Modules) {
 				if (module.Name == filename) {
 					return module;
@@ -200,7 +201,8 @@ namespace Debugger
 			throw new DebuggerException("Module \"" + filename + "\" is not in collection");
 		}
 
-		internal Module GetModule(ICorDebugModule corModule) {
+		internal Module GetModule(ICorDebugModule corModule)
+		{
 			foreach(Module module in this.Modules) {
 				if (module.CorModule == corModule) {
 					return module;
@@ -209,22 +211,18 @@ namespace Debugger
 			throw new DebuggerException("Module is not in collection");
 		}
 		
-		internal Thread GetThread(ICorDebugThread corThread) {
+		internal Thread GetThread(ICorDebugThread corThread)
+		{
 			foreach(Thread thread in this.Threads) {
 				if (thread.CorThread == corThread) {
 					return thread;
 				}
 			}
-			throw new DebuggerException("Thread is not in collection");
-		}
-		
-		internal Thread TryGetThread(ICorDebugThread corThread) {
-			foreach(Thread thread in this.Threads) {
-				if (thread.CorThread == corThread) {
-					return thread;
-				}
-			}
-			return null;
+			// Sometimes, the thread is not reported for some unkown reason
+			TraceMessage("Thread not found in collection");
+			Thread newThread = new Thread(this, corThread);
+			this.threads.Add(newThread);
+			return newThread;
 		}
 		
 		/// <summary> Read the specified amount of memory at the given memory address </summary>

@@ -43,7 +43,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 			var pc = ParserService.CurrentProjectContent;
 			var a = GetAssembly(pc);
 			if (a != null) yield return a;
-			foreach (var r in pc.ReferencedContents) {
+			foreach (var r in pc.ThreadSafeGetReferencedContents()) {
 				a = GetAssembly(r);
 				if (a != null) yield return a;
 			}

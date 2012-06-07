@@ -48,7 +48,7 @@ namespace SharpRefactoring.ContextActions
 			IProjectContent pc = context.ProjectContent;
 			
 			SearchAllExtensionMethodsWithName(results, pc, rr.CallName);
-			foreach (IProjectContent content in pc.ReferencedContents)
+			foreach (IProjectContent content in pc.ThreadSafeGetReferencedContents())
 				SearchAllExtensionMethodsWithName(results, content, rr.CallName);
 			
 			foreach (IClass c in results) {
@@ -99,7 +99,7 @@ namespace SharpRefactoring.ContextActions
 		public string Search(UnknownMethodResolveResult rr, IProjectContent pc, List<IClass> results)
 		{
 			SearchAttributesWithName(results, pc, rr.CallName);
-			foreach (IProjectContent content in pc.ReferencedContents)
+			foreach (IProjectContent content in pc.ThreadSafeGetReferencedContents())
 				SearchAttributesWithName(results, content, rr.CallName);
 			return rr.CallName;
 		}
@@ -107,7 +107,7 @@ namespace SharpRefactoring.ContextActions
 		public string Search(UnknownIdentifierResolveResult rr, IProjectContent pc, List<IClass> results)
 		{
 			SearchAttributesWithName(results, pc, rr.Identifier);
-			foreach (IProjectContent content in pc.ReferencedContents)
+			foreach (IProjectContent content in pc.ThreadSafeGetReferencedContents())
 				SearchAttributesWithName(results, content, rr.Identifier);
 			return rr.Identifier;
 		}

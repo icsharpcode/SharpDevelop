@@ -23,18 +23,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public SelectedElementRectangleExtension()
 		{
 			Rectangle selectionRect = new Rectangle();
-            selectionRect.SnapsToDevicePixels = true;
-            selectionRect.Stroke = new SolidColorBrush(Color.FromRgb(0x47, 0x47, 0x47));
-            selectionRect.StrokeThickness = 1.5;
-            selectionRect.IsHitTestVisible = false;
+			selectionRect.SnapsToDevicePixels = true;
+			selectionRect.Stroke = new SolidColorBrush(Color.FromRgb(0x47, 0x47, 0x47));
+			selectionRect.StrokeThickness = 1.5;
+			selectionRect.IsHitTestVisible = false;
 
-            RelativePlacement placement = new RelativePlacement(HorizontalAlignment.Stretch, VerticalAlignment.Stretch);
-            placement.XOffset = -1;
-            placement.YOffset = -1;
-            placement.WidthOffset = 2;
-            placement.HeightOffset = 2;
+			RelativePlacement placement = new RelativePlacement(HorizontalAlignment.Stretch, VerticalAlignment.Stretch);
+			placement.XOffset = -1;
+			placement.YOffset = -1;
+			placement.WidthOffset = 2;
+			placement.HeightOffset = 2;
 
-            this.AddAdorners(placement, selectionRect);
+			this.AddAdorners(placement, selectionRect);
 		}
 	}
 }

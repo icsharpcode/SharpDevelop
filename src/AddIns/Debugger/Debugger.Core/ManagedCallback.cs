@@ -447,7 +447,7 @@ namespace Debugger
 		
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
-			Thread thread = process.TryGetThread(pThread);
+			Thread thread = process.GetThread(pThread);
 			
 			// ICorDebugThread is still not dead and can be used for some operations
 			if (thread != null) {

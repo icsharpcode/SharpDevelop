@@ -58,6 +58,7 @@ namespace ICSharpCode.Decompiler.Ast
 			MethodDefinition oldCurrentMethod = context.CurrentMethod;
 			Debug.Assert(oldCurrentMethod == null || oldCurrentMethod == methodDef);
 			context.CurrentMethod = methodDef;
+			context.CurrentMethodIsAsync = false;
 			try {
 				AstMethodBodyBuilder builder = new AstMethodBodyBuilder();
 				builder.methodDef = methodDef;
@@ -543,12 +544,15 @@ namespace ICSharpCode.Decompiler.Ast
 						}
 						return arg1;
 					}
-				case ILCode.Castclass:
-					return arg1.CastTo(operandAsTypeRef);
 				case ILCode.Unbox_Any:
 					// unboxing does not require a cast if the argument was an isinst instruction
 					if (arg1 is AsExpression && byteCode.Arguments[0].Code == ILCode.Isinst && TypeAnalysis.IsSameType(operand as TypeReference, byteCode.Arguments[0].Operand as TypeReference))
 						return arg1;
+					else
+						goto case ILCode.Castclass;
+				case ILCode.Castclass:
+					if ((byteCode.Arguments[0].InferredType != null && byteCode.Arguments[0].InferredType.IsGenericParameter) || ((Cecil.TypeReference)operand).IsGenericParameter)
+						return arg1.CastTo(new PrimitiveType("object")).CastTo(operandAsTypeRef);
 					else
 						return arg1.CastTo(operandAsTypeRef);
 				case ILCode.Isinst:
@@ -844,8 +848,11 @@ namespace ICSharpCode.Decompiler.Ast
 				case ILCode.ExpressionTreeParameterDeclarations:
 					args[args.Count - 1].AddAnnotation(new ParameterDeclarationAnnotation(byteCode));
 					return args[args.Count - 1];
+				case ILCode.Await:
+					return new UnaryOperatorExpression(UnaryOperatorType.Await, arg1);
 				case ILCode.NullableOf:
-					case ILCode.ValueOf: return arg1;
+				case ILCode.ValueOf: 
+					return arg1;
 				default:
 					throw new Exception("Unknown OpCode: " + byteCode.Code);
 			}

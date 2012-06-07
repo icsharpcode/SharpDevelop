@@ -40,6 +40,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			nextTokenIsPotentialStartOfExpression = state.NextTokenIsPotentialStartOfExpression;
 			nextTokenIsStartOfImportsOrAccessExpression = state.NextTokenIsStartOfImportsOrAccessExpression;
 			readXmlIdentifier = state.ReadXmlIdentifier;
+			lambdaNestingDepth = state.LambdaNestingDepth;
 			identifierExpected = state.IdentifierExpected;
 			stateStack = new Stack<int>(state.StateStack.Reverse());
 			stack = new Stack<Block>(state.BlockStack.Select(x => (Block)x.Clone()).Reverse());
@@ -49,7 +50,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void Print(string text)
 		{
-			//Console.WriteLine(text);
+//			Console.WriteLine(text);
 			output.AppendLine(text);
 		}
 		
@@ -107,6 +108,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				.IsElement(fx => fx.context == expected);
 		}
 		
+		public int LambdaNestingDepth {
+			get { return lambdaNestingDepth; }
+		}
+		
 		public bool NextTokenIsPotentialStartOfExpression {
 			get { return nextTokenIsPotentialStartOfExpression; }
 		}
@@ -114,6 +119,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public bool ReadXmlIdentifier {
 			get { return readXmlIdentifier; }
 			set { readXmlIdentifier = value; }
+		}
+		
+		public bool XmlAllowed {
+			get { return xmlAllowed; }
 		}
 		
 		public bool NextTokenIsStartOfImportsOrAccessExpression {

@@ -381,5 +381,54 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		bool enableImeSupport = true;
+		
+		/// <summary>
+		/// Gets/Sets whether the support for Input Method Editors (IME)
+		/// for non-alphanumeric scripts (Chinese, Japanese, Korean, ...) is enabled.
+		/// </summary>
+		[DefaultValue(true)]
+		public virtual bool EnableImeSupport {
+			get { return enableImeSupport; }
+			set {
+				if (enableImeSupport != value) {
+					enableImeSupport = value;
+					OnPropertyChanged("EnableImeSupport");
+				}
+			}
+		}
+		
+		bool showColumnRuler = false;
+		
+		/// <summary>
+		/// Gets/Sets whether the column ruler should be shown.
+		/// </summary>
+		[DefaultValue(false)]
+		public virtual bool ShowColumnRuler {
+			get { return showColumnRuler; }
+			set {
+				if (showColumnRuler != value) {
+					showColumnRuler = value;
+					OnPropertyChanged("ShowColumnRuler");
+				}
+			}
+		}
+		
+		int columnRulerPosition = 80;
+		
+		/// <summary>
+		/// Gets/Sets where the column ruler should be shown.
+		/// </summary>
+		[DefaultValue(80)]
+		public virtual int ColumnRulerPosition {
+			get { return columnRulerPosition; }
+			set {
+				if (columnRulerPosition != value) {
+					columnRulerPosition = value;
+					OnPropertyChanged("ColumnRulerPosition");
+				}
+			}
+		}
 	}
 }

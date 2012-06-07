@@ -37,7 +37,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			ResourceStorage storage;
 			if (!resources.TryGetValue(culture.Name, out storage)) {
-				storage = resources[culture.Name] = new ResourceStorage(culture.Name);
+				storage = resources[culture.Name] = new ResourceStorage(culture.Name, viewContent.PrimaryFileName);
 				string fileName = CalcResourceFileName(viewContent.PrimaryFileName, culture.Name);
 				CreateOpenedFileForStorage(storage, fileName, File.Exists(fileName));
 			}
@@ -108,12 +108,14 @@ namespace ICSharpCode.FormsDesigner.Services
 			IResourceWriter writer;
 			byte[] buffer;
 			readonly string cultureName;
+			string parentDesignerSourceFileName;
 			internal OpenedFile OpenedFile;
 			internal bool IsNewFile;
 			
-			public ResourceStorage(string cultureName)
+			public ResourceStorage(string cultureName, string parentDesignerSourceFileName)
 			{
 				this.cultureName = cultureName;
+				this.parentDesignerSourceFileName = parentDesignerSourceFileName;
 			}
 			
 			public void Dispose()
@@ -204,7 +206,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			public IResourceWriter GetWriter()
 			{
 				this.stream = new MemoryStream();
-				this.writer = CreateResourceWriter(this.stream, GetResourceType(OpenedFile.FileName));
+				this.writer = CreateResourceWriter(this.stream, GetResourceType(OpenedFile.FileName), parentDesignerSourceFileName);
 				return this.writer;
 			}
 			
@@ -335,12 +337,12 @@ namespace ICSharpCode.FormsDesigner.Services
 			return new ResXResourceReader(stream);
 		}
 		
-		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
+		internal static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type, string parentDesignerSourceFileName)
 		{
 			if (type == ResourceType.Resources) {
 				return new ResourceWriter(stream);
 			}
-			return new ResXResourceWriter(stream);
+			return new ResXResourceWriter(stream, t => ResXConverter.ConvertTypeName(t, parentDesignerSourceFileName));
 		}
 		
 		internal static ResourceType GetResourceType(string fileName)

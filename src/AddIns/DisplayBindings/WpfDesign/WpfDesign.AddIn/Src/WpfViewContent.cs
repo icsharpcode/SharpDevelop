@@ -60,6 +60,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected override void LoadInternal(OpenedFile file, System.IO.Stream stream)
 		{
+			wasChangedInDesigner = false;
 			Debug.Assert(file == this.PrimaryFile);
 			
 			_stream = new MemoryStream();
@@ -108,10 +109,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 		}
 		
 		private MemoryStream _stream;
+		bool wasChangedInDesigner;
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			if (IsDirty && designer.DesignContext != null) {
+			if (wasChangedInDesigner && designer.DesignContext != null) {
 				XmlWriterSettings settings = new XmlWriterSettings();
 				settings.Indent = true;
 				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
@@ -120,12 +122,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 					designer.SaveDesigner(xmlWriter);
 				}
 			} else {
-				if (_stream.CanRead) {
-					_stream.Position = 0;
-					using (var reader = new StreamReader(_stream)) {
-						using (var writer = new StreamWriter(stream)) {
-							writer.Write(reader.ReadToEnd());
-						}
+				_stream.Position = 0;
+				using (var reader = new StreamReader(new UnclosableStream(_stream))) {
+					using (var writer = new StreamWriter(stream)) {
+						writer.Write(reader.ReadToEnd());
 					}
 				}
 			}
@@ -153,6 +153,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		void OnUndoStackChanged(object sender, EventArgs e)
 		{
+			wasChangedInDesigner = true;
 			this.PrimaryFile.MakeDirty();
 		}
 		

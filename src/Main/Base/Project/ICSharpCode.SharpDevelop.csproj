@@ -97,9 +97,9 @@
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
+    <Compile Include="Src\Commands\ViewInBrowser.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\AvalonEditSyntaxHighlighterAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
@@ -258,6 +258,7 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationConverter.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\StorageLocationPicker.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReferenceHelper.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ActiveTextEditors.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml.cs">
       <DependentUpon>AddServiceReferenceDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -269,28 +270,38 @@
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceViewModel.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ClientOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ICodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\GeneratorCompleteEventArgs.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IActiveTextEditors.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IFileSystem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IProjectWithServiceReferences.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceCodeDomBuilder.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceFileGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceMapGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\IServiceReferenceProxyGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\MetadataFile.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\MetadataSource.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ProjectWithServiceReferences.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomBuilder.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceCodeDomProvider.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceDiscoveryClient.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceDiscoveryEventArgs.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileGenerator.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileName.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceFileSystem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceGeneratorOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFile.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileName.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapFileProjectItem.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceMapGenerator.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml.cs">
+      <DependentUpon>ServiceReferenceOptionsPanel..xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceProxyGenerator.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\WebServiceMetadataSet.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceUrlHistory.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\SvcUtilCommandLine.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\SvcUtilMessageView.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\SvcUtilPath.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\SvcUtilRunner.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ToolNotFoundDialog.Designer.cs">
       <DependentUpon>ToolNotFoundDialog.cs</DependentUpon>
@@ -341,6 +352,7 @@
     <Compile Include="Src\Project\Behaviors\ProjectBehavior.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorService.cs" />
     <Compile Include="Src\Project\Behaviors\ProjectBehaviorSupportedConditionEvaluator.cs" />
+    <Compile Include="Src\Project\Behaviors\ResXConverter.cs" />
     <Compile Include="Src\Project\BuildEngine.cs" />
     <Compile Include="Src\Project\ContextSpecificProperties.cs" />
     <Compile Include="Src\Project\Converter\IUpgradableProject.cs" />
@@ -363,6 +375,18 @@
     <Compile Include="Src\Project\MSBuildEngine\WorkerProcess.cs" />
     <Compile Include="Src\Project\MSBuildFileProject.cs" />
     <Compile Include="Src\Project\MSBuildItemWrapper.cs" />
+    <Compile Include="Src\Project\PortableLibrary\CheckPortableLibraryInstalled.cs" />
+    <Compile Include="Src\Project\PortableLibrary\ConvertToPortableLibraryProjectBehavior.cs" />
+    <Compile Include="Src\Project\PortableLibrary\PickPortableTargetFramework.cs" />
+    <Compile Include="Src\Project\PortableLibrary\PortableLibraryProjectBehavior.cs" />
+    <Compile Include="Src\Project\PortableLibrary\PortableTargetFramework.cs" />
+    <Compile Include="Src\Project\PortableLibrary\Profile.cs" />
+    <Compile Include="Src\Project\PortableLibrary\ProfileList.cs" />
+    <Compile Include="Src\Project\PortableLibrary\SelectProfileDialog.xaml.cs">
+      <DependentUpon>SelectProfileDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Project\PortableLibrary\SupportedFramework.cs" />
     <Compile Include="Src\Project\ProjectChangeWatcher.cs" />
     <Compile Include="Src\Project\ProjectLoadInformation.cs" />
     <Compile Include="Src\Project\ProjectStartException.cs" />
@@ -784,8 +808,10 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Util\MultiDictionary.cs" />
     <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />
+    <Compile Include="Src\Util\KeyComparer.cs" />
     <Compile Include="Src\Util\ReactiveExtensions.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
@@ -875,6 +901,8 @@
     </Page>
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AddServiceReferenceDialog.xaml" />
     <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\AdvancedServiceDialog.xaml" />
+    <Page Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference\ServiceReferenceOptionsPanel..xaml" />
+    <Page Include="Src\Project\PortableLibrary\SelectProfileDialog.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />
@@ -905,6 +933,7 @@
     </ProjectReference>
     <Folder Include="Src\Gui\Dialogs\ReferenceDialog\ServiceReference" />
     <Folder Include="Src\Project\Behaviors" />
+    <Folder Include="Src\Project\PortableLibrary" />
     <Folder Include="themes" />
     <Folder Include="Src\Editor\AvalonEdit" />
     <Folder Include="Src\Editor\CodeCompletion" />

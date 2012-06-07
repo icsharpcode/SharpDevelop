@@ -300,6 +300,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			// look for attributes
 			while (tn.kind == Tokens.LessThan) {
 				while (braceCount > 0 || tn.kind != Tokens.GreaterThan) {
+					if (tn.kind == Tokens.EOF) return false;
 					tn = lexer.Peek();
 					if (tn.kind == Tokens.OpenParenthesis)
 						braceCount++;
@@ -382,6 +383,75 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (item != null) {
 				list.Add(item);
 				item.Parent = parent;
+			}
+		}
+		
+		internal static string GetReflectionNameForOperator(OverloadableOperatorType op, ConversionType conversion)
+		{
+			switch (op) {
+				case OverloadableOperatorType.Add:
+					return "op_Addition";
+				case OverloadableOperatorType.BitNot:
+					return "op_OnesComplement";
+				case OverloadableOperatorType.BitwiseAnd:
+					return "op_BitwiseAnd";
+				case OverloadableOperatorType.BitwiseOr:
+					return "op_BitwiseOr";
+				case OverloadableOperatorType.Concat:
+					return "op_Concatenate";
+				case OverloadableOperatorType.CType:
+					switch (conversion) {
+						case ConversionType.Implicit:
+							return "op_Implicit";
+						case ConversionType.Explicit:
+							return "op_Explicit";
+						default:
+							return "op_unknown";
+					}
+				case OverloadableOperatorType.Divide:
+					return "op_Division";
+				case OverloadableOperatorType.DivideInteger:
+					return "op_IntegerDivision";
+				case OverloadableOperatorType.Equality:
+					return "op_Equality";
+				case OverloadableOperatorType.ExclusiveOr:
+					return "op_ExclusiveOr";
+				case OverloadableOperatorType.GreaterThan:
+					return "op_GreaterThan";
+				case OverloadableOperatorType.GreaterThanOrEqual:
+					return "op_GreaterThanOrEqual";
+				case OverloadableOperatorType.InEquality:
+					return "op_Inequality";
+				case OverloadableOperatorType.IsFalse:
+					return "op_False";
+				case OverloadableOperatorType.IsTrue:
+					return "op_True";
+				case OverloadableOperatorType.LessThan:
+					return "op_LessThan";
+				case OverloadableOperatorType.LessThanOrEqual:
+					return "op_LessThanOrEqual";
+				case OverloadableOperatorType.Like:
+					return "op_Like";
+				case OverloadableOperatorType.Modulus:
+					return "op_Modulus";
+				case OverloadableOperatorType.Multiply:
+					return "op_Multiply";
+				case OverloadableOperatorType.Not:
+					return "op_LogicalNot";
+				case OverloadableOperatorType.Power:
+					return "op_Exponent";
+				case OverloadableOperatorType.ShiftLeft:
+					return "op_LeftShift";
+				case OverloadableOperatorType.ShiftRight:
+					return "op_RightShift";
+				case OverloadableOperatorType.Subtract:
+					return "op_Subtraction";
+				case OverloadableOperatorType.UnaryMinus:
+					return "op_UnaryNegation";
+				case OverloadableOperatorType.UnaryPlus:
+					return "op_UnaryPlus";
+				default:
+					return "op_unknown";
 			}
 		}
 	}

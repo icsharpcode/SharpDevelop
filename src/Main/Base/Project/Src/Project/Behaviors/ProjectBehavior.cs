@@ -94,6 +94,29 @@ namespace ICSharpCode.SharpDevelop.Project
 			return Enumerable.Empty<CompilerVersion>();
 		}
 		
+		public virtual IEnumerable<TargetFramework> GetAvailableTargetFrameworks()
+		{
+			if (this.next != null)
+				return next.GetAvailableTargetFrameworks();
+			return Enumerable.Empty<TargetFramework>();
+		}
+		
+		public virtual CompilerVersion CurrentCompilerVersion {
+			get {
+				if (this.next != null)
+					return next.CurrentCompilerVersion;
+				throw new InvalidOperationException();
+			}
+		}
+		
+		public virtual TargetFramework CurrentTargetFramework {
+			get {
+				if (this.next != null)
+					return next.CurrentTargetFramework;
+				throw new InvalidOperationException();
+			}
+		}
+		
 		public virtual void UpgradeProject(CompilerVersion newVersion, TargetFramework newFramework)
 		{
 			if (this.next != null)

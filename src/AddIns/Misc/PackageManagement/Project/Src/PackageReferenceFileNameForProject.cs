@@ -17,7 +17,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void GetFileNameForProject(IProject project)
 		{
-			FileName = Path.Combine(project.Directory, PackageReferenceRepository.PackageReferenceFile);
+			FileName = Path.Combine(project.Directory, Constants.PackageReferenceFile);
 		}
 		
 		public string FileName { get; private set; }

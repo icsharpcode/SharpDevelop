@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 			repositoryPath = new SolutionPackageRepositoryPath(solution, options);
 			CreatePackagePathResolver();
 			CreateFileSystem();
-			CreateRepository();
+			CreateRepository(ConfigSettingsFileSystem.CreateConfigSettingsFileSystem(solution));
 		}
 		
 		void CreatePackagePathResolver()
@@ -48,9 +48,9 @@ namespace ICSharpCode.PackageManagement
 			fileSystem = new PhysicalFileSystem(repositoryPath.PackageRepositoryPath);
 		}
 		
-		void CreateRepository()
+		void CreateRepository(ConfigSettingsFileSystem configSettingsFileSystem)
 		{
-			repository = repositoryFactory.CreateSharedRepository(packagePathResolver, fileSystem);			
+			repository = repositoryFactory.CreateSharedRepository(packagePathResolver, fileSystem, configSettingsFileSystem);			
 		}
 		
 		public ISharedPackageRepository Repository {

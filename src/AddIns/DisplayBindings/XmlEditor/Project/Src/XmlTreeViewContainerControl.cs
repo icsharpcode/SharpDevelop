@@ -200,7 +200,7 @@ namespace ICSharpCode.XmlEditor
 		/// comment node currently on display.
 		/// </summary>
 		public string TextContent {
-			get { return textBox.Text; }
+			get { return textBox.Text.Replace("\n", "\r\n"); }
 			set { textBox.Text = value; }
 		}
 		
@@ -740,6 +740,7 @@ namespace ICSharpCode.XmlEditor
 			// 
 			this.textBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.textBox.Location = new System.Drawing.Point(0, 0);
+			this.textBox.Multiline = true;
 			this.textBox.Name = "textBox";
 			this.textBox.Size = new System.Drawing.Size(375, 326);
 			this.textBox.TabIndex = 2;

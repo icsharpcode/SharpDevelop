@@ -5,22 +5,28 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
-
+using System.Xml.Linq;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
+using Microsoft.Win32;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
@@ -33,18 +39,22 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			InitializeComponent();
 			textEditor.Document.UndoStack.SizeLimit = 0;
-			textEditor.Options = CodeEditorOptions.Instance;
+			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
+			textEditor.Options = new TextEditorOptions(CodeEditorOptions.Instance);
 			bracketHighlighter = new BracketHighlightRenderer(textEditor.TextArea.TextView);
 			foldingManager = FoldingManager.Install(textEditor.TextArea);
-			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
+			textMarkerService = new TextMarkerService(textEditor.Document);
+			textEditor.TextArea.TextView.BackgroundRenderers.Add(textMarkerService);
+			textEditor.TextArea.TextView.LineTransformers.Add(textMarkerService);
+			textEditor.TextArea.TextView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 		}
 		
 		BracketHighlightRenderer bracketHighlighter;
 		FoldingManager foldingManager;
+		TextMarkerService textMarkerService;
+		ITextMarker marker;
 		List<CustomizedHighlightingColor> customizationList;
 		
-		#region Folding
-		// TODO : probably move this to a separate class!
 		public const string FoldingControls = "Folding controls";
 		public const string FoldingSelectedControls = "Selected folding controls";
 		public const string FoldingTextMarkers = "Folding markers";
@@ -56,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			return brush;
 		}
 		
-		public static void ApplyToFolding(TextEditor editor, IEnumerable<CustomizedHighlightingColor> customisations)
+		public static void ApplyToRendering(TextEditor editor, IEnumerable<CustomizedHighlightingColor> customisations)
 		{
 			bool assignedFoldingMarker = false, assignedSelectedFoldingControls = false, assignedFoldingTextMarkers = false;
 			
@@ -67,6 +77,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			
 			FoldingElementGenerator.TextBrush = FoldingElementGenerator.DefaultTextBrush;
 			
+			bool assignedErrorColor = false;
+			bool assignedWarningColor = false;
+			bool assignedMessageColor = false;
+
+			foreach (var instance in ErrorPainter.Instances) {
+				instance.ErrorColor = Colors.Red;
+				instance.WarningColor = Colors.Orange;
+				instance.MessageColor = Colors.Blue;
+			}
+			
 			foreach (CustomizedHighlightingColor color in customisations) {
 				switch (color.Name) {
 					case FoldingControls:
@@ -74,18 +94,22 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 							continue;
 						assignedFoldingMarker = true;
 						if (color.Foreground != null)
-							editor.SetValue(FoldingMargin.FoldingMarkerBrushProperty, CreateFrozenBrush(color.Foreground.Value));
+							editor.SetValue(FoldingMargin.FoldingMarkerBrushProperty,
+							                CreateFrozenBrush(color.Foreground.Value));
 						if (color.Background != null)
-							editor.SetValue(FoldingMargin.FoldingMarkerBackgroundBrushProperty, CreateFrozenBrush(color.Background.Value));
+							editor.SetValue(FoldingMargin.FoldingMarkerBackgroundBrushProperty,
+							                CreateFrozenBrush(color.Background.Value));
 						break;
 					case FoldingSelectedControls:
 						if (assignedSelectedFoldingControls)
 							continue;
 						assignedSelectedFoldingControls = true;
 						if (color.Foreground != null)
-							editor.SetValue(FoldingMargin.SelectedFoldingMarkerBrushProperty, CreateFrozenBrush(color.Foreground.Value));
+							editor.SetValue(FoldingMargin.SelectedFoldingMarkerBrushProperty,
+							                CreateFrozenBrush(color.Foreground.Value));
 						if (color.Background != null)
-							editor.SetValue(FoldingMargin.SelectedFoldingMarkerBackgroundBrushProperty, CreateFrozenBrush(color.Background.Value));
+							editor.SetValue(FoldingMargin.SelectedFoldingMarkerBackgroundBrushProperty,
+							                CreateFrozenBrush(color.Background.Value));
 						break;
 					case FoldingTextMarkers:
 						if (assignedFoldingTextMarkers)
@@ -94,10 +118,39 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 						if (color.Foreground != null)
 							FoldingElementGenerator.TextBrush = CreateFrozenBrush(color.Foreground.Value);
 						break;
+					case ErrorPainter.ErrorColorName:
+						if (assignedErrorColor)
+							continue;
+						assignedErrorColor = true;
+						if (color.Foreground != null) {
+							foreach (var instance in ErrorPainter.Instances) {
+								instance.ErrorColor = color.Foreground.Value;
+							}
+						}
+						break;
+					case ErrorPainter.WarningColorName:
+						if (assignedWarningColor)
+							continue;
+						assignedWarningColor = true;
+						if (color.Foreground != null) {
+							foreach (var instance in ErrorPainter.Instances) {
+								instance.WarningColor = color.Foreground.Value;
+							}
+						}
+						break;
+					case ErrorPainter.MessageColorName:
+						if (assignedMessageColor)
+							continue;
+						assignedMessageColor = true;
+						if (color.Foreground != null) {
+							foreach (var instance in ErrorPainter.Instances) {
+								instance.MessageColor = color.Foreground.Value;
+							}
+						}
+						break;
 				}
 			}
 		}
-		#endregion
 		
 		XshdSyntaxDefinition LoadBuiltinXshd(string name)
 		{
@@ -130,6 +183,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 			customizationList = CustomizedHighlightingColor.LoadColors();
 			
+			CreateDefaultEntries(null, out defaultText, defaultEntries);
+			
 			languageComboBox.Items.Clear();
 			languageComboBox.Items.Add(new XshdSyntaxDefinition { Name = "All languages" });
 			foreach (XshdSyntaxDefinition def in allSyntaxDefinitions)
@@ -144,7 +199,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
 			if (xshd != null) {
 				IHighlightingItem defaultText;
-				CreateDefaultEntries(languageComboBox.SelectedIndex == 0 ? null : xshd.Name, out defaultText);
+				List<IHighlightingItem> list = new List<IHighlightingItem>();
+				CreateDefaultEntries(languageComboBox.SelectedIndex == 0 ? null : xshd.Name, out defaultText, list);
+				listBox.Items.AddRange(list);
 				
 				if (languageComboBox.SelectedIndex > 0) {
 					// Create entries for all customizable colors in the syntax highlighting definition
@@ -168,18 +225,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
-		void CreateDefaultEntries(string language, out IHighlightingItem defaultText)
+		void CreateDefaultEntries(string language, out IHighlightingItem defaultText, IList<IHighlightingItem> items)
 		{
 			// Create entry for "default text/background"
 			defaultText = new SimpleHighlightingItem(CustomizableHighlightingColorizer.DefaultTextAndBackground, ta => ta.Document.Text = "Normal text") {
 				Foreground = SystemColors.WindowTextColor,
 				Background = SystemColors.WindowColor
 			};
-			defaultText = new CustomizedHighlightingItem(customizationList, defaultText, null, canSetFont: false);
-			if (language != null)
-				defaultText = new CustomizedHighlightingItem(customizationList, defaultText, language, canSetFont: false);
+			defaultText = new CustomizedHighlightingItem(customizationList, defaultText, language, canSetFont: false);
 			defaultText.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(defaultText);
+			items.Add(defaultText);
 			
 			// Create entry for "Selected text"
 			IHighlightingItem selectedText = new SimpleHighlightingItem(
@@ -192,11 +247,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				Foreground = SystemColors.HighlightTextColor,
 				Background = SystemColors.HighlightColor
 			};
-			selectedText = new CustomizedHighlightingItem(customizationList, selectedText, null, canSetFont: false);
-			if (language != null)
-				selectedText = new CustomizedHighlightingItem(customizationList, selectedText, language, canSetFont: false);
+			selectedText = new CustomizedHighlightingItem(customizationList, selectedText, language, canSetFont: false);
 			selectedText.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(selectedText);
+			items.Add(selectedText);
 			
 			// Create entry for "Non-printable characters"
 			IHighlightingItem nonPrintChars = new SimpleHighlightingItem(
@@ -207,11 +260,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{
 				Foreground = Colors.LightGray
 			};
-			nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, null, canSetFont: false, canSetBackground: false);
-			if (language != null)
-				nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, language, canSetFont: false);
+			nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, language, canSetFont: false, canSetBackground: false);
 			nonPrintChars.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(nonPrintChars);
+			items.Add(nonPrintChars);
 			
 			// Create entry for "Line numbers"
 			IHighlightingItem lineNumbers = new SimpleHighlightingItem(
@@ -225,11 +276,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{
 				Foreground = Colors.Gray
 			};
-			lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, null, canSetFont: false, canSetBackground: false);
-			if (language != null)
-				lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, language, canSetFont: false);
+			lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, language, canSetFont: false, canSetBackground: false);
 			lineNumbers.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(lineNumbers);
+			items.Add(lineNumbers);
 			
 			// Create entry for "Bracket highlight"
 			IHighlightingItem bracketHighlight = new SimpleHighlightingItem(
@@ -247,11 +296,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				Foreground = BracketHighlightRenderer.DefaultBorder,
 				Background = BracketHighlightRenderer.DefaultBackground
 			};
-			bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, null, canSetFont: false);
-			if (language != null)
-				bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, language, canSetFont: false);
+			bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, language, canSetFont: false);
 			bracketHighlight.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(bracketHighlight);
+			items.Add(bracketHighlight);
 			
 			// Create entry for "Folding controls"
 			IHighlightingItem foldingControls = new SimpleHighlightingItem(
@@ -266,11 +313,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				Foreground = Colors.Gray,
 				Background = Colors.White
 			};
-			foldingControls = new CustomizedHighlightingItem(customizationList, foldingControls, null, canSetFont: false);
-			if (language != null)
-				foldingControls = new CustomizedHighlightingItem(customizationList, foldingControls, language, canSetFont: false);
+			foldingControls = new CustomizedHighlightingItem(customizationList, foldingControls, language, canSetFont: false);
 			foldingControls.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(foldingControls);
+			items.Add(foldingControls);
 			
 			// Create entry for "Selected folding controls"
 			IHighlightingItem selectedFoldingControls = new SimpleHighlightingItem(
@@ -285,11 +330,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				Foreground = Colors.Black,
 				Background = Colors.White
 			};
-			selectedFoldingControls = new CustomizedHighlightingItem(customizationList, selectedFoldingControls, null, canSetFont: false);
-			if (language != null)
-				selectedFoldingControls = new CustomizedHighlightingItem(customizationList, selectedFoldingControls, language, canSetFont: false);
+			selectedFoldingControls = new CustomizedHighlightingItem(customizationList, selectedFoldingControls, language, canSetFont: false);
 			selectedFoldingControls.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(selectedFoldingControls);
+			items.Add(selectedFoldingControls);
 			
 			// Create entry for "Folding text markers"
 			IHighlightingItem foldingTextMarker = new SimpleHighlightingItem(
@@ -303,14 +346,106 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			{
 				Foreground = Colors.Gray
 			};
-			foldingTextMarker = new CustomizedHighlightingItem(customizationList, foldingTextMarker, null, canSetFont: false, canSetBackground: false);
-			if (language != null)
-				foldingControls = new CustomizedHighlightingItem(customizationList, foldingTextMarker, language, canSetFont: false, canSetBackground: false);
+			foldingTextMarker = new CustomizedHighlightingItem(customizationList, foldingTextMarker, language, canSetFont: false, canSetBackground: false);
 			foldingTextMarker.PropertyChanged += item_PropertyChanged;
-			listBox.Items.Add(foldingTextMarker);
+			items.Add(foldingTextMarker);
+			
+			IHighlightingItem linkText = new SimpleHighlightingItem(
+				CustomizableHighlightingColorizer.LinkText,
+				ta => {
+					ta.Document.Text = "http://icsharpcode.net" + Environment.NewLine + "me@example.com";
+				})
+			{
+				Foreground = Colors.Blue,
+				Background = Colors.Transparent
+			};
+			linkText = new CustomizedHighlightingItem(customizationList, linkText, language, canSetFont: false);
+			linkText.PropertyChanged += item_PropertyChanged;
+			items.Add(linkText);
+			
+			IHighlightingItem errorMarker = new SimpleHighlightingItem(
+				ErrorPainter.ErrorColorName,
+				ta => {
+					ta.Document.Text = "some error";
+					marker = textMarkerService.Create(0, 5);
+				})
+			{
+				Foreground = Colors.Red
+			};
+			errorMarker = new CustomizedHighlightingItem(customizationList, errorMarker, language, canSetFont: false, canSetBackground: false);
+			errorMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(errorMarker);
+			
+			IHighlightingItem warningMarker = new SimpleHighlightingItem(
+				ErrorPainter.WarningColorName,
+				ta => {
+					ta.Document.Text = "some warning";
+					marker = textMarkerService.Create(0, 5);
+				})
+			{
+				Foreground = Colors.Orange
+			};
+			warningMarker = new CustomizedHighlightingItem(customizationList, warningMarker, language, canSetFont: false, canSetBackground: false);
+			warningMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(warningMarker);
+			
+			IHighlightingItem messageMarker = new SimpleHighlightingItem(
+				ErrorPainter.MessageColorName,
+				ta => {
+					ta.Document.Text = "some message";
+					marker = textMarkerService.Create(0, 5);
+				})
+			{
+				Foreground = Colors.Blue
+			};
+			messageMarker = new CustomizedHighlightingItem(customizationList, messageMarker, language, canSetFont: false, canSetBackground: false);
+			messageMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(messageMarker);
+			
+			IHighlightingItem breakpointMarker = new SimpleHighlightingItem(
+				BreakpointBookmark.BreakpointMarker,
+				ta => {
+					ta.Document.Text = "some code with a breakpoint";
+					marker = textMarkerService.Create(0, ta.Document.TextLength);
+				})
+			{
+				Background = BreakpointBookmark.DefaultBackground,
+				Foreground = BreakpointBookmark.DefaultForeground
+			};
+			breakpointMarker = new CustomizedHighlightingItem(customizationList, breakpointMarker, language, canSetFont: false);
+			breakpointMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(breakpointMarker);
+			
+			IHighlightingItem currentStatementMarker = new SimpleHighlightingItem(
+				CurrentLineBookmark.Name,
+				ta => {
+					ta.Document.Text = "current statement line";
+					marker = textMarkerService.Create(0, ta.Document.TextLength);
+				})
+			{
+				Background = CurrentLineBookmark.DefaultBackground,
+				Foreground = CurrentLineBookmark.DefaultForeground
+			};
+			currentStatementMarker = new CustomizedHighlightingItem(customizationList, currentStatementMarker, language, canSetFont: false);
+			currentStatementMarker.PropertyChanged += item_PropertyChanged;
+			items.Add(currentStatementMarker);
+			
+			IHighlightingItem columnRuler = new SimpleHighlightingItem(
+				CustomizableHighlightingColorizer.ColumnRuler,
+				ta => {
+					ta.Document.Text = "some line with a lot of text";
+					ta.TextView.Options.ColumnRulerPosition = 15;
+					ta.TextView.Options.ShowColumnRuler = true;
+				})
+			{
+				Foreground = Colors.LightGray
+			};
+			columnRuler = new CustomizedHighlightingItem(customizationList, columnRuler, language, canSetFont: false, canSetBackground: false);
+			columnRuler.PropertyChanged += item_PropertyChanged;
+			items.Add(columnRuler);
 		}
 
-		void item_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		void item_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			UpdatePreview();
 		}
@@ -341,10 +476,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			if (xshd != null) {
 				var customizationsForCurrentLanguage = customizationList.Where(c => c.Language == null || c.Language == xshd.Name);
 				CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(textEditor, customizationsForCurrentLanguage);
-				ApplyToFolding(textEditor, customizationsForCurrentLanguage);
+				ApplyToRendering(textEditor, customizationsForCurrentLanguage);
 				var item = (IHighlightingItem)listBox.SelectedItem;
 				TextView textView = textEditor.TextArea.TextView;
 				foldingManager.Clear();
+				textMarkerService.RemoveAll(m => true);
+				marker = null;
 				textView.LineTransformers.Remove(colorizer);
 				colorizer = null;
 				if (item != null) {
@@ -355,7 +492,297 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					textEditor.Select(0, 0);
 					bracketHighlighter.SetHighlight(null);
 					item.ShowExample(textEditor.TextArea);
+					if (marker != null) {
+						switch (item.Name) {
+							case ErrorPainter.ErrorColorName:
+							case ErrorPainter.WarningColorName:
+							case ErrorPainter.MessageColorName:
+								marker.MarkerType = TextMarkerType.SquigglyUnderline;
+								marker.ForegroundColor = item.Foreground;
+								marker.BackgroundColor = item.Background;
+								break;
+							default:
+								marker.MarkerType = TextMarkerType.None;
+								marker.ForegroundColor = item.Foreground;
+								marker.BackgroundColor = item.Background;
+								break;
+						}
+					}
 				}
+			}
+		}
+		
+		void ImportButtonClick(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog dialog = new OpenFileDialog {
+				Filter = @"All known settings|*.vssettings;*.sdsettings|Visual Studio settings (*.vssettings)|*.vssettings|SharpDevelop settings (*.sdsettings)|*.sdsettings",
+				CheckFileExists = true
+			};
+			if (dialog.ShowDialog() != true)
+				return;
+			switch (Path.GetExtension(dialog.FileName).ToUpperInvariant()) {
+				case ".VSSETTINGS":
+					LoadVSSettings(XDocument.Load(dialog.FileName));
+					break;
+				case ".SDSETTINGS":
+					LoadSDSettings(XDocument.Load(dialog.FileName));
+					break;
+			}
+		}
+		#region VSSettings
+		void LoadVSSettings(XDocument document)
+		{
+			XElement[] items;
+			if (!CheckVersionAndFindCategory(document, out items) || items == null) {
+				Core.MessageService.ShowError("Settings version not supported!");
+				return;
+			}
+			bool? replaceCustomizations = null;
+			foreach (var item in items) {
+				string key = item.Attribute("Name").Value;
+				var entry = ParseEntry(item);
+				foreach (var sdKey in mapping[key]) {
+					IHighlightingItem color;
+					if (FindSDColor(sdKey, out color)) {
+						if (color.IsCustomized) {
+							if (!replaceCustomizations.HasValue) {
+								replaceCustomizations =
+									MessageService.AskQuestion("There are already one or more existing customizations. " +
+									                           "Do you want to replace them with the imported values? " +
+									                           "Colors that are not yet customized will be imported anyway.");
+							}
+							if (replaceCustomizations == false)
+								continue;
+						}
+						color.Bold = entry.Item3;
+						color.Foreground = entry.Item1;
+						color.Background = entry.Item2;
+					}
+				}
+			}
+		}
+		
+		readonly List<IHighlightingItem> defaultEntries = new List<IHighlightingItem>();
+		IHighlightingItem defaultText;
+		
+		bool FindSDColor(string sdKey, out IHighlightingItem item)
+		{
+			string language = null;
+			int dot = sdKey.IndexOf('.');
+			if (dot > 0) {
+				language = sdKey.Substring(0, dot);
+				sdKey = sdKey.Substring(dot + 1);
+			}
+			if ((language == null && languageComboBox.SelectedIndex == 0)
+			    || (language == ((XshdSyntaxDefinition)languageComboBox.SelectedItem).Name)) {
+				item = listBox.Items.OfType<IHighlightingItem>().FirstOrDefault(i => i.Name == sdKey);
+			} else if (language == null) {
+				item = defaultEntries.FirstOrDefault(i => i.Name == sdKey);
+			} else {
+				var def = allSyntaxDefinitions.FirstOrDefault(d => d.Name == language);
+				var highlighting = HighlightingManager.Instance.GetDefinition(language);
+				item = null;
+				if (def != null && highlighting != null) {
+					var color = def.Elements.OfType<XshdColor>().FirstOrDefault(i => i.Name == sdKey);
+					if (color != null) {
+						item = new NamedColorHighlightingItem(defaultText, color) { ParentDefinition = highlighting };
+						item = new CustomizedHighlightingItem(customizationList, item, language);
+					}
+				}
+			}
+			return item != null;
+		}
+		
+		// VS => SD
+		static readonly MultiDictionary<string, string> mapping = new MultiDictionary<string, string>(StringComparer.Ordinal) {
+			{ "Brace Matching (Rectangle)", BracketHighlightRenderer.BracketHighlight },
+			{ "Collapsible Text", FoldingTextMarkers },
+			{ "Comment", "XML.Comment" },
+			{ "Comment", "VBNET.Comment" },
+			{ "Comment", "C#.Comment" },
+			{ "Compiler Error", ErrorPainter.ErrorColorName },
+			{ "CSS Comment", "CSS.Comment" },
+			{ "CSS Keyword", "" },
+			{ "CSS Property Name", "" },
+			{ "CSS Property Value", "" },
+			{ "CSS Selector", "" },
+			{ "CSS String Value", "" },
+			{ "Excluded Code", "" },
+			{ "HTML Attribute Value", "" },
+			{ "HTML Attribute", "" },
+			{ "HTML Comment", "" },
+			{ "HTML Element Name", "" },
+			{ "HTML Entity", "" },
+			{ "HTML Operator", "" },
+			{ "HTML Server-Side Script", "" },
+			{ "HTML Tag Delimiter", "" },
+			{ "Identifier", "" },
+			{ "Inactive Selected Text", "" },
+			{ "Indicator Margin", "" },
+			{ "Keyword", "C#.ThisOrBaseReference" },
+			{ "Keyword", "C#.NullOrValueKeywords" },
+			{ "Keyword", "C#.Keywords" },
+			{ "Keyword", "C#.GotoKeywords" },
+			{ "Keyword", "C#.ContextKeywords" },
+			{ "Keyword", "C#.ExceptionKeywords" },
+			{ "Keyword", "C#.CheckedKeyword" },
+			{ "Keyword", "C#.UnsafeKeywords" },
+			{ "Keyword", "C#.OperatorKeywords" },
+			{ "Keyword", "C#.ParameterModifiers" },
+			{ "Keyword", "C#.Modifiers" },
+			{ "Keyword", "C#.Visibility" },
+			{ "Keyword", "C#.NamespaceKeywords" },
+			{ "Keyword", "C#.GetSetAddRemove" },
+			{ "Keyword", "C#.TrueFalse" },
+			{ "Keyword", "C#.TypeKeywords" },
+			{ "Keyword", "VBNET.DateLiteral" },
+			{ "Keyword", "VBNET.Preprocessor" },
+			{ "Keyword", "VBNET.DataTypes" },
+			{ "Keyword", "VBNET.Operators" },
+			{ "Keyword", "VBNET.Constants" },
+			{ "Keyword", "VBNET.Keywords" },
+			{ "Keyword", "VBNET.FunctionKeywords" },
+			{ "Keyword", "VBNET.ContextKeywords" },
+			{ "Line Numbers", CustomizableHighlightingColorizer.LineNumbers },
+			{ "MarkerFormatDefinition/HighlightedReference", "" },
+			{ "Number", "C#.NumberLiteral" },
+			{ "Operator", "C#.Punctuation" },
+			{ "outlining.collapsehintadornment", "" },
+			{ "outlining.square", FoldingControls },
+			{ "outlining.square", FoldingSelectedControls },
+			{ "outlining.verticalrule", "" },
+			{ "Plain Text", "" },
+			{ "Plain Text", CustomizableHighlightingColorizer.DefaultTextAndBackground },
+			{ "Preprocessor Keyword", "" },
+			{ "Preprocessor Keyword", "C#.Preprocessor" },
+			{ "Razor Code", "" },
+			{ "Script Comment", "" },
+			{ "Script Identifier", "" },
+			{ "Script Keyword", "" },
+			{ "Script Number", "" },
+			{ "Script Operator", "" },
+			{ "Script String", "" },
+			{ "Selected Text", "" },
+			{ "Selected Text", CustomizableHighlightingColorizer.SelectedText },
+			{ "String", "VBNET.String" },
+			{ "String", "C#.String" },
+			{ "String(C# @ Verbatim)", "" },
+			{ "Syntax Error", "" },
+			{ "urlformat", CustomizableHighlightingColorizer.LinkText },
+			{ "User Types", "" },
+			{ "User Types(Delegates)", "" },
+			{ "User Types(Enums)", "" },
+			{ "User Types(Interfaces)", "" },
+			{ "User Types(Value types)", "" },
+			{ "Warning", ErrorPainter.WarningColorName },
+			{ "XAML Attribute Quotes", "" },
+			{ "XAML Attribute Value", "" },
+			{ "XAML Attribute", "" },
+			{ "XAML CData Section", "" },
+			{ "XAML Comment", "" },
+			{ "XAML Delimiter", "" },
+			{ "XAML Markup Extension Class", "" },
+			{ "XAML Markup Extension Parameter Name", "" },
+			{ "XAML Markup Extension Parameter Value", "" },
+			{ "XAML Name", "" },
+			{ "XAML Text", "" },
+			{ "XML Attribute Quotes", "" },
+			{ "XML Attribute Value", "XML." },
+			{ "XML Attribute", "" },
+			{ "XML CData Section", "" },
+			{ "XML Comment", "" },
+			{ "XML Delimiter", "" },
+			{ "XML Doc Comment", "" },
+			{ "XML Doc Tag", "" },
+			{ "XML Name", "" },
+			{ "XML Text", "" },
+		};
+		
+		Tuple<Color, Color, bool> ParseEntry(XElement element)
+		{
+			Color fore = Colors.Transparent;
+			Color back = Colors.Transparent;
+			bool isBold = false;
+			
+			var attribute = element.Attribute("Foreground");
+			if (attribute != null)
+				fore = ParseColor(attribute.Value);
+			attribute = element.Attribute("Background");
+			if (attribute != null)
+				back = ParseColor(attribute.Value);
+			attribute = element.Attribute("BoldFont");
+			if (attribute != null)
+				isBold = attribute.Value == "Yes";
+			
+			return Tuple.Create(fore, back, isBold);
+		}
+		
+		Color ParseColor(string s)
+		{
+			if (string.IsNullOrWhiteSpace(s))
+				return Colors.Transparent;
+			if (s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+				s = s.Substring(2);
+			if (s.Substring(0, 2) == "02")
+				return Colors.Transparent;
+			try {
+				byte b = byte.Parse(s.Substring(2, 2), NumberStyles.HexNumber);
+				byte g = byte.Parse(s.Substring(4, 2), NumberStyles.HexNumber);
+				byte r = byte.Parse(s.Substring(6, 2), NumberStyles.HexNumber);
+				return Color.FromRgb(r, g, b);
+			} catch (FormatException) {
+				return Colors.Transparent;
+			}
+		}
+		
+		bool CheckVersionAndFindCategory(XDocument document, out XElement[] categoryItems)
+		{
+			categoryItems = null;
+			var node = document.Root;
+			var appID = document.Root.Element("ApplicationIdentity");
+			var category = document.Root.Descendants("Category").FirstOrDefault(e => e.Attribute("GUID") != null && e.Attribute("GUID").Value == "{A27B4E24-A735-4D1D-B8E7-9716E1E3D8E0}");
+			if (category != null)
+				categoryItems = category.Descendants("Item").ToArray();
+			if (node.Name != "UserSettings" || appID == null || category == null)
+				return false;
+			return appID.Attribute("version") != null && appID.Attribute("version").Value == "10.0";
+		}
+		#endregion
+		
+		#region SDSettings
+		void LoadSDSettings(XDocument document)
+		{
+			var version = document.Root.Attribute("version");
+			if (version != null && version.Value != Properties.CurrentVersion.ToString()) {
+				Core.MessageService.ShowError("Settings version not supported!");
+				return;
+			}
+			var p = Properties.Load(document.CreateReader());
+			customizationList = p.Get("CustomizedHighlightingRules", new List<CustomizedHighlightingColor>());
+			LanguageComboBox_SelectionChanged(null, null);
+		}
+		#endregion
+
+		void ExportButtonClick(object sender, RoutedEventArgs e)
+		{
+			SaveFileDialog dialog = new SaveFileDialog {
+				Filter = @"SharpDevelop settings (*.sdsettings)|*.sdsettings",
+			};
+			if (dialog.ShowDialog() != true)
+				return;
+			Save(dialog.FileName);
+		}
+		
+		void Save(string fileName)
+		{
+			Properties p = new Properties();
+			p.Set("CustomizedHighlightingRules", customizationList);
+			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				writer.WriteStartElement("Properties");
+				writer.WriteAttributeString("version", Properties.CurrentVersion.ToString());
+				p.WriteProperties(writer);
+				writer.WriteEndElement();
 			}
 		}
 	}
