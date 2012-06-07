@@ -431,14 +431,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			items.Add(currentStatementMarker);
 			
 			IHighlightingItem columnRuler = new SimpleHighlightingItem(
-				ColumnRulerRenderer.Name,
+				CustomizableHighlightingColorizer.ColumnRuler,
 				ta => {
 					ta.Document.Text = "some line with a lot of text";
 					ta.TextView.Options.ColumnRulerPosition = 15;
 					ta.TextView.Options.ShowColumnRuler = true;
 				})
 			{
-				Foreground = ColumnRulerRenderer.DefaultForeground
+				Foreground = Colors.LightGray
 			};
 			columnRuler = new CustomizedHighlightingItem(customizationList, columnRuler, language, canSetFont: false, canSetBackground: false);
 			columnRuler.PropertyChanged += item_PropertyChanged;
