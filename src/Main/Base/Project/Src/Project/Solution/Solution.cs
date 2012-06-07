@@ -672,12 +672,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			return newSec;
 		}
 		
-		public SolutionItem GetProjectConfiguration(string guid) {
-			ProjectSection projectConfigSection = GetProjectConfigurationsSection();
-			SolutionItem foundItem = projectConfigSection.Items.Find(item => item.Name.StartsWith(guid));
-			if (foundItem != null)
-				return foundItem;
-			LoggingService.Warn("No configuration for project "+guid + "using default.");
+		SolutionItem GetProjectConfiguration(string guid)
+		{
+			ProjectSection prjSec = GetProjectConfigurationsSection();
+			string searchKey = guid + "." + preferences.ActiveConfiguration + "|" + preferences.ActivePlatform + ".ActiveCfg";
+			foreach (SolutionItem item in prjSec.Items) {
+				if (searchKey.Equals(item.Name, StringComparison.OrdinalIgnoreCase)) {
+					return item;
+				}
+			}
+			LoggingService.Warn("No configuration for project " + guid + "; using default.");
 			return new SolutionItem("Debug|Any CPU", "Debug|Any CPU");
 		}
 		
