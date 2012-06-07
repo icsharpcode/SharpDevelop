@@ -84,15 +84,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		}
 		#endregion
 		
-		#region Load Solution Projects Thread
-		public bool LoadSolutionProjectsThreadRunning {
-			get { return false; }
-		}
-		
-		public event EventHandler LoadSolutionProjectsThreadStarted;
-		public event EventHandler LoadSolutionProjectsThreadEnded;
-		#endregion
-		
 		#region Compilation
 		public ICompilation GetCompilation(IProject project)
 		{

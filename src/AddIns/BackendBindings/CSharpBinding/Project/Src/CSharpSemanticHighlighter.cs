@@ -36,6 +36,7 @@ namespace CSharpBinding
 		
 		List<IDocumentLine> invalidLines = new List<IDocumentLine>();
 		List<CachedLine> cachedLines = new List<CachedLine>();
+		bool hasCrashed;
 		
 		int lineNumber;
 		HighlightedLine line;
@@ -184,6 +185,10 @@ namespace CSharpBinding
 		public HighlightedLine HighlightLine(int lineNumber)
 		{
 			IDocumentLine documentLine = textEditor.Document.GetLineByNumber(lineNumber);
+			if (hasCrashed) {
+				// don't highlight anymore after we've crashed
+				return new HighlightedLine(textEditor.Document, documentLine);
+			}
 			ITextSourceVersion newVersion = textEditor.Document.Version;
 			CachedLine cachedLine = null;
 			for (int i = 0; i < cachedLines.Count; i++) {
@@ -225,7 +230,12 @@ namespace CSharpBinding
 			HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
 			this.line = line;
 			this.lineNumber = lineNumber;
-			parseInfo.CompilationUnit.AcceptVisitor(this);
+			try {
+				parseInfo.CompilationUnit.AcceptVisitor(this);
+			} catch (Exception ex) {
+				hasCrashed = true;
+				throw new ApplicationException("Error highlighting line " + lineNumber, ex);
+			}
 			this.line = null;
 			this.resolver = null;
 			Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);

@@ -43,7 +43,10 @@ namespace ICSharpCode.XamlBinding
 			file.errors.AddRange(document.SyntaxErrors.Select(err => new Error(ErrorType.Error, err.Description)));
 			var visitor = new XamlDocumentVisitor(file, fileContent);
 			visitor.VisitDocument(document);
-			file.topLevel = new[] { visitor.TypeDefinition };
+			if (visitor.TypeDefinition != null)
+				file.topLevel = new[] { visitor.TypeDefinition };
+			else
+				file.topLevel = new IUnresolvedTypeDefinition[0];
 			
 			file.lastWriteTime = DateTime.UtcNow;
 			return file;

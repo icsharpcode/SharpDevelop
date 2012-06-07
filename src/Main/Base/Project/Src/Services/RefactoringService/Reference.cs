@@ -15,7 +15,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class Reference : SearchResultMatch
 	{
-		DomRegion region;
 		ResolveResult resolveResult;
 		
 		public Reference(DomRegion region, ResolveResult resolveResult, int offset, int length, HighlightedInlineBuilder builder)
