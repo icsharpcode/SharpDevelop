@@ -403,7 +403,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else if (versionNumber == SolutionVersionVS11) {
 					sw.WriteLine("# Visual Studio 11");
 				}
-				sw.WriteLine("# SharpDevelop " + RevisionClass.FullVersion);
+				sw.WriteLine("# SharpDevelop " + RevisionClass.Major + "." + RevisionClass.Minor);
 				sw.Write(projectSection.ToString());
 				
 				sw.Write(globalSection.ToString());
