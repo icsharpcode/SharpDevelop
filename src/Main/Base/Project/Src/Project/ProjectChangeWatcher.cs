@@ -117,17 +117,30 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 
+		static bool showingMessageBox;
+		
 		static void MainFormActivated(object sender, EventArgs e)
 		{
-			if (wasChangedExternally) {
-				wasChangedExternally = false;
+			if (wasChangedExternally && !showingMessageBox) {
 
 				if (ProjectService.OpenSolution != null) {
+					// Set wasChangedExternally=false only after the dialog is closed,
+					// so that additional changes to the project while the dialog is open
+					// don't cause it to appear twice.
+					
+					// The MainFormActivated event occurs when the dialog is closed before
+					// we get a change to set wasChangedExternally=false, so we use 'showingMessageBox'
+					// to prevent the dialog from appearing infititely.
+					showingMessageBox = true;
 					int result = MessageService.ShowCustomDialog(MessageService.DefaultMessageBoxTitle, "${res:ICSharpCode.SharpDevelop.Project.SolutionAlteredExternallyMessage}", 0, 1, "${res:ICSharpCode.SharpDevelop.Project.ReloadSolution}", "${res:ICSharpCode.SharpDevelop.Project.KeepOldSolution}", "${res:ICSharpCode.SharpDevelop.Project.CloseSolution}");
+					showingMessageBox = false;
+					wasChangedExternally = false;
 					if (result == 0)
 						ProjectService.LoadSolution(ProjectService.OpenSolution.FileName);
 					else if (result == 2)
 						new CloseSolution().Run();
+				} else {
+					wasChangedExternally = false;
 				}
 			}
 		}
