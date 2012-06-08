@@ -22,18 +22,12 @@ namespace Debugger
 		
 		Stepper currentStepIn;
 		
-		StackFrame selectedStackFrame;
-		
-		Exception     currentException;
-		DebuggeeState currentException_DebuggeeState;
-		ExceptionType currentExceptionType;
-		bool          currentExceptionIsUnhandled;
-
-		public event EventHandler<ThreadEventArgs> NameChanged;
-		public event EventHandler<ThreadEventArgs> Exited;
-		
 		public Process Process {
 			get { return process; }
+		}
+		
+		public AppDomain AppDomain {
+			get { return process.GetAppDomain(this.corThread.GetAppDomain()); }
 		}
 
 		[Debugger.Tests.Ignore]
@@ -89,20 +83,9 @@ namespace Debugger
 			if (this.HasExited) throw new DebuggerException("Already exited");
 			
 			process.TraceMessage("Thread " + this.ID + " exited");
-			if (process.SelectedThread == this) {
-				process.SelectedThread = null;
-			}
 			
 			this.HasExited = true;
-			OnExited(new ThreadEventArgs(this));
-			process.Threads.Remove(this);
-		}
-		
-		protected virtual void OnExited(ThreadEventArgs e)
-		{
-			if (Exited != null) {
-				Exited(this, e);
-			}
+			process.threads.Remove(this);
 		}
 		
 		/// <summary> If the thread is not at safe point, it is not posible to evaluate
@@ -129,7 +112,7 @@ namespace Debugger
 
 				Value runTimeValue = RuntimeValue;
 				if (runTimeValue.IsNull) return ThreadPriority.Normal;
-				return (ThreadPriority)(int)runTimeValue.GetMemberValue("m_Priority").PrimitiveValue;
+				return (ThreadPriority)(int)runTimeValue.GetFieldValue("m_Priority").PrimitiveValue;
 			}
 		}
 		
@@ -142,7 +125,7 @@ namespace Debugger
 				process.AssertPaused();
 				
 				ICorDebugValue corValue = this.CorThread.GetObject();
-				return new Value(process.AppDomains[this.CorThread.GetAppDomain()], corValue);
+				return new Value(process.GetAppDomain(this.CorThread.GetAppDomain()), corValue);
 			}
 		}
 		
@@ -154,48 +137,10 @@ namespace Debugger
 				if (!IsInValidState) return string.Empty;
 				Value runtimeValue = RuntimeValue;
 				if (runtimeValue.IsNull) return string.Empty;
-				Value runtimeName = runtimeValue.GetMemberValue("m_Name");
+				Value runtimeName = runtimeValue.GetFieldValue("m_Name");
 				if (runtimeName.IsNull) return string.Empty;
 				return runtimeName.AsString(100);
 			}
-		}
-		
-		protected virtual void OnNameChanged(ThreadEventArgs e)
-		{
-			if (NameChanged != null) {
-				NameChanged(this, e);
-			}
-		}
-		
-		internal void NotifyNameChanged()
-		{
-			OnNameChanged(new ThreadEventArgs(this));
-		}
-		
-		public Exception CurrentException {
-			get {
-				if (currentException_DebuggeeState == process.DebuggeeState) {
-					return currentException;
-				} else {
-					return null;
-				}
-			}
-			internal set { currentException = value; }
-		}
-		
-		internal DebuggeeState CurrentException_DebuggeeState {
-			get { return currentException_DebuggeeState; }
-			set { currentException_DebuggeeState = value; }
-		}
-		
-		public ExceptionType CurrentExceptionType {
-			get { return currentExceptionType; }
-			internal set { currentExceptionType = value; }
-		}
-		
-		public bool CurrentExceptionIsUnhandled {
-			get { return currentExceptionIsUnhandled; }
-			internal set { currentExceptionIsUnhandled = value; }
 		}
 		
 		/// <summary> Tryies to intercept the current exception.
@@ -219,9 +164,6 @@ namespace Debugger
 				}
 			}
 			if (mostRecentUnoptimized == null) return false;
-			
-			if (exception == null)
-				exception = currentException;
 			
 			try {
 				// Interception will expire the CorValue so keep permanent reference
@@ -345,25 +287,26 @@ namespace Debugger
 			return stackTrace.ToString();
 		}
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				if (selectedStackFrame != null && selectedStackFrame.IsInvalid) return null;
-				if (process.IsRunning) return null;
-				return selectedStackFrame;
-			}
-			set {
-				selectedStackFrame = value;
-			}
-		}
-		
 		/// <summary>
 		/// Returns the most recent stack frame (the one that is currently executing).
 		/// Returns null if callstack is empty.
 		/// </summary>
 		public StackFrame MostRecentStackFrame {
 			get {
-				foreach(StackFrame stackFrame in Callstack) {
+				foreach(StackFrame stackFrame in this.Callstack) {
 					return stackFrame;
+				}
+				return null;
+			}
+		}
+		
+		[Debugger.Tests.Ignore]
+		public StackFrame MostRecentUserStackFrame {
+			get {
+				foreach (StackFrame stackFrame in this.Callstack) {
+					if (!stackFrame.MethodInfo.StepOver) {
+						return stackFrame;
+					}
 				}
 				return null;
 			}
@@ -378,23 +321,6 @@ namespace Debugger
 					return false;
 				}
 			}
-		}
-	}
-	
-	[Serializable]
-	public class ThreadEventArgs : ProcessEventArgs
-	{
-		Thread thread;
-		
-		public Thread Thread {
-			get {
-				return thread;
-			}
-		}
-		
-		public ThreadEventArgs(Thread thread): base(thread.Process)
-		{
-			this.thread = thread;
 		}
 	}
 }

@@ -20,16 +20,15 @@ namespace Debugger.AddIn.Visualizers
 			return type.FullName == typeof(string).FullName;
 		}
 		
-		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
+		public IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue)
 		{
-			return new TextVisualizerCommand(expression);
+			return new TextVisualizerCommand(valueName, getValue);
 		}
 	}
 	
 	public class TextVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public TextVisualizerCommand(Expression expression)
-			:base(expression)
+		public TextVisualizerCommand(string valueName, Func<Value> getValue) : base(valueName, getValue)
 		{
 		}
 		
@@ -40,10 +39,7 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression == null)
-				return;
-			string expressionValue = this.Expression.Evaluate(WindowsDebugger.CurrentProcess).AsString();
-			var textVisualizerWindow = new TextVisualizerWindow(this.Expression.PrettyPrint(), expressionValue);
+			var textVisualizerWindow = new TextVisualizerWindow(this.ValueName, this.GetValue().AsString());
 			textVisualizerWindow.ShowDialog();
 		}
 	}

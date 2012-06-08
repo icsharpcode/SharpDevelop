@@ -22,7 +22,7 @@ namespace Debugger
 		Process process;
 		
 		ICorDebugILFrame  corILFrame;
-		object            corILFramePauseSession;
+		long              corILFramePauseSession;
 		ICorDebugFunction corFunction;
 		
 		DebugMethodInfo methodInfo;
@@ -83,14 +83,14 @@ namespace Debugger
 		{
 			this.process = thread.Process;
 			this.thread = thread;
-			this.appDomain = process.AppDomains[corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain()];
+			this.appDomain = process.GetAppDomain(corILFrame.GetFunction().GetClass().GetModule().GetAssembly().GetAppDomain());
 			this.corILFrame = corILFrame;
 			this.corILFramePauseSession = process.PauseSession;
 			this.corFunction = corILFrame.GetFunction();
 			this.chainIndex = chainIndex;
 			this.frameIndex = frameIndex;
 			
-			MetaDataImport metaData = thread.Process.Modules[corFunction.GetClass().GetModule()].MetaData;
+			MetaDataImport metaData = thread.Process.GetModule(corFunction.GetClass().GetModule()).MetaData;
 			int methodGenArgs = metaData.EnumGenericParams(corFunction.GetToken()).Length;
 			// Class parameters are first, then the method ones
 			List<ICorDebugType> corGenArgs = ((ICorDebugILFrame2)corILFrame).EnumerateTypeParameters().ToList();
@@ -241,40 +241,21 @@ namespace Debugger
 			}
 		}
 		
-		/// <summary>
-		/// Determine whether the instrustion pointer can be set to given location
-		/// </summary>
-		/// <returns> Best possible location. Null is not possible. </returns>
-		public SourcecodeSegment CanSetIP(string filename, int line, int column)
-		{
-			return SetIP(true, filename, line, column);
-		}
-		
-		/// <summary>
-		/// Set the instrustion pointer to given location
-		/// </summary>
-		/// <returns> Best possible location. Null is not possible. </returns>
-		public SourcecodeSegment SetIP(string filename, int line, int column)
-		{
-			return SetIP(false, filename, line, column);
-		}
-		
-		SourcecodeSegment SetIP(bool simulate, string filename, int line, int column)
+		public SourcecodeSegment SetIP(string filename, int line, int column, bool dryRun)
 		{
 			process.AssertPaused();
 			
-			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, null, line, column);
+			SourcecodeSegment segment = SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, filename, line, column);
 			
 			if (segment != null && segment.CorFunction.GetToken() == this.MethodInfo.MetadataToken) {
 				try {
-					if (simulate) {
+					if (dryRun) {
 						CorILFrame.CanSetIP((uint)segment.ILStart);
 					} else {
-						// Invalidates all frames and chains for the current thread
 						CorILFrame.SetIP((uint)segment.ILStart);
+						// Invalidates all frames and chains for the current thread
 						process.NotifyResumed(DebuggeeStateAction.Keep);
-						process.NotifyPaused(PausedReason.SetIP);
-						process.RaisePausedEvents();
+						process.NotifyPaused();
 					}
 				} catch {
 					return null;
@@ -345,6 +326,8 @@ namespace Debugger
 		
 		ICorDebugValue GetArgumentCorValue(int index)
 		{
+			this.Process.AssertPaused();
+			
 			ICorDebugValue corValue;
 			try {
 				// Non-static methods include 'this' as first argument
@@ -378,6 +361,17 @@ namespace Debugger
 			if (loc == null)
 				return null;
 			return loc.GetValue(this);
+		}
+		
+		public Value GetLocalVariableValue(uint address)
+		{
+			this.Process.AssertPaused();
+			try {
+				return new Value(this.AppDomain, this.CorILFrame.GetLocalVariable(address));
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
+				throw;
+			}
 		}
 		
 		/// <summary> Get instance of 'this'.  It works well with delegates and enumerators. </summary>

@@ -76,7 +76,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 
 		#region Popup
 		ToolTip toolTip;
-		Popup popup;
+		Popup popupToolTip;
 		
 		void TextEditorMouseHover(object sender, MouseEventArgs e)
 		{
@@ -92,24 +92,19 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 				ToolTipRequestService.RequestToolTip(args);
 			}
 			
+			if (!TryCloseExistingPopup(false)) {
+				return;
+			}
+			
 			if (args.ContentToShow != null) {
-				var contentToShowITooltip = args.ContentToShow as ITooltip;
+				popupToolTip = args.ContentToShow as Popup;
 				
-				if (contentToShowITooltip != null && contentToShowITooltip.ShowAsPopup) {
-					if (!(args.ContentToShow is UIElement)) {
-						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
-					}
-					if (popup == null) {
-						popup = CreatePopup();
-					}
-					if (TryCloseExistingPopup(false)) {
-						// when popup content decides to close, close the popup
-						contentToShowITooltip.Closed += (closedSender, closedArgs) => { popup.IsOpen = false; };
-						popup.Child = (UIElement)args.ContentToShow;
-						//ICSharpCode.SharpDevelop.Debugging.DebuggerService.CurrentDebugger.IsProcessRunningChanged
-						SetPopupPosition(popup, e);
-						popup.IsOpen = true;
-					}
+				if (popupToolTip != null) {
+					var popupPosition = GetPopupPosition(e);
+					popupToolTip.HorizontalOffset = popupPosition.X;
+					popupToolTip.VerticalOffset = popupPosition.Y;
+					popupToolTip.IsOpen = true;
+					popupToolTip.StaysOpen = true;  // We will close it ourselves
 					e.Handled = true;
 				} else {
 					if (toolTip == null) {
@@ -131,35 +126,19 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 					toolTip.IsOpen = true;
 					e.Handled = true;
 				}
-			} else {
-				// close popup if mouse hovered over empty area
-				if (popup != null) {
-					e.Handled = true;
-				}
-				TryCloseExistingPopup(false);
 			}
 		}
 		
 		bool TryCloseExistingPopup(bool mouseClick)
 		{
-			bool canClose = true;
-			if (popup != null) {
-				var popupContentITooltip = popup.Child as ITooltip;
-				if (popupContentITooltip != null) {
-					canClose = popupContentITooltip.Close(mouseClick);
+			if (popupToolTip != null) {
+				if (popupToolTip.IsOpen && !mouseClick && popupToolTip is ITooltip && !((ITooltip)popupToolTip).CloseOnHoverEnd) {
+					return false; // Popup does not want to be closed yet
 				}
-				if (canClose) {
-					popup.IsOpen = false;
-				}
+				popupToolTip.IsOpen = false;
+				popupToolTip = null;
 			}
-			return canClose;
-		}
-		
-		void SetPopupPosition(Popup popup, MouseEventArgs mouseArgs)
-		{
-			var popupPosition = GetPopupPosition(mouseArgs);
-			popup.HorizontalOffset = popupPosition.X;
-			popup.VerticalOffset = popupPosition.Y;
+			return true;
 		}
 		
 		/// <summary> Returns Popup position based on mouse position, in device independent units </summary>
@@ -182,17 +161,6 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 			return positionInPixels.TransformFromDevice(this);
 		}
 		
-		Popup CreatePopup()
-		{
-			popup = new Popup();
-			popup.Closed += (s, e) => popup = null;
-			popup.AllowsTransparency = true;
-			popup.PlacementTarget = this; // required for property inheritance
-			popup.Placement = PlacementMode.Absolute;
-			popup.StaysOpen = true;
-			return popup;
-		}
-		
 		void TextEditorMouseHoverStopped(object sender, MouseEventArgs e)
 		{
 			if (toolTip != null) {
@@ -205,7 +173,7 @@ namespace ICSharpCode.ILSpyAddIn.ViewContent
 		
 		void TextEditorMouseLeave(object sender, MouseEventArgs e)
 		{
-			if (popup != null && !popup.IsMouseOver) {
+			if (popupToolTip != null && !popupToolTip.IsMouseOver) {
 				// do not close popup if mouse moved from editor to popup
 				TryCloseExistingPopup(false);
 			}

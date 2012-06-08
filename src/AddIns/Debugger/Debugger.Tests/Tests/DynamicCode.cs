@@ -56,9 +56,9 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			process.SelectedStackFrame.StepOver();
-			process.SelectedStackFrame.StepInto();
-			Assert.AreEqual("Source.txt", process.SelectedStackFrame.NextStatement.Filename);
+			this.CurrentStackFrame.StepOver();
+			this.CurrentStackFrame.StepInto();
+			Assert.AreEqual("Source.txt", this.CurrentStackFrame.NextStatement.Filename);
 						
 			EndTest();
 		}
@@ -71,16 +71,16 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="DynamicCode.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DynamicCode.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>DynamicllyGeneratedAssembly (No symbols)</ModuleLoaded>
     <ModuleLoaded>ISymWrapper.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DynamicCode.cs:42,4-42,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete DynamicCode.cs:43,4-43,73</DebuggingPaused>
-    <DebuggingPaused>StepComplete Source.txt:1,1-1,100</DebuggingPaused>
-    <ProcessExited />
+    <Paused>DynamicCode.cs:42,4-42,40</Paused>
+    <Paused>DynamicCode.cs:43,4-43,73</Paused>
+    <Paused>Source.txt:1,1-1,100</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

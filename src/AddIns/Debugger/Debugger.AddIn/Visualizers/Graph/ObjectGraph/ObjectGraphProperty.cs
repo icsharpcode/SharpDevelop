@@ -39,7 +39,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			if (this.Expression == null) throw new DebuggerVisualizerException("Cannot evaluate property with missing Expression");
 			Value debuggerVal;
 			try {
-				debuggerVal = this.Expression.Evaluate(WindowsDebugger.CurrentProcess);
+				debuggerVal = this.Expression.GetValue();
 			} catch (System.Exception ex) {
 				this.Value = "Exception: " + ex.Message;
 				this.IsEvaluated = true;
@@ -49,7 +49,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			this.IsAtomic = debuggerVal.Type.IsAtomic();
 			this.IsNull = debuggerVal.IsNull;
 			// null and complex properties will show empty string
-			this.Value = debuggerVal.IsNull || (!this.IsAtomic) ? string.Empty : debuggerVal.InvokeToString();
+			this.Value = debuggerVal.IsNull || (!this.IsAtomic) ? string.Empty : debuggerVal.InvokeToString(WindowsDebugger.EvalThread);
 			this.IsEvaluated = true;
 		}
 	}

@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			ITextEditor textEditor = provider.TextEditor;
 			
-			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column);
+			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.Caret.Line, textEditor.Caret.Column, false);
 		}
 	}
 }

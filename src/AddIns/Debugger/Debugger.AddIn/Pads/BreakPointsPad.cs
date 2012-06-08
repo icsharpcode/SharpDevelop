@@ -17,51 +17,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class BreakPointsPad : BookmarkPadBase
 	{
-		WindowsDebugger debugger;
-		NDebugger debuggerCore;
-		
 		public BreakPointsPad()
 		{
-			InitializeComponents();
+			var res = new CommonResources();
+			res.InitializeComponent();
 			
-			myPanel.Children.Add(CreateToolBar());
+			Grid grid = (Grid)this.Control;
+			ToolBar toolbar = ToolBarService.CreateToolBar(grid, this, "/SharpDevelop/Pads/BreakpointPad/Toolbar");
+			grid.Children.Add(toolbar);
 			
-			CreateColumns();
-		}
-
-		void InitializeComponents()
-		{
-			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
-			if (debugger.ServiceInitialized) {
-				InitializeDebugger();
-			} else {
-				debugger.Initialize += delegate {
-					InitializeDebugger();
-				};
-			}
-		}
-
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-		}
-		
-		protected override ToolBar CreateToolBar()
-		{
-			ToolBar toolbar = ToolBarService.CreateToolBar(myPanel, this, "/SharpDevelop/Pads/BreakpointPad/Toolbar");
-			toolbar.SetValue(Grid.RowProperty, 0);
-			return toolbar;
-		}
-		
-		protected override void CreateColumns()
-		{
-			string conditionHeader = StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader}");
-			
-			// HACK
-			DataTemplate cellTemplate = new ConditionCell().FindResource("ConditionCellTemplate") as DataTemplate;
-			
-			listView.AddColumn(conditionHeader, cellTemplate);
+			this.control.listView.View = (GridView)res["breakpointsGridView"];
 		}
 		
 		protected override bool ShowBookmarkInThisPad(SDBookmark mark)
@@ -69,27 +34,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			return mark.IsVisibleInBookmarkPad && mark is BreakpointBookmark;
 		}
 		
-		protected override void OnItemActivated(object sender, EventArgs e)
+		protected override void OnItemActivated(SDBookmark bookmark)
 		{
-			var node = CurrentItem;
-			if (node == null)
-				return;
-			SDBookmark mark = node.Mark as SDBookmark;
-			if (mark == null)
-				return;
-			
-			string fileName = mark.FileName;
-			if (mark is DecompiledBreakpointBookmark) {
+			if (bookmark is DecompiledBreakpointBookmark) {
 				// get information from breakpoint and navigate to the decompiled type
 				string assemblyFile, typeName;
-				if (DecompiledBreakpointBookmark.GetAssemblyAndType(fileName, out assemblyFile, out typeName)) {
-					NavigationService.NavigateTo(assemblyFile, typeName, string.Empty, mark.LineNumber, false);
+				if (DecompiledBreakpointBookmark.GetAssemblyAndType(bookmark.FileName, out assemblyFile, out typeName)) {
+					NavigationService.NavigateTo(assemblyFile, typeName, string.Empty, bookmark.LineNumber, false);
 				}
 			} else {
-				// jump to normal breakpoint
-				FileService.JumpToFilePosition(fileName, mark.LineNumber, 1);
-				
-				// TODO: if other types of breakpoint bookmarks are available, one should do jumping/navigation here
+				base.OnItemActivated(bookmark);
 			}
 		}
 	}

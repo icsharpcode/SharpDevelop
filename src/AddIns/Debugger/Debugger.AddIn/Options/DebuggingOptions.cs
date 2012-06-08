@@ -4,13 +4,13 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Xml.Serialization;
 using Debugger;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
-	public enum ShowIntegersAs { Auto, Decimal, Hexadecimal };
+	public enum ShowIntegersAs { Decimal, Hexadecimal, Both, Auto };
 	
 	[Serializable]
 	public class DebuggingOptions: Options
@@ -28,7 +28,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			DebuggeeExceptionWindowState = FormWindowState.Normal;
 		}
 		
-		public bool ICorDebugVisualizerEnabled { get; set; }
 		public ShowIntegersAs ShowIntegersAs { get; set; }
 		public bool ShowArgumentNames { get; set; }
 		public bool ShowArgumentValues { get; set; }

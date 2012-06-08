@@ -25,9 +25,9 @@ namespace Debugger.AddIn.Visualizers
 			return type.ResolveIEnumerableImplementation(out collectionType, out itemType);
 		}
 		
-		public IVisualizerCommand CreateVisualizerCommand(Expression expression)
+		public IVisualizerCommand CreateVisualizerCommand(string valueName, Func<Value> getValue)
 		{
-			return new GridVisualizerCommand(expression);
+			return new GridVisualizerCommand(valueName, getValue);
 		}
 	}
 	
@@ -36,8 +36,7 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public class GridVisualizerCommand : ExpressionVisualizerCommand
 	{
-		public GridVisualizerCommand(Expression expression)
-			:base(expression)
+		public GridVisualizerCommand(string valueName, Func<Value> getValue) : base(valueName, getValue)
 		{
 		}
 		
@@ -48,10 +47,8 @@ namespace Debugger.AddIn.Visualizers
 		
 		public override void Execute()
 		{
-			if (this.Expression == null)
-				return;
-			var gridVisualizerWindow = GridVisualizerWindow.EnsureShown();
-			gridVisualizerWindow.ShownExpression = this.Expression;
+			GridVisualizerWindow window = new GridVisualizerWindow(this.ValueName, this.GetValue);
+			window.ShowDialog();
 		}
 	}
 }

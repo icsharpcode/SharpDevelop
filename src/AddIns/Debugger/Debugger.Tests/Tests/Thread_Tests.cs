@@ -9,6 +9,7 @@ namespace Debugger.Tests
 	{
 		public static void Main()
 		{
+			System.Diagnostics.Debugger.Break();
 			System.Threading.Thread.CurrentThread.Priority = System.Threading.ThreadPriority.AboveNormal;
 			System.Diagnostics.Debugger.Break();
 			System.Threading.Thread.CurrentThread.Name = "ThreadName";
@@ -24,20 +25,13 @@ namespace Debugger.Tests {
 		[NUnit.Framework.Test]
 		public void Thread_Tests()
 		{
-			debugger.Processes.Added += debugger_ProcessStarted;
 			StartTest();
-			debugger.Processes.Added -= debugger_ProcessStarted;
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
 			process.Continue();
-			ObjectDump("Thread", process.SelectedThread);
+			ObjectDump("Thread", this.CurrentThread);
+			process.Continue();
+			ObjectDump("Thread", this.CurrentThread);
 			EndTest();
-		}
-
-		void debugger_ProcessStarted(object sender, CollectionItemEventArgs<Process> e)
-		{
-			e.Item.Threads.Added += delegate(object sender2, CollectionItemEventArgs<Thread> f) {
-				ObjectDump("ThreadStartedEvent", f.Item);
-			};
 		}
 	}
 }
@@ -48,58 +42,43 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Thread_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
-    <ThreadStartedEvent>
-      <Thread
-        Callstack="{System.Void System.AppDomain.SetupDomain(System.Boolean allowRedirects, System.String path, System.String configFile, System.String[] propertyNames, System.String[] propertyValues)}"
-        CurrentExceptionType="0"
-        IsAtSafePoint="True"
-        IsInValidState="True"
-        MostRecentStackFrame="System.Void System.AppDomain.SetupDomain(System.Boolean allowRedirects, System.String path, System.String configFile, System.String[] propertyNames, System.String[] propertyValues)"
-        Name=""
-        Priority="Normal"
-        RuntimeValue="null" />
-    </ThreadStartedEvent>
     <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Thread_Tests.cs:13,4-13,40</DebuggingPaused>
+    <Paused>Thread_Tests.cs:12,4-12,40</Paused>
     <Thread>
       <Thread
         Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
-        CurrentExceptionType="0"
+        IsAtSafePoint="True"
+        IsInValidState="True"
+        MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
+        Name=""
+        Priority="Normal"
+        RuntimeValue="{System.Threading.Thread}" />
+    </Thread>
+    <Paused>Thread_Tests.cs:14,4-14,40</Paused>
+    <Thread>
+      <Thread
+        Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
         IsAtSafePoint="True"
         IsInValidState="True"
         MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
         Name=""
         Priority="AboveNormal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
-    <DebuggingPaused>Break Thread_Tests.cs:15,4-15,40</DebuggingPaused>
+    <Paused>Thread_Tests.cs:16,4-16,40</Paused>
     <Thread>
       <Thread
         Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
-        CurrentExceptionType="0"
         IsAtSafePoint="True"
         IsInValidState="True"
         MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
         Name="ThreadName"
         Priority="AboveNormal"
-        RuntimeValue="{System.Threading.Thread}"
-        SelectedStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()" />
+        RuntimeValue="{System.Threading.Thread}" />
     </Thread>
-    <ThreadStartedEvent>
-      <Thread
-        Callstack="{System.Void System.Threading.ReaderWriterLock.Finalize()}"
-        CurrentExceptionType="0"
-        IsAtSafePoint="True"
-        IsInValidState="True"
-        MostRecentStackFrame="System.Void System.Threading.ReaderWriterLock.Finalize()"
-        Name=""
-        Priority="Normal"
-        RuntimeValue="null" />
-    </ThreadStartedEvent>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

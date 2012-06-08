@@ -128,12 +128,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
-		public bool CanSetInstructionPointer(string filename, int line, int column)
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool SetInstructionPointer(string filename, int line, int column)
+		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			throw new NotImplementedException();
 		}

@@ -42,7 +42,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			ObjectGraphWindow.Instance = null;			// allow release
 		}
 		
-		public ICSharpCode.NRefactory.Ast.Expression ShownExpression
+		public GraphExpression ShownExpression
 		{
 			get { return this.objectGraphControl.ShownExpression; }
 			set { this.objectGraphControl.ShownExpression = value; }

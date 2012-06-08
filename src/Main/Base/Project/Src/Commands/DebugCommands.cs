@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Bookmarks;
-using ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -135,31 +134,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line, typeof(DecompiledBreakpointBookmark));
 					}
 				}
-			}
-		}
-	}
-	
-	public class RemoveAllBreakpointsCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			BookmarkManager.RemoveAll(b => b is BreakpointBookmark);
-		}
-	}
-	
-	public class DeleteBreakpointCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			if (Owner == null || !(Owner is BookmarkPadBase)) return;
-			
-			var bookmarkBase = (BookmarkPadBase)Owner;
-			var item = bookmarkBase.CurrentItem;
-			
-			if (item == null) return;
-			
-			if (item.Mark is BreakpointBookmark) {
-				BookmarkManager.RemoveMark(item.Mark);
 			}
 		}
 	}

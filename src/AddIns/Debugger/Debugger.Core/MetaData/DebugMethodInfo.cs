@@ -160,17 +160,7 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
 		{
-			List<Value> args = new List<Value>();
-			foreach(object arg in parameters) {
-				args.Add((Value)arg);
-			}
-			if (this.IsSpecialName && this.Name == ".ctor") {
-				if (obj != null)
-					throw new GetValueException("'obj' must be null for constructor call");
-				return Eval.NewObject(this, args.ToArray());
-			} else {
-				return Eval.InvokeMethod(this, (Value)obj, args.ToArray());
-			}
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>
@@ -575,7 +565,8 @@ namespace Debugger.MetaData
 							localVariables,
 							0, int.MaxValue,
 							delegate(StackFrame context) {
-								return context.GetThisValue().GetFieldValue(fieldInfoCopy);
+								// TODO: Use eval thread
+								return context.GetThisValue().GetFieldValue(context.Thread, fieldInfoCopy);
 							},
 							(DebugType)fieldInfo.FieldType
 						);
@@ -585,6 +576,7 @@ namespace Debugger.MetaData
 				// Add this
 				if (!this.IsStatic) {
 					DebugLocalVariableInfo thisVar = new DebugLocalVariableInfo(
+						this,
 						"this",
 						-1,
 						0, int.MaxValue,
@@ -600,20 +592,22 @@ namespace Debugger.MetaData
 			return localVariables;
 		}
 		
-		static void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, DebugType captureClassType)
+		void AddCapturedLocalVariables(List<DebugLocalVariableInfo> vars, int scopeStartOffset, int scopeEndOffset, ValueGetter getCaptureClass, DebugType captureClassType)
 		{
 			if (captureClassType.IsDisplayClass || captureClassType.IsYieldEnumerator || captureClassType.IsAsyncStateMachine) {
 				foreach(DebugFieldInfo fieldInfo in captureClassType.GetFields()) {
 					DebugFieldInfo fieldInfoCopy = fieldInfo;
 					if (fieldInfo.Name.StartsWith("CS$")) continue; // Ignore
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
+						this,
 						fieldInfo.Name,
 						-1,
 						scopeStartOffset,
 						scopeEndOffset,
 						(DebugType)fieldInfo.FieldType,
 						delegate(StackFrame context) {
-							return getCaptureClass(context).GetFieldValue(fieldInfoCopy);
+							// TODO: Use eval thread
+							return getCaptureClass(context).GetFieldValue(context.Thread, fieldInfoCopy);
 						}
 					);
 					locVar.IsCaptured = true;
@@ -646,7 +640,7 @@ namespace Debugger.MetaData
 		{
 			List<DebugLocalVariableInfo> vars = new List<DebugLocalVariableInfo>();
 			foreach (ISymUnmanagedVariable symVar in symScope.GetLocals()) {
-				ISymUnmanagedVariable symVarCopy = symVar;
+				uint address = (uint)symVar.GetAddressField1();
 				int start;
 				SignatureReader sigReader = new SignatureReader(symVar.GetSignature());
 				LocalVarSig.LocalVariable locVarSig = sigReader.ReadLocalVariable(sigReader.Blob, 0, out start);
@@ -661,13 +655,14 @@ namespace Debugger.MetaData
 							(int)symScope.GetStartOffset(),
 							(int)symScope.GetEndOffset(),
 							delegate(StackFrame context) {
-								return GetLocalVariableValue(context, symVarCopy);
+								return context.GetLocalVariableValue(address);
 							},
 							locVarType
 						);
 					}
 				} else {
 					DebugLocalVariableInfo locVar = new DebugLocalVariableInfo(
+						this,
 						symVar.GetName(),
 						(int)symVar.GetAddressField1(),
 						// symVar also has Get*Offset methods, but the are not implemented
@@ -675,7 +670,7 @@ namespace Debugger.MetaData
 						(int)symScope.GetEndOffset(),
 						locVarType,
 						delegate(StackFrame context) {
-							return GetLocalVariableValue(context, symVarCopy);
+							return context.GetLocalVariableValue(address);
 						}
 					);
 					vars.Add(locVar);
@@ -685,18 +680,6 @@ namespace Debugger.MetaData
 				vars.AddRange(GetLocalVariablesInScope(childScope));
 			}
 			return vars;
-		}
-		
-		static Value GetLocalVariableValue(StackFrame context, ISymUnmanagedVariable symVar)
-		{
-			ICorDebugValue corVal;
-			try {
-				corVal = context.CorILFrame.GetLocalVariable((uint)symVar.GetAddressField1());
-			} catch (COMException e) {
-				if ((uint)e.ErrorCode == 0x80131304) throw new GetValueException("Unavailable in optimized code");
-				throw;
-			}
-			return new Value(context.AppDomain, corVal);
 		}
 		
 		/// <inheritdoc/>

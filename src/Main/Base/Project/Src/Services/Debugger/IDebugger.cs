@@ -79,16 +79,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		void Detach();
 		
 		/// <summary>
-		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.
-		/// </summary>
-		/// <returns>True if possible. False otherwise</returns>
-		bool CanSetInstructionPointer(string filename, int line, int column);
-		
-		/// <summary>
 		/// Set the instruction pointer to a given position.
 		/// </summary>
 		/// <returns>True if successful. False otherwise</returns>
-		bool SetInstructionPointer(string filename, int line, int column);
+		bool SetInstructionPointer(string filename, int line, int column, bool dryRun);
 		
 		/// <summary>
 		/// Ocurrs when the debugger is starting.

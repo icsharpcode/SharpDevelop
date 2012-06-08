@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System.Linq;
+using Debugger.AddIn.Visualizers.Graph;
 using Debugger.Interop.CorDebug;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,24 @@ namespace Debugger.AddIn.Visualizers.Utils
 		}
 		
 		/// <summary>
+		/// Evaluates 'new List&lt;T&gt;(iEnumerableValue)' in the debuggee.
+		/// </summary>
+		public static Value CreateListFromIEnumerable(Value iEnumerableValue)
+		{
+			DebugType iEnumerableType, itemType;
+			if (!iEnumerableValue.Type.ResolveIEnumerableImplementation(out iEnumerableType, out itemType))
+				throw new GetValueException("Value is not IEnumerable");
+			    	
+			DebugType listType = DebugType.CreateFromType(iEnumerableValue.AppDomain, typeof(System.Collections.Generic.List<>), itemType);
+			DebugConstructorInfo ctor = (DebugConstructorInfo)listType.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, new System.Type[] { iEnumerableType }, null);
+			if (ctor == null)
+				throw new DebuggerException("List<T> constructor not found");
+			
+			// Keep reference since we do not want to keep reenumerating it
+			return Value.InvokeMethod(WindowsDebugger.EvalThread, null, ctor.MethodInfo, new Value[] { iEnumerableValue }).GetPermanentReferenceOfHeapValue();
+		}
+		
+		/// <summary>
 		/// Gets underlying address of object in the debuggee.
 		/// </summary>
 		public static ulong GetObjectAddress(this Value val)
@@ -60,14 +79,6 @@ namespace Debugger.AddIn.Visualizers.Utils
 		}
 		
 		/// <summary>
-		/// Evaluates expression and gets underlying address of object in the debuggee.
-		/// </summary>
-		public static ulong GetObjectAddress(this Expression expr)
-		{
-			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetObjectAddress();
-		}
-		
-		/// <summary>
 		/// System.Runtime.CompilerServices.GetHashCode method, for obtaining non-overriden hash codes from debuggee.
 		/// </summary>
 		private static DebugMethodInfo hashCodeMethod;
@@ -86,7 +97,7 @@ namespace Debugger.AddIn.Visualizers.Utils
 					throw new DebuggerException("Cannot obtain method System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode");
 				}
 			}
-			Value defaultHashCode = Eval.InvokeMethod(DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
+			Value defaultHashCode = Eval.InvokeMethod(WindowsDebugger.EvalThread, DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
 			
 			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 			//string hashCode = value.InvokeMethod(method, null).AsString;
@@ -106,23 +117,34 @@ namespace Debugger.AddIn.Visualizers.Utils
 			}
 		}
 		
-		public static Value EvalPermanentReference(this Expression expr)
+		/// <summary>
+		/// Evaluates 'System.Collections.ICollection.Count' on given Value.
+		/// </summary>
+		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
+		public static int GetIListCount(this Value list)
 		{
-			return expr.Evaluate(WindowsDebugger.CurrentProcess).GetPermanentReference();
+			var iCollectionType = list.Type.GetInterface(typeof(System.Collections.ICollection).FullName);
+			if (iCollectionType == null)
+				throw new GetValueException("Object does not implement System.Collections.ICollection");
+			// Do not get string representation since it can be printed in hex
+			return (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iCollectionType.GetProperty("Count")).PrimitiveValue;
 		}
 		
 		/// <summary>
-		/// Evaluates System.Collections.ICollection.Count property on given object.
+		/// Evaluates 'System.Collection.IList.Item(i)' on given Value.
 		/// </summary>
-		/// <exception cref="GetValueException">Evaluating System.Collections.ICollection.Count on targetObject failed.</exception>
-		public static int GetIListCount(this Expression targetObject)
+		/// <param name="target"></param>
+		/// <param name="index"></param>
+		/// <returns></returns>
+		public static Value GetIListItem(this Value target, int index)
 		{
-			Value list = targetObject.Evaluate(WindowsDebugger.CurrentProcess);
-			var iCollectionType = list.Type.GetInterface(typeof(System.Collections.ICollection).FullName);
-			if (iCollectionType == null)
-				throw new GetValueException(targetObject, targetObject.PrettyPrint() + " does not implement System.Collections.ICollection");
-			// Do not get string representation since it can be printed in hex
-			return (int)list.GetPropertyValue(iCollectionType.GetProperty("Count")).PrimitiveValue;
+			var iListType = target.Type.GetInterface(typeof(System.Collections.IList).FullName);
+			if (iListType == null)
+				throw new GetValueException("Object does not implement System.Collections.IList");
+			DebugPropertyInfo indexerProperty = (DebugPropertyInfo)iListType.GetProperty("Item");
+			if (indexerProperty == null)
+				throw new GetValueException("The object does not have an indexer property");
+			return target.GetPropertyValue(WindowsDebugger.EvalThread, indexerProperty, Eval.CreateValue(WindowsDebugger.EvalThread, index));
 		}
 		
 		/// <summary>

@@ -40,11 +40,11 @@ namespace Debugger.Tests {
 			
 			DumpLocalVariables();
 			
-			Value array = process.SelectedStackFrame.GetLocalVariableValue("array").GetPermanentReference();
-			ObjectDump("array.Length", array.GetMemberValue("Length"));
+			Value array = this.CurrentStackFrame.GetLocalVariableValue("array").GetPermanentReference(this.EvalThread);
+			ObjectDump("array.Length", array.GetMemberValue(this.EvalThread, "Length"));
 			ObjectDump("array", array);
 			
-			Value lbArray = process.SelectedStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference();
+			Value lbArray = this.CurrentStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference(this.EvalThread);
 			ObjectDump("lbArray", lbArray);
 			ObjectDump("lbArray-10-20", lbArray.GetArrayElement(new int[] {10, 20}));
 			
@@ -59,10 +59,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="Value_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Value_Tests.cs:27,4-27,40</DebuggingPaused>
+    <Paused>Value_Tests.cs:27,4-27,40</Paused>
     <LocalVariables>
       <Item>
         <LocalVariable
@@ -131,7 +131,7 @@ namespace Debugger.Tests {
         PrimitiveValue="a"
         Type="System.Char" />
     </lbArray-10-20>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

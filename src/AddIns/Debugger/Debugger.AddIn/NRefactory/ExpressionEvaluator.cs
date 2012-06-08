@@ -6,17 +6,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-
 using Debugger;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.NRefactory.Visitors
 {
 	public class EvaluateException: GetValueException
 	{
-		public EvaluateException(INode code, string msg):base(code, msg) {}
-		public EvaluateException(INode code, string msgFmt, params string[] msgArgs):base(code, string.Format(msgFmt, msgArgs)) {}
+		public EvaluateException(INode code, string msg):base(msg) {}
+		public EvaluateException(INode code, string msgFmt, params string[] msgArgs):base(string.Format(msgFmt, msgArgs)) {}
 	}
 	
 	class TypedValue
@@ -51,6 +51,10 @@ namespace ICSharpCode.NRefactory.Visitors
 			get { return context; }
 		}
 		
+		public Thread EvalThread {
+			get { return this.Context.Thread; }
+		}
+		
 		ExpressionEvaluator(StackFrame context)
 		{
 			this.context = context;
@@ -76,19 +80,12 @@ namespace ICSharpCode.NRefactory.Visitors
 			return Evaluate(Parse(code, language), context, data);
 		}
 		
-		public static Value Evaluate(INode code, Process context)
-		{
-			if (context.SelectedStackFrame == null && context.SelectedThread.MostRecentStackFrame == null)
-				// This can happen when needed 'dll' is missing.  This causes an exception dialog to be shown even before the applicaiton starts
-				throw new GetValueException("Can not evaluate because the process has no managed stack frames");
-			
-			return Evaluate(code, context.GetCurrentExecutingFrame());
-		}
-		
 		public static Value Evaluate(INode code, StackFrame context, object data = null)
 		{
-			if (context == null) throw new ArgumentNullException("context");
-			if (context.IsInvalid) throw new DebuggerException("The context is no longer valid");
+			if (context == null)
+				throw new GetValueException("Invalid stackframe");
+			if (context.IsInvalid)
+				throw new DebuggerException("The context is no longer valid");
 			
 			TypedValue val = new ExpressionEvaluator(context).Evaluate(code, false, data);
 			if (val == null)
@@ -113,7 +110,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return astExpression;
 		}
 		
-		public static string FormatValue(Value val)
+		public static string FormatValue(Thread evalThread, Value val)
 		{
 			if (val == null) {
 				return null;
@@ -127,7 +124,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				foreach(Value item in val.GetArrayElements()) {
 					if (!first) sb.Append(", ");
 					first = false;
-					sb.Append(FormatValue(item));
+					sb.Append(FormatValue(evalThread, item));
 				}
 				sb.Append("}");
 				return sb.ToString();
@@ -135,13 +132,13 @@ namespace ICSharpCode.NRefactory.Visitors
 				StringBuilder sb = new StringBuilder();
 				sb.Append(val.Type.Name);
 				sb.Append(" {");
-				val = val.GetPermanentReference();
-				int count = (int)val.GetMemberValue("Count").PrimitiveValue;
+				val = val.GetPermanentReference(evalThread);
+				int count = (int)val.GetMemberValue(evalThread, "Count").PrimitiveValue;
 				for(int i = 0; i < count; i++) {
 					if (i > 0) sb.Append(", ");
 					DebugPropertyInfo itemProperty = (DebugPropertyInfo)val.Type.GetProperty("Item");
-					Value item = val.GetPropertyValue(itemProperty, Eval.CreateValue(val.AppDomain, i));
-					sb.Append(FormatValue(item));
+					Value item = val.GetPropertyValue(evalThread, itemProperty, Eval.CreateValue(evalThread, i));
+					sb.Append(FormatValue(evalThread, item));
 				}
 				sb.Append("}");
 				return sb.ToString();
@@ -152,7 +149,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else if (val.Type.IsPrimitive) {
 				return val.PrimitiveValue.ToString();
 			} else {
-				return val.InvokeToString();
+				return val.InvokeToString(evalThread);
 			}
 		}
 		
@@ -163,25 +160,16 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		TypedValue Evaluate(INode expression, bool permRef, object data = null)
 		{
-			// Try to get the value from cache
-			// (the cache is cleared when the process is resumed)
 			TypedValue val;
-			if (context.Process.ExpressionsCache.TryGetValue(expression, out val)) {
-				if (val == null || !val.Value.IsInvalid)
-					return val;
-			}
 			
 			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
 			watch.Start();
 			try {
 				val = (TypedValue)expression.AcceptVisitor(this, data);
 				if (val != null && permRef)
-					val = new TypedValue(val.Value.GetPermanentReference(), val.Type);
-			} catch (GetValueException e) {
-				e.Expression = expression;
-				throw;
+					val = new TypedValue(val.Value.GetPermanentReference(this.EvalThread), val.Type);
 			} catch (NotImplementedException e) {
-				throw new GetValueException(expression, "Language feature not implemented: " + e.Message);
+				throw new EvaluateException(expression, "Language feature not implemented: " + e.Message);
 			} finally {
 				watch.Stop();
 				context.Process.TraceMessage("Evaluated: {0} in {1} ms total", expression.PrettyPrint(), watch.ElapsedMilliseconds);
@@ -189,9 +177,6 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			if (val != null && val.Value.IsInvalid)
 				throw new DebuggerException("Expression \"" + expression.PrettyPrint() + "\" is invalid right after evaluation");
-			
-			// Add the result to cache
-			context.Process.ExpressionsCache[expression] = val;
 			
 			return val;
 		}
@@ -266,7 +251,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		TypedValue CreateValue(object primitiveValue)
 		{
-			Value val = Eval.CreateValue(context.AppDomain, primitiveValue);
+			Value val = Eval.CreateValue(this.EvalThread, primitiveValue);
 			return new TypedValue(val, val.Type);
 		}
 		
@@ -312,7 +297,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (!left.Value.IsReference && left.Type.FullName != right.Type.FullName) {
 				throw new GetValueException(string.Format("Type {0} expected, {1} seen", left.Type.FullName, right.Type.FullName));
 			}
-			left.Value.SetValue(right.Value);
+			left.Value.SetValue(this.EvalThread, right.Value);
 			return right;
 		}
 		
@@ -367,17 +352,6 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			string identifier = identifierExpression.Identifier;
 			
-			if (identifier == "__exception") {
-				if (context.Thread.CurrentException != null) {
-					return new TypedValue(
-						context.Thread.CurrentException.Value,
-						DebugType.CreateFromType(context.AppDomain.Mscorlib, typeof(System.Exception))
-					);
-				} else {
-					throw new GetValueException("No current exception");
-				}
-			}
-			
 			DebugParameterInfo par = context.MethodInfo.GetParameter(identifier);
 			if (par != null)
 				return new TypedValue(par.GetValue(context), (DebugType)par.ParameterType);
@@ -400,14 +374,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (thisValue != null) {
 				IDebugMemberInfo instMember = (IDebugMemberInfo)thisValue.Type.GetMember<MemberInfo>(identifier, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, DebugType.IsFieldOrNonIndexedProperty);
 				if (instMember != null)
-					return new TypedValue(Value.GetMemberValue(thisValue.Value, (MemberInfo)instMember), instMember.MemberType);
+					return new TypedValue(Value.GetMemberValue(this.EvalThread, thisValue.Value, (MemberInfo)instMember), instMember.MemberType);
 			}
 			
 			// Static class members
 			foreach(DebugType declaringType in ((DebugType)context.MethodInfo.DeclaringType).GetSelfAndDeclaringTypes()) {
 				IDebugMemberInfo statMember = (IDebugMemberInfo)declaringType.GetMember<MemberInfo>(identifier, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static, DebugType.IsFieldOrNonIndexedProperty);
 				if (statMember != null)
-					return new TypedValue(Value.GetMemberValue(null, (MemberInfo)statMember), statMember.MemberType);
+					return new TypedValue(Value.GetMemberValue(this.EvalThread, null, (MemberInfo)statMember), statMember.MemberType);
 			}
 			
 			throw new GetValueException("Identifier \"" + identifier + "\" not found in this context");
@@ -441,7 +415,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				if (pi == null)
 					throw new GetValueException("The object does not have an indexer property");
 				return new TypedValue(
-					target.Value.GetPropertyValue(pi, GetValues(indexes)),
+					target.Value.GetPropertyValue(this.EvalThread, pi, GetValues(indexes)),
 					(DebugType)pi.PropertyType
 				);
 			}
@@ -479,7 +453,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			MethodInfo method = targetType.GetMethod(methodName, DebugType.BindingFlagsAllInScope, null, GetTypes(args), null);
 			if (method == null)
 				throw new GetValueException("Method " + methodName + " not found");
-			Value retVal = Value.InvokeMethod(target != null ? target.Value : null, method, GetValues(args));
+			Value retVal = Value.InvokeMethod(this.EvalThread, target != null ? target.Value : null, method, GetValues(args));
 			if (retVal == null)
 				return null;
 			return new TypedValue(retVal, (DebugType)method.ReturnType);
@@ -492,10 +466,10 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			DebugType type = objectCreateExpression.CreateType.ResolveType(context.AppDomain);
 			List<TypedValue> ctorArgs = EvaluateAll(objectCreateExpression.Parameters);
-			ConstructorInfo ctor = type.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, GetTypes(ctorArgs), null);
+			DebugConstructorInfo ctor = (DebugConstructorInfo)type.GetConstructor(BindingFlags.Default, null, CallingConventions.Any, GetTypes(ctorArgs), null);
 			if (ctor == null)
 				throw new EvaluateException(objectCreateExpression, "Constructor not found");
-			Value val = (Value)ctor.Invoke(GetValues(ctorArgs));
+			Value val = Value.InvokeMethod(this.EvalThread, null, ctor.MethodInfo, GetValues(ctorArgs));
 			return new TypedValue(val, type);
 		}
 		
@@ -511,14 +485,14 @@ namespace ICSharpCode.NRefactory.Visitors
 			} else if (!arrayCreateExpression.ArrayInitializer.IsNull) {
 				length = arrayCreateExpression.ArrayInitializer.CreateExpressions.Count;
 			}
-			Value array = Eval.NewArray((DebugType)type.GetElementType(), (uint)length, null);
+			Value array = Eval.NewArray(this.EvalThread, (DebugType)type.GetElementType(), (uint)length, null);
 			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
 				List<Expression> inits = arrayCreateExpression.ArrayInitializer.CreateExpressions;
 				if (inits.Count != length)
 					throw new EvaluateException(arrayCreateExpression, "Incorrect initializer length");
 				for(int i = 0; i < length; i++) {
 					TypedValue init = EvaluateAs(inits[i], (DebugType)type.GetElementType());
-					array.SetArrayElement(new int[] { i }, init.Value);
+					array.SetArrayElement(this.EvalThread, new int[] { i }, init.Value);
 				}
 			}
 			return new TypedValue(array, type);
@@ -545,7 +519,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (memberInfos.Length == 0)
 				throw new GetValueException("Member \"" + memberReferenceExpression.MemberName + "\" not found");
 			return new TypedValue(
-				Value.GetMemberValue(target != null ? target.Value : null, memberInfos[0]),
+				Value.GetMemberValue(this.EvalThread, target != null ? target.Value : null, memberInfos[0]),
 				((IDebugMemberInfo)memberInfos[0]).MemberType
 			);
 		}
@@ -772,8 +746,8 @@ namespace ICSharpCode.NRefactory.Visitors
 			
 			if (op == BinaryOperatorType.Add) {
 				if (left.Type.Is<string>() || right.Type.Is<string>()) {
-					string a = left.Value.IsNull ? string.Empty : left.Value.InvokeToString();
-					string b = right.Value.IsNull ? string.Empty : right.Value.InvokeToString();
+					string a = left.Value.IsNull ? string.Empty : left.Value.InvokeToString(this.EvalThread);
+					string b = right.Value.IsNull ? string.Empty : right.Value.InvokeToString(this.EvalThread);
 					return CreateValue(a + b);
 				}
 			}

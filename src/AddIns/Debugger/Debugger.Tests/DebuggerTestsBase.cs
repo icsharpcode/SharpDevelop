@@ -31,11 +31,9 @@ namespace Debugger.Tests
 		protected XmlElement  snapshotNode;
 		protected int         shapshotID;
 		
-		public StackFrame SelectedStackFrame {
-			get {
-				return process.SelectedStackFrame;
-			}
-		}
+		public Thread CurrentThread { get; private set; }
+		public StackFrame CurrentStackFrame { get; private set; }
+		public Thread EvalThread { get { return this.CurrentThread; } }
 		
 		public void Continue()
 		{
@@ -196,37 +194,40 @@ namespace Debugger.Tests
 			
 			log = "";
 			lastLogMessage = null;
-			process = debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), testName);
+			process = debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), testName, false);
 			process.LogMessage += delegate(object sender, MessageEventArgs e) {
 				log += e.Message;
 				lastLogMessage = e.Message;
 				LogEvent("LogMessage", e.Message.Replace("\r",@"\r").Replace("\n",@"\n"));
 			};
-			process.Modules.Added += delegate(object sender, CollectionItemEventArgs<Module> e) {
-				LogEvent("ModuleLoaded", e.Item.Name + (e.Item.HasSymbols ? " (Has symbols)" : " (No symbols)"));
+			process.ModuleLoaded += delegate(object sender, ModuleEventArgs e) {
+				LogEvent("ModuleLoaded", e.Module.Name + (e.Module.HasSymbols ? " (Has symbols)" : " (No symbols)"));
 			};
-			process.Paused += delegate(object sender, ProcessEventArgs e) {
-				LogEvent("DebuggingPaused", e.Process.PauseSession.PausedReason.ToString() + " " + e.Process.SelectedStackFrame.NextStatement.ToString());
-			};
-//			process.DebuggingResumed += delegate(object sender, ProcessEventArgs e) {
-//				LogEvent("DebuggingResumed", e.Process.PausedReason.ToString());
-//			};
-			process.ExceptionThrown += delegate(object sender, ExceptionEventArgs e) {
-				StringBuilder msg = new StringBuilder();
-				if (process.SelectedThread.InterceptException(e.Exception)) {
-					msg.Append(e.Exception.ToString());
+			process.Paused += delegate(object sender, DebuggerEventArgs e) {
+				this.CurrentThread = e.Thread;
+				if (e.Thread != null && e.Thread.IsInValidState) {
+					this.CurrentStackFrame = e.Thread.MostRecentStackFrame;
 				} else {
-					// For example, happens on stack overflow
-					msg.Append("Could not intercept: ");
-					msg.Append(e.Exception.ToString());
+					this.CurrentStackFrame = null;
 				}
-				LogEvent("ExceptionThrown", msg.ToString());
+				if (e.ExceptionThrown != null) {
+					StringBuilder msg = new StringBuilder();
+					if (CurrentThread.InterceptException(e.ExceptionThrown)) {
+						msg.Append(e.ExceptionThrown.ToString());
+					} else {
+						// For example, happens on stack overflow
+						msg.Append("Could not intercept: ");
+						msg.Append(e.ExceptionThrown.ToString());
+					}
+					LogEvent("ExceptionThrown", msg.ToString());	
+				}
+				LogEvent("Paused", CurrentStackFrame != null ? CurrentStackFrame.NextStatement.ToString() : string.Empty);
 			};
-			process.Exited += delegate(object sender, EventArgs e) {
-				LogEvent("ProcessExited", null);
+			process.Exited += delegate(object sender, DebuggerEventArgs e) {
+				LogEvent("Exited", null);
 			};
 			
-			LogEvent("ProcessStarted", null);
+			LogEvent("Started", null);
 			
 			if (wait) {
 				process.WaitForPause();

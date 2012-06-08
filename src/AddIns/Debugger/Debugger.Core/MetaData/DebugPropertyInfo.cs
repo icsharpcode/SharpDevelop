@@ -184,21 +184,13 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
 		{
-			List<Value> args = new List<Value>();
-			foreach(object arg in index) {
-				args.Add((Value)arg);
-			}
-			return Value.GetPropertyValue((Value)obj, this, args.ToArray());
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		/// <inheritdoc/>
 		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
 		{
-			List<Value> args = new List<Value>();
-			foreach(object arg in index) {
-				args.Add((Value)arg);
-			}
-			Value.SetPropertyValue((Value)obj, this, args.ToArray(), (Value)value);
+			throw new NotImplementedException("Use Debugger.Value directly");
 		}
 		
 		public bool IsPublic {

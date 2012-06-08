@@ -36,15 +36,15 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="_HelloWorldTest.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>_HelloWorldTest.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <DebuggingPaused>Break _HelloWorldTest.cs:14,4-14,40</DebuggingPaused>
-    <ProcessExited />
+    <Paused>_HelloWorldTest.cs:14,4-14,40</Paused>
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

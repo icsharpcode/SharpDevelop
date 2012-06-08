@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.AddIn.Options;
@@ -34,7 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			}
 		}
 		
-		sealed class FlowDocumentTooltip : Border, ITooltip
+		sealed class FlowDocumentTooltip : Popup, ITooltip
 		{
 			FlowDocumentScrollViewer viewer;
 			
@@ -42,25 +43,22 @@ namespace ICSharpCode.AvalonEdit.AddIn.XmlDoc
 			{
 				viewer = new FlowDocumentScrollViewer();
 				viewer.Document = document;
-				this.Child = viewer;
-				
-				this.Background = SystemColors.InfoBrush;
+				Border border = new Border {
+					Background = SystemColors.InfoBrush,
+					BorderBrush = SystemColors.InfoTextBrush,
+					BorderThickness = new Thickness(1),
+					MaxHeight = 400,
+					Child = viewer
+				};
+				this.Child = border;
 				viewer.Foreground = SystemColors.InfoTextBrush;
-				this.BorderBrush = SystemColors.InfoTextBrush;
-				this.BorderThickness = new Thickness(1);
-				this.MaxHeight = 400;
 				document.FontSize = CodeEditorOptions.Instance.FontSize;
 			}
 			
 			public event RoutedEventHandler Closed { add {} remove {} }
 			
-			public bool ShowAsPopup {
+			public bool CloseOnHoverEnd {
 				get { return true; }
-			}
-			
-			public bool Close(bool mouseClick)
-			{
-				return true;
 			}
 		}
 		

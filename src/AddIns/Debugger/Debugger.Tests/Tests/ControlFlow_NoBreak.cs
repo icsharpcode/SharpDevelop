@@ -36,10 +36,10 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="ControlFlow_NoBreak.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_NoBreak.exe (Has symbols)</ModuleLoaded>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

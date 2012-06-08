@@ -23,7 +23,7 @@ namespace Debugger
 	{
 		AppDomain      appDomain;
 		ICorDebugValue corValue;
-		PauseSession   corValue_pauseSession;
+		long           corValue_pauseSession;
 		DebugType      type;
 		
 		// Permanently stored as convinience so that it survives Continue
@@ -113,8 +113,7 @@ namespace Debugger
 		/// Value is valid only until the debuggee is resummed. </summary>
 		public bool IsInvalid {
 			get {
-				return corValue_pauseSession != this.Process.PauseSession &&
-					!(corValue is ICorDebugHandleValue);
+				return corValue_pauseSession != this.Process.PauseSession && !(corValue is ICorDebugHandleValue);
 			}
 		}
 		
@@ -193,11 +192,11 @@ namespace Debugger
 		}
 		
 		// Box value type
-		public Value Box()
+		public Value Box(Thread evalThread)
 		{
 			byte[] rawValue = this.CorGenericValue.GetRawValue();
 			// The type must not be a primive type (always true in current design)
-			ICorDebugReferenceValue corRefValue = Eval.NewObjectNoConstructor(this.Type).CorReferenceValue;
+			ICorDebugReferenceValue corRefValue = Eval.NewObjectNoConstructor(evalThread, this.Type).CorReferenceValue;
 			// Make the reference to box permanent
 			corRefValue = ((ICorDebugHeapValue2)corRefValue.Dereference()).CreateHandle(CorDebugHandleType.HANDLE_STRONG);
 			// Create new value
@@ -207,8 +206,17 @@ namespace Debugger
 			return newValue;
 		}
 		
+		/// <remarks> If we are sure it is heap value we do not need eval. </remarks>
 		[Debugger.Tests.Ignore]
-		public Value GetPermanentReference()
+		public Value GetPermanentReferenceOfHeapValue()
+		{
+			if (this.CorValue is ICorDebugReferenceValue) {
+				return GetPermanentReference(null);
+			}
+			throw new DebuggerException("Value is not a heap value");
+		}
+		
+		public Value GetPermanentReference(Thread evalThread)
 		{
 			if (this.CorValue is ICorDebugHandleValue) {
 				return this;
@@ -219,12 +227,12 @@ namespace Debugger
 				if (deRef is ICorDebugHeapValue2) {
 					return new Value(appDomain, ((ICorDebugHeapValue2)deRef).CreateHandle(CorDebugHandleType.HANDLE_STRONG));
 				} else {
-					// For exampe int* is a refernce not pointing to heap
+					// For exampe int* is a reference not pointing to heap
 					// TODO: It isn't permanent
 					return this;
 				}
 			} else {
-				return this.Box();
+				return this.Box(evalThread);
 			}
 		}
 		
@@ -242,13 +250,13 @@ namespace Debugger
 		}
 		
 		/// <summary> Copy the acutal value from some other Value object </summary>
-		public void SetValue(Value newValue)
+		public void SetValue(Thread evalThread, Value newValue)
 		{
 			ICorDebugValue newCorValue = newValue.CorValue;
 			
 			if (this.CorValue is ICorDebugReferenceValue) {
 				if (!(newCorValue is ICorDebugReferenceValue))
-					newCorValue = newValue.Box().CorValue;
+					newCorValue = newValue.Box(evalThread).CorValue;
 				((ICorDebugReferenceValue)this.CorValue).SetValue(((ICorDebugReferenceValue)newCorValue).GetValue());
 			} else {
 				this.CorGenericValue.SetRawValue(newValue.CorGenericValue.GetRawValue());
@@ -273,22 +281,24 @@ namespace Debugger
 					return CorGenericValue.GetValue(this.Type.PrimitiveType);
 				}
 			}
-			set {
-				if (this.Type.FullName == typeof(string).FullName) {
-					this.SetValue(Eval.NewString(this.AppDomain, value.ToString()));
-				} else {
-					if (this.Type.PrimitiveType == null)
-						throw new DebuggerException("Value is not a primitive type");
-					if (value == null)
-						throw new DebuggerException("Can not set primitive value to null");
-					object newValue;
-					try {
-						newValue = Convert.ChangeType(value, this.Type.PrimitiveType);
-					} catch {
-						throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.PrimitiveType.ToString());
-					}
-					CorGenericValue.SetValue(newValue);
+		}
+		
+		public void SetPrimitiveValue(Thread evalThread, object value)
+		{
+			if (this.Type.FullName == typeof(string).FullName) {
+				this.SetValue(evalThread, Eval.NewString(evalThread, value.ToString()));
+			} else {
+				if (this.Type.PrimitiveType == null)
+					throw new DebuggerException("Value is not a primitive type");
+				if (value == null)
+					throw new DebuggerException("Can not set primitive value to null");
+				object newValue;
+				try {
+					newValue = Convert.ChangeType(value, this.Type.PrimitiveType);
+				} catch {
+					throw new NotSupportedException("Can not convert " + value.GetType().ToString() + " to " + this.Type.PrimitiveType.ToString());
 				}
+				CorGenericValue.SetValue(newValue);
 			}
 		}
 		
@@ -370,10 +380,10 @@ namespace Debugger
 			return CorArrayValue.GetElement(indices);
 		}
 		
-		public void SetArrayElement(int[] elementIndices, Value newVal)
+		public void SetArrayElement(Thread evalThread, int[] elementIndices, Value newVal)
 		{
 			Value elem = GetArrayElement(elementIndices);
-			elem.SetValue(newVal);
+			elem.SetValue(evalThread, newVal);
 		}
 		
 		/// <summary> Returns all elements in the array </summary>
@@ -409,88 +419,85 @@ namespace Debugger
 			}
 		}
 		
-		#region Convenience overload methods
-		
 		/// <summary> Get a field or property of an object with a given name. </summary>
 		/// <returns> Null if not found </returns>
-		public Value GetMemberValue(string name)
+		public Value GetMemberValue(Thread evalThread, string name)
 		{
 			MemberInfo memberInfo = this.Type.GetMember<MemberInfo>(name, DebugType.BindingFlagsAllInScope, DebugType.IsFieldOrNonIndexedProperty);
 			if (memberInfo == null)
 				return null;
-			return GetMemberValue(memberInfo);
+			return GetMemberValue(evalThread, memberInfo);
 		}
 		
 		/// <summary> Get the value of given member. </summary>
-		public Value GetMemberValue(MemberInfo memberInfo, params Value[] arguments)
+		public Value GetMemberValue(Thread evalThread, MemberInfo memberInfo, params Value[] arguments)
 		{
-			return GetMemberValue(this, memberInfo, arguments);
+			return GetMemberValue(evalThread, this, memberInfo, arguments);
 		}
-		
-		#endregion
 		
 		/// <summary> Get the value of given member. </summary>
 		/// <param name="objectInstance">null if member is static</param>
-		public static Value GetMemberValue(Value objectInstance, MemberInfo memberInfo, params Value[] arguments)
+		public static Value GetMemberValue(Thread evalThread, Value objectInstance, MemberInfo memberInfo, params Value[] arguments)
 		{
 			if (memberInfo is FieldInfo) {
 				if (arguments.Length > 0)
 					throw new GetValueException("Arguments can not be used for a field");
-				return GetFieldValue(objectInstance, (FieldInfo)memberInfo);
+				return GetFieldValue(evalThread, objectInstance, (FieldInfo)memberInfo);
 			} else if (memberInfo is PropertyInfo) {
-				return GetPropertyValue(objectInstance, (PropertyInfo)memberInfo, arguments);
+				return GetPropertyValue(evalThread, objectInstance, (PropertyInfo)memberInfo, arguments);
 			} else if (memberInfo is MethodInfo) {
-				return InvokeMethod(objectInstance, (MethodInfo)memberInfo, arguments);
+				return InvokeMethod(evalThread, objectInstance, (MethodInfo)memberInfo, arguments);
 			}
 			throw new DebuggerException("Unknown member type: " + memberInfo.GetType());
 		}
 		
-		#region Convenience overload methods
-		
-		/// <summary> Get the value of given field. </summary>
-		public Value GetFieldValue(FieldInfo fieldInfo)
+		public static void SetFieldValue(Thread evalThread, Value objectInstance, FieldInfo fieldInfo, Value newValue)
 		{
-			return Value.GetFieldValue(this, fieldInfo);
-		}
-		
-		#endregion
-		
-		public static void SetFieldValue(Value objectInstance, FieldInfo fieldInfo, Value newValue)
-		{
-			Value val = GetFieldValue(objectInstance, fieldInfo);
+			Value val = GetFieldValue(evalThread, objectInstance, fieldInfo);
 			if (!fieldInfo.FieldType.IsAssignableFrom(newValue.Type))
 				throw new GetValueException("Can not assign {0} to {1}", newValue.Type.FullName, fieldInfo.FieldType.FullName);
-			val.SetValue(newValue);
+			val.SetValue(evalThread, newValue);
+		}
+		
+		/// <summary> Get the value of given instance field. </summary>
+		public Value GetFieldValue(string name)
+		{
+			FieldInfo fieldInfo = this.Type.GetMember<FieldInfo>(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null);
+			if (fieldInfo == null)
+				throw new DebuggerException("Field '{0}' not found", name);
+			
+			return new Value(this.AppDomain, GetFieldCorValue(null, this, fieldInfo));
 		}
 		
 		/// <summary> Get the value of given field. </summary>
+		public Value GetFieldValue(Thread evalThread, FieldInfo fieldInfo)
+		{
+			return Value.GetFieldValue(evalThread, this, fieldInfo);
+		}
+		
+		/// <summary> Get the value of given field. </summary>
+		/// <param name="thread"> Thread to use for thread-local storage </param>
 		/// <param name="objectInstance">null if field is static</param>
-		public static Value GetFieldValue(Value objectInstance, FieldInfo fieldInfo)
+		public static Value GetFieldValue(Thread evalThread, Value objectInstance, FieldInfo fieldInfo)
 		{
 			CheckObject(objectInstance, fieldInfo);
 			
 			if (fieldInfo.IsStatic && fieldInfo.IsLiteral) {
-				return GetLiteralValue((DebugFieldInfo)fieldInfo);
+				return GetLiteralValue(evalThread, (DebugFieldInfo)fieldInfo);
 			} else {
 				return new Value(
 					((DebugFieldInfo)fieldInfo).AppDomain,
-					GetFieldCorValue(objectInstance, fieldInfo)
+					GetFieldCorValue(evalThread, objectInstance, fieldInfo)
 				);
 			}
 		}
 		
-		static ICorDebugValue GetFieldCorValue(Value objectInstance, FieldInfo fieldInfo)
+		static ICorDebugValue GetFieldCorValue(Thread contextThread, Value objectInstance, FieldInfo fieldInfo)
 		{
-			Process process = ((DebugFieldInfo)fieldInfo).Process;
-			
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
-			if (process.IsPaused &&
-			    process.SelectedThread != null &&
-			    process.SelectedThread.MostRecentStackFrame != null &&
-			    process.SelectedThread.MostRecentStackFrame.CorILFrame != null)
-			{
-				curFrame = process.SelectedThread.MostRecentStackFrame.CorILFrame;
+			if (contextThread != null && contextThread.MostRecentStackFrame != null && contextThread.MostRecentStackFrame.CorILFrame != null) {
+				curFrame = contextThread.MostRecentStackFrame.CorILFrame;
 			}
 			
 			try {
@@ -504,76 +511,54 @@ namespace Debugger
 			}
 		}
 		
-		static Value GetLiteralValue(DebugFieldInfo fieldInfo)
+		static Value GetLiteralValue(Thread evalThread, DebugFieldInfo fieldInfo)
 		{
 			CorElementType corElemType = (CorElementType)fieldInfo.FieldProps.ConstantType;
 			if (corElemType == CorElementType.CLASS) {
 				// Only null literals are allowed
-				return Eval.CreateValue(fieldInfo.AppDomain, null);
+				return Eval.CreateValue(evalThread, null);
 			} else if (corElemType == CorElementType.STRING) {
 				string str = Marshal.PtrToStringUni(fieldInfo.FieldProps.ConstantPtr, (int)fieldInfo.FieldProps.ConstantStringLength);
-				return Eval.CreateValue(fieldInfo.AppDomain, str);
+				return Eval.CreateValue(evalThread, str);
 			} else {
 				DebugType type = DebugType.CreateFromType(fieldInfo.AppDomain.Mscorlib, DebugType.CorElementTypeToManagedType(corElemType));
 				if (fieldInfo.FieldType.IsEnum && fieldInfo.FieldType.GetEnumUnderlyingType() == type) {
-					Value val = Eval.NewObjectNoConstructor((DebugType)fieldInfo.FieldType);
-					Value backingField = val.GetMemberValue("value__");
+					Value val = Eval.NewObjectNoConstructor(evalThread, (DebugType)fieldInfo.FieldType);
+					Value backingField = val.GetMemberValue(evalThread, "value__");
 					backingField.CorGenericValue.SetValue(fieldInfo.FieldProps.ConstantPtr);
 					return val;
 				} else {
-					Value val = Eval.NewObjectNoConstructor(type);
+					Value val = Eval.NewObjectNoConstructor(evalThread, type);
 					val.CorGenericValue.SetValue(fieldInfo.FieldProps.ConstantPtr);
 					return val;
 				}
 			}
 		}
 		
-		#region Convenience overload methods
-		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public Value GetPropertyValue(PropertyInfo propertyInfo, params Value[] arguments)
+		public Value GetPropertyValue(Thread evalThread, PropertyInfo propertyInfo, params Value[] arguments)
 		{
-			return GetPropertyValue(this, propertyInfo, arguments);
+			return GetPropertyValue(evalThread, this, propertyInfo, arguments);
 		}
 		
-		#endregion
-		
 		/// <summary> Get the value of the property using the get accessor </summary>
-		public static Value GetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, params Value[] arguments)
+		public static Value GetPropertyValue(Thread evalThread, Value objectInstance, PropertyInfo propertyInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
 			if (propertyInfo.GetGetMethod() == null) throw new GetValueException("Property does not have a get method");
 			
-			Value val = Value.InvokeMethod(objectInstance, (DebugMethodInfo)propertyInfo.GetGetMethod(), arguments);
-			
-			return val;
+			return Value.InvokeMethod(evalThread, objectInstance, (DebugMethodInfo)propertyInfo.GetGetMethod(), arguments);
 		}
 		
-		#region Convenience overload methods
-		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetPropertyValue(PropertyInfo propertyInfo, Value newValue)
+		public Value SetPropertyValue(Thread evalThread, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
-			return SetPropertyValue(this, propertyInfo, null, newValue);
+			return SetPropertyValue(evalThread, this, propertyInfo, arguments, newValue);
 		}
 		
 		/// <summary> Set the value of the property using the set accessor </summary>
-		public Value SetPropertyValue(PropertyInfo propertyInfo, Value[] arguments, Value newValue)
-		{
-			return SetPropertyValue(this, propertyInfo, arguments, newValue);
-		}
-		
-		/// <summary> Set the value of the property using the set accessor </summary>
-		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value newValue)
-		{
-			return SetPropertyValue(objectInstance, propertyInfo, null, newValue);
-		}
-		
-		#endregion
-		
-		/// <summary> Set the value of the property using the set accessor </summary>
-		public static Value SetPropertyValue(Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
+		public static Value SetPropertyValue(Thread evalThread, Value objectInstance, PropertyInfo propertyInfo, Value[] arguments, Value newValue)
 		{
 			CheckObject(objectInstance, propertyInfo);
 			
@@ -585,25 +570,22 @@ namespace Debugger
 			allParams[0] = newValue;
 			arguments.CopyTo(allParams, 1);
 			
-			return Value.InvokeMethod(objectInstance, (DebugMethodInfo)propertyInfo.GetSetMethod(), allParams);
+			return Value.InvokeMethod(evalThread, objectInstance, (DebugMethodInfo)propertyInfo.GetSetMethod(), allParams);
 		}
 		
-		#region Convenience overload methods
-		
 		/// <summary> Synchronously invoke the method </summary>
-		public Value InvokeMethod(MethodInfo methodInfo, params Value[] arguments)
+		public Value InvokeMethod(Thread evalThread, MethodInfo methodInfo, params Value[] arguments)
 		{
-			return InvokeMethod(this, methodInfo, arguments);
+			return InvokeMethod(evalThread, this, methodInfo, arguments);
 		}
 		
-		#endregion
-		
 		/// <summary> Synchronously invoke the method </summary>
-		public static Value InvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
+		public static Value InvokeMethod(Thread evalThread, Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, methodInfo);
 			
 			return Eval.InvokeMethod(
+				evalThread,
 				(DebugMethodInfo)methodInfo,
 				methodInfo.IsStatic ? null : objectInstance,
 				arguments ?? new Value[0]
@@ -611,32 +593,30 @@ namespace Debugger
 		}
 		
 		/// <summary> Invoke the ToString() method </summary>
-		public string InvokeToString(int maxLength = int.MaxValue)
+		public string InvokeToString(Thread evalThread, int maxLength = int.MaxValue)
 		{
+			if (this.IsNull) return AsString(maxLength);
 			if (this.Type.IsPrimitive) return AsString(maxLength);
 			if (this.Type.FullName == typeof(string).FullName) return AsString(maxLength);
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
 			DebugMethodInfo methodInfo = (DebugMethodInfo)this.AppDomain.ObjectType.GetMethod("ToString", new DebugType[] {});
-			return Eval.InvokeMethod(methodInfo, this, new Value[] {}).AsString(maxLength);
+			return Eval.InvokeMethod(evalThread, methodInfo, this, new Value[] {}).AsString(maxLength);
 		}
 		
-		#region Convenience overload methods
-		
 		/// <summary> Asynchronously invoke the method </summary>
-		public Eval AsyncInvokeMethod(MethodInfo methodInfo, params Value[] arguments)
+		public Eval AsyncInvokeMethod(Thread evalThread, MethodInfo methodInfo, params Value[] arguments)
 		{
-			return AsyncInvokeMethod(this, methodInfo, arguments);
+			return AsyncInvokeMethod(evalThread, this, methodInfo, arguments);
 		}
 		
-		#endregion
-		
 		/// <summary> Asynchronously invoke the method </summary>
-		public static Eval AsyncInvokeMethod(Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
+		public static Eval AsyncInvokeMethod(Thread evalThread, Value objectInstance, MethodInfo methodInfo, params Value[] arguments)
 		{
 			CheckObject(objectInstance, methodInfo);
 			
 			return Eval.AsyncInvokeMethod(
+				evalThread,
 				(DebugMethodInfo)methodInfo,
 				methodInfo.IsStatic ? null : objectInstance,
 				arguments ?? new Value[0]

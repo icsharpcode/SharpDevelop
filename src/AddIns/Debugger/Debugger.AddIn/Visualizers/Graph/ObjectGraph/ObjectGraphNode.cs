@@ -27,7 +27,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// <summary>
 		/// Expression used to obtain this node.
 		/// </summary>
-		public Expression Expression { get; set; }
+		public GraphExpression Expression { get; set; }
 
 		/// <summary>
 		/// Property tree of this node.

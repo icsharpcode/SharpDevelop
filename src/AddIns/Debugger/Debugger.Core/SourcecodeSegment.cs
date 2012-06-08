@@ -13,68 +13,18 @@ namespace Debugger
 {
 	public class SourcecodeSegment: DebuggerObject
 	{
-		Module module;
-		
-		string filename;
-		string typename;
-		byte[] checkSum;
-		int startLine;
-		int startColumn;
-		int endLine;
-		int endColumn;
-		
-		ICorDebugFunction corFunction;
-		int ilStart;
-		int ilEnd;
-		int[] stepRanges;
-		
-		public Module Module {
-			get { return module; }
-		}
-		
-		public string Filename {
-			get { return filename; }
-		}
-		
-		public string Typename {
-			get { return typename; }
-		}
-		
-		public byte[] CheckSum {
-			get { return checkSum; }
-		}
-		
-		public int StartLine {
-			get { return startLine; }
-		}
-		
-		public int StartColumn {
-			get { return startColumn; }
-		}
-		
-		public int EndLine {
-			get { return endLine; }
-		}
-		
-		public int EndColumn {
-			get { return endColumn; }
-		}
-		
-		internal ICorDebugFunction CorFunction {
-			get { return corFunction; }
-		}
-		
-		public int ILStart {
-			get { return ilStart; }
-		}
-		
-		public int ILEnd {
-			get { return ilEnd; }
-		}
-		
-		public int[] StepRanges {
-			get { return stepRanges; }
-		}
+		public Module Module { get; private set; }
+		public string Filename { get; private set; }
+		public string Typename { get; private set; }
+		public byte[] CheckSum { get; private set; }
+		public int StartLine { get; private set; }
+		public int StartColumn { get; private set; }
+		public int EndLine { get; private set; }
+		public int EndColumn { get; private set; }
+		internal ICorDebugFunction CorFunction { get; private set; }
+		public int ILStart { get; private set; }
+		public int ILEnd { get; private set; }
+		public int[] StepRanges { get; private set; }
 		
 		private SourcecodeSegment()
 		{
@@ -150,7 +100,7 @@ namespace Debugger
 			}
 		}
 		
-		static ISymUnmanagedDocument GetSymDocumentFromFilename(Module module, string filename, byte[] checksum)
+		static ISymUnmanagedDocument GetSymDocumentFromFilename(Module module, string filename)
 		{
 			if (filename == null) throw new ArgumentNullException("filename");
 			
@@ -174,15 +124,17 @@ namespace Debugger
 			return null;
 		}
 		
-		public static SourcecodeSegment Resolve(Module module, string fileName, byte[] checkSum, int line, int column)
+		public static SourcecodeSegment Resolve(Module module, string fileName, int line, int column)
 		{
 			// Do not use ISymUnmanagedReader.GetDocument!  It is broken if two files have the same name
 			// Do not use ISymUnmanagedMethod.GetOffset!  It sometimes returns negative offset
 			
+			if (fileName == null) return null;
+			
 			ISymUnmanagedReader symReader = module.SymReader;
 			if (symReader == null) return null; // No symbols
 			
-			ISymUnmanagedDocument symDoc = GetSymDocumentFromFilename(module, fileName, checkSum);
+			ISymUnmanagedDocument symDoc = GetSymDocumentFromFilename(module, fileName);
 			if (symDoc == null) return null; // Document not found
 			
 			ISymUnmanagedMethod symMethod;
@@ -202,17 +154,17 @@ namespace Debugger
 				// If the desired breakpoint position is before the end of the sequence point
 				if (line < sqPoint.EndLine || (line == sqPoint.EndLine && column < sqPoint.EndColumn)) {
 					SourcecodeSegment segment = new SourcecodeSegment();
-					segment.module        = module;
-					segment.filename      = symDoc.GetURL();
-					segment.checkSum      = symDoc.GetCheckSum();
-					segment.startLine     = (int)sqPoint.Line;
-					segment.startColumn   = (int)sqPoint.Column;
-					segment.endLine       = (int)sqPoint.EndLine;
-					segment.endColumn     = (int)sqPoint.EndColumn;
-					segment.corFunction   = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
-					segment.ilStart = (int)sqPoint.Offset;
-					segment.ilEnd   = (int)sqPoint.Offset;
-					segment.stepRanges    = null;
+					segment.Module        = module;
+					segment.Filename      = symDoc.GetURL();
+					segment.CheckSum      = symDoc.GetCheckSum();
+					segment.StartLine     = (int)sqPoint.Line;
+					segment.StartColumn   = (int)sqPoint.Column;
+					segment.EndLine       = (int)sqPoint.EndLine;
+					segment.EndColumn     = (int)sqPoint.EndColumn;
+					segment.CorFunction   = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
+					segment.ILStart       = (int)sqPoint.Offset;
+					segment.ILEnd         = (int)sqPoint.Offset;
+					segment.StepRanges    = null;
 					return segment;
 				}
 			}
@@ -300,21 +252,21 @@ namespace Debugger
 					}
 					
 					SourcecodeSegment segment = new SourcecodeSegment();
-					segment.module        = module;
-					segment.filename      = GetFilenameFromSymDocument(module, sequencePoints[i].Document);
-					segment.checkSum      = sequencePoints[i].Document.GetCheckSum();
-					segment.startLine     = (int)sequencePoints[i].Line;
-					segment.startColumn   = (int)sequencePoints[i].Column;
-					segment.endLine       = (int)sequencePoints[i].EndLine;
-					segment.endColumn     = (int)sequencePoints[i].EndColumn;
-					segment.corFunction   = corFunction;
-					segment.ilStart       = ilStart;
-					segment.ilEnd         = ilEnd;
-					segment.stepRanges    = stepRanges.ToArray();
+					segment.Module        = module;
+					segment.Filename      = GetFilenameFromSymDocument(module, sequencePoints[i].Document);
+					segment.CheckSum      = sequencePoints[i].Document.GetCheckSum();
+					segment.StartLine     = (int)sequencePoints[i].Line;
+					segment.StartColumn   = (int)sequencePoints[i].Column;
+					segment.EndLine       = (int)sequencePoints[i].EndLine;
+					segment.EndColumn     = (int)sequencePoints[i].EndColumn;
+					segment.CorFunction   = corFunction;
+					segment.ILStart       = ilStart;
+					segment.ILEnd         = ilEnd;
+					segment.StepRanges    = stepRanges.ToArray();
 					
 					// VB.NET sometimes produces temporary files which it then deletes
 					// (eg 17d14f5c-a337-4978-8281-53493378c1071.vb)
-					string filename = Path.GetFileName(segment.filename);
+					string filename = Path.GetFileName(segment.Filename);
 					if (filename.Length == 40 && filename.EndsWith(".vb")) {
 						bool guidName = true;
 						foreach(char c in filename.Substring(0, filename.Length - 3)) {
@@ -343,7 +295,7 @@ namespace Debugger
 		{
 			return string.Format("{0}:{1},{2}-{3},{4}",
 			                     Path.GetFileName(this.Filename ?? string.Empty),
-			                     this.startLine, this.startColumn, this.endLine, this.endColumn);
+			                     this.StartLine, this.StartColumn, this.EndLine, this.EndColumn);
 		}
 		
 		#region Decompiled breakpoint
@@ -352,17 +304,17 @@ namespace Debugger
 		{
 			try {
 				SourcecodeSegment segment = new SourcecodeSegment();
-				segment.module        = module;
-				segment.typename      = null;
-				segment.checkSum      = null;
-				segment.startLine     = line;
-				segment.startColumn   = 0;
-				segment.endLine       = line;
-				segment.endColumn     = 0;
-				segment.corFunction   = module.CorModule.GetFunctionFromToken((uint)metadataToken);
-				segment.ilStart 	  = iLOffset;
-				segment.ilEnd   	  = iLOffset;
-				segment.stepRanges    = null;
+				segment.Module        = module;
+				segment.Typename      = null;
+				segment.CheckSum      = null;
+				segment.StartLine     = line;
+				segment.StartColumn   = 0;
+				segment.EndLine       = line;
+				segment.EndColumn     = 0;
+				segment.CorFunction   = module.CorModule.GetFunctionFromToken((uint)metadataToken);
+				segment.ILStart 	      = iLOffset;
+				segment.ILEnd   	      = iLOffset;
+				segment.StepRanges    = null;
 				
 				return segment;
 			} catch {
@@ -372,19 +324,19 @@ namespace Debugger
 		
 		public static SourcecodeSegment ResolveForIL(Module module, ICorDebugFunction corFunction, int line, int offset, int[] ranges)
 		{
-			try {				
+			try {
 				SourcecodeSegment segment = new SourcecodeSegment();
-				segment.module        = module;
-				segment.typename      = null;
-				segment.checkSum      = null;
-				segment.startLine     = line;
-				segment.startColumn   = 0;
-				segment.endLine       = line;
-				segment.endColumn     = 0;
-				segment.corFunction   = corFunction;
-				segment.ilStart 	  = offset;
-				segment.ilEnd   	  = ranges[1];
-				segment.stepRanges    = ranges;
+				segment.Module        = module;
+				segment.Typename      = null;
+				segment.CheckSum      = null;
+				segment.StartLine     = line;
+				segment.StartColumn   = 0;
+				segment.EndLine       = line;
+				segment.EndColumn     = 0;
+				segment.CorFunction   = corFunction;
+				segment.ILStart 	      = offset;
+				segment.ILEnd   	      = ranges[1];
+				segment.StepRanges    = ranges;
 				
 				return segment;
 			} catch {

@@ -54,7 +54,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			backgroundRenderers = new ObserveAddRemoveCollection<IBackgroundRenderer>(BackgroundRenderer_Added, BackgroundRenderer_Removed);
 			columnRulerRenderer = new ColumnRulerRenderer(this);
 			this.Options = new TextEditorOptions();
-			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
+			this.columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
 			
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
@@ -204,13 +204,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				OptionChanged(this, e);
 			}
 			
-			// PropertyName == null means all properties are changed
-			if (e.PropertyName == null || e.PropertyName == "ColumnRulerPosition" || e.PropertyName == "ShowColumnRuler") {
-				if (Options.ShowColumnRuler)
-					columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerBrush);
-				else
-					columnRulerRenderer.SetRuler(-1, ColumnRulerBrush);
-			}
+			if (Options.ShowColumnRuler)
+				columnRulerRenderer.SetRuler(Options.ColumnRulerPosition, ColumnRulerPen);
+			else
+				columnRulerRenderer.SetRuler(-1, ColumnRulerPen);
 			
 			UpdateBuiltinElementGeneratorsFromOptions();
 			Redraw();
@@ -1951,24 +1948,33 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				InvalidateDefaultTextMetrics();
 				Redraw();
 			}
+			if (e.Property == ColumnRulerPenProperty) {
+				columnRulerRenderer.SetRuler(this.Options.ColumnRulerPosition, this.ColumnRulerPen);
+			}
 		}
 		
-		public static readonly DependencyProperty ColumnRulerBrushProperty =
-			DependencyProperty.Register("ColumnRulerBrush", typeof(Brush), typeof(TextView),
-			                            new FrameworkPropertyMetadata(Brushes.LightGray, OnUpdateBrushes));
+		/// <summary>
+		/// The pen used to draw the column ruler.
+		/// <seealso cref="TextEditorOptions.ShowColumnRuler"/>
+		/// </summary>
+		public static readonly DependencyProperty ColumnRulerPenProperty =
+			DependencyProperty.Register("ColumnRulerBrush", typeof(Pen), typeof(TextView),
+			                            new FrameworkPropertyMetadata(CreateFrozenPen(Brushes.LightGray)));
 		
-		public Brush ColumnRulerBrush {
-			get { return (Brush)GetValue(ColumnRulerBrushProperty); }
-			set { SetValue(ColumnRulerBrushProperty, value); }
-		}
-		
-		public static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		static Pen CreateFrozenPen(SolidColorBrush brush)
 		{
-			TextView view = d as TextView;
-			if (view == null) return;
-			if (e.Property == ColumnRulerBrushProperty)
-				view.columnRulerRenderer.SetRuler(view.Options.ColumnRulerPosition, (Brush)e.NewValue);
+			Pen pen = new Pen(brush, 1);
+			pen.Freeze();
+			return pen;
 		}
 		
+		/// <summary>
+		/// Gets/Sets the pen used to draw the column ruler.
+		/// <seealso cref="TextEditorOptions.ShowColumnRuler"/>
+		/// </summary>
+		public Pen ColumnRulerPen {
+			get { return (Pen)GetValue(ColumnRulerPenProperty); }
+			set { SetValue(ColumnRulerPenProperty, value); }
+		}
 	}
 }

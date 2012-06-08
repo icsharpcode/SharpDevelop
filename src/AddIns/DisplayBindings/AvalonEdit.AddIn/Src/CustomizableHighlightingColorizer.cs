@@ -31,6 +31,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public const string LinkText = "Link text";
 		public const string BreakpointMarker = "Breakpoint";
 		public const string InstructionPointerMarker = "Current statement";
+		public const string ColumnRuler = "Column ruler";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
@@ -43,7 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.TextView.ClearValue(TextView.NonPrintableCharacterBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextForegroundBrushProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.LinkTextBackgroundBrushProperty);
-			textEditor.TextArea.TextView.ClearValue(TextView.ColumnRulerBrushProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.ColumnRulerPenProperty);
 			
 			// 'assigned' flags are used so that the first matching customization wins.
 			// This is necessary because more specific customizations come first in the list
@@ -110,12 +111,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						if (color.Background != null)
 							textEditor.TextArea.TextView.LinkTextBackgroundBrush = CreateFrozenBrush(color.Background.Value);
 						break;
-					case ColumnRulerRenderer.Name:
+					case ColumnRuler:
 						if (assignedColumnRulerColor)
 							continue;
 						assignedColumnRulerColor = true;
 						if (color.Foreground != null)
-							textEditor.TextArea.TextView.ColumnRulerBrush = CreateFrozenBrush(color.Foreground.Value); 
+							textEditor.TextArea.TextView.ColumnRulerPen = CreateFrozenPen(color.Foreground.Value); 
 						break;
 				}
 			}
@@ -346,6 +347,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			SolidColorBrush brush = new SolidColorBrush(color);
 			brush.Freeze();
 			return brush;
+		}
+		
+		static Pen CreateFrozenPen(Color color)
+		{
+			Pen pen = new Pen(CreateFrozenBrush(color), 1);
+			pen.Freeze();
+			return pen;
 		}
 	}
 }

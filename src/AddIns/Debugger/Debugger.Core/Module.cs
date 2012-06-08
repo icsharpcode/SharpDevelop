@@ -29,11 +29,6 @@ namespace Debugger
 		
 		internal Dictionary<string, DebugType> LoadedDebugTypes = new Dictionary<string, DebugType>();
 		
-		/// <summary>
-		/// Occurs when symbols are loaded or unloaded (for memory modules)
-		/// </summary>
-		public event EventHandler<ModuleEventArgs> SymbolsUpdated;
-		
 		public AppDomain AppDomain {
 			get { return appDomain; }
 		}
@@ -222,11 +217,11 @@ namespace Debugger
 		/// <summary>
 		/// Load symblos for on-disk module
 		/// </summary>
-		public void LoadSymbolsFromDisk(string[] searchPath)
+		public void LoadSymbolsFromDisk(string[] symbolsSearchPaths)
 		{
 			if (!IsDynamic && !IsInMemory) {
 				if (symReader == null) {
-					symReader = metaData.GetSymReader(fullPath, string.Join("; ", searchPath ?? new string[0]));
+					symReader = metaData.GetSymReader(fullPath, string.Join("; ", symbolsSearchPaths ?? new string[0]));
 					if (symReader != null) {
 						process.TraceMessage("Loaded symbols from disk for " + this.Name);
 						OnSymbolsUpdated();
@@ -280,31 +275,10 @@ namespace Debugger
 		
 		void OnSymbolsUpdated()
 		{
-			SetBreakpoints();
+			foreach (Breakpoint b in this.Debugger.Breakpoints) {
+				b.SetBreakpoint(this);
+			}
 			ResetJustMyCodeStatus();
-			if (SymbolsUpdated != null) {
-				SymbolsUpdated(this, new ModuleEventArgs(this));
-			}
-		}
-		
-		void SetBreakpoints()
-		{
-			if (this.HasSymbols) {
-				// This is in case that the client modifies the collection as a response to set breakpoint
-				// NB: If client adds new breakpoint, it will be set directly as a result of his call, not here (because module is already loaded)
-				List<Breakpoint> collection = new List<Breakpoint>();
-				collection.AddRange(this.Debugger.Breakpoints);
-				
-				var currentModuleTypes = this.GetNamesOfDefinedTypes();
-				foreach (Breakpoint b in collection) {
-					if (b is ILBreakpoint) {
-						// set the breakpoint only if the module contains the type
-						if (!currentModuleTypes.Contains(b.TypeName))
-							continue;
-					}
-					b.SetBreakpoint(this);
-				}
-			}
 		}
 		
 		void SetJITCompilerFlags()
@@ -394,23 +368,6 @@ namespace Debugger
 					break;
 			}
 			return jcf;
-		}
-	}
-	
-	[Serializable]
-	public class ModuleEventArgs : ProcessEventArgs
-	{
-		Module module;
-		
-		public Module Module {
-			get {
-				return module;
-			}
-		}
-		
-		public ModuleEventArgs(Module module): base(module.Process)
-		{
-			this.module = module;
 		}
 	}
 }

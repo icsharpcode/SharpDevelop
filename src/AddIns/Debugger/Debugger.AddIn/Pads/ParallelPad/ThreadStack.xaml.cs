@@ -5,15 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Pads.ParallelPad
 {
@@ -183,7 +184,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			if (selectedItem == null)
 				return;
 			
-			var thread = Process.Threads.Find(t => t.ID == threadId);
+			var thread = Process.Threads.FirstOrDefault(t => t.ID == threadId);
 			if (thread == null)
 				return;
 
@@ -233,7 +234,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			foreach (var id in ThreadIds) {
 				MenuItem m = new MenuItem();
 				m.IsCheckable = true;
-				m.IsChecked = id == Process.SelectedThread.ID;
+				m.IsChecked = id == WindowsDebugger.CurrentThread.ID;
 				m.Click += delegate(object sender, RoutedEventArgs e) {
 					var menuItem = e.OriginalSource as MenuItem;
 					SelectFrame((uint)menuItem.Tag, item);
@@ -270,7 +271,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 						if (selectedItem.MethodName == frame.GetMethodName())
 						{
 							TextBlock tb = new TextBlock();
-							tb.Text = thread.ID + ": " + CallStackPadContent.GetFullName(frame);
+							tb.Text = thread.ID + ": " + CallStackPad.GetFullName(frame);
 							panel.Children.Add(tb);
 						}
 					}

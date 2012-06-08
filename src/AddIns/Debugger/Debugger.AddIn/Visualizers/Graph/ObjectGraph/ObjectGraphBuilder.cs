@@ -79,26 +79,20 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="expression">Expression valid in the program being debugged (eg. variable name)</param>
 		/// <returns>Object graph</returns>
-		public ObjectGraph BuildGraphForExpression(string expression, ExpandedExpressions expandedNodes)
+		public ObjectGraph BuildGraphForExpression(GraphExpression expression, ExpandedExpressions expandedNodes)
 		{
-			if (string.IsNullOrEmpty(expression)) {
-				throw new DebuggerVisualizerException("Please specify an expression.");
-			}
-
-			var debuggedProcess = this.debuggerService.DebuggedProcess;
-			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedStackFrame == null) {
+			if (WindowsDebugger.CurrentStackFrame == null) {
 				throw new DebuggerVisualizerException("Please use the visualizer when debugging.");
 			}
 			
-			var rootExpression = ExpressionEvaluator.ParseExpression(expression, SupportedLanguage.CSharp);
-			Value rootValue = rootExpression.Evaluate(debuggedProcess);
+			Value rootValue = expression.GetValue();
 			if (rootValue.IsNull)	{
 				throw new DebuggerVisualizerException(expression + " is null.");
 			}
-			return buildGraphForValue(rootValue.GetPermanentReference(), rootExpression, expandedNodes);
+			return buildGraphForValue(rootValue.GetPermanentReference(WindowsDebugger.EvalThread), expression, expandedNodes);
 		}
 		
-		private ObjectGraph buildGraphForValue(Value rootValue, Expression rootExpression, ExpandedExpressions expandedNodes)
+		private ObjectGraph buildGraphForValue(Value rootValue, GraphExpression rootExpression, ExpandedExpressions expandedNodes)
 		{
 			resultGraph = new ObjectGraph();
 			//resultGraph.Root = buildGraphRecursive(debuggerService.GetValueFromName(expression).GetPermanentReference(), expandedNodes);
@@ -108,15 +102,15 @@ namespace Debugger.AddIn.Visualizers.Graph
 			return resultGraph;
 		}
 		
-		public ObjectGraphNode ObtainNodeForExpression(Expression expr)
+		public ObjectGraphNode ObtainNodeForExpression(GraphExpression expr)
 		{
 			bool createdNewNode; // ignored (caller is not interested, otherwise he would use the other overload)
 			return ObtainNodeForExpression(expr, out createdNewNode);
 		}
 		
-		public ObjectGraphNode ObtainNodeForExpression(Expression expr, out bool createdNewNode)
+		public ObjectGraphNode ObtainNodeForExpression(GraphExpression expr, out bool createdNewNode)
 		{
-			return ObtainNodeForValue(expr.EvalPermanentReference(), expr, out createdNewNode);
+			return ObtainNodeForValue(expr.GetValue().GetPermanentReference(WindowsDebugger.EvalThread), expr, out createdNewNode);
 		}
 		
 		/// <summary>
@@ -124,7 +118,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="value">Value for which to obtain the node/</param>
 		/// <param name="createdNew">True if new node was created, false if existing node was returned.</param>
-		public ObjectGraphNode ObtainNodeForValue(Value value, Expression expression, out bool createdNew)
+		public ObjectGraphNode ObtainNodeForValue(Value value, GraphExpression expression, out bool createdNew)
 		{
 			createdNew = false;
 			ObjectGraphNode nodeForValue = getExistingNodeForValue(value);
@@ -158,7 +152,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 				//AddRawViewNode(contentRoot, thisNode);
 				// it is an IEnumerable
 				DebugType debugListType;
-				var debugListExpression = DebuggerHelpers.CreateDebugListExpression(thisNode.Expression, itemType, out debugListType);
+				var debugListExpression = new GraphExpression(
+					DebuggerHelpers.CreateDebugListExpression(thisNode.Expression.Expr, itemType, out debugListType),
+					() => DebuggerHelpers.CreateListFromIEnumerable(thisNode.Expression.GetValue())
+				);
 				LoadNodeCollectionContent(contentRoot, debugListExpression, debugListType);
 			} else {
 				// it is an object
@@ -173,21 +170,26 @@ namespace Debugger.AddIn.Visualizers.Graph
 			LoadNodeObjectContent(rawViewNode, thisNode.Expression, thisNode.PermanentReference.Type);
 		}
 		
-		void LoadNodeCollectionContent(AbstractNode node, Expression thisObject, DebugType iListType)
+		void LoadNodeCollectionContent(AbstractNode node, GraphExpression thisObject, DebugType iListType)
 		{
-			thisObject = thisObject.CastToIList();
-			int listCount = thisObject.GetIListCount();
+			var thisObjectAsIList = new GraphExpression(thisObject.Expr.CastToIList(), thisObject.GetValue);
+			int listCount = thisObjectAsIList.GetValue().GetIListCount();
 			PropertyInfo indexerProp = iListType.GetProperty("Item");
 			
+			var v = new List<String>();
+			
 			for (int i = 0; i < listCount; i++)	{
-				Expression itemExpr = thisObject.AppendIndexer(i);
+				var itemExpr = new GraphExpression(
+					thisObjectAsIList.Expr.AppendIndexer(i),
+					() => thisObjectAsIList.GetValue().GetIListItem(i)  // EXPR-EVAL, Does a 'cast' to IList
+				);
 				PropertyNode itemNode = new PropertyNode(
 					new ObjectGraphProperty { Name = "[" + i + "]", MemberInfo = indexerProp, Expression = itemExpr, Value = "", IsAtomic = true, TargetNode = null });
 				node.AddChild(itemNode);
 			}
 		}
 		
-		void LoadNodeObjectContent(AbstractNode node, Expression expression, DebugType type)
+		void LoadNodeObjectContent(AbstractNode node, GraphExpression expression, DebugType type)
 		{
 			// base
 			if (type.BaseType != null && type.BaseType.FullName != "System.Object")
@@ -216,7 +218,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 			}
 		}
 		
-		private List<ObjectGraphProperty> getProperties(Expression expression, DebugType shownType, BindingFlags flags)
+		private List<ObjectGraphProperty> getProperties(GraphExpression expression, DebugType shownType, BindingFlags flags)
 		{
 			List<ObjectGraphProperty> propertyList = new List<ObjectGraphProperty>();
 			
@@ -233,7 +235,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 
 				// ObjectGraphProperty needs an expression
 				// to know whether it is expanded, and to evaluate
-				Expression propExpression = expression.AppendMemberReference((IDebugMemberInfo)memberProp);
+				var propExpression = new GraphExpression(
+					expression.Expr.AppendMemberReference((IDebugMemberInfo)memberProp),
+					() => expression.GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberProp)  // EXPR-EVAL
+				);
 				// Value, IsAtomic are lazy evaluated
 				propertyList.Add(new ObjectGraphProperty
 				                 { Name = memberProp.Name,
@@ -258,10 +263,10 @@ namespace Debugger.AddIn.Visualizers.Graph
 				// We are only evaluating expanded nodes here.
 				// We have to do this to know the "shape" of the graph.
 				// We do not evaluate atomic and non-expanded properties, those will be lazy evaluated when drawn.
-				if (expandedNodes.IsExpanded(complexProperty.Expression))
+				if (expandedNodes.IsExpanded(complexProperty.Expression.Expr))
 				{
 					// if expanded, evaluate this property
-					Value memberValue = complexProperty.Expression.Evaluate(this.debuggerService.DebuggedProcess);
+					Value memberValue = complexProperty.Expression.GetValue();
 					if (memberValue.IsNull)
 					{
 						continue;
@@ -269,7 +274,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 					else
 					{
 						// if property value is not null, create neighbor
-						memberValue = memberValue.GetPermanentReference();
+						memberValue = memberValue.GetPermanentReference(WindowsDebugger.EvalThread);
 						
 						bool createdNew;
 						// get existing node (loop) or create new
@@ -295,7 +300,7 @@ namespace Debugger.AddIn.Visualizers.Graph
 		/// </summary>
 		/// <param name="permanentReference">Value, has to be valid.</param>
 		/// <returns>New empty object node representing the value.</returns>
-		private ObjectGraphNode createNewNode(Value permanentReference, Expression expression)
+		private ObjectGraphNode createNewNode(Value permanentReference, GraphExpression expression)
 		{
 			if (permanentReference == null)	throw new ArgumentNullException("permanentReference");
 			
@@ -339,33 +344,6 @@ namespace Debugger.AddIn.Visualizers.Graph
 				ObjectGraphNode nodeWithSameAddress = nodesWithSameHashCode.Find(
 					node => { return node.PermanentReference.GetObjectAddress() == objectAddress; } );
 				return nodeWithSameAddress;
-			}
-		}
-		
-		public ObjectGraphProperty createAtomicProperty(string name, Expression expression)
-		{
-			// value is empty (will be lazy-evaluated later)
-			return new ObjectGraphProperty
-			{ Name = name, Value = "", Expression = expression, IsAtomic = true, TargetNode = null };
-		}
-		
-		public ObjectGraphProperty createComplexProperty(string name, Expression expression, ObjectGraphNode targetNode, bool isNull)
-		{
-			// value is empty (will be lazy-evaluated later)
-			return new ObjectGraphProperty
-			{ Name = name, Value = "", Expression = expression, IsAtomic = false, TargetNode = targetNode, IsNull = isNull };
-		}
-		
-		/// <summary>
-		/// Checks whether given expression's type is supported by the graph builder.
-		/// </summary>
-		/// <param name="expr">Expression to be checked.</param>
-		private void checkIsOfSupportedType(Expression expr)
-		{
-			DebugType typeOfValue = expr.Evaluate(debuggerService.DebuggedProcess).Type;
-			if (typeOfValue.IsArray)
-			{
-				throw new DebuggerVisualizerException("Arrays are not supported yet");
 			}
 		}
 	}

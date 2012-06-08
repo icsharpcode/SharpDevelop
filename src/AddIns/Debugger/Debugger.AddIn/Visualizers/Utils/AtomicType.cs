@@ -22,16 +22,5 @@ namespace Debugger.AddIn.Visualizers.Utils
 		{
 			return type.IsPrimitive || type.FullName == "System.String" || type.IsEnum();
 		}
-		
-		/// <summary>
-		/// Checks whether given expression's type is atomic.
-		/// </summary>
-		/// <param name="expr">Expression.</param>
-		/// <returns>True if expression's type is atomic, False otherwise.</returns>
-		public static bool IsOfAtomicType(this Expression expr)
-		{
-			DebugType typeOfValue = expr.Evaluate(WindowsDebugger.CurrentProcess).Type;
-			return AtomicType.IsAtomic(typeOfValue);
-		}
 	}
 }

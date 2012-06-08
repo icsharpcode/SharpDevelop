@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			// because Drag'N'Drop operation has finished
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
-					DebuggerService.CurrentDebugger.SetInstructionPointer(this.FileName, lineNumber, 1);
+					DebuggerService.CurrentDebugger.SetInstructionPointer(this.FileName, lineNumber, 1, false);
 				});
 		}
 	}

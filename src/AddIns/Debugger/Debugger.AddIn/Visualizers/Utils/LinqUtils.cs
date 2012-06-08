@@ -7,9 +7,6 @@ using System;
 
 namespace Debugger.AddIn.Visualizers.Utils
 {
-	/// <summary>
-	/// Description of LinqUtils.
-	/// </summary>
 	public static class LinqUtils
 	{
 		public static int MaxOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector, int defaultValue)

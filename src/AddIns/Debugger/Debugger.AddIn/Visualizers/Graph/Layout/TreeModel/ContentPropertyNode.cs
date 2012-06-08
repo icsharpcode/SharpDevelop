@@ -6,6 +6,7 @@ using System.ComponentModel;
 using Debugger.AddIn.TreeModel;
 using Debugger.AddIn.Visualizers.Graph.Drawing;
 using Debugger.MetaData;
+using ICSharpCode.SharpDevelop;
 
 namespace Debugger.AddIn.Visualizers.Graph.Layout
 {
@@ -65,7 +66,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			this.IsExpanded = false;			// always false, Property nodes are never expanded (they have IsPropertyExpanded)
 			this.Property = new PositionedNodeProperty(
 				sourcePropertyNode.Property, this.ContainingNode,
-				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression));
+				expanded.Expressions.IsExpanded(sourcePropertyNode.Property.Expression.Expr));
 			if (PositionedGraphNodeControl.IsShowMemberIcon) {
 				EvalMemberIcon();
 			}
@@ -77,8 +78,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 			if ((this.Property != null) && (this.Property.ObjectGraphProperty != null)) {
 				var memberInfo = (IDebugMemberInfo)this.Property.ObjectGraphProperty.MemberInfo;
 				if (memberInfo != null) {
-					string imageName;
-					var image = ExpressionNode.GetImageForMember(memberInfo, out imageName);
+					var image = new ResourceServiceImage(ValueNode.GetImageForMember(memberInfo));
 					this.MemberIcon = image.ImageSource;
 				}
 			}

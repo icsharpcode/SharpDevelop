@@ -45,6 +45,11 @@ namespace Debugger.MetaData
 		
 		public Value GetValue(StackFrame context)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			if (context.MethodInfo != this.Member)
+				throw new GetValueException("Expected stack frame: " + this.Member.ToString());
+			
 			return getter(context);
 		}
 			

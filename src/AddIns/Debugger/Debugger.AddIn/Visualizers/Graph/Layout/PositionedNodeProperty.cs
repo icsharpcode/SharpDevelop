@@ -70,7 +70,7 @@ namespace Debugger.AddIn.Visualizers.Graph.Layout
 		/// <summary>
 		/// Full Debugger expression used to obtain value of this property.
 		/// </summary>
-		public Expression Expression { get { return this.objectGraphProperty.Expression; } }
+		public GraphExpression Expression { get { return this.objectGraphProperty.Expression; } }
 		
 		/// <summary>
         /// Is this property of atomic type? (int, string, etc.)

@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 
@@ -31,6 +32,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					OnFileNameChanged(EventArgs.Empty);
 				}
 			}
+		}
+		
+		public string FileNameAndLineNumber {
+			get { return string.Format(StringParser.Parse("${res:MainWindow.Windows.BookmarkPad.LineText}"), Path.GetFileName(this.FileName), this.LineNumber); }
 		}
 		
 		public event EventHandler FileNameChanged;

@@ -64,19 +64,12 @@
     <Compile Include="MetaData\DebugConstructorInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AppDomain.cs" />
-    <Compile Include="AppDomainCollection.cs" />
     <Compile Include="ArrayDimension.cs" />
     <Compile Include="ArrayDimensions.cs" />
     <Compile Include="Breakpoint.cs" />
-    <Compile Include="BreakpointCollection.cs" />
-    <Compile Include="CollectionWithEvents.cs" />
-    <Compile Include="DebuggeeState.cs" />
     <Compile Include="DebuggerException.cs" />
-    <Compile Include="DebuggerObject.cs" />
     <Compile Include="Eval.cs" />
-    <Compile Include="EvalCollection.cs" />
     <Compile Include="Exception.cs" />
-    <Compile Include="ExceptionType.cs" />
     <Compile Include="GetValueException.cs" />
     <Compile Include="Interop\Common.cs" />
     <Compile Include="Interop\CorDebug.cs" />
@@ -102,7 +95,6 @@
     <Compile Include="MetaData\IDebugMemberInfo.cs" />
     <Compile Include="MetaData\IOverloadable.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="ModuleCollection.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil.Binary\ImageFormatException.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil.Metadata\CodedIndex.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil.Metadata\ElementType.cs" />
@@ -144,14 +136,8 @@
     <Compile Include="Mono.Cecil\Mono.Cecil\MethodCallingConvention.cs" />
     <Compile Include="Mono.Cecil\Mono.Cecil\ReflectionException.cs" />
     <Compile Include="NDebugger.cs" />
-    <Compile Include="NRefactory\Ast\ExpressionExtensionMethods.cs" />
-    <Compile Include="NRefactory\Visitors\ExpressionEvaluator.cs" />
     <Compile Include="Options.cs" />
-    <Compile Include="PausedReason.cs" />
-    <Compile Include="PauseSession.cs" />
     <Compile Include="Process.cs" />
-    <Compile Include="ProcessCollection.cs" />
-    <Compile Include="ProcessEventArgs.cs" />
     <Compile Include="SourcecodeSegment.cs" />
     <Compile Include="StackFrame.cs" />
     <Compile Include="Stepper.cs" />
@@ -159,9 +145,7 @@
     <Compile Include="Tests\IgnoreAttribute.cs" />
     <Compile Include="Tests\IgnoreOnExceptionAttribute.cs" />
     <Compile Include="Thread.cs" />
-    <Compile Include="ThreadCollection.cs" />
     <Compile Include="Value.cs" />
-    <None Include="Stepping.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -198,17 +182,7 @@
     <Folder Include="Mono.Cecil\Mono.Cecil.Binary" />
     <Folder Include="Mono.Cecil\Mono.Cecil.Metadata" />
     <Folder Include="Mono.Cecil\Mono.Cecil.Signatures" />
-    <Folder Include="NRefactory" />
-    <Folder Include="NRefactory\Ast" />
-    <Folder Include="NRefactory\Visitors" />
     <Folder Include="Tests" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -73,7 +73,7 @@ namespace Debugger
 			Process process;
 			// We have to wait until the created process is added into the collection
 			lock(debugger.ProcessIsBeingCreatedLock) {
-				process = debugger.Processes[pProcess];
+				process = debugger.GetProcess(pProcess);
 			}
 			// Make *really* sure the process is not dead
 			if (process == null) {

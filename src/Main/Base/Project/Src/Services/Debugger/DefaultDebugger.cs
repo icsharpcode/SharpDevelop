@@ -125,12 +125,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 		}
 		
-		public bool CanSetInstructionPointer(string filename, int line, int column)
-		{
-			return false;
-		}
-		
-		public bool SetInstructionPointer(string filename, int line, int column)
+		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
 		{
 			return false;
 		}

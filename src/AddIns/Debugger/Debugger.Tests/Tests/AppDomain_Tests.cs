@@ -39,12 +39,12 @@ namespace Debugger.Tests {
 		{
 			StartTest();
 			
-			DebugType type1 = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
-			DebugType type1b = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
+			DebugType type1 = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
+			DebugType type1b = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
 			ObjectDump("SameDomainEqual", type1 == type1b);
 			process.Continue();
-			ObjectDump("AppDomainName", process.SelectedStackFrame.GetLocalVariableValue("appDomainName").AsString());
-			DebugType type2 = process.SelectedStackFrame.GetLocalVariableValue("two").Type;
+			ObjectDump("AppDomainName", this.CurrentStackFrame.GetLocalVariableValue("appDomainName").AsString());
+			DebugType type2 = this.CurrentStackFrame.GetLocalVariableValue("two").Type;
 			ObjectDump("OtherDomainEqual", type1 == type2);
 			ObjectDump("AppDomainsEqual", type1.AppDomain == type2.AppDomain);
 			ObjectDump("AppDomainIDsEqual", type1.AppDomain.ID == type2.AppDomain.ID);
@@ -60,19 +60,19 @@ namespace Debugger.Tests {
 <DebuggerTests>
   <Test
     name="AppDomain_Tests.cs">
-    <ProcessStarted />
+    <Started />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomain_Tests.cs:13,4-13,40</DebuggingPaused>
+    <Paused>AppDomain_Tests.cs:13,4-13,40</Paused>
     <SameDomainEqual>True</SameDomainEqual>
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomain_Tests.cs:26,4-26,40</DebuggingPaused>
+    <Paused>AppDomain_Tests.cs:26,4-26,40</Paused>
     <AppDomainName>myDomain Id=2</AppDomainName>
     <OtherDomainEqual>False</OtherDomainEqual>
     <AppDomainsEqual>False</AppDomainsEqual>
     <AppDomainIDsEqual>False</AppDomainIDsEqual>
-    <ProcessExited />
+    <Exited />
   </Test>
 </DebuggerTests>
 #endif // EXPECTED_OUTPUT

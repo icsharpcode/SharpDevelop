@@ -8,18 +8,17 @@ using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
-namespace ICSharpCode.AvalonEdit
+namespace ICSharpCode.AvalonEdit.Rendering
 {
 	/// <summary>
 	/// Renders a ruler at a certain column.
 	/// </summary>
-	public class ColumnRulerRenderer : IBackgroundRenderer
+	sealed class ColumnRulerRenderer : IBackgroundRenderer
 	{
 		Pen pen;
 		int column;
 		TextView textView;
 		
-		public const string Name = "Column ruler";
 		public static readonly Color DefaultForeground = Colors.LightGray;
 		
 		public ColumnRulerRenderer(TextView textView)
@@ -37,15 +36,14 @@ namespace ICSharpCode.AvalonEdit
 			get { return KnownLayer.Background; }
 		}
 		
-		public void SetRuler(int column, Brush brush)
+		public void SetRuler(int column, Pen pen)
 		{
 			if (this.column != column) {
 				this.column = column;
 				textView.InvalidateLayer(this.Layer);
 			}
-			if (pen.Brush != brush) {
-				this.pen = new Pen(brush, 1);
-				this.pen.Freeze();
+			if (this.pen != pen) {
+				this.pen = pen;
 				textView.InvalidateLayer(this.Layer);
 			}
 		}
