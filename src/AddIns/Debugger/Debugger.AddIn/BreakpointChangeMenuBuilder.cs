@@ -1,19 +1,19 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using ICSharpCode.SharpDevelop.Gui.Pads;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Windows.Controls;
+
 using Debugger.AddIn.Service;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn
 {
@@ -51,9 +51,9 @@ namespace Debugger.AddIn
 		
 		void HandleItem(object sender)
 		{
-			ToolStripMenuItem item = null;
-			if (sender is ToolStripMenuItem)
-				item = (ToolStripMenuItem)sender;
+			MenuItem item = null;
+			if (sender is MenuItem)
+				item = (MenuItem)sender;
 			
 			if (item != null) {
 				BreakpointBookmark bookmark = (BreakpointBookmark)item.Tag;

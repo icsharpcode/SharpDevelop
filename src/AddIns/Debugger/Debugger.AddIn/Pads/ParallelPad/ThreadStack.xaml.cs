@@ -25,12 +25,12 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			private set;
 		}
 		
-		public Location Location {
+		public TextLocation Location {
 			get;
 			private set;
 		}
 		
-		public FrameSelectedEventArgs(StackFrame item, Location location)
+		public FrameSelectedEventArgs(StackFrame item, TextLocation location)
 		{
 			Item = item;
 			Location = location;

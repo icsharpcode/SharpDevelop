@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using Debugger;
 using Debugger.AddIn.Pads.Controls;
-using Debugger.AddIn.Pads.ParallelPad;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 

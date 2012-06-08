@@ -13,7 +13,6 @@ using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TreeView;
@@ -64,24 +63,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void LoadNodes()
 		{
 			if (ProjectService.OpenSolution != null &&
-				ProjectService.OpenSolution.Preferences != null  &&
-				ProjectService.OpenSolution.Preferences.Properties != null)
+			    ProjectService.OpenSolution.Preferences != null  &&
+			    ProjectService.OpenSolution.Preferences.Properties != null)
 			{
-				var props = ProjectService.OpenSolution.Preferences.Properties.Get("Watches", new Properties());
-				foreach(var element in props.Elements) {
-					this.Items.Add(new TreeNode(element, null).ToSharpTreeNode());
-				}		
+				var props = ProjectService.OpenSolution.Preferences.Properties.NestedProperties("Watches");
+				foreach (var key in props.Keys) {
+					this.Items.Add(new TreeNode(props.Get(key, ""), () => null).ToSharpTreeNode());
+				}
 			}
 		}
 
 		void SaveNodes()
 		{
 			if (ProjectService.OpenSolution != null &&
-				ProjectService.OpenSolution.Preferences != null  &&
-				ProjectService.OpenSolution.Preferences.Properties != null)
+			    ProjectService.OpenSolution.Preferences != null  &&
+			    ProjectService.OpenSolution.Preferences.Properties != null)
 			{
 				var props = new Properties();
-				ProjectService.OpenSolution.Preferences.Properties.Set("Watches", props);
+				ProjectService.OpenSolution.Preferences.Properties.SetNestedProperties("Watches", props);
 				foreach(var node in this.Items.OfType<TreeNode>()) {
 					props.Set(node.Name, (object)null);
 				}
@@ -91,12 +90,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		SharpTreeNodeAdapter MakeNode(string name)
 		{
 			LoggingService.Info("Evaluating watch: " + name);
-			TreeNode node;
-			try {
-				node = new ValueNode(null, name, () => ExpressionEvaluator.Evaluate(name, SupportedLanguage.CSharp, WindowsDebugger.CurrentStackFrame));
-			} catch (GetValueException e) {
-				node = new TreeNode("Icons.16x16.Error", name, e.Message, string.Empty, null);
-			}
+			TreeNode node = null;
+			#warning reimplement this!
+//			try {
+//				node = new ValueNode(null, name, () => ExpressionEvaluator.Evaluate(name, SupportedLanguage.CSharp, WindowsDebugger.CurrentStackFrame));
+//			} catch (GetValueException e) {
+//				node = new TreeNode("Icons.16x16.Error", name, e.Message, string.Empty, null);
+//			}
 			node.CanDelete = true;
 			node.CanSetName = true;
 			node.PropertyChanged += (s, e) => { if (e.PropertyName == "Name") WindowsDebugger.RefreshPads(); };

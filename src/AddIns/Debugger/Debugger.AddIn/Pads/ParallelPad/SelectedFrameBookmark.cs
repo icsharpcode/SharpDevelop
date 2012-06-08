@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public static readonly IImage SelectedFrameImage = new ResourceServiceImage("Icons.48x48.CurrentFrame");
 		
-		public SelectedFrameBookmark(FileName fileName, Location location) : base(fileName, location)
+		public SelectedFrameBookmark(FileName fileName, TextLocation location) : base(fileName, location)
 		{
 			this.IsVisibleInBookmarkPad = false;
 		}

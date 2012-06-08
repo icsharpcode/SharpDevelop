@@ -6,12 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using Debugger;
+using Debugger.AddIn;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Services;
 
@@ -20,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class ConsolePad : AbstractConsolePad
 	{
 		SupportedLanguage language;
-		NRefactoryResolver resolver;
+//		NRefactoryResolver resolver;
 		
 		const string debuggerConsoleToolBarTreePath = "/SharpDevelop/Pads/ConsolePad/ToolBar";
 		
@@ -55,15 +53,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (frame == null)
 				return "No current execution frame";
 			
-			try {
-				object data = ((WindowsDebugger)DebuggerService.CurrentDebugger).debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
-				                                                                       frame.MethodInfo.MetadataToken,
-				                                                                       code);
-				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, frame, data);
-				return ExpressionEvaluator.FormatValue(WindowsDebugger.EvalThread, val);
-			} catch (GetValueException e) {
-				return e.Message;
-			}
+			throw new NotImplementedException("");
+			
+//			try {
+//				object data = ((WindowsDebugger)DebuggerService.CurrentDebugger).debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
+//				                                                                       frame.MethodInfo.MetadataToken,
+//				                                                                       code);
+//				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, frame, data);
+//				return ExpressionEvaluator.FormatValue(WindowsDebugger.EvalThread, val);
+//			} catch (GetValueException e) {
+//				return e.Message;
+//			}
 		}
 		
 		protected override string Prompt {
@@ -80,16 +80,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void OnLanguageChanged()
 		{
-			switch (SelectedLanguage) {
-				case SupportedLanguage.CSharp:
-					resolver = new NRefactoryResolver(LanguageProperties.CSharp);
-					SetHighlighting("C#");
-					break;
-				case SupportedLanguage.VBNet:
-					resolver = new NRefactoryResolver(LanguageProperties.VBNet);
-					SetHighlighting("VBNET");
-					break;
-			}
+			#warning reimplement this!
+//			switch (SelectedLanguage) {
+//				case SupportedLanguage.CSharp:
+//					resolver = new NRefactoryResolver(LanguageProperties.CSharp);
+//					SetHighlighting("C#");
+//					break;
+//				case SupportedLanguage.VBNet:
+//					resolver = new NRefactoryResolver(LanguageProperties.VBNet);
+//					SetHighlighting("VBNET");
+//					break;
+//			}
 		}
 		
 		public ConsolePad()
@@ -109,23 +110,23 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			var seg = frame.NextStatement;
 			if (seg == null)
 				return;
-			
-			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
-			var info = ParserService.GetParseInformation(seg.Filename);
-			
-			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
-			
-			int currentOffset = TextEditor.Caret.Offset - console.CommandOffset - 1;
-			
-			var expr = expressionFinder.FindExpression(currentText, currentOffset);
-			
-			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
-			
-			var rr = resolver.Resolve(expr, info, text);
-			
-			if (rr != null) {
-				TextEditor.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
-			}
+			#warning reimplement this!
+//			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
+//			var info = ParserService.GetParseInformation(seg.Filename);
+//			
+//			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
+//			
+//			int currentOffset = TextEditor.Caret.Offset - console.CommandOffset - 1;
+//			
+//			var expr = expressionFinder.FindExpression(currentText, currentOffset);
+//			
+//			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
+//			
+//			var rr = resolver.Resolve(expr, info, text);
+//			
+//			if (rr != null) {
+//				TextEditor.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
+//			}
 		}
 		
 		protected override ToolBar BuildToolBar()

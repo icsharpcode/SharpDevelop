@@ -62,15 +62,16 @@ namespace Debugger.AddIn.Service
 		
 		bool CheckSyntax()
 		{
-			SupportedLanguage language = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), this.cmbLanguage.SelectedItem.ToString(), true);
-			using (var parser = ParserFactory.CreateParser(language, new StringReader(this.codeEditor.Document.Text))) {
-				parser.ParseExpression();
-				if (parser.Errors.Count > 0) {
-					MessageService.ShowError(parser.Errors.ErrorOutput);
-					return false;
-				}
-			}
-			
+			#warning reimplement this!
+//			SupportedLanguage language = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), this.cmbLanguage.SelectedItem.ToString(), true);
+//			using (var parser = ParserFactory.CreateParser(language, new StringReader(this.codeEditor.Document.Text))) {
+//				parser.ParseExpression();
+//				if (parser.Errors.Count > 0) {
+//					MessageService.ShowError(parser.Errors.ErrorOutput);
+//					return false;
+//				}
+//			}
+//			
 			return true;
 		}
 		

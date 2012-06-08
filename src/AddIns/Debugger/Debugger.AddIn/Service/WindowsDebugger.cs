@@ -12,17 +12,16 @@ using System.Text;
 using System.Windows.Forms;
 
 using Debugger;
-using Debugger.AddIn.Tooltips;
+using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
@@ -350,24 +349,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public Value GetValueFromName(string variableName)
 		{
-			if (CurrentStackFrame != null) {
-				object data = debuggerDecompilerService.GetLocalVariableIndex(CurrentStackFrame.MethodInfo.DeclaringType.MetadataToken, CurrentStackFrame.MethodInfo.MetadataToken, variableName);
-				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, CurrentStackFrame, data);
-			}
+#warning			if (CurrentStackFrame != null) {
+//				object data = debuggerDecompilerService.GetLocalVariableIndex(CurrentStackFrame.MethodInfo.DeclaringType.MetadataToken, CurrentStackFrame.MethodInfo.MetadataToken, variableName);
+//				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, CurrentStackFrame, data);
+//			}
 			return null;
-		}
-
-		/// <summary>
-		/// Gets Expression for given variable. Can throw GetValueException.
-		/// <exception cref="GetValueException">Thrown when getting expression fails. Exception message explains reason.</exception>
-		/// </summary>
-		public Expression GetExpression(string variableName)
-		{
-			if (CurrentStackFrame != null) {
-				return ExpressionEvaluator.ParseExpression(variableName, SupportedLanguage.CSharp);
-			} else {
-				throw new GetValueException("Cannot evaluate now - debugged process is either null or running or has no selected stack frame");
-			}
 		}
 		
 		public bool IsManaged(int processId)
@@ -392,31 +378,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				Value val = GetValueFromName(variableName);
 				if (val == null) return null;
 				return val.AsString();
-			} catch (GetValueException) {
-				return null;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the tooltip control that shows the value of given variable.
-		/// Return null if no tooltip is available.
-		/// </summary>
-		public object GetTooltipControl(Location logicalPosition, string variableName)
-		{
-			try {
-				var tooltipExpression = GetExpression(variableName);
-				var valueNode = new ValueNode("Icons.16x16.Local", variableName, () => tooltipExpression.Evaluate());
-				return new DebuggerTooltipControl(new TreeNode[] { valueNode });
-			} catch (System.Exception ex) {
-				LoggingService.Error("Error on GetTooltipControl: " + ex.Message);
-				return null;
-			}
-		}
-		
-		public Debugger.AddIn.TreeModel.TreeNode GetNode(string variable, string currentImageName = null)
-		{
-			try {
-				return new ValueNode(currentImageName ?? "Icons.16x16.Local", variable, () => GetExpression(variable).Evaluate());
 			} catch (GetValueException) {
 				return null;
 			}
@@ -539,12 +500,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool Evaluate(string code, string language)
 		{
 			try {
-				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language, true);
-				Value val = ExpressionEvaluator.Evaluate(code, supportedLanguage, CurrentStackFrame);
-				
-				if (val != null && val.Type.IsPrimitive && val.PrimitiveValue is bool)
-					return (bool)val.PrimitiveValue;
-				else
+#warning				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language, true);
+//				Value val = ExpressionEvaluator.Evaluate(code, supportedLanguage, CurrentStackFrame);
+//				
+//				if (val != null && val.Type.IsPrimitive && val.PrimitiveValue is bool)
+//					return (bool)val.PrimitiveValue;
+//				else
 					return false;
 			} catch (GetValueException e) {
 				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
@@ -780,6 +741,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			ProjectService.OpenSolution.Projects
 				.Where(p => e.Module.Name.IndexOf(p.Name) >= 0)
 				.ForEach(p => e.Module.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
+		}
+		
+		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
+		{
+//			throw new NotImplementedException();
 		}
 	}
 }

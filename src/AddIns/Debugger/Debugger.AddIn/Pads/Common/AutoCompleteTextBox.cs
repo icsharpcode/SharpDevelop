@@ -9,8 +9,6 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Project;
@@ -54,7 +52,7 @@ namespace Debugger.AddIn.Pads.Controls
 		public AutoCompleteTextBox()
 		{
 			object tmp;
-			this.editorAdapter = EditorControlService.CreateEditor(out tmp);
+			this.editorAdapter = SD.EditorControlService.CreateEditor(out tmp);
 			this.editor = (TextEditor)tmp;
 			
 			this.editor.Background = Brushes.Transparent;
@@ -95,26 +93,27 @@ namespace Debugger.AddIn.Pads.Controls
 		private void ShowDotCompletion(StackFrame frame, string currentText)
 		{
 			string language = ProjectService.CurrentProject == null ? "C#" : ProjectService.CurrentProject.Language;
-			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language));
-			
-			var seg = frame.NextStatement;
-			
-			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
-			var info = ParserService.GetParseInformation(seg.Filename);
-			
-			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
-			
-			int currentOffset = this.editor.CaretOffset;
-			
-			var expr = expressionFinder.FindExpression(currentText, currentOffset);
-			
-			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
-			
-			var rr = resolver.Resolve(expr, info, text);
-			
-			if (rr != null) {
-				editorAdapter.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
-			}
+			#warning reimplement this!
+//			NRefactoryResolver resolver = new NRefactoryResolver(LanguageProperties.GetLanguage(language));
+//			
+//			var seg = frame.NextStatement;
+//			
+//			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
+//			var info = ParserService.GetParseInformation(seg.Filename);
+//			
+//			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
+//			
+//			int currentOffset = this.editor.CaretOffset;
+//			
+//			var expr = expressionFinder.FindExpression(currentText, currentOffset);
+//			
+//			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
+//			
+//			var rr = resolver.Resolve(expr, info, text);
+//			
+//			if (rr != null) {
+//				editorAdapter.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
+//			}
 		}
 	}
 }

@@ -12,8 +12,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using Debugger.AddIn.Visualizers;
-using Debugger.AddIn.Visualizers.Utils;
+//using Debugger.AddIn.Visualizers;
+//using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -162,10 +162,10 @@ namespace Debugger.AddIn.TreeModel
 				this.Type = val.Type.Name;
 				
 				if (!val.IsNull) {
-					this.VisualizerCommands = VisualizerDescriptors.GetAllDescriptors()
-						.Where(descriptor => descriptor.IsVisualizerAvailable(val.Type))
-						.Select(descriptor => descriptor.CreateVisualizerCommand(this.Name, this.GetValue))
-						.ToList();
+#warning					this.VisualizerCommands = VisualizerDescriptors.GetAllDescriptors()
+//						.Where(descriptor => descriptor.IsVisualizerAvailable(val.Type))
+//						.Select(descriptor => descriptor.CreateVisualizerCommand(this.Name, this.GetValue))
+//						.ToList();
 				}
 				
 				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms", this.Name, watch.ElapsedMilliseconds);
@@ -175,7 +175,7 @@ namespace Debugger.AddIn.TreeModel
 				this.Value = e.Message;
 				this.Type  = string.Empty;
 				this.GetChildren = null;
-				this.VisualizerCommands = null;
+#warning				this.VisualizerCommands = null;
 				return;
 			}
 		}
@@ -348,15 +348,16 @@ namespace Debugger.AddIn.TreeModel
 				);
 			} else {
 				DebugType iEnumerableType, itemType;
-				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
-					yield return new TreeNode(
-						null,
-						"IEnumerable",
-						"Expanding will enumerate the IEnumerable",
-						string.Empty,
-						() => GetIListChildren(() => DebuggerHelpers.CreateListFromIEnumerable(GetValue()))
-					);
-				}
+				#warning reimplement this!
+//				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
+//					yield return new TreeNode(
+//						null,
+//						"IEnumerable",
+//						"Expanding will enumerate the IEnumerable",
+//						string.Empty,
+//						() => GetIListChildren(() => DebuggerHelpers.CreateListFromIEnumerable(GetValue()))
+//					);
+//				}
 			}
 			
 			foreach(TreeNode node in GetMembers(publicInstance)) {

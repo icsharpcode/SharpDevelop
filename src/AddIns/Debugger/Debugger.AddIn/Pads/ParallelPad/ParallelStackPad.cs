@@ -552,7 +552,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			return model;
 		}
 
-		void ToggleSelectedFrameBookmark(Location location)
+		void ToggleSelectedFrameBookmark(TextLocation location)
 		{
 			// remove all
 			BookmarkManager.RemoveAll(b => b is SelectedFrameBookmark);

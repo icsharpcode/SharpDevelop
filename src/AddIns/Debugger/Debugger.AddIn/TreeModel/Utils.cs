@@ -9,7 +9,6 @@ using System.Windows.Threading;
 
 using Debugger.AddIn.Pads.Controls;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Services;
 
