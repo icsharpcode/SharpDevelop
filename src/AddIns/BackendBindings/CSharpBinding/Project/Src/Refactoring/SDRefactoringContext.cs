@@ -41,6 +41,7 @@ namespace CSharpBinding.Refactoring
 		public SDRefactoringContext(ITextEditor editor, CSharpAstResolver resolver, TextLocation location)
 			: base(resolver, CancellationToken.None)
 		{
+			this.resolver = resolver;
 			this.editor = editor;
 			this.textSource = editor.Document;
 			this.document = editor.Document;
