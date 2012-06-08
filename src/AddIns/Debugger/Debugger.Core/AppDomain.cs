@@ -35,10 +35,7 @@ namespace Debugger
 							assemblies.Add(module.UnresolvedAssembly);
 						}
 					}
-					if (assemblies.Count == 0)
-						compilation = new SimpleCompilation(MinimalCorlib.Instance);
-					else
-						compilation = new SimpleCompilation(assemblies[0], assemblies.Skip(1));
+					compilation = TypeSystemExtensions.CreateCompilation(this, assemblies);
 				}
 				return compilation;
 			}

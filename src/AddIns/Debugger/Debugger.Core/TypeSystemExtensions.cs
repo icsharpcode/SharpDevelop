@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using Mono.Cecil;
 using Mono.Cecil.Metadata;
 
 namespace Debugger
@@ -17,6 +19,7 @@ namespace Debugger
 	/// </summary>
 	public static class TypeSystemExtensions
 	{
+		#region Module Loading
 		static ConditionalWeakTable<IUnresolvedAssembly, ModuleMetadataInfo> weakTable = new ConditionalWeakTable<IUnresolvedAssembly, ModuleMetadataInfo>();
 		
 		class ModuleMetadataInfo
@@ -59,7 +62,9 @@ namespace Debugger
 		{
 			return GetInfo(assembly).Module;
 		}
+		#endregion
 		
+		#region IType -> ICorDebugType
 		public static ICorDebugType ToCorDebug(this IType type)
 		{
 			switch (type.Kind) {
@@ -95,5 +100,141 @@ namespace Debugger
 			}
 			return ((ICorDebugClass2)corClass).GetParameterizedType((uint)(type.IsReferenceType == false ? CorElementType.VALUETYPE : CorElementType.CLASS), corGenArgs.ToArray());
 		}
+		#endregion
+		
+		#region Compilation
+		class DebugCompilation : SimpleCompilation
+		{
+			public readonly AppDomain AppDomain;
+			
+			public DebugCompilation(AppDomain appDomain, IUnresolvedAssembly mainAssembly, IEnumerable<IAssemblyReference> assemblyReferences)
+				: base(mainAssembly, assemblyReferences)
+			{
+				this.AppDomain = appDomain;
+			}
+		}
+		
+		internal static ICompilation CreateCompilation(AppDomain appDomain, IList<IUnresolvedAssembly> assemblies)
+		{
+			if (assemblies.Count == 0)
+				return new DebugCompilation(appDomain, MinimalCorlib.Instance, Enumerable.Empty<IAssemblyReference>());
+			else
+				return new DebugCompilation(appDomain, assemblies[0], assemblies.Skip(1));
+		}
+		
+		public static AppDomain GetAppDomain(this ICompilation compilation)
+		{
+			DebugCompilation dc = compilation as DebugCompilation;
+			if (dc != null)
+				return dc.AppDomain;
+			else
+				throw new InvalidOperationException("The compilation is not a debugger type system");
+		}
+		
+		public static IType Import(this ICompilation compilation, ICorDebugType corType)
+		{
+			return ToTypeReference(corType, GetAppDomain(compilation).Process).Resolve(compilation.TypeResolveContext);
+		}
+		#endregion
+		
+		#region ICorDebugType -> IType
+		public static ITypeReference ToTypeReference(this ICorDebugType corType, Process process)
+		{
+			switch ((CorElementType)corType.GetTheType()) {
+				case CorElementType.VOID:
+					return KnownTypeReference.Void;
+				case CorElementType.BOOLEAN:
+					return KnownTypeReference.Boolean;
+				case CorElementType.CHAR:
+					return KnownTypeReference.Char;
+				case CorElementType.I1:
+					return KnownTypeReference.SByte;
+				case CorElementType.U1:
+					return KnownTypeReference.Byte;
+				case CorElementType.I2:
+					return KnownTypeReference.Int16;
+				case CorElementType.U2:
+					return KnownTypeReference.UInt16;
+				case CorElementType.I4:
+					return KnownTypeReference.Int32;
+				case CorElementType.U4:
+					return KnownTypeReference.UInt32;
+				case CorElementType.I8:
+					return KnownTypeReference.Int64;
+				case CorElementType.U8:
+					return KnownTypeReference.UInt64;
+				case CorElementType.R4:
+					return KnownTypeReference.Single;
+				case CorElementType.R8:
+					return KnownTypeReference.Double;
+				case CorElementType.STRING:
+					return KnownTypeReference.String;
+				case CorElementType.PTR:
+					return new PointerTypeReference(corType.GetFirstTypeParameter().ToTypeReference(process));
+				case CorElementType.BYREF:
+					return new ByReferenceTypeReference(corType.GetFirstTypeParameter().ToTypeReference(process));
+				case CorElementType.VALUETYPE:
+				case CorElementType.CLASS:
+					// Get generic arguments
+					List<ITypeReference> genericArguments = new List<ITypeReference>();
+					foreach (ICorDebugType t in corType.EnumerateTypeParameters().GetEnumerator()) {
+						genericArguments.Add(t.ToTypeReference(process));
+					}
+					var module = process.GetModule(corType.GetClass().GetModule());
+					ITypeReference typeDefinitionReference = ToTypeDefinitionReference(module, corType.GetClass().GetToken());
+					if (genericArguments.Count > 0)
+						return new ParameterizedTypeReference(typeDefinitionReference, genericArguments);
+					else
+						return typeDefinitionReference;
+				case CorElementType.ARRAY:
+					return new ArrayTypeReference(corType.GetFirstTypeParameter().ToTypeReference(process),
+					                              (int)corType.GetRank());
+				case CorElementType.GENERICINST:
+					throw new NotSupportedException();
+				case CorElementType.I:
+					return KnownTypeReference.IntPtr;
+				case CorElementType.U:
+					return KnownTypeReference.UIntPtr;
+				case CorElementType.OBJECT:
+					return KnownTypeReference.Object;
+				case CorElementType.SZARRAY:
+					return new ArrayTypeReference(corType.GetFirstTypeParameter().ToTypeReference(process));
+				case CorElementType.CMOD_REQD:
+				case CorElementType.CMOD_OPT:
+					return corType.GetFirstTypeParameter().ToTypeReference(process);
+				default:
+					throw new InvalidOperationException("Invalid value for CorElementType");
+			}
+		}
+		
+		static ITypeReference ToTypeDefinitionReference(Module module, uint classToken)
+		{
+			var props = module.MetaData.GetTypeDefProps(classToken);
+			var visibility = (TypeAttributes)props.Flags & TypeAttributes.VisibilityMask;
+			if (visibility == TypeAttributes.Public || visibility == TypeAttributes.NotPublic) {
+				// top-level type
+				int dot = props.Name.LastIndexOf('.');
+				int tick = props.Name.LastIndexOf('`');
+				string ns = dot > 0 ? props.Name.Substring(0, dot) : string.Empty;
+				string name;
+				int typeParameterCount;
+				if (tick < 0) {
+					name = props.Name.Substring(dot + 1);
+					typeParameterCount = 0;
+				} else {
+					name = props.Name.Substring(dot + 1, tick - (dot + 1));
+					int.TryParse(props.Name.Substring(tick + 1), out typeParameterCount);
+				}
+				return new GetClassTypeReference(ns, name, typeParameterCount);
+			} else {
+				// nested type
+				uint enclosingTk = module.MetaData.GetNestedClassProps(classToken).EnclosingClass;
+				var declaringTypeReference = ToTypeDefinitionReference(module, enclosingTk);
+				int typeParameterCount;
+				string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(props.Name, out typeParameterCount);
+				return new NestedTypeReference(declaringTypeReference, name, typeParameterCount);
+			}
+		}
+		#endregion
 	}
 }
