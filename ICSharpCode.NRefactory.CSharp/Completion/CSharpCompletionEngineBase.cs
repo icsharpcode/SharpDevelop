@@ -820,7 +820,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			try {
-				var ctx = CSharpParsedFile.GetResolver(Compilation, location);
+				var ctx = GetState ();
 				var root = expr.AncestorsAndSelf.FirstOrDefault(n => n is EntityDeclaration || n is CompilationUnit);
 				if (root == null) {
 					return null;
