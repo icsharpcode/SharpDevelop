@@ -624,6 +624,8 @@ namespace Debugger
 				b.SetBreakpoint(module);
 			}
 			
+			module.AppDomain.InvalidateCompilation();
+			
 			if (this.BreakInMain) {
 				if (module.SymReader == null) return; // No symbols
 				

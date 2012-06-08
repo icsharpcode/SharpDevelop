@@ -4,12 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 using Debugger.Interop.CorSym;
 using Debugger.Interop.MetaData;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger
 {
@@ -27,7 +27,16 @@ namespace Debugger
 		ISymUnmanagedReader symReader;
 		MetaDataImport metaData;
 		
+		IUnresolvedAssembly unresolvedAssembly;
 		internal Dictionary<string, DebugType> LoadedDebugTypes = new Dictionary<string, DebugType>();
+		
+		public IUnresolvedAssembly UnresolvedAssembly {
+			get { return unresolvedAssembly; }
+		}
+		
+		public IAssembly Assembly {
+			get { return unresolvedAssembly.Resolve(appDomain.Compilation.TypeResolveContext); }
+		}
 		
 		public AppDomain AppDomain {
 			get { return appDomain; }
@@ -185,6 +194,7 @@ namespace Debugger
 			this.process = appDomain.Process;
 			this.corModule = corModule;
 			
+			unresolvedAssembly = TypeSystemExtensions.LoadModule(this, corModule);
 			metaData = new MetaDataImport(corModule);
 			
 			if (IsDynamic || IsInMemory) {

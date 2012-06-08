@@ -984,11 +984,11 @@ namespace Debugger.MetaData
 				return CreateFromType(module.AppDomain.Mscorlib, sysType);
 			
 			if (sigType is CLASS) {
-				return CreateFromTypeDefOrRef(module, false, ((CLASS)sigType).Type.ToUInt(), null);
+				return CreateFromTypeDefOrRef(module, false, ((CLASS)sigType).Type.ToUInt32(), null);
 			}
 			
 			if (sigType is VALUETYPE) {
-				return CreateFromTypeDefOrRef(module, true, ((VALUETYPE)sigType).Type.ToUInt(), null);
+				return CreateFromTypeDefOrRef(module, true, ((VALUETYPE)sigType).Type.ToUInt32(), null);
 			}
 			
 			// Numbered generic reference
@@ -1010,7 +1010,7 @@ namespace Debugger.MetaData
 					genArgs.Add(CreateFromSignature(module, genArgSig.Type, declaringType));
 				}
 				
-				return CreateFromTypeDefOrRef(module, genInst.ValueType, genInst.Type.ToUInt(), genArgs.ToArray());
+				return CreateFromTypeDefOrRef(module, genInst.ValueType, genInst.Type.ToUInt32(), genArgs.ToArray());
 			}
 			
 			if (sigType is ARRAY) {
