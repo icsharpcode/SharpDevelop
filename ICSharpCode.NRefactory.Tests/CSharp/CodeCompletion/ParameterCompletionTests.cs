@@ -292,7 +292,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 			}
 			var mb = new DefaultMemberProvider(doc, parsedFile);
-			var engine = new CSharpParameterCompletionEngine (doc, mb, new TestFactory (pctx), pctx, rctx, compilationUnit, parsedFile);
+			var engine = new CSharpParameterCompletionEngine (doc, mb, new TestFactory (pctx), pctx, rctx, parsedFile);
 			return engine.GetParameterDataProvider (cursorPosition, doc.GetCharAt (cursorPosition - 1));
 		}
 		

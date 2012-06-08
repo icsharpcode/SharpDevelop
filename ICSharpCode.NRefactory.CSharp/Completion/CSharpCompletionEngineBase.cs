@@ -51,8 +51,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#region Input properties
 		public CSharpTypeResolveContext ctx { get; private set; }
 
-		public CompilationUnit Unit { get; private set; }
-
 		public CSharpParsedFile CSharpParsedFile { get; private set; }
 
 		public IProjectContent ProjectContent { get; private set; }
@@ -68,14 +66,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		#endregion
 		
-		protected CSharpCompletionEngineBase(IProjectContent content, IMemberProvider memberProvider, CSharpTypeResolveContext ctx, CompilationUnit unit, CSharpParsedFile parsedFile)
+		protected CSharpCompletionEngineBase(IProjectContent content, IMemberProvider memberProvider, CSharpTypeResolveContext ctx, CSharpParsedFile parsedFile)
 		{
 			if (content == null)
 				throw new ArgumentNullException("content");
 			if (ctx == null)
 				throw new ArgumentNullException("ctx");
-			if (unit == null)
-				throw new ArgumentNullException("unit");
 			if (parsedFile == null)
 				throw new ArgumentNullException("parsedFile");
 			if (memberProvider == null)
@@ -84,7 +80,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			this.ProjectContent = content;
 			this.MemberProvider = memberProvider;
 			this.ctx = ctx;
-			this.Unit = unit;
 			this.CSharpParsedFile = parsedFile;
 		}
 		
@@ -808,10 +803,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression (ExpressionResult tuple)
 		{
-			return ResolveExpression (tuple.Node, tuple.Unit);
+			return ResolveExpression (tuple.Node);
 		}
 
-		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression(AstNode expr, CompilationUnit unit)
+		protected Tuple<ResolveResult, CSharpResolver> ResolveExpression(AstNode expr)
 		{
 			if (expr == null) {
 				return null;
