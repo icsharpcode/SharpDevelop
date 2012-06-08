@@ -699,34 +699,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
-		string cachedText = null;
+//		string cachedText = null;
 		
 		protected virtual void Reset ()
 		{
-			cachedText = null;
+//			cachedText = null;
 		}
 		
 		protected Tuple<string, TextLocation> GetMemberTextToCaret()
 		{
-			int startOffset;
-			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
-				startOffset = document.GetOffset(currentMember.Region.Begin);
-			} else if (currentType != null) {
-				startOffset = document.GetOffset(currentType.Region.Begin);
-			} else {
-				startOffset = 0;
-			}
-			while (startOffset > 0) {
-				char ch = document.GetCharAt(startOffset - 1);
-				if (ch != ' ' && ch != '\t') {
-					break;
-				}
-				--startOffset;
-			}
-			if (cachedText == null)
-				cachedText = document.GetText (startOffset, offset - startOffset);
-			
-			return Tuple.Create (cachedText, document.GetLocation (startOffset));
+			return MemberProvider.GetMemberTextToCaret(offset, currentType, currentMember);
 		}
 		
 		protected ExpressionResult GetInvocationBeforeCursor(bool afterBracket)

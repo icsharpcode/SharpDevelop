@@ -35,6 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	public interface IMemberProvider
 	{
 		void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember);
+
+		Tuple<string, TextLocation> GetMemberTextToCaret(int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember);
 	}
 
 	public class DefaultMemberProvider : IMemberProvider
@@ -159,6 +161,29 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			return bracketStack.Any (t => t == '{');
 		}
+	
+		public Tuple<string, TextLocation> GetMemberTextToCaret(int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember)
+		{
+			int startOffset;
+			if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
+				startOffset = document.GetOffset(currentMember.Region.Begin);
+			} else if (currentType != null) {
+				startOffset = document.GetOffset(currentType.Region.Begin);
+			} else {
+				startOffset = 0;
+			}
+			while (startOffset > 0) {
+				char ch = document.GetCharAt(startOffset - 1);
+				if (ch != ' ' && ch != '\t') {
+					break;
+				}
+				--startOffset;
+			}
+
+			return Tuple.Create (document.GetText (startOffset, caretOffset - startOffset), document.GetLocation (startOffset));
+		}
+		
+
 	}
 }
 
