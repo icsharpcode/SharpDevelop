@@ -307,17 +307,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		List<string> GetUsedNamespaces()
 		{
-			var scope = CSharpParsedFile.GetUsingScope(location);
+			var scope = ctx.CurrentUsingScope;
 			var result = new List<string>();
-			var resolver = new CSharpResolver(ctx);
 			while (scope != null) {
-				result.Add(scope.NamespaceName);
+				result.Add(scope.Namespace.FullName);
 				
-				foreach (var u in scope.Usings) {
-					var ns = u.ResolveNamespace(resolver);
-					if (ns == null) {
-						continue;
-					}
+				foreach (var ns in scope.Usings) {
 					result.Add(ns.FullName);
 				}
 				scope = scope.Parent;

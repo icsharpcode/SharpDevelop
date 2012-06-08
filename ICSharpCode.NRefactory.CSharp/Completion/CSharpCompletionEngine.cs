@@ -1318,10 +1318,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		void AddTypesAndNamespaces(CompletionDataWrapper wrapper, CSharpResolver state, AstNode node, Func<IType, IType> typePred = null, Predicate<IMember> memberPred = null, Action<ICompletionData, IType> callback = null)
 		{
-			var lookup = new MemberLookup(
-				ctx.CurrentTypeDefinition,
-				Compilation.MainAssembly
-			);
+			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
@@ -1382,7 +1379,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddTypeParameter(p);
 				}
 			}
-			var scope = CSharpParsedFile.GetUsingScope(location).Resolve(Compilation);
+			var scope = ctx.CurrentUsingScope;
 			
 			for (var n = scope; n != null; n = n.Parent) {
 				foreach (var pair in n.UsingAliases) {
@@ -2369,7 +2366,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					}
 				}
 				// ADD Aliases
-				var scope = CSharpParsedFile.GetUsingScope(location).Resolve(Compilation);
+				var scope = ctx.CurrentUsingScope;
 			
 				for (var n = scope; n != null; n = n.Parent) {
 					foreach (var pair in n.UsingAliases) {
@@ -2749,7 +2746,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			sb.Append("a;");
 			AppendMissingClosingBrackets(sb, text, false);
 			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, CSharpParsedFile.FileName, 0);
+			var completionUnit = parser.Parse(stream, "a.cs", 0);
 			stream.Close();
 			var loc = document.GetLocation(offset);
 			
@@ -2772,7 +2769,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			AppendMissingClosingBrackets(sb, text, false);
 			
 			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, CSharpParsedFile.FileName, 0);
+			var completionUnit = parser.Parse(stream, "a.cs", 0);
 			stream.Close();
 			var loc = document.GetLocation(offset);
 			
@@ -2783,7 +2780,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				sb.Append("a ()");
 				AppendMissingClosingBrackets(sb, text, false);
 				stream = new System.IO.StringReader(sb.ToString());
-				completionUnit = parser.Parse(stream, CSharpParsedFile.FileName, 0);
+				completionUnit = parser.Parse(stream, "a.cs", 0);
 				stream.Close();
 				loc = document.GetLocation(offset);
 				
