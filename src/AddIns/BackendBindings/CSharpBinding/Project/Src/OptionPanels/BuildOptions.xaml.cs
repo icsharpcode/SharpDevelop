@@ -7,18 +7,10 @@
  */
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 using Gui.Dialogs.OptionPanels.ProjectOptions;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
@@ -93,22 +85,19 @@ namespace CSharpBinding.OptionPanels
 			this.BaseIntermediateOutputPathCommand = new RelayCommand(BaseIntermediateOutputPathExecute);
 			this.IntermediateOutputPathCommand = new RelayCommand(IntermediateOutputPathExecute);
 			SetTreatWarningAsErrorRadioButtons();
-			this.DefineConstants.Location = PropertyStorageLocations.ConfigurationSpecific;
-			this.Optimize.Location = PropertyStorageLocations.ConfigurationSpecific;
-			this.AllowUnsafeBlocks.Location = PropertyStorageLocations.ConfigurationSpecific;
-			this.CheckForOverflowUnderflow.Location = PropertyStorageLocations.ConfigurationSpecific;
 		}
 		
 		#region properties
 		
 		public ProjectProperty<string> DefineConstants {
-			get {return GetProperty("DefineConstants", "", TextBoxEditMode.EditRawProperty); }
+			get {return GetProperty("DefineConstants", "",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific); }
 		}
 		
 		public ProjectProperty<string> Optimize {
-			get {return GetProperty("Optimize", "", TextBoxEditMode.EditRawProperty); }
+			get {return GetProperty("Optimize", "",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific); }
 		}
-		
 		
 		public ProjectProperty<string> AllowUnsafeBlocks {
 			get {return GetProperty("AllowUnsafeBlocks", "", TextBoxEditMode.EditRawProperty); }
@@ -116,9 +105,9 @@ namespace CSharpBinding.OptionPanels
 		
 		
 		public ProjectProperty<string> CheckForOverflowUnderflow {
-			get {return GetProperty("CheckForOverflowUnderflow", "", TextBoxEditMode.EditRawProperty); }
+			get {return GetProperty("CheckForOverflowUnderflow", "",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific); }
 		}
-		
 		
 		public ProjectProperty<string> NoStdLib {
 			get {return GetProperty("NoStdLib", "", TextBoxEditMode.EditRawProperty); }
@@ -140,31 +129,37 @@ namespace CSharpBinding.OptionPanels
 		
 		// used in multibinding
 		public ProjectProperty<string> RegisterForComInterop {
-			get {return GetProperty("RegisterForComInterop","",TextBoxEditMode.EditRawProperty ); }
+			get {return GetProperty("RegisterForComInterop","",
+			                        TextBoxEditMode.EditRawProperty, PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		
 		public ProjectProperty<string> GenerateSerializationAssemblies {
-			get {return GetProperty("GenerateSerializationAssemblies","",TextBoxEditMode.EditRawProperty ); }
+			get {return GetProperty("GenerateSerializationAssemblies","Auto",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		
 		public ProjectProperty<string> PlatformTarget {
-			get {return GetProperty("PlatformTarget","",TextBoxEditMode.EditRawProperty ); }
+			get {return GetProperty("PlatformTarget","AnyCPU",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		public ProjectProperty<string> FileAlignment {
-			get {return GetProperty("FileAlignment","",TextBoxEditMode.EditRawProperty ); }
+			get {return GetProperty("FileAlignment","4096",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 	
 		public ProjectProperty<string> BaseAddress {
-			get {return GetProperty("BaseAddress","0x400000",TextBoxEditMode.EditRawProperty ); }
+			get {return GetProperty("BaseAddress","0x400000",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.PlatformSpecific ); }
 		}
 		
 		
 		public ProjectProperty<string> BaseIntermediateOutputPath {
-			get {return GetProperty("BaseIntermediateOutputPath",@"obj\",TextBoxEditMode.EditRawProperty ); }
+			get {return GetProperty("BaseIntermediateOutputPath",@"obj\",
+			                        TextBoxEditMode.EditRawProperty,PropertyStorageLocations.ConfigurationSpecific ); }
 		}
 		
 		
@@ -208,6 +203,7 @@ namespace CSharpBinding.OptionPanels
 		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
 		{
 			SaveTreatWarningAsErrorRadioButtons();
+			
 			return base.Save(project, configuration, platform);
 		}
 		#endregion
@@ -264,6 +260,7 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		#endregion
+		
 		
 		#region ChangeOutputPathCommand
 		
@@ -359,6 +356,7 @@ namespace CSharpBinding.OptionPanels
 			                                        base.BaseDirectory,base.BaseDirectory,this.intermediateOutputPathTextBox.Text);
 			base.RaisePropertyChanged(()=> IntermediateOutputPath);
 		}
+		
 		#endregion
 		
 		#region WarningLevel
@@ -386,7 +384,9 @@ namespace CSharpBinding.OptionPanels
 		
 		private void SetTreatWarningAsErrorRadioButtons()
 		{
-			if (bool.Parse(this.TreatWarningsAsErrors.Value)) {
+			bool result;
+			bool.TryParse(this.TreatWarningsAsErrors.Value,out result);
+			if (result) {
 				this.allRadioButton.IsChecked  = true;
 			} else {
 				if (WarningsAsErrors.Value.Length > 0) {
@@ -395,20 +395,34 @@ namespace CSharpBinding.OptionPanels
 					this.noneRadioButton.IsChecked = true;
 				}
 			}
+			this.noneRadioButton.Checked += ErrorButton_Checked;
+			this.allRadioButton.Checked += ErrorButton_Checked;
+			this.specificWarningsRadioButton.Checked += ErrorButton_Checked;
 		}
 		
+	
 		
+	
 		private void SaveTreatWarningAsErrorRadioButtons()	
 		{
 
 			if ((bool)this.noneRadioButton.IsChecked){
 				this.specificWarningsTextBox.Text = string.Empty;
 			}
+			
 			if ((bool)this.allRadioButton.IsChecked) {
 				this.TreatWarningsAsErrors.Value = "true";
 			}	else {
 				this.TreatWarningsAsErrors.Value = "false";
 			}
+			this.noneRadioButton.Checked -= ErrorButton_Checked;
+			this.allRadioButton.Checked -= ErrorButton_Checked;
+			this.specificWarningsRadioButton.Checked -= ErrorButton_Checked;
+		}
+		
+		void ErrorButton_Checked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			IsDirty = true;
 		}
 		
 		
