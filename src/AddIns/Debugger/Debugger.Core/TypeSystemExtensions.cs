@@ -28,16 +28,18 @@ namespace Debugger
 		{
 			public readonly Module Module;
 			public Dictionary<IUnresolvedEntity, uint> MetadataTokens = new Dictionary<IUnresolvedEntity, uint>();
+			public Dictionary<IUnresolvedMember, ITypeReference[]> LocalVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
 			
 			public ModuleMetadataInfo(Module module)
 			{
 				this.Module = module;
 			}
 			
-			public void AddMetadataToken(IUnresolvedMethod method, CecilLoader loader)
+			public void AddMethod(IUnresolvedMethod method, CecilLoader loader)
 			{
 				var cecilMethod = loader.GetCecilObject(method);
 				this.MetadataTokens[method] = cecilMethod.MetadataToken.ToUInt32();
+				this.LocalVariableTypes[method] = cecilMethod.Body.Variables.Select(v => loader.ReadTypeReference(v.VariableType)).ToArray();
 			}
 		}
 		
@@ -65,21 +67,21 @@ namespace Debugger
 					moduleMetadataInfo.MetadataTokens[member] = cecilMember.MetadataToken.ToUInt32();
 				}
 				foreach (var member in typeDef.Methods) {
-					moduleMetadataInfo.AddMetadataToken(member, loader);
+					moduleMetadataInfo.AddMethod(member, loader);
 				}
 				foreach (var member in typeDef.Properties) {
 					if (member.CanGet)
-						moduleMetadataInfo.AddMetadataToken(member.Getter, loader);
+						moduleMetadataInfo.AddMethod(member.Getter, loader);
 					if (member.CanSet)
-						moduleMetadataInfo.AddMetadataToken(member.Setter, loader);
+						moduleMetadataInfo.AddMethod(member.Setter, loader);
 				}
 				foreach (var member in typeDef.Events) {
 					if (member.CanAdd)
-						moduleMetadataInfo.AddMetadataToken(member.AddAccessor, loader);
+						moduleMetadataInfo.AddMethod(member.AddAccessor, loader);
 					if (member.CanRemove)
-						moduleMetadataInfo.AddMetadataToken(member.RemoveAccessor, loader);
+						moduleMetadataInfo.AddMethod(member.RemoveAccessor, loader);
 					if (member.CanInvoke)
-						moduleMetadataInfo.AddMetadataToken(member.InvokeAccessor, loader);
+						moduleMetadataInfo.AddMethod(member.InvokeAccessor, loader);
 				}
 			}
 			weakTable.Add(asm, moduleMetadataInfo);
@@ -93,7 +95,9 @@ namespace Debugger
 				throw new ArgumentException("The assembly was not from the debugger type system");
 			return info;
 		}
+		#endregion
 		
+		#region GetModule / GetMetadataToken / GetVariableType
 		public static Module GetModule(this IAssembly assembly)
 		{
 			return GetInfo(assembly).Module;
@@ -115,6 +119,13 @@ namespace Debugger
 		{
 			var info = GetInfo(method.ParentAssembly);
 			return info.MetadataTokens[method.UnresolvedMember];
+		}
+		
+		public static IType GetVariableType(this IMethod method, int index)
+		{
+			var info = GetInfo(method.ParentAssembly);
+			var variableTypes = info.LocalVariableTypes[method.UnresolvedMember];
+			return variableTypes[index].Resolve(method.Compilation);
 		}
 		#endregion
 		
