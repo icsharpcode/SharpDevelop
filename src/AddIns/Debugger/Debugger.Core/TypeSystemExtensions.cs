@@ -4,12 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using Mono.Cecil;
 using Mono.Cecil.Metadata;
 
 namespace Debugger
@@ -33,21 +35,24 @@ namespace Debugger
 			}
 		}
 		
-		internal static IUnresolvedAssembly LoadModule(Module module, ICorDebugModule corModule)
+		internal static Task<IUnresolvedAssembly> LoadModuleAsync(Module module, ICorDebugModule corModule)
 		{
 			string name = corModule.GetName();
 			if (corModule.IsDynamic() == 1 || corModule.IsInMemory() == 1)
-				return new DefaultUnresolvedAssembly(name);
-			CecilLoader loader = new CecilLoader(true);
-			loader.IncludeInternalMembers = true;
-			var asm = loader.LoadAssemblyFile(name);
-			var moduleMetadataInfo = new ModuleMetadataInfo(module);
-			foreach (var typeDef in asm.GetAllTypeDefinitions()) {
-				var cecilTypeDef = loader.GetCecilObject(typeDef);
-				moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
-			}
-			weakTable.Add(asm, moduleMetadataInfo);
-			return asm;
+				return Task.FromResult<IUnresolvedAssembly>(new DefaultUnresolvedAssembly(name));
+			return Task.Run(
+				delegate {
+					CecilLoader loader = new CecilLoader(true);
+					loader.IncludeInternalMembers = true;
+					var asm = loader.LoadAssemblyFile(name);
+					var moduleMetadataInfo = new ModuleMetadataInfo(module);
+					foreach (var typeDef in asm.GetAllTypeDefinitions()) {
+						var cecilTypeDef = loader.GetCecilObject(typeDef);
+						moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
+					}
+					weakTable.Add(asm, moduleMetadataInfo);
+					return asm;
+				});
 		}
 		
 		static ModuleMetadataInfo GetInfo(IAssembly assembly)
@@ -67,6 +72,12 @@ namespace Debugger
 		#region IType -> ICorDebugType
 		public static ICorDebugType ToCorDebug(this IType type)
 		{
+			AppDomain appDomain;
+			return ToCorDebug(type, out appDomain);
+		}
+		
+		static ICorDebugType ToCorDebug(IType type, out AppDomain appDomain)
+		{
 			switch (type.Kind) {
 				case TypeKind.Class:
 				case TypeKind.Interface:
@@ -75,19 +86,33 @@ namespace Debugger
 				case TypeKind.Enum:
 				case TypeKind.Module:
 				case TypeKind.Void:
-					return ConvertTypeDefOrParameterizedType(type);
+					return ConvertTypeDefOrParameterizedType(type, out appDomain);
 				case TypeKind.Array:
+					{
+						var arrayType = (ArrayType)type;
+						var elementType = ToCorDebug(arrayType.ElementType, out appDomain);
+						return appDomain.CorAppDomain2.GetArrayOrPointerType(
+							(uint)(arrayType.Dimensions == 1 ? CorElementType.SZARRAY : CorElementType.ARRAY),
+							(uint)arrayType.Dimensions, elementType);
+					}
 				case TypeKind.Pointer:
 				case TypeKind.ByReference:
-					throw new NotImplementedException();
+					{
+						var pointerType = (TypeWithElementType)type;
+						var elementType = ToCorDebug(pointerType.ElementType, out appDomain);
+						return appDomain.CorAppDomain2.GetArrayOrPointerType(
+							(uint)(type.Kind == TypeKind.Pointer ? CorElementType.PTR : CorElementType.BYREF),
+							0, elementType);
+					}
 				default:
 					throw new System.Exception("Invalid value for TypeKind");
 			}
 		}
 		
-		static ICorDebugType ConvertTypeDefOrParameterizedType(IType type)
+		static ICorDebugType ConvertTypeDefOrParameterizedType(IType type, out AppDomain appDomain)
 		{
 			ITypeDefinition typeDef = type.GetDefinition();
+			appDomain = GetAppDomain(typeDef.Compilation);
 			var info = GetInfo(typeDef.ParentAssembly);
 			uint token = info.MetadataTokens[typeDef.Parts[0]];
 			ICorDebugClass corClass = info.Module.CorModule.GetClassFromToken(token);
