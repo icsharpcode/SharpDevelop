@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -56,7 +57,10 @@ namespace Debugger.AddIn.Pads.Controls
 			this.editor = (TextEditor)tmp;
 			
 			this.editor.Background = Brushes.Transparent;
+			this.editor.ClearValue(TextEditor.FontFamilyProperty);
+			this.editor.ClearValue(TextEditor.FontSizeProperty);
 			this.editor.ShowLineNumbers = false;
+			this.editor.WordWrap = false;
 			this.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
 			this.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 			this.editor.TextArea.GotKeyboardFocus += delegate {
@@ -70,7 +74,7 @@ namespace Debugger.AddIn.Pads.Controls
 			this.editor.TextArea.PreviewKeyDown += editor_TextArea_PreviewKeyDown;
 			this.editor.TextArea.TextEntered += editor_TextArea_TextEntered;
 			
-			this.Content = this.editor;
+			this.Content = this.editor.TextArea;
 		}
 		
 		void editor_TextArea_PreviewKeyDown(object sender, KeyEventArgs e)

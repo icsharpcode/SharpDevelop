@@ -2,10 +2,12 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Debugger;
 using Debugger.AddIn.TreeModel;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Services;
 using ICSharpCode.TreeView;
 
@@ -32,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.tree.Root = new SharpTreeNode();
 			this.tree.ShowRoot = false;
 			this.tree.View = (GridView)res["variableGridView"];
+			this.tree.ItemContainerStyle = (Style)res["itemContainerStyle"];
 			
 			WindowsDebugger.RefreshingPads += RefreshPad;
 			RefreshPad();

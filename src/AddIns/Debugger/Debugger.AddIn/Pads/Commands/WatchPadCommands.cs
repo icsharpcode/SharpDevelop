@@ -20,9 +20,11 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var node = new TreeNode(string.Empty, null).ToSharpTreeNode();
-				pad.Items.Add(node);
-				pad.Tree.FocusNode(node);
+				var node = new TreeNode(string.Empty, null);
+				node.CanSetName = true;
+				var sharpNode = node.ToSharpTreeNode();
+				pad.Items.Add(sharpNode);
+				pad.Tree.FocusNode(sharpNode);
 			}
 		}
 	}

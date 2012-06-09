@@ -7,6 +7,31 @@
 	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
 	>
 	
+	<Style x:Key="itemContainerStyle" TargetType="{x:Type ListViewItem}">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ListViewItem}">
+					<Border Name="Bd"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							Padding="{TemplateBinding Padding}"
+							SnapsToDevicePixels="true">
+						<GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+											  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsEnabled" Value="false">
+							<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	
 	<!-- Local Variables Pad and Watch Pad -->
 	<tv:SharpGridView x:Key="variableGridView">
 		<GridView.Columns>
@@ -30,7 +55,7 @@
 			<GridViewColumn Header="{core:Localize MainWindow.Windows.Debug.LocalVariables.TypeColumn}" Width="200">
 				<GridViewColumn.CellTemplate>
 					<DataTemplate>
-						<local:AutoCompleteTextBox Text="{Binding Node.Type}" />
+						<local:AutoCompleteTextBox Text="{Binding Node.Type}" IsEditable="False"/>
 					</DataTemplate>
 				</GridViewColumn.CellTemplate>
 			</GridViewColumn>
