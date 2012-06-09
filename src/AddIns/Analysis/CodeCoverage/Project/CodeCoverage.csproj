@@ -60,6 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\CodeCoverageControl.cs" />
+    <Compile Include="Src\CodeCoverageProjectOptionsPanel.xaml.cs">
+      <DependentUpon>CodeCoverageProjectOptionsPanel.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\CodeCoveragePad.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\CodeCoverageModule.cs" />
@@ -94,8 +98,6 @@
     <EmbeddedResource Include="Resources\CodeCoverageOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageDisplayItem.cs" />
     <Compile Include="Src\ColorPickerComboBox.cs" />
-    <Compile Include="Src\CodeCoverageProjectOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\CodeCoverageProjectOptionsPanel.xfrm" />
     <Compile Include="Src\CodeCoverageService.cs" />
     <Compile Include="Src\RunTestWithCodeCoverageCommand.cs" />
     <None Include="CodeCoverage.addin">
@@ -127,6 +129,11 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>
@@ -142,6 +149,9 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\CodeCoverageProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

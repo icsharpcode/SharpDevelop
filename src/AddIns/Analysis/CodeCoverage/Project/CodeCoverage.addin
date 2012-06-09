@@ -52,6 +52,8 @@
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             insertafter = "CodeAnalysisOptionPanel"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
+	
+	
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">
@@ -108,6 +110,7 @@
 		<OptionPanel id          = "CodeCoverage"
 		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageProjectOptionsPanel"/>
+		
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit/Format">
