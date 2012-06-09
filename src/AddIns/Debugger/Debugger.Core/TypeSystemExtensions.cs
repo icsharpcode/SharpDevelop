@@ -28,6 +28,7 @@ namespace Debugger
 		{
 			public readonly Module Module;
 			public Dictionary<IUnresolvedEntity, uint> MetadataTokens = new Dictionary<IUnresolvedEntity, uint>();
+			public Dictionary<uint, IUnresolvedMethod> TokenToMethod = new Dictionary<uint, IUnresolvedMethod>();
 			public Dictionary<IUnresolvedMember, ITypeReference[]> LocalVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
 			
 			public ModuleMetadataInfo(Module module)
@@ -38,8 +39,11 @@ namespace Debugger
 			public void AddMethod(IUnresolvedMethod method, CecilLoader loader)
 			{
 				var cecilMethod = loader.GetCecilObject(method);
-				this.MetadataTokens[method] = cecilMethod.MetadataToken.ToUInt32();
-				this.LocalVariableTypes[method] = cecilMethod.Body.Variables.Select(v => loader.ReadTypeReference(v.VariableType)).ToArray();
+				uint token = cecilMethod.MetadataToken.ToUInt32();
+				this.MetadataTokens[method] = token;
+				this.TokenToMethod[token] = method;
+				if (cecilMethod.HasBody)
+					this.LocalVariableTypes[method] = cecilMethod.Body.Variables.Select(v => loader.ReadTypeReference(v.VariableType)).ToArray();
 			}
 		}
 		
@@ -121,7 +125,7 @@ namespace Debugger
 			return info.MetadataTokens[method.UnresolvedMember];
 		}
 		
-		public static IType GetVariableType(this IMethod method, int index)
+		public static IType GetLocalVariableType(this IMethod method, int index)
 		{
 			var info = GetInfo(method.ParentAssembly);
 			var variableTypes = info.LocalVariableTypes[method.UnresolvedMember];
@@ -370,11 +374,6 @@ namespace Debugger
 			return def != null && def.KnownTypeCode == knownType;
 		}
 		
-		public static uint GetMetadataToken(this IMember member)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public static IField GetBackingField(this IMethod method)
 		{
 			throw new NotImplementedException();
@@ -399,11 +398,6 @@ namespace Debugger
 			return module.CorModule.GetFunctionFromToken(method.GetMetadataToken());
 		}
 		
-		public static IType GetLocalVariableType(this IMethod method, int index)
-		{
-			throw new NotImplementedException();
-		}
-		
 		public static bool IsDisplayClass(this IType type)
 		{
 			if (type.Name.StartsWith("<>") && type.Name.Contains("__DisplayClass")) {
@@ -424,13 +418,24 @@ namespace Debugger
 		
 		public static IMethod Import(this ICompilation compilation, ICorDebugFunction corFunction, List<ICorDebugType> typeArgs)
 		{
-			throw new NotImplementedException();
+			IMethod definition = Import(compilation, corFunction);
+			if (typeArgs == null || typeArgs.Count == 0) {
+				return definition;
+			}
+			int classTPC = definition.DeclaringTypeDefinition.TypeParameterCount;
+			IType[] classTPs = typeArgs.Take(classTPC).Select(t => compilation.Import(t)).ToArray();
+			IType[] methodTPs = null;
+			if (definition.TypeParameters.Count > 0)
+				methodTPs = typeArgs.Skip(classTPC).Select(t => compilation.Import(t)).ToArray();
+			return new SpecializedMethod(definition, new TypeParameterSubstitution(classTPs, methodTPs));
 		}
 		
 		public static IMethod Import(this ICompilation compilation, ICorDebugFunction corFunction)
 		{
 			Module module = compilation.GetAppDomain().Process.GetModule(corFunction.GetModule());
-			throw new NotImplementedException();
+			var info = GetInfo(module.Assembly);
+			var unresolved = info.TokenToMethod[corFunction.GetToken()];
+			return unresolved.Resolve(new SimpleTypeResolveContext(module.Assembly));
 		}
 	}
 }
