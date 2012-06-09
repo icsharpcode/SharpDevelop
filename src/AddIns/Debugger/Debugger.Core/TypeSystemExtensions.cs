@@ -27,11 +27,17 @@ namespace Debugger
 		class ModuleMetadataInfo
 		{
 			public readonly Module Module;
-			public Dictionary<IUnresolvedTypeDefinition, uint> MetadataTokens = new Dictionary<IUnresolvedTypeDefinition, uint>();
+			public Dictionary<IUnresolvedEntity, uint> MetadataTokens = new Dictionary<IUnresolvedEntity, uint>();
 			
 			public ModuleMetadataInfo(Module module)
 			{
 				this.Module = module;
+			}
+			
+			public void AddMetadataToken(IUnresolvedMethod method, CecilLoader loader)
+			{
+				var cecilMethod = loader.GetCecilObject(method);
+				this.MetadataTokens[method] = cecilMethod.MetadataToken.ToUInt32();
 			}
 		}
 		
@@ -49,6 +55,27 @@ namespace Debugger
 					foreach (var typeDef in asm.GetAllTypeDefinitions()) {
 						var cecilTypeDef = loader.GetCecilObject(typeDef);
 						moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
+						foreach (var member in typeDef.Fields) {
+							var cecilMember = loader.GetCecilObject(member);
+							moduleMetadataInfo.MetadataTokens[member] = cecilMember.MetadataToken.ToUInt32();
+						}
+						foreach (var member in typeDef.Methods) {
+							moduleMetadataInfo.AddMetadataToken(member, loader);
+						}
+						foreach (var member in typeDef.Properties) {
+							if (member.CanGet)
+								moduleMetadataInfo.AddMetadataToken(member.Getter, loader);
+							if (member.CanSet)
+								moduleMetadataInfo.AddMetadataToken(member.Setter, loader);
+						}
+						foreach (var member in typeDef.Events) {
+							if (member.CanAdd)
+								moduleMetadataInfo.AddMetadataToken(member.AddAccessor, loader);
+							if (member.CanRemove)
+								moduleMetadataInfo.AddMetadataToken(member.RemoveAccessor, loader);
+							if (member.CanInvoke)
+								moduleMetadataInfo.AddMetadataToken(member.InvokeAccessor, loader);
+						}
 					}
 					weakTable.Add(asm, moduleMetadataInfo);
 					return asm;
@@ -66,6 +93,24 @@ namespace Debugger
 		public static Module GetModule(this IAssembly assembly)
 		{
 			return GetInfo(assembly).Module;
+		}
+		
+		public static uint GetMetadataToken(this ITypeDefinition typeDefinition)
+		{
+			var info = GetInfo(typeDefinition.ParentAssembly);
+			return info.MetadataTokens[typeDefinition.Parts[0]];
+		}
+		
+		public static uint GetMetadataToken(this IField field)
+		{
+			var info = GetInfo(field.ParentAssembly);
+			return info.MetadataTokens[field.UnresolvedMember];
+		}
+		
+		public static uint GetMetadataToken(this IMethod method)
+		{
+			var info = GetInfo(method.ParentAssembly);
+			return info.MetadataTokens[method.UnresolvedMember];
 		}
 		#endregion
 		
