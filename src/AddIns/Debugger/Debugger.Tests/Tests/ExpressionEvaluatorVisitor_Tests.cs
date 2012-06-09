@@ -226,6 +226,7 @@ namespace Debugger.Tests
 			float pi = 3.14f;
 			string hi = "hi";
 			string emptyString = "";
+			DBBool boo = DBBool.Null;
 			
 			char[] array = "Hello".ToCharArray();
 			char[] array2 = "world".ToCharArray();
@@ -280,13 +281,12 @@ namespace Debugger.Tests
 			AssertEval("hi", "\"hi\"");
 			AssertEval("i is int", "true");
 			AssertEval("i is string", "false");
-//			AssertEval("hi + i", "\"hi4\"");
-//			AssertEval("hi + 1", "\"hi1\"");
+			AssertEval("hi + i", "\"hi4\"");
+			AssertEval("hi + 1", "\"hi1\"");
 			AssertEval("i > 2 ? i : i * 2", "4");
 			AssertEval("i < 2 ? i : i * 2", "8");
 			AssertEval("DBBool.True.IsTrue", "true");
-//			AssertEval("i < 2 ? i : i * 2", "8");
-			
+			AssertEval("i < 2 ? i : i * 2", "8");
 			
 			EndTest(false);
 		}

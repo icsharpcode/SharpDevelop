@@ -87,7 +87,7 @@ namespace Debugger.AddIn
 			Value val = Value.GetMemberValue(evalThread, target, importedMember);
 			if (val == null)
 				throw new GetValueException("Member not found!");
-			return target;
+			return val;
 		}
 		
 		Value Visit(OperatorResolveResult result)
@@ -194,7 +194,7 @@ namespace Debugger.AddIn
 			Debug.Assert(result.Operands.Count == 2);
 			Debug.Assert(operatorType != BinaryOperatorType.ConditionalAnd && operatorType != BinaryOperatorType.ConditionalOr && operatorType != BinaryOperatorType.NullCoalescing);
 			var lhs = Convert(result.Operands[0]).GetPermanentReference(evalThread);
-			var rhs = Convert(result.Operands[1]);
+			var rhs = Convert(result.Operands[1]).GetPermanentReference(evalThread);
 			var lhsRR = lhs.ToResolveResult(context);
 			var rhsRR = rhs.ToResolveResult(context);
 			CSharpResolver resolver = new CSharpResolver(debuggerTypeSystem).WithCheckForOverflow(checkForOverflow);
