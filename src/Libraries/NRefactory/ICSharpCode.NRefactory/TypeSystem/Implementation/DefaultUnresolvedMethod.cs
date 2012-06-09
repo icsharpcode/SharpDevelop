@@ -32,6 +32,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IList<IUnresolvedAttribute> returnTypeAttributes;
 		IList<IUnresolvedTypeParameter> typeParameters;
 		IList<IUnresolvedParameter> parameters;
+		IMemberReference accessorOwner;
 		
 		protected override void FreezeInternal()
 		{
@@ -122,6 +123,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (parameters == null)
 					parameters = new List<IUnresolvedParameter>();
 				return parameters;
+			}
+		}
+		
+		public IMemberReference AccessorOwner {
+			get { return accessorOwner; }
+			set {
+				ThrowIfFrozen();
+				accessorOwner = value;
 			}
 		}
 		

@@ -1646,10 +1646,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[CLSCompliant(false)]
 		public IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
+			return ReadMethod(method, parentType, null, methodType);
+		}
+		
+		IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, IUnresolvedMember accessorOwner, EntityType methodType = EntityType.Method)
+		{
 			if (method == null)
 				return null;
 			DefaultUnresolvedMethod m = new DefaultUnresolvedMethod(parentType, method.Name);
 			m.EntityType = methodType;
+			m.AccessorOwner = accessorOwner;
 			if (method.HasGenericParameters) {
 				for (int i = 0; i < method.GenericParameters.Count; i++) {
 					if (method.GenericParameters[i].Position != i)
@@ -1875,8 +1881,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property);
 			
-			p.Getter = ReadMethod(property.GetMethod, parentType);
-			p.Setter = ReadMethod(property.SetMethod, parentType);
+			p.Getter = ReadMethod(property.GetMethod, parentType, p);
+			p.Setter = ReadMethod(property.SetMethod, parentType, p);
 			
 			if (property.HasParameters) {
 				foreach (ParameterDefinition par in property.Parameters) {
@@ -1903,9 +1909,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(ev.AddMethod, e);
 			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev);
 			
-			e.AddAccessor = ReadMethod(ev.AddMethod, parentType);
-			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType);
-			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType);
+			e.AddAccessor = ReadMethod(ev.AddMethod, parentType, e);
+			e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType, e);
+			e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType, e);
 			
 			AddAttributes(ev, e);
 			

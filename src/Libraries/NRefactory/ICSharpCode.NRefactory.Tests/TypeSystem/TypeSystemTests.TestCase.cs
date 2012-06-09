@@ -72,6 +72,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		public NestedEnum EnumField;
 		
+		public A Property { get; set; }
+		
 		public enum NestedEnum {
 			EnumMember
 		}
