@@ -390,7 +390,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			bool isNullable = NullableType.IsNullable(expression.Type);
 			
 			// the operator is overloadable:
-			OverloadResolution userDefinedOperatorOR = new OverloadResolution(compilation, new[] { expression }, conversions: conversions);
+			OverloadResolution userDefinedOperatorOR = CreateOverloadResolution(new[] { expression });
 			foreach (var candidate in GetUserDefinedOperatorCandidates(type, overloadableOperatorName)) {
 				userDefinedOperatorOR.AddCandidate(candidate);
 			}
@@ -439,7 +439,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			OverloadResolution builtinOperatorOR = new OverloadResolution(compilation, new[] { expression }, conversions: conversions);
+			OverloadResolution builtinOperatorOR = CreateOverloadResolution(new[] { expression });
 			foreach (var candidate in methodGroup) {
 				builtinOperatorOR.AddCandidate(candidate);
 			}
@@ -569,7 +569,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
 			// the operator is overloadable:
-			OverloadResolution userDefinedOperatorOR = new OverloadResolution(compilation, new[] { lhs, rhs }, conversions: conversions);
+			OverloadResolution userDefinedOperatorOR = CreateOverloadResolution(new[] { lhs, rhs });
 			HashSet<IParameterizedMember> userOperatorCandidates = new HashSet<IParameterizedMember>();
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(lhsType, overloadableOperatorName));
 			userOperatorCandidates.UnionWith(GetUserDefinedOperatorCandidates(rhsType, overloadableOperatorName));
@@ -800,7 +800,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			OverloadResolution builtinOperatorOR = new OverloadResolution(compilation, new[] { lhs, rhs }, conversions: conversions);
+			OverloadResolution builtinOperatorOR = CreateOverloadResolution(new[] { lhs, rhs });
 			foreach (var candidate in methodGroup) {
 				builtinOperatorOR.AddCandidate(candidate);
 			}
@@ -1260,7 +1260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			else if (rr.IsCompileTimeConstant && c != Conversion.None)
 				return ResolveCast(targetType, rr);
 			else
-				return new ConversionResolveResult(targetType, rr, c);
+				return new ConversionResolveResult(targetType, rr, c, checkForOverflow);
 		}
 		
 		public ResolveResult ResolveCast(IType targetType, ResolveResult expression)
@@ -1291,7 +1291,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			Conversion c = conversions.ExplicitConversion(expression, targetType);
-			return new ConversionResolveResult(targetType, expression, c);
+			return new ConversionResolveResult(targetType, expression, c, checkForOverflow);
 		}
 		
 		internal object CSharpPrimitiveCast(TypeCode targetType, object input)
@@ -1891,7 +1891,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
+				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions);
 				if (or.BestCandidate != null) {
 					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
 						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetResult.Type));
@@ -1914,7 +1914,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
 			if (invokeMethod != null) {
-				OverloadResolution or = new OverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
+				OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
 				or.AddCandidate(invokeMethod);
 				return new CSharpInvocationResolveResult(
 					target, invokeMethod, //invokeMethod.ReturnType.Resolve(context),
@@ -2003,6 +2003,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				variableName = variableName.Substring(1);
 			return char.ToLower(variableName[0]) + variableName.Substring(1);
 		}
+		
+		OverloadResolution CreateOverloadResolution(ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null)
+		{
+			var or = new OverloadResolution(compilation, arguments, argumentNames, typeArguments, conversions);
+			or.CheckForOverflow = checkForOverflow;
+			return or;
+		}
 		#endregion
 		
 		#region ResolveIndexer
@@ -2035,7 +2042,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// §7.6.6.2 Indexer access
-			OverloadResolution or = new OverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
+			OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
 			MemberLookup lookup = CreateMemberLookup();
 			var indexers = lookup.LookupIndexers(target.Type);
 			or.AddMethodLists(indexers);
@@ -2090,7 +2097,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (type.Kind == TypeKind.Delegate && arguments.Length == 1) {
 				return Convert(arguments[0], type);
 			}
-			OverloadResolution or = new OverloadResolution(compilation, arguments, argumentNames, conversions: conversions);
+			OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
 			MemberLookup lookup = CreateMemberLookup();
 			foreach (IMethod ctor in type.GetConstructors()) {
 				if (lookup.IsAccessible(ctor, allowProtectedAccess))
