@@ -8,11 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -20,7 +20,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Win32;
 
 namespace ICSharpCode.CppBinding.Project
 {

@@ -53,7 +53,10 @@
 		             insertafter = "CodeAnalysisOptionPanel"
 		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanel"/>
 	
-	
+	<OptionPanel id          = "CodeCoverageOptionsPanel1"
+		             label       = "${res:ICSharpCode.UnitTesting.CodeCoverage}"
+		             insertafter = "CodeAnalysisOptionPanel"
+		             class       = "ICSharpCode.CodeCoverage.CodeCoverageOptionsPanelXaml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands">

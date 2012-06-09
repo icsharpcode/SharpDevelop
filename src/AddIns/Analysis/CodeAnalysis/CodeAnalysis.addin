@@ -23,6 +23,9 @@
 		<OptionPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
 		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
+	<OptionPanel id          = "CodeAnalysis"
+		             label       = "${res:ICSharpCode.CodeAnalysis}"
+		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanelXaml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">

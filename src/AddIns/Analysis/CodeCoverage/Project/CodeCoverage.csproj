@@ -60,6 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\CodeCoverageControl.cs" />
+    <Compile Include="Src\CodeCoverageOptionsPanelXaml.xaml.cs">
+      <DependentUpon>CodeCoverageOptionsPanelXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\CodeCoverageProjectOptionsPanel.xaml.cs">
       <DependentUpon>CodeCoverageProjectOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -151,6 +155,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\CodeCoverageOptionsPanelXaml.xaml" />
     <Page Include="Src\CodeCoverageProjectOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
