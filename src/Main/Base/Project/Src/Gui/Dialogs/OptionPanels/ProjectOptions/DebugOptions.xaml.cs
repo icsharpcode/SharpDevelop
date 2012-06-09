@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			get
 			{
-				return GetProperty<StartAction>("StartAction", Project.StartAction.Project, PropertyStorageLocations.ConfigurationSpecific);
+				return GetProperty<StartAction>("StartAction", SharpDevelop.Project.StartAction.Project, PropertyStorageLocations.ConfigurationSpecific);
 			}
 		}
 		

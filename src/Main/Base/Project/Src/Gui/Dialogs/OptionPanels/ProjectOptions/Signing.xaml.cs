@@ -7,17 +7,17 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets;
@@ -30,9 +30,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public partial class Signing : ProjectOptionPanel
 	{
 		private const string KeyFileExtensions = "*.snk;*.pfx;*.key";
-		private List<string> keyFile = new List<string>();
-		private MSBuildBasedProject project;
-		
+		private string selectedKey;
+		private ObservableCollection<string> keyFile = new ObservableCollection<string>();
 		
 		public Signing()
 		{
@@ -43,15 +42,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		private void Initialize()
 		{
 			FindKeys(base.BaseDirectory);
-			SelectedKey = AssemblyOriginatorKeyFile.Value;
-			if (SelectedKey != null) {
+			SelectedKey = AssemblyOriginatorKeyFile.Value.Trim();
+			if (SelectedKey.Length >  0) {
 				if (!KeyFile.Contains(SelectedKey)) {
 					keyFile.Add(SelectedKey);
 				}
 			}
-			
 			keyFile.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
 			keyFile.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
+			keyFileComboBox.SelectedIndex = 0;
+			keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
 		}
 		
 		public ProjectProperty<String> SignAssembly {
@@ -78,7 +78,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			this.project = project;
 			Initialize();
 		}
 		
@@ -87,14 +86,15 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (signAssemblyCheckBox.IsChecked == true) {
 				this.AssemblyOriginatorKeyFile.Value = "File";
 			}
+			keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
 			return base.Save(project, configuration, platform);
 		}
 		#endregion
 		
 		
-		#region keyFile
+		#region KeyFile
 		
-		public List<string> KeyFile {
+		public ObservableCollection<string> KeyFile {
 			get { return keyFile; }
 			set {
 				keyFile = value;
@@ -102,17 +102,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
-		public string SelectedKey {get;set;}
+		
+		public string SelectedKey {
+			get { return selectedKey; }
+			set { selectedKey = value;
+				base.RaisePropertyChanged(() => SelectedKey);
+			}
+		}
+		
 		
 		void FindKeys(string directory)
 		{
 			directory = FileUtility.NormalizePath(directory);
 			while (true) {
 				try {
-//					var files = from file in new DirectoryInfo(@"C:\").GetFiles()
-//            where file..Name.StartsWith("_")
-//            select file;
-
 					foreach (string fileName in Directory.GetFiles(directory, "*.snk")) {
 						keyFile.Add(MSBuildInternals.Escape(FileUtility.GetRelativePath(base.BaseDirectory, fileName)));
 					}
@@ -157,21 +160,60 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		private void CreateKeyFile()
 		{
-			if (File.Exists(CreateKey.StrongNameTool)) {
-				CreateKey createKey = new CreateKey(base.BaseDirectory);
-				createKey.KeyFile = project.Name;
-				createKey.ShowDialog();
-				if (createKey.DialogResult.HasValue && createKey.DialogResult.Value)
-				{
-					SelectedKey = MSBuildInternals.Escape(createKey.KeyFile);
-				} else{
-					SelectedKey = String.Empty;
+			if (File.Exists(StrongNameTool)) {
+				string title = StringParser.Parse("${res:Dialog.ProjectOptions.Signing.CreateKey.Title}");
+				string str = StringParser.Parse("${res:Dialog.ProjectOptions.Signing.CreateKey.KeyName}");
+				var keyName = str.Remove(str.IndexOf("&"),1);
+				
+				string key = MessageService.ShowInputBox(title,keyName,base.Project.Name);
+				if(!String.IsNullOrEmpty(key)) {
+					if (CreateKey(key.Trim())) {
+						this.keyFileComboBox.SelectionChanged -= KeyFileComboBox_SelectionChanged;
+						var generated = MSBuildInternals.Escape(key);
+						KeyFile.Add(generated);
+						SelectedKey = generated;
+						this.keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
+					}					
+				} else {
+					MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
 				}
-			} else {
-				MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
 			}
 		}
 		
 		#endregion	
+		
+		 /// <summary>
+        /// Gets the path of the "strong named" executable. This is used to create keys for strongly signing
+        /// .NET assemblies.
+        /// </summary>
+		private static string StrongNameTool {
+			get {
+        		return FileUtility.GetSdkPath("sn.exe");
+			}
+		}
+        
+        
+         /// <summary>
+        /// Creates a key with the sn.exe utility.
+        /// </summary>
+        /// <param name="keyPath">The path of the key to create.</param>
+        /// <returns>True if the key was created correctly.</returns>
+        private static bool CreateKey(string keyPath)
+        {
+        	if (File.Exists(keyPath)) {
+        		string question = "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}";
+        		question = StringParser.Parse(question, new StringTagPair("fileNames", keyPath));
+        		if (!MessageService.AskQuestion(question, "${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
+        			return false;
+        		}
+        	}
+        	Process p = Process.Start(StrongNameTool, "-k \"" + keyPath + "\"");
+        	p.WaitForExit();
+        	if (p.ExitCode != 0) {
+        		MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.ErrorCreatingKey}");
+        		return false;
+        	}
+        	return true;
+        }
 	}
 }

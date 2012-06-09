@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		private const string iconsfilter = "${res:SharpDevelop.FileFilter.Icons}|*.ico|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string manifestFilter = "${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles}|*.manifest|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string win32filter = "Win32 Resource files|*.res|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
-		MSBuildBasedProject project;
+//		MSBuildBasedProject project;
 		
 		public ApplicationSettings()
 		{
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		private void Initialize()
 		{
 			
-			foreach (IClass c in GetPossibleStartupObjects(project)) {
+			foreach (IClass c in GetPossibleStartupObjects(base.Project)) {
 				startupObjectComboBox.Items.Add(c.FullyQualifiedName);
 			}
 
@@ -53,10 +53,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			project_MinimumSolutionVersionChanged(null, null);
 			// re-evaluate if the project has the minimum version whenever this options page gets visible
 			// because the "convert project" button on the compiling tab page might have updated the MSBuild version.
-			project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
+			base.Project.MinimumSolutionVersionChanged += project_MinimumSolutionVersionChanged;
 			
-			projectFolderTextBox.Text = project.Directory;
-			projectFileTextBox.Text = Path.GetFileName(project.FileName);
+			projectFolderTextBox.Text = base.BaseDirectory;
+			projectFileTextBox.Text = Path.GetFileName(base.Project.FileName);
 			
 			//OptionBinding
 			RefreshStartupObjectEnabled(this, EventArgs.Empty);
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault}"));
 			applicationManifestComboBox.Items.Add(StringParser.Parse("${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest}"));
-			foreach (string fileName in Directory.GetFiles(project.Directory, "*.manifest")) {
+			foreach (string fileName in Directory.GetFiles(base.BaseDirectory, "*.manifest")) {
 				applicationManifestComboBox.Items.Add(Path.GetFileName(fileName));
 			}
 			applicationManifestComboBox.Items.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
@@ -116,7 +116,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		protected override void Load(MSBuildBasedProject project, string configuration, string platform)
 		{
 			base.Load(project, configuration, platform);
-			this.project = project;
 			Initialize();
 		}
 		
@@ -148,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void project_MinimumSolutionVersionChanged(object sender, EventArgs e)
 		{
 			// embedding manifests requires the project to target MSBuild 3.5 or higher
-			applicationManifestComboBox.IsEnabled = project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
+			applicationManifestComboBox.IsEnabled = base.Project.MinimumSolutionVersion >= Solution.SolutionVersionVS2008;
 		}
 			
 		#region refresh Outputpath + StartupOptions
@@ -196,10 +195,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void ApplicationIconTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
-			if (project != null) {
+			if (base.Project != null) {
 				if(FileUtility.IsValidPath(this.applicationIconTextBox.Text))
 				{
-					string appIconPath = Path.Combine(project.Directory, this.applicationIconTextBox.Text);
+					string appIconPath = Path.Combine(base.BaseDirectory, this.applicationIconTextBox.Text);
 					Console.WriteLine(appIconPath);
 					var b = File.Exists(appIconPath);
 					if (File.Exists(appIconPath)) {
@@ -257,7 +256,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void CreateManifest()
 		{
-			string manifestFile = Path.Combine(project.Directory, "app.manifest");
+			string manifestFile = Path.Combine(base.BaseDirectory, "app.manifest");
 			if (!File.Exists(manifestFile)) {
 				string defaultManifest;
 				using (Stream stream = typeof(ApplicationSettings).Assembly.GetManifestResourceStream("Resources.DefaultManifest.manifest")) {
@@ -272,10 +271,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				FileService.FireFileCreated(manifestFile, false);
 			}
 			
-			if (!project.IsFileInProject(manifestFile)) {
-				FileProjectItem newItem = new FileProjectItem(project, ItemType.None);
+			if (!base.Project.IsFileInProject(manifestFile)) {
+				FileProjectItem newItem = new FileProjectItem(base.Project, ItemType.None);
 				newItem.Include = "app.manifest";
-				ProjectService.AddProjectItem(project, newItem);
+				ProjectService.AddProjectItem(base.Project, newItem);
 				ProjectBrowserPad.RefreshViewAsync();
 			}
 		

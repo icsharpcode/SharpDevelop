@@ -180,6 +180,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+		public MSBuildBasedProject Project {
+			get { return project; }
+		}
+		
 		public string BaseDirectory {
 			get { return project.Directory; }
 		}
