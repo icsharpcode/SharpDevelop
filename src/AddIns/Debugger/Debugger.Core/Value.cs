@@ -493,6 +493,9 @@ namespace Debugger
 					return objectInstance.CorObjectValue.GetFieldValue((fieldInfo.DeclaringType).ToCorDebug().GetClass(), fieldInfo.GetMetadataToken());
 				}
 			} catch (COMException e) {
+				// System.Runtime.InteropServices.COMException (0x80131303): A class is not loaded. (Exception from HRESULT: 0x80131303)
+				if ((uint)e.ErrorCode == 0x80131303)
+					throw new GetValueException("Class " + fieldInfo.DeclaringType.FullName + " is not loaded");
 				throw new GetValueException("Can not get value of field", e);
 			}
 		}

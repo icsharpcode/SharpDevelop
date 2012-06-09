@@ -123,7 +123,7 @@ namespace Debugger.AddIn.TreeModel
 						this.GetChildren = () => GetArrayChildren(dims, dims);
 					}
 				} else if (val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct) {
-					if (val.Type.FullName == typeof(List<>).FullName) {
+					if (val.Type.IsKnownType(typeof(List<>))) {
 						if ((int)val.GetFieldValue("_size").PrimitiveValue > 0)
 							this.GetChildren = () => GetIListChildren(this.GetValue);
 					} else {
@@ -355,7 +355,7 @@ namespace Debugger.AddIn.TreeModel
 				);
 			}
 			
-			if (shownType.GetAllBaseTypeDefinitions().Any(t => t.FullName == typeof(IList).FullName)) {
+			if (shownType.GetAllBaseTypeDefinitions().Any(t => t.IsKnownType(typeof(IList)))) {
 				yield return new TreeNode(
 					"IList",
 					() => GetIListChildren(GetValue)

@@ -375,6 +375,16 @@ namespace Debugger
 			return def != null && def.KnownTypeCode == knownType;
 		}
 		
+		public static bool IsKnownType(this IType type, Type knownType)
+		{
+			var def = type.GetDefinition();
+			if (knownType.IsGenericTypeDefinition) {
+				return def != null && def.Compilation.FindType(knownType).Equals(def);
+			} else {
+				return def != null && def.Compilation.FindType(knownType).Equals(type);
+			}
+		}
+		
 		public static IField GetBackingField(this IMethod method)
 		{
 			return null;
@@ -405,7 +415,7 @@ namespace Debugger
 				return true; // Anonymous method or lambda
 			}
 			
-			if (type.GetDefinition().Attributes.Any(a => a.AttributeType.FullName == typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute).FullName)) {
+			if (type.GetDefinition() != null && type.GetDefinition().Attributes.Any(a => a.AttributeType.IsKnownType(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute)))) {
 				if (type.GetAllBaseTypeDefinitions().Any(t => t.FullName == typeof(System.Collections.IEnumerator).FullName)) {
 					return true; // yield
 				}
