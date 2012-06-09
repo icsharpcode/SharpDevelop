@@ -13,8 +13,6 @@
 	<optionpanels:ProjectOptionPanel.Resources>
 		<optionpanels:StorageLocationConverter
 			x:Key="converter" />
-		<optionpanels:StringToBoolConverter
-			x:Key="strTobool"></optionpanels:StringToBoolConverter>
 	</optionpanels:ProjectOptionPanel.Resources>
 	
 	<ScrollViewer
@@ -53,7 +51,7 @@
 					
 					<!--x:Name="optimizeCodeCheckBox"-->
 					<CheckBox  Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
-						IsChecked="{Binding Optimize.Value,Converter={StaticResource strTobool}}"
+						IsChecked="{Binding Optimize.Value}"
 						Content="{core:Localize Dialog.ProjectOptions.BuildOptions.OptimizeCode}"></CheckBox>
 					
 					<optionpanels:StorageLocationPicker Grid.Row="3" DockPanel.Dock="Left"
@@ -61,21 +59,21 @@
 					
 					<!--x:Name="allowUnsafeCodeCheckBox"-->
 					<CheckBox Grid.Row="3" Grid.Column="1" VerticalAlignment="Center"
-						IsChecked="{Binding AllowUnsafeBlocks.Value,Converter={StaticResource strTobool}}"
+						IsChecked="{Binding AllowUnsafeBlocks.Value}"
 						Content="{core:Localize Dialog.ProjectOptions.BuildOptions.AllowUnsafeCode}"></CheckBox>
 					
 					<optionpanels:StorageLocationPicker Grid.Row="4" DockPanel.Dock="Left" Location="{Binding CheckForOverflowUnderflow.Location}"/>
 					
 					<!--x:Name="checkForOverflowCheckBox"-->
 					<CheckBox Grid.Row="4" Grid.Column="1" VerticalAlignment="Center"
-						IsChecked="{Binding CheckForOverflowUnderflow.Value,Converter={StaticResource strTobool}}"
+						IsChecked="{Binding CheckForOverflowUnderflow.Value}"
 						Content="{core:Localize Dialog.ProjectOptions.BuildOptions.CheckForOverflow}"></CheckBox>
 					
 					<optionpanels:StorageLocationPicker Grid.Row="5" DockPanel.Dock="Left" Location="{Binding NoStdLib.Location}"/>
 					
 					<!--x:Name="noCorlibCheckBox"-->
 					<CheckBox Grid.Row="5" Grid.Column="1" VerticalAlignment="Center"
-						IsChecked="{Binding NoStdLib.Value,Converter={StaticResource strTobool}}"
+						IsChecked="{Binding NoStdLib.Value}"
 						Content="{core:Localize Dialog.ProjectOptions.BuildOptions.NoCorlib}"></CheckBox>
 				</Grid>
 			</GroupBox>
@@ -188,7 +186,7 @@
 							
 							<!--x:Name="registerCOMInteropCheckBox"-->
 							<CheckBox Grid.Column="2"
-							          IsChecked="{Binding RegisterForComInterop.Value,Converter={StaticResource strTobool}}"
+							          IsChecked="{Binding RegisterForComInterop.Value}"
 							          Content="{core:Localize Dialog.ProjectOptions.Build.RegisterForCOM}"></CheckBox>
 							
 							<Label Grid.Row="1" Grid.Column="1"
@@ -289,7 +287,7 @@
 					<!--x:Name="warningLevelComboBox"-->
 					<ComboBox Grid.Column="2" Width="40" VerticalAlignment="Center" HorizontalAlignment="Left"
 					          ItemsSource="{Binding Path=DataContext.WarnLevel}"
-					          SelectedValue="{Binding Path=DataContext.SelectedWarningLevel}"
+					          SelectedValue="{Binding Path=WarningLevel.Value}"
 					          DisplayMemberPath="DisplayValue"
 					          SelectedValuePath="Key"
 					          SelectedIndex="4"></ComboBox>
