@@ -7,10 +7,6 @@
 	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Gui.OptionPanels"
 	xmlns:projects="clr-namespace:ICSharpCode.SharpDevelop.Project"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
-	<optionpanels:ProjectOptionPanel.Resources>
-		<optionpanels:StringToBoolConverter
-			x:Key="strTobool"></optionpanels:StringToBoolConverter>
-	</optionpanels:ProjectOptionPanel.Resources>
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<StackPanel
 			Orientation="Vertical">
@@ -33,7 +29,7 @@
 					<CheckBox x:Name="signAssemblyCheckBox"
 					          Grid.Column="1" VerticalAlignment="Bottom"
 					          Content="{core:Localize Dialog.ProjectOptions.Signing.SignAssembly}"
-					          IsChecked="{Binding SignAssembly.Value,Converter={StaticResource strTobool}}">
+					          IsChecked="{Binding SignAssembly.Value}">
 					</CheckBox>
 					
 					<Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"

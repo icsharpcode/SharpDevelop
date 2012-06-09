@@ -54,8 +54,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			keyFileComboBox.SelectionChanged += KeyFileComboBox_SelectionChanged;
 		}
 		
-		public ProjectProperty<String> SignAssembly {
-			get { return GetProperty("SignAssembly","false", TextBoxEditMode.EditEvaluatedProperty); }
+		public ProjectProperty<bool> SignAssembly {
+			get { return GetProperty("SignAssembly", false); }
 		}
 		
 		

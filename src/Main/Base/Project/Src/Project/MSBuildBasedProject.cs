@@ -255,10 +255,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		                          out PropertyStorageLocations location)
 		{
 			using (var c = OpenConfiguration(configuration, platform)) {
-				var prop = c.GetNonImportedProperty(propertyName);
+				bool wasHiddenByImportedProperty;
+				var prop = c.GetNonImportedProperty(propertyName, out wasHiddenByImportedProperty);
 				if (prop != null) {
 					location = c.GetLocation(prop);
 					return prop.EvaluatedValue;
+				} else if (wasHiddenByImportedProperty) {
+					string unevaluated = GetAnyUnevaluatedPropertyValue(configuration, platform, propertyName, out location);
+					if (unevaluated != null) {
+						return c.Project.ExpandString(unevaluated);
+					}
+					return null;
 				} else {
 					location = PropertyStorageLocations.Unknown;
 					return null;
@@ -306,10 +313,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		                                    out PropertyStorageLocations location)
 		{
 			using (var c = OpenConfiguration(configuration, platform)) {
-				var prop = c.GetNonImportedProperty(propertyName);
+				bool wasHiddenByImportedProperty;
+				var prop = c.GetNonImportedProperty(propertyName, out wasHiddenByImportedProperty);
 				if (prop != null) {
 					location = c.GetLocation(prop);
 					return prop.UnevaluatedValue;
+				} else if (wasHiddenByImportedProperty) {
+					return GetAnyUnevaluatedPropertyValue(configuration, platform, propertyName, out location);
 				} else {
 					location = PropertyStorageLocations.Unknown;
 					return null;
@@ -418,12 +428,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				this.unloadProjectOnDispose = unloadProjectOnDispose;
 			}
 			
-			public MSBuild.ProjectProperty GetNonImportedProperty(string name)
+			public MSBuild.ProjectProperty GetNonImportedProperty(string name, out bool wasHiddenByImportedProperty)
 			{
+				wasHiddenByImportedProperty = false;
 				var prop = Project.GetProperty(name);
 				if (prop != null && prop.Xml != null) {
 					if (prop.Xml.ContainingProject == p.projectFile || prop.Xml.ContainingProject == p.userProjectFile)
 						return prop;
+					else
+						wasHiddenByImportedProperty = true;
 				}
 				return null;
 			}
@@ -467,7 +480,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		                                                    out PropertyStorageLocations location)
 		{
 			using (var c = OpenConfiguration(configuration, platform)) {
-				var prop = c.GetNonImportedProperty(propertyName);
+				bool wasHiddenByImportedProperty;
+				var prop = c.GetNonImportedProperty(propertyName, out wasHiddenByImportedProperty);
 				if (prop != null) {
 					group = (ProjectPropertyGroupElement)prop.Xml.Parent;
 					location = c.GetLocation(prop);
@@ -490,15 +504,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <param name="propertyName">The name of the property</param>
 		string GetAnyUnevaluatedPropertyValue(string configuration, string platform, string propertyName)
 		{
+			PropertyStorageLocations tmp;
+			return GetAnyUnevaluatedPropertyValue(configuration, platform, propertyName, out tmp);
+		}
+		
+		string GetAnyUnevaluatedPropertyValue(string configuration, string platform, string propertyName, out PropertyStorageLocations location)
+		{
 			// first try main project file, then try user project file
-			ProjectPropertyElement p = GetAnyUnevaluatedProperty(projectFile, configuration, platform, propertyName);
-			if (p == null)
-				p = GetAnyUnevaluatedProperty(userProjectFile, configuration, platform, propertyName);
+			ProjectPropertyElement p = GetAnyUnevaluatedProperty(projectFile, configuration, platform, propertyName, out location);
+			if (p == null) {
+				p = GetAnyUnevaluatedProperty(userProjectFile, configuration, platform, propertyName, out location);
+				if (p != null)
+					location |= PropertyStorageLocations.UserFile;
+			}
 			return p != null ? p.Value : null;
 		}
 		
-		static ProjectPropertyElement GetAnyUnevaluatedProperty(ProjectRootElement project, string configuration, string platform, string propertyName)
+		static ProjectPropertyElement GetAnyUnevaluatedProperty(ProjectRootElement project, string configuration, string platform, string propertyName, out PropertyStorageLocations location)
 		{
+			location = PropertyStorageLocations.Unknown;
 			foreach (var g in project.PropertyGroups) {
 				var property = g.Properties.FirstOrDefault(p => MSBuildInternals.PropertyNameComparer.Equals(p.Name, propertyName));
 				if (property == null)
@@ -510,6 +534,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				if ((configuration == null || configuration == gConfiguration || gConfiguration == null)
 				    && (platform == null || platform == gPlatform || gPlatform == null))
 				{
+					if (gConfiguration == null && gPlatform == null) {
+						location = PropertyStorageLocations.Base;
+					} else {
+						location = 0;
+						if (gConfiguration != null)
+							location |= PropertyStorageLocations.ConfigurationSpecific;
+						if (gPlatform != null)
+							location |= PropertyStorageLocations.PlatformSpecific;
+					};
 					return property;
 				}
 			}
@@ -1625,6 +1658,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return formattedText.ToString();
 		}
-		#endregion		
+		#endregion
 	}
 }
