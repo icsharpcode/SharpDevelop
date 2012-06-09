@@ -35,8 +35,18 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 		}
 		
+		public ErrorResolveResult(IType type, string message, TextLocation location) : base(type)
+		{
+			this.Message = message;
+			this.Location = location;
+		}
+		
 		public override bool IsError {
 			get { return true; }
 		}
+		
+		public string Message { get; private set; }
+		
+		public TextLocation Location { get; private set; }
 	}
 }
