@@ -65,6 +65,7 @@ namespace Debugger
 			var moduleMetadataInfo = new ModuleMetadataInfo(module);
 			foreach (var typeDef in asm.GetAllTypeDefinitions()) {
 				var cecilTypeDef = loader.GetCecilObject(typeDef);
+				loader.SetCurrentModule(cecilTypeDef.Module);
 				moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
 				foreach (var member in typeDef.Fields) {
 					var cecilMember = loader.GetCecilObject(member);
@@ -129,7 +130,7 @@ namespace Debugger
 		{
 			var info = GetInfo(method.ParentAssembly);
 			var variableTypes = info.LocalVariableTypes[method.UnresolvedMember];
-			return variableTypes[index].Resolve(method.Compilation);
+			return variableTypes[index].Resolve(new SimpleTypeResolveContext(method));
 		}
 		#endregion
 		
@@ -376,7 +377,7 @@ namespace Debugger
 		
 		public static IField GetBackingField(this IMethod method)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public static ICorDebugType[] GetTypeArguments(this IMethod method)
