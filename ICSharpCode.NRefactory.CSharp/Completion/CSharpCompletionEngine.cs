@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public bool CloseOnSquareBrackets;
 		#endregion
 		
-		public CSharpCompletionEngine(IDocument document, IMemberProvider memberProvider, ICompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx) : base (content, memberProvider, ctx)
+		public CSharpCompletionEngine(IDocument document, ICompletionContextProvider completionContextProvider, ICompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx) : base (content, completionContextProvider, ctx)
 		{
 			if (document == null) {
 				throw new ArgumentNullException("document");
@@ -882,7 +882,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (n.Parent is ICSharpCode.NRefactory.CSharp.Attribute) {
 							nodes.Add(n.Parent);
 						}
-						var astResolver = MemberProvider.GetResolver (csResolver, identifierStart.Unit);
+						var astResolver = CompletionContextProvider.GetResolver (csResolver, identifierStart.Unit);
 						astResolver.ApplyNavigator(new NodeListResolveVisitorNavigator(nodes));
 						try {
 							csResolver = astResolver.GetResolverStateBefore(n);
@@ -1278,7 +1278,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var root = node;
 				while (root.Parent != null)
 					root = root.Parent;
-				var astResolver = MemberProvider.GetResolver (state, root);
+				var astResolver = CompletionContextProvider.GetResolver (state, root);
 				foreach (var type in CreateFieldAction.GetValidTypes(astResolver, (Expression)node)) {
 					if (type.Kind == TypeKind.Enum) {
 						AddEnumMembers(wrapper, type, state);
@@ -1653,7 +1653,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					var expressionOrVariableDeclaration = GetNewExpressionAt(j);
 					if (expressionOrVariableDeclaration == null)
 						return null;
-					var astResolver = MemberProvider.GetResolver(GetState(), expressionOrVariableDeclaration.Unit);
+					var astResolver = CompletionContextProvider.GetResolver(GetState(), expressionOrVariableDeclaration.Unit);
 					hintType = CreateFieldAction.GetValidTypes(
 						astResolver,
 						expressionOrVariableDeclaration.Node as Expression
@@ -2135,7 +2135,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var exprParent = resolvedNode.GetParent<Expression>();
 			var unit = exprParent != null ? exprParent.GetParent<CompilationUnit>() : null;
 
-			var astResolver = unit != null ? MemberProvider.GetResolver(state, unit) : null;
+			var astResolver = unit != null ? CompletionContextProvider.GetResolver(state, unit) : null;
 			IType hintType = exprParent != null && astResolver != null ? 
 				CreateFieldAction.GetValidTypes(astResolver, exprParent) .FirstOrDefault() :
 				null;

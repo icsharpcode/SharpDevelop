@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpCompletionEngineBase.cs
 //  
 // Author:
@@ -64,22 +64,22 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		#endregion
 		
-		protected CSharpCompletionEngineBase(IProjectContent content, IMemberProvider memberProvider, CSharpTypeResolveContext ctx)
+		protected CSharpCompletionEngineBase(IProjectContent content, ICompletionContextProvider completionContextProvider, CSharpTypeResolveContext ctx)
 		{
 			if (content == null)
 				throw new ArgumentNullException("content");
 			if (ctx == null)
 				throw new ArgumentNullException("ctx");
-			if (memberProvider == null)
-				throw new ArgumentNullException("memberProvider");
+			if (completionContextProvider == null)
+				throw new ArgumentNullException("completionContextProvider");
 			
 			this.ProjectContent = content;
-			this.MemberProvider = memberProvider;
+			this.CompletionContextProvider = completionContextProvider;
 			this.ctx = ctx;
 		}
 		
 		
-		public IMemberProvider MemberProvider {
+		public ICompletionContextProvider CompletionContextProvider {
 			get;
 			private set;
 		}
@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			
 			this.offset = offset;
 			this.location = document.GetLocation (offset);
-			MemberProvider.GetCurrentMembers (offset, out currentType, out currentMember);
+			CompletionContextProvider.GetCurrentMembers (offset, out currentType, out currentMember);
 		}
 
 		public bool GetParameterCompletionCommandOffset (out int cpos)
@@ -703,7 +703,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		protected Tuple<string, TextLocation> GetMemberTextToCaret()
 		{
-			return MemberProvider.GetMemberTextToCaret(offset, currentType, currentMember);
+			return CompletionContextProvider.GetMemberTextToCaret(offset, currentType, currentMember);
 		}
 		
 		protected ExpressionResult GetInvocationBeforeCursor(bool afterBracket)
@@ -801,7 +801,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (root == null) {
 					return null;
 				}
-				var csResolver = MemberProvider.GetResolver (GetState(), root);
+				var csResolver = CompletionContextProvider.GetResolver (GetState(), root);
 				var result = csResolver.Resolve(resolveNode);
 				var state = csResolver.GetResolverStateBefore(resolveNode);
 				return Tuple.Create(result, state);

@@ -291,7 +291,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					rctx = rctx.WithCurrentMember(curMember.CreateResolved(rctx));
 				}
 			}
-			var mb = new DefaultMemberProvider(doc, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
 			var engine = new CSharpParameterCompletionEngine (doc, mb, new TestFactory (pctx), pctx, rctx);
 			return engine.GetParameterDataProvider (cursorPosition, doc.GetCharAt (cursorPosition - 1));
 		}

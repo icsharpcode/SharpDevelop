@@ -239,7 +239,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 					rctx = rctx.WithCurrentMember(curMember);
 				}
 			}
-			var mb = new DefaultMemberProvider(doc, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
 			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, rctx);
 				
 			engine.EolMarker = Environment.NewLine;
@@ -265,7 +265,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			pctx = pctx.UpdateProjectContent(null, parsedFile);
 			var cmp = pctx.CreateCompilation();
 			
-			var mb = new DefaultMemberProvider(doc, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
 			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();

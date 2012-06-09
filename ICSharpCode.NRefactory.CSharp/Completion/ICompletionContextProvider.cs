@@ -33,7 +33,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
-	public interface IMemberProvider
+	public interface ICompletionContextProvider
 	{
 		void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember);
 
@@ -42,12 +42,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		CSharpAstResolver GetResolver (CSharpResolver resolver, AstNode rootNode);
 	}
 
-	public class DefaultMemberProvider : IMemberProvider
+	public class DefaultCompletionContextProvider : ICompletionContextProvider
 	{
 		readonly IDocument document;
 		readonly CSharpParsedFile parsedFile;
 
-		public DefaultMemberProvider (IDocument document, CSharpParsedFile parsedFile)
+		public DefaultCompletionContextProvider (IDocument document, CSharpParsedFile parsedFile)
 		{
 			if (document == null)
 				throw new ArgumentNullException("document");

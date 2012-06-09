@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 	{
 		internal IParameterCompletionDataFactory factory;
 		
-		public CSharpParameterCompletionEngine(IDocument document, IMemberProvider memberProvider, IParameterCompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx) : base (content, memberProvider, ctx)
+		public CSharpParameterCompletionEngine(IDocument document, ICompletionContextProvider completionContextProvider, IParameterCompletionDataFactory factory, IProjectContent content, CSharpTypeResolveContext ctx) : base (content, completionContextProvider, ctx)
 		{
 			if (document == null) {
 				throw new ArgumentNullException("document");
