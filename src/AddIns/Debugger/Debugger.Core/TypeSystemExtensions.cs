@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -46,40 +46,44 @@ namespace Debugger
 			string name = corModule.GetName();
 			if (corModule.IsDynamic() == 1 || corModule.IsInMemory() == 1)
 				return Task.FromResult<IUnresolvedAssembly>(new DefaultUnresolvedAssembly(name));
-			return Task.Run(
-				delegate {
-					CecilLoader loader = new CecilLoader(true);
-					loader.IncludeInternalMembers = true;
-					var asm = loader.LoadAssemblyFile(name);
-					var moduleMetadataInfo = new ModuleMetadataInfo(module);
-					foreach (var typeDef in asm.GetAllTypeDefinitions()) {
-						var cecilTypeDef = loader.GetCecilObject(typeDef);
-						moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
-						foreach (var member in typeDef.Fields) {
-							var cecilMember = loader.GetCecilObject(member);
-							moduleMetadataInfo.MetadataTokens[member] = cecilMember.MetadataToken.ToUInt32();
-						}
-						foreach (var member in typeDef.Methods) {
-							moduleMetadataInfo.AddMetadataToken(member, loader);
-						}
-						foreach (var member in typeDef.Properties) {
-							if (member.CanGet)
-								moduleMetadataInfo.AddMetadataToken(member.Getter, loader);
-							if (member.CanSet)
-								moduleMetadataInfo.AddMetadataToken(member.Setter, loader);
-						}
-						foreach (var member in typeDef.Events) {
-							if (member.CanAdd)
-								moduleMetadataInfo.AddMetadataToken(member.AddAccessor, loader);
-							if (member.CanRemove)
-								moduleMetadataInfo.AddMetadataToken(member.RemoveAccessor, loader);
-							if (member.CanInvoke)
-								moduleMetadataInfo.AddMetadataToken(member.InvokeAccessor, loader);
-						}
-					}
-					weakTable.Add(asm, moduleMetadataInfo);
-					return asm;
-				});
+			
+			//return Task.FromResult(LoadModule(module, name));
+			return Task.Run(() => LoadModule(module, name));
+		}
+		
+		static IUnresolvedAssembly LoadModule(Module module, string name)
+		{
+			CecilLoader loader = new CecilLoader(true);
+			loader.IncludeInternalMembers = true;
+			var asm = loader.LoadAssemblyFile(name);
+			var moduleMetadataInfo = new ModuleMetadataInfo(module);
+			foreach (var typeDef in asm.GetAllTypeDefinitions()) {
+				var cecilTypeDef = loader.GetCecilObject(typeDef);
+				moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
+				foreach (var member in typeDef.Fields) {
+					var cecilMember = loader.GetCecilObject(member);
+					moduleMetadataInfo.MetadataTokens[member] = cecilMember.MetadataToken.ToUInt32();
+				}
+				foreach (var member in typeDef.Methods) {
+					moduleMetadataInfo.AddMetadataToken(member, loader);
+				}
+				foreach (var member in typeDef.Properties) {
+					if (member.CanGet)
+						moduleMetadataInfo.AddMetadataToken(member.Getter, loader);
+					if (member.CanSet)
+						moduleMetadataInfo.AddMetadataToken(member.Setter, loader);
+				}
+				foreach (var member in typeDef.Events) {
+					if (member.CanAdd)
+						moduleMetadataInfo.AddMetadataToken(member.AddAccessor, loader);
+					if (member.CanRemove)
+						moduleMetadataInfo.AddMetadataToken(member.RemoveAccessor, loader);
+					if (member.CanInvoke)
+						moduleMetadataInfo.AddMetadataToken(member.InvokeAccessor, loader);
+				}
+			}
+			weakTable.Add(asm, moduleMetadataInfo);
+			return asm;
 		}
 		
 		static ModuleMetadataInfo GetInfo(IAssembly assembly)

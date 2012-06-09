@@ -28,9 +28,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		string fileName = String.Empty;
 		IProjectChangeWatcher changeWatcher;
 		
-		public Solution(IProjectChangeWatcher changeWatcher)
+		public Solution(IProjectChangeWatcher changeWatcher, string initialConfiguration = null, string initialPlatform = null)
 		{
 			preferences = new SolutionPreferences(this);
+			if (!string.IsNullOrEmpty(initialConfiguration))
+				preferences.ActiveConfiguration = initialConfiguration;
+			if (!string.IsNullOrEmpty(initialPlatform))
+				preferences.ActivePlatform = initialPlatform;
 			this.MSBuildProjectCollection = new Microsoft.Build.Evaluation.ProjectCollection();
 			this.changeWatcher = changeWatcher;
 		}
@@ -564,6 +568,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+			newSolution.preferences.ValidateConfigurationAndPlatform();
 			// load projects
 			for(int i=0; i<projectsToLoad.Count; i++) {
 				ProjectLoadInformation loadInfo = projectsToLoad[i];
@@ -1187,9 +1192,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public static Solution Load(string fileName)
+		public static Solution Load(string fileName, string initialConfiguration = null, string initialPlatform = null)
 		{
-			Solution newSolution = new Solution(new ProjectChangeWatcher(fileName));
+			Solution newSolution = new Solution(new ProjectChangeWatcher(fileName), initialConfiguration, initialPlatform);
 			solutionBeingLoaded  = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			

@@ -264,9 +264,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			BeforeLoadSolution();
 			OnSolutionLoading(fileName);
+			var solutionProperties = LoadSolutionPreferences(fileName);
 			try {
-				openSolution = Solution.Load(fileName);
+				openSolution = Solution.Load(fileName, solutionProperties["ActiveConfiguration"], solutionProperties["ActivePlatform"]);
 				CommandManager.InvalidateRequerySuggested();
+				SD.ParserService.InvalidateCurrentSolutionSnapshot();
 				if (openSolution == null)
 					return;
 			} catch (IOException ex) {
@@ -278,24 +280,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
+			(openSolution.Preferences as IMementoCapable).SetMemento(solutionProperties);
+			
 			try {
-				string file = GetPreferenceFileName(openSolution.FileName);
-				Properties properties = null;
-				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
-					try {
-						properties = Properties.Load(file);
-					} catch (IOException) {
-					} catch (UnauthorizedAccessException) {
-					} catch (XmlException) {
-						// ignore errors about inaccessible or malformed files
-					}
-				}
-				(openSolution.Preferences as IMementoCapable).SetMemento(properties ?? new Properties());
-			} catch (Exception ex) {
-				MessageService.ShowException(ex);
-			}
-			try {
-				ApplyConfigurationAndReadPreferences();
+				ApplyConfigurationAndReadProjectPreferences();
 			} catch (Exception ex) {
 				MessageService.ShowException(ex);
 			}
@@ -309,7 +297,27 @@ namespace ICSharpCode.SharpDevelop.Project
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 		}
 		
-		static void ApplyConfigurationAndReadPreferences()
+		static Properties LoadSolutionPreferences(string solutionFileName)
+		{
+			try {
+				string file = GetPreferenceFileName(solutionFileName);
+				Properties properties = null;
+				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
+					try {
+						return Properties.Load(file);
+					} catch (IOException) {
+					} catch (UnauthorizedAccessException) {
+					} catch (XmlException) {
+						// ignore errors about inaccessible or malformed files
+					}
+				}
+			} catch (Exception ex) {
+				MessageService.ShowException(ex);
+			}
+			return new Properties();
+		}
+		
+		static void ApplyConfigurationAndReadProjectPreferences()
 		{
 			openSolution.ApplySolutionConfigurationAndPlatformToProjects();
 			foreach (IProject project in openSolution.Projects) {
@@ -455,7 +463,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return b.ToString();
 		}
 		
-		static string GetPreferenceFileName(string projectFileName)
+		internal static string GetPreferenceFileName(string projectFileName)
 		{
 			string directory = Path.Combine(PropertyService.ConfigDirectory, "preferences");
 			return Path.Combine(directory,

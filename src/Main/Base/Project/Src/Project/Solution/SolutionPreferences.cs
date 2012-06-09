@@ -91,21 +91,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		void IMementoCapable.SetMemento(Properties memento)
 		{
 			SetStartupProject(memento.Get("StartupProject", ""));
-			string configuration = memento.Get("ActiveConfiguration", activeConfiguration);
-			string platform      = memento.Get("ActivePlatform", activePlatform);
-			
+			activeConfiguration = memento.Get("ActiveConfiguration", activeConfiguration);
+			activePlatform = memento.Get("ActivePlatform", activePlatform);
+			ValidateConfigurationAndPlatform();
+			this.properties = memento;
+		}
+		
+		internal void ValidateConfigurationAndPlatform()
+		{
 			// validate configuration and platform:
 			IList<string> available = solution.GetConfigurationNames();
-			if (available.Count > 0 && !available.Contains(configuration))
-				configuration = available[0];
+			if (available.Count > 0 && !available.Contains(activeConfiguration))
+				activeConfiguration = available[0];
 			available = solution.GetPlatformNames();
-			if (available.Count > 0 && !available.Contains(platform))
-				platform = available[0];
-			
-			this.ActiveConfiguration = configuration;
-			this.ActivePlatform = platform;
-
-			this.properties = memento;
+			if (available.Count > 0 && !available.Contains(activePlatform))
+				activePlatform = available[0];
 		}
 	}
 }
