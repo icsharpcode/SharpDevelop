@@ -351,6 +351,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
 			Assert.AreEqual(new[] { "index" }, p.Getter.Parameters.Select(x => x.Name).ToArray());
 			Assert.AreEqual("System.String", p.Getter.ReturnType.ReflectionName);
+			Assert.AreEqual(p, p.Getter.AccessorOwner);
 		}
 		
 		[Test]
@@ -363,6 +364,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
 			Assert.AreEqual(new[] { "index", "value" }, p.Setter.Parameters.Select(x => x.Name).ToArray());
 			Assert.AreEqual(TypeKind.Void, p.Setter.ReturnType.Kind);
+		}
+		
+		[Test]
+		public void GenericPropertyGetter()
+		{
+			var type = compilation.FindType(typeof(GenericClass<string, object>));
+			var prop = type.GetProperties(p => p.Name == "Property").Single();
+			Assert.AreEqual("System.String", prop.Getter.ReturnType.ReflectionName);
+			Assert.IsTrue(prop.Getter.IsAccessor);
+			Assert.AreEqual(prop, prop.Getter.AccessorOwner);
 		}
 		
 		[Test]
