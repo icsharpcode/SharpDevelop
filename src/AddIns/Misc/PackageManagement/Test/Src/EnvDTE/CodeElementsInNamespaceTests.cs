@@ -132,5 +132,16 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("Test.MyClass", codeClass.FullName);
 		}
+		
+		[Test]
+		public void Item_OneInterfaceCompletionEntryAndItemSelectedByName_ReturnsOneCodeInterface()
+		{
+			helper.AddInterfaceToProjectContentAndCompletionEntries("Test", "Test.IClass");
+			CreateCodeElements("Test");
+			
+			CodeInterface codeInterface = codeElements.Item("IClass") as CodeInterface;
+			
+			Assert.AreEqual("Test.IClass", codeInterface.FullName);
+		}
 	}
 }

@@ -15,7 +15,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public static FilePosition GetEndPosition(this IMethodOrProperty method)
 		{
+			if (method.DeclaringTypeIsInterface()) {
+				return method.Region.ToEndPosition(method.CompilationUnit);
+			}
 			return method.BodyRegion.ToEndPosition(method.CompilationUnit);
+		}
+		
+		public static bool DeclaringTypeIsInterface(this IMethodOrProperty method)
+		{
+			return method.DeclaringType.ClassType == ClassType.Interface;
 		}
 	}
 }

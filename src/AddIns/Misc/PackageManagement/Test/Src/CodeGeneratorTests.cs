@@ -34,5 +34,40 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedCode, code);
 		}
+		
+		[Test]
+		public void GenerateCode_Method_CreatesMethod()
+		{
+			CreateCodeGenerator();
+			var method = new MethodDeclaration();
+			method.Name = "MyMethod";
+			method.TypeReference = new TypeReference("MyReturnType");
+			method.Modifier = Modifiers.Public;
+			method.Body = new BlockStatement();
+			
+			string code = codeGenerator.GenerateCode(method, String.Empty);
+			
+			string expectedCode = 
+				"public MyReturnType MyMethod()\r\n" +
+				"{\r\n" +
+				"}\r\n";
+			
+			Assert.AreEqual(expectedCode, code);
+		}
+		
+		[Test]
+		public void GenerateCode_InterfaceMethodDeclaration_CreatesMethod()
+		{
+			CreateCodeGenerator();
+			var method = new MethodDeclaration();
+			method.Name = "MyMethod";
+			method.TypeReference = new TypeReference("MyReturnType");
+			
+			string code = codeGenerator.GenerateCode(method, String.Empty);
+			
+			string expectedCode = "MyReturnType MyMethod();\r\n";
+			
+			Assert.AreEqual(expectedCode, code);
+		}
 	}
 }

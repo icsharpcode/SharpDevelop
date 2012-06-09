@@ -52,9 +52,9 @@ namespace ICSharpCode.PackageManagement
 		FieldDeclaration CreateField(string name, string type)
 		{
 			return new FieldDeclaration(new List<AttributeSection>()) {
-				TypeReference = new TypeReference(type),
+				Fields = CreateVariableDeclarations(name),
 				Modifier = Modifiers.Public,
-				Fields = CreateVariableDeclarations(name)
+				TypeReference = new TypeReference(type)
 			};
 		}
 		
@@ -73,9 +73,13 @@ namespace ICSharpCode.PackageManagement
 		
 		IField FindField(IRefactoringDocumentView view)
 		{
+			return FindMatchingClass(view).Fields.Last();
+		}
+		
+		IClass FindMatchingClass(IRefactoringDocumentView view)
+		{
 			ICompilationUnit unit = view.Parse();
-			IClass matchedClass = FindMatchingClass(unit);
-			return matchedClass.Fields.Last();
+			return FindMatchingClass(unit);
 		}
 		
 		IClass FindMatchingClass(ICompilationUnit unit)
@@ -86,6 +90,33 @@ namespace ICSharpCode.PackageManagement
 				}
 			}
 			return null;
+		}
+		
+		public CodeFunction AddPublicMethod(string name, string type)
+		{
+			CodeGenerator codeGenerator = GetCodeGenerator();
+			IRefactoringDocumentView view = LoadClassDocumentView();
+			codeGenerator.InsertCodeAtEnd(Class.Region, view.RefactoringDocument, CreateMethod(name, type));
+			return GetMethodInserted(view);
+		}
+		
+		MethodDeclaration CreateMethod(string name, string type)
+		{
+			return new MethodDeclaration {
+				Name = name,
+				TypeReference = new TypeReference(type)
+			};
+		}
+		
+		CodeFunction GetMethodInserted(IRefactoringDocumentView view)
+		{
+			IMethod method = FindMethod(view);
+			return new CodeFunction(method);
+		}
+		
+		IMethod FindMethod(IRefactoringDocumentView view)
+		{
+			return FindMatchingClass(view).Methods.Last();
 		}
 	}
 }

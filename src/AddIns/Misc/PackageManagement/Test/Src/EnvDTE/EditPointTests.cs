@@ -105,6 +105,7 @@ namespace PackageManagement.Tests.EnvDTE
 			var methodRegion = new DomRegion(1, 5, 1, 10);
 			var methodBodyRegion = new DomRegion(1, 10, 3, 12);
 			CreateMethod(fileName, methodRegion, methodBodyRegion);
+			methodHelper.AddDeclaringType("MyClass");
 			DocumentOffsetToReturn(line: 1, column: 5, offset: 5);
 			DocumentOffsetToReturn(line: 3, column: 12, offset: 20);
 			DocumentFileName(fileName);

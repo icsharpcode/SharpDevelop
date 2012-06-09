@@ -94,9 +94,17 @@ namespace PackageManagement.Tests.Helpers
 		/// </summary>
 		public void AddMethodToClass(string fullyQualifiedName)
 		{
+			AddMethodToClass(fullyQualifiedName, DomRegion.Empty, DomRegion.Empty);
+		}
+		
+		public void AddMethodToClass(string fullyQualifiedName, DomRegion region, DomRegion bodyRegion)
+		{
 			var helper = new MethodHelper();
 			helper.ProjectContentHelper = ProjectContentHelper;
 			helper.CreateMethod(fullyQualifiedName);
+			helper.SetRegion(region);
+			helper.SetBodyRegion(bodyRegion);
+			helper.SetDeclaringType(Class);
 			methods.Add(helper.Method);
 		}
 		
@@ -143,6 +151,11 @@ namespace PackageManagement.Tests.Helpers
 		public void SetClassFileName(string fileName)
 		{
 			CompilationUnitHelper.SetFileName(fileName);
+		}
+		
+		public void SetClassType(ClassType type)
+		{
+			Class.Stub(c => c.ClassType).Return(type);
 		}
 	}
 }

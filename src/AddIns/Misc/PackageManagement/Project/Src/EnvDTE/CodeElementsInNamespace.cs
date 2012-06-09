@@ -55,7 +55,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddCodeClass(IClass c)
 		{
-			AddCodeElement(new CodeClass2(projectContent, c));
+			if (c.ClassType == ClassType.Interface) {
+				AddCodeElement(new CodeInterface(projectContent, c));
+			} else {
+				AddCodeElement(new CodeClass2(projectContent, c));
+			}
 		}
 	}
 }

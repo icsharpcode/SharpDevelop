@@ -39,6 +39,16 @@ namespace PackageManagement.Tests.EnvDTE
 			codeFunction = new CodeFunction(helper.Method);
 		}
 		
+		void SetDeclaringTypeAsInterface(string name)
+		{
+			helper.AddDeclaringTypeAsInterface(name);
+		}
+		
+		void SetDeclaringType(string name)
+		{
+			helper.AddDeclaringType(name);
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -63,6 +73,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void GetStartPoint_FunctionStartsAtColumn3_ReturnsPointWithOffset3()
 		{
 			CreatePublicFunction("Class1.MyFunction");
+			SetDeclaringType("Class1");
 			helper.FunctionStartsAtColumn(3);
 			
 			TextPoint point = codeFunction.GetStartPoint();
@@ -75,6 +86,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void GetStartPoint_FunctionStartsAtLine2_ReturnsPointWithLine2()
 		{
 			CreatePublicFunction("Class1.MyFunction");
+			SetDeclaringType("Class1");
 			helper.FunctionStartsAtLine(2);
 			
 			TextPoint point = codeFunction.GetStartPoint();
@@ -87,6 +99,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void GetEndPoint_FunctionBodyEndsAtColumn4_ReturnsPointWithOffset4()
 		{
 			CreatePublicFunction("Class1.MyFunction");
+			SetDeclaringType("Class1");
 			helper.FunctionBodyEndsAtColumn(4);
 			
 			TextPoint point = codeFunction.GetEndPoint();
@@ -99,6 +112,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void GetEndPoint_FunctionBodyEndsAtLine4_ReturnsPointWithLine4()
 		{
 			CreatePublicFunction("Class1.MyFunction");
+			SetDeclaringType("Class1");
 			helper.FunctionBodyEndsAtLine(4);
 			
 			TextPoint point = codeFunction.GetEndPoint();
@@ -115,6 +129,20 @@ namespace PackageManagement.Tests.EnvDTE
 			vsCMElement kind = codeFunction.Kind;
 			
 			Assert.AreEqual(vsCMElement.vsCMElementFunction, kind);
+		}
+				
+		[Test]
+		public void GetEndPoint_InterfaceMethod_ReturnsMethodsDeclarationRegionEndNotBodyRegionEnd()
+		{
+			CreatePublicFunction("MyInterface.MyMethod");
+			SetDeclaringTypeAsInterface("MyInterface");
+			helper.SetRegion(new DomRegion(1, 1, 1, 10));
+			helper.SetBodyRegion(new DomRegion(1, 10, 0, 0));
+			
+			TextPoint point = codeFunction.GetEndPoint();
+			
+			Assert.AreEqual(1, point.Line);
+			Assert.AreEqual(10, point.LineCharOffset);
 		}
 	}
 }

@@ -92,6 +92,16 @@ namespace PackageManagement.Tests.Helpers
 			return fakeClass;
 		}
 		
+		public IClass AddInterfaceToProjectContentAndCompletionEntries(string namespaceName, string className)
+		{
+			IClass fakeClass = AddInterfaceToProjectContent(className);
+			var namespaceContents = new List<ICompletionEntry>();
+			namespaceContents.Add(fakeClass);
+			AddCompletionEntriesToNamespace(namespaceName, namespaceContents);
+			
+			return fakeClass;
+		}
+		
 		public void AddNamespaceNameToProjectContent(string name)
 		{
 			NamespaceNames.Add(name);

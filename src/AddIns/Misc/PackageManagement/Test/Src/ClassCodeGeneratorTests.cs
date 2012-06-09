@@ -19,6 +19,7 @@ namespace PackageManagement.Tests
 		ClassHelper helper;
 		ClassCodeGenerator codeGenerator;
 		CodeVariable codeVariable;
+		CodeFunction codeFunction;
 		IDocumentLoader documentLoader;
 		IRefactoringDocument document;
 		FakeCodeGenerator fakeCodeGenerator;
@@ -37,6 +38,7 @@ namespace PackageManagement.Tests
 		void CreateClass(string name)
 		{
 			helper.CreatePublicClass(name);
+			helper.SetClassType(ICSharpCode.SharpDevelop.Dom.ClassType.Class);
 		}
 		
 		void CreateCodeGenerator()
@@ -92,13 +94,39 @@ namespace PackageManagement.Tests
 			return helper;
 		}
 		
+		void AddMethodToClassForReparse(string name)
+		{
+			AddMethodToClassForReparse(name, DomRegion.Empty, DomRegion.Empty);
+		}
+		
+		void AddMethodToClassForReparse(string name, DomRegion region, DomRegion bodyRegion)
+		{
+			ClassHelper helper = CreateClassHelper("MyClass");
+			helper.AddMethodToClass(name, region, bodyRegion);
+			AddClassesToReparsedCompilationUnit(helper);
+		}
+		
+		void AddMethodsToClassForReparse(params string[] names)
+		{
+			ClassHelper helper = CreateClassHelper("MyClass");
+			foreach (string name in names) {
+				helper.AddMethodToClass(name);
+			}
+			AddClassesToReparsedCompilationUnit(helper);
+		}
+		
 		void AddPublicVariable(string name, string type)
 		{
 			codeVariable = codeGenerator.AddPublicVariable(name, type);
 		}
 		
+		void AddPublicMethod(string name, string type)
+		{
+			codeFunction = codeGenerator.AddPublicMethod(name, type);
+		}
+		
 		[Test]
-		public void AddPublicVariable_VariableNameAndTypeIsString_ReturnsCodeVariable()
+		public void AddPublicVariable_VariableTypeIsString_ReturnsCodeVariable()
 		{
 			CreateClass("MyClass");
 			CreateCodeGenerator();
@@ -119,7 +147,7 @@ namespace PackageManagement.Tests
 		}
 
 		[Test]
-		public void AddPublicVariable_VariableNameAndTypeIsCustomType_CodeForFieldAddedAtEndOfClass()
+		public void AddPublicVariable_VariableTypeIsCustomType_CodeForFieldAddedAtEndOfClass()
 		{
 			CreateClass("MyClass");
 			CreateCodeGenerator();
@@ -174,6 +202,88 @@ namespace PackageManagement.Tests
 			AddPublicVariable("MyVariable", "System.String");
 			
 			Assert.AreEqual("MyVariable", codeVariable.Name);
+		}
+		
+		[Test]
+		public void AddPublicMethod_MethodReturnTypeIsCustomType_CodeForMethodAddedAtEndOfClass()
+		{
+			CreateClass("MyClass");
+			CreateCodeGenerator();
+			var classRegion = new DomRegion(1, 2, 3, 4);
+			helper.SetClassRegion(classRegion);
+			string fileName = @"d:\projects\myproject\MyClass.cs";
+			SetClassFileName(fileName);
+			SetDocumentFileName(fileName);
+			AddMethodToClassForReparse("MyClass.MyMethod");
+			
+			AddPublicMethod("MyMethod", "MyType");
+			
+			MethodDeclaration method = fakeCodeGenerator.NodePassedToInsertCodeAtEnd as MethodDeclaration;
+			Assert.AreEqual(classRegion, fakeCodeGenerator.RegionPassedToInsertCodeAtEnd);
+			Assert.AreEqual(document, fakeCodeGenerator.DocumentPassedToInsertCodeAtEnd);
+			Assert.AreEqual(Modifiers.None, method.Modifier);
+			Assert.AreEqual("MyType", method.TypeReference.Type);
+			Assert.AreEqual("MyMethod", method.Name);
+			Assert.IsNotNull(method.Body);
+			Assert.IsTrue(method.Body.IsNull);
+		}
+		
+		[Test]
+		public void AddPublicMethod_MethodReturnTypeIsString_ReturnsCodeMethod()
+		{
+			CreateClass("MyClass");
+			CreateCodeGenerator();
+			string fileName = @"d:\projects\myproject\MyClass.cs";
+			SetClassFileName(fileName);
+			SetDocumentFileName(fileName);
+			
+			AddMethodToClassForReparse("MyClass.MyMethod", new DomRegion(1, 2, 1, 5), new DomRegion(1, 5, 3, 3));
+			
+			AddPublicMethod("MyMethod", "System.String");
+			
+			TextPoint start = codeFunction.GetStartPoint();
+			TextPoint end = codeFunction.GetEndPoint();
+			Assert.AreEqual("MyMethod", codeFunction.Name);
+			Assert.AreEqual(1, start.Line);
+			Assert.AreEqual(2, start.LineCharOffset);
+			Assert.AreEqual(3, end.Line);
+			Assert.AreEqual(3, end.LineCharOffset);
+		}
+		
+		[Test]
+		public void AddPublicMethod_ReparsedClassHasTwoMethods_LastMethodReturned()
+		{
+			CreateClass("MyClass");
+			CreateCodeGenerator();
+			string fileName = @"d:\projects\myproject\MyClass.cs";
+			SetClassFileName(fileName);
+			SetDocumentFileName(fileName);
+			AddMethodsToClassForReparse("MyClass.First", "MyClass.MyMethod");
+			
+			AddPublicMethod("MyMethod", "System.String");
+			
+			Assert.AreEqual("MyMethod", codeFunction.Name);
+		}
+		
+		[Test]
+		public void AddPublicFunction_ReparsedCompilationUnitHasThreeClasses_MethodReturnedFromCorrectClass()
+		{
+			CreateClass("MyClass2");
+			CreateCodeGenerator();
+			string fileName = @"d:\projects\myproject\MyClass2.cs";
+			SetClassFileName(fileName);
+			SetDocumentFileName(fileName);
+			ClassHelper class1 = CreateClassHelper("MyClass1");
+			ClassHelper class2 = CreateClassHelper("MyClass2");
+			ClassHelper class3 = CreateClassHelper("MyClass3");
+			
+			class2.AddMethodToClass("MyClass2.MyMethod");
+			
+			AddClassesToReparsedCompilationUnit(class1, class2, class3);
+			
+			AddPublicMethod("MyMethod", "System.String");
+			
+			Assert.AreEqual("MyMethod", codeFunction.Name);
 		}
 	}
 }

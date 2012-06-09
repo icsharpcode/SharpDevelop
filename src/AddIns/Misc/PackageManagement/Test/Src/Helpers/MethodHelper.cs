@@ -85,5 +85,22 @@ namespace PackageManagement.Tests.Helpers
 			unit.FileName = fileName;
 			Method.Stub(m => m.CompilationUnit).Return(unit);
 		}
+		
+		public void AddDeclaringTypeAsInterface(string name)
+		{
+			IClass declaringType = ProjectContentHelper.AddInterfaceToProjectContent(name);
+			SetDeclaringType(declaringType);
+		}
+		
+		public void SetDeclaringType(IClass declaringType)
+		{
+			Method.Stub(m => m.DeclaringType).Return(declaringType);
+		}
+		
+		public void AddDeclaringType(string name)
+		{
+			IClass declaringType = ProjectContentHelper.AddClassToProjectContent(name);
+			SetDeclaringType(declaringType);
+		}
 	}
 }

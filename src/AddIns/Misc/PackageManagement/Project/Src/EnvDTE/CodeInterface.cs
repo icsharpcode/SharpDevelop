@@ -40,7 +40,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public CodeFunction AddFunction(string name, vsCMFunction kind, object type, object Position = null, vsCMAccess Access = vsCMAccess.vsCMAccessPublic)
 		{
-			throw new NotImplementedException();
+			var codeGenerator = new ClassCodeGenerator(Class);
+			return codeGenerator.AddPublicMethod(name, (string)type);
 		}
 		
 		public override string FullName {
