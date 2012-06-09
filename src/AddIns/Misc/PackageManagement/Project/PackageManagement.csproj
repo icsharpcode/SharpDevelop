@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AcceptLicensesEventArgs.cs" />
+    <Compile Include="Src\ClassCodeGenerator.cs" />
     <Compile Include="Src\ConfigSettingsFileSystem.cs" />
     <Compile Include="Src\Design\DesignTimeSelectProjectsViewModel.cs" />
     <Compile Include="Src\Design\FakePackageOperation.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
     <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
     <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
+    <Compile Include="Src\IRefactoringDocumentView.cs" />
     <Compile Include="Src\IFieldExtensions.cs" />
     <Compile Include="Src\IDocumentLoader.cs" />
     <Compile Include="Src\IMethodOrPropertyExtensions.cs" />
@@ -220,6 +222,7 @@
     <Compile Include="Src\ProjectBrowserRefresher.cs" />
     <Compile Include="Src\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="Src\ProjectTemplatePackagesSettingsFileName.cs" />
+    <Compile Include="Src\RefactoringDocumentView.cs" />
     <Compile Include="Src\RegisteredPackageRepositories.cs" />
     <Compile Include="Src\ManagePackagesView.cs">
       <DependentUpon>ManagePackagesView.xaml</DependentUpon>
@@ -370,6 +373,7 @@
     <Compile Include="Src\Scripting\RunPackageScriptsAction.cs" />
     <Compile Include="Src\SolutionPackageRepository.cs" />
     <Compile Include="Src\ThreadSafeDocument.cs" />
+    <Compile Include="Src\ThreadSafeDocumentLine.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdateAllPackagesInProject.cs" />

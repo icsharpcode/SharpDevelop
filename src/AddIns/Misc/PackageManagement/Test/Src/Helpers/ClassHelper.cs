@@ -12,6 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public IClass Class;
 		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
+		public CompilationUnitHelper CompilationUnitHelper = new CompilationUnitHelper();
 		
 		List<IMethod> methods = new List<IMethod>();
 		List<IProperty> properties = new List<IProperty>();
@@ -28,6 +29,7 @@ namespace PackageManagement.Tests.Helpers
 			Class.Stub(c => c.Methods).Return(methods);
 			Class.Stub(c => c.Properties).Return(properties);
 			Class.Stub(c => c.Fields).Return(fields);
+			Class.Stub(c => c.CompilationUnit).Return(CompilationUnitHelper.CompilationUnit);
 		}
 		
 		public void AddAttributeToClass(string name)
@@ -115,9 +117,15 @@ namespace PackageManagement.Tests.Helpers
 		/// </summary>
 		public void AddFieldToClass(string fullyQualifiedName)
 		{
+			AddFieldToClass(fullyQualifiedName, DomRegion.Empty);
+		}
+		
+		public void AddFieldToClass(string fullyQualifiedName, DomRegion region)
+		{
 			var helper = new FieldHelper();
 			helper.ProjectContentHelper = ProjectContentHelper;
 			helper.CreateField(fullyQualifiedName);
+			helper.SetRegion(region);
 			
 			fields.Add(helper.Field);
 		}
@@ -125,6 +133,16 @@ namespace PackageManagement.Tests.Helpers
 		public void AddClassNamespace(string name)
 		{
 			Class.Stub(c => c.Namespace).Return(name);
+		}
+		
+		public void SetClassRegion(DomRegion classRegion)
+		{
+			Class.Stub(c => c.Region).Return(classRegion);
+		}
+		
+		public void SetClassFileName(string fileName)
+		{
+			CompilationUnitHelper.SetFileName(fileName);
 		}
 	}
 }

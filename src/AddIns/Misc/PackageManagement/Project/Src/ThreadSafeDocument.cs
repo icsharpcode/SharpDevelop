@@ -36,7 +36,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public int TotalNumberOfLines {
 			get {
-				throw new NotImplementedException();
+				if (WorkbenchSingleton.InvokeRequired) {
+					return WorkbenchSingleton.SafeThreadFunction(() => TotalNumberOfLines);
+				}
+				return document.TotalNumberOfLines;
 			}
 		}
 		
@@ -48,13 +51,19 @@ namespace ICSharpCode.PackageManagement
 		
 		public int TextLength {
 			get {
-				throw new NotImplementedException();
+				if (WorkbenchSingleton.InvokeRequired) {
+					return WorkbenchSingleton.SafeThreadFunction(() => TextLength);
+				}
+				return document.TextLength;
 			}
 		}
 		
 		public IDocumentLine GetLine(int lineNumber)
 		{
-			throw new NotImplementedException();
+			if (WorkbenchSingleton.InvokeRequired) {
+				return WorkbenchSingleton.SafeThreadFunction(() => GetLine(lineNumber));
+			}
+			return new ThreadSafeDocumentLine(document.GetLine(lineNumber));
 		}
 		
 		public IDocumentLine GetLineForOffset(int offset)
@@ -66,9 +75,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (WorkbenchSingleton.InvokeRequired) {
 				return WorkbenchSingleton.SafeThreadFunction(() => PositionToOffset(line, column));
-			} else {
-				return document.PositionToOffset(line, column);
 			}
+			return document.PositionToOffset(line, column);
 		}
 		
 		public Location OffsetToPosition(int offset)
@@ -78,7 +86,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Insert(int offset, string text)
 		{
-			throw new NotImplementedException();
+			if (WorkbenchSingleton.InvokeRequired) {
+				WorkbenchSingleton.SafeThreadAsyncCall(() => Insert(offset, text));
+			} else {
+				document.Insert(offset, text);
+			}
 		}
 		
 		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
@@ -88,7 +100,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Remove(int offset, int length)
 		{
-			throw new NotImplementedException();
+			if (WorkbenchSingleton.InvokeRequired) {
+				WorkbenchSingleton.SafeThreadAsyncCall(() => Remove(offset, length));
+			} else {
+				document.Remove(offset, length);
+			}
 		}
 		
 		public void Replace(int offset, int length, string newText)

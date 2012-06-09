@@ -5,7 +5,7 @@ using System;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 using Rhino.Mocks;
@@ -19,7 +19,7 @@ namespace PackageManagement.Tests.EnvDTE
 		MethodHelper methodHelper;
 		TextPoint endPoint;
 		EditPoint editPoint;
-		IDocument document;
+		IRefactoringDocument document;
 		IDocumentLoader documentLoader;
 		
 		[SetUp]
@@ -32,7 +32,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateDocumentLoader()
 		{
-			document = MockRepository.GenerateStub<IDocument>();
+			document = MockRepository.GenerateStub<IRefactoringDocument>();
 			documentLoader = MockRepository.GenerateStub<IDocumentLoader>();
 		}
 
@@ -79,7 +79,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void DocumentFileName(string fileName)
 		{
-			documentLoader.Stub(loader => loader.LoadDocument(fileName)).Return(document);
+			documentLoader.Stub(loader => loader.LoadRefactoringDocument(fileName)).Return(document);
 		}
 		
 		[Test]

@@ -2,14 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PackageManagement
 {
-	public interface IDocumentLoader
+	public interface IRefactoringDocumentView
 	{
-		IRefactoringDocument LoadRefactoringDocument(string fileName);
-		IRefactoringDocumentView LoadRefactoringDocumentView(string fileName);
+		IRefactoringDocument RefactoringDocument { get; }
+		ICompilationUnit Parse();
 	}
 }

@@ -67,9 +67,9 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void SetCompilationUnitFileName(string fileName)
 		{
-			ICompilationUnit unit = MockRepository.GenerateStub<ICompilationUnit>();
-			unit.FileName = fileName;
-			Field.Stub(f => f.CompilationUnit).Return(unit);
+			var helper = new CompilationUnitHelper();
+			helper.SetFileName(fileName);
+			Field.Stub(f => f.CompilationUnit).Return(helper.CompilationUnit);
 		}
 	}
 }

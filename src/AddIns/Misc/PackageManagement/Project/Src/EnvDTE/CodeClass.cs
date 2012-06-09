@@ -27,7 +27,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual CodeVariable AddVariable(string name, object type, object Position = null, vsCMAccess Access = vsCMAccess.vsCMAccessPublic, object Location = null)
 		{
-			throw new NotImplementedException();
+			var codeGenerator = new ClassCodeGenerator(Class);
+			return codeGenerator.AddPublicVariable(name, (string)type);
 		}
 	}
 }

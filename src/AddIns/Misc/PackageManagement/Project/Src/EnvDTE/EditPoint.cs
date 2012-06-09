@@ -3,13 +3,13 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class EditPoint : TextPoint
 	{
-		IDocument document;
+		IRefactoringDocument document;
 		
 		internal EditPoint(FilePosition filePosition, IDocumentLoader documentLoader)
 			: base(filePosition, documentLoader)
@@ -31,7 +31,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void OpenDocument()
 		{
-			document = DocumentLoader.LoadDocument(FilePosition.FileName);
+			document = DocumentLoader.LoadRefactoringDocument(FilePosition.FileName);
 		}
 		
 		int GetStartOffset()
