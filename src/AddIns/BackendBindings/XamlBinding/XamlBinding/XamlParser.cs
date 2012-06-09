@@ -110,5 +110,10 @@ namespace ICSharpCode.XamlBinding
 			// TODO: create a simple compilation with WPF references?
 			return null;
 		}
+		
+		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -22,7 +22,7 @@ namespace Debugger.Tests
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
+		[NUnit.Framework.Test, NUnit.Framework.Ignore]
 		public void Thread_Tests()
 		{
 			StartTest();

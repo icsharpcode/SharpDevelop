@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -85,12 +86,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			LoggingService.Info("Evaluating watch: " + name);
 			TreeNode node = null;
-			#warning reimplement this!
-//			try {
-//				node = new ValueNode(null, name, () => ExpressionEvaluator.Evaluate(name, SupportedLanguage.CSharp, WindowsDebugger.CurrentStackFrame));
-//			} catch (GetValueException e) {
-//				node = new TreeNode("Icons.16x16.Error", name, e.Message, string.Empty, null);
-//			}
+			try {
+				node = new ValueNode(null, name, () => WindowsDebugger.Evaluate(name));
+			} catch (GetValueException e) {
+				node = new TreeNode("Icons.16x16.Error", name, e.Message, string.Empty, null);
+			}
 			node.CanDelete = true;
 			node.CanSetName = true;
 			node.PropertyChanged += (s, e) => { if (e.PropertyName == "Name") WindowsDebugger.RefreshPads(); };

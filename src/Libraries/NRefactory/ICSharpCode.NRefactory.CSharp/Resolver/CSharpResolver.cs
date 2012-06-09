@@ -2204,6 +2204,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return Convert(input, boolean, c);
 		}
 		
+		/// <summary>
+		/// Converts the negated input to <c>bool</c> using the rules for boolean expressions.
+		/// Computes <c>!(bool)input</c> if the implicit cast to bool is valid; otherwise
+		/// computes <c>input.operator false()</c>.
+		/// </summary>
+		public ResolveResult ResolveConditionFalse(ResolveResult input)
+		{
+			if (input == null)
+				throw new ArgumentNullException("input");
+			IType boolean = compilation.FindType(KnownTypeCode.Boolean);
+			Conversion c = conversions.ImplicitConversion(input, boolean);
+			if (!c.IsValid) {
+				var opFalse = input.Type.GetMethods(m => m.IsOperator && m.Name == "op_False").FirstOrDefault();
+				if (opFalse != null) {
+					c = Conversion.UserDefinedImplicitConversion(opFalse, false);
+					return Convert(input, boolean, c);
+				}
+			}
+			return ResolveUnaryOperator(UnaryOperatorType.Not, Convert(input, boolean, c));
+		}
+		
 		public ResolveResult ResolveConditional(ResolveResult condition, ResolveResult trueExpression, ResolveResult falseExpression)
 		{
 			// C# 4.0 spec §7.14: Conditional operator

@@ -53,17 +53,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (frame == null)
 				return "No current execution frame";
 			
-			throw new NotImplementedException("");
-			
-//			try {
-//				object data = ((WindowsDebugger)DebuggerService.CurrentDebugger).debuggerDecompilerService.GetLocalVariableIndex(frame.MethodInfo.DeclaringType.MetadataToken,
-//				                                                                       frame.MethodInfo.MetadataToken,
-//				                                                                       code);
-//				Value val = ExpressionEvaluator.Evaluate(code, SelectedLanguage, frame, data);
-//				return ExpressionEvaluator.FormatValue(WindowsDebugger.EvalThread, val);
-//			} catch (GetValueException e) {
-//				return e.Message;
-//			}
+			try {
+				var val = WindowsDebugger.Evaluate(code);
+				return ExpressionEvaluationVisitor.FormatValue(WindowsDebugger.EvalThread, val);
+			} catch (GetValueException e) {
+				return e.Message;
+			}
 		}
 		
 		protected override string Prompt {

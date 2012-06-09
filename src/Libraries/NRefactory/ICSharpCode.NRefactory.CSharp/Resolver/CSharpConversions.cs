@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return Conversion.NullLiteralConversion;
 			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return Conversion.ImplicitReferenceConversion;
-			if (BoxingConversion(fromType, toType))
+			if (IsBoxingConversion(fromType, toType))
 				return Conversion.BoxingConversion;
 			if (fromType.Kind == TypeKind.Dynamic)
 				return Conversion.ImplicitDynamicConversion;
@@ -184,7 +184,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitReferenceConversion(fromType, toType, 0))
 				return true;
-			if (BoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
+			if (IsBoxingConversion(fromType, toType) && !NullableType.IsNullable(fromType))
 				return true;
 			if (ImplicitTypeParameterConversion(fromType, toType))
 				return true;
@@ -398,6 +398,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Implicit Reference Conversion
+		public bool IsImplicitReferenceConversion(IType fromType, IType toType)
+		{
+			return ImplicitReferenceConversion(fromType, toType, 0);
+		}
+		
 		bool ImplicitReferenceConversion(IType fromType, IType toType, int subtypeCheckNestingDepth)
 		{
 			// C# 4.0 spec: §6.1.6
@@ -510,7 +515,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Boxing Conversions
-		bool BoxingConversion(IType fromType, IType toType)
+		public bool IsBoxingConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.7
 			fromType = NullableType.GetUnderlyingType(fromType);

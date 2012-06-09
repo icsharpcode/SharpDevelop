@@ -273,6 +273,22 @@ namespace ICSharpCode.SharpDevelop.Parser
 			return rr;
 		}
 		
+		public ResolveResult ResolveSnippet(FileName fileName, TextLocation fileLocation, ITextSource fileContent, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			var entry = GetFileEntry(fileName, true);
+			if (entry.parser == null)
+				return ErrorResolveResult.UnknownError;
+			IProject project = compilation != null ? compilation.GetProject() : null;
+			var parseInfo = entry.Parse(fileContent, project, cancellationToken);
+			if (parseInfo == null)
+				return ErrorResolveResult.UnknownError;
+			if (compilation == null)
+				compilation = GetCompilationForFile(fileName);
+			ResolveResult rr = entry.parser.ResolveSnippet(parseInfo, fileLocation, codeSnippet, compilation, cancellationToken);
+			LoggingService.Debug("Resolved " + fileLocation + " to " + rr);
+			return rr;
+		}
+		
 		public Task<ResolveResult> ResolveAsync(FileName fileName, TextLocation location, ITextSource fileContent, ICompilation compilation, CancellationToken cancellationToken)
 		{
 			var entry = GetFileEntry(fileName, true);

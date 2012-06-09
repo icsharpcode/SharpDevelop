@@ -2,6 +2,7 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -10,7 +11,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-
 using Debugger;
 using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
@@ -19,6 +19,7 @@ using Debugger.MetaData;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
@@ -319,20 +320,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		/// <summary>
-		/// Gets variable of given name.
-		/// Returns null if unsuccessful. Can throw GetValueException.
-		/// <exception cref="GetValueException">Thrown when evaluation fails. Exception message explains reason.</exception>
-		/// </summary>
-		public Value GetValueFromName(string variableName)
-		{
-#warning			if (CurrentStackFrame != null) {
-//				object data = debuggerDecompilerService.GetLocalVariableIndex(CurrentStackFrame.MethodInfo.DeclaringType.MetadataToken, CurrentStackFrame.MethodInfo.MetadataToken, variableName);
-//				return ExpressionEvaluator.Evaluate(variableName, SupportedLanguage.CSharp, CurrentStackFrame, data);
-//			}
-			return null;
-		}
-		
 		public bool IsManaged(int processId)
 		{
 			corPublish = new CorpubPublishClass();
@@ -343,21 +330,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				return process.IsManaged() != 0;
 			}
 			return false;
-		}
-		
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// Returns null if unsuccessful.
-		/// </summary>
-		public string GetValueAsString(string variableName)
-		{
-			try {
-				Value val = GetValueFromName(variableName);
-				if (val == null) return null;
-				return val.AsString();
-			} catch (GetValueException) {
-				return null;
-			}
 		}
 		
 		public bool SetInstructionPointer(string filename, int line, int column, bool dryRun)
@@ -475,15 +447,15 @@ namespace ICSharpCode.SharpDevelop.Services
 			bookmark.IsEnabledChanged += delegate { breakpoint.IsEnabled = bookmark.IsEnabled; };
 		}
 		
-		bool Evaluate(string code, string language)
+		bool EvaluateCondition(string code)
 		{
 			try {
-#warning				SupportedLanguage supportedLanguage = (SupportedLanguage)Enum.Parse(typeof(SupportedLanguage), language, true);
-//				Value val = ExpressionEvaluator.Evaluate(code, supportedLanguage, CurrentStackFrame);
-//				
-//				if (val != null && val.Type.IsPrimitive && val.PrimitiveValue is bool)
-//					return (bool)val.PrimitiveValue;
-//				else
+				if (CurrentStackFrame == null || CurrentStackFrame.NextStatement == null)
+					return false;
+				var val = Evaluate(code);
+				if (val != null && val.Type.IsPrimitive && val.PrimitiveValue is bool)
+					return (bool)val.PrimitiveValue;
+				else
 					return false;
 			} catch (GetValueException e) {
 				string errorMessage = "Error while evaluating breakpoint condition " + code + ":\n" + e.Message + "\n";
@@ -553,7 +525,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					case BreakpointAction.Break:
 						break;
 					case BreakpointAction.Condition:
-						if (Evaluate(bookmark.Condition, bookmark.ScriptLanguage))
+						if (EvaluateCondition(bookmark.Condition))
 							DebuggerService.PrintDebugMessage(string.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Conditional.Breakpoints.BreakpointHitAtBecause}") + "\n", bookmark.LineNumber, bookmark.FileName, bookmark.Condition));
 						else
 							CurrentProcess.AsyncContinue();
@@ -623,6 +595,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			return true;
 		}
 		
+		public static Value Evaluate(string code)
+		{
+			if (CurrentStackFrame == null || CurrentStackFrame.NextStatement == null)
+				throw new GetValueException("no stackframe available!");
+			var location = CurrentStackFrame.NextStatement;
+			var fileName = new FileName(location.Filename);
+			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), new ParseableFileContentFinder().Create(fileName), code, CurrentStackFrame.MethodInfo.DebugModule.Assembly.Compilation, System.Threading.CancellationToken.None);
+			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.MethodInfo.DebugModule.Assembly.Compilation).Convert(rr);
+		}
+
 		public void JumpToCurrentLine()
 		{
 			if (CurrentThread == null)

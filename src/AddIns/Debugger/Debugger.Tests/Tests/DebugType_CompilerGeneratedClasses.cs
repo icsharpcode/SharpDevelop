@@ -74,9 +74,9 @@ namespace Debugger.Tests {
 			DumpLocalVariables("OutterDelegateLocalVariables");
 			process.Continue();
 			DumpLocalVariables("InnterDelegateLocalVariables");
-			Eval("nestedDelegArg");
-			Eval("instanceField");
-			Eval("staticField");
+			Evaluate(CurrentStackFrame, EvalThread, "nestedDelegArg", GetResource("DebugType_CompilerGeneratedClasses.cs"));
+			Evaluate(CurrentStackFrame, EvalThread, "instanceField", GetResource("DebugType_CompilerGeneratedClasses.cs"));
+			Evaluate(CurrentStackFrame, EvalThread, "staticField", GetResource("DebugType_CompilerGeneratedClasses.cs"));
 			EndTest();
 		}
 	}

@@ -110,48 +110,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			return astExpression;
 		}
 		
-		public static string FormatValue(Thread evalThread, Value val)
-		{
-			if (val == null) {
-				return null;
-			} if (val.IsNull) {
-				return "null";
-			} else if (val.Type.IsArray) {
-				StringBuilder sb = new StringBuilder();
-				sb.Append(val.Type.Name);
-				sb.Append(" {");
-				bool first = true;
-				foreach(Value item in val.GetArrayElements()) {
-					if (!first) sb.Append(", ");
-					first = false;
-					sb.Append(FormatValue(evalThread, item));
-				}
-				sb.Append("}");
-				return sb.ToString();
-			} else if (val.Type.GetInterface(typeof(ICollection).FullName) != null) {
-				StringBuilder sb = new StringBuilder();
-				sb.Append(val.Type.Name);
-				sb.Append(" {");
-				val = val.GetPermanentReference(evalThread);
-				int count = (int)val.GetMemberValue(evalThread, "Count").PrimitiveValue;
-				for(int i = 0; i < count; i++) {
-					if (i > 0) sb.Append(", ");
-					DebugPropertyInfo itemProperty = (DebugPropertyInfo)val.Type.GetProperty("Item");
-					Value item = val.GetPropertyValue(evalThread, itemProperty, Eval.CreateValue(evalThread, i));
-					sb.Append(FormatValue(evalThread, item));
-				}
-				sb.Append("}");
-				return sb.ToString();
-			} else if (val.Type.FullName == typeof(char).FullName) {
-				return "'" + val.PrimitiveValue.ToString() + "'";
-			} else if (val.Type.FullName == typeof(string).FullName) {
-				return "\"" + val.PrimitiveValue.ToString() + "\"";
-			} else if (val.Type.IsPrimitive) {
-				return val.PrimitiveValue.ToString();
-			} else {
-				return val.InvokeToString(evalThread);
-			}
-		}
+
 		
 		TypedValue Evaluate(INode expression)
 		{

@@ -118,13 +118,14 @@ namespace Debugger.Tests
 			
 		}
 		
-		protected void EndTest()
+		protected void EndTest(bool hasXml = true)
 		{
 			if (!process.HasExited) {
 				process.AsyncContinue();
 				process.WaitForExit();
 			}
-			CheckXmlOutput();
+			if (hasXml)
+				CheckXmlOutput();
 		}
 		
 		protected void CheckXmlOutput()
@@ -219,7 +220,7 @@ namespace Debugger.Tests
 						msg.Append("Could not intercept: ");
 						msg.Append(e.ExceptionThrown.ToString());
 					}
-					LogEvent("ExceptionThrown", msg.ToString());	
+					LogEvent("ExceptionThrown", msg.ToString());
 				}
 				LogEvent("Paused", CurrentStackFrame != null ? CurrentStackFrame.NextStatement.ToString() : string.Empty);
 			};
@@ -422,7 +423,7 @@ namespace Debugger.Tests
 			}
 		}
 		
-		string GetResource(string filename)
+		protected string GetResource(string filename)
 		{
 			string resourcePrefix = "Debugger.Tests.Tests.";
 			

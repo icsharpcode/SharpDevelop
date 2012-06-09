@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Core;
@@ -165,6 +166,36 @@ namespace CSharpBinding.Parser
 				.AddAssemblyReferences(defaultReferences.Value)
 				.UpdateProjectContent(null, parsedFile)
 				.CreateCompilation();
+		}
+		
+		public ResolveResult ResolveSnippet(ParseInformation parseInfo, TextLocation location, string codeSnippet, ICompilation compilation, CancellationToken cancellationToken)
+		{
+			var csParseInfo = parseInfo as CSharpFullParseInformation;
+			if (csParseInfo == null)
+				throw new ArgumentException("Parse info does not have CompilationUnit");
+			CSharpAstResolver contextResolver = new CSharpAstResolver(compilation, csParseInfo.CompilationUnit, csParseInfo.ParsedFile);
+			var node = csParseInfo.CompilationUnit.GetNodeAt(location);
+			CSharpResolver context;
+			if (node != null)
+				context = contextResolver.GetResolverStateAfter(node, cancellationToken);
+			else
+				context = new CSharpResolver(compilation);
+			CSharpParser parser = new CSharpParser();
+			var expr = parser.ParseExpression(new StringReader(codeSnippet));
+			if (parser.HasErrors)
+				return new ErrorResolveResult(SpecialType.UnknownType, PrintErrorsAsString(parser.ErrorPrinter.Errors), TextLocation.Empty);
+			CSharpAstResolver snippetResolver = new CSharpAstResolver(context, expr);
+			return snippetResolver.Resolve(expr, cancellationToken);
+		}
+		
+		string PrintErrorsAsString(List<Error> errors)
+		{
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (var error in errors)
+				builder.AppendLine(error.Message);
+			
+			return builder.ToString();
 		}
 	}
 }

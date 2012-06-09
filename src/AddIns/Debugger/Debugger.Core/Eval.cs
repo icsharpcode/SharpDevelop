@@ -55,16 +55,16 @@ namespace Debugger
 			get { return (ICorDebugEval2)corEval; }
 		}
 
-	    /// <exception cref="GetValueException">Evaluating...</exception>
-	    public Value Result {
+		/// <exception cref="GetValueException">Evaluating...</exception>
+		public Value Result {
 			get {
 				switch(this.State) {
-					case EvalState.Evaluating:            throw new GetValueException("Evaluating...");
-					case EvalState.EvaluatedSuccessfully: return result;
-					case EvalState.EvaluatedException:    return result;
-					case EvalState.EvaluatedNoResult:     return null;
-					case EvalState.EvaluatedTimeOut:      throw new GetValueException("Timeout");
-					default: throw new DebuggerException("Unknown state");
+						case EvalState.Evaluating:            throw new GetValueException("Evaluating...");
+						case EvalState.EvaluatedSuccessfully: return result;
+						case EvalState.EvaluatedException:    return result;
+						case EvalState.EvaluatedNoResult:     return null;
+						case EvalState.EvaluatedTimeOut:      throw new GetValueException("Timeout");
+						default: throw new DebuggerException("Unknown state");
 				}
 			}
 		}
@@ -76,9 +76,9 @@ namespace Debugger
 		public bool Evaluated {
 			get {
 				return state == EvalState.EvaluatedSuccessfully ||
-				       state == EvalState.EvaluatedException ||
-				       state == EvalState.EvaluatedNoResult ||
-				       state == EvalState.EvaluatedTimeOut;
+					state == EvalState.EvaluatedException ||
+					state == EvalState.EvaluatedNoResult ||
+					state == EvalState.EvaluatedTimeOut;
 			}
 		}
 		
@@ -125,9 +125,9 @@ namespace Debugger
 					throw new GetValueException("Func eval cannot work. Bad starting point.");
 				} else {
 					#if DEBUG
-						throw; // Expose for more diagnostics
+					throw; // Expose for more diagnostics
 					#else
-						throw new GetValueException(e.Message);
+					throw new GetValueException(e.Message);
 					#endif
 				}
 			}
@@ -141,9 +141,9 @@ namespace Debugger
 			}
 		}
 
-	    /// <exception cref="DebuggerException">Evaluation can not be stopped</exception>
-	    /// <exception cref="GetValueException">Process exited</exception>
-	    Value WaitForResult()
+		/// <exception cref="DebuggerException">Evaluation can not be stopped</exception>
+		/// <exception cref="GetValueException">Process exited</exception>
+		Value WaitForResult()
 		{
 			// Note that aborting is not supported for suspended threads
 			try {
@@ -170,7 +170,7 @@ namespace Debugger
 			}
 		}
 		
-		internal void NotifyEvaluationComplete(bool successful) 
+		internal void NotifyEvaluationComplete(bool successful)
 		{
 			// Eval result should be ICorDebugHandleValue so it should survive Continue()
 			if (state == EvalState.EvaluatedTimeOut) {
@@ -225,7 +225,7 @@ namespace Debugger
 				// if (!(thisValue.IsObject)) // eg Can evaluate on array
 				if (!thisValue.Type.GetDefinition().IsDerivedFrom(method.DeclaringType.GetDefinition())) {
 					throw new GetValueException(
-						"Can not evaluate because the object is not of proper type.  " + 
+						"Can not evaluate because the object is not of proper type.  " +
 						"Expected: " + method.DeclaringType.FullName + "  Seen: " + thisValue.Type.FullName
 					);
 				}
@@ -348,6 +348,11 @@ namespace Debugger
 					eval.CorEval2.NewParameterizedObjectNoConstructor(type.ToCorDebug().GetClass(), (uint)typeArgs.Length, typeArgs);
 				}
 			);
+		}
+		
+		public static Eval AsyncNewObjectNoConstructor(Thread evalThread, IType type)
+		{
+			throw new NotImplementedException();
 		}
 		
 		static ICorDebugValue[] ValuesAsCorDebug(Value[] values)
