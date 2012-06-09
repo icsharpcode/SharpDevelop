@@ -158,7 +158,7 @@ namespace Debugger
 			// eg. Convert.ToInt64(ulong.MaxValue) causes such freeze
 			StackFrame mostRecentUnoptimized = null;
 			foreach(StackFrame sf in this.Callstack) {
-				if (sf.MethodInfo.DebugModule.CorModule2.GetJITCompilerFlags() != 1) { // CORDEBUG_JIT_DEFAULT 
+				if (sf.Module.CorModule2.GetJITCompilerFlags() != 1) { // CORDEBUG_JIT_DEFAULT 
 					mostRecentUnoptimized = sf;
 					break;
 				}
@@ -304,7 +304,7 @@ namespace Debugger
 		public StackFrame MostRecentUserStackFrame {
 			get {
 				foreach (StackFrame stackFrame in this.Callstack) {
-					if (!stackFrame.MethodInfo.StepOver) {
+					if (!stackFrame.IsNonUserCode) {
 						return stackFrame;
 					}
 				}

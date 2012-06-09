@@ -12,13 +12,20 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-//using Debugger.AddIn.Visualizers;
-//using Debugger.AddIn.Visualizers.Utils;
 using Debugger.MetaData;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Services;
+
+//using Debugger.AddIn.Visualizers;
+//using Debugger.AddIn.Visualizers.Utils;
+
+
+
+
+
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -97,7 +104,7 @@ namespace Debugger.AddIn.TreeModel
 		/// Get the value of the node and update the UI text fields.
 		/// </summary>
 		void GetValueAndUpdateUI()
-		{			
+		{
 			try {
 				Stopwatch watch = new Stopwatch();
 				watch.Start();
@@ -108,21 +115,21 @@ namespace Debugger.AddIn.TreeModel
 				// Note that the child collections are lazy-evaluated
 				if (val.IsNull) {
 					this.GetChildren = null;
-				} else if (val.Type.IsPrimitive || val.Type.FullName == typeof(string).FullName) { // Must be before IsClass
+				} else if (val.Type.IsPrimitiveType() || val.Type.IsKnownType(KnownTypeCode.String)) { // Must be before IsClass
 					this.GetChildren = null;
-				} else if (val.Type.IsArray) { // Must be before IsClass
+				} else if (val.Type.Kind == TypeKind.Array) { // Must be before IsClass
 					var dims = val.ArrayDimensions;  // Eval now
 					if (dims.TotalElementCount > 0) {
 						this.GetChildren = () => GetArrayChildren(dims, dims);
 					}
-				} else if (val.Type.IsClass || val.Type.IsValueType) {
-					if (val.Type.FullNameWithoutGenericArguments == typeof(List<>).FullName) {
+				} else if (val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct) {
+					if (val.Type.FullName == typeof(List<>).FullName) {
 						if ((int)val.GetFieldValue("_size").PrimitiveValue > 0)
 							this.GetChildren = () => GetIListChildren(this.GetValue);
 					} else {
 						this.GetChildren = () => GetObjectChildren(val.Type);
 					}
-				} else if (val.Type.IsPointer) {
+				} else if (val.Type.Kind == TypeKind.Pointer) {
 					if (val.Dereference() != null) {
 						this.GetChildren = () => new[] { new ValueNode("Icons.16x16.Local", "*" + this.Name, () => GetValue().Dereference()) };
 					}
@@ -131,7 +138,7 @@ namespace Debugger.AddIn.TreeModel
 				// Do last since it may expire the object
 				if (val.IsNull) {
 					fullValue = "null";
-				} else if (val.Type.IsInteger) {
+				} else if (val.Type.IsInteger()) {
 					var i = val.PrimitiveValue;
 					if (DebuggingOptions.Instance.ShowIntegersAs == ShowIntegersAs.Decimal) {
 						fullValue = i.ToString();
@@ -145,13 +152,13 @@ namespace Debugger.AddIn.TreeModel
 							fullValue = string.Format("{0} ({1})", i, hex);
 						}
 					}
-				} else if (val.Type.IsPointer) {
+				} else if (val.Type.Kind == TypeKind.Pointer) {
 					fullValue = String.Format("0x{0:X}", val.PointerAddress);
 				} else if (val.Type.FullName == typeof(string).FullName) {
 					fullValue = '"' + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + '"';
 				} else if (val.Type.FullName == typeof(char).FullName) {
 					fullValue = "'" + val.InvokeToString(WindowsDebugger.EvalThread).Replace("\n", "\\n").Replace("\t", "\\t").Replace("\r", "\\r").Replace("\0", "\\0").Replace("\b", "\\b").Replace("\a", "\\a").Replace("\f", "\\f").Replace("\v", "\\v").Replace("\"", "\\\"") + "'";
-				} else if ((val.Type.IsClass || val.Type.IsValueType)) {
+				} else if ((val.Type.Kind == TypeKind.Class || val.Type.Kind == TypeKind.Struct)) {
 					fullValue = val.InvokeToString(WindowsDebugger.EvalThread);
 				} else {
 					fullValue = val.AsString();
@@ -228,14 +235,14 @@ namespace Debugger.AddIn.TreeModel
 			return menu;
 		}
 		
-		public static string GetImageForMember(IDebugMemberInfo memberInfo)
+		public static string GetImageForMember(IMember memberInfo)
 		{
 			string name = string.Empty;
 			
 			if (memberInfo.IsPublic) {
-			} else if (memberInfo.IsAssembly) {
+			} else if (memberInfo.IsInternal) {
 				name += "Internal";
-			} else if (memberInfo.IsFamily) {
+			} else if (memberInfo.IsProtected) {
 				name += "Protected";
 			} else if (memberInfo.IsPrivate) {
 				name += "Private";
@@ -272,17 +279,19 @@ namespace Debugger.AddIn.TreeModel
 		public static IEnumerable<TreeNode> GetLocalVariables()
 		{
 			var stackFrame = GetCurrentStackFrame();
-			foreach(DebugParameterInfo par in stackFrame.MethodInfo.GetParameters()) {
+			foreach(var par in stackFrame.MethodInfo.Parameters.Select((p, i) => new { Param = p, Index = i})) {
 				var parCopy = par;
-				yield return new ValueNode("Icons.16x16.Parameter", par.Name, () => parCopy.GetValue(GetCurrentStackFrame()));
+				yield return new ValueNode("Icons.16x16.Parameter", par.Param.Name, () => GetCurrentStackFrame().GetArgumentValue(par.Index));
 			}
 			if (stackFrame.HasSymbols) {
-				foreach(DebugLocalVariableInfo locVar in stackFrame.MethodInfo.GetLocalVariables(stackFrame.IP)) {
+				foreach(LocalVariable locVar in stackFrame.GetLocalVariables(stackFrame.IP)) {
 					var locVarCopy = locVar;
 					yield return new ValueNode("Icons.16x16.Local", locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
 				}
 			} else {
 				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+				#warning decompiler
+				/*
 				if (debugger.debuggerDecompilerService != null) {
 					int typeToken = stackFrame.MethodInfo.DeclaringType.MetadataToken;
 					int methodToken = stackFrame.MethodInfo.MetadataToken;
@@ -297,17 +306,22 @@ namespace Debugger.AddIn.TreeModel
 						});
 					}
 				}
+				*/
 			}
 		}
 		
-		IEnumerable<TreeNode> GetObjectChildren(DebugType shownType)
+		IEnumerable<TreeNode> GetObjectChildren(IType shownType)
 		{
-			MemberInfo[] publicStatic      = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.Public    | BindingFlags.Static   | BindingFlags.DeclaredOnly);
-			MemberInfo[] publicInstance    = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.Public    | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-			MemberInfo[] nonPublicStatic   = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Static   | BindingFlags.DeclaredOnly);
-			MemberInfo[] nonPublicInstance = shownType.GetFieldsAndNonIndexedProperties(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+			IEnumerable<IMember> fields = shownType.GetFields(f => !f.IsConst, GetMemberOptions.IgnoreInheritedMembers);
+			IEnumerable<IMember> properties = shownType.GetProperties(p => p.CanGet && p.Parameters.Count == 0, GetMemberOptions.IgnoreInheritedMembers);
+			IEnumerable<IMember> fieldsAndProperties = fields.Concat(properties).ToList();
 			
-			DebugType baseType = (DebugType)shownType.BaseType;
+			IEnumerable<IMember> publicStatic      = fieldsAndProperties.Where(m =>  m.IsPublic &&  m.IsStatic);
+			IEnumerable<IMember> publicInstance    = fieldsAndProperties.Where(m =>  m.IsPublic && !m.IsStatic);
+			IEnumerable<IMember> nonPublicStatic   = fieldsAndProperties.Where(m => !m.IsPublic &&  m.IsStatic);
+			IEnumerable<IMember> nonPublicInstance = fieldsAndProperties.Where(m => !m.IsPublic && !m.IsStatic);
+			
+			IType baseType = shownType.DirectBaseTypes.FirstOrDefault(t => t.Kind != TypeKind.Interface);
 			if (baseType != null) {
 				yield return new TreeNode(
 					"Icons.16x16.Class",
@@ -318,19 +332,19 @@ namespace Debugger.AddIn.TreeModel
 				);
 			}
 			
-			if (nonPublicInstance.Length > 0) {
+			if (nonPublicInstance.Any()) {
 				yield return new TreeNode(
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicMembers}"),
 					() => GetMembers(nonPublicInstance)
 				);
 			}
 			
-			if (publicStatic.Length > 0 || nonPublicStatic.Length > 0) {
+			if (publicStatic.Any() || nonPublicStatic.Any()) {
 				yield return new TreeNode(
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.StaticMembers}"),
 					() => {
 						var children = GetMembers(publicStatic).ToList();
-						if (nonPublicStatic.Length > 0) {
+						if (nonPublicStatic.Any()) {
 							children.Insert(0, new TreeNode(
 								StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.NonPublicStaticMembers}"),
 								() => GetMembers(nonPublicStatic)
@@ -341,13 +355,13 @@ namespace Debugger.AddIn.TreeModel
 				);
 			}
 			
-			if (shownType.GetInterface(typeof(IList).FullName) != null) {
+			if (shownType.GetAllBaseTypeDefinitions().Any(t => t.FullName == typeof(IList).FullName)) {
 				yield return new TreeNode(
 					"IList",
 					() => GetIListChildren(GetValue)
 				);
 			} else {
-				DebugType iEnumerableType, itemType;
+				//DebugType iEnumerableType, itemType;
 				#warning reimplement this!
 //				if (shownType.ResolveIEnumerableImplementation(out iEnumerableType, out itemType)) {
 //					yield return new TreeNode(
@@ -365,11 +379,11 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		IEnumerable<TreeNode> GetMembers(MemberInfo[] members)
+		IEnumerable<TreeNode> GetMembers(IEnumerable<IMember> members)
 		{
-			foreach(MemberInfo memberInfo in members.OrderBy(m => m.Name)) {
+			foreach(var memberInfo in members.OrderBy(m => m.Name)) {
 				var memberInfoCopy = memberInfo;
-				string imageName = GetImageForMember((IDebugMemberInfo)memberInfo);
+				string imageName = GetImageForMember(memberInfo);
 				yield return new ValueNode(imageName, memberInfo.Name, () => GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberInfoCopy));
 			}
 		}
@@ -377,16 +391,16 @@ namespace Debugger.AddIn.TreeModel
 		static IEnumerable<TreeNode> GetIListChildren(Func<Value> getValue)
 		{
 			Value list;
-			PropertyInfo itemProp;
+			IProperty itemProp;
 			int count = 0;
 			try {
 				// TODO: We want new list on reeval
 				// We need the list to survive generation of index via Eval
 				list = getValue().GetPermanentReference(WindowsDebugger.EvalThread);
-				DebugType iListType = (DebugType)list.Type.GetInterface(typeof(IList).FullName);
-				itemProp = iListType.GetProperty("Item");
+				IType iListType = list.Type.GetAllBaseTypeDefinitions().Where(t => t.FullName == typeof(IList).FullName).FirstOrDefault();
+				itemProp = iListType.GetProperties(p => p.Name == "Item").Single();
 				// Do not get string representation since it can be printed in hex
-				count = (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperty("Count")).PrimitiveValue;
+				count = (int)list.GetPropertyValue(WindowsDebugger.EvalThread, iListType.GetProperties(p => p.Name == "Count").Single()).PrimitiveValue;
 			} catch (GetValueException e) {
 				return new [] { new TreeNode(null, "(error)", e.Message, string.Empty, null) };
 			}
@@ -427,7 +441,7 @@ namespace Debugger.AddIn.TreeModel
 		
 		IEnumerable<TreeNode> GetArrayChildren(ArrayDimensions bounds, ArrayDimensions originalBounds)
 		{
-			const int MaxElementCount = 1000;
+			const int MaxElementCount = 100;
 			
 			if (bounds.TotalElementCount == 0)
 			{

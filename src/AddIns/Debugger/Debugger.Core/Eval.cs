@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-
 using Debugger.MetaData;
 using Debugger.Interop.CorDebug;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger
 {
@@ -188,16 +189,16 @@ namespace Debugger
 		}
 		
 		/// <summary> Synchronously calls a function and returns its return value </summary>
-		public static Value InvokeMethod(Thread evalThread, DebugMethodInfo method, Value thisValue, Value[] args)
+		public static Value InvokeMethod(Thread evalThread, IMethod method, Value thisValue, Value[] args)
 		{
-			if (method.BackingField != null) {
-				method.Process.TraceMessage("Using backing field for " + method.FullName);
-				return Value.GetMemberValue(evalThread, thisValue, method.BackingField, args);
+			if (method.GetBackingField() != null) {
+				evalThread.Process.TraceMessage("Using backing field for " + method.FullName);
+				return Value.GetMemberValue(evalThread, thisValue, method.GetBackingField(), args);
 			}
 			return AsyncInvokeMethod(evalThread, method, thisValue, args).WaitForResult();
 		}
 		
-		public static Eval AsyncInvokeMethod(Thread evalThread, DebugMethodInfo method, Value thisValue, Value[] args)
+		public static Eval AsyncInvokeMethod(Thread evalThread, IMethod method, Value thisValue, Value[] args)
 		{
 			return new Eval(
 				evalThread,
@@ -209,11 +210,11 @@ namespace Debugger
 		}
 
 		/// <exception cref="GetValueException"><c>GetValueException</c>.</exception>
-		static void MethodInvokeStarter(Eval eval, DebugMethodInfo method, Value thisValue, Value[] args)
+		static void MethodInvokeStarter(Eval eval, IMethod method, Value thisValue, Value[] args)
 		{
 			List<ICorDebugValue> corArgs = new List<ICorDebugValue>();
 			args = args ?? new Value[0];
-			if (args.Length != method.ParameterCount) {
+			if (args.Length != method.Parameters.Count) {
 				throw new GetValueException("Invalid parameter count");
 			}
 			if (!method.IsStatic) {
@@ -222,7 +223,7 @@ namespace Debugger
 				if (thisValue.IsNull)
 					throw new GetValueException("Null reference");
 				// if (!(thisValue.IsObject)) // eg Can evaluate on array
-				if (!method.DeclaringType.IsInstanceOfType(thisValue)) {
+				if (!thisValue.Type.GetDefinition().IsDerivedFrom(method.DeclaringType.GetDefinition())) {
 					throw new GetValueException(
 						"Can not evaluate because the object is not of proper type.  " + 
 						"Expected: " + method.DeclaringType.FullName + "  Seen: " + thisValue.Type.FullName
@@ -232,32 +233,23 @@ namespace Debugger
 			}
 			for(int i = 0; i < args.Length; i++) {
 				Value arg = args[i];
-				DebugType paramType = (DebugType)method.GetParameters()[i].ParameterType;
-				if (!arg.Type.CanImplicitelyConvertTo(paramType))
+				IType paramType = method.Parameters[i].Type;
+				if (!arg.IsNull && !arg.Type.GetDefinition().IsDerivedFrom(paramType.GetDefinition().GetDefinition()))
 					throw new GetValueException("Inncorrect parameter type. Expected " + paramType.ToString());
-				// Implicitely convert to correct primitve type
-				if (paramType.IsPrimitive && args[i].Type != paramType) {
-					object oldPrimVal = arg.PrimitiveValue;
-					object newPrimVal = Convert.ChangeType(oldPrimVal, paramType.PrimitiveType);
-					// Eval - TODO: Is this dangerous?
-					arg = CreateValue(eval.thread, newPrimVal);
-				}
-				// It is importatnt to pass the parameted in the correct form (boxed/unboxed)
-				if (paramType.IsValueType) {
-					corArgs.Add(arg.CorGenericValue);
+				// It is importatnt to pass the parameter in the correct form (boxed/unboxed)
+				if (paramType.IsReferenceType == true) {
+					if (!arg.IsReference)
+						throw new DebuggerException("Reference expected as method argument");
+					corArgs.Add(arg.CorValue);
 				} else {
-					if (args[i].Type.IsValueType) {
-						// Eval - TODO: Is this dangerous?
-						corArgs.Add(arg.Box(eval.thread).CorValue);
-					} else {
-						corArgs.Add(arg.CorValue);
-					}
+					corArgs.Add(arg.CorGenericValue); // Unbox
 				}
 			}
 			
-			ICorDebugType[] genericArgs = ((DebugType)method.DeclaringType).GenericArgumentsAsCorDebugType;
+			ICorDebugType[] genericArgs = method.GetTypeArguments();
+			
 			eval.CorEval2.CallParameterizedFunction(
-				method.CorFunction,
+				method.ToCorFunction(),
 				(uint)genericArgs.Length, genericArgs,
 				(uint)corArgs.Count, corArgs.ToArray()
 			);
@@ -266,7 +258,7 @@ namespace Debugger
 		public static Value CreateValue(Thread evalThread, object value)
 		{
 			if (value == null) {
-				ICorDebugClass corClass = evalThread.AppDomain.ObjectType.CorType.GetClass();
+				ICorDebugClass corClass = evalThread.AppDomain.ObjectType.ToCorDebug().GetClass();
 				ICorDebugEval corEval = evalThread.CorThread.CreateEval();
 				ICorDebugValue corValue = corEval.CreateValue((uint)CorElementType.CLASS, corClass);
 				return new Value(evalThread.AppDomain, corValue);
@@ -275,37 +267,12 @@ namespace Debugger
 			} else {
 				if (!value.GetType().IsPrimitive)
 					throw new DebuggerException("Value must be primitve type.  Seen " + value.GetType());
-				Value val = Eval.NewObjectNoConstructor(evalThread, DebugType.CreateFromType(evalThread.AppDomain.Mscorlib, value.GetType()));
+				IType type = evalThread.AppDomain.Compilation.FindType(value.GetType());
+				Value val = Eval.NewObjectNoConstructor(evalThread, type);
 				val.SetPrimitiveValue(evalThread, value);
 				return val;
 			}
 		}
-		
-	    /*
-		// The following function create values only for the purpuse of evalutaion
-		// They actually do not allocate memory on the managed heap
-		// The advantage is that it does not continue the process
-	    /// <exception cref="DebuggerException">Can not create string this way</exception>
-	    public static Value CreateValue(Process process, object value)
-		{
-			if (value is string) throw new DebuggerException("Can not create string this way");
-			CorElementType corElemType;
-			ICorDebugClass corClass = null;
-			if (value != null) {
-				corElemType = DebugType.TypeNameToCorElementType(value.GetType().FullName);
-			} else {
-				corElemType = CorElementType.CLASS;
-				corClass = DebugType.Create(process, null, typeof(object).FullName).CorType.Class;
-			}
-			ICorDebugEval corEval = CreateCorEval(process);
-			ICorDebugValue corValue = corEval.CreateValue((uint)corElemType, corClass);
-			Value v = new Value(process, new Expressions.PrimitiveExpression(value), corValue);
-			if (value != null) {
-				v.PrimitiveValue = value;
-			}
-			return v;
-		}
-		*/
 		
 		public static Value NewString(Thread evalThread, string textToCreate)
 		{
@@ -323,12 +290,12 @@ namespace Debugger
 			);
 		}
 		
-		public static Value NewArray(Thread evalThread, DebugType type, uint length, uint? lowerBound)
+		public static Value NewArray(Thread evalThread, IType type, uint length, uint? lowerBound)
 		{
 			return AsyncNewArray(evalThread, type, length, lowerBound).WaitForResult();
 		}
 		
-		public static Eval AsyncNewArray(Thread evalThread, DebugType type, uint length, uint? lowerBound)
+		public static Eval AsyncNewArray(Thread evalThread, IType type, uint length, uint? lowerBound)
 		{
 			lowerBound = lowerBound ?? 0;
 			return new Eval(
@@ -336,45 +303,49 @@ namespace Debugger
 				"New array: " + type + "[" + length + "]",
 				delegate(Eval eval) {
 					// Multi-dimensional arrays not supported in .NET 2.0
-					eval.CorEval2.NewParameterizedArray(type.CorType, 1, new uint[] { length }, new uint[] { lowerBound.Value });
+					eval.CorEval2.NewParameterizedArray(type.ToCorDebug(), 1, new uint[] { length }, new uint[] { lowerBound.Value });
 				}
 			);
 		}
 		
-		public static Value NewObject(Thread evalThread, DebugMethodInfo constructor, Value[] constructorArguments)
+		public static Value NewObject(Thread evalThread, IMethod constructor, Value[] constructorArguments)
 		{
 			return AsyncNewObject(evalThread, constructor, constructorArguments).WaitForResult();
 		}
 		
-		public static Eval AsyncNewObject(Thread evalThread, DebugMethodInfo constructor, Value[] constructorArguments)
+		public static Eval AsyncNewObject(Thread evalThread, IMethod constructor, Value[] constructorArguments)
 		{
-			ICorDebugValue[] constructorArgsCorDebug = ValuesAsCorDebug(constructorArguments);
+			ICorDebugType[] typeArgs = constructor.GetTypeArguments();
+			ICorDebugValue[] ctorArgs = ValuesAsCorDebug(constructorArguments);
 			return new Eval(
 				evalThread,
 				"New object: " + constructor.FullName,
 				delegate(Eval eval) {
 					eval.CorEval2.NewParameterizedObject(
-						constructor.CorFunction,
-						(uint)constructor.DeclaringType.GetGenericArguments().Length,
-						((DebugType)constructor.DeclaringType).GenericArgumentsAsCorDebugType,
-						(uint)constructorArgsCorDebug.Length,
-						constructorArgsCorDebug);
+						constructor.ToCorFunction(),
+						(uint)typeArgs.Length, typeArgs,
+						(uint)ctorArgs.Length, ctorArgs);
 				}
 			);
 		}
 		
-		public static Value NewObjectNoConstructor(Thread evalThread, DebugType debugType)
+		public static Value NewObjectNoConstructor(Thread evalThread, IType type)
 		{
-			return AsyncNewObjectNoConstructor(evalThread, debugType).WaitForResult();
+			return AsyncNewObjectNoConstructor(evalThread, type).WaitForResult();
 		}
 		
-		public static Eval AsyncNewObjectNoConstructor(Thread evalThread, DebugType debugType)
+		public static Eval AsyncNewObjectNoConstructor(Thread evalThread, IType type)
 		{
+			ICorDebugType[] typeArgs = new ICorDebugType[0];
+			var genType = type as ParameterizedType;
+			if (genType != null) {
+				typeArgs = genType.TypeArguments.Select(t => t.ToCorDebug()).ToArray();
+			}
 			return new Eval(
 				evalThread,
-				"New object: " + debugType.FullName,
+				"New object: " + type.FullName,
 				delegate(Eval eval) {
-					eval.CorEval2.NewParameterizedObjectNoConstructor(debugType.CorType.GetClass(), (uint)debugType.GetGenericArguments().Length, debugType.GenericArgumentsAsCorDebugType);
+					eval.CorEval2.NewParameterizedObjectNoConstructor(type.ToCorDebug().GetClass(), (uint)typeArgs.Length, typeArgs);
 				}
 			);
 		}

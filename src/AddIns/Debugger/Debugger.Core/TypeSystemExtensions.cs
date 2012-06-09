@@ -321,5 +321,116 @@ namespace Debugger
 			}
 		}
 		#endregion
+		
+		public static bool IsPrimitiveType(this IType type)
+		{
+			var def = type.GetDefinition();
+			if (def != null) {
+				switch (def.KnownTypeCode) {
+					case KnownTypeCode.Boolean:
+					case KnownTypeCode.Char:
+					case KnownTypeCode.SByte:
+					case KnownTypeCode.Byte:
+					case KnownTypeCode.Int16:
+					case KnownTypeCode.UInt16:
+					case KnownTypeCode.Int32:
+					case KnownTypeCode.UInt32:
+					case KnownTypeCode.Int64:
+					case KnownTypeCode.UInt64:
+					case KnownTypeCode.Single:
+					case KnownTypeCode.Double:
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		public static bool IsInteger(this IType type)
+		{
+			var def = type.GetDefinition();
+			if (def != null) {
+				switch (def.KnownTypeCode) {
+					case KnownTypeCode.SByte:
+					case KnownTypeCode.Byte:
+					case KnownTypeCode.Int16:
+					case KnownTypeCode.UInt16:
+					case KnownTypeCode.Int32:
+					case KnownTypeCode.UInt32:
+					case KnownTypeCode.Int64:
+					case KnownTypeCode.UInt64:
+						return true;
+				}
+			}
+			return false;
+		}
+		
+		public static bool IsKnownType(this IType type, KnownTypeCode knownType)
+		{
+			var def = type.GetDefinition();
+			return def != null && def.KnownTypeCode == knownType;
+		}
+		
+		public static uint GetMetadataToken(this IMember member)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public static IField GetBackingField(this IMethod method)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public static ICorDebugType[] GetTypeArguments(this IMethod method)
+		{
+			List<ICorDebugType> typeArgs = new List<ICorDebugType>();
+			var specMethod = method as SpecializedMethod;
+			if (specMethod != null) {
+				if (specMethod.Substitution.ClassTypeArguments != null)
+					typeArgs.AddRange(specMethod.Substitution.ClassTypeArguments.Select(t => t.ToCorDebug()));
+				if (specMethod.Substitution.MethodTypeArguments != null)
+					typeArgs.AddRange(specMethod.Substitution.MethodTypeArguments.Select(t => t.ToCorDebug()));
+			}
+			return typeArgs.ToArray();
+		}
+		
+		public static ICorDebugFunction ToCorFunction(this IMethod method)
+		{
+			Module module = method.DeclaringType.GetDefinition().ParentAssembly.GetModule();
+			return module.CorModule.GetFunctionFromToken(method.GetMetadataToken());
+		}
+		
+		public static IType GetLocalVariableType(this IMethod method, int index)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public static bool IsDisplayClass(this IType type)
+		{
+			if (type.Name.StartsWith("<>") && type.Name.Contains("__DisplayClass")) {
+				return true; // Anonymous method or lambda
+			}
+			
+			if (type.GetDefinition().Attributes.Any(a => a.AttributeType.FullName == typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute).FullName)) {
+				if (type.GetAllBaseTypeDefinitions().Any(t => t.FullName == typeof(System.Collections.IEnumerator).FullName)) {
+					return true; // yield
+				}
+				if (type.GetAllBaseTypeDefinitions().Any(t => t.FullName == "System.Runtime.CompilerServices.IAsyncStateMachine")) {
+					return true; // async
+				}
+			}
+			
+			return false;
+		}
+		
+		public static IMethod Import(this ICompilation compilation, ICorDebugFunction corFunction, List<ICorDebugType> typeArgs)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public static IMethod Import(this ICompilation compilation, ICorDebugFunction corFunction)
+		{
+			Module module = compilation.GetAppDomain().Process.GetModule(corFunction.GetModule());
+			throw new NotImplementedException();
+		}
 	}
 }

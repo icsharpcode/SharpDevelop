@@ -286,29 +286,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		// TODO - What is this?
-		Debugger.StackFrame GetStackFrame()
-		{
-			bool isMatch = false;
-			int line = -1;
-			int[] ilRange = null;
-			
-			var frame = CurrentStackFrame;
-			int typeToken = frame.MethodInfo.DeclaringType.MetadataToken;
-			int methodToken = frame.MethodInfo.MetadataToken;
-			
-			// get the mapped instruction from the current line marker or the next one
-			if (!debuggerDecompilerService.GetILAndLineNumber(typeToken, methodToken, frame.IP, out ilRange, out line, out isMatch)){
-				frame.SourceCodeLine = 0;
-				frame.ILRanges = new [] { 0, 1 };
-			} else {
-				frame.SourceCodeLine = line;
-				frame.ILRanges = ilRange;
-			}
-			
-			return frame;
-		}
-		
 		public void StepInto()
 		{
 			if (CurrentStackFrame != null) {
@@ -477,9 +454,10 @@ namespace ICSharpCode.SharpDevelop.Services
 					
 					int[] ilRanges;
 					int methodToken;
-					if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
-						CurrentDebugger.AddILBreakpoint(memberReference.FullName, dbb.LineNumber, memberReference.MetadataToken.ToInt32(), methodToken, ilRanges[0], dbb.IsEnabled);
-					}
+					#warning decompiler
+//					if (debuggerDecompilerService.GetILAndTokenByLineNumber(token, dbb.LineNumber, out ilRanges, out methodToken)) {
+//						CurrentDebugger.AddILBreakpoint(memberReference.FullName, dbb.LineNumber, memberReference.MetadataToken.ToInt32(), methodToken, ilRanges[0], dbb.IsEnabled);
+//					}
 				} catch (System.Exception ex) {
 					LoggingService.Error("Error on DecompiledBreakpointBookmark: " + ex.Message);
 				}
@@ -656,7 +634,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (CurrentThread != null && CurrentStackFrame.HasSymbols) {
 					JumpToSourceCode();
 				} else {
-					JumpToDecompiledCode(CurrentStackFrame);
+			#warning		JumpToDecompiledCode(CurrentStackFrame);
 				}
 //			} else {
 //				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
@@ -682,6 +660,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		/*
 		void JumpToDecompiledCode(Debugger.StackFrame frame)
 		{
 			if (frame == null) {
@@ -716,7 +695,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				                             debugType.FullNameWithoutGenericArguments,
 				                             IDStringProvider.GetIDString(frame.MethodInfo),
 				                             line);
-			} else {
+			} else
+			{
 				// no line => do decompilation
 				NavigationService.NavigateTo(debugType.DebugModule.FullPath,
 				                             debugType.FullNameWithoutGenericArguments,
@@ -724,6 +704,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 			}
 		}
+		*/
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
 		{

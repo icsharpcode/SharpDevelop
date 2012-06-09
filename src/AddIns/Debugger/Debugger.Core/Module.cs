@@ -29,7 +29,6 @@ namespace Debugger
 		MetaDataImport metaData;
 		
 		Task<IUnresolvedAssembly> unresolvedAssembly;
-		internal Dictionary<string, DebugType> LoadedDebugTypes = new Dictionary<string, DebugType>();
 		
 		public IUnresolvedAssembly UnresolvedAssembly {
 			get { return unresolvedAssembly.Result; }
@@ -164,29 +163,6 @@ namespace Debugger
 				// Since we have asked the COMInterop layer to preservesig, we need to marshal any failing HRESULTS.
 				((ICorDebugModule2)corModule).SetJITCompilerFlags((uint)value);
 			}
-		}
-		
-		/// <summary> Returns all non-generic types defined in the module </summary>
-		/// <remarks> Generic types can not be returned, because we do not know how to instanciate them </remarks>
-		public List<DebugType> GetDefinedTypes()
-		{
-			List<DebugType> types = new List<DebugType>();
-			foreach(TypeDefProps typeDef in this.MetaData.EnumTypeDefProps()) {
-				if (this.MetaData.EnumGenericParams(typeDef.Token).Length == 0) {
-					types.Add(DebugType.CreateFromTypeDefOrRef(this, null, typeDef.Token, null));
-				}
-			}
-			return types;
-		}
-		
-		/// <summary> Get names of all generic and non-generic types defined in this module </summary>
-		public List<string> GetNamesOfDefinedTypes()
-		{
-			List<string> names = new List<string>();
-			foreach(TypeDefProps typeProps in this.MetaData.EnumTypeDefProps()) {
-				names.Add(typeProps.Name);
-			}
-			return names;
 		}
 		
 		internal Module(AppDomain appDomain, ICorDebugModule corModule)

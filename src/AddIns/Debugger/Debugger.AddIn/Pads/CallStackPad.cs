@@ -159,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			StringBuilder name = new StringBuilder(64);
 			if (DebuggingOptions.Instance.ShowModuleNames) {
-				name.Append(frame.MethodInfo.DebugModule.ToString());
+				name.Append(frame.MethodInfo.ToString());
 				name.Append('!');
 			}
 			name.Append(frame.MethodInfo.DeclaringType.FullName);
@@ -167,9 +167,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Append(frame.MethodInfo.Name);
 			if (DebuggingOptions.Instance.ShowArgumentNames || DebuggingOptions.Instance.ShowArgumentValues) {
 				name.Append('(');
-				for (int i = 0; i < frame.ArgumentCount; i++) {
+				for (int i = 0; i < frame.MethodInfo.Parameters.Count; i++) {
 					if (DebuggingOptions.Instance.ShowArgumentNames) {
-						name.Append(frame.MethodInfo.GetParameters()[i].Name);
+						name.Append(frame.MethodInfo.Parameters[i].Name);
 						if (DebuggingOptions.Instance.ShowArgumentValues) {
 							name.Append('=');
 						}

@@ -144,9 +144,9 @@ namespace Debugger
 			           thread.CurrentStepIn.IsInStepRanges((int)currentStackFrame.IP)) {
 				Stepper.StepIn(currentStackFrame, thread.CurrentStepIn.StepRanges, "finishing step in");
 				process.TraceMessage(" - finishing step in");
-			} else if (currentStackFrame.MethodInfo.StepOver) {
+			} else if (currentStackFrame.IsNonUserCode) {
 				if (process.Options.EnableJustMyCode) {
-					currentStackFrame.MethodInfo.MarkAsNonUserCode();
+					currentStackFrame.MarkAsNonUserCode();
 					process.TraceMessage(" - method {0} marked as non user code", currentStackFrame.MethodInfo.FullName);
 					Stepper.StepIn(currentStackFrame, new int[] {0, int.MaxValue}, "seeking user code");
 					process.TraceMessage(" - seeking user code");

@@ -80,7 +80,7 @@ namespace Debugger
 			return true;
 		}
 	}
-	
+	/*
 	public class ILBreakpoint : Breakpoint
 	{
 		public ILBreakpoint(string typeName, int line, int metadataToken, int memberToken, int offset, bool enabled)
@@ -120,4 +120,5 @@ namespace Debugger
 			}
 		}
 	}
+	*/
 }

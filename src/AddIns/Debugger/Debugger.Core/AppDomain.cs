@@ -17,8 +17,6 @@ namespace Debugger
 		
 		ICorDebugAppDomain corAppDomain;
 		
-		internal Dictionary<ICorDebugType, DebugType> DebugTypeCache = new Dictionary<ICorDebugType, DebugType>();
-		
 		ICompilation compilation;
 		
 		internal void InvalidateCompilation()
@@ -67,8 +65,8 @@ namespace Debugger
 			}
 		}
 		
-		internal DebugType ObjectType {
-			get { return DebugType.CreateFromType(this.Mscorlib, typeof(object)); }
+		internal IType ObjectType {
+			get { return this.Compilation.FindType(KnownTypeCode.Object); }
 		}
 		
 		internal ICorDebugAppDomain CorAppDomain {

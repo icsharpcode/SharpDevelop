@@ -99,7 +99,7 @@ namespace Debugger
 				sb.AppendLine();
 			}
 			// Note that evaluation is not possible after a stackoverflow exception
-			Value stackTrace = exception.GetMemberValue(evalThread, "StackTrace");
+			Value stackTrace = exception.GetPropertyValue(evalThread, "StackTrace");
 			if (!stackTrace.IsNull) {
 				sb.Append(stackTrace.AsString());
 				sb.AppendLine();
