@@ -240,7 +240,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				}
 			}
 			var mb = new DefaultMemberProvider(doc, parsedFile);
-			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, rctx, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, rctx);
 				
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
@@ -266,7 +266,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var cmp = pctx.CreateCompilation();
 			
 			var mb = new DefaultMemberProvider(doc, parsedFile);
-			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly), parsedFile);
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);

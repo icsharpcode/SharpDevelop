@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Linq;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 
 namespace ICSharpCode.NRefactory.CSharp.Completion
 {
@@ -37,6 +38,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		void GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember);
 
 		Tuple<string, TextLocation> GetMemberTextToCaret(int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember);
+
+		CSharpAstResolver GetResolver (CSharpResolver resolver, AstNode rootNode);
 	}
 
 	public class DefaultMemberProvider : IMemberProvider
@@ -182,7 +185,13 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 
 			return Tuple.Create (document.GetText (startOffset, caretOffset - startOffset), document.GetLocation (startOffset));
 		}
-		
+
+
+		public CSharpAstResolver GetResolver (CSharpResolver resolver, AstNode rootNode)
+		{
+			return new CSharpAstResolver (resolver, rootNode, parsedFile);
+		}
+
 
 	}
 }

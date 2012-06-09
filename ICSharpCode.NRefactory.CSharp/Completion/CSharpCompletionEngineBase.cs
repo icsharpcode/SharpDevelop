@@ -51,8 +51,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#region Input properties
 		public CSharpTypeResolveContext ctx { get; private set; }
 
-		public CSharpParsedFile CSharpParsedFile { get; private set; }
-
 		public IProjectContent ProjectContent { get; private set; }
 		
 		ICompilation compilation;
@@ -66,21 +64,18 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		}
 		#endregion
 		
-		protected CSharpCompletionEngineBase(IProjectContent content, IMemberProvider memberProvider, CSharpTypeResolveContext ctx, CSharpParsedFile parsedFile)
+		protected CSharpCompletionEngineBase(IProjectContent content, IMemberProvider memberProvider, CSharpTypeResolveContext ctx)
 		{
 			if (content == null)
 				throw new ArgumentNullException("content");
 			if (ctx == null)
 				throw new ArgumentNullException("ctx");
-			if (parsedFile == null)
-				throw new ArgumentNullException("parsedFile");
 			if (memberProvider == null)
 				throw new ArgumentNullException("memberProvider");
 			
 			this.ProjectContent = content;
 			this.MemberProvider = memberProvider;
 			this.ctx = ctx;
-			this.CSharpParsedFile = parsedFile;
 		}
 		
 		
@@ -802,12 +797,11 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				resolveNode = expr;
 			}
 			try {
-				var ctx = GetState ();
 				var root = expr.AncestorsAndSelf.FirstOrDefault(n => n is EntityDeclaration || n is CompilationUnit);
 				if (root == null) {
 					return null;
 				}
-				var csResolver = new CSharpAstResolver (ctx, root, CSharpParsedFile);
+				var csResolver = MemberProvider.GetResolver (GetState(), root);
 				var result = csResolver.Resolve(resolveNode);
 				var state = csResolver.GetResolverStateBefore(resolveNode);
 				return Tuple.Create(result, state);
