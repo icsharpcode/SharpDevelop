@@ -41,7 +41,7 @@ namespace Debugger.Tests {
 			DumpLocalVariables();
 			
 			Value array = this.CurrentStackFrame.GetLocalVariableValue("array").GetPermanentReference(this.EvalThread);
-			ObjectDump("array.Length", array.GetMemberValue(this.EvalThread, "Length"));
+			ObjectDump("array.Length", array.GetPropertyValue(this.EvalThread, "Length"));
 			ObjectDump("array", array);
 			
 			Value lbArray = this.CurrentStackFrame.GetLocalVariableValue("lbArray").GetPermanentReference(this.EvalThread);

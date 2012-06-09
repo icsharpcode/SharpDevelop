@@ -48,7 +48,7 @@ namespace Debugger.Tests {
 			
 			argument = this.CurrentStackFrame.GetArgumentValue(0);
 			local = this.CurrentStackFrame.GetLocalVariableValue("local");
-			@class = this.CurrentStackFrame.GetThisValue().GetMemberValue(this.EvalThread, "class");
+			@class = this.CurrentStackFrame.GetThisValue(false).GetFieldValue("class");
 			ObjectDump("argument", argument);
 			ObjectDump("local", local);
 			ObjectDump("@class", @class);

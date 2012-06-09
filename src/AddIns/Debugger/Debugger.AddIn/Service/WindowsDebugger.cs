@@ -453,7 +453,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				if (CurrentStackFrame == null || CurrentStackFrame.NextStatement == null)
 					return false;
 				var val = Evaluate(code);
-				if (val != null && val.Type.IsPrimitive && val.PrimitiveValue is bool)
+				if (val != null && val.Type.IsPrimitiveType() && val.PrimitiveValue is bool)
 					return (bool)val.PrimitiveValue;
 				else
 					return false;
@@ -601,8 +601,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				throw new GetValueException("no stackframe available!");
 			var location = CurrentStackFrame.NextStatement;
 			var fileName = new FileName(location.Filename);
-			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), new ParseableFileContentFinder().Create(fileName), code, CurrentStackFrame.MethodInfo.DebugModule.Assembly.Compilation, System.Threading.CancellationToken.None);
-			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.MethodInfo.DebugModule.Assembly.Compilation).Convert(rr);
+			var rr = SD.ParserService.ResolveSnippet(fileName, new TextLocation(location.StartLine, location.StartColumn), new ParseableFileContentFinder().Create(fileName), code, CurrentStackFrame.AppDomain.Compilation, System.Threading.CancellationToken.None);
+			return new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation).Convert(rr);
 		}
 
 		public void JumpToCurrentLine()

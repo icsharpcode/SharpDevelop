@@ -270,7 +270,7 @@ namespace Debugger
 			if (callbackInterface.IsInCallback) throw new DebuggerException("Can not raise event within callback.");
 			TraceMessage ("Debugger event: OnPaused()");
 			if (Paused != null) {
-				foreach(Delegate d in Paused.GetInvocationList()) {
+				foreach(EventHandler<DebuggerEventArgs> d in Paused.GetInvocationList()) {
 					if (IsRunning) {
 						TraceMessage ("Skipping OnPaused delegate because process has resumed");
 						break;
@@ -279,7 +279,7 @@ namespace Debugger
 						TraceMessage ("Skipping OnPaused delegate because process has exited");
 						break;
 					}
-					d.DynamicInvoke(this, e);
+					d(this, e);
 				}
 			}
 		}

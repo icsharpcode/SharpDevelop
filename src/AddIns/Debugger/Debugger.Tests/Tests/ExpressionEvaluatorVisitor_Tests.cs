@@ -320,8 +320,8 @@ namespace Debugger.Tests
 			if (frame == null || frame.NextStatement == null)
 				throw new GetValueException("no stackframe available!");
 			var location = frame.NextStatement;
-			var rr = ResolveSnippet(location.Filename, new TextLocation(location.StartLine, location.StartColumn), contextCode, code, frame.MethodInfo.DebugModule.Assembly.Compilation);
-			return new ExpressionEvaluationVisitor(frame, evalThread, frame.MethodInfo.DebugModule.Assembly.Compilation).Convert(rr);
+			var rr = ResolveSnippet(location.Filename, new TextLocation(location.StartLine, location.StartColumn), contextCode, code, frame.AppDomain.Compilation);
+			return new ExpressionEvaluationVisitor(frame, evalThread, frame.AppDomain.Compilation).Convert(rr);
 		}
 	}
 }

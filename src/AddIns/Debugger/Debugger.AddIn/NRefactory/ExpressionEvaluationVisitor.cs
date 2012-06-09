@@ -26,21 +26,9 @@ namespace Debugger.AddIn
 	
 	public static class Extensions
 	{
-		public static IType ToIType(this DebugType type, StackFrame frame)
-		{
-			var typeRef = ReflectionHelper.ParseReflectionName(type.FullName);
-			return typeRef.Resolve(frame.AppDomain.Compilation);
-		}
-		
-		public static bool IsKnownType(this IType type, KnownTypeCode knownType)
-		{
-			var def = type.GetDefinition();
-			return def != null && def.KnownTypeCode == knownType;
-		}
-		
 		public static ResolveResult ToResolveResult(this Value value, StackFrame context)
 		{
-			return new ConstantResolveResult(value.Type.ToIType(context), value.PrimitiveValue);
+			return new ConstantResolveResult(value.Type, value.PrimitiveValue);
 		}
 	}
 	
@@ -85,7 +73,7 @@ namespace Debugger.AddIn
 		
 		Value Visit(ThisResolveResult result)
 		{
-			return context.GetLocalVariableThis();
+			return context.GetThisValue(true);
 		}
 		
 		Value Visit(MemberResolveResult result)
@@ -168,7 +156,7 @@ namespace Debugger.AddIn
 		{
 			Debug.Assert(result.Operands.Count == 3);
 			var condition = Convert(result.Operands[0]);
-			if (!condition.Type.ToIType(context).IsKnownType(KnownTypeCode.Boolean))
+			if (!condition.Type.IsKnownType(KnownTypeCode.Boolean))
 				throw new GetValueException("Boolean expression expected!");
 			if ((bool)condition.PrimitiveValue)
 				return Convert(result.Operands[1]);
@@ -252,8 +240,7 @@ namespace Debugger.AddIn
 			var conversions = CSharpConversions.Get(debuggerTypeSystem);
 			bool evalResult = false;
 			if (!val.IsNull) {
-				var type = val.Type.ToIType(context);
-				IType inputType = NullableType.GetUnderlyingType(type);
+				IType inputType = NullableType.GetUnderlyingType(val.Type);
 				if (inputType.Equals(importedType))
 					evalResult = true;
 				else if (conversions.IsImplicitReferenceConversion(inputType, importedType))
@@ -349,7 +336,7 @@ namespace Debugger.AddIn
 		{
 			if (val.IsNull) {
 				return "null";
-			} else if (val.Type.IsArray) {
+			} else if (val.Type.Kind == TypeKind.Array) {
 				StringBuilder sb = new StringBuilder();
 				sb.Append(val.Type.Name);
 				sb.Append(" {");
@@ -361,25 +348,26 @@ namespace Debugger.AddIn
 				}
 				sb.Append("}");
 				return sb.ToString();
-			} else if (val.Type.GetInterface(typeof(ICollection).FullName) != null) {
+			} else if (val.Type.GetAllBaseTypeDefinitions().Any(def => def.IsKnownType(KnownTypeCode.ICollection))) {
 				StringBuilder sb = new StringBuilder();
 				sb.Append(val.Type.Name);
 				sb.Append(" {");
 				val = val.GetPermanentReference(evalThread);
-				int count = (int)val.GetMemberValue(evalThread, "Count").PrimitiveValue;
+				var countProp = val.Type.GetProperties(p => p.Name == "Count" && !p.IsExplicitInterfaceImplementation).Single();
+				int count = (int)val.GetMemberValue(evalThread, countProp).PrimitiveValue;
 				for(int i = 0; i < count; i++) {
 					if (i > 0) sb.Append(", ");
-					DebugPropertyInfo itemProperty = (DebugPropertyInfo)val.Type.GetProperty("Item");
+					var itemProperty = val.Type.GetProperties(p => p.IsIndexer && p.Name == "Item" && !p.IsExplicitInterfaceImplementation).Single();
 					Value item = val.GetPropertyValue(evalThread, itemProperty, Eval.CreateValue(evalThread, i));
 					sb.Append(FormatValue(evalThread, item));
 				}
 				sb.Append("}");
 				return sb.ToString();
-			} else if (val.Type.FullName == typeof(char).FullName) {
+			} else if (val.Type.IsKnownType(KnownTypeCode.Char)) {
 				return "'" + CSharpOutputVisitor.ConvertChar((char)val.PrimitiveValue) + "'";
-			} else if (val.Type.FullName == typeof(string).FullName) {
+			} else if (val.Type.IsKnownType(KnownTypeCode.String)) {
 				return "\"" + CSharpOutputVisitor.ConvertString((string)val.PrimitiveValue) + "\"";
-			} else if (val.Type.IsPrimitive) {
+			} else if (val.Type.IsPrimitiveType()) {
 				return CSharpOutputVisitor.PrintPrimitiveValue(val.PrimitiveValue);
 			} else {
 				return val.InvokeToString(evalThread);

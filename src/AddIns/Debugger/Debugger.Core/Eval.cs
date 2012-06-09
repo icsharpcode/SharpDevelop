@@ -350,11 +350,6 @@ namespace Debugger
 			);
 		}
 		
-		public static Eval AsyncNewObjectNoConstructor(Thread evalThread, IType type)
-		{
-			throw new NotImplementedException();
-		}
-		
 		static ICorDebugValue[] ValuesAsCorDebug(Value[] values)
 		{
 			ICorDebugValue[] valuesAsCorDebug = new ICorDebugValue[values.Length];
