@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// If this method is an accessor, returns a reference to the corresponding property/event.
 		/// Otherwise, returns null.
 		/// </summary>
-		IMemberReference AccessorOwner { get; }
+		IUnresolvedMember AccessorOwner { get; }
 		
 		/// <summary>
 		/// Resolves the member.
