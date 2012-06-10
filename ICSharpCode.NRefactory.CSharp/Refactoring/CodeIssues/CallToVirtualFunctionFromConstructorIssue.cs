@@ -29,8 +29,8 @@ using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Virtual functions should not be called from constructors",
-	       Description = "Warns about calls to virtual member functions occuring int the constructor.",
+	[IssueDescription("Constructors should not call virtual members",
+	       Description = "Warns about calls to virtual member functions occuring in the constructor.",
 	       Category = IssueCategories.CodeQualityIssues,
 	       Severity = Severity.Warning)]
 	public class CallToVirtualFunctionFromConstructorIssue : ICodeIssueProvider
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				if (targetMethod.IsVirtualCall)
 					AddIssue(invocationExpression,
-					         context.TranslateString("Calling virtual functions in constructors is bad practice."));
+					         context.TranslateString("Calling virtual functions in constructors is bad practice"));
 			}
 		}
 	}

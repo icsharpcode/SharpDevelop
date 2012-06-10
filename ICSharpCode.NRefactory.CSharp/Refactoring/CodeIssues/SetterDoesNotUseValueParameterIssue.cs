@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}, CancellationToken.None);
 
 				if(!referenceFound)
-					AddIssue(node, context.TranslateString("The setter does not use the 'value' parameter."));
+					AddIssue(node, context.TranslateString("The setter does not use the 'value' parameter"));
 			}
 		}
 	}

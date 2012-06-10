@@ -77,14 +77,20 @@ namespace ICSharpCode.NRefactory.CSharp
 					return;
 				if (!func(leftLength, rightLength))
 					AddIssue(objectCreateExpression,
-					         context.TranslateString("Swap parameters"),
-					         script => {
-						var newOCE = objectCreateExpression.Clone() as ObjectCreateExpression;
-						newOCE.Arguments.Clear();
-						newOCE.Arguments.Add(secondParam.Clone());
-						newOCE.Arguments.Add(firstParam.Clone());
-						script.Replace(objectCreateExpression, newOCE);
-					});
+					         context.TranslateString("The parameters are in the wrong order"),
+					         GetActions(objectCreateExpression, firstParam, secondParam));
+			}
+
+			IEnumerable<CodeAction> GetActions(ObjectCreateExpression objectCreateExpression,
+			                                   PrimitiveExpression firstParam, PrimitiveExpression secondParam)
+			{
+				yield return new CodeAction(context.TranslateString("Swap parameters"), script =>  {
+					var newOCE = objectCreateExpression.Clone() as ObjectCreateExpression;
+					newOCE.Arguments.Clear();
+					newOCE.Arguments.Add(secondParam.Clone());
+					newOCE.Arguments.Add(firstParam.Clone());
+					script.Replace(objectCreateExpression, newOCE);
+				});
 			}
 		}
 	}
