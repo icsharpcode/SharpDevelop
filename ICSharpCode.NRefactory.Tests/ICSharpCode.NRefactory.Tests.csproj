@@ -93,6 +93,7 @@
     <Compile Include="CSharp\CodeActions\ConvertSwitchToIfTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateCustomEventImplementationTests.cs" />
     <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
+    <Compile Include="CSharp\CodeActions\ExtractAnonymousMethodTests.cs" />
     <Compile Include="CSharp\CodeActions\MergeNestedIfTests.cs" />
     <Compile Include="CSharp\CodeActions\PutInsideUsingTests.cs" />
     <Compile Include="CSharp\CodeActions\SplitDeclarationListTests.cs" />

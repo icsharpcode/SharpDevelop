@@ -1,5 +1,5 @@
 ﻿// 
-// ConvertLambdaBodyExpressionToStatementAction.cs
+// LambdaHelper.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -30,36 +30,29 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[ContextAction ("Converts expression of lambda body to statement",
-					Description = "Converts expression of lambda body to statement")]
-	public class ConvertLambdaBodyExpressionToStatementAction : SpecializedCodeAction<LambdaExpression>
+	public class LambdaHelper
 	{
-
-		protected override CodeAction GetAction (RefactoringContext context, LambdaExpression node)
+		public static IType GetLambdaReturnType(RefactoringContext context, LambdaExpression lambda)
 		{
-			if (!node.ArrowToken.Contains (context.Location))
-				return null;
+			var parent = lambda.Parent;
+			while (parent is ParenthesizedExpression)
+				parent = parent.Parent;
 
-			var bodyExpr = node.Body as Expression;
-			if (bodyExpr == null)
+			ITypeDefinition delegateTypeDef;
+			if (parent is InvocationExpression) {
+				var invocation = (InvocationExpression)parent;
+				var argIndex = invocation.Arguments.TakeWhile (arg => !arg.Contains (lambda.StartLocation)).Count ();
+				var resolveResult = (CSharpInvocationResolveResult)context.Resolve (invocation);
+				delegateTypeDef = resolveResult.Arguments [argIndex].Type.GetDefinition ();
+			} else {
+				delegateTypeDef = context.Resolve (parent).Type.GetDefinition ();
+			}
+			if (delegateTypeDef == null)
 				return null;
-			return new CodeAction (context.TranslateString ("Convert to lambda statement"),
-				script =>
-				{
-					var body = new BlockStatement ();
-					if (RequireReturnStatement (context, node)) {
-						body.Add (new ReturnStatement (bodyExpr.Clone ()));
-					} else {
-						body.Add (new ExpressionStatement (bodyExpr.Clone ()));
-					}
-					script.Replace (bodyExpr, body);
-				});
-		}
-
-		static bool RequireReturnStatement (RefactoringContext context, LambdaExpression lambda)
-		{
-			var type = LambdaHelper.GetLambdaReturnType (context, lambda);
-			return type != null && type.ReflectionName != "System.Void";
+			var invokeMethod = delegateTypeDef.GetMethods (m => m.Name == "Invoke").FirstOrDefault ();
+			if (invokeMethod == null)
+				return null;
+			return invokeMethod.ReturnType;
 		}
 	}
 }

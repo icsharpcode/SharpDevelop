@@ -258,6 +258,8 @@
     <Compile Include="Refactoring\CodeActions\UseStringFormatAction.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\DocumentScript.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractAnonymousMethodAction.cs" />
+    <Compile Include="Refactoring\LambdaHelper.cs" />
     <Compile Include="Refactoring\PatternHelper.cs" />
     <Compile Include="Refactoring\RefactoringAstHelper.cs" />
     <Compile Include="Refactoring\RefactoringContext.cs" />
