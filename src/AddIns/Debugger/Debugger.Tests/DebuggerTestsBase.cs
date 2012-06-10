@@ -461,6 +461,7 @@ namespace Debugger.Tests
 			compParams.TreatWarningsAsErrors = false;
 			compParams.IncludeDebugInformation = true;
 			compParams.ReferencedAssemblies.Add("System.dll");
+			compParams.ReferencedAssemblies.Add("System.Core.dll");
 			compParams.OutputAssembly = exeFilename;
 			compParams.CompilerOptions = "/unsafe /platform:x86 /target:winexe";
 			compParams.ReferencedAssemblies.Add(typeof(TestFixtureAttribute).Assembly.Location);

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Linq;
 
 namespace Debugger.Tests
 {
@@ -227,6 +228,7 @@ namespace Debugger.Tests
 			string hi = "hi";
 			string emptyString = "";
 			DBBool boo = DBBool.Null;
+			var enumerable = Enumerable.Empty<int>();
 			
 			char[] array = "Hello".ToCharArray();
 			char[] array2 = "world".ToCharArray();
@@ -265,12 +267,15 @@ namespace Debugger.Tests
 	using NUnit.Framework;
 	using Debugger.AddIn;
 	using ICSharpCode.NRefactory.CSharp.Resolver;
+	using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
 	
 	/// <summary>
 	/// Description of ExpressionEvaluatorVisitor_Tests.
 	/// </summary>
 	public partial class DebuggerTests
 	{
+		
 		[Test]
 		public void ExpressionEvaluatorVisitor_Tests()
 		{
@@ -287,6 +292,12 @@ namespace Debugger.Tests
 			AssertEval("i < 2 ? i : i * 2", "8");
 			AssertEval("DBBool.True.IsTrue", "true");
 			AssertEval("i < 2 ? i : i * 2", "8");
+			AssertEval("DBBool.True || DBBool.Null", "DBBool.True");
+			AssertEval("DBBool.Null || DBBool.True", "DBBool.True");
+			AssertEval("DBBool.Null || DBBool.False", "DBBool.Null");
+			AssertEval("DBBool.False || DBBool.False", "DBBool.False");
+			AssertEval("array", "Char[] {'H', 'e', 'l', 'l', 'o'}");
+			AssertEval("array.ToList()", "List<Char> {'H', 'e', 'l', 'l', 'o'}");
 			
 			EndTest(false);
 		}
@@ -320,7 +331,10 @@ namespace Debugger.Tests
 			if (frame == null || frame.NextStatement == null)
 				throw new GetValueException("no stackframe available!");
 			var location = frame.NextStatement;
-			var rr = ResolveSnippet(location.Filename, new TextLocation(location.StartLine, location.StartColumn), contextCode, code, frame.AppDomain.Compilation);
+			var debuggerTypeSystem = frame.AppDomain.Compilation;
+			var compilation = new SimpleCompilation(debuggerTypeSystem.MainAssembly.UnresolvedAssembly, debuggerTypeSystem.ReferencedAssemblies.Select(a => a.UnresolvedAssembly));
+			var rr = ResolveSnippet(location.Filename, new TextLocation(location.StartLine, location.StartColumn),
+			                        contextCode, code, compilation);
 			return new ExpressionEvaluationVisitor(frame, evalThread, frame.AppDomain.Compilation).Convert(rr);
 		}
 	}

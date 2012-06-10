@@ -28,7 +28,29 @@ namespace Debugger.AddIn
 	{
 		public static ResolveResult ToResolveResult(this Value value, StackFrame context)
 		{
-			return new ConstantResolveResult(value.Type, value.PrimitiveValue);
+			return new ValueResolveResult(value);
+		}
+	}
+	
+	public class ValueResolveResult : ResolveResult
+	{
+		Value value;
+		
+		public ValueResolveResult(Value value) : base(value.Type)
+		{
+			this.value = value;
+		}
+		
+		public Value Value {
+			get { return value; }
+		}
+		
+		public override bool IsCompileTimeConstant {
+			get { return value.Type.IsKnownType(KnownTypeCode.String) || value.Type.IsPrimitiveType(); }
+		}
+		
+		public override object ConstantValue {
+			get { return value.PrimitiveValue; }
 		}
 	}
 	
@@ -69,6 +91,11 @@ namespace Debugger.AddIn
 			if (result.IsError)
 				throw new GetValueException("Unknown error");
 			throw new GetValueException("Unsupported language construct: " + result.GetType().Name);
+		}
+		
+		Value Visit(ValueResolveResult result)
+		{
+			return result.Value;
 		}
 		
 		Value Visit(ThisResolveResult result)
@@ -195,6 +222,8 @@ namespace Debugger.AddIn
 			Debug.Assert(operatorType != BinaryOperatorType.ConditionalAnd && operatorType != BinaryOperatorType.ConditionalOr && operatorType != BinaryOperatorType.NullCoalescing);
 			var lhs = Convert(result.Operands[0]).GetPermanentReference(evalThread);
 			var rhs = Convert(result.Operands[1]).GetPermanentReference(evalThread);
+			if (result.UserDefinedOperatorMethod != null)
+				return InvokeMethod(null, result.UserDefinedOperatorMethod, lhs, rhs);
 			var lhsRR = lhs.ToResolveResult(context);
 			var rhsRR = rhs.ToResolveResult(context);
 			CSharpResolver resolver = new CSharpResolver(debuggerTypeSystem).WithCheckForOverflow(checkForOverflow);
@@ -206,7 +235,7 @@ namespace Debugger.AddIn
 				var method = debuggerTypeSystem.FindType(KnownTypeCode.String)
 					.GetMethods(m => m.Name == "Concat" && m.Parameters.Count == 2)
 					.Single(m => m.Parameters.All(p => p.Type.IsKnownType(KnownTypeCode.Object)));
-				return Value.InvokeMethod(evalThread, null, method, lhs, rhs);
+				return InvokeMethod(null, method, lhs, rhs);
 			}
 			throw new InvalidOperationException();
 		}
@@ -225,9 +254,7 @@ namespace Debugger.AddIn
 				return lhs;
 			var rhs = Convert(result.Operands[1]);
 			var val = resolver.ResolveBinaryOperator(bitwiseOperatorType, lhs.ToResolveResult(context), rhs.ToResolveResult(context));
-			if (val.IsCompileTimeConstant)
-				return Convert(val);
-			throw new InvalidOperationException();
+			return Convert(val);
 		}
 		
 		/// <remark
@@ -292,6 +319,10 @@ namespace Debugger.AddIn
 			else if (result.Conversion.IsNumericConversion) {
 				var convVal = CSharpPrimitiveCast.Cast(ReflectionHelper.GetTypeCode(result.Type), val.PrimitiveValue, false);
 				return Eval.CreateValue(evalThread, convVal);
+			} else if (result.Conversion.IsUserDefined)
+				return InvokeMethod(null, result.Conversion.Method, val);
+			else if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit) {
+				return val;
 			} else
 				throw new NotImplementedException();
 		}
@@ -323,13 +354,23 @@ namespace Debugger.AddIn
 				usedMethod = (IMethod)importedMember;
 			} else
 				throw new GetValueException("Invoked member must be a method or property");
-			
-			return Convert(result.TargetResult).InvokeMethod(evalThread, usedMethod, result.Arguments.Select(rr => Convert(rr)).ToArray());
+			Value target = null;
+			if (!usedMethod.IsStatic)
+				target = Convert(result.TargetResult);
+			return InvokeMethod(target, usedMethod, result.Arguments.Select(rr => Convert(rr)).ToArray());
 		}
 		
 		Value Visit(NamespaceResolveResult result)
 		{
 			throw new GetValueException("Namespace not supported!");
+		}
+		
+		Value InvokeMethod(Value thisValue, IMethod method, params Value[] arguments)
+		{
+			method = debuggerTypeSystem.Import(method);
+			if (method == null)
+				throw new GetValueException("Method not found!");
+			return Value.InvokeMethod(evalThread, thisValue, method, arguments);
 		}
 		
 		public static string FormatValue(Thread evalThread, Value val)
