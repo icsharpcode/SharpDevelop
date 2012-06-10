@@ -199,46 +199,48 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			#endregion
 		}
 		
-		static CompletionDataList CreateProvider (string text, bool isCtrlSpace)
+		static CompletionDataList CreateProvider(string text, bool isCtrlSpace)
 		{
 			string parsedText;
 			string editorText;
-			int cursorPosition = text.IndexOf ('$');
-			int endPos = text.IndexOf ('$', cursorPosition + 1);
+			int cursorPosition = text.IndexOf('$');
+			int endPos = text.IndexOf('$', cursorPosition + 1);
 			if (endPos == -1) {
-				parsedText = editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
+				parsedText = editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1);
 			} else {
-				parsedText = text.Substring (0, cursorPosition) + new string (' ', endPos - cursorPosition) + text.Substring (endPos + 1);
-				editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring (endPos + 1);
+				parsedText = text.Substring(0, cursorPosition) + new string(' ', endPos - cursorPosition) + text.Substring(endPos + 1);
+				editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring(endPos + 1);
 				cursorPosition = endPos - 1; 
 			}
-			var doc = new ReadOnlyDocument (editorText);
+			var doc = new ReadOnlyDocument(editorText);
 			
-			IProjectContent pctx = new CSharpProjectContent ();
-			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			IProjectContent pctx = new CSharpProjectContent();
+			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
-			compilationUnit.Freeze ();
+			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
+			compilationUnit.Freeze();
 			
-			var parsedFile = compilationUnit.ToTypeSystem ();
-			pctx = pctx.UpdateProjectContent (null, parsedFile);
+			var parsedFile = compilationUnit.ToTypeSystem();
+			pctx = pctx.UpdateProjectContent(null, parsedFile);
 			
-			var cmp = pctx.CreateCompilation ();
-			var loc = doc.GetLocation (cursorPosition);
+			var cmp = pctx.CreateCompilation();
+			var loc = doc.GetLocation(cursorPosition);
 			
-			var rctx = new CSharpTypeResolveContext (cmp.MainAssembly);
-			rctx = rctx.WithUsingScope (parsedFile.GetUsingScope (loc).Resolve (cmp));
+			var rctx = new CSharpTypeResolveContext(cmp.MainAssembly);
+			rctx = rctx.WithUsingScope(parsedFile.GetUsingScope(loc).Resolve(cmp));
 			
 
-			var curDef = parsedFile.GetInnermostTypeDefinition (loc);
+			var curDef = parsedFile.GetInnermostTypeDefinition(loc);
 			if (curDef != null) {
-				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
-				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
-				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
-				if (curMember != null)
-					rctx = rctx.WithCurrentMember (curMember);
+				var resolvedDef = curDef.Resolve(rctx).GetDefinition();
+				rctx = rctx.WithCurrentTypeDefinition(resolvedDef);
+				var curMember = resolvedDef.Members.FirstOrDefault(m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
+				if (curMember != null) {
+					rctx = rctx.WithCurrentMember(curMember);
+				}
 			}
-			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, rctx, compilationUnit, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, rctx);
 				
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
@@ -253,17 +255,18 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			};
 		}
 		
-		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent (string text, CompilationUnit compilationUnit)
+		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent(string text, CompilationUnit compilationUnit)
 		{
-			var doc = new ReadOnlyDocument (text);
-			IProjectContent pctx = new CSharpProjectContent ();
-			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			var parsedFile = compilationUnit.ToTypeSystem ();
+			var doc = new ReadOnlyDocument(text);
+			IProjectContent pctx = new CSharpProjectContent();
+			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			var parsedFile = compilationUnit.ToTypeSystem();
 			
-			pctx = pctx.UpdateProjectContent (null, parsedFile);
-			var cmp = pctx.CreateCompilation ();
+			pctx = pctx.UpdateProjectContent(null, parsedFile);
+			var cmp = pctx.CreateCompilation();
 			
-			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly), compilationUnit, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);
