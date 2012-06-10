@@ -29,6 +29,8 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
+	[ContextAction("Invoke using static method syntax",
+	               Description = "Converts the call into static method call syntax.")]
 	public class ExtensionMethodInvocationToStaticMethodInvocationAction : ICodeActionProvider
 	{
 		#region ICodeActionProvider implementation

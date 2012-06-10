@@ -23,7 +23,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
 using System.Collections.Generic;
@@ -31,6 +30,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
+	
+	[ContextAction("Invoke using extension method syntax",
+	               Description = "Converts the call into extension method call syntax.")]
 	public class StaticMethodInvocationToExtensionMethodInvocationAction : ICodeActionProvider
 	{
 		#region ICodeActionProvider implementation
