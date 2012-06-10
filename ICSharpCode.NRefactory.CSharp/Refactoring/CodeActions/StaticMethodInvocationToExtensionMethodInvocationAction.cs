@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (invocationRR == null)
 				yield break;
 			var method = invocationRR.Member as IMethod;
-			if (method == null || !method.IsExtensionMethod)
+			if (method == null || !method.IsExtensionMethod || invocationRR.IsExtensionMethodInvocation)
 				yield break;
 			yield return new CodeAction(context.TranslateString("Convert to extension method call"), script => {
 				var newArgumentList = invocation.Arguments.Skip(1).Select(arg => arg.Clone()).ToList();

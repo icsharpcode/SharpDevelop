@@ -137,6 +137,25 @@ class C
 		}
 
 		[Test]
+		public void IgnoresIfAlreadyExtensionMethodCallSyntax()
+		{
+			TestWrongContext<StaticMethodInvocationToExtensionMethodInvocationAction>(@"
+class A { }
+static class B
+{
+	public static void Ext (this A a, int i);
+}
+class C
+{
+	void F()
+	{
+		A a = new A();
+		a.$Ext (1);
+	}
+}");
+		}
+
+		[Test]
 		public void IgnoresPropertyInvocation()
 		{
 			TestWrongContext<StaticMethodInvocationToExtensionMethodInvocationAction>(@"
