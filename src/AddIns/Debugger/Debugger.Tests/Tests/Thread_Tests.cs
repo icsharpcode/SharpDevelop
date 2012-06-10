@@ -10,6 +10,7 @@ namespace Debugger.Tests
 		public static void Main()
 		{
 			System.Diagnostics.Debugger.Break();
+			// This line forces the internal thread object to be created
 			System.Threading.Thread.CurrentThread.Priority = System.Threading.ThreadPriority.AboveNormal;
 			System.Diagnostics.Debugger.Break();
 			System.Threading.Thread.CurrentThread.Name = "ThreadName";
@@ -22,7 +23,7 @@ namespace Debugger.Tests
 namespace Debugger.Tests {
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test, NUnit.Framework.Ignore]
+		[NUnit.Framework.Test]
 		public void Thread_Tests()
 		{
 			StartTest();
@@ -48,32 +49,32 @@ namespace Debugger.Tests {
     <Paused>Thread_Tests.cs:12,4-12,40</Paused>
     <Thread>
       <Thread
-        Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main]"
         Name=""
         Priority="Normal"
-        RuntimeValue="{System.Threading.Thread}" />
+        RuntimeValue="null" />
     </Thread>
-    <Paused>Thread_Tests.cs:14,4-14,40</Paused>
+    <Paused>Thread_Tests.cs:15,4-15,40</Paused>
     <Thread>
       <Thread
-        Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main]"
         Name=""
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}" />
     </Thread>
-    <Paused>Thread_Tests.cs:16,4-16,40</Paused>
+    <Paused>Thread_Tests.cs:17,4-17,40</Paused>
     <Thread>
       <Thread
-        Callstack="{static System.Void Debugger.Tests.Thread_Tests.Main()}"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="static System.Void Debugger.Tests.Thread_Tests.Main()"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main]"
         Name="ThreadName"
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}" />

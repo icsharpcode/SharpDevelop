@@ -65,7 +65,7 @@ namespace Debugger.Tests {
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test]
+		[NUnit.Framework.Test, NUnit.Framework.Ignore("TODO: Compiler generated classes are missing from the metadata")]
 		public void DebugType_CompilerGeneratedClasses()
 		{
 			StartTest();
