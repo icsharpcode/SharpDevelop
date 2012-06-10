@@ -205,7 +205,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void AddPublicMethod_MethodReturnTypeIsCustomType_CodeForMethodAddedAtEndOfClass()
+		public void AddPublicMethod_MethodReturnTypeIsSystemCustomType_CodeForMethodAddedAtEndOfClass()
 		{
 			CreateClass("MyClass");
 			CreateCodeGenerator();
@@ -226,6 +226,29 @@ namespace PackageManagement.Tests
 			Assert.AreEqual("MyMethod", method.Name);
 			Assert.IsNotNull(method.Body);
 			Assert.IsTrue(method.Body.IsNull);
+		}
+		
+		/// <summary>
+		/// Workaround NRefactory giving incorrect begin column for interface methods that use fully
+		/// qualified return types (e.g. System.Object). Begin column points to the "Object" part of the
+		/// return type not the start of the return type.
+		/// </summary>
+		[Test]
+		public void AddPublicMethod_MethodReturnTypeIsSystemObject_SystemNotAddedToReturnType()
+		{
+			CreateClass("MyClass");
+			CreateCodeGenerator();
+			var classRegion = new DomRegion(1, 2, 3, 4);
+			helper.SetClassRegion(classRegion);
+			string fileName = @"d:\projects\myproject\MyClass.cs";
+			SetClassFileName(fileName);
+			SetDocumentFileName(fileName);
+			AddMethodToClassForReparse("MyClass.MyMethod");
+			
+			AddPublicMethod("MyMethod", "System.Object");
+			
+			MethodDeclaration method = fakeCodeGenerator.NodePassedToInsertCodeAtEnd as MethodDeclaration;
+			Assert.AreEqual("Object", method.TypeReference.Type);
 		}
 		
 		[Test]

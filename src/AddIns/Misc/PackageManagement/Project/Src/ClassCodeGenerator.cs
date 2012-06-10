@@ -92,6 +92,16 @@ namespace ICSharpCode.PackageManagement
 			return null;
 		}
 		
+		/// <summary>
+		/// The fully qualified type will not be added as the method's return value since
+		/// NRefactory returns the incorrect start column for the method's region in this case.
+		/// Instead we add the last part of the type so for "System.Object" we add "Object" so the
+		/// method's region is correct. This only seems to affect methods where there is no modifier
+		/// (e.g. public, private) explicitly defined in code.
+		/// 
+		/// For MvcScaffolding we only need the start and end points to be correctly defined since the
+		/// function will be immediately replaced with different code.
+		/// </summary>
 		public CodeFunction AddPublicMethod(string name, string type)
 		{
 			CodeGenerator codeGenerator = GetCodeGenerator();
@@ -104,8 +114,17 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new MethodDeclaration {
 				Name = name,
-				TypeReference = new TypeReference(type)
+				TypeReference = new TypeReference(GetShortTypeName(type))
 			};
+		}
+		
+		string GetShortTypeName(string type)
+		{
+			int index = type.LastIndexOf('.');
+			if (index > 0) {
+				return type.Substring(index + 1);
+			}
+			return type;
 		}
 		
 		CodeFunction GetMethodInserted(IRefactoringDocumentView view)
