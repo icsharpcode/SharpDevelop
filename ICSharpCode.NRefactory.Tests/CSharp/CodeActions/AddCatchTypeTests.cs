@@ -58,6 +58,34 @@ class TestClass
 		}
 
 		[Test]
+		public void PreservesWhitespaceInBody()
+		{
+			Test<AddCatchTypeAction>(@"
+class TestClass
+{
+	public void F()
+	{
+		try {
+		}
+		catch$ {
+
+		}
+	}
+}", @"
+class TestClass
+{
+	public void F()
+	{
+		try {
+		}
+		catch (System.Exception e) {
+
+		}
+	}
+}");
+		}
+
+		[Test]
 		public void DoesNotUseRedundantNamespace()
 		{
 			Test<AddCatchTypeAction>(@"

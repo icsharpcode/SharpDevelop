@@ -88,6 +88,34 @@ class TestClass
 		}
 
 		[Test]
+		public void PreservesWhitespaceInBody()
+		{
+			Test<RemoveRedundantCatchTypeAction>(@"
+class TestClass
+{
+	public void F()
+	{
+		try {
+		}
+		catch $(System.Exception e) {
+
+		}
+	}
+}", @"
+class TestClass
+{
+	public void F()
+	{
+		try {
+		}
+		catch {
+
+		}
+	}
+}");
+		}
+
+		[Test]
 		public void IgnoresReferencedExceptionMatch()
 		{
 			TestWrongContext<RemoveRedundantCatchTypeAction>(@"
