@@ -385,11 +385,6 @@ namespace Debugger
 			}
 		}
 		
-		public static IField GetBackingField(this IMethod method)
-		{
-			return null;
-		}
-		
 		public static ICorDebugType[] GetTypeArguments(this IMethod method)
 		{
 			List<ICorDebugType> typeArgs = new List<ICorDebugType>();

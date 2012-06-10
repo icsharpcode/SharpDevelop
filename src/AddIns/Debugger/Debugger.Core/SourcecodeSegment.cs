@@ -184,20 +184,10 @@ namespace Debugger
 		/// 'ILStart &lt;= ILOffset &lt;= ILEnd' and this range includes at least
 		/// the returned area of source code. (May incude some extra compiler generated IL too)
 		/// </summary>
-		internal static SourcecodeSegment Resolve(Module module, ICorDebugFunction corFunction, int offset)
+		internal static SourcecodeSegment Resolve(Module module, ISymUnmanagedMethod symMethod, ICorDebugFunction corFunction, int offset)
 		{
-			ISymUnmanagedReader symReader = module.SymReader;
-			if (symReader == null) return null; // No symbols
-			
-			ISymUnmanagedMethod symMethod;
-			try {
-				symMethod = symReader.GetMethod(corFunction.GetToken());
-			} catch (COMException) {
-				// Can not find the method
-				// eg. Compiler generated constructors are not in symbol store
+			if (symMethod == null)
 				return null;
-			}
-			if (symMethod == null) return null;
 			
 			uint sequencePointCount = symMethod.GetSequencePointCount();
 			SequencePoint[] sequencePoints = symMethod.GetSequencePoints();

@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace Debugger.Tests
 {
@@ -32,23 +31,22 @@ namespace Debugger.Tests
 #if TEST_CODE
 namespace Debugger.Tests {
 	using Debugger.MetaData;
+	using ICSharpCode.NRefactory.TypeSystem;
 	
 	public partial class DebuggerTests
 	{
-		[NUnit.Framework.Test, NUnit.Framework.Ignore]
+		[NUnit.Framework.Test]
 		public void AppDomain_Tests()
 		{
 			StartTest();
 			
-//			IType type1 = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
-//			IType type1b = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
-//			ObjectDump("SameDomainEqual", type1.Equals(type1b));
-//			process.Continue();
-//			ObjectDump("AppDomainName", this.CurrentStackFrame.GetLocalVariableValue("appDomainName").AsString());
-//			IType type2 = this.CurrentStackFrame.GetLocalVariableValue("two").Type;
-//			ObjectDump("OtherDomainEqual", type1.Equals(type2));
-//			ObjectDump("AppDomainsEqual", type1.AppDomain == type2.AppDomain);
-//			ObjectDump("AppDomainIDsEqual", type1.AppDomain.ID == type2.AppDomain.ID);
+			IType type1 = this.CurrentStackFrame.GetLocalVariableValue("one").Type;
+			process.Continue();
+			ObjectDump("AppDomainName", this.CurrentStackFrame.GetLocalVariableValue("appDomainName").AsString());
+			IType type2 = this.CurrentStackFrame.GetLocalVariableValue("two").Type;
+			ObjectDump("OtherDomainEqual", type1.Equals(type2));
+			ObjectDump("AppDomain1-ID", type1.GetDefinition().Compilation.GetAppDomain().ID);
+			ObjectDump("AppDomain2-ID", type2.GetDefinition().Compilation.GetAppDomain().ID);
 			
 			EndTest();
 		}
@@ -65,14 +63,13 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
     <Paused>AppDomain_Tests.cs:13,4-13,40</Paused>
-    <SameDomainEqual>True</SameDomainEqual>
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
     <Paused>AppDomain_Tests.cs:26,4-26,40</Paused>
     <AppDomainName>myDomain Id=2</AppDomainName>
     <OtherDomainEqual>False</OtherDomainEqual>
-    <AppDomainsEqual>False</AppDomainsEqual>
-    <AppDomainIDsEqual>False</AppDomainIDsEqual>
+    <AppDomain1-ID>1</AppDomain1-ID>
+    <AppDomain2-ID>2</AppDomain2-ID>
     <Exited />
   </Test>
 </DebuggerTests>

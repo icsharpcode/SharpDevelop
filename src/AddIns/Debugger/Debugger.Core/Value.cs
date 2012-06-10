@@ -618,9 +618,9 @@ namespace Debugger
 		#endregion
 		
 		/// <summary> Is this method in form 'return this.field;'? </summary>
-		internal static uint GetBackingFieldToken(ICorDebugFunction corFunction)
+		internal static uint GetBackingFieldToken(IMethod method)
 		{
-			// TODO: use this
+			ICorDebugFunction corFunction = method.ToCorFunction();
 			
 			ICorDebugCode corCode;
 			try {

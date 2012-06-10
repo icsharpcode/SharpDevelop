@@ -222,7 +222,7 @@ namespace Debugger.Tests
 					}
 					LogEvent("ExceptionThrown", msg.ToString());
 				}
-				LogEvent("Paused", CurrentStackFrame != null ? CurrentStackFrame.NextStatement.ToString() : string.Empty);
+				LogEvent("Paused", CurrentStackFrame != null && CurrentStackFrame.NextStatement != null ? CurrentStackFrame.NextStatement.ToString() : string.Empty);
 			};
 			process.Exited += delegate(object sender, DebuggerEventArgs e) {
 				LogEvent("Exited", null);
@@ -266,6 +266,27 @@ namespace Debugger.Tests
 			} else {
 				dumpNode.AppendChild(dumpNode.OwnerDocument.CreateTextNode(obj.ToString()));
 			}
+		}
+		
+		class LocalVariable
+		{
+			public string Name { get; set; }
+			public Type Type { get; set; }
+			public Value Value { get; set; }
+		}
+		
+		public void DumpLocalVariables()
+		{
+			DumpLocalVariables("LocalVariables");
+		}
+		
+		public void DumpLocalVariables(string msg)
+		{/*
+			ObjectDump(
+				msg,
+				this.CurrentStackFrame.MethodInfo.GetLocalVariables(this.CurrentStackFrame.IP).Select(v => new LocalVariable() { Name = v.Name, Type = v.LocalType, Value = v.GetValue(this.CurrentStackFrame)})
+			);
+		*/
 		}
 		
 		List<string> expandProperties;

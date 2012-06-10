@@ -191,10 +191,12 @@ namespace Debugger
 		/// <summary> Synchronously calls a function and returns its return value </summary>
 		public static Value InvokeMethod(Thread evalThread, IMethod method, Value thisValue, Value[] args)
 		{
-			if (method.GetBackingField() != null) {
-				evalThread.Process.TraceMessage("Using backing field for " + method.FullName);
-				return Value.GetMemberValue(evalThread, thisValue, method.GetBackingField(), args);
-			}
+			#warning Fast property eval
+//			var field = Value.GetBackingField(method);
+//			if (field != null) {
+//				evalThread.Process.TraceMessage("Using backing field for " + method.FullName);
+//				return Value.GetMemberValue(evalThread, thisValue, field, args);
+//			}
 			return AsyncInvokeMethod(evalThread, method, thisValue, args).WaitForResult();
 		}
 		

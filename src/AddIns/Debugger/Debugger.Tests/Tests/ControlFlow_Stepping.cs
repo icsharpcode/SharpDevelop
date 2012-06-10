@@ -26,7 +26,7 @@ namespace Debugger.Tests
 			public void Target() {}
 		}
 		
-		public static int ShortProperty {
+		public static int Property {
 			get {
 				return 1;
 			}
@@ -36,10 +36,10 @@ namespace Debugger.Tests
 		
 		public static int FieldProperty {
 			get {
-				return
-					field;
+				return field;
 			}
 		}
+		
 		
 		[DebuggerNonUserCode]
 		static void ZigZag1()
@@ -99,7 +99,7 @@ namespace Debugger.Tests
 			string theasnwer = 42.ToString();
 			StepRoot();
 			new DefaultCtorClass().Target();
-			int s = ShortProperty;
+			int p = Property;
 			int f = FieldProperty;
 			CatchExcpetion();
 			ZigZag1();
@@ -127,7 +127,6 @@ namespace Debugger.Tests {
 				this.CurrentStackFrame.SetIP(start.Filename, start.StartLine + 1, start.StartColumn, false);
 				
 				process.Options.EnableJustMyCode = jmcEnabled;
-				process.Options.StepOverSingleLineProperties = true;
 				process.Options.StepOverFieldAccessProperties = true;
 				
 				this.CurrentStackFrame.StepInto(); // 42.ToString()
@@ -150,7 +149,10 @@ namespace Debugger.Tests {
 				this.CurrentStackFrame.StepOver(); // Finish the step out
 				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
-				this.CurrentStackFrame.StepInto(); // ShortProperty
+				this.CurrentStackFrame.StepInto(); // Property
+				Assert.AreNotEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
+				this.CurrentStackFrame.StepOut();
+				this.CurrentStackFrame.StepOver(); // Finish the step out
 				Assert.AreEqual("Main", this.CurrentStackFrame.MethodInfo.Name);
 				
 				this.CurrentStackFrame.StepInto(); // FieldProperty
@@ -209,7 +211,9 @@ namespace Debugger.Tests {
     <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
     <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
     <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:30,8-30,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
     <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
     <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
     <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
@@ -235,7 +239,9 @@ namespace Debugger.Tests {
     <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
     <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
     <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:30,8-30,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
     <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
     <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
     <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>
@@ -256,7 +262,9 @@ namespace Debugger.Tests {
     <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
     <Paused>ControlFlow_Stepping.cs:26,25-26,26</Paused>
     <Paused>ControlFlow_Stepping.cs:101,4-101,36</Paused>
-    <Paused>ControlFlow_Stepping.cs:102,4-102,26</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
+    <Paused>ControlFlow_Stepping.cs:30,8-30,9</Paused>
+    <Paused>ControlFlow_Stepping.cs:102,4-102,21</Paused>
     <Paused>ControlFlow_Stepping.cs:103,4-103,26</Paused>
     <Paused>ControlFlow_Stepping.cs:104,4-104,21</Paused>
     <Paused>ControlFlow_Stepping.cs:105,4-105,14</Paused>

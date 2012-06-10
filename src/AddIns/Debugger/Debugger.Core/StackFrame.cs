@@ -38,6 +38,7 @@ namespace Debugger
 		/// <summary> Internal index of the stack frame.  The value is increasing with age. </summary>
 		public uint FrameIndex { get; private set; }
 		
+		[Debugger.Tests.Ignore]
 		public Module Module { get; private set; }
 		
 		public IMethod MethodInfo { get; private set; }
@@ -49,6 +50,21 @@ namespace Debugger
 		public bool HasSymbols {
 			get {
 				return GetSegmentForOffset(0) != null;
+			}
+		}
+		
+		internal ISymUnmanagedMethod SymMethod {
+			get {
+				if (this.Module.SymReader == null) {
+					return null;
+				}
+				try {
+					return this.Module.SymReader.GetMethod(this.CorFunction.GetToken());
+				} catch (COMException) {
+					// Can not find the method
+					// eg. Compiler generated constructors are not in symbol store
+					return null;
+				}
 			}
 		}
 		
@@ -119,7 +135,7 @@ namespace Debugger
 		{
 			if (SourceCodeLine != 0)
 				return SourcecodeSegment.ResolveForIL(this.Module, this.CorFunction, SourceCodeLine, offset, ILRanges);
-			return SourcecodeSegment.Resolve(this.Module, this.CorFunction, offset);
+			return SourcecodeSegment.Resolve(this.Module, this.SymMethod, this.CorFunction, offset);
 		}
 		
 		/// <summary> Step into next instruction </summary>
@@ -334,16 +350,10 @@ namespace Debugger
 		public IEnumerable<LocalVariable> GetLocalVariables()
 		{
 			if (localVariables == null) {
+				var symMethod = this.SymMethod;
 				// Note that the user might load symbols later
-				if (this.Module.SymReader == null)
+				if (symMethod == null)
 					return new List<LocalVariable>();
-					
-				ISymUnmanagedMethod symMethod;
-				try {
-					symMethod = this.Module.SymReader.GetMethod(this.MethodInfo.GetMetadataToken());
-				} catch {
-					return new List<LocalVariable>();
-				}
 				
 				localVariables = LocalVariable.GetLocalVariables(this.MethodInfo, symMethod);
 			}
@@ -373,7 +383,7 @@ namespace Debugger
 					return false;
 				
 				if (opt.StepOverNoSymbols) {
-					if (this.Module.SymReader == null) return true;
+					if (this.SymMethod == null) return true;
 				}
 				if (opt.StepOverDebuggerAttributes) {
 					string[] debuggerAttributes = {
@@ -385,12 +395,10 @@ namespace Debugger
 					if (this.MethodInfo.DeclaringType.GetDefinition().Attributes.Any(a => debuggerAttributes.Contains(a.AttributeType.FullName))) return true;
 				}
 				if (opt.StepOverAllProperties) {
-					// TODO
-					// if (this.IsPropertyAccessor) return true;
+					if (this.MethodInfo.IsAccessor) return true;
 				}
 				if (opt.StepOverFieldAccessProperties) {
-					// TODO
-					// if (this.IsPropertyAccessor && this.BackingFieldToken != 0) return true;
+					if (this.MethodInfo.IsAccessor && Value.GetBackingFieldToken(this.MethodInfo) != 0) return true;
 				}
 				return false;
 			}

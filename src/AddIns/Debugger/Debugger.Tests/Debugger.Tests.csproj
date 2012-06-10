@@ -54,7 +54,6 @@
     <Compile Include="Tests\StackFrame_Callstack.cs" />
     <Compile Include="Tests\DebugType_CompilerGeneratedClasses.cs" />
     <Compile Include="Tests\ControlFlow_DebuggeeKilled.cs" />
-    <Compile Include="Tests\DebugType_Tests.cs" />
     <Compile Include="Tests\Exception_Custom.cs" />
     <Compile Include="Tests\StackFrame_Lifetime.cs" />
     <Compile Include="Tests\StackFrame_Tests.cs" />
