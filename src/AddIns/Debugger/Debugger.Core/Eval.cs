@@ -224,20 +224,17 @@ namespace Debugger
 					throw new GetValueException("'this' is null");
 				if (thisValue.IsNull)
 					throw new GetValueException("Null reference");
-				// if (!(thisValue.IsObject)) // eg Can evaluate on array
-				if (!thisValue.Type.GetDefinition().IsDerivedFrom(method.DeclaringType.GetDefinition())) {
-					throw new GetValueException(
-						"Can not evaluate because the object is not of proper type.  " +
-						"Expected: " + method.DeclaringType.FullName + "  Seen: " + thisValue.Type.FullName
-					);
-				}
 				corArgs.Add(thisValue.CorValue);
 			}
 			for(int i = 0; i < args.Length; i++) {
 				Value arg = args[i];
 				IType paramType = method.Parameters[i].Type;
-				if (!arg.IsNull && !arg.Type.GetDefinition().IsDerivedFrom(paramType.GetDefinition().GetDefinition()))
+				if (!arg.IsNull &&
+				    arg.Type.GetDefinition() != null &&
+				    paramType.GetDefinition() != null &&
+				    !arg.Type.GetDefinition().IsDerivedFrom(paramType.GetDefinition())) {
 					throw new GetValueException("Inncorrect parameter type. Expected " + paramType.ToString());
+				}
 				// It is importatnt to pass the parameter in the correct form (boxed/unboxed)
 				if (paramType.IsReferenceType == true) {
 					if (!arg.IsReference)

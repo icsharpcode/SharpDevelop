@@ -402,7 +402,7 @@ namespace Debugger
 				if (objectInstance.IsNull)
 					throw new GetValueException("Null reference");
 				// Array.Length can be called
-				if (objectInstance.Type.IsKnownType(KnownTypeCode.Array))
+				if (objectInstance.Type.Kind == TypeKind.Array)
 					return; 
 				if (objectInstance.Type.GetDefinition() == null || !objectInstance.Type.GetDefinition().IsDerivedFrom(memberInfo.DeclaringType.GetDefinition()))
 					throw new GetValueException("Object is not of type " + memberInfo.DeclaringType.FullName);

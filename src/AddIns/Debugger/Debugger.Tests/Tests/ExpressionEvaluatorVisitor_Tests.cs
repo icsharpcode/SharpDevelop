@@ -297,7 +297,7 @@ namespace Debugger.Tests
 			AssertEval("DBBool.Null || DBBool.False", "DBBool.Null");
 			AssertEval("DBBool.False || DBBool.False", "DBBool.False");
 			AssertEval("array", "Char[] {'H', 'e', 'l', 'l', 'o'}");
-			AssertEval("array.ToList()", "List<Char> {'H', 'e', 'l', 'l', 'o'}");
+			AssertEval("array.ToList()", "List {'H', 'e', 'l', 'l', 'o'}");
 			
 			EndTest(false);
 		}

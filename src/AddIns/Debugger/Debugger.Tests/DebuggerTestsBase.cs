@@ -7,11 +7,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
-
+using ICSharpCode.NRefactory.TypeSystem;
 using Microsoft.CSharp;
 using NUnit.Framework;
 
@@ -271,7 +272,7 @@ namespace Debugger.Tests
 		class LocalVariable
 		{
 			public string Name { get; set; }
-			public Type Type { get; set; }
+			public IType Type { get; set; }
 			public Value Value { get; set; }
 		}
 		
@@ -281,12 +282,11 @@ namespace Debugger.Tests
 		}
 		
 		public void DumpLocalVariables(string msg)
-		{/*
+		{
 			ObjectDump(
 				msg,
-				this.CurrentStackFrame.MethodInfo.GetLocalVariables(this.CurrentStackFrame.IP).Select(v => new LocalVariable() { Name = v.Name, Type = v.LocalType, Value = v.GetValue(this.CurrentStackFrame)})
+				this.CurrentStackFrame.GetLocalVariables(this.CurrentStackFrame.IP).Select(v => new LocalVariable() { Name = v.Name, Type = v.Type, Value = v.GetValue(this.CurrentStackFrame)})
 			);
-		*/
 		}
 		
 		List<string> expandProperties;
