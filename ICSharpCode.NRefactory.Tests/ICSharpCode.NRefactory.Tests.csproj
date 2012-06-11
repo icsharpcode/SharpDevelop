@@ -276,6 +276,7 @@
     <Compile Include="CSharp\CodeIssues\CallToVirtualFunctionFromConstructorTests.cs" />
     <Compile Include="CSharp\CodeActions\StaticMethodInvocationToExtensionMethodInvocationTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtensionMethodInvocationToStaticMethodInvocationTests.cs" />
+    <Compile Include="CSharp\CodeActions\IterateViaForeachTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

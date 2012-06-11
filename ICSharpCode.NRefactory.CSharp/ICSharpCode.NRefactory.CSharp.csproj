@@ -380,6 +380,7 @@
     <Compile Include="Refactoring\CodeIssues\CallToVirtualFunctionFromConstructorIssue.cs" />
     <Compile Include="Refactoring\CodeActions\StaticMethodInvocationToExtensionMethodInvocationAction.cs" />
     <Compile Include="Refactoring\CodeActions\ExtensionMethodInvocationToStaticMethodInvocationAction.cs" />
+    <Compile Include="Refactoring\CodeActions\IterateViaForeachAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
