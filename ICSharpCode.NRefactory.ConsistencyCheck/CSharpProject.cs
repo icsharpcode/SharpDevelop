@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			this.CompilationUnit = p.Parse(Content.CreateReader(), fileName);
 			if (p.HasErrors) {
 				Console.WriteLine("Error parsing " + fileName + ":");
-				foreach (var error in p.ErrorPrinter.Errors) {
+				foreach (var error in p.ErrorsAndWarnings) {
 					Console.WriteLine("  " + error.Region + " " + error.Message);
 				}
 			}

@@ -579,6 +579,40 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 	}
 }");
 		}
+		
+		[Test()]
+		public void TestNoBlankLinesBetweenEndBraceAndEndParenthesis ()
+		{
+			CSharpFormattingOptions policy = FormattingOptionsFactory.CreateMono ();
+			policy.BlankLinesBetweenMembers = 1;
+			
+			var adapter = Test (policy, @"class Test
+{
+	int Foo (int i, double d, Action a)
+	{
+		a ();
+	}
+
+	void Bar ()
+	{
+		Foo (1, 2, () => {
+		});
+	}
+}",
+@"class Test
+{
+	int Foo (int i, double d, Action a)
+	{
+		a ();
+	}
+
+	void Bar ()
+	{
+		Foo (1, 2, () => {
+		});
+	}
+}", FormattingMode.Intrusive);
+		}
 
 	}
 }

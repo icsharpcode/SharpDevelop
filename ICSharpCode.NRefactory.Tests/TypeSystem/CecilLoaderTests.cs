@@ -145,7 +145,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(0, c.GetProperties().Count());
 			Assert.AreEqual(0, c.GetEvents().Count());
 			Assert.AreEqual(0, c.GetFields().Count());
-			Assert.AreEqual(3, c.Attributes.Count);
 		}
 		
 		[Test]

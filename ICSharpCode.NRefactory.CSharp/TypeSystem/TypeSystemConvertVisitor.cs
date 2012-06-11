@@ -677,6 +677,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			if (accessor.IsNull)
 				return null;
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, prefix + p.Name);
+			a.AccessorOwner = p;
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? p.Accessibility;
 			a.IsAbstract = p.IsAbstract;
 			a.IsOverride = p.IsOverridable;
