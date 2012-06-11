@@ -52,8 +52,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
-
-
 			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 			{
 				FindIssuesInNode(indexerDeclaration.Setter.Body);
@@ -61,7 +59,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
-				FindIssuesInNode(propertyDeclaration.Setter.Body);
+				var body = propertyDeclaration.Setter.Body;
+				if (!body.IsNull)
+					FindIssuesInNode(body);
 			}
 
 			CompilationUnit compilationUnit;

@@ -86,6 +86,30 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+
+		[Test]
+		public void IgnoresAutoSetter()
+		{
+			var input = @"class A
+{
+	string  Property { set; }
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
+		public void IgnoreReadOnlyProperty()
+		{
+			var input = @"class A
+{
+	string  Property { get; }
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 	}
 }
 
