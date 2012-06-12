@@ -89,6 +89,42 @@ class TestClass
 		}
 
 		[Test]
+		public void HandlesAssignmentExpressionStatement()
+		{
+			Test<IterateViaForeachAction>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	public IEnumerable<int> GetInts ()
+	{
+		return new int[] { };
+	}
+
+	public void F()
+	{
+		IEnumerable<int> ints;
+		ints = GetIn$ts ();
+	}
+}", @"
+using System.Collections.Generic;
+class TestClass
+{
+	public IEnumerable<int> GetInts ()
+	{
+		return new int[] { };
+	}
+
+	public void F()
+	{
+		IEnumerable<int> ints;
+		ints = GetInts ();
+		foreach (var item in ints) {
+		}
+	}
+}");
+		}
+
+		[Test]
 		public void HandlesLinqExpressionAssignment()
 		{
 			Test<IterateViaForeachAction>(@"

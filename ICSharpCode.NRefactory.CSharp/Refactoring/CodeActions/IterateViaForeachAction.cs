@@ -68,12 +68,22 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var expressionStatement = context.GetNode<ExpressionStatement>();
 			if (expressionStatement == null)
 				return null;
-			var expressionRR = context.Resolve(expressionStatement.Expression) as ResolveResult;
+			var expression = expressionStatement.Expression;
+			if (expression is AssignmentExpression)
+				expression = ((AssignmentExpression)expression).Left;
+			var expressionRR = context.Resolve(expression) as ResolveResult;
 			if (!ImplementsInterface(expressionRR.Type, "System.Collections.IEnumerable"))
 				return null;
 			return new CodeAction(context.TranslateString("Iterate via foreach"), script => {
-				var iterator = MakeForeach(expressionStatement.Expression.Clone(), context);
-				script.Replace(expressionStatement, iterator);
+				var iterator = MakeForeach(expression.Clone(), context);
+				if (expression == expressionStatement.Expression) {
+					script.Replace(expressionStatement, iterator);
+				} else {
+					script.InsertBefore(expressionStatement.NextSibling, iterator);
+					// Work around incorrect formatting when inserting relatively to
+					// a node on a different indentation level
+					script.FormatText(context.GetNode<BlockStatement>());
+				}
 			});
 
 		}
