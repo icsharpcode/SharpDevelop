@@ -306,7 +306,7 @@ namespace ICSharpCode.CodeAnalysis
 			public override bool Save()
 			{
 				Set(po.RuleString);
-				Helper.SetProperty("CodeAnalysisRuleAssemblies", 
+				Helper.SetProperty("CodeAnalysisRuleAssemblies",
 				                   (po.RuleAssemblies == DefaultRuleAssemblies) ? "" : po.RuleAssemblies,
 				                   false,
 				                   Location);
