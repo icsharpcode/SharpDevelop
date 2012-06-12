@@ -32,11 +32,11 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription("Property or indexer setter does not use the value parameter",
-	       Description = "Warns about property or indexer setters that do not use the value parameter.",
+	[IssueDescription("The value parameter is not used in a context where is should be",
+	       Description = "Warns about property or indexer setters and event adders or removers that do not use the value parameter.",
 	       Category = IssueCategories.CodeQualityIssues,
 	       Severity = Severity.Warning)]
-	public class SetterDoesNotUseValueParameterIssue : ICodeIssueProvider
+	public class ValueParameterUnusedIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
@@ -47,21 +47,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			readonly BaseRefactoringContext context;
 			
-			public GatherVisitor(BaseRefactoringContext context, SetterDoesNotUseValueParameterIssue inspector) : base (context)
+			public GatherVisitor(BaseRefactoringContext context, ValueParameterUnusedIssue inspector) : base (context)
 			{
 				this.context = context;
 			}
 
 			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
 			{
-				FindIssuesInNode(indexerDeclaration.Setter.Body);
+				FindIssuesInNode(indexerDeclaration.Setter, indexerDeclaration.Setter.Body);
 			}
 
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
 				var body = propertyDeclaration.Setter.Body;
 				if (!body.IsNull)
-					FindIssuesInNode(body);
+					FindIssuesInNode(propertyDeclaration.Setter, body);
+			}
+
+			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
+			{
+				var addAccessor = eventDeclaration.AddAccessor;
+				FindIssuesInNode(addAccessor, addAccessor.Body, "add accessor");
+				var removeAccessor = eventDeclaration.RemoveAccessor;
+				FindIssuesInNode(removeAccessor, removeAccessor.Body, "remove accessor");
 			}
 
 			CompilationUnit compilationUnit;
@@ -72,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitCompilationUnit(unit);
 			}
 
-			void FindIssuesInNode(AstNode node)
+			void FindIssuesInNode(AstNode anchor, AstNode node, string accessorName = "setter")
 			{
 				var variable = context.GetResolverStateBefore(node).LocalVariables
 					.Where(v => v.Name == "value").FirstOrDefault();
@@ -86,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}, CancellationToken.None);
 
 				if(!referenceFound)
-					AddIssue(node, context.TranslateString("The setter does not use the 'value' parameter"));
+					AddIssue(anchor, context.TranslateString("The " + accessorName + " does not use the 'value' parameter"));
 			}
 		}
 	}

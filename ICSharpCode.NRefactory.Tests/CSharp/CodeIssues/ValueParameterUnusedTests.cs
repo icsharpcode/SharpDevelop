@@ -30,7 +30,7 @@ using ICSharpCode.NRefactory.CSharp.CodeActions;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
-	public class SetterDoesNotUseValueParameterTests : InspectionActionTestBase
+	public class ValueParameterUnusedTests : InspectionActionTestBase
 	{
 		[Test]
 		public void TestPropertySetter()
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 		}
 
@@ -66,8 +66,27 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
+		}
+
+		[Test]
+		public void TestMatchingEventAdder()
+		{
+			var input = @"class A	
+{
+	delegate void TestEventHandler ();
+	event TestEventHandler EventTested
+	{
+		add {
+		}
+		remove {
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
+			Assert.AreEqual(2, issues.Count);
 		}
 
 		[Test]
@@ -83,7 +102,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	}
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 
@@ -95,7 +114,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	string  Property { set; }
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 
@@ -107,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 	string  Property { get; }
 }";
 			TestRefactoringContext context;
-			var issues = GetIssues(new SetterDoesNotUseValueParameterIssue(), input, out context);
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 	}
