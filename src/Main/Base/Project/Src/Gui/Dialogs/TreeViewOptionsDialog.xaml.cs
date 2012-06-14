@@ -219,6 +219,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (PropertyChanged != null)
 					PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
 			}
+			
+			public override string ToString()
+			{
+				// used for keyboard navigation and screenreaders
+				return this.Title;
+			}
 		}
 	}
 }
