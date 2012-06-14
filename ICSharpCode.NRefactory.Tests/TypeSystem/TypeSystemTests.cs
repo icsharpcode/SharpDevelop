@@ -885,5 +885,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(ix3.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item" }));
 			Assert.That(ix3.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32, KnownTypeCode.Int32 })));
 		}
+
+		[Test]
+		public void ExplicitIndexerImplementationReturnsTheCorrectMembers() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexersExplicitly));
+
+			Assert.That(type.Properties.All(p => p.ImplementedInterfaceMembers.Count == 1));
+			Assert.That(type.Properties.All(p => p.Getter.ImplementedInterfaceMembers.Count == 1));
+			Assert.That(type.Properties.All(p => p.Setter.ImplementedInterfaceMembers.Count == 1));
+		}
 	}
 }

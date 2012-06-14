@@ -264,4 +264,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public int this[string x] { get { return 0; } set {} }
 		public int this[int x, int y] { get { return 0; } set {} }
 	}
+
+	public class ClassThatImplementsIndexersExplicitly : IInterfaceWithIndexers, IGenericInterfaceWithIndexer<int> {
+		int IInterfaceWithIndexers.this[int x] { get { return 0; } set {} }
+		int IGenericInterfaceWithIndexer<int>.this[int x] { get { return 0; } set {} }
+		int IInterfaceWithIndexers.this[string x] { get { return 0; } set {} }
+		int IInterfaceWithIndexers.this[int x, int y] { get { return 0; } set {} }
+	}
 }
