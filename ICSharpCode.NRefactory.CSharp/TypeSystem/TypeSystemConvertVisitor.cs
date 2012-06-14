@@ -679,7 +679,7 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, prefix + p.Name);
 			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? p.Accessibility;
 			a.IsAbstract = p.IsAbstract;
-			a.IsOverride = p.IsOverridable;
+			a.IsOverride = p.IsOverride;
 			a.IsSealed = p.IsSealed;
 			a.IsStatic = p.IsStatic;
 			a.IsSynthetic = p.IsSynthetic;
