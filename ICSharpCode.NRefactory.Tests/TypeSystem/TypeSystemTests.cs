@@ -678,6 +678,63 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]", field2.Type.ReflectionName);
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]]]", field3.Type.ReflectionName);
 		}
+
+		[Test]
+		public void FlagsOnInterfaceMembersAreCorrect() {
+			ITypeDefinition type = GetTypeDefinition(typeof(IInterfaceWithProperty));
+			var p = type.Properties.Single();
+			Assert.AreEqual(false, p.IsIndexer);
+			Assert.AreEqual(true, p.IsAbstract);
+			Assert.AreEqual(true, p.IsOverridable);
+			Assert.AreEqual(false, p.IsOverride);
+			Assert.AreEqual(true, p.IsPublic);
+			Assert.AreEqual(true, p.Getter.IsAbstract);
+			Assert.AreEqual(true, p.Getter.IsOverridable);
+			Assert.AreEqual(false, p.Getter.IsOverride);
+			Assert.AreEqual(true, p.Getter.IsPublic);
+			Assert.AreEqual(true, p.Setter.IsAbstract);
+			Assert.AreEqual(true, p.Setter.IsOverridable);
+			Assert.AreEqual(false, p.Setter.IsOverride);
+			Assert.AreEqual(true, p.Setter.IsPublic);
+
+			type = GetTypeDefinition(typeof(IInterfaceWithIndexers));
+			p = type.Properties.Single(x => x.Parameters.Count == 2);
+			Assert.AreEqual(true, p.IsIndexer);
+			Assert.AreEqual(true, p.IsAbstract);
+			Assert.AreEqual(true, p.IsOverridable);
+			Assert.AreEqual(false, p.IsOverride);
+			Assert.AreEqual(true, p.IsPublic);
+			Assert.AreEqual(true, p.Getter.IsAbstract);
+			Assert.AreEqual(true, p.Getter.IsOverridable);
+			Assert.AreEqual(false, p.Getter.IsOverride);
+			Assert.AreEqual(true, p.Getter.IsPublic);
+			Assert.AreEqual(true, p.Setter.IsAbstract);
+			Assert.AreEqual(true, p.Setter.IsOverridable);
+			Assert.AreEqual(false, p.Setter.IsOverride);
+			Assert.AreEqual(true, p.Setter.IsPublic);
+
+			type = GetTypeDefinition(typeof(IHasEvent));
+			var e = type.Events.Single();
+			Assert.AreEqual(true, e.IsAbstract);
+			Assert.AreEqual(true, e.IsOverridable);
+			Assert.AreEqual(false, e.IsOverride);
+			Assert.AreEqual(true, e.IsPublic);
+			Assert.AreEqual(true, e.AddAccessor.IsAbstract);
+			Assert.AreEqual(true, e.AddAccessor.IsOverridable);
+			Assert.AreEqual(false, e.AddAccessor.IsOverride);
+			Assert.AreEqual(true, e.AddAccessor.IsPublic);
+			Assert.AreEqual(true, e.RemoveAccessor.IsAbstract);
+			Assert.AreEqual(true, e.RemoveAccessor.IsOverridable);
+			Assert.AreEqual(false, e.RemoveAccessor.IsOverride);
+			Assert.AreEqual(true, e.RemoveAccessor.IsPublic);
+
+			type = GetTypeDefinition(typeof(IDisposable));
+			var m = type.Methods.Single();
+			Assert.AreEqual(true, m.IsAbstract);
+			Assert.AreEqual(true, m.IsOverridable);
+			Assert.AreEqual(false, m.IsOverride);
+			Assert.AreEqual(true, m.IsPublic);
+		}
 		
 		[Test]
 		public void InnerClassInGenericClass_TypeParameterOwner()
