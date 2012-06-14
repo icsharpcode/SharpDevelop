@@ -26,5 +26,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			project.RemoveReference(referenceProjectItem);
 			project.Save();
 		}
+		
+		public Project SourceProject {
+			get {
+				var projectReference = referenceProjectItem as ProjectReferenceProjectItem;
+				if (projectReference != null) {
+					return new Project(projectReference.ReferencedProject as MSBuildBasedProject);
+				}
+				return null;
+			}
+		}
 	}
 }
