@@ -847,5 +847,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("add_Event3", normalEvent.AddAccessor.Name);
 			Assert.AreEqual("remove_Event3", normalEvent.RemoveAccessor.Name);
 		}
+
+		[Test]
+		public void PropertyAccessorsShouldBeReportedAsImplementingInterfaceAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			Assert.That(prop.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.Prop" }));
+			Assert.That(prop.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.get_Prop" }));
+			Assert.That(prop.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.set_Prop" }));
+		}
 	}
 }
