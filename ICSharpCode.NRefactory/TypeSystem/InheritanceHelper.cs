@@ -69,13 +69,52 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (IType baseType in allBaseTypes.Reverse()) {
 				if (baseType == member.DeclaringTypeDefinition)
 					continue;
-				
-				foreach (IMember baseMember in baseType.GetMembers(m => m.Name == member.Name, GetMemberOptions.IgnoreInheritedMembers)) {
-					if (SignatureComparer.Ordinal.Equals(member, baseMember)) {
-						if (specializedMember != null)
-							yield return SpecializedMember.Create(baseMember, specializedMember.Substitution);
-						else
-							yield return baseMember;
+
+				if (member is IMethod && ((IMethod)member).IsAccessor) {
+					var accessorOwner = ((IMethod)member).AccessorOwner;
+					foreach (IMember baseOwner in baseType.GetMembers(m => m.Name == accessorOwner.Name, GetMemberOptions.IgnoreInheritedMembers)) {
+						if (accessorOwner is IProperty && baseOwner is IProperty) {
+							var accessorProperty = (IProperty)accessorOwner;
+							var baseProperty = (IProperty)baseOwner;
+							if (member == accessorProperty.Getter && baseProperty.CanGet) {
+								if (specializedMember != null)
+									yield return SpecializedMember.Create(baseProperty.Getter, specializedMember.Substitution);
+								else
+									yield return baseProperty.Getter;
+							}
+							if (member == accessorProperty.Setter && baseProperty.CanSet) {
+								if (specializedMember != null)
+									yield return SpecializedMember.Create(baseProperty.Setter, specializedMember.Substitution);
+								else
+									yield return baseProperty.Setter;
+							}
+						}
+						else if (accessorOwner is IEvent && baseOwner is IEvent) {
+							var accessorEvent = (IEvent)accessorOwner;
+							var baseEvent = (IEvent)baseOwner;
+							if (member == accessorEvent.AddAccessor && baseEvent.CanAdd) {
+								if (specializedMember != null)
+									yield return SpecializedMember.Create(baseEvent.AddAccessor, specializedMember.Substitution);
+								else
+									yield return baseEvent.AddAccessor;
+							}
+							if (member == accessorEvent.RemoveAccessor && baseEvent.CanRemove) {
+								if (specializedMember != null)
+									yield return SpecializedMember.Create(baseEvent.RemoveAccessor, specializedMember.Substitution);
+								else
+									yield return baseEvent.RemoveAccessor;
+							}
+						}
+					}
+				}
+				else {
+					foreach (IMember baseMember in baseType.GetMembers(m => m.Name == member.Name, GetMemberOptions.IgnoreInheritedMembers)) {
+						if (SignatureComparer.Ordinal.Equals(member, baseMember)) {
+							if (specializedMember != null)
+								yield return SpecializedMember.Create(baseMember, specializedMember.Substitution);
+							else
+								yield return baseMember;
+						}
 					}
 				}
 			}
