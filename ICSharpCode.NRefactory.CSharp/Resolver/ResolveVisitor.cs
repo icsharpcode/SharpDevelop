@@ -1236,7 +1236,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				ResolveResult input = Resolve(asExpression.Expression);
 				var targetType = ResolveType(asExpression.Type);
-				return new ConversionResolveResult(targetType, input, Conversion.TryCast);
+				return new ConversionResolveResult(targetType, input, Conversion.TryCast, resolver.CheckForOverflow);
 			} else {
 				ScanChildren(asExpression);
 				return null;
@@ -1498,7 +1498,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					var addRR = memberLookup.Lookup(initializedObject, "Add", EmptyList<IType>.Instance, true);
 					var mgrr = addRR as MethodGroupResolveResult;
 					if (mgrr != null) {
-						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Compilation, addArguments, null, false, false, resolver.conversions);
+						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Compilation, addArguments, null, false, false, resolver.CheckForOverflow, resolver.conversions);
 						var invocationRR = or.CreateResolveResult(initializedObject);
 						StoreResult(aie, invocationRR);
 						ProcessConversionsInInvocation(null, aie.Elements, invocationRR);
@@ -3415,7 +3415,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		ResolveResult WrapResult(ResolveResult result)
 		{
-			return new ConversionResolveResult(result.Type, result, Conversion.IdentityConversion);
+			return new ConversionResolveResult(result.Type, result, Conversion.IdentityConversion, resolver.CheckForOverflow);
 		}
 		
 		ResolveResult IAstVisitor<ResolveResult>.VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause)
@@ -3603,7 +3603,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ProcessConversion(queryWhereClause.Condition, condition, conversionToBool, boolType);
 			if (currentQueryResult != null) {
 				if (conversionToBool != Conversion.IdentityConversion && conversionToBool != Conversion.None) {
-					condition = new ConversionResolveResult(boolType, condition, conversionToBool);
+					condition = new ConversionResolveResult(boolType, condition, conversionToBool, resolver.CheckForOverflow);
 				}
 				
 				var methodGroup = resolver.ResolveMemberAccess(currentQueryResult, "Where", EmptyList<IType>.Instance);

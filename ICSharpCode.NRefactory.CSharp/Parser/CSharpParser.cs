@@ -3750,7 +3750,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return AstType.Null;
 		}
 		
-		public AstNode ParseExpression (TextReader reader)
+		public Expression ParseExpression (TextReader reader)
 		{
 			var es = ParseStatements (new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd () + ";"), -1).FirstOrDefault () as ExpressionStatement;
 			if (es != null) {
@@ -3758,7 +3758,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (ae != null)
 					return ae.Right;
 			}
-			return null;
+			return Expression.Null;
 		}
 		
 		/// <summary>
