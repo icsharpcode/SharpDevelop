@@ -1911,15 +1911,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (p.Getter != null && p.Getter.IsExplicitInterfaceImplementation) {
 					p.IsExplicitInterfaceImplementation = true;
 					foreach (var x in p.Getter.ExplicitInterfaceImplementations) {
-						var r = new DefaultMemberReference(p.Parameters.Count == 0 ? EntityType.Property : EntityType.Indexer, x.DeclaringTypeReference, name, 0, p.Parameters.Select(y => y.Type).ToList());
-						p.ExplicitInterfaceImplementations.Add(r);
+						p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(p.Parameters.Count == 0 ? EntityType.Property : EntityType.Indexer, x.DeclaringTypeReference, name, 0, p.Parameters.Select(y => y.Type).ToList()));
 					}
 				}
 				else if (p.Setter != null && p.Setter.IsExplicitInterfaceImplementation) {
 					p.IsExplicitInterfaceImplementation = true;
 					foreach (var x in p.Setter.ExplicitInterfaceImplementations) {
-						var r = new DefaultMemberReference(p.Parameters.Count == 0 ? EntityType.Property : EntityType.Indexer, x.DeclaringTypeReference, name, 0, p.Parameters.Select(y => y.Type).ToList());
-						p.ExplicitInterfaceImplementations.Add(r);
+						p.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(p.Parameters.Count == 0 ? EntityType.Property : EntityType.Indexer, x.DeclaringTypeReference, name, 0, p.Parameters.Select(y => y.Type).ToList()));
 					}
 				}
 			}
@@ -1956,6 +1954,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			AddAttributes(ev, e);
 			
+			int lastDot = ev.Name.LastIndexOf('.');
+			if (lastDot >= 0) {
+				string name = ev.Name.Substring(lastDot + 1);
+				if (e.AddAccessor != null && e.AddAccessor.IsExplicitInterfaceImplementation) {
+					e.IsExplicitInterfaceImplementation = true;
+					foreach (var x in e.AddAccessor.ExplicitInterfaceImplementations) {
+						e.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(EntityType.Event, x.DeclaringTypeReference, name));
+					}
+				}
+				else if (e.RemoveAccessor != null && e.RemoveAccessor.IsExplicitInterfaceImplementation) {
+					e.IsExplicitInterfaceImplementation = true;
+					foreach (var x in e.RemoveAccessor.ExplicitInterfaceImplementations) {
+						e.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(EntityType.Event, x.DeclaringTypeReference, name));
+					}
+				}
+			}
+
+			// This is very hacky. Due to which code parts are taken later in the execution, we need to pretend that the accessors are not explicit interface implementations at this stage.
+			if (e.AddAccessor != null && e.AddAccessor.IsExplicitInterfaceImplementation) {
+				e.AddAccessor = ReadMethod(ev.AddMethod, parentType, e, readExplicitInterfaceImplementation: false);
+			}
+			if (e.RemoveAccessor != null && e.RemoveAccessor.IsExplicitInterfaceImplementation) {
+				e.RemoveAccessor = ReadMethod(ev.RemoveMethod, parentType, e, readExplicitInterfaceImplementation: false);
+			}
+			if (e.InvokeAccessor != null && e.InvokeAccessor.IsExplicitInterfaceImplementation) {
+				e.InvokeAccessor = ReadMethod(ev.InvokeMethod, parentType, e, readExplicitInterfaceImplementation: false);
+			}
+
 			FinishReadMember(e, ev);
 			
 			return e;
