@@ -88,6 +88,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// Enable interning by default.
 			this.InterningProvider = new SimpleInterningProvider();
 		}
+
+		void ReadExplicitInterfaceImplementation(DefaultUnresolvedMethod m, MethodDefinition method) {
+			if (method.Name.Contains(".") && method.HasOverrides) {
+				m.IsExplicitInterfaceImplementation = true;
+				foreach (var or in method.Overrides) {
+					m.ExplicitInterfaceImplementations.Add(new DefaultMemberReference(EntityType.Method, ReadTypeReference(or.DeclaringType), or.Name, or.GenericParameters.Count, m.Parameters.Select(p => p.Type).ToList(), false));
+				}
+			}
+		}
 		
 		#region Load From AssemblyDefinition
 		/// <summary>
@@ -1650,7 +1659,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return ReadMethod(method, parentType, null, methodType);
 		}
 		
-		IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, IUnresolvedMember accessorOwner, EntityType methodType = EntityType.Method)
+		IUnresolvedMethod ReadMethod(MethodDefinition method, IUnresolvedTypeDefinition parentType, IUnresolvedMember accessorOwner, EntityType methodType = EntityType.Method, bool readExplicitInterfaceImplementation = true)
 		{
 			if (method == null)
 				return null;
@@ -1685,6 +1694,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (method.IsStatic && HasExtensionAttribute(method)) {
 				m.IsExtensionMethod = true;
 			}
+
+			if (readExplicitInterfaceImplementation)
+				ReadExplicitInterfaceImplementation(m, method);
 			
 			FinishReadMember(m, method);
 			return m;
@@ -1870,6 +1882,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Property
+
 		[CLSCompliant(false)]
 		public IUnresolvedProperty ReadProperty(PropertyDefinition property, IUnresolvedTypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
@@ -1891,6 +1904,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			AddAttributes(property, p);
+
+			int lastDot = property.Name.LastIndexOf('.');
+			if (lastDot >= 0) {
+				string name = property.Name.Substring(lastDot + 1);
+				if (p.Getter != null && p.Getter.IsExplicitInterfaceImplementation) {
+					p.IsExplicitInterfaceImplementation = true;
+					foreach (var x in p.Getter.ExplicitInterfaceImplementations) {
+						var r = new DefaultMemberReference(p.Parameters.Count == 0 ? EntityType.Property : EntityType.Indexer, x.DeclaringTypeReference, name, 0, p.Parameters.Select(y => y.Type).ToList());
+						p.ExplicitInterfaceImplementations.Add(r);
+					}
+				}
+				else if (p.Setter != null && p.Setter.IsExplicitInterfaceImplementation) {
+					p.IsExplicitInterfaceImplementation = true;
+					foreach (var x in p.Setter.ExplicitInterfaceImplementations) {
+						var r = new DefaultMemberReference(p.Parameters.Count == 0 ? EntityType.Property : EntityType.Indexer, x.DeclaringTypeReference, name, 0, p.Parameters.Select(y => y.Type).ToList());
+						p.ExplicitInterfaceImplementations.Add(r);
+					}
+				}
+			}
+
+			// This is very hacky. Due to which code parts are taken later in the execution, we need to pretend that the accessors are not explicit interface implementations at this stage.
+			if (p.Getter != null && p.Getter.IsExplicitInterfaceImplementation) {
+				p.Getter = ReadMethod(property.GetMethod, parentType, p, readExplicitInterfaceImplementation: false);
+			}
+			if (p.Setter != null && p.Setter.IsExplicitInterfaceImplementation) {
+				p.Setter = ReadMethod(property.GetMethod, parentType, p, readExplicitInterfaceImplementation: false);
+			}
 			
 			FinishReadMember(p, property);
 			return p;

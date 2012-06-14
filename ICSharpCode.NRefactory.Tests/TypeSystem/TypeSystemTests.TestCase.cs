@@ -249,6 +249,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public int Prop { get; set; }
 	}
 
+	public class ClassThatImplementsPropertyExplicitly : IInterfaceWithProperty {
+		int IInterfaceWithProperty.Prop { get; set; }
+	}
+
 	public interface IInterfaceWithIndexers {
 		int this[int x] { get; set; }
 		int this[string x] { get; set; }
