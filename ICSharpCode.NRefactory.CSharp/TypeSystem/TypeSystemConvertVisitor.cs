@@ -756,11 +756,12 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		DefaultUnresolvedMethod CreateDefaultEventAccessor(IUnresolvedEvent ev, string name, IUnresolvedParameter valueParameter)
 		{
 			var a = new DefaultUnresolvedMethod(currentTypeDefinition, name);
+			a.AccessorOwner = ev;
 			a.Region = ev.BodyRegion;
 			a.BodyRegion = ev.BodyRegion;
 			a.Accessibility = ev.Accessibility;
 			a.IsAbstract = ev.IsAbstract;
-			a.IsOverride = ev.IsOverridable;
+			a.IsOverride = ev.IsOverride;
 			a.IsSealed = ev.IsSealed;
 			a.IsStatic = ev.IsStatic;
 			a.IsSynthetic = ev.IsSynthetic;

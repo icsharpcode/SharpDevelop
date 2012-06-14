@@ -275,4 +275,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		int IInterfaceWithIndexers.this[string x] { get { return 0; } set {} }
 		int IInterfaceWithIndexers.this[int x, int y] { get { return 0; } set {} }
 	}
+
+	public interface IHasEvent {
+		event EventHandler Event;
+	}
+
+	public class ClassThatImplementsEvent : IHasEvent {
+		public event EventHandler Event;
+	}
+
+	public class ClassThatImplementsEventWithCustomAccessors : IHasEvent {
+		public event EventHandler Event { add {} remove {} }
+	}
+
+	public class ClassThatImplementsEventExplicitly : IHasEvent {
+		event EventHandler IHasEvent.Event { add {} remove {} }
+	}
 }

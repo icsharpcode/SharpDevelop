@@ -961,5 +961,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(prop.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.set_Prop" }));
 		}
 
+		[Test]
+		public void EventAccessorsShouldBeReportedAsImplementingInterfaceAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEvent));
+			var evt = type.Events.Single(p => p.Name == "Event");
+			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
+		}
+
+		[Test]
+		public void EventAccessorsShouldBeReportedAsImplementingInterfaceAccessorsWhenCustomAccessorMethodsAreUsed() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEventWithCustomAccessors));
+			var evt = type.Events.Single(p => p.Name == "Event");
+			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
+		}
+
+		[Test]
+		public void ExplicitlyImplementedEventsShouldBeReportedAsBeingImplemented() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEventExplicitly));
+			var evt = type.Events.Single();
+			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
+		}
 	}
 }
