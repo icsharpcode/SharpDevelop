@@ -76,14 +76,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			return new CodeAction(context.TranslateString("Iterate via foreach"), script => {
 				var iterator = MakeForeach(expression.Clone(), context);
-				if (expression == expressionStatement.Expression) {
+				if (expression == expressionStatement.Expression)
 					script.Replace(expressionStatement, iterator);
-				} else {
-					script.InsertBefore(expressionStatement.NextSibling, iterator);
-					// Work around incorrect formatting when inserting relatively to
-					// a node on a different indentation level
-					script.FormatText(context.GetNode<BlockStatement>());
-				}
+				else
+					script.InsertAfter(expressionStatement, iterator);
 			});
 
 		}

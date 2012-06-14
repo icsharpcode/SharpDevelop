@@ -125,6 +125,56 @@ class TestClass
 		}
 
 		[Test]
+		public void HandlesAsExpressionStatement()
+		{
+			Test<IterateViaForeachAction>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	public void F()
+	{
+		object s = """";
+		s as IEnumerable$<char>;
+	}
+}", @"
+using System.Collections.Generic;
+class TestClass
+{
+	public void F()
+	{
+		object s = """";
+		foreach (var item in s as IEnumerable<char>) {
+		}
+	}
+}", 0, true);
+		}
+
+		[Test]
+		public void HandlesAsExpression()
+		{
+			Test<IterateViaForeachAction>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	public void F()
+	{
+		object s = """";
+		s as IEnumerable$<char>
+	}
+}", @"
+using System.Collections.Generic;
+class TestClass
+{
+	public void F()
+	{
+		object s = """";
+		foreach (var item in s as IEnumerable<char>) {
+		}
+	}
+}", 0, true);
+		}
+
+		[Test]
 		public void HandlesLinqExpressionAssignment()
 		{
 			Test<IterateViaForeachAction>(@"
