@@ -856,5 +856,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(prop.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.get_Prop" }));
 			Assert.That(prop.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.set_Prop" }));
 		}
+
+		[Test]
+		public void IndexerAccessorsShouldBeReportedAsImplementingTheCorrectInterfaceAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexers));
+			var ix1 = type.Properties.Single(p => p.Parameters.Count == 1 && p.Parameters[0].Type.GetDefinition().KnownTypeCode == KnownTypeCode.Int32);
+			var ix2 = type.Properties.Single(p => p.Parameters.Count == 1 && p.Parameters[0].Type.GetDefinition().KnownTypeCode == KnownTypeCode.String);
+			var ix3 = type.Properties.Single(p => p.Parameters.Count == 2);
+
+			Assert.That(ix1.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EquivalentTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.Item", "ICSharpCode.NRefactory.TypeSystem.TestCase.IGenericInterfaceWithIndexer`1.Item" }));
+			Assert.That(ix1.ImplementedInterfaceMembers.All(p => ((IProperty)p).Parameters.Select(x => x.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32 })));
+			Assert.That(ix1.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EquivalentTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.get_Item", "ICSharpCode.NRefactory.TypeSystem.TestCase.IGenericInterfaceWithIndexer`1.get_Item" }));
+			Assert.That(ix1.Getter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32 })));
+			Assert.That(ix1.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EquivalentTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item", "ICSharpCode.NRefactory.TypeSystem.TestCase.IGenericInterfaceWithIndexer`1.set_Item" }));
+			Assert.That(ix1.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+
+			Assert.That(ix2.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.Item" }));
+			Assert.That(ix2.ImplementedInterfaceMembers.All(p => ((IProperty)p).Parameters.Select(x => x.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.String })));
+			Assert.That(ix2.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.get_Item" }));
+			Assert.That(ix2.Getter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.String })));
+			Assert.That(ix2.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item" }));
+			Assert.That(ix2.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.String, KnownTypeCode.Int32 })));
+
+			Assert.That(ix3.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.Item" }));
+			Assert.That(ix3.ImplementedInterfaceMembers.All(p => ((IProperty)p).Parameters.Select(x => x.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+			Assert.That(ix3.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.get_Item" }));
+			Assert.That(ix3.Getter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+			Assert.That(ix3.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item" }));
+			Assert.That(ix3.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+		}
 	}
 }
