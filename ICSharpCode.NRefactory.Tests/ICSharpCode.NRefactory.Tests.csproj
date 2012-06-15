@@ -279,6 +279,7 @@
     <Compile Include="CSharp\CodeActions\ExtractFieldTests.cs" />
     <Compile Include="CSharp\CodeIssues\ValueParameterUnusedTests.cs" />
     <Compile Include="CSharp\Parser\Statements\InvalidStatementsTests.cs" />
+    <Compile Include="CSharp\Refactoring\NamingHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

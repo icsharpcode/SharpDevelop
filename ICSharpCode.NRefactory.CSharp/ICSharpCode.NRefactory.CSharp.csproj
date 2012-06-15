@@ -381,6 +381,7 @@
     <Compile Include="Refactoring\CodeActions\ExtractFieldAction.cs" />
     <Compile Include="Completion\ICompletionContextProvider.cs" />
     <Compile Include="Refactoring\CodeIssues\ValueParameterUnusedIssue.cs" />
+    <Compile Include="Refactoring\NamingHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

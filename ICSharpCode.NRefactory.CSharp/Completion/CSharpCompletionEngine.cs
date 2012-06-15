@@ -130,61 +130,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return Enumerable.Empty<ICompletionData>();
 		}
 
-		IEnumerable<string> GenerateNameProposals(AstType type)
-		{
-			if (type is PrimitiveType) {
-				var pt = (PrimitiveType)type;
-				switch (pt.Keyword) {
-					case "object":
-						yield return "o";
-						yield return "obj";
-						break;
-					case "bool":
-						yield return "b";
-						yield return "pred";
-						break;
-					case "double":
-					case "float":
-					case "decimal":
-						yield return "d";
-						yield return "f";
-						yield return "m";
-						break;
-					default:
-						yield return "i";
-						yield return "j";
-						yield return "k";
-						break;
-				}
-				yield break;
-			}
-			string name;
-			if (type is SimpleType) {
-				name = ((SimpleType)type).Identifier;
-			} else if (type is MemberType) {
-				name = ((SimpleType)type).Identifier;
-			} else {
-				yield break;
-			}
-
-			var names = WordParser.BreakWords(name);
-
-			var possibleName = new StringBuilder();
-			for (int i = 0; i < names.Count; i++) {
-				possibleName.Length = 0;
-				for (int j = i; j < names.Count; j++) {
-					if (string.IsNullOrEmpty(names [j])) {
-						continue;
-					}
-					if (j == i) { 
-						names [j] = Char.ToLower(names [j] [0]) + names [j].Substring(1);
-					}
-					possibleName.Append(names [j]);
-				}
-				yield return possibleName.ToString();
-			}
-		}
-
 		IEnumerable<ICompletionData> HandleMemberReferenceCompletion(ExpressionResult expr)
 		{
 			if (expr == null) 
@@ -405,7 +350,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						if (parent.Variables.Count != 1)
 							return DefaultControlSpaceItems(isAsExpression, controlSpace);
 
-						foreach (var possibleName in GenerateNameProposals (parent.Type)) {
+						foreach (var possibleName in NamingHelper.GenerateNameProposals (parent.Type)) {
 							if (possibleName.Length > 0) {
 								proposeNameList.Result.Add(factory.CreateLiteralCompletionData(possibleName.ToString()));
 							}
@@ -1115,7 +1060,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			if (node is Identifier && node.Parent is ForeachStatement) {
 				var foreachStmt = (ForeachStatement)node.Parent;
-				foreach (var possibleName in GenerateNameProposals (foreachStmt.VariableType)) {
+				foreach (var possibleName in NamingHelper.GenerateNameProposals (foreachStmt.VariableType)) {
 					if (possibleName.Length > 0) {
 						wrapper.Result.Add(factory.CreateLiteralCompletionData(possibleName.ToString()));
 					}
@@ -1133,7 +1078,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				// Try Parameter name case 
 				var param = node.Parent as ParameterDeclaration;
 				if (param != null) {
-					foreach (var possibleName in GenerateNameProposals (param.Type)) {
+					foreach (var possibleName in NamingHelper.GenerateNameProposals (param.Type)) {
 						if (possibleName.Length > 0) {
 							wrapper.Result.Add(factory.CreateLiteralCompletionData(possibleName.ToString()));
 						}
