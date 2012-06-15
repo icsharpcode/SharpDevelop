@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public override bool Equals(object obj)
 			{
 				AnonymousTypeProperty p = obj as AnonymousTypeProperty;
-				return p != null && declaringType.Equals(p.declaringType) && this.Name == p.Name;
+				return p != null && this.Name == p.Name && declaringType.Equals(p.declaringType);
 			}
 			
 			public override int GetHashCode()
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override ITypeReference ToTypeReference()
 		{
-			throw new NotSupportedException();
+			return new AnonymousTypeReference(unresolvedProperties);
 		}
 		
 		public override string Name {
@@ -140,6 +140,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return false;
 			}
 			return true;
+		}
+	}
+	
+	/// <summary>
+	/// Anonymous type reference.
+	/// </summary>
+	[Serializable]
+	public class AnonymousTypeReference : ITypeReference
+	{
+		readonly IUnresolvedProperty[] unresolvedProperties;
+		
+		public AnonymousTypeReference(IUnresolvedProperty[] properties)
+		{
+			if (properties == null)
+				throw new ArgumentNullException("properties");
+			this.unresolvedProperties = properties;
+		}
+		
+		public IType Resolve(ITypeResolveContext context)
+		{
+			return new AnonymousType(context.Compilation, unresolvedProperties);
 		}
 	}
 }
