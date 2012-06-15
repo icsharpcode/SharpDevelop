@@ -236,4 +236,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public static int Prop3 { get; set; }
 		public int Prop4 { get; set; }
 	}
+
+	public interface IInterfaceWithProperty {
+		int Prop { get; set; }
+	}
+
+	public class ClassWithVirtualProperty {
+		public virtual int Prop { get; set; }
+	}
 }
