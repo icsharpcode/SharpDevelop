@@ -346,6 +346,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public static readonly KnownTypeReference IEnumeratorOfT = Get(KnownTypeCode.IEnumeratorOfT);
 		
 		/// <summary>
+		/// Gets a type reference pointing to the <c>System.Collections.ICollection</c> type.
+		/// </summary>
+		public static readonly KnownTypeReference ICollection = Get(KnownTypeCode.ICollection);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>System.Collections.Generic.ICollection{T}</c> type.
+		/// </summary>
+		public static readonly KnownTypeReference ICollectionOfT = Get(KnownTypeCode.ICollectionOfT);
+		
+		/// <summary>
+		/// Gets a type reference pointing to the <c>System.Collections.IList</c> type.
+		/// </summary>
+		public static readonly KnownTypeReference IList = Get(KnownTypeCode.IList);
+		
+		/// <summary>
 		/// Gets a type reference pointing to the <c>System.Collections.Generic.IList{T}</c> type.
 		/// </summary>
 		public static readonly KnownTypeReference IListOfT = Get(KnownTypeCode.IListOfT);
