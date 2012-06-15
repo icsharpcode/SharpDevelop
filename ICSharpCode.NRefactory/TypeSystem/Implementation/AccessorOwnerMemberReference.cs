@@ -18,20 +18,34 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
-	public enum EntityType : byte
+	/// <summary>
+	/// Given a reference to an accessor, returns the accessor's owner.
+	/// </summary>
+	[Serializable]
+	sealed class AccessorOwnerMemberReference : IMemberReference
 	{
-		None,
-		TypeDefinition,
-		Field,
-		Property,
-		Indexer,
-		Event,
-		Method,
-		Operator,
-		Constructor,
-		Destructor,
-		Accessor
+		readonly IMemberReference accessorReference;
+		
+		public AccessorOwnerMemberReference(IMemberReference accessorReference)
+		{
+			if (accessorReference == null)
+				throw new ArgumentNullException("accessorReference");
+			this.accessorReference = accessorReference;
+		}
+		
+		public ITypeReference DeclaringTypeReference {
+			get { return accessorReference.DeclaringTypeReference; }
+		}
+		
+		public IMember Resolve(ITypeResolveContext context)
+		{
+			IMethod method = accessorReference.Resolve(context) as IMethod;
+			if (method != null)
+				return method.AccessorOwner;
+			else
+				return null;
+		}
 	}
 }

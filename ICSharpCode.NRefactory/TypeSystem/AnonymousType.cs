@@ -116,6 +116,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		public override IEnumerable<IMethod> GetAccessors(Predicate<IUnresolvedMethod> filter, GetMemberOptions options)
+		{
+			for (int i = 0; i < unresolvedProperties.Length; i++) {
+				if (unresolvedProperties[i].CanGet) {
+					if (filter == null || filter(unresolvedProperties[i].Getter))
+						yield return resolvedProperties[i].Getter;
+				}
+				if (unresolvedProperties[i].CanSet) {
+					if (filter == null || filter(unresolvedProperties[i].Setter))
+						yield return resolvedProperties[i].Setter;
+				}
+			}
+		}
+		
 		public override int GetHashCode()
 		{
 			unchecked {

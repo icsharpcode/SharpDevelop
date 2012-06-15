@@ -38,9 +38,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		string name;
 		int typeParameterCount;
 		IList<ITypeReference> parameterTypes;
-		bool isExplicitInterfaceImplementation;
 		
-		public DefaultMemberReference(EntityType entityType, ITypeReference typeReference, string name, int typeParameterCount = 0, IList<ITypeReference> parameterTypes = null, bool isExplicitInterfaceImplementation = false)
+		public DefaultMemberReference(EntityType entityType, ITypeReference typeReference, string name, int typeParameterCount = 0, IList<ITypeReference> parameterTypes = null)
 		{
 			if (typeReference == null)
 				throw new ArgumentNullException("typeReference");
@@ -53,7 +52,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 			this.typeParameterCount = typeParameterCount;
 			this.parameterTypes = parameterTypes ?? EmptyList<ITypeReference>.Instance;
-			this.isExplicitInterfaceImplementation = isExplicitInterfaceImplementation;
 		}
 		
 		public ITypeReference DeclaringTypeReference {
@@ -64,14 +62,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			IType type = typeReference.Resolve(context);
 			IEnumerable<IMember> members;
-			if (entityType == EntityType.Method) {
+			if (entityType == EntityType.Accessor) {
+				members = type.GetAccessors(m => m.Name == name && !m.IsExplicitInterfaceImplementation);
+			} else if (entityType == EntityType.Method) {
 				members = type.GetMethods(
 					m => m.Name == name && m.EntityType == EntityType.Method
-					&& m.TypeParameters.Count == typeParameterCount && m.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
+					&& m.TypeParameters.Count == typeParameterCount && !m.IsExplicitInterfaceImplementation,
 					GetMemberOptions.IgnoreInheritedMembers);
 			} else {
 				members = type.GetMembers(
-					m => m.Name == name && m.EntityType == entityType && m.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
+					m => m.Name == name && m.EntityType == entityType && !m.IsExplicitInterfaceImplementation,
 					GetMemberOptions.IgnoreInheritedMembers);
 			}
 			var resolvedParameterTypes = parameterTypes.Resolve(context);
