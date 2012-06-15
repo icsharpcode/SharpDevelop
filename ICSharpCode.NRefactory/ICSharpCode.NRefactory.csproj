@@ -168,7 +168,6 @@
     <Compile Include="TypeSystem\Implementation\SimpleCompilation.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleConstantValue.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleInterningProvider.cs" />
-    <Compile Include="TypeSystem\Implementation\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedEvent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedField.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedMember.cs" />
@@ -200,6 +199,7 @@
     <Compile Include="TypeSystem\ParameterizedType.cs" />
     <Compile Include="TypeSystem\ParameterListComparer.cs" />
     <Compile Include="TypeSystem\ReflectionNameParseException.cs" />
+    <Compile Include="TypeSystem\SimpleTypeResolveContext.cs" />
     <Compile Include="TypeSystem\TypeKind.cs" />
     <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />
