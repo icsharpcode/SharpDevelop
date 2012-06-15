@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
@@ -49,7 +50,7 @@ class TestClass
 	public void F()
 	{
 		var list = new ArrayList ();
-		foreach (var item in list) {
+		foreach (var o in list) {
 		}
 	}
 }");
@@ -82,7 +83,7 @@ class TestClass
 
 	public void F()
 	{
-		foreach (var item in GetInts ()) {
+		foreach (var i in GetInts ()) {
 		}
 	}
 }");
@@ -118,7 +119,7 @@ class TestClass
 	{
 		IEnumerable<int> ints;
 		ints = GetInts ();
-		foreach (var item in ints) {
+		foreach (var i in ints) {
 		}
 	}
 }");
@@ -143,10 +144,34 @@ class TestClass
 	public void F()
 	{
 		object s = """";
-		foreach (var item in s as IEnumerable<char>) {
+		foreach (var c in s as IEnumerable<char>) {
 		}
 	}
 }", 0, true);
+		}
+
+		[Test]
+		public void NonKnownTypeNamingTest()
+		{
+			Test<IterateViaForeachAction>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	public void F()
+	{
+		var items$ = new List<TestClass> ();
+	}
+}", @"
+using System.Collections.Generic;
+class TestClass
+{
+	public void F()
+	{
+		var items = new List<TestClass> ();
+		foreach (var testClass in items) {
+		}
+	}
+}");
 		}
 
 		[Test]
@@ -168,7 +193,7 @@ class TestClass
 	public void F()
 	{
 		object s = """";
-		foreach (var item in s as IEnumerable<char>) {
+		foreach (var c in s as IEnumerable<char>) {
 		}
 	}
 }", 0, true);
@@ -208,7 +233,7 @@ class TestClass
 		var filteredInts = from item in GetInts ()
 							where item > 0
 							select item;
-		foreach (var item in filteredInts) {
+		foreach (var i in filteredInts) {
 		}
 	}
 }");
@@ -228,7 +253,68 @@ class TestClass
 
 	public void F()
 	{
-		foreach (var item in $GetInts ()) {
+		foreach (var i in $GetInts ()) {
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void IgnoresInitializersInForStatement()
+		{
+			TestWrongContext<IterateViaForeachAction>(@"
+class TestClass
+{
+	public void F()
+	{
+		for (int[] i = new $int[] {} ;;) {
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void AddsForToBodyOfUsingStatement()
+		{
+			Test<IterateViaForeachAction>(@"
+class TestClass
+{
+	public void F()
+	{
+		using (int[] i = new $int[] {}) {
+		}
+	}
+}",@"
+class TestClass
+{
+	public void F()
+	{
+		using (int[] i = new int[] {}) {
+			foreach (var j in i) {
+			}
+		}
+	}
+}");
+		}
+
+		[Test]
+		public void AddsBlockStatementToUsingStatement()
+		{
+			Test<IterateViaForeachAction>(@"
+class TestClass
+{
+	public void F()
+	{
+		using (int[] i = new $int[] {});
+	}
+}",@"
+class TestClass
+{
+	public void F()
+	{
+		using (int[] i = new int[] {}) {
+			foreach (var j in i) {
+			}
 		}
 	}
 }");
