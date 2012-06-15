@@ -847,5 +847,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("add_Event3", normalEvent.AddAccessor.Name);
 			Assert.AreEqual("remove_Event3", normalEvent.RemoveAccessor.Name);
 		}
+
+		[Test]
+		public void InterfacePropertyAccessorsShouldNotBeOverrides() {
+			ITypeDefinition type = GetTypeDefinition(typeof(IInterfaceWithProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			Assert.That(prop.Getter.IsOverride, Is.False);
+			Assert.That(prop.Getter.IsOverridable, Is.True);
+			Assert.That(prop.Setter.IsOverride, Is.False);
+			Assert.That(prop.Setter.IsOverridable, Is.True);
+		}
+
+		[Test]
+		public void VirtualPropertyAccessorsShouldNotBeOverrides() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassWithVirtualProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			Assert.That(prop.Getter.IsOverride, Is.False);
+			Assert.That(prop.Getter.IsOverridable, Is.True);
+			Assert.That(prop.Setter.IsOverride, Is.False);
+			Assert.That(prop.Setter.IsOverridable, Is.True);
+		}
 	}
 }
