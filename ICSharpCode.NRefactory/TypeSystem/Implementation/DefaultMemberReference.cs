@@ -38,8 +38,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		string name;
 		int typeParameterCount;
 		IList<ITypeReference> parameterTypes;
+		bool isExplicitInterfaceImplementation;
 		
-		public DefaultMemberReference(EntityType entityType, ITypeReference typeReference, string name, int typeParameterCount = 0, IList<ITypeReference> parameterTypes = null)
+		public DefaultMemberReference(EntityType entityType, ITypeReference typeReference, string name, int typeParameterCount = 0, IList<ITypeReference> parameterTypes = null, bool isExplicitInterfaceImplementation = false)
 		{
 			if (typeReference == null)
 				throw new ArgumentNullException("typeReference");
@@ -52,6 +53,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 			this.typeParameterCount = typeParameterCount;
 			this.parameterTypes = parameterTypes ?? EmptyList<ITypeReference>.Instance;
+			this.isExplicitInterfaceImplementation = isExplicitInterfaceImplementation;
 		}
 		
 		public ITypeReference DeclaringTypeReference {
@@ -65,11 +67,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (entityType == EntityType.Method) {
 				members = type.GetMethods(
 					m => m.Name == name && m.EntityType == EntityType.Method
-					&& m.TypeParameters.Count == typeParameterCount && !m.IsExplicitInterfaceImplementation,
+					&& m.TypeParameters.Count == typeParameterCount && m.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
 					GetMemberOptions.IgnoreInheritedMembers);
 			} else {
 				members = type.GetMembers(
-					m => m.Name == name && m.EntityType == entityType && !m.IsExplicitInterfaceImplementation,
+					m => m.Name == name && m.EntityType == entityType && m.IsExplicitInterfaceImplementation == isExplicitInterfaceImplementation,
 					GetMemberOptions.IgnoreInheritedMembers);
 			}
 			var resolvedParameterTypes = parameterTypes.Resolve(context);

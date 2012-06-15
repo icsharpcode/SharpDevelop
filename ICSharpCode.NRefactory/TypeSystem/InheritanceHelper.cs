@@ -39,6 +39,46 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			return GetBaseMembers(member, false).FirstOrDefault();
 		}
+
+		private static IEnumerable<IMember> GetBaseAccessors(IMethod accessor, bool includeImplementedInterfaces) {
+			IMember accessorOwner = accessor.AccessorOwner;
+			SpecializedMember specializedMember = accessor as SpecializedMember;
+
+			foreach (IMember baseOwner in GetBaseMembers(accessorOwner, includeImplementedInterfaces)) {
+				if (accessorOwner is IProperty && baseOwner is IProperty) {
+					var accessorProperty = (IProperty)accessorOwner;
+					var baseProperty = (IProperty)baseOwner;
+					if (accessor == accessorProperty.Getter && baseProperty.CanGet) {
+						if (specializedMember != null)
+							yield return SpecializedMember.Create(baseProperty.Getter, specializedMember.Substitution);
+						else
+							yield return baseProperty.Getter;
+					}
+					if (accessor == accessorProperty.Setter && baseProperty.CanSet) {
+						if (specializedMember != null)
+							yield return SpecializedMember.Create(baseProperty.Setter, specializedMember.Substitution);
+						else
+							yield return baseProperty.Setter;
+					}
+				}
+				else if (accessorOwner is IEvent && baseOwner is IEvent) {
+					var accessorEvent = (IEvent)accessorOwner;
+					var baseEvent = (IEvent)baseOwner;
+					if (accessor == accessorEvent.AddAccessor && baseEvent.CanAdd) {
+						if (specializedMember != null)
+							yield return SpecializedMember.Create(baseEvent.AddAccessor, specializedMember.Substitution);
+						else
+							yield return baseEvent.AddAccessor;
+					}
+					if (accessor == accessorEvent.RemoveAccessor && baseEvent.CanRemove) {
+						if (specializedMember != null)
+							yield return SpecializedMember.Create(baseEvent.RemoveAccessor, specializedMember.Substitution);
+						else
+							yield return baseEvent.RemoveAccessor;
+					}
+				}
+			}
+		}
 		
 		/// <summary>
 		/// Gets all base members that have the same signature.
@@ -50,7 +90,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (member == null)
 				throw new ArgumentNullException("member");
-			
+
 			if (member.IsExplicitInterfaceImplementation && member.ImplementedInterfaceMembers.Count == 1) {
 				// C#-style explicit interface implementation
 				member = member.ImplementedInterfaceMembers[0];
@@ -59,6 +99,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			SpecializedMember specializedMember = member as SpecializedMember;
 			member = member.MemberDefinition;
+
+			if (member is IMethod && ((IMethod)member).IsAccessor) {
+				foreach (IMember m in GetBaseAccessors((IMethod)member, includeImplementedInterfaces))
+					yield return m;
+				yield break;
+			}
 			
 			IEnumerable<IType> allBaseTypes;
 			if (includeImplementedInterfaces) {
@@ -69,7 +115,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (IType baseType in allBaseTypes.Reverse()) {
 				if (baseType == member.DeclaringTypeDefinition)
 					continue;
-				
+
 				foreach (IMember baseMember in baseType.GetMembers(m => m.Name == member.Name, GetMemberOptions.IgnoreInheritedMembers)) {
 					if (SignatureComparer.Ordinal.Equals(member, baseMember)) {
 						if (specializedMember != null)
