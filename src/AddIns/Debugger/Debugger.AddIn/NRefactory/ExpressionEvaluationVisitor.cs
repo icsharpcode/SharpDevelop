@@ -59,8 +59,11 @@ namespace Debugger.AddIn
 		StackFrame context;
 		ICompilation debuggerTypeSystem;
 		Thread evalThread;
+		bool allowMethodInvoke;
+		bool allowSetValue;
 		
-		public ExpressionEvaluationVisitor(StackFrame context, Thread evalThread, ICompilation debuggerTypeSystem)
+		public ExpressionEvaluationVisitor(StackFrame context, Thread evalThread, ICompilation debuggerTypeSystem,
+		                                   bool allowMethodInvoke = false, bool allowSetValue = false)
 		{
 			if (evalThread == null)
 				throw new ArgumentNullException("evalThread");
@@ -71,6 +74,8 @@ namespace Debugger.AddIn
 			this.context = context;
 			this.debuggerTypeSystem = debuggerTypeSystem;
 			this.evalThread = evalThread;
+			this.allowMethodInvoke = allowMethodInvoke;
+			this.allowSetValue = allowSetValue;
 		}
 		
 		public Value Convert(ResolveResult result)
@@ -121,6 +126,8 @@ namespace Debugger.AddIn
 		{
 			switch (result.OperatorType) {
 				case ExpressionType.Assign:
+					if (!allowSetValue)
+						throw new InvalidOperationException("Setting values is not allowed in the current context!");
 					Debug.Assert(result.Operands.Count == 2);
 					return VisitAssignment((dynamic)result.Operands[0], (dynamic)result.Operands[1]);
 				case ExpressionType.Add:
@@ -300,7 +307,7 @@ namespace Debugger.AddIn
 		
 		Value Visit(ArrayAccessResolveResult result)
 		{
-			var val = Convert(result.Array);
+			var val = Convert(result.Array).GetPermanentReference(evalThread);
 			return val.GetArrayElement(result.Indexes.Select(rr => (int)Convert(rr).PrimitiveValue).ToArray());
 		}
 		
@@ -321,10 +328,9 @@ namespace Debugger.AddIn
 				return Eval.CreateValue(evalThread, convVal);
 			} else if (result.Conversion.IsUserDefined)
 				return InvokeMethod(null, result.Conversion.Method, val);
-			else if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit) {
+			else if (result.Conversion.IsReferenceConversion && result.Conversion.IsImplicit)
 				return val;
-			} else
-				throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
 		
 		Value Visit(LocalResolveResult result)
@@ -351,13 +357,15 @@ namespace Debugger.AddIn
 					throw new GetValueException("Indexer does not have a getter.");
 				usedMethod = prop.Getter;
 			} else if (importedMember is IMethod) {
+				if (!allowMethodInvoke)
+					throw new InvalidOperationException("Method invocation not allowed in the current context!");
 				usedMethod = (IMethod)importedMember;
 			} else
 				throw new GetValueException("Invoked member must be a method or property");
 			Value target = null;
 			if (!usedMethod.IsStatic)
-				target = Convert(result.TargetResult);
-			return InvokeMethod(target, usedMethod, result.Arguments.Select(rr => Convert(rr)).ToArray());
+				target = Convert(result.TargetResult).GetPermanentReference(evalThread);
+			return InvokeMethod(target, usedMethod, result.Arguments.Select(rr => Convert(rr).GetPermanentReference(evalThread)).ToArray());
 		}
 		
 		Value Visit(NamespaceResolveResult result)
@@ -415,5 +423,126 @@ namespace Debugger.AddIn
 			}
 		}
 		
+	}
+	
+	public class ResolveResultPrettyPrinter
+	{
+		public ResolveResultPrettyPrinter()
+		{
+			
+		}
+		
+		public string Print(ResolveResult result)
+		{
+			if (result == null)
+				return "";
+			if (result.IsError)
+				return "{Error}";
+			return Visit((dynamic)result);
+		}
+		
+		string Visit(ResolveResult result)
+		{
+			return "Not supported: " + result.GetType().Name;
+		}
+		
+//		string Visit(ValueResolveResult result)
+//		{
+//			throw new NotImplementedException();
+//		}
+		
+		string Visit(ThisResolveResult result)
+		{
+			return "this";
+		}
+		
+		string Visit(MemberResolveResult result)
+		{
+			return Print(result.TargetResult) + "." + result.Member.Name;
+		}
+		
+		string Visit(OperatorResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(TypeIsResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(TypeOfResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(TypeResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(UnknownMemberResolveResult result)
+		{
+			return result.MemberName;
+		}
+		
+		string Visit(UnknownIdentifierResolveResult result)
+		{
+			return result.Identifier;
+		}
+		
+		string Visit(ArrayAccessResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(ArrayCreateResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(ConversionResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(LocalResolveResult result)
+		{
+			if (result.IsParameter)
+				return result.Variable.Name;
+			return result.Variable.Name;
+		}
+		
+		string Visit(AmbiguousMemberResolveResult result)
+		{
+			throw new NotImplementedException();
+		}
+		
+		string Visit(InvocationResolveResult result)
+		{
+			StringBuilder sb = new StringBuilder();
+			
+			sb.Append(Print(result.TargetResult));
+			sb.Append('.');
+			sb.Append(result.Member.Name);
+			
+			sb.Append(result.Member is IProperty ? "[" : "(");
+			
+			bool first = true;
+			foreach (var p in result.Member.Parameters) {
+				if (first) first = false;
+				else sb.Append(", ");
+				sb.Append(p.Name);
+			}
+			
+			sb.Append(result.Member is IProperty ? "]" : ")");
+			
+			return sb.ToString();
+		}
+		
+		string Visit(NamespaceResolveResult result)
+		{
+			return "namespace " + result.NamespaceName;
+		}
 	}
 }

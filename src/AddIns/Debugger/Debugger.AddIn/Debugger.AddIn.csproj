@@ -144,6 +144,8 @@
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs" />
+    <Compile Include="Tooltips\VisualizerPicker.cs" />
     <Compile Include="TreeModel\SharpTreeNodeAdapter.cs" />
     <Compile Include="TreeModel\TreeNode.cs" />
     <EmbeddedResource Include="Service\DebuggeeExceptionForm.resx">
@@ -221,9 +223,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Tooltips" />
     <Page Include="Options\DebuggingOptionsPanel.xaml" />
     <Page Include="Pads\Common\CommonResources.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
+    <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
+    <Page Include="Tooltips\VisualizerPicker.xaml" />
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
       <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
       <Name>ICSharpCode.Core.WinForms</Name>

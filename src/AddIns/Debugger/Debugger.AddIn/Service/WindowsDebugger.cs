@@ -13,6 +13,7 @@ using System.Text;
 using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn;
+using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
 using Debugger.MetaData;
@@ -20,6 +21,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
@@ -613,11 +615,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			WorkbenchSingleton.MainWindow.Activate();
 			
 			// if (debuggedProcess.IsSelectedFrameForced()) {
-				if (CurrentThread != null && CurrentStackFrame.HasSymbols) {
-					JumpToSourceCode();
-				} else {
-			#warning		JumpToDecompiledCode(CurrentStackFrame);
-				}
+			if (CurrentThread != null && CurrentStackFrame.HasSymbols) {
+				JumpToSourceCode();
+			} else {
+				#warning		JumpToDecompiledCode(CurrentStackFrame);
+			}
 //			} else {
 //				var frame = debuggedProcess.SelectedThread.MostRecentStackFrame;
 //				// other pause reasons
@@ -686,7 +688,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 			}
 		}
-		*/
+		 */
 		
 		StopAttachedProcessDialogResult ShowStopAttachedProcessDialog()
 		{
@@ -708,7 +710,23 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
-//			throw new NotImplementedException();
+			if (e.ResolveResult == null)
+				return;
+			if (e.ResolveResult is LocalResolveResult || e.ResolveResult is MemberResolveResult || e.ResolveResult is InvocationResolveResult) {
+				Value result;
+				string text;
+				try {
+					ExpressionEvaluationVisitor eval = new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation);
+					result = eval.Convert(e.ResolveResult);
+					text = new ResolveResultPrettyPrinter().Print(e.ResolveResult);
+				} catch (GetValueException ex) {
+					text = ex.Message;
+					result = null;
+				} catch (InvalidOperationException) {
+					return;
+				}
+				e.SetToolTip(new DebuggerTooltipControl(ValueNode.GetTooltipFor(text, result)));
+			}
 		}
 	}
 }

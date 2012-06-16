@@ -26,23 +26,23 @@ namespace Debugger.AddIn.Tooltips
 			if (this.SelectedItem == null) {
 				return;
 			}
-			var clickedCommand = this.SelectedItem as IVisualizerCommand;
-			if (clickedCommand == null) {
-				throw new InvalidOperationException(
-					string.Format("{0} clicked, only instances of {1} must be present in {2}.",
-								  this.SelectedItem.GetType().ToString(), typeof(IVisualizerCommand).Name, typeof(VisualizerPicker).Name));
-			}
+//			var clickedCommand = this.SelectedItem as IVisualizerCommand;
+//			if (clickedCommand == null) {
+//				throw new InvalidOperationException(
+//					string.Format("{0} clicked, only instances of {1} must be present in {2}.",
+//								  this.SelectedItem.GetType().ToString(), typeof(IVisualizerCommand).Name, typeof(VisualizerPicker).Name));
+//			}
 
-			clickedCommand.Execute();
+//			clickedCommand.Execute();
 			// Make no item selected, so that multiple selections of the same item always execute the command.
 			// This triggers VisualizerPicker_SelectionChanged again, which returns immediately.
 			this.SelectedIndex = -1;
 		}
 
-		public new IEnumerable<IVisualizerCommand> ItemsSource
-		{
-			get { return (IEnumerable<IVisualizerCommand>)base.ItemsSource; }
-			set { base.ItemsSource = value; }
-		}
+//		public new IEnumerable<IVisualizerCommand> ItemsSource
+//		{
+//			get { return (IEnumerable<IVisualizerCommand>)base.ItemsSource; }
+//			set { base.ItemsSource = value; }
+//		}
 	}
 }

@@ -14,6 +14,7 @@ using System.Text;
 using System.Windows.Forms;
 using Debugger.MetaData;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
@@ -169,20 +170,20 @@ namespace Debugger.AddIn.TreeModel
 				this.Type = val.Type.Name;
 				
 				if (!val.IsNull) {
-#warning					this.VisualizerCommands = VisualizerDescriptors.GetAllDescriptors()
+					#warning					this.VisualizerCommands = VisualizerDescriptors.GetAllDescriptors()
 //						.Where(descriptor => descriptor.IsVisualizerAvailable(val.Type))
 //						.Select(descriptor => descriptor.CreateVisualizerCommand(this.Name, this.GetValue))
 //						.ToList();
 				}
 				
 				LoggingService.InfoFormatted("Evaluated node '{0}' in {1} ms", this.Name, watch.ElapsedMilliseconds);
-			
+				
 			} catch (GetValueException e) {
 				error = e;
 				this.Value = e.Message;
 				this.Type  = string.Empty;
 				this.GetChildren = null;
-#warning				this.VisualizerCommands = null;
+				#warning				this.VisualizerCommands = null;
 				return;
 			}
 		}
@@ -276,6 +277,11 @@ namespace Debugger.AddIn.TreeModel
 			return WindowsDebugger.CurrentStackFrame;
 		}
 		
+		public static TreeNode GetTooltipFor(string text, Value value)
+		{
+			return new ValueNode("Icons.16x16.Local", text, () => value);
+		}
+		
 		public static IEnumerable<TreeNode> GetLocalVariables()
 		{
 			var stackFrame = GetCurrentStackFrame();
@@ -306,7 +312,7 @@ namespace Debugger.AddIn.TreeModel
 						});
 					}
 				}
-				*/
+				 */
 			}
 		}
 		

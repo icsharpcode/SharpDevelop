@@ -36,6 +36,11 @@ namespace Debugger.AddIn.Tooltips
 			this.Placement = PlacementMode.Absolute;
 		}
 		
+		public DebuggerTooltipControl(params TreeNode[] treeNodes)
+			: this((IEnumerable<TreeNode>)treeNodes)
+		{
+		}
+		
 		private void Expand_Click(object sender, RoutedEventArgs e)
 		{
 			var clickedButton = (ToggleButton)e.OriginalSource;
