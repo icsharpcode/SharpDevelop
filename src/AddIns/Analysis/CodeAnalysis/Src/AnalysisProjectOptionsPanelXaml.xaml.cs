@@ -8,6 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -16,6 +20,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using Gui.Dialogs.OptionPanels.ProjectOptions;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -31,23 +36,27 @@ namespace ICSharpCode.CodeAnalysis
 	/// <summary>
 	/// Interaction logic for AnalysisProjectOptionsPanelXaml.xaml
 	/// </summary>
+	
+	
 	public partial class AnalysisProjectOptionsPanelXaml : ProjectOptionPanel
 	{
 		private bool initSuccess;
 		private bool userCheck;
 		private Dictionary<string, RuleTreeNode> rules = new Dictionary<string, RuleTreeNode>();
+		
 		private List<KeyItemPair> bla = new List<KeyItemPair>();
 		
 		public AnalysisProjectOptionsPanelXaml()
 		{
 			InitializeComponent();
 			DataContext = this;
+			
 			bla.Add(new KeyItemPair("Warning","Warning"));
 			bla.Add(new KeyItemPair("Error","Error"));
 			bla.Add(new KeyItemPair("None","None"));
 		}
 		
-			
+		
 		public ProjectProperty<bool> RunCodeAnalysis {
 			get { return GetProperty("RunCodeAnalysis", false); }
 		}
@@ -77,7 +86,7 @@ namespace ICSharpCode.CodeAnalysis
 					ruleAssemblies = value;
 					
 					if (initSuccess) {
-////						OnOptionChanged(EventArgs.Empty);
+						////						OnOptionChanged(EventArgs.Empty);
 						ReloadRuleList();
 					}
 				}
@@ -185,7 +194,6 @@ namespace ICSharpCode.CodeAnalysis
 		#endregion
 		
 		
-		
 		#region RuleList
 		
 		void ReloadRuleList()
@@ -242,19 +250,54 @@ namespace ICSharpCode.CodeAnalysis
 			return list.ToArray();
 		}
 		
-		
+	
 		#endregion
+	
 		
-		#region TreeView
+		#region TreeNodes
 		
 		class BaseTree:SharpTreeNode
 		{
-			public BaseTree(IEnumerable<KeyItemPair> bla)
+			private Icon ruleIcon;
+			private int index;
+			
+			public BaseTree(IEnumerable<KeyItemPair> ruleState)
 			{
-				this.BLA = bla;
+				this.RuleState = ruleState;
+				RuleIcon = SystemIcons.Warning;
 			}
 			
-			public IEnumerable<KeyItemPair> BLA {get;set;}
+			public IEnumerable<KeyItemPair> RuleState {get;set;}
+			
+			
+			public Icon RuleIcon {
+				get { return ruleIcon; }
+				set { ruleIcon = value;
+					base.RaisePropertyChanged("RuleIcon");
+				}
+			}
+			
+			
+			public int Index {
+				get { return index; }
+				set { index = value;
+					switch (index) {
+						case 0:
+								RuleIcon = SystemIcons.Warning;
+							break;
+						case  1:
+								RuleIcon = SystemIcons.Error;
+							break;
+						case 2:
+								RuleIcon = null;
+							break;
+						default:
+							
+							break;
+					}
+					base.RaisePropertyChanged("Index");
+				}
+			}
 		}
 		
 		
@@ -268,6 +311,7 @@ namespace ICSharpCode.CodeAnalysis
 				foreach (FxCopRule rule in category.Rules) {
 					this.Children.Add(new RuleTreeNode(rule,bla));
 				}
+			
 			}
 			
 			
@@ -294,7 +338,7 @@ namespace ICSharpCode.CodeAnalysis
 						return 1;
 					else if (allWarn)
 						return 0;
-					else
+					else 
 						return -1;
 				}
 			}
@@ -306,7 +350,7 @@ namespace ICSharpCode.CodeAnalysis
 			internal FxCopRule rule;
 			internal bool isError;
 			
-			public RuleTreeNode(FxCopRule rule,IEnumerable<KeyItemPair> bla):base(bla)
+			public RuleTreeNode(FxCopRule rule,IEnumerable<KeyItemPair> ruleState):base(ruleState)
 			{
 				this.rule = rule;
 			}
@@ -341,4 +385,33 @@ namespace ICSharpCode.CodeAnalysis
 		}
 		#endregion
 	}
+	
+	[ValueConversion(typeof(System.Drawing.Icon), typeof(System.Windows.Media.ImageSource))]
+	public class ImageConverter : IValueConverter
+	{  
+		public object Convert(object value, Type targetType,
+		                      object parameter, CultureInfo culture)  
+		{ 
+			// empty images are empty... 
+			if (value == null) { return null; }  
+			var image = (System.Drawing.Icon)value; 
+			// Winforms Image we want to get the WPF Image from... 
+			var bitmap = new System.Windows.Media.Imaging.BitmapImage(); 
+			bitmap.BeginInit();  
+			MemoryStream memoryStream = new MemoryStream();   
+			// Save to a memory stream... 
+			image.Save(memoryStream);  
+			// Rewind the stream...  
+			memoryStream.Seek(0, System.IO.SeekOrigin.Begin);  
+			bitmap.StreamSource = memoryStream; 
+			bitmap.EndInit();  
+			return bitmap; 
+		} 
+		public object ConvertBack(object value, Type targetType,
+		                          object parameter, CultureInfo culture) 
+		{  
+			return null;  
+		}  
+	}
+
 }

@@ -6,7 +6,11 @@
 	xmlns:project="clr-namespace:ICSharpCode.SharpDevelop.Project;assembly=ICSharpCode.SharpDevelop"
 	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
+	xmlns:local="clr-namespace:ICSharpCode.CodeAnalysis"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
+<optionpanels:ProjectOptionPanel.Resources>
+	<local:ImageConverter x:Key="imageConverter"></local:ImageConverter>
+	</optionpanels:ProjectOptionPanel.Resources>
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid >
 			<Grid.RowDefinitions>
@@ -31,10 +35,11 @@
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			        Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.AddRemoveRuleAssembly}"></Button>
 		
-			<tv:SharpTreeView x:Name="ruleTreeView" ShowRoot="False" ShowLines="False"
-				Grid.Row="2" Grid.ColumnSpan="3" >
+			<tv:SharpTreeView x:Name="ruleTreeView" ShowRoot="False" ShowLines="False" IsSynchronizedWithCurrentItem="True"
+				Grid.Row="2" Grid.ColumnSpan="3" SelectedItem="{Binding SelectedNode}">
+		
 				<ListView.View>
-					<tv:SharpGridView>
+					<tv:SharpGridView >
 						<tv:SharpGridView.Columns>
 							<GridViewColumn Width="500" Header="ID">
 								<GridViewColumn.CellTemplate>
@@ -43,16 +48,28 @@
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
-							<GridViewColumn Header="Action" Width="100">
+							
+							<GridViewColumn  Width="25">
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
-										<ComboBox Width="70" Background="Transparent"
-										          ItemsSource="{Binding Path=BLA}"
-										          DisplayMemberPath="DisplayValue"
-										></ComboBox>
+										<Image Source="{Binding Path=RuleIcon, Converter={StaticResource imageConverter}}"></Image>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
+							
+							
+							<GridViewColumn Header="Action" Width="100">
+								<GridViewColumn.CellTemplate>
+									<DataTemplate>	
+										<ComboBox Width="70" Background="Transparent"
+										      ItemsSource="{Binding Path=RuleState}"
+										          SelectedIndex="{Binding Index}"
+										          DisplayMemberPath="DisplayValue">
+										</ComboBox>
+									</DataTemplate>
+								</GridViewColumn.CellTemplate>
+							</GridViewColumn>
+						
 						</tv:SharpGridView.Columns>
 					</tv:SharpGridView>
 				</ListView.View>
