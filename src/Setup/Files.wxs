@@ -1825,6 +1825,9 @@
 									<Component Id="PackageManagementPowerShellDll" Guid="78A57EFC-EB7D-4982-A6DA-42F061BCA2D2" DiskId="1">
 										<File Id="PackageManagement.PowerShell.dll" Name="PackageManagement.PowerShell.dll" Source="..\..\AddIns\Misc\PackageManagement\PackageManagement.PowerShell.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="PackageManagement.PowerShell.dll" AssemblyManifest="PackageManagement.PowerShell.dll" />
 									</Component>
+									<Component Id="NuGetConsoleTypesDll" Guid="7386637C-A6C6-4AD4-8EA3-C5E87AA3F552" DiskId="1">
+										<File Id="NuGet.Console.Types.dll" Name="NuGet.Console.Types.dll" Source="..\..\AddIns\Misc\PackageManagement\NuGet.Console.Types.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="NuGet.Console.Types.dll" AssemblyManifest="NuGet.Console.Types.dll" />
+									</Component>
 								</Directory>
 								<Directory Id="TextTemplating" Name="TextTemplating">
 									<Component Id="MonoTextTemplatingDll" Guid="07BFBED7-FC7B-4CF3-BD00-DCA8E8E7C17B" DiskId="1">
