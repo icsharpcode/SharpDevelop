@@ -37,6 +37,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
+    <Reference Include="NuGet.Console.Types">
+      <HintPath>..\RequiredLibraries\NuGet.Console.Types.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet.Core">
       <HintPath>..\RequiredLibraries\NuGet.Core.dll</HintPath>
     </Reference>
@@ -319,6 +322,7 @@
       <DependentUpon>RegisteredProjectTemplatePackageSourcesView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Scripting\ConsoleInitializer.cs" />
     <Compile Include="Src\Scripting\IPackageManagementConsoleHost.cs" />
     <Compile Include="Src\Scripting\IPackageScriptRunner.cs" />
     <Compile Include="Src\Scripting\IPowerShellDetection.cs" />
@@ -423,12 +427,15 @@
     <Compile Include="Src\UpdatePackageInAllProjects.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\PackageManagementViewModels.cs" />
+    <Compile Include="Src\VisualStudio\ComponentModel.cs" />
     <Compile Include="Src\VisualStudio\FlavoredProject.cs" />
+    <Compile Include="Src\VisualStudio\IComponentModel.cs" />
     <Compile Include="Src\VisualStudio\IVsAggregatableProject.cs" />
     <Compile Include="Src\VisualStudio\IVsHierarchy.cs" />
     <Compile Include="Src\VisualStudio\IVsSolution.cs" />
     <Compile Include="Src\VisualStudio\NotInstalledException.cs" />
     <Compile Include="Src\VisualStudio\Package.cs" />
+    <Compile Include="Src\VisualStudio\SComponentModel.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManager.cs" />
     <Compile Include="Src\VisualStudio\ThreadHelper.cs" />
     <Compile Include="Src\VisualStudio\VsConstants.cs" />

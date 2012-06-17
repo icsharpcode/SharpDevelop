@@ -38,6 +38,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NuGet.Console.Types">
+      <HintPath>..\RequiredLibraries\NuGet.Console.Types.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet.Core">
       <HintPath>..\RequiredLibraries\NuGet.Core.dll</HintPath>
     </Reference>
@@ -255,6 +258,7 @@
     <Compile Include="Src\PackageManagementSolutionTests.cs" />
     <Compile Include="Src\PackageRepositoryCacheTests.cs" />
     <Compile Include="Src\RegisteredProjectTemplatePackageSourcesTests.cs" />
+    <Compile Include="Src\Scripting\ConsoleInitializerTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsConsoleTests.cs" />
     <Compile Include="Src\Scripting\PackageInitializationScriptsTests.cs" />
     <Compile Include="Src\Scripting\PackageManagementConsoleHostProviderTests.cs" />
@@ -300,6 +304,7 @@
     <Compile Include="Src\UpdatePackageActionTests.cs" />
     <Compile Include="Src\UpdatePackageInAllProjectsTests.cs" />
     <Compile Include="Src\ViewModelBaseTests.cs" />
+    <Compile Include="Src\VisualStudio\ComponentModelTests.cs" />
     <Compile Include="Src\VisualStudio\FlavoredProjectTests.cs" />
     <Compile Include="Src\VisualStudio\PackageTests.cs" />
     <Compile Include="Src\VisualStudio\SVsExtensionManagerTests.cs" />

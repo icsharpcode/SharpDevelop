@@ -255,5 +255,10 @@ namespace ICSharpCode.PackageManagement.Scripting
 		{
 			return registeredRepositories.CreateRepository(packageSource);
 		}
+		
+		public void SetDefaultRunspace()
+		{
+			powerShellHost.SetDefaultRunspace();
+		}
 	}
 }

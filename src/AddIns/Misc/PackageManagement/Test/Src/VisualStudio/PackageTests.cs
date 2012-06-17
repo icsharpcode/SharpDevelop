@@ -2,10 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.PackageManagement.EnvDTE;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NuGetConsole;
 using NUnit.Framework;
 
 namespace PackageManagement.Tests.VisualStudio
@@ -13,6 +16,14 @@ namespace PackageManagement.Tests.VisualStudio
 	[TestFixture]
 	public class PackageTests
 	{
+		[TestFixtureSetUp]
+		public void InitFixture()
+		{
+			if (!PropertyService.Initialized) {
+				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
+			}
+		}
+		
 		[Test]
 		public void GetGlobalService_GetExtensionManagerService_ReturnsExtensionManager()
 		{
@@ -43,6 +54,22 @@ namespace PackageManagement.Tests.VisualStudio
 			object solution = Package.GetGlobalService(typeof(IVsSolution)) as IVsSolution;
 			
 			Assert.IsInstanceOf(typeof(IVsSolution), solution);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetSComponentModel_ReturnsSComponentModel()
+		{
+			object model = Package.GetGlobalService(typeof(SComponentModel)) as SComponentModel;
+			
+			Assert.IsInstanceOf(typeof(SComponentModel), model);
+		}
+		
+		[Test]
+		public void GetGlobalService_GetSComponentModel_ReturnsIComponentModel()
+		{
+			object model = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+			
+			Assert.IsInstanceOf(typeof(IComponentModel), model);
 		}
 	}
 }
