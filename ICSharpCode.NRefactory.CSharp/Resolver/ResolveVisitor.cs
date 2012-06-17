@@ -59,7 +59,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
 		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
-		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
 		/// <summary>Resolve result of the current LINQ query.</summary>
@@ -112,12 +111,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.resolver = resolver;
 			this.parsedFile = parsedFile;
 			this.navigator = skipAllNavigator;
-			this.voidResult = new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
 		}
 		
 		internal void SetNavigator(IResolveVisitorNavigator navigator)
 		{
 			this.navigator = navigator ?? skipAllNavigator;
+		}
+		
+		ResolveResult voidResult {
+			get {
+				return new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
+			}
 		}
 		#endregion
 		
@@ -1594,7 +1598,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression)
 		{
 			if (resolverEnabled) {
-				return Resolve(typeReferenceExpression.Type);
+				return Resolve(typeReferenceExpression.Type).ShallowClone();
 			} else {
 				Scan(typeReferenceExpression.Type);
 				return null;
@@ -2420,6 +2424,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal abstract AstNode BodyExpression { get; }
 			
 			internal abstract void EnforceMerge(ResolveVisitor parentVisitor);
+			
+			public override ResolveResult ShallowClone()
+			{
+				if (IsUndecided)
+					throw new NotSupportedException();
+				return base.ShallowClone();
+			}
 		}
 		
 		void MergeUndecidedLambdas()
@@ -3261,7 +3272,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var clause in queryExpression.Clauses) {
 					currentQueryResult = Resolve(clause);
 				}
-				return currentQueryResult;
+				return WrapResult(currentQueryResult);
 			} finally {
 				currentQueryResult = oldQueryResult;
 				cancellationToken = oldCancellationToken;

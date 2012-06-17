@@ -75,6 +75,16 @@ namespace ICSharpCode.NRefactory.Semantics
 			this.constantValue = constantValue;
 		}
 		
+		public MemberResolveResult(ResolveResult targetResult, IMember member, IType returnType, bool isConstant, object constantValue, bool isVirtualCall)
+			: base(returnType)
+		{
+			this.targetResult = targetResult;
+			this.member = member;
+			this.isConstant = isConstant;
+			this.constantValue = constantValue;
+			this.isVirtualCall = isVirtualCall;
+		}
+		
 		public ResolveResult TargetResult {
 			get { return targetResult; }
 		}

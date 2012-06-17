@@ -63,7 +63,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			IType type = typeReference.Resolve(context);
 			IEnumerable<IMember> members;
 			if (entityType == EntityType.Accessor) {
-				members = type.GetAccessors(m => m.Name == name && !m.IsExplicitInterfaceImplementation);
+				members = type.GetAccessors(
+					m => m.Name == name && !m.IsExplicitInterfaceImplementation,
+					GetMemberOptions.IgnoreInheritedMembers);
 			} else if (entityType == EntityType.Method) {
 				members = type.GetMethods(
 					m => m.Name == name && m.EntityType == EntityType.Method
