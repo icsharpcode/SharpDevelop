@@ -221,6 +221,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				CheckName(propertyDeclaration, AffectedEntity.Property, propertyDeclaration.NameToken, GetAccessibiltiy(propertyDeclaration, Modifiers.Private));
 			}
 
+			public override void VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration)
+			{
+				if (indexerDeclaration.Modifiers.HasFlag(Modifiers.Override)) {
+					var rr = ctx.Resolve (indexerDeclaration) as MemberResolveResult;
+					if (rr == null)
+						return;
+					var baseType = rr.Member.DeclaringType.DirectBaseTypes.FirstOrDefault (t => t.Kind != TypeKind.Interface);
+					var method = baseType != null ? baseType.GetProperties (m => m.IsIndexer && m.IsOverridable && m.Parameters.Count == indexerDeclaration.Parameters.Count).FirstOrDefault () : null;
+					if (method == null)
+						return;
+					int i = 0;
+					foreach (var par in indexerDeclaration.Parameters) {
+						if (method.Parameters[i++].Name != par.Name) {
+							par.AcceptVisitor (this);
+						}
+					}
+					return;
+				}
+				base.VisitIndexerDeclaration(indexerDeclaration);
+			}
+
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
 				if (methodDeclaration.Modifiers.HasFlag(Modifiers.Override)) {
