@@ -182,5 +182,32 @@ class Foo
 ");
 		}
 
+		[Test()]
+		public void TestThisMemberReferenceCreation ()
+		{
+			string result = RunContextAction (
+				new CreateFieldAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		this.$foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	int foo;" + Environment.NewLine +
+				"	void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		this.foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
+		}
+
 	}
 }

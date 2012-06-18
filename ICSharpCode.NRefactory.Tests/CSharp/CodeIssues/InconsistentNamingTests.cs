@@ -237,6 +237,31 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var output = @"struct Str<TK> { TK k;}";
 			CheckNaming (input, output);
 		}
+
+
+		[Test]
+		public void TestOverrideMembers ()
+		{
+			var input = @"
+class Base { public virtual int method (int Param) {} }
+class MyClass : Base { public override int method (int Param) {} }";
+			TestRefactoringContext context;
+			var issues = GetIssues (new InconsistentNamingIssue (), input, out context);
+			Assert.AreEqual (2, issues.Count);
+		}
+
+		[Test]
+		public void TestOverrideMembersParameterNameCaseMismatch ()
+		{
+			var input = @"
+class Base { public virtual int Method (int param) {} }
+class MyClass : Base { public override int Method (int Param) {} }";
+			TestRefactoringContext context;
+			var issues = GetIssues (new InconsistentNamingIssue (), input, out context);
+			foreach (var issue in issues)
+				Console.WriteLine(issue.Description);
+			Assert.AreEqual (1, issues.Count);
+		}
 	}
 
 	[TestFixture]

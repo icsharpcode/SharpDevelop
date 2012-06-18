@@ -241,7 +241,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
-		public void Specialized_GetIndex_ToTypeReference()
+		public void Specialized_GetIndex_ToMemberReference()
 		{
 			var method = compilation.FindType(typeof(GenericClass<string, object>)).GetMethods(m => m.Name == "GetIndex").Single();
 			Assert.AreSame(method.TypeParameters[0], method.Parameters[0].Type);
@@ -347,6 +347,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanGet);
+			Assert.AreEqual(EntityType.Accessor, p.Getter.EntityType);
 			Assert.AreEqual("get_Item", p.Getter.Name);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
 			Assert.AreEqual(new[] { "index" }, p.Getter.Parameters.Select(x => x.Name).ToArray());
@@ -360,6 +361,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var testClass = GetTypeDefinition(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanSet);
+			Assert.AreEqual(EntityType.Accessor, p.Setter.EntityType);
 			Assert.AreEqual("set_Item", p.Setter.Name);
 			Assert.AreEqual(Accessibility.Public, p.Setter.Accessibility);
 			Assert.AreEqual(new[] { "index", "value" }, p.Setter.Parameters.Select(x => x.Name).ToArray());
@@ -678,6 +680,63 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]", field2.Type.ReflectionName);
 			Assert.AreEqual("ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[ICSharpCode.NRefactory.TypeSystem.TestCase.OuterGeneric`1+Inner[[`0]]]]", field3.Type.ReflectionName);
 		}
+
+		[Test]
+		public void FlagsOnInterfaceMembersAreCorrect() {
+			ITypeDefinition type = GetTypeDefinition(typeof(IInterfaceWithProperty));
+			var p = type.Properties.Single();
+			Assert.AreEqual(false, p.IsIndexer);
+			Assert.AreEqual(true, p.IsAbstract);
+			Assert.AreEqual(true, p.IsOverridable);
+			Assert.AreEqual(false, p.IsOverride);
+			Assert.AreEqual(true, p.IsPublic);
+			Assert.AreEqual(true, p.Getter.IsAbstract);
+			Assert.AreEqual(true, p.Getter.IsOverridable);
+			Assert.AreEqual(false, p.Getter.IsOverride);
+			Assert.AreEqual(true, p.Getter.IsPublic);
+			Assert.AreEqual(true, p.Setter.IsAbstract);
+			Assert.AreEqual(true, p.Setter.IsOverridable);
+			Assert.AreEqual(false, p.Setter.IsOverride);
+			Assert.AreEqual(true, p.Setter.IsPublic);
+
+			type = GetTypeDefinition(typeof(IInterfaceWithIndexers));
+			p = type.Properties.Single(x => x.Parameters.Count == 2);
+			Assert.AreEqual(true, p.IsIndexer);
+			Assert.AreEqual(true, p.IsAbstract);
+			Assert.AreEqual(true, p.IsOverridable);
+			Assert.AreEqual(false, p.IsOverride);
+			Assert.AreEqual(true, p.IsPublic);
+			Assert.AreEqual(true, p.Getter.IsAbstract);
+			Assert.AreEqual(true, p.Getter.IsOverridable);
+			Assert.AreEqual(false, p.Getter.IsOverride);
+			Assert.AreEqual(true, p.Getter.IsPublic);
+			Assert.AreEqual(true, p.Setter.IsAbstract);
+			Assert.AreEqual(true, p.Setter.IsOverridable);
+			Assert.AreEqual(false, p.Setter.IsOverride);
+			Assert.AreEqual(true, p.Setter.IsPublic);
+
+			type = GetTypeDefinition(typeof(IHasEvent));
+			var e = type.Events.Single();
+			Assert.AreEqual(true, e.IsAbstract);
+			Assert.AreEqual(true, e.IsOverridable);
+			Assert.AreEqual(false, e.IsOverride);
+			Assert.AreEqual(true, e.IsPublic);
+			Assert.AreEqual(true, e.AddAccessor.IsAbstract);
+			Assert.AreEqual(true, e.AddAccessor.IsOverridable);
+			Assert.AreEqual(false, e.AddAccessor.IsOverride);
+			Assert.AreEqual(true, e.AddAccessor.IsPublic);
+			Assert.AreEqual(true, e.RemoveAccessor.IsAbstract);
+			Assert.AreEqual(true, e.RemoveAccessor.IsOverridable);
+			Assert.AreEqual(false, e.RemoveAccessor.IsOverride);
+			Assert.AreEqual(true, e.RemoveAccessor.IsPublic);
+
+			type = GetTypeDefinition(typeof(IDisposable));
+			var m = type.Methods.Single();
+			Assert.AreEqual(true, m.IsAbstract);
+			Assert.AreEqual(true, m.IsOverridable);
+			Assert.AreEqual(false, m.IsOverride);
+			Assert.AreEqual(true, m.IsPublic);
+		}
 		
 		[Test]
 		public void InnerClassInGenericClass_TypeParameterOwner()
@@ -866,6 +925,174 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(prop.Getter.IsOverridable, Is.True);
 			Assert.That(prop.Setter.IsOverride, Is.False);
 			Assert.That(prop.Setter.IsOverridable, Is.True);
+		}
+
+		[Test]
+		public void PropertyAccessorsShouldBeReportedAsImplementingInterfaceAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			Assert.That(prop.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.Prop" }));
+			Assert.That(prop.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.get_Prop" }));
+			Assert.That(prop.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.set_Prop" }));
+		}
+
+		[Test]
+		public void PropertyAccessorsShouldSupportToMemberReference()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsProperty));
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			var mr = prop.Getter.ToMemberReference();
+			Assert.AreEqual(prop.Getter, mr.Resolve(compilation.TypeResolveContext));
+		}
+		
+		[Test]
+		public void IndexerAccessorsShouldBeReportedAsImplementingTheCorrectInterfaceAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexers));
+			var ix1 = type.Properties.Single(p => p.Parameters.Count == 1 && p.Parameters[0].Type.GetDefinition().KnownTypeCode == KnownTypeCode.Int32);
+			var ix2 = type.Properties.Single(p => p.Parameters.Count == 1 && p.Parameters[0].Type.GetDefinition().KnownTypeCode == KnownTypeCode.String);
+			var ix3 = type.Properties.Single(p => p.Parameters.Count == 2);
+
+			Assert.That(ix1.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EquivalentTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.Item", "ICSharpCode.NRefactory.TypeSystem.TestCase.IGenericInterfaceWithIndexer`1.Item" }));
+			Assert.That(ix1.ImplementedInterfaceMembers.All(p => ((IProperty)p).Parameters.Select(x => x.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32 })));
+			Assert.That(ix1.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EquivalentTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.get_Item", "ICSharpCode.NRefactory.TypeSystem.TestCase.IGenericInterfaceWithIndexer`1.get_Item" }));
+			Assert.That(ix1.Getter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32 })));
+			Assert.That(ix1.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EquivalentTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item", "ICSharpCode.NRefactory.TypeSystem.TestCase.IGenericInterfaceWithIndexer`1.set_Item" }));
+			Assert.That(ix1.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+
+			Assert.That(ix2.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.Item" }));
+			Assert.That(ix2.ImplementedInterfaceMembers.All(p => ((IProperty)p).Parameters.Select(x => x.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.String })));
+			Assert.That(ix2.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.get_Item" }));
+			Assert.That(ix2.Getter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.String })));
+			Assert.That(ix2.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item" }));
+			Assert.That(ix2.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.String, KnownTypeCode.Int32 })));
+
+			Assert.That(ix3.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.Item" }));
+			Assert.That(ix3.ImplementedInterfaceMembers.All(p => ((IProperty)p).Parameters.Select(x => x.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+			Assert.That(ix3.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.get_Item" }));
+			Assert.That(ix3.Getter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+			Assert.That(ix3.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithIndexers.set_Item" }));
+			Assert.That(ix3.Setter.ImplementedInterfaceMembers.All(m => ((IMethod)m).Parameters.Select(p => p.Type.GetDefinition().KnownTypeCode).SequenceEqual(new[] { KnownTypeCode.Int32, KnownTypeCode.Int32, KnownTypeCode.Int32 })));
+		}
+
+		[Test]
+		public void ExplicitIndexerImplementationReturnsTheCorrectMembers() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexersExplicitly));
+
+			Assert.That(type.Properties.All(p => p.ImplementedInterfaceMembers.Count == 1));
+			Assert.That(type.Properties.All(p => p.Getter.ImplementedInterfaceMembers.Count == 1));
+			Assert.That(type.Properties.All(p => p.Setter.ImplementedInterfaceMembers.Count == 1));
+		}
+
+		[Test]
+		public void ExplicitlyImplementedPropertyAccessorsShouldSupportToMemberReference()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsPropertyExplicitly));
+			var prop = type.Properties.Single();
+			var mr = prop.Getter.ToMemberReference();
+			Assert.AreEqual(prop.Getter, mr.Resolve(compilation.TypeResolveContext));
+		}
+		
+		[Test]
+		public void ExplicitDisposableImplementation()
+		{
+			ITypeDefinition disposable = GetTypeDefinition(typeof(NRefactory.TypeSystem.TestCase.ExplicitDisposableImplementation));
+			IMethod method = disposable.Methods.Single(m => !m.IsConstructor);
+			Assert.IsTrue(method.IsExplicitInterfaceImplementation);
+			Assert.AreEqual("System.IDisposable.Dispose", method.ImplementedInterfaceMembers.Single().FullName);
+		}
+		
+		[Test]
+		public void ExplicitImplementationOfUnifiedMethods()
+		{
+			IType type = compilation.FindType(typeof(ExplicitGenericInterfaceImplementationWithUnifiableMethods<int, int>));
+			Assert.AreEqual(2, type.GetMethods(m => m.IsExplicitInterfaceImplementation).Count());
+			foreach (IMethod method in type.GetMethods(m => m.IsExplicitInterfaceImplementation)) {
+				Assert.AreEqual(1, method.ImplementedInterfaceMembers.Count, method.ToString());
+				Assert.AreEqual("System.Int32", method.Parameters.Single().Type.ReflectionName);
+				IMethod interfaceMethod = (IMethod)method.ImplementedInterfaceMembers.Single();
+				Assert.AreEqual("System.Int32", interfaceMethod.Parameters.Single().Type.ReflectionName);
+				var genericParamType = ((IMethod)method.MemberDefinition).Parameters.Single().Type;
+				var interfaceGenericParamType = ((IMethod)interfaceMethod.MemberDefinition).Parameters.Single().Type;
+				Assert.AreEqual(TypeKind.TypeParameter, genericParamType.Kind);
+				Assert.AreEqual(TypeKind.TypeParameter, interfaceGenericParamType.Kind);
+				Assert.AreEqual(genericParamType.ReflectionName, interfaceGenericParamType.ReflectionName);
+			}
+		}
+		
+		[Test]
+		public void ExplicitImplementationOfUnifiedMethods_ToMemberReference()
+		{
+			IType type = compilation.FindType(typeof(ExplicitGenericInterfaceImplementationWithUnifiableMethods<int, int>));
+			Assert.AreEqual(2, type.GetMethods(m => m.IsExplicitInterfaceImplementation).Count());
+			foreach (IMethod method in type.GetMethods(m => m.IsExplicitInterfaceImplementation)) {
+				IMethod resolvedMethod = (IMethod)method.ToMemberReference().Resolve(compilation.TypeResolveContext);
+				Assert.AreEqual(method, resolvedMethod);
+			}
+		}
+
+		[Test]
+		public void ExplicitGenericInterfaceImplementation()
+		{
+			ITypeDefinition impl = GetTypeDefinition(typeof(ExplicitGenericInterfaceImplementation));
+			IType genericInterfaceOfString = compilation.FindType(typeof(IGenericInterface<string>));
+			IMethod implMethod1 = impl.Methods.Single(m => !m.IsConstructor && !m.Parameters[1].IsRef);
+			IMethod implMethod2 = impl.Methods.Single(m => !m.IsConstructor && m.Parameters[1].IsRef);
+			Assert.IsTrue(implMethod1.IsExplicitInterfaceImplementation);
+			Assert.IsTrue(implMethod2.IsExplicitInterfaceImplementation);
+			
+			IMethod interfaceMethod1 = (IMethod)implMethod1.ImplementedInterfaceMembers.Single();
+			Assert.AreEqual(genericInterfaceOfString, interfaceMethod1.DeclaringType);
+			Assert.IsTrue(!interfaceMethod1.Parameters[1].IsRef);
+			
+			IMethod interfaceMethod2 = (IMethod)implMethod2.ImplementedInterfaceMembers.Single();
+			Assert.AreEqual(genericInterfaceOfString, interfaceMethod2.DeclaringType);
+			Assert.IsTrue(interfaceMethod2.Parameters[1].IsRef);
+		}
+
+		[Test]
+		public void ExplicitlyImplementedPropertiesShouldBeReportedAsBeingImplemented() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsPropertyExplicitly));
+			var prop = type.Properties.Single();
+			Assert.That(prop.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.Prop" }));
+			Assert.That(prop.Getter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.get_Prop" }));
+			Assert.That(prop.Setter.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IInterfaceWithProperty.set_Prop" }));
+		}
+		
+		[Test]
+		public void ExplicitlyImplementedPropertiesShouldHaveExplicitlyImplementedAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsPropertyExplicitly));
+			var prop = type.Properties.Single();
+			Assert.IsTrue(prop.IsExplicitInterfaceImplementation);
+			Assert.IsTrue(prop.Getter.IsExplicitInterfaceImplementation);
+			Assert.IsTrue(prop.Setter.IsExplicitInterfaceImplementation);
+		}
+
+		[Test]
+		public void EventAccessorsShouldBeReportedAsImplementingInterfaceAccessors() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEvent));
+			var evt = type.Events.Single(p => p.Name == "Event");
+			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
+		}
+
+		[Test]
+		public void EventAccessorsShouldBeReportedAsImplementingInterfaceAccessorsWhenCustomAccessorMethodsAreUsed() {
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEventWithCustomAccessors));
+			var evt = type.Events.Single(p => p.Name == "Event");
+			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
+		}
+
+		[Test]
+		public void ExplicitlyImplementedEventsShouldBeReportedAsBeingImplemented() 
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsEventExplicitly));
+			var evt = type.Events.Single();
+			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
 		}
 	}
 }

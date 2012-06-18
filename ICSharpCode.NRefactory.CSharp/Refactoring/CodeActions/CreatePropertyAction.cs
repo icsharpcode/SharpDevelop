@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				isStatic |= state.CurrentMember.IsStatic || state.CurrentTypeDefinition.IsStatic;
 			}
 
-//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
+	//			var service = (NamingConventionService)context.GetService(typeof(NamingConventionService));
 //			if (service != null && !service.IsValidName(propertyName, AffectedEntity.Property, Modifiers.Private, isStatic)) { 
 //				yield break;
 //			}
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			});
 		}
 
-		static string GetPropertyName(Expression expr)
+		internal static string GetPropertyName(Expression expr)
 		{
 			if (expr is IdentifierExpression) 
 				return ((IdentifierExpression)expr).Identifier;
