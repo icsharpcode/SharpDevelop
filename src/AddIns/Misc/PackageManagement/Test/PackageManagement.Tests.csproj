@@ -130,7 +130,7 @@
     <Compile Include="Src\EnvDTE\ProjectTests.cs" />
     <Compile Include="Src\EnvDTE\ProjectPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\ReferencesTests.cs" />
-    <Compile Include="Src\EnvDTE\ReferenceTests.cs" />
+    <Compile Include="Src\EnvDTE\Reference3Tests.cs" />
     <Compile Include="Src\EnvDTE\TextEditorFontsAndColorsItemsPropertyTests.cs" />
     <Compile Include="Src\EnvDTE\TextEditorFontsAndColorsPropertyFactoryTests.cs" />
     <Compile Include="Src\EnvDTE\TextEditorFontSizePropertyTests.cs" />

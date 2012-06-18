@@ -11,9 +11,9 @@ using PackageManagement.Tests.Helpers;
 namespace PackageManagement.Tests.EnvDTE
 {
 	[TestFixture]
-	public class ReferenceTests
+	public class Reference3Tests
 	{
-		Reference reference;
+		Reference3 reference;
 		TestableProject msbuildProject;
 		FakePackageManagementProjectService fakeProjectService;
 		TestableDTEProject project;
@@ -29,7 +29,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateReference(Project project, ReferenceProjectItem referenceProjectItem)
 		{
-			reference = new Reference(project, referenceProjectItem);
+			reference = new Reference3(project, referenceProjectItem);
 		}
 		
 		TestableProject CreateProjectReference()
@@ -95,6 +95,16 @@ namespace PackageManagement.Tests.EnvDTE
 			Project project = reference.SourceProject;
 			
 			Assert.AreEqual(@"d:\projects\referencedproject.csproj", project.FileName);
+		}
+		
+		[Test]
+		public void AutoReferenced_SystemXmlReferenceInProjectReferences_ReturnsFalse()
+		{
+			CreateReference("System.Xml");
+			
+			bool result = reference.AutoReferenced;
+			
+			Assert.IsFalse(result);
 		}
 	}
 }
