@@ -21,6 +21,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			get { return referenceProjectItem.Name; }
 		}
 		
+		public string Path {
+			get { return referenceProjectItem.FileName; }
+		}
+		
 		public void Remove()
 		{
 			project.RemoveReference(referenceProjectItem);

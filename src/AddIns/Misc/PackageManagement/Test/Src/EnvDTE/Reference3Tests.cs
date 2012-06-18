@@ -17,12 +17,13 @@ namespace PackageManagement.Tests.EnvDTE
 		TestableProject msbuildProject;
 		FakePackageManagementProjectService fakeProjectService;
 		TestableDTEProject project;
+		ReferenceProjectItem referenceProjectItem;
 		
 		void CreateReference(string name)
 		{
 			project = new TestableDTEProject();
 			msbuildProject = project.TestableProject;
-			ReferenceProjectItem referenceProjectItem = msbuildProject.AddReference(name);
+			referenceProjectItem = msbuildProject.AddReference(name);
 			fakeProjectService = project.FakeProjectService;
 			CreateReference(project, referenceProjectItem);
 		}
@@ -105,6 +106,17 @@ namespace PackageManagement.Tests.EnvDTE
 			bool result = reference.AutoReferenced;
 			
 			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void Path_SystemXmlReferenceInProjectReferences_ReturnsFullPathToSystemXml()
+		{
+			CreateReference("System.Xml");
+			referenceProjectItem.FileName = @"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll";
+			
+			string path = reference.Path;
+			
+			Assert.AreEqual(@"c:\Program Files\Microsoft\Reference Assemblies\v4\System.Xml.dll", path);
 		}
 	}
 }
