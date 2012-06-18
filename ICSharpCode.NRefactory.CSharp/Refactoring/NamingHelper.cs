@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			string firstSuggestion = null;
 			foreach (var name in NamingHelper.GenerateNameProposals(type)) {
 				firstSuggestion = firstSuggestion ?? name;
-				if (!UsedVariableNames.Contains(name) && LookupVariable(name) == null)
+				if (NameIsUnused(name))
 					return name;
 			}
 			// If we get here, all of the standard suggestions are already used.
@@ -128,8 +128,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			string proposedName;
 			do {
 				proposedName = firstSuggestion + counter++;
-			} while (UsedVariableNames.Contains(proposedName));
+			} while (!NameIsUnused(proposedName));
 			return proposedName;
+		}
+
+		bool NameIsUnused(string name)
+		{
+			return !UsedVariableNames.Contains(name) && LookupVariable(name) == null;
 		}
 
 		/// <summary>
