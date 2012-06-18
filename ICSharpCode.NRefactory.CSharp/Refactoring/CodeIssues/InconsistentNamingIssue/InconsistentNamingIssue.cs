@@ -215,12 +215,31 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
+				if (propertyDeclaration.Modifiers.HasFlag (Modifiers.Override))
+					return;
 				base.VisitPropertyDeclaration(propertyDeclaration);
 				CheckName(propertyDeclaration, AffectedEntity.Property, propertyDeclaration.NameToken, GetAccessibiltiy(propertyDeclaration, Modifiers.Private));
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
+				if (methodDeclaration.Modifiers.HasFlag(Modifiers.Override)) {
+					var rr = ctx.Resolve (methodDeclaration) as MemberResolveResult;
+					if (rr == null)
+						return;
+					var baseType = rr.Member.DeclaringType.DirectBaseTypes.FirstOrDefault (t => t.Kind != TypeKind.Interface);
+					var method = baseType != null ? baseType.GetMethods (m => m.Name == rr.Member.Name && m.IsOverridable && m.Parameters.Count == methodDeclaration.Parameters.Count).FirstOrDefault () : null;
+					if (method == null)
+						return;
+					int i = 0;
+					foreach (var par in methodDeclaration.Parameters) {
+						if (method.Parameters[i++].Name != par.Name) {
+							par.AcceptVisitor (this);
+						}
+					}
+
+					return;
+				}
 				base.VisitMethodDeclaration(methodDeclaration);
 
 				CheckName(methodDeclaration, methodDeclaration.Modifiers.HasFlag(Modifiers.Async) ? AffectedEntity.AsyncMethod : AffectedEntity.Method, methodDeclaration.NameToken, GetAccessibiltiy(methodDeclaration, Modifiers.Private));
@@ -262,6 +281,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
 			{
+				if (eventDeclaration.Modifiers.HasFlag (Modifiers.Override))
+					return;
 				base.VisitCustomEventDeclaration(eventDeclaration);
 				CheckName(eventDeclaration, AffectedEntity.Event, eventDeclaration.NameToken, GetAccessibiltiy(eventDeclaration, Modifiers.Private));
 			}
