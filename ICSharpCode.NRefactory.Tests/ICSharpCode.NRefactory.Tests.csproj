@@ -166,6 +166,7 @@
     <Compile Include="CSharp\Resolver\LinqTests.cs" />
     <Compile Include="CSharp\Resolver\LocalTypeInferenceTests.cs" />
     <Compile Include="CSharp\Resolver\MemberLookupTests.cs" />
+    <Compile Include="CSharp\Resolver\MethodTests.cs" />
     <Compile Include="CSharp\Resolver\NameLookupTests.cs" />
     <Compile Include="CSharp\Resolver\ObjectCreationTests.cs" />
     <Compile Include="CSharp\Resolver\ResolveAtLocationTests.cs" />
