@@ -236,6 +236,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Conversion c = ExplicitNullableConversion(fromType, toType);
 			if (c.IsValid)
 				return c;
+			c = UserDefinedExplicitConversion(fromType, toType);
+			if (c.IsValid)
+				return c;
 			if (ExplicitReferenceConversion(fromType, toType))
 				return Conversion.ExplicitReferenceConversion;
 			if (UnboxingConversion(fromType, toType))
@@ -247,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			if (ExplicitPointerConversion(fromType, toType))
 				return Conversion.ExplicitPointerConversion;
-			return UserDefinedExplicitConversion(fromType, toType);
+			return Conversion.None;
 		}
 		#endregion
 		
