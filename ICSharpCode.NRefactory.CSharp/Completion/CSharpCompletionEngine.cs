@@ -1226,7 +1226,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				if (currentMember != null || node is Expression) {
 					AddKeywords(wrapper, statementStartKeywords);
 					AddKeywords(wrapper, expressionLevelKeywords);
-					if (node is TypeDeclaration)
+					if (node == null || node is TypeDeclaration)
 						AddKeywords(wrapper, typeLevelKeywords);
 				} else if (currentType != null) {
 					AddKeywords(wrapper, typeLevelKeywords);
