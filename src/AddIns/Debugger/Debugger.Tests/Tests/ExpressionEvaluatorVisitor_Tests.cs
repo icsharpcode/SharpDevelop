@@ -335,7 +335,7 @@ namespace Debugger.Tests
 			var compilation = new SimpleCompilation(debuggerTypeSystem.MainAssembly.UnresolvedAssembly, debuggerTypeSystem.ReferencedAssemblies.Select(a => a.UnresolvedAssembly));
 			var rr = ResolveSnippet(location.Filename, new TextLocation(location.StartLine, location.StartColumn),
 			                        contextCode, code, compilation);
-			return new ExpressionEvaluationVisitor(frame, evalThread, frame.AppDomain.Compilation).Convert(rr);
+			return new ExpressionEvaluationVisitor(frame, evalThread, frame.AppDomain.Compilation, true, true).Convert(rr);
 		}
 	}
 }
