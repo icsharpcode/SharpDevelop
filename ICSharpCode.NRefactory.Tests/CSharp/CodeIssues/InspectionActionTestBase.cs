@@ -63,6 +63,20 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			}
 			Assert.AreEqual (expectedOutput, ctx.Text);
 		}
+
+		protected static void Test<T> (string input, int issueCount, string output = null, int fixIndex = -1)
+			where T : ICodeIssueProvider, new ()
+		{
+			TestRefactoringContext context;
+			var issues = GetIssues (new T (), input, out context);
+			Assert.AreEqual (issueCount, issues.Count);
+			if (issueCount == 0 || output == null) 
+				return;
+			if (fixIndex == -1)
+				CheckFix (context, issues, output);
+			else
+				CheckFix (context, issues [fixIndex], output);
+		}
 	}
 	
 }
