@@ -86,15 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (FindUsage (ctx, unit, typeParameter, decl))
 					return;
 
-				AddIssue (decl.NameToken, ctx.TranslateString ("Remove unused type parameter"),
-					script =>
-					{
-						var newMethodDecl = (MethodDeclaration)methodDecl.Clone ();
-						newMethodDecl.TypeParameters.Remove (
-							newMethodDecl.TypeParameters.FirstOrNullObject (t => t.Name == decl.Name));
-						script.Replace (methodDecl, newMethodDecl);
-					});
-
+				AddIssue (decl.NameToken, ctx.TranslateString ("Type parameter is never used"));
 			}
 		}
 	}

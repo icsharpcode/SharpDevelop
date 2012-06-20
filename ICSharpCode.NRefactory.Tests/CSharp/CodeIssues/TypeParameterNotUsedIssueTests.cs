@@ -42,13 +42,7 @@ class TestClass {
 	{
 	}
 }";
-			var output = @"
-class TestClass {
-	void TestMethod ()
-	{
-	}
-}";
-			Test<TypeParameterNotUsedIssue> (input, 1, output);
+			Test<TypeParameterNotUsedIssue> (input, 1);
 		}
 
 		[Test]
