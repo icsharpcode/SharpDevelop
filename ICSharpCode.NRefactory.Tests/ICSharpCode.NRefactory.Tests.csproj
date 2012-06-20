@@ -188,6 +188,7 @@
     <Compile Include="CSharp\Resolver\LinqTests.cs" />
     <Compile Include="CSharp\Resolver\LocalTypeInferenceTests.cs" />
     <Compile Include="CSharp\Resolver\MemberLookupTests.cs" />
+    <Compile Include="CSharp\Resolver\MethodTests.cs" />
     <Compile Include="CSharp\Resolver\NameLookupTests.cs" />
     <Compile Include="CSharp\Resolver\ObjectCreationTests.cs" />
     <Compile Include="CSharp\Resolver\ResolveAtLocationTests.cs" />
@@ -292,6 +293,7 @@
     <Compile Include="CSharp\CodeActions\ImplementInterfaceExplicitTests.cs" />
     <Compile Include="CSharp\CodeActions\ImplementAbstractMembersTest.cs" />
     <Compile Include="CSharp\CodeActions\ExtractFieldTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

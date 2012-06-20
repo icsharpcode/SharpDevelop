@@ -850,15 +850,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.EntityType, name,
 						explicitInterfaceType, parameterTypeReferences: parameterTypeReferences);
 				}
-				resolver = resolver.WithCurrentMember(member);
 				
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
-					if (node.Role == PropertyDeclaration.SetterRole && member != null) {
+					if (node.Role == PropertyDeclaration.GetterRole && member is IProperty) {
 						resolver = resolver.PushBlock();
-						resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
+						resolver = resolver.WithCurrentMember(((IProperty)member).Getter);
 						Scan(node);
 						resolver = resolver.PopBlock();
-					} else {
+					}
+					else if (node.Role == PropertyDeclaration.SetterRole && member is IProperty) {
+						resolver = resolver.PushBlock();
+						resolver = resolver.WithCurrentMember(((IProperty)member).Setter);
+						Scan(node);
+						resolver = resolver.PopBlock();
+					}
+					else {
 						Scan(node);
 					}
 				}
@@ -898,16 +904,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						                                          explicitInterfaceAstType.ToTypeReference());
 					}
 				}
-				resolver = resolver.WithCurrentMember(member);
-				
-				if (member != null) {
-					resolver = resolver.PushBlock();
-					resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value"));
-					ScanChildren(eventDeclaration);
-				} else {
-					ScanChildren(eventDeclaration);
+
+				for (AstNode node = eventDeclaration.FirstChild; node != null; node = node.NextSibling) {
+					if (node.Role == CustomEventDeclaration.AddAccessorRole && member is IEvent) {
+						resolver = resolver.PushBlock();
+						resolver = resolver.WithCurrentMember(((IEvent)member).AddAccessor);
+						Scan(node);
+						resolver = resolver.PopBlock();
+					}
+					else if (node.Role == CustomEventDeclaration.RemoveAccessorRole && member is IEvent) {
+						resolver = resolver.PushBlock();
+						resolver = resolver.WithCurrentMember(((IEvent)member).RemoveAccessor);
+						Scan(node);
+						resolver = resolver.PopBlock();
+					}
+					else {
+						Scan(node);
+					}
 				}
-				
+
 				if (member != null)
 					return new MemberResolveResult(null, member, false);
 				else
