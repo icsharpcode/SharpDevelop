@@ -91,5 +91,38 @@ class TestClass {
 			Test<LocalVariableNotUsedIssue> (input2, 0);
 		}
 
+		[Test]
+		public void TestUnusedForeachVariable ()
+		{
+			var input = @"
+class TestClass {
+	void TestMethod ()
+	{
+		var array = new int[10];
+		foreach (var i in array) {
+		}
+	}
+}";
+			Test<LocalVariableNotUsedIssue> (input, 1);
+
+		}
+
+		[Test]
+		public void TestUsedForeachVariable ()
+		{
+			var input = @"
+class TestClass {
+	void TestMethod ()
+	{
+		var array = new int[10];
+		int j = 0;
+		foreach (var i in array) {
+			j += i;
+		}
+	}
+}";
+			Test<LocalVariableNotUsedIssue> (input, 0);
+		}
+
 	}
 }

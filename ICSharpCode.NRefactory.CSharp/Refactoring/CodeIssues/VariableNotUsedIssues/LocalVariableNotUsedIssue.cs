@@ -79,6 +79,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					});
 			}
+
+			public override void VisitForeachStatement (ForeachStatement foreachStatement)
+			{
+				var resolveResult = ctx.Resolve (foreachStatement.VariableNameToken) as LocalResolveResult;
+				if (resolveResult == null)
+					return;
+
+				if (FindUsage (ctx, unit, resolveResult.Variable, foreachStatement.VariableNameToken))
+					return;
+
+				AddIssue (foreachStatement.VariableNameToken, ctx.TranslateString ("Local variable is never used"));
+			}
 		}
 
 	}
