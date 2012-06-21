@@ -33,6 +33,7 @@
 		
 			<Button Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,3,0,3"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			        Click="ChangeRuleAssembliesButtonClick"
 			        Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.AddRemoveRuleAssembly}"></Button>
 		
 			<tv:SharpTreeView x:Name="ruleTreeView" ShowRoot="False" ShowLines="False" IsSynchronizedWithCurrentItem="True"
@@ -49,27 +50,32 @@
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
 							
-							<GridViewColumn  Width="25">
+						
+							<GridViewColumn Header="Action">
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
-										<Image Source="{Binding Path=RuleIcon, Converter={StaticResource imageConverter}}"></Image>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							
-							
-							<GridViewColumn Header="Action" Width="100">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>	
-										<ComboBox Width="70" Background="Transparent"
-										      ItemsSource="{Binding Path=RuleState}"
-										          SelectedIndex="{Binding Index}"
-										          DisplayMemberPath="DisplayValue">
+										<ComboBox  Background="Transparent" Width="100"
+										          HorizontalAlignment="Center" VerticalAlignment="Center"
+										          ItemsSource="{Binding Path=RuleState}"
+										          SelectedIndex="{Binding Index}">
+											<ComboBox.ItemTemplate>
+												<DataTemplate>
+													<StackPanel Orientation="Horizontal">
+														<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
+														       Source="{Binding Item1,
+														Converter={StaticResource imageConverter}}"></Image>
+														<TextBlock VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
+													</StackPanel>
+										
+												</DataTemplate>
+											
+											</ComboBox.ItemTemplate>
+										
 										</ComboBox>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
-						
+
 						</tv:SharpGridView.Columns>
 					</tv:SharpGridView>
 				</ListView.View>

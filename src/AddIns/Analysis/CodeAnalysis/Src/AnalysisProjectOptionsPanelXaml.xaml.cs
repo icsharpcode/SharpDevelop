@@ -44,16 +44,15 @@ namespace ICSharpCode.CodeAnalysis
 		private bool userCheck;
 		private Dictionary<string, RuleTreeNode> rules = new Dictionary<string, RuleTreeNode>();
 		
-		private List<KeyItemPair> bla = new List<KeyItemPair>();
+		private List<Tuple<Icon,string>> bla = new List<Tuple<Icon,string>>();
 		
 		public AnalysisProjectOptionsPanelXaml()
 		{
 			InitializeComponent();
 			DataContext = this;
-			
-			bla.Add(new KeyItemPair("Warning","Warning"));
-			bla.Add(new KeyItemPair("Error","Error"));
-			bla.Add(new KeyItemPair("None","None"));
+			bla.Add(Tuple.Create<Icon,string>(SystemIcons.Warning,"Warning"));
+			bla.Add(Tuple.Create<Icon,string>(SystemIcons.Error,"Error"));
+//			bla.Add(Tuple.Create<Icon,string>(null,"None"));
 		}
 		
 		
@@ -69,6 +68,7 @@ namespace ICSharpCode.CodeAnalysis
 		public ProjectProperty<string> CodeAnalysisRules {
 			get { return GetProperty("CodeAnalysisRules","",TextBoxEditMode.EditEvaluatedProperty); }
 		}
+		
 		#region Rule Assemblies Property
 		
 		string ruleAssemblies;
@@ -113,6 +113,8 @@ namespace ICSharpCode.CodeAnalysis
 							b.Append('!');
 						b.Append(rule.Identifier);
 					}
+					Console.WriteLine("");
+					Console.WriteLine(b.ToString());
 				}
 			}
 			return b.ToString();
@@ -148,6 +150,7 @@ namespace ICSharpCode.CodeAnalysis
 					ruleNode.isError = error;
 				}
 			}
+			/*
 			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
 				bool noneChecked = true;
 				foreach (RuleTreeNode rtn in cat.Children) {
@@ -157,7 +160,7 @@ namespace ICSharpCode.CodeAnalysis
 					}
 				}
 				cat.IsChecked = !noneChecked;
-			}
+			} */
 			userCheck = true;
 		}
 		
@@ -190,6 +193,11 @@ namespace ICSharpCode.CodeAnalysis
 			ReloadRuleList();
 		}
 		
+		protected override bool Save(MSBuildBasedProject project, string configuration, string platform)
+		{
+			this.CodeAnalysisRules.Value = RuleString;
+			return base.Save(project, configuration, platform);
+		}
 
 		#endregion
 		
@@ -228,11 +236,23 @@ namespace ICSharpCode.CodeAnalysis
 					}
 					initSuccess = true;
 					ReadRuleString();
+					foreach (var element in ruleTreeView.Root.Children) {
+						element.PropertyChanged += delegate {
+							base.IsDirty = true;
+						};
+					}
 				}
 			}
 		}
 		
-		string[] GetRuleAssemblyList(bool replacePath)
+		
+		private void OnPropertyChanged(object sender,System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			base.IsDirty = true;
+		}
+			
+		
+		private string[] GetRuleAssemblyList(bool replacePath)
 		{
 			List<string> list = new List<string>();
 			string fxCopPath = FxCopWrapper.FindFxCopPath();
@@ -250,6 +270,11 @@ namespace ICSharpCode.CodeAnalysis
 			return list.ToArray();
 		}
 		
+		private void ChangeRuleAssembliesButtonClick object sender, RoutedEventArgs e)
+		{
+	
+		}
+		
 	
 		#endregion
 	
@@ -258,45 +283,35 @@ namespace ICSharpCode.CodeAnalysis
 		
 		class BaseTree:SharpTreeNode
 		{
-			private Icon ruleIcon;
 			private int index;
 			
-			public BaseTree(IEnumerable<KeyItemPair> ruleState)
+			public BaseTree(IEnumerable<Tuple<Icon,string>> ruleState)
 			{
 				this.RuleState = ruleState;
-				RuleIcon = SystemIcons.Warning;
 			}
 			
-			public IEnumerable<KeyItemPair> RuleState {get;set;}
+			public IEnumerable<Tuple<Icon,string>> RuleState {get;set;}
 			
 			
-			public Icon RuleIcon {
-				get { return ruleIcon; }
-				set { ruleIcon = value;
-					base.RaisePropertyChanged("RuleIcon");
-				}
-			}
-			
-			
-			public int Index {
+			public virtual int Index {
 				get { return index; }
-				set { index = value;
-					switch (index) {
-						case 0:
-								RuleIcon = SystemIcons.Warning;
-							break;
-						case  1:
-								RuleIcon = SystemIcons.Error;
-							break;
-						case 2:
-								RuleIcon = null;
-							break;
-						default:
-							
-							break;
+				set {
+					if (index != value) {
+						index = value;
+						switch (index) {
+							case 0:
+								break;
+							case  1:
+								break;
+							case 2:
+								break;
+							default:
+								break;
+						}
+						base.RaisePropertyChanged("Index");
 					}
-					base.RaisePropertyChanged("Index");
 				}
+					
 			}
 		}
 		
@@ -305,13 +320,12 @@ namespace ICSharpCode.CodeAnalysis
 		{
 			internal FxCopCategory category;
 			
-			public CategoryTreeNode(FxCopCategory category,IEnumerable<KeyItemPair> bla):base(bla)
+			public CategoryTreeNode(FxCopCategory category,IEnumerable<Tuple<Icon,string>> bla):base(bla)
 			{
 				this.category = category;
 				foreach (FxCopRule rule in category.Rules) {
 					this.Children.Add(new RuleTreeNode(rule,bla));
 				}
-			
 			}
 			
 			
@@ -348,9 +362,19 @@ namespace ICSharpCode.CodeAnalysis
 		class RuleTreeNode :BaseTree
 		{
 			internal FxCopRule rule;
-			internal bool isError;
+//			internal bool isError;
+			bool error;
 			
-			public RuleTreeNode(FxCopRule rule,IEnumerable<KeyItemPair> ruleState):base(ruleState)
+			internal bool isError {
+				get { return error; }
+				set { error = value;
+					if (error) {
+						base.Index = 1;
+					}
+				}
+			}
+			
+			public RuleTreeNode(FxCopRule rule,IEnumerable<Tuple<Icon,string>> ruleState):base(ruleState)
 			{
 				this.rule = rule;
 			}
@@ -366,6 +390,15 @@ namespace ICSharpCode.CodeAnalysis
 			public string Identifier {
 				get {
 					return rule.CategoryName + "#" + rule.CheckId;
+				}
+			}
+			
+			public override int Index {
+				get { return base.Index; }
+				set { base.Index = value;
+					if (Index == 1) {
+						error = true;
+					}
 				}
 			}
 		}
@@ -384,7 +417,9 @@ namespace ICSharpCode.CodeAnalysis
 			}
 		}
 		#endregion
+		
 	}
+		
 	
 	[ValueConversion(typeof(System.Drawing.Icon), typeof(System.Windows.Media.ImageSource))]
 	public class ImageConverter : IValueConverter
