@@ -15,7 +15,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ICSharpCode.CppBinding.Project
+namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// Interaction logic for StringListEditorDialog.xaml

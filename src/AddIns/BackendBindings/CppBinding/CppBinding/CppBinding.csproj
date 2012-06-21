@@ -96,7 +96,6 @@
     <Compile Include="Project\ResourceScript.cs" />
     <Compile Include="Project\SpecifyCliRuntimeLibraryCommand.cs" />
     <Compile Include="Project\CppProject.cs" />
-    <Compile Include="Project\StringListEditorDialog.xaml.cs" />
     <None Include="CppBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -154,6 +153,5 @@
     <Page Include="Project\ApplicationOptions.xaml" />
     <Page Include="Project\LinkerOptions.xaml" />
     <Page Include="Project\PreprocessorOptions.xaml" />
-    <Page Include="Project\StringListEditorDialog.xaml" />
   </ItemGroup>
 </Project>
