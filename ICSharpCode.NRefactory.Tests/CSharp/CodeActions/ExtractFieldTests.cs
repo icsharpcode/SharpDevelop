@@ -81,7 +81,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	int foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"		foo = 5;" + Environment.NewLine +
@@ -109,7 +108,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	int foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"	}" + Environment.NewLine +
@@ -136,7 +134,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	int foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
 				"	TestClass (int foo)" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"		this.foo = foo;" + Environment.NewLine +
