@@ -31,7 +31,7 @@
 			          IsChecked="{Binding RunCodeAnalysis.Value}"
 			          Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.RunOnBuild}"></CheckBox>
 		
-			<Button Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,3,0,3"
+			<Button Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,10,0,10"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			        Click="ChangeRuleAssembliesButtonClick"
 			        Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.AddRemoveRuleAssembly}"></Button>

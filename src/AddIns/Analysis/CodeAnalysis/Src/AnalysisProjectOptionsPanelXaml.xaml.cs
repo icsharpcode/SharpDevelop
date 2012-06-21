@@ -270,9 +270,28 @@ namespace ICSharpCode.CodeAnalysis
 			return list.ToArray();
 		}
 		
-		private void ChangeRuleAssembliesButtonClick object sender, RoutedEventArgs e)
+		private void ChangeRuleAssembliesButtonClick( object sender, RoutedEventArgs e)
 		{
-	
+			var  stringListDialog = new StringListEditorDialog();
+			stringListDialog.BrowseForDirectory = true;
+			stringListDialog.TitleText = StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.ChooseRuleAssemblyDirectory}");
+			stringListDialog.LoadList(GetRuleAssemblyList(false));
+			stringListDialog.ShowDialog();
+			if (stringListDialog.DialogResult ?? false) {
+				StringBuilder b = new StringBuilder(DefaultRuleAssemblies);
+				foreach (string asm in stringListDialog.GetList()) {
+					b.Append(';');
+					b.Append(asm);
+				}
+				bool oldInitSuccess = initSuccess;
+				initSuccess = true;
+				try {
+					this.RuleAssemblies = b.ToString();
+				} finally {
+					initSuccess = oldInitSuccess;
+//					base.IsDirty = true;
+				}
+			}
 		}
 		
 	
