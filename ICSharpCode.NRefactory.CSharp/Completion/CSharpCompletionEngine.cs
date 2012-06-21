@@ -1249,13 +1249,12 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					AddKeywords(wrapper, parameterTypePredecessorKeywords);
 				}
 			}
-
 			AddKeywords(wrapper, primitiveTypesKeywords);
-			if (currentMember != null) {
+			if (currentMember != null && (node is IdentifierExpression || node is SimpleType) && (node.Parent is ExpressionStatement || node.Parent is ForeachStatement || node.Parent is UsingStatement)) {
 				wrapper.AddCustom("var");
+				wrapper.AddCustom("dynamic");
 			} 
 			wrapper.Result.AddRange(factory.CreateCodeTemplateCompletionData());
-			
 			if (node != null && node.Role == Roles.Argument) {
 				var resolved = ResolveExpression(node.Parent);
 				var invokeResult = resolved != null ? resolved.Item1 as CSharpInvocationResolveResult : null;
@@ -2213,6 +2212,17 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					);
 				}
 			}
+
+			foreach (var method in resolveResult.Methods) {
+				if (parameter < method.Parameters.Count && method.Parameters [parameter].Type.Kind == TypeKind.Delegate) {
+					AutoSelect = false;
+					AutoCompleteEmptyMatch = false;
+				}
+				foreach (var p in method.Parameters) {
+					result.AddNamedParameterVariable(p);
+				}
+			}
+
 			if (!controlSpace) {
 				if (addedEnums.Count + addedDelegates.Count == 0) {
 					return Enumerable.Empty<ICompletionData>();
@@ -3034,7 +3044,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			"true", "false", "typeof", "checked", "unchecked", "from", "break", "checked",
 			"unchecked", "const", "continue", "do", "finally", "fixed", "for", "foreach",
 			"goto", "if", "lock", "return", "stackalloc", "switch", "throw", "try", "unsafe", 
-			"using", "while", "yield", "dynamic", "var", "dynamic",
+			"using", "while", "yield",
 			"catch"
 		};
 		static string[] globalLevelKeywords = new string [] {

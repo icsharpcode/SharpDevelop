@@ -4386,7 +4386,25 @@ namespace Test
 				Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
 			});
 		}
-		
+		[Test()]
+		public void TestNamedParameters2 ()
+		{
+			var provider = CreateCtrlSpaceProvider (
+@"class MyClass {
+    string Bar { get; set; }
+
+    void MethodOne(string foo="""", string bar="""")
+	{
+    }
+
+    void MethodTwo() {
+        MethodOne($$);
+    }
+}");
+			Assert.IsNotNull (provider.Find ("bar:"), "'bar:' not found.");
+			Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
+		}
+
 		[Test()]
 		public void TestNamedParametersConstructorCase ()
 		{
