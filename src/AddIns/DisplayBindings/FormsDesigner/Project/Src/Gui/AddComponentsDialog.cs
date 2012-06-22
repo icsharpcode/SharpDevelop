@@ -12,8 +12,9 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
@@ -46,7 +47,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void PrintGACCache()
 		{
-			foreach (DomAssemblyName asm in GacInterop.GetAssemblyList()) {
+			foreach (DomAssemblyName asm in SD.GlobalAssemblyCache.Assemblies) {
 				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version.ToString()});
 				item.Tag = asm.FullName;
 				((ListView)ControlDictionary["gacListView"]).Items.Add(item);

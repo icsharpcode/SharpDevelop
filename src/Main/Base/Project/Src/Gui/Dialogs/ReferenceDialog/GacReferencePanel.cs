@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual IList<DomAssemblyName> GetCacheContent()
 		{
-			return SD.GlobalAssemblyCache.GetGacAssemblyFullNames()
+			return SD.GlobalAssemblyCache.Assemblies
 				.Where(name => !name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase))
 				.ToList();
 		}

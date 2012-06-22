@@ -10,12 +10,16 @@ namespace ICSharpCode.SharpDevelop.Parser
 {
 	sealed class GlobalAssemblyCacheService : IGlobalAssemblyCacheService
 	{
-		public bool IsGACAssembly(string fileName)
+		public bool IsGacAssembly(string fileName)
 		{
 			throw new NotImplementedException();
 		}
 		
-		public IEnumerable<DomAssemblyName> GetGacAssemblyFullNames()
+		public IEnumerable<DomAssemblyName> Assemblies { 
+			get { return GetGacAssemblyFullNames(); }
+		}
+		
+		IEnumerable<DomAssemblyName> GetGacAssemblyFullNames()
 		{
 			IApplicationContext applicationContext = null;
 			IAssemblyEnum assemblyEnum = null;

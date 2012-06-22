@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.Editor;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -158,12 +159,12 @@ namespace ICSharpCode.FormsDesigner
 			readonly bool doNotLoad;
 			
 			public FileContent()
-				: this(ParserService.DefaultFileEncoding)
+				: this(SD.FileService.DefaultFileEncoding)
 			{
 			}
 			
 			public FileContent(Encoding encoding)
-				: this(new ICSharpCode.SharpDevelop.Editor.AvalonEdit.AvalonEditDocumentAdapter(), encoding)
+				: this(new TextDocument(), encoding)
 			{
 			}
 			
@@ -195,7 +196,7 @@ namespace ICSharpCode.FormsDesigner
 			{
 				if (this.doNotLoad)
 					return;
-				using (StreamReader r = ICSharpCode.AvalonEdit.Utils.FileReader.OpenStream(stream, ParserService.DefaultFileEncoding)) {
+				using (StreamReader r = ICSharpCode.AvalonEdit.Utils.FileReader.OpenStream(stream, SD.FileService.DefaultFileEncoding)) {
 					this.Document.Text = r.ReadToEnd();
 					this.encoding = r.CurrentEncoding;
 				}

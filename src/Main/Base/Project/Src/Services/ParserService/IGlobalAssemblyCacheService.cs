@@ -14,12 +14,12 @@ namespace ICSharpCode.SharpDevelop.Parser
 		/// <summary>
 		/// Gets whether the file name is within the GAC.
 		/// </summary>
-		bool IsGACAssembly(string fileName);
+		bool IsGacAssembly(string fileName);
 		
 		/// <summary>
 		/// Gets the names of all assemblies in the GAC.
 		/// </summary>
-		IEnumerable<DomAssemblyName> GetGacAssemblyFullNames();
+		IEnumerable<DomAssemblyName> Assemblies { get; }
 		
 		/// <summary>
 		/// Gets the file name for an assembly stored in the GAC.

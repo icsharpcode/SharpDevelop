@@ -9,7 +9,6 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

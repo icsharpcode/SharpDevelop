@@ -1,15 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.CodeDom;
 using System.IO;
 using System.Linq;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -20,19 +21,19 @@ namespace ICSharpCode.FormsDesigner.Services
 	{
 		public const string ProjectResourceKey = "SDProjectResource_";
 		
-		IProjectContent projectContent;
+		IProject project;
 		string stringLiteralDelimiter;
 		bool designerSupportsProjectResources = true;
 		
-		public ProjectResourceService(IProjectContent projectContent)
+		public ProjectResourceService(IProject project)
 		{
-			if (projectContent == null)
-				throw new ArgumentNullException("projectContent");
-			this.projectContent = projectContent;
+			if (project == null)
+				throw new ArgumentNullException("project");
+			this.project = project;
 		}
 		
-		public IProjectContent ProjectContent {
-			get { return projectContent; }
+		public IProject ProjectContent {
+			get { return project; }
 			set {
 				if (value == null)
 					throw new ArgumentNullException("value");
@@ -159,7 +160,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// Determines whether the specified class is a generated resource
 		/// class, based on the attached attributes.
 		/// </summary>
-		public static bool IsGeneratedResourceClass(IClass @class)
+		public static bool IsGeneratedResourceClass(ITypeDefinition @class)
 		{
 			IClass generatedCodeAttributeClass = @class.ProjectContent.GetClass("System.CodeDom.Compiler.GeneratedCodeAttribute", 0);
 			if (generatedCodeAttributeClass == null) {

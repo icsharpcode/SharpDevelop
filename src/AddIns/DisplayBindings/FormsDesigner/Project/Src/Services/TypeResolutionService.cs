@@ -8,10 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
@@ -74,7 +73,7 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		
 		string formSourceFileName;
-		IProjectContent callingProject;
+		IProject callingProject;
 		/// <summary>
 		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
 		/// Used to detect changes in references assemblies.
@@ -85,7 +84,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// Gets the project content of the project that created this TypeResolutionService.
 		/// Returns null when no calling project was specified.
 		/// </summary>
-		public IProjectContent CallingProject {
+		public IProject CallingProject {
 			get {
 				if (formSourceFileName != null) {
 					if (ProjectService.OpenSolution != null) {
@@ -109,12 +108,12 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.formSourceFileName = formSourceFileName;
 		}
 		
-		readonly HashSet<IProjectContent> projectContentsCurrentlyLoadingAssembly = new HashSet<IProjectContent>();
+		readonly HashSet<IProject> projectContentsCurrentlyLoadingAssembly = new HashSet<IProjectContent>();
 		
 		/// <summary>
 		/// Loads the assembly represented by the project content. Returns null on failure.
 		/// </summary>
-		public Assembly LoadAssembly(IProjectContent pc)
+		public Assembly LoadAssembly(IProject pc)
 		{
 			WorkbenchSingleton.AssertMainThread();
 			// prevent StackOverflow when project contents have cyclic dependencies
@@ -157,7 +156,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		readonly string sharpDevelopRoot = Directory.GetParent(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).FullName;
 		
-		bool IsSharpDevelopAssembly(IProjectContent pc, out Assembly assembly)
+		bool IsSharpDevelopAssembly(IUnresolvedAssembly pc, out Assembly assembly)
 		{
 			assembly = null;
 			foreach (var asm in AppDomain.CurrentDomain.GetAssemblies()) {

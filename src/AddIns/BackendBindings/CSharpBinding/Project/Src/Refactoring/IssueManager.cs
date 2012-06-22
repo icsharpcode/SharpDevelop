@@ -276,8 +276,11 @@ namespace CSharpBinding.Refactoring
 				}
 				existingResults = results;
 			}
-			cancellationTokenSource.Dispose();
-			cancellationTokenSource = null;
+			if (cancellationTokenSource != null && cancellationTokenSource.Token == cancellationToken) {
+				// Dispose the cancellation token source if it's still the same on as we originally created
+				cancellationTokenSource.Dispose();
+				cancellationTokenSource = null;
+			}
 		}
 		
 		#region IContextActionProvider implementation

@@ -3,13 +3,11 @@
 
 using System;
 using System.Text;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.FormsDesigner
 {
+	/*
 	public class VBNetDesignerGenerator : AbstractDesignerGenerator
 	{
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
@@ -73,5 +71,5 @@ namespace ICSharpCode.FormsDesigner
 		{
 			return String.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 		}
-	}
+	}*/
 }

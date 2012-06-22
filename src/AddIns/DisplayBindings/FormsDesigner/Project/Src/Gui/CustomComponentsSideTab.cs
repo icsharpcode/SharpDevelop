@@ -8,11 +8,10 @@ using System.ComponentModel.Design;
 using System.Drawing.Design;
 using System.Linq;
 using System.Reflection;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Widgets.SideBar;
@@ -59,6 +58,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
+		/*
 		/// <summary>
 		/// Gets the list of project contents of all open projects plus the referenced project contents.
 		/// </summary>
@@ -67,6 +67,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				return Enumerable.Union(ParserService.AllProjectContents, AssemblyParserService.DefaultProjectContentRegistry.GetLoadedProjectContents());
 			}
 		}
+		*/
 		
 		void ScanProjectAssemblies()
 		{
@@ -120,12 +121,12 @@ namespace ICSharpCode.FormsDesigner.Gui
 	public class CustomComponentToolBoxItem : ToolboxItem
 	{
 		string className;
-		IProjectContent assemblyLocation;
+		//IProjectContent assemblyLocation;
 		Assembly usedAssembly = null;
 		
-		public CustomComponentToolBoxItem(IClass c)
+		public CustomComponentToolBoxItem(ITypeDefinition c)
 		{
-			className = c.FullyQualifiedName;
+			className = c.FullName;
 			assemblyLocation = c.ProjectContent;
 			this.Bitmap = new ToolboxItem(typeof(Component)).Bitmap;
 			this.IsTransient = true;

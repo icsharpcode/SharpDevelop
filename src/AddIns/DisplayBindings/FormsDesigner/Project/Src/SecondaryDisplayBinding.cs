@@ -1,14 +1,17 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using System.Linq;
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Parser;
 
 namespace ICSharpCode.FormsDesigner
 {
@@ -29,9 +32,8 @@ namespace ICSharpCode.FormsDesigner
 			return name == "InitializeComponents" || name == "InitializeComponent";
 		}
 		
-		public static IMethod GetInitializeComponents(IClass c)
+		public static IMethod GetInitializeComponents(ITypeDefinition c)
 		{
-			c = c.GetCompoundClass();
 			foreach (IMethod method in c.Methods) {
 				if (IsInitializeComponentsMethodName(method.Name) && method.Parameters.Count == 0) {
 					return method;
@@ -40,38 +42,32 @@ namespace ICSharpCode.FormsDesigner
 			return null;
 		}
 
-		public static bool BaseClassIsFormOrControl(IClass c)
+		public static bool BaseClassIsFormOrControl(ITypeDefinition c)
 		{
+			if (c == null)
+				return false;
 			// Simple test for fully qualified name
-			c = c.GetCompoundClass();
-			foreach (IReturnType baseType in c.BaseTypes) {
-				if (baseType.FullyQualifiedName == "System.Windows.Forms.Form"
-				    || baseType.FullyQualifiedName == "System.Windows.Forms.UserControl"
-				    // also accept Form and UserControl when they could not be resolved
-				    || baseType.FullyQualifiedName == "Form"
-				    || baseType.FullyQualifiedName == "UserControl")
+			foreach (var baseType in c.GetNonInterfaceBaseTypes()) {
+				var baseTypeName = baseType.FullName;
+				if (baseTypeName == "System.Windows.Forms.Form"
+				    || baseTypeName == "System.Windows.Forms.UserControl")
 				{
 					return true;
 				}
 			}
-			
-			IClass form = c.ProjectContent.GetClass("System.Windows.Forms.Form", 0);
-			IClass userControl = c.ProjectContent.GetClass("System.Windows.Forms.UserControl", 0);
-			if (form != null && c.IsTypeInInheritanceTree(form))
-				return true;
-			if (userControl != null && c.IsTypeInInheritanceTree(userControl))
-				return true;
 			return false;
 		}
 
-		public static bool IsDesignable(ParseInformation info)
+		public static bool IsDesignable(IParsedFile parsedFile, ICompilation compilation)
 		{
-			if (info != null) {
-				ICompilationUnit cu = (ICompilationUnit)info.CompilationUnit;
-				foreach (IClass c in cu.Classes) {
-					IMethod method = GetInitializeComponents(c);
+			if (parsedFile == null)
+				return false;
+			foreach (var utd in parsedFile.TopLevelTypeDefinitions) {
+				var td = utd.Resolve(new SimpleTypeResolveContext(compilation.MainAssembly)).GetDefinition();
+				if (td != null) {
+					IMethod method = GetInitializeComponents(td);
 					if (method != null) {
-						return BaseClassIsFormOrControl(c);
+						return BaseClassIsFormOrControl(td);
 					}
 				}
 			}
@@ -82,19 +78,18 @@ namespace ICSharpCode.FormsDesigner
 		{
 			if (viewContent is ITextEditorProvider) {
 				ITextEditorProvider textEditorProvider = (ITextEditorProvider)viewContent;
-				string fileExtension = String.Empty;
-				string fileName      = viewContent.PrimaryFileName;
+				FileName fileName      = viewContent.PrimaryFileName;
 				if (fileName == null)
 					return false;
 				
-				fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
+				string fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 				
 				switch (fileExtension) {
 					case ".cs":
-					case ".vb":
-						ParseInformation info = ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document);
-						
-						if (IsDesignable(info))
+//					case ".vb":
+						var parsedFile = SD.ParserService.ParseFile(fileName, textEditorProvider.TextEditor.Document);
+						var compilation = SD.ParserService.GetCompilationForFile(fileName);
+						if (IsDesignable(parsedFile, compilation))
 							return true;
 						break;
 				}
@@ -118,12 +113,14 @@ namespace ICSharpCode.FormsDesigner
 			
 			switch (fileExtension) {
 				case ".cs":
-					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.CSharp);
-					generator = new CSharpDesignerGenerator();
+//					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.CSharp);
+//					generator = new CSharpDesignerGenerator();
+					throw new NotImplementedException();
 					break;
 				case ".vb":
-					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.VBNet);
-					generator = new VBNetDesignerGenerator();
+					//loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.VBNet);
+					//generator = new VBNetDesignerGenerator();
+					throw new NotImplementedException();
 					break;
 				default:
 					throw new ApplicationException("Cannot create content for " + fileExtension);

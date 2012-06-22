@@ -13,14 +13,15 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
+using ICSharpCode.NRefactory.Editor;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.FormsDesigner
@@ -65,7 +66,7 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.sourceCodeStorage[this.PrimaryFile]; }
 		}
 		
-		public ITextBuffer PrimaryFileContent {
+		public ITextSource PrimaryFileContent {
 			get { return this.PrimaryFileDocument.CreateSnapshot(); }
 		}
 		
@@ -84,7 +85,7 @@ namespace ICSharpCode.FormsDesigner
 			set { this.DesignerCodeFileDocument.Text = value; }
 		}
 		
-		public ICSharpCode.SharpDevelop.Editor.IDocument GetDocumentForFile(OpenedFile file)
+		public IDocument GetDocumentForFile(OpenedFile file)
 		{
 			return this.sourceCodeStorage[file];
 		}
@@ -337,17 +338,17 @@ namespace ICSharpCode.FormsDesigner
 		
 		ProjectResourceService CreateProjectResourceService()
 		{
-			IProjectContent projectContent = GetProjectContentForFile();
-			return new ProjectResourceService(projectContent);
+			var project = GetProjectForFile();
+			return new ProjectResourceService(project);
 		}
 		
-		IProjectContent GetProjectContentForFile()
+		IProject GetProjectForFile()
 		{
-			ParseInformation parseInfo = ParserService.GetParseInformation(this.DesignerCodeFile.FileName);
-			if (parseInfo != null) {
-				return parseInfo.CompilationUnit.ProjectContent;
+			Solution solution = ProjectService.OpenSolution;
+			if (solution != null) {
+				return solution.FindProjectContainingFile(this.DesignerCodeFile.FileName);
 			}
-			return DefaultProjectContent.DummyProjectContent;
+			return null;
 		}
 		
 		bool hasUnmergedChanges;

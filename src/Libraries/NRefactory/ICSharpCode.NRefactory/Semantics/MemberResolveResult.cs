@@ -27,6 +27,8 @@ namespace ICSharpCode.NRefactory.Semantics
 {
 	/// <summary>
 	/// Represents the result of a member invocation.
+	/// Used for field/property/event access.
+	/// Also, <see cref="InvocationResultResult"/> derives from MemberResolveResult.
 	/// </summary>
 	public class MemberResolveResult : ResolveResult
 	{
