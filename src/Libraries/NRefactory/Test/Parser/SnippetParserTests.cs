@@ -26,5 +26,14 @@ namespace ICSharpCode.NRefactory.Tests
 			INode node = parser.Parse("Dim doc = <test><%= test %></test>");
 			Assert.IsTrue(parser.Errors.Count == 0);
 		}
+		
+		[Test]
+		public void InvalidXmlLiteral()
+		{
+			// ensure we don't crash on this invalid VB code
+			SnippetParser parser = new SnippetParser(SupportedLanguage.VBNet);
+			INode node = parser.Parse("<Cell StyleID=<%= print_title %>>");
+			Assert.IsTrue(parser.Errors.Count > 0);
+		}
 	}
 }
