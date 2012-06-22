@@ -55,6 +55,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			
 			Dictionary<AstNode, ResolveResult> resolvedNodes = new Dictionary<AstNode, ResolveResult>();
+			HashSet<ResolveResult> resolveResults = new HashSet<ResolveResult>();
 			HashSet<AstNode> nodesWithConversions = new HashSet<AstNode>();
 			
 			public ResolveVisitorNavigationMode Scan(AstNode node)
@@ -69,6 +70,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				resolvedNodes.Add(node, result);
 				if (CSharpAstResolver.IsUnresolvableNode(node))
 					throw new InvalidOperationException("Resolved unresolvable node");
+				if (!ParenthesizedExpression.ActsAsParenthesizedExpression(node))
+					if (!resolveResults.Add(result))
+						throw new InvalidOperationException("Duplicate resolve result");
 				
 				if (result.IsError && !allowErrors) {
 					Console.WriteLine("Compiler error at " + fileName + ":" + node.StartLocation + ": " + result);
