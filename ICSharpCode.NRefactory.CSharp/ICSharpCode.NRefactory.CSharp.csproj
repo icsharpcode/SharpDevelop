@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{53DCA265-3C3C-42F9-B647-F72BA678122B}</ProjectGuid>
@@ -183,6 +183,7 @@
     <Compile Include="OutputVisitor\IOutputFormatter.cs" />
     <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
+    <Compile Include="Parser\CompilerSettings.cs" />
     <Compile Include="Parser\CSharpParser.cs" />
     <Compile Include="Parser\mcs\anonymous.cs" />
     <Compile Include="Parser\mcs\argument.cs" />

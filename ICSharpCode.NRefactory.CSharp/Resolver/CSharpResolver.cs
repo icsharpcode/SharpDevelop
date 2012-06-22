@@ -56,6 +56,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.compilation = compilation;
 			this.conversions = CSharpConversions.Get(compilation);
 			this.context = new CSharpTypeResolveContext(compilation.MainAssembly);
+			
+			var pc = compilation.MainAssembly.UnresolvedAssembly as CSharpProjectContent;
+			if (pc != null) {
+				this.checkForOverflow = pc.CompilerSettings.CheckForOverflow;
+			}
 		}
 		
 		public CSharpResolver(CSharpTypeResolveContext context)

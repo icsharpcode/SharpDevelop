@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.Demo
 			this.csharpParseButton.Name = "csharpParseButton";
 			this.csharpParseButton.Size = new System.Drawing.Size(100, 23);
 			this.csharpParseButton.TabIndex = 0;
-			this.csharpParseButton.Text = "Parse";
+			this.csharpParseButton.Text = "\u2193 Parse \u2193";
 			this.csharpParseButton.UseVisualStyleBackColor = true;
 			this.csharpParseButton.Click += new System.EventHandler(this.CSharpParseButtonClick);
 			// 
