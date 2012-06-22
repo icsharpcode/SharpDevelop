@@ -102,7 +102,9 @@
     <Compile Include="CSharp\CodeIssues\AccessToModifiedClosureTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\LocalVariableOnlyAssignedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterOnlyAssignedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\TypeParameterNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
