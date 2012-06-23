@@ -1596,7 +1596,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			if (target.Type.Kind == TypeKind.Dynamic)
-				return new ResolveResult(SpecialType.Dynamic);
+				return new DynamicMemberResolveResult(target, identifier);
 			
 			MemberLookup lookup = CreateMemberLookup(lookupMode);
 			ResolveResult result;
@@ -1893,8 +1893,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.6.5
 			
-			if (target.Type.Kind == TypeKind.Dynamic)
-				return new ResolveResult(SpecialType.Dynamic);
+			if (target.Type.Kind == TypeKind.Dynamic) {
+				return new DynamicInvocationResolveResult(target, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+			}
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
