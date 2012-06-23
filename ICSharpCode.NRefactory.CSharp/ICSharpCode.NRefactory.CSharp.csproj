@@ -183,6 +183,7 @@
     <Compile Include="OutputVisitor\IOutputFormatter.cs" />
     <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
+    <Compile Include="Parser\CompilerSettings.cs" />
     <Compile Include="Parser\CSharpParser.cs" />
     <Compile Include="Parser\mcs\anonymous.cs" />
     <Compile Include="Parser\mcs\argument.cs" />

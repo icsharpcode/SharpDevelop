@@ -203,9 +203,11 @@ namespace ICSharpCode.NRefactory.Demo
 			
 			ICompilation compilation = project.CreateCompilation();
 			
+			AstNode selectedNode = null;
 			StoreInDictionaryNavigator navigator;
 			if (csharpTreeView.SelectedNode != null) {
-				navigator = new StoreInDictionaryNavigator((AstNode)csharpTreeView.SelectedNode.Tag);
+				selectedNode = (AstNode)csharpTreeView.SelectedNode.Tag;
+				navigator = new StoreInDictionaryNavigator(selectedNode);
 			} else {
 				navigator = new StoreInDictionaryNavigator();
 			}
@@ -214,6 +216,10 @@ namespace ICSharpCode.NRefactory.Demo
 			csharpTreeView.BeginUpdate();
 			ShowResolveResultsInTree(csharpTreeView.Nodes, navigator);
 			csharpTreeView.EndUpdate();
+			if (csharpTreeView.SelectedNode != null) {
+				using (var dlg = new SemanticTreeDialog(resolver.Resolve(selectedNode)))
+					dlg.ShowDialog();
+			}
 		}
 		
 		sealed class StoreInDictionaryNavigator : NodeListResolveVisitorNavigator
