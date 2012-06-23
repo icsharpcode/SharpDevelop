@@ -22,7 +22,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace ICSharpCode.NRefactory.Utils
 {
@@ -67,11 +66,8 @@ namespace ICSharpCode.NRefactory.Utils
 					name = name.Replace(c, '-');
 			string fileName = name != null ? Path.Combine(Path.GetTempPath(), name) : Path.GetTempFileName();
 			Save(fileName + ".gv");
-			new Thread(new ThreadStart(
-				delegate {
-					Process.Start("dot", "\"" + fileName + ".gv\" -Tpng -o \"" + fileName + ".png\"").WaitForExit();
-					Process.Start(fileName + ".png");
-				})).Start();
+			Process.Start("dot", "\"" + fileName + ".gv\" -Tpng -o \"" + fileName + ".png\"").WaitForExit();
+			Process.Start(fileName + ".png");
 		}
 		
 		static string Escape(string text)
