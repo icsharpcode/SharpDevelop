@@ -1133,13 +1133,15 @@ namespace Mono.CSharp {
 			Attrs.Add (a);
 			
 #if FULL_AST
-			Sections.Add (Attrs);
+			var s = new List<Attribute>();
+			s.Add(a);
+			Sections.Add (s);
 #endif
 		}
 
 		public Attributes (List<Attribute> attrs)
 		{
-			Attrs = attrs;
+			Attrs = new List<Attribute>(attrs);
 #if FULL_AST
 			Sections.Add (attrs);
 #endif
