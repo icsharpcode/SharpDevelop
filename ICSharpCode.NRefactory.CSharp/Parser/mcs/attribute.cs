@@ -1154,9 +1154,8 @@ namespace Mono.CSharp {
 		{
 #if FULL_AST
 			Sections.Add (attrs);
-#else
-			Attrs.AddRange (attrs);
 #endif
+			Attrs.AddRange (attrs);
 		}
 
 		public void AttachTo (Attributable attributable, IMemberContext context)
