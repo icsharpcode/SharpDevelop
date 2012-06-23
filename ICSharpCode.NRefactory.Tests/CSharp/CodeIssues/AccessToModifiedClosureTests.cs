@@ -748,6 +748,35 @@ class TestClass
 }";
 			Test (input, 1, output);
 		}
-		
+
+		[Test]
+		public void TestConstructor ()
+		{
+			var input = @"
+class TestClass
+{
+	public TestClass (int[] a)
+	{
+		foreach (var i in a) {
+			int i1;
+			var f = new System.Func<int, int> (x => x + i);
+		}
+	}
+}";
+			var output = @"
+class TestClass
+{
+	public TestClass (int[] a)
+	{
+		foreach (var i in a) {
+			int i1;
+			var i2 = i;
+			var f = new System.Func<int, int> (x => x + i2);
+		}
+	}
+}";
+			Test (input, 1, output);
+		}
+
 	}
 }

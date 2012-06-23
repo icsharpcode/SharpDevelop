@@ -31,9 +31,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public static class LocalVariableNamePicker
 	{
-		public static string PickSafeName (MethodDeclaration method, IEnumerable<string> candidates)
+		public static string PickSafeName (AstNode node, IEnumerable<string> candidates)
 		{
-			var existingNames = new VariableNameCollector ().Collect (method);
+			var existingNames = new VariableNameCollector ().Collect (node);
 			return candidates.FirstOrDefault (name => !existingNames.Contains (name));
 		}
 
@@ -41,10 +41,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			private ISet<string> variableNames = new HashSet<string> ();
 
-			public ISet<string> Collect (MethodDeclaration methodDecl)
+			public ISet<string> Collect (AstNode node)
 			{
 				variableNames.Clear ();
-				methodDecl.AcceptVisitor (this);
+				node.AcceptVisitor (this);
 				return variableNames;
 			}
 

@@ -82,8 +82,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			Action<Script> action = script =>
 			{
-				var newName = LocalVariableNamePicker.PickSafeName (containingStatement.GetParent<MethodDeclaration> (),
-															Enumerable.Range (1, 100).Select (i => variableName + i));
+				AstNode parent = containingStatement.GetParent<MethodDeclaration> () ??
+					(AstNode)containingStatement.GetParent<ConstructorDeclaration> ();
+				var newName = LocalVariableNamePicker.PickSafeName (parent,
+					Enumerable.Range (1, 100).Select (i => variableName + i));
+
 				var variableDecl = new VariableDeclarationStatement (variableType.Clone (), newName, 
 																	 new IdentifierExpression (variableName));
 				

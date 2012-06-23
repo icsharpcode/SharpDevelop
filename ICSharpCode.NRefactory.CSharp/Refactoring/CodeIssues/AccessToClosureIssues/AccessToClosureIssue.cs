@@ -98,7 +98,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				CheckVariable (((LocalResolveResult)ctx.Resolve (variableInitializer)).Variable, 
 							   variableDecl.Type, 
 							   variableDecl.GetParent<Statement> ());
-				base.VisitVariableInitializer (variableInitializer);
 			}
 
 			public override void VisitForeachStatement (ForeachStatement foreachStatement)
@@ -106,7 +105,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				CheckVariable (((LocalResolveResult)ctx.Resolve (foreachStatement.VariableNameToken)).Variable,
 							   foreachStatement.VariableType, 
 							   foreachStatement);
-				base.VisitForeachStatement (foreachStatement);
 			}
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
@@ -119,11 +117,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					body = ((AnonymousMethodExpression)parent).Body;
 				} else if (parent is LambdaExpression) {
 					body = ((LambdaExpression)parent).Body as Statement;
+				} else if (parent is ConstructorDeclaration) {
+					body = ((ConstructorDeclaration)parent).Body;
 				}
 				if (body != null)
 					CheckVariable (((LocalResolveResult)ctx.Resolve (parameterDeclaration)).Variable, 
 								   parameterDeclaration.Type, body);
-				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 
 			void FindLocalReferences (IVariable variable, FoundReferenceCallback callback)
