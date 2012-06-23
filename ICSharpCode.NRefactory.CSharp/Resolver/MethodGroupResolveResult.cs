@@ -51,6 +51,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	
 	/// <summary>
 	/// Represents a group of methods.
+	/// A method reference used to create a delegate is resolved to a MethodGroupResolveResult.
+	/// The MethodGroupResolveResult has no type.
+	/// To retrieve the delegate type or the chosen overload, look at the method group conversion.
 	/// </summary>
 	public class MethodGroupResolveResult : ResolveResult
 	{
