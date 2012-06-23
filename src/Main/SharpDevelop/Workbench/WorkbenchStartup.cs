@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows.Interop;
-
+using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Parser;
@@ -79,6 +79,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 						MessageService.ShowException(ex);
 					}
 				}
+				StartPreloadThread();
 			}
 			
 			NavigationService.ResumeLogging();
@@ -95,5 +96,71 @@ namespace ICSharpCode.SharpDevelop.Workbench
 				MessageService.ShowException(e, "Exception while saving workbench state.");
 			}
 		}
+		
+		#region Preload-Thread
+		void StartPreloadThread()
+		{
+			// Wait until UI is responsive and pads are initialized before starting the thread.
+			// We don't want to slow down SharpDevelop's startup, we just want to make opening
+			// a project more responsive.
+			// (and parallelism doesn't really help here; we're mostly waiting for the disk to load the code)
+			// So we do our work in the background while the user decides which project to open.
+			SD.MainThread.InvokeAsync(
+				() => new Thread(PreloadThread) { IsBackground = true, Priority = ThreadPriority.BelowNormal }.Start(),
+				DispatcherPriority.ApplicationIdle
+			).FireAndForget();
+		}
+		
+		void PreloadThread()
+		{
+			// Pre-load some stuff to make SharpDevelop more responsive once it is started.
+			LoggingService.Debug("Preload-Thread started.");
+			
+			// warm up MSBuild
+			string projectCode = @"
+<Project DefaultTargets=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"" ToolsVersion=""4.0"">
+  <PropertyGroup>
+    <Configuration>Debug</Configuration>
+    <Platform>AnyCPU</Platform>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include=""System"" />
+  </ItemGroup>
+  <Import Project=""$(MSBuildToolsPath)\Microsoft.CSharp.targets"" />
+</Project>";
+			var project = new Microsoft.Build.Evaluation.Project(
+				new System.Xml.XmlTextReader(new System.IO.StringReader(projectCode)), null, "4.0",
+				new Microsoft.Build.Evaluation.ProjectCollection());
+			
+			// warm up the XSHD loader
+			ICSharpCode.AvalonEdit.Highlighting.HighlightingManager.Instance.GetDefinition("C#");
+			// warm up the C# parser
+			var parser = new ICSharpCode.NRefactory.CSharp.CSharpParser();
+			var cu = parser.Parse(new ICSharpCode.AvalonEdit.Document.TextDocument(@"using System;
+class Test {
+	int SomeMethod(string a);
+	void Main(string[] b) {
+	   SomeMethod(b[0 + 1]);
+	}
+}"), "test.cs");
+			// warm up the type system
+			var parsedFile = cu.ToTypeSystem();
+			var pc = new ICSharpCode.NRefactory.CSharp.CSharpProjectContent().UpdateProjectContent(null, parsedFile);
+			pc = pc.AddAssemblyReferences(new[] { ICSharpCode.NRefactory.TypeSystem.Implementation.MinimalCorlib.Instance });
+			var compilation = pc.CreateCompilation();
+			// warm up the resolver
+			var resolver = new ICSharpCode.NRefactory.CSharp.Resolver.CSharpAstResolver(compilation, cu, parsedFile);
+			foreach (var node in cu.Descendants) {
+				resolver.Resolve(node);
+			}
+			// warm up AvalonEdit (must be done on main thread)
+			SD.MainThread.InvokeAsync(
+				delegate {
+					object editor;
+					SD.EditorControlService.CreateEditor(out editor);
+					LoggingService.Debug("Preload-Thread finished.");
+				}, DispatcherPriority.Background);
+		}
+		#endregion
 	}
 }

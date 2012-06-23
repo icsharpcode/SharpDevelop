@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop
 		/// <summary>
 		/// Gets whether the current thread is different from the thread running this message loop.
 		/// </summary>
-		/// <remarks><c>InvokeRequired = !CheckAcess()</c></remarks>
+		/// <remarks><c>InvokeRequired = !CheckAccess()</c></remarks>
 		bool InvokeRequired { get; }
 		
 		/// <summary>

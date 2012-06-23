@@ -51,6 +51,7 @@
     <Reference Include="log4net">
       <HintPath>..\..\Libraries\log4net\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
