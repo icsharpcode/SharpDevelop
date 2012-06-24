@@ -73,6 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitTypeParameterDeclaration (TypeParameterDeclaration decl)
 			{
+				base.VisitTypeParameterDeclaration (decl);
+
 				var resolveResult = ctx.Resolve (decl) as TypeResolveResult;
 				if (resolveResult == null)
 					return;
@@ -87,8 +89,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				AddIssue (decl.NameToken, ctx.TranslateString ("Type parameter is never used"));
-
-				base.VisitTypeParameterDeclaration (decl);
 			}
 		}
 	}

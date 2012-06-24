@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
 			{
+				base.VisitVariableInitializer (variableInitializer);
+
 				var decl = variableInitializer.Parent as VariableDeclarationStatement;
 				if (decl == null)
 					return;
@@ -64,8 +66,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				AddIssue (variableInitializer.NameToken,
 					ctx.TranslateString ("Local variable is assigned by its value is never used"));
-
-				base.VisitVariableInitializer (variableInitializer);
 			}
 		}
 	}

@@ -53,6 +53,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitParameterDeclaration (ParameterDeclaration parameterDeclaration)
 			{
+				base.VisitParameterDeclaration (parameterDeclaration);
+
 				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
@@ -60,8 +62,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				AddIssue (parameterDeclaration.NameToken, ctx.TranslateString ("Parameter is never used"));
-
-				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 		}
 	}

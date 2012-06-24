@@ -52,6 +52,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
 			{
+				base.VisitVariableInitializer (variableInitializer);
+
 				// check if variable is assigned
 				if (!variableInitializer.Initializer.IsNull)
 					return;
@@ -78,11 +80,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							script.Replace (decl, newDeclaration);
 						}
 					});
-				base.VisitVariableInitializer (variableInitializer);
 			}
 
 			public override void VisitForeachStatement (ForeachStatement foreachStatement)
 			{
+				base.VisitForeachStatement (foreachStatement);
+
 				var resolveResult = ctx.Resolve (foreachStatement.VariableNameToken) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
@@ -91,8 +94,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				AddIssue (foreachStatement.VariableNameToken, ctx.TranslateString ("Local variable is never used"));
-
-				base.VisitForeachStatement (foreachStatement);
 			}
 		}
 
