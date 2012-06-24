@@ -76,5 +76,10 @@ namespace ICSharpCode.PackageManagement
 				return Directory.GetDirectories(path);
 			}
 		}
+		
+		public void ParseFile(string fileName)
+		{
+			ParserService.ParseFile(fileName);
+		}
 	}
 }

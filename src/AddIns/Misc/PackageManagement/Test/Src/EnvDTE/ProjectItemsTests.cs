@@ -411,6 +411,20 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void AddFromFile_FullFileNameIsInsideProject_FileIsParsed()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
+			
+			projectItems.AddFromFile(fileName);
+			
+			string parsedFileName = fakeFileService.FileNamePassedToParseFile;
+			
+			Assert.AreEqual(fileName, parsedFileName);
+		}
+		
+		[Test]
 		public void AddFromFile_FullFileNameIsInsideProject_ProjectItemReturned()
 		{
 			CreateProjectItems();

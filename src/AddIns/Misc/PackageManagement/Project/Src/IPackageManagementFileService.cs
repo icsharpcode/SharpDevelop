@@ -14,5 +14,7 @@ namespace ICSharpCode.PackageManagement
 		bool FileExists(string fileName);
 		string[] GetFiles(string path);
 		string[] GetDirectories(string path);
+		
+		void ParseFile(string fileName);
 	}
 }

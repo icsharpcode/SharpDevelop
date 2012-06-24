@@ -106,5 +106,12 @@ namespace PackageManagement.Tests.Helpers
 			}
 			return new string[0];
 		}
+		
+		public string FileNamePassedToParseFile;
+		
+		public void ParseFile(string fileName)
+		{
+			FileNamePassedToParseFile = fileName;
+		}
 	}
 }

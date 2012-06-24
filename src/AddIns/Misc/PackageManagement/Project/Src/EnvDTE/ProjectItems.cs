@@ -98,6 +98,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			ProjectItem projectItem = project.AddFileProjectItemUsingFullPath(fileName);
 			project.Save();
+			fileService.ParseFile(fileName);
 			return projectItem;
 		}
 		
