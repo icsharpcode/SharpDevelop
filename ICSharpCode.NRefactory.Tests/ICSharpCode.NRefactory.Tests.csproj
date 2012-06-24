@@ -280,6 +280,7 @@
     <Compile Include="CSharp\CodeIssues\ValueParameterUnusedTests.cs" />
     <Compile Include="CSharp\Parser\Statements\InvalidStatementsTests.cs" />
     <Compile Include="CSharp\Refactoring\NamingHelperTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertToInitializerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -308,6 +309,7 @@
     <Folder Include="CSharp\CodeIssues\" />
     <Folder Include="CSharp\CodeActions\" />
     <Folder Include="CSharp\Parser\Bugs\" />
+    <Folder Include="CSharp\CodeActions\ConvertToInitializer\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

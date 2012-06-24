@@ -382,6 +382,9 @@
     <Compile Include="Completion\ICompletionContextProvider.cs" />
     <Compile Include="Refactoring\CodeIssues\ValueParameterUnusedIssue.cs" />
     <Compile Include="Refactoring\NamingHelper.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertToInitializer\ConvertToInitializerAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertToInitializer\StatementsToInitializerConverter.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertToInitializer\InitializerPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -395,6 +398,7 @@
     <Folder Include="Refactoring\CodeIssues\" />
     <Folder Include="Refactoring\CodeIssues\InconsistentNamingIssue\" />
     <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
+    <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
