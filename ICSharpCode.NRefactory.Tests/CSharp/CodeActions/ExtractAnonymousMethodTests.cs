@@ -137,5 +137,23 @@ class TestClass
 	}
 }");
 		}
+
+		[Test]
+		public void TestLambdaInField ()
+		{
+			Test<ExtractAnonymousMethodAction> (@"
+class TestClass
+{
+	System.Action<int> a = i $=>  { i++; };
+}", @"
+class TestClass
+{
+	void Method (int i)
+	{
+		i++;
+	}
+	System.Action<int> a = Method;
+}");
+		}
 	}
 }

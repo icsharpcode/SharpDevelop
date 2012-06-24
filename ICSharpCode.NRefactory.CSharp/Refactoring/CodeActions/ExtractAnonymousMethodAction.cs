@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				{
 					var identifier = new IdentifierExpression ("Method");
 					script.Replace (node, identifier);
-					script.InsertBefore (node.GetParent<MethodDeclaration> (), method);
+					script.InsertBefore (node.GetParent<EntityDeclaration> (), method);
 					script.Link (method.NameToken, identifier);
 				});
 		}
