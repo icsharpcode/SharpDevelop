@@ -162,6 +162,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
+		/// Sets the current module.
+		/// This causes ReadTypeReference() to use <see cref="DefaultAssemblyReference.CurrentAssembly"/> for references
+		/// in that module.
+		/// </summary>
+		public void SetCurrentModule(ModuleDefinition module)
+		{
+			this.currentModule = module;
+		}
+		
+		/// <summary>
 		/// Loads a type from Cecil.
 		/// </summary>
 		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>

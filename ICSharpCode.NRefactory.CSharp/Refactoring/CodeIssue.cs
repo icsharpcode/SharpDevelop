@@ -1,4 +1,4 @@
-﻿// 
+// 
 // InspectionIssue.cs
 //
 // Author:
