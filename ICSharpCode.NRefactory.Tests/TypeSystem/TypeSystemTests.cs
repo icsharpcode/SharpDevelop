@@ -995,6 +995,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void ExplicitIndexerImplementationReturnsTheCorrectMembers() {
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexersExplicitly));
 
+			Assert.That(type.Properties.All(p => p.EntityType == EntityType.Indexer));
 			Assert.That(type.Properties.All(p => p.ImplementedInterfaceMembers.Count == 1));
 			Assert.That(type.Properties.All(p => p.Getter.ImplementedInterfaceMembers.Count == 1));
 			Assert.That(type.Properties.All(p => p.Setter.ImplementedInterfaceMembers.Count == 1));
