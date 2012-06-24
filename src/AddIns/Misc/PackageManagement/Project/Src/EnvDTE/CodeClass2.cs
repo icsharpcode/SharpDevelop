@@ -14,7 +14,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeElements PartialClasses {
-			get { return new CodeElementsList(); }
+			get { return new PartialClasses(this); }
 		}
 		
 		public static CodeClass2 CreateFromBaseType(IProjectContent projectContent, IReturnType baseType)

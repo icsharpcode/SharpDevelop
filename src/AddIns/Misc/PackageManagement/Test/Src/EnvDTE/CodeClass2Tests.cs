@@ -236,5 +236,19 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual("MyNamespace.Test", codeNamespace.FullName);
 		}
+		
+		[Test]
+		public void PartialClasses_ClassIsNotPartial_ReturnsClass()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyNamespace.MyClass");
+			CreateClass();
+			
+			CodeElements partialClasses = codeClass.PartialClasses;
+			CodeClass firstClass = partialClasses.FirstCodeClass2OrDefault();
+			
+			Assert.AreEqual(1, partialClasses.Count);
+			Assert.AreEqual(codeClass, firstClass);
+		}
 	}
 }
