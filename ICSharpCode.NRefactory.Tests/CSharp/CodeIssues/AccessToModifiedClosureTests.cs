@@ -98,7 +98,7 @@ class TestClass
 	void TestMethod ()
 	{
 		for (int i = 0; i < 10; i++) {
-			int i1 = i;
+			var i1 = i;
 			var f = new System.Func<int, int> (x => x + i1);
 		}
 	}
@@ -143,7 +143,7 @@ class TestClass
 	void TestMethod ()
 	{
 		for (int i = 0; i < 10;) {
-			int i1 = i;
+			var i1 = i;
 			var f = new System.Func<int, int> (delegate (int x) { return x + i1; });
 			i++;
 		}
@@ -175,7 +175,7 @@ class TestClass
 		int i = 0;
 		while (i < 10) {
 			i++;
-			int i1 = i;
+			var i1 = i;
 			var f = new System.Func<int, int> (x => x + i1);
 		}
 	}
@@ -204,7 +204,7 @@ class TestClass
 	{
 		int i = 0;
 		while (i++ < 10) {
-			int i1 = i;
+			var i1 = i;
 			var f = new System.Func<int, int> (delegate (int x) { return x + i1; });
 		}
 	}
@@ -235,7 +235,7 @@ class TestClass
 		int i = 0;
 		do {
 			i += 1;
-			int i1 = i;
+			var i1 = i;
 			var f = new System.Func<int, int> (x => x + i1);
 		} while (i < 10);
 	}
@@ -264,7 +264,7 @@ class TestClass
 	{
 		int i = 0;
 		while (i++ < 10) {
-			int i1 = i;
+			var i1 = i;
 			var f = new System.Func<int, int> (x => x + i1);
 		}
 	}
@@ -491,7 +491,7 @@ class TestClass
 	void TestMethod ()
 	{
 		int i = 0;
-		int i1 = i;
+		var i1 = i;
 		System.Func<int, int> f = x => i1 + x;
 		i += 1;
 	}
@@ -563,7 +563,7 @@ class TestClass
 {
 	void TestMethod (int i)
 	{
-		int i1 = i;
+		var i1 = i;
 		System.Func<int, int> f = x => i1 + x;
 		i += 1;
 	}
@@ -595,7 +595,7 @@ class TestClass
 {
 	void TestMethod3 (System.Func<int, int> a, int b)
 	{
-		int b1 = b;
+		var b1 = b;
 	    TestMethod3 (c => c + b1, b++);
 	}
 }";
@@ -624,7 +624,7 @@ class TestClass
 	{
 		int i = 0;
 		System.Func<int, int> f = null;
-		int i1 = i;
+		var i1 = i;
 		if ((f = x => x + i1) != null)
 			i++;
 	}
@@ -655,7 +655,7 @@ class TestClass
 		System.Func<int, int> f = null;
 		switch (k) {
 		default:
-			int i1 = i;
+			var i1 = i;
 			f = x => x + i1;
 			break;
 		}
@@ -778,5 +778,31 @@ class TestClass
 			Test (input, 1, output);
 		}
 
+		[Test]
+		public void TestField ()
+		{
+			var input = @"
+class TestClass
+{
+	System.Action<int> a = i =>
+	{
+		System.Func<int> f = () => i + 1;
+		i++;
+	};
+}";
+			var output = @"
+class TestClass
+{
+	System.Action<int> a = i =>
+	{
+		var i1 = i;
+		System.Func<int> f = () => i1 + 1;
+		i++;
+	};
+}";
+			Test (input, 1, output);
+		}
+
+		
 	}
 }

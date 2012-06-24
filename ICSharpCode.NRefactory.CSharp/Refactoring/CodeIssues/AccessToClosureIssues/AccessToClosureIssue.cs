@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		}
 
 		protected abstract IEnumerable<CodeAction> GetFixes (BaseRefactoringContext context, Node env, 
-															 string variableName, AstType variableType);
+															 string variableName);
 
 		#region GatherVisitor
 
@@ -92,19 +92,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitVariableInitializer (VariableInitializer variableInitializer)
 			{
 				var variableDecl = variableInitializer.Parent as VariableDeclarationStatement;
-				if (variableDecl == null)
-					return;
-
-				CheckVariable (((LocalResolveResult)ctx.Resolve (variableInitializer)).Variable, 
-							   variableDecl.Type, 
-							   variableDecl.GetParent<Statement> ());
+				if (variableDecl != null)
+					CheckVariable (((LocalResolveResult)ctx.Resolve (variableInitializer)).Variable, 
+								   variableDecl.GetParent<Statement> ());
 				base.VisitVariableInitializer (variableInitializer);
 			}
 
 			public override void VisitForeachStatement (ForeachStatement foreachStatement)
 			{
 				CheckVariable (((LocalResolveResult)ctx.Resolve (foreachStatement.VariableNameToken)).Variable,
-							   foreachStatement.VariableType,
 							   foreachStatement);
 				base.VisitForeachStatement (foreachStatement);
 			}
@@ -121,10 +117,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					body = ((LambdaExpression)parent).Body as Statement;
 				} else if (parent is ConstructorDeclaration) {
 					body = ((ConstructorDeclaration)parent).Body;
+				} else if (parent is OperatorDeclaration) {
+					body = ((OperatorDeclaration)parent).Body;
 				}
 				if (body != null)
-					CheckVariable (((LocalResolveResult)ctx.Resolve (parameterDeclaration)).Variable,
-								   parameterDeclaration.Type, body);
+					CheckVariable (((LocalResolveResult)ctx.Resolve (parameterDeclaration)).Variable, body);
 				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 
@@ -134,7 +131,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 											   ctx.CancellationToken);
 			}
 
-			void CheckVariable (IVariable variable, AstType type, Statement env)
+			void CheckVariable (IVariable variable, Statement env)
 			{
 				if (!issueProvider.IsTargetVariable (variable))
 					return;
@@ -147,10 +144,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					AddNode (envLookup, new Node (astNode, issueProvider.GetNodeKind (astNode))));
 
 				root.SortChildren ();
-				CollectIssues (root, variable.Name, type);
+				CollectIssues (root, variable.Name);
 			}
 
-			void CollectIssues (Environment env, string variableName, AstType variableType)
+			void CollectIssues (Environment env, string variableName)
 			{
 				IList<ControlFlowNode> cfg = null;
 				IDictionary<Statement, IList<Node>> modifications = null;
@@ -171,20 +168,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				foreach (var child in env.GetChildEnvironments ()) {
 					if (!child.IssueCollected && cfg != null && 
 						CanReachModification (cfg, child, modifications))
-						CollectAllIssues (child, variableName, variableType);
+						CollectAllIssues (child, variableName);
 
-					CollectIssues (child, variableName, variableType);
+					CollectIssues (child, variableName);
 				}
 			}
 
-			void CollectAllIssues (Environment env, string variableName, AstType variableType)
+			void CollectAllIssues (Environment env, string variableName)
 			{
-				var fixes = issueProvider.GetFixes (ctx, env, variableName, variableType).ToArray ();
+				var fixes = issueProvider.GetFixes (ctx, env, variableName).ToArray ();
 				env.IssueCollected = true;
 
 				foreach (var child in env.Children) {
 					if (child is Environment) {
-						CollectAllIssues ((Environment)child, variableName, variableType);
+						CollectAllIssues ((Environment)child, variableName);
 					} else {
 						if (child.Kind != NodeKind.Modification)
 							AddIssue (child.AstNode, title, fixes);
