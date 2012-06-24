@@ -64,6 +64,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				AddIssue (variableInitializer.NameToken,
 					ctx.TranslateString ("Local variable is assigned by its value is never used"));
+
+				base.VisitVariableInitializer (variableInitializer);
 			}
 		}
 	}

@@ -78,6 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							script.Replace (decl, newDeclaration);
 						}
 					});
+				base.VisitVariableInitializer (variableInitializer);
 			}
 
 			public override void VisitForeachStatement (ForeachStatement foreachStatement)
@@ -90,6 +91,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				AddIssue (foreachStatement.VariableNameToken, ctx.TranslateString ("Local variable is never used"));
+
+				base.VisitForeachStatement (foreachStatement);
 			}
 		}
 

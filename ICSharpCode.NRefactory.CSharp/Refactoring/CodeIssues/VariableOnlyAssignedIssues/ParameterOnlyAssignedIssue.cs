@@ -60,6 +60,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				AddIssue (parameterDeclaration.NameToken, 
 					ctx.TranslateString ("Parameter is assigned by its value is never used"));
+
+				base.VisitParameterDeclaration (parameterDeclaration);
 			}
 		}
 	}

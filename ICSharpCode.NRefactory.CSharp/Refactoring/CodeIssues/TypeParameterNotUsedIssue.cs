@@ -87,6 +87,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 
 				AddIssue (decl.NameToken, ctx.TranslateString ("Type parameter is never used"));
+
+				base.VisitTypeParameterDeclaration (decl);
 			}
 		}
 	}
