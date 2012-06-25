@@ -385,6 +385,7 @@
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\ConvertToInitializerAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\StatementsToInitializerConverter.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\InitializerPath.cs" />
+    <Compile Include="Refactoring\CodeIssues\CallToStaticMemberViaDerivedTypeIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
