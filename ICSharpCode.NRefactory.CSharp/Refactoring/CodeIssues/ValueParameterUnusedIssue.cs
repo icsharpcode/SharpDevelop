@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.Semantics;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
@@ -59,9 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration)
 			{
-				var body = propertyDeclaration.Setter.Body;
-				if (!body.IsNull)
-					FindIssuesInNode(propertyDeclaration.Setter, body);
+				FindIssuesInNode(propertyDeclaration.Setter, propertyDeclaration.Setter.Body);
 			}
 
 			public override void VisitCustomEventDeclaration(CustomEventDeclaration eventDeclaration)
@@ -82,6 +79,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void FindIssuesInNode(AstNode anchor, AstNode node, string accessorName = "setter")
 			{
+				if (node == null || node.IsNull)
+					return;
 				var variable = context.GetResolverStateBefore(node).LocalVariables
 					.Where(v => v.Name == "value").FirstOrDefault();
 				if (variable == null)

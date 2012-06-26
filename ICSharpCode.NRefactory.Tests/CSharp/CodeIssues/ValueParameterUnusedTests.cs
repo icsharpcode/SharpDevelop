@@ -117,13 +117,25 @@ namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
-
+		
 		[Test]
 		public void IgnoreReadOnlyProperty()
 		{
 			var input = @"class A
 {
-	string  Property { get; }
+string  Property { get; }
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotCrashOnNullIndexerAccessorBody()
+		{
+			var input = @"abstract class A
+{
+public abstract string this[int i] { get; set; }
 }";
 			TestRefactoringContext context;
 			var issues = GetIssues(new ValueParameterUnusedIssue(), input, out context);
