@@ -20,7 +20,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddBaseTypes()
 		{
-			AddCodeElement(CodeClass2.CreateFromBaseType(projectContent, c.BaseType));
+			if (c.BaseType != null) {
+				AddCodeElement(CodeClass2.CreateFromBaseType(projectContent, c.BaseType));
+			}
 		}
 	}
 }

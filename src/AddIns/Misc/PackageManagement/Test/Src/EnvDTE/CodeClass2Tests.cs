@@ -172,6 +172,17 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void BaseTypes_ClassBaseTypeIsNull_ReturnsNoCodeElements()
+		{
+			CreateProjectContent();
+			CreatePublicClass("System.Object");
+			
+			CodeElements codeElements = codeClass.Bases;
+			
+			Assert.AreEqual(0, codeElements.Count);
+		}
+		
+		[Test]
 		public void Members_ClassHasOneMethod_ReturnsOneMethod()
 		{
 			CreateProjectContent();
