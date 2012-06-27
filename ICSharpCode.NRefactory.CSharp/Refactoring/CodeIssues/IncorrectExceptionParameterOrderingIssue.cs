@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using System;
 
-namespace ICSharpCode.NRefactory.CSharp
+namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	[IssueDescription("Incorrect ordering of exception constructor parameters",
 	       Description = "Warns about the constructor parameter ordering of some confusing exception types.",
