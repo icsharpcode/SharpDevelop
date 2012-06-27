@@ -127,27 +127,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return newVariableDeclarationStatement;
 		}
 
-		IList<Type> scopeEntryPoints = new List<Type>() {
-			typeof (IfElseStatement),
-			typeof (WhileStatement),
-			typeof (ForeachStatement),
-			typeof (ForStatement),
-			typeof (DoWhileStatement),
-			typeof (UsingStatement)
-		};
 		List<Type> scopeContainers = new List<Type>() {
 			typeof (MethodDeclaration),
 			typeof (Accessor)
 		};
 
-		AstNode FindCurrentScopeEntryNode(AstNode startNode)
+		AstNode FindCurrentScopeEntryNode(Statement startNode)
 		{
-			var startNodeType = startNode.GetType();
-			if (scopeEntryPoints.Contains(startNodeType))
-				return startNode;
-			if (scopeContainers.Contains(startNodeType))
-				return null;
-			return FindCurrentScopeEntryNode(startNode.Parent);
+			// Start one node up in the tree, otherwise we may stop at the BlockStatement
+			// of the current scope instead of moving up to the enclosing scope
+			var currentNode = startNode.Parent;
+			AstNode lastNode;
+			do {
+				lastNode = currentNode;
+				currentNode = currentNode.Parent;
+				if (scopeContainers.Contains(currentNode.GetType()))
+					return null;
+			} while (currentNode.GetType() != typeof(BlockStatement));
+			return lastNode;
 		}
 		#endregion
 	}

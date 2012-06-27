@@ -63,6 +63,19 @@ while (true) {
 }
 ");
 		}
+		
+		[Test]
+		public void IgnoresDeclarationsDirectlyInABody()
+		{
+			TestWrongContext<MoveToOuterScopeAction>(@"
+class A
+{
+	void F()
+	{
+		int $i = 2;
+	}
+}");
+		}
 
 		[Test]
 		public void MovesOnlyTheCurrentVariableInitialization()
@@ -107,6 +120,20 @@ while (true) {
 	int i = 2;
 	j = i;
 }
+");
+		}
+		
+		[Test]
+		public void HandlesLambdaDelegate()
+		{
+			TestStatements(@"
+var action = new Action<int>(i => {
+	int j$ = 2;
+});
+", @"
+int j = 2;
+var action = new Action<int>(i => {
+});
 ");
 		}
 	}
