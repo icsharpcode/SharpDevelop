@@ -283,6 +283,7 @@
     <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertToInitializerTests.cs" />
     <Compile Include="CSharp\CodeIssues\CallToStaticMemberViaDerivedTypeTests.cs" />
     <Compile Include="CSharp\CodeActions\MoveToOuterScopeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\VariableDeclaredInWideScopeIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

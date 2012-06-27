@@ -387,6 +387,7 @@
     <Compile Include="Refactoring\CodeActions\ConvertToInitializer\InitializerPath.cs" />
     <Compile Include="Refactoring\CodeIssues\CallToStaticMemberViaDerivedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeActions\MoveToOuterScopeAction.cs" />
+    <Compile Include="Refactoring\CodeIssues\VariableDeclaredInWideScopeIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
