@@ -5295,6 +5295,36 @@ static class Ext
 				Assert.IsNull(provider.Find("this"), "'this' found.");
 			});
 		}
+		
+		/// <summary>
+		/// Bug 5404 - Completion and highlighting for pointers 
+		/// </summary>
+		[Test()]
+		public void TestBug5404()
+		{
+			CombinedProviderTest(
+				@"using System;
+
+namespace TestConsole
+{
+unsafe class MainClass
+{
+public int i = 5, j =19;
+
+public static void Main (string[] args)
+{
+MainClass*  mc;
+$mc->$
+}
+}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("i"), "'i' not found.");
+			});
+		}
+		
+
+
 
 	}
 }
