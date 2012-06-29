@@ -163,9 +163,15 @@ namespace ICSharpCode.AvalonEdit.Editing
 			VisualLine vl = textView.GetVisualLine(pos.Line);
 			if (vl == null) return EMPTY_RECT;
 			TextLine line = vl.GetTextLine(pos.VisualColumn);
-			double offset = vl.GetTextLineVisualYPosition(line, VisualYPosition.LineTop) - textView.ScrollOffset.Y;
-			Rect r = line.GetTextBounds(pos.VisualColumn, 1).First().Rectangle;
-			r.Offset(-textView.ScrollOffset.X, offset);
+			double offset = vl.GetTextLineVisualYPosition(line, VisualYPosition.TextTop) - textView.ScrollOffset.Y;
+			Rect r;
+			if (pos.VisualColumn < vl.VisualLengthWithEndOfLineMarker) {
+				r = line.GetTextBounds(pos.VisualColumn, 1).First().Rectangle;
+				r.Offset(-textView.ScrollOffset.X, offset);
+			} else {
+				r = new Rect(vl.GetVisualPosition(pos.VisualColumn, VisualYPosition.TextTop), new Size(textView.WideSpaceWidth, textView.DefaultLineHeight));
+				r.Offset(-textView.ScrollOffset);
+			}
 			// this may happen during layout changes in AvalonDock, so we just return an empty rectangle
 			// in those cases. It should be refreshed immediately.
 			if (!source.RootVisual.IsAncestorOf(textView)) return EMPTY_RECT;
