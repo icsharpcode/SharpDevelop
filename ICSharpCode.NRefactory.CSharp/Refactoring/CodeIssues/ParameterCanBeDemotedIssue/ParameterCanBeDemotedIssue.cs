@@ -68,8 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						continue;
 					var currentType = localResolveResult.Type;
 					var candidateTypes = localResolveResult.Type.GetAllBaseTypes().ToList();
-					candidateTypes.Add(localResolveResult.Type);
-					var possibleTypes = GetLeastDerivedImplementors(candidateTypes, invocations);
+					var possibleTypes = GetPossibleTypes(candidateTypes, invocations);
 					var suggestedTypes = possibleTypes.Where(t => t != currentType);
 					if (suggestedTypes.Any())
 						AddIssue(parameter, context.TranslateString("Parameter can be demoted to base class"),
@@ -89,45 +88,45 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			}
 
-			static IEnumerable<IMember> GetDeclaredMembers(IMember member)
-			{
-				var implementedInterfaceMembers = member.ImplementedInterfaceMembers;
-				if (implementedInterfaceMembers.Count == 0) {
-					yield return member;
-				}
-				else {
-					foreach (var interfaceMember in implementedInterfaceMembers) {
-						yield return interfaceMember;
-					}
-				}
-			}
-
 			HashSet<IMember> GetNeededMembers(IEnumerable<InvocationResolveResult> invocations)
 			{
 				var members = new HashSet<IMember>();
 				foreach (var invocation in invocations) {
-					foreach (var member in GetDeclaredMembers(invocation.Member)) {
-						members.Add(member);
-					}
+					members.Add(invocation.Member);
 				}
 				return members;
 			}
 
-			bool SatisfiesMemberRequests(IType type, HashSet<IMember> members)
+			static bool HasCommonMemberDeclaration(IEnumerable<IMember> acceptableMembers, IMember member)
 			{
-				var unsatisfiedMembers = new HashSet<IMember>(members);
-				foreach (var member in type.GetMembers()) {
-					var interfaceMembers = member.ImplementedInterfaceMembers;
-					if (interfaceMembers.Count > 0) {
-						unsatisfiedMembers.RemoveWhere(m => interfaceMembers.Contains(m));
-					} else {
-						unsatisfiedMembers.RemoveWhere(m => m == member);
-					}
+				var implementedInterfaceMembers = member.MemberDefinition.ImplementedInterfaceMembers;
+				if (implementedInterfaceMembers.Any()) {
+					return acceptableMembers.ContainsAny(implementedInterfaceMembers);
 				}
-				return unsatisfiedMembers.Count == 0;
+				else {
+					return acceptableMembers.Contains(member.MemberDefinition);
+				}
 			}
 
-			IEnumerable<IType> GetLeastDerivedImplementors(IEnumerable<IType> types, IEnumerable<InvocationResolveResult> invocations)
+			bool SatisfiesMemberRequests(IType candidateType, HashSet<IMember> wantedMembers)
+			{
+				var allMembers = candidateType.GetMembers();
+				foreach (var wantedMember in wantedMembers) {
+					IEnumerable<IMember> acceptableMembers;
+					if (wantedMember.ImplementedInterfaceMembers.Any()) {
+						acceptableMembers = wantedMember.ImplementedInterfaceMembers.ToList();
+					} else {
+						acceptableMembers = new List<IMember>() { wantedMember.MemberDefinition };
+					}
+
+					var hasMember = allMembers.Any(m => HasCommonMemberDeclaration(acceptableMembers, m));
+					if (!hasMember)
+						return false;
+				}
+				return true;
+			}
+
+			IEnumerable<IType> GetPossibleTypes(IEnumerable<IType> types, IEnumerable<InvocationResolveResult> invocations)
 			{
 				var members = GetNeededMembers(invocations);
 				return from type in types
@@ -174,6 +173,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					Invocations[variable] = new List<InvocationResolveResult>();
 				Invocations[variable].Add(invocationResolveResult);
 			}
+		}
+	}
+	
+	static class IEnumerableExtensions
+	{
+		public static bool ContainsAny<T>(this IEnumerable<T> collection, IEnumerable<T> items)
+		{
+			foreach (var item in items) {
+				if (collection.Contains(item))
+					return true;
+			}
+			return false;
 		}
 	}
 }

@@ -27,18 +27,17 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
-using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
-		[TestFixture]
-		public class ParameterCanBeDemotedTests : InspectionActionTestBase
-		{
+	[TestFixture]
+	public class ParameterCanBeDemotedTests : InspectionActionTestBase
+	{
 		
-				[Test]
-				public void BasicTest()
-				{
-						var input = @"
+		[Test]
+		public void BasicTest()
+		{
+			var input = @"
 class A
 {
 	public virtual void Foo() {}
@@ -54,11 +53,13 @@ class C
 		b.Foo();
 	}
 }";
-						TestRefactoringContext context;
-						var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
-						Assert.AreEqual(1, issues.Count);
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
 			
-						CheckFix(context, issues [0], @"
+			CheckFix(context, issues [0], @"
 class A
 {
 	public virtual void Foo() {}
@@ -74,13 +75,13 @@ class C
 		b.Foo();
 	}
 }"
-						);
-				}
+			);
+		}
 
-				[Test]
-				public void InterfaceTest()
-				{
-						var input = @"
+		[Test]
+		public void InterfaceTest()
+		{
+			var input = @"
 interface IA
 {
 	void Foo();
@@ -97,11 +98,13 @@ class C
 		b.Foo();
 	}
 }";
-						TestRefactoringContext context;
-						var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
-						Assert.AreEqual(1, issues.Count);
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
 			
-						CheckFix(context, issues [0], @"
+			CheckFix(context, issues [0], @"
 interface IA
 {
 	void Foo();
@@ -118,8 +121,66 @@ class C
 		b.Foo();
 	}
 }"
-						);
-				}
+			);
+		}
+		
+		[Test]
+		public void MultipleInterfaceTest()
+		{
+			var input = @"
+interface IA1
+{
+	void Foo();
+}
+interface IA2
+{
+	void Bar();
+}
+class B : IA1, IA2
+{
+	public virtual void Foo() {}
+	public virtual void Bar() {}
+}
+class C : B {}
+class Test
+{
+	void F(C c)
+	{
+		c.Foo();
+		c.Bar();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
+
+			CheckFix(context, issues [0], @"
+interface IA1
+{
+	void Foo();
+}
+interface IA2
+{
+	void Bar();
+}
+class B : IA1, IA2
+{
+	public virtual void Foo() {}
+	public virtual void Bar() {}
+}
+class C : B {}
+class Test
+{
+	void F(B c)
+	{
+		c.Foo();
+		c.Bar();
+	}
+}"
+			);
+		}
 
 		string baseInput = @"
 interface IA
@@ -160,7 +221,9 @@ class Test
 			TestRefactoringContext context;
 			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
-			var fixes = issues [0].Actions;
+			var issue = issues [0];
+			Assert.AreEqual(4, issue.Actions.Count);
+
 			CheckFix(context, issues [0], baseInput + @"
 class Test
 {
@@ -168,7 +231,8 @@ class Test
 	{
 		d.Foo();
 	}
-}");
+}"
+			);
 		}
 	}
 }
