@@ -388,6 +388,7 @@
     <Compile Include="Refactoring\CodeIssues\CallToStaticMemberViaDerivedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeActions\MoveToOuterScopeAction.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableDeclaredInWideScopeIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

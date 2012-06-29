@@ -284,6 +284,7 @@
     <Compile Include="CSharp\CodeIssues\CallToStaticMemberViaDerivedTypeTests.cs" />
     <Compile Include="CSharp\CodeActions\MoveToOuterScopeTests.cs" />
     <Compile Include="CSharp\CodeIssues\VariableDeclaredInWideScopeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -313,6 +314,7 @@
     <Folder Include="CSharp\CodeActions\" />
     <Folder Include="CSharp\Parser\Bugs\" />
     <Folder Include="CSharp\CodeActions\ConvertToInitializer\" />
+    <Folder Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
