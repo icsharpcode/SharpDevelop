@@ -72,6 +72,7 @@
       <DependentUpon>AnalysisProjectOptionsPanelXaml.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\AnalysisProjectOptionsTreeNodes.cs" />
     <Compile Include="Src\FxCopWrapper.cs" />
     <Compile Include="Src\FxCopRule.cs" />
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />

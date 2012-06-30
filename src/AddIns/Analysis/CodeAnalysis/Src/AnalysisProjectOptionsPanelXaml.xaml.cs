@@ -44,14 +44,14 @@ namespace ICSharpCode.CodeAnalysis
 		private bool userCheck;
 		private Dictionary<string, RuleTreeNode> rules = new Dictionary<string, RuleTreeNode>();
 		
-		private List<Tuple<Icon,string>> bla = new List<Tuple<Icon,string>>();
+		private List<Tuple<Icon,string,int>> bla = new List<Tuple<Icon,string,int>>();
 		
 		public AnalysisProjectOptionsPanelXaml()
 		{
 			InitializeComponent();
 			DataContext = this;
-			bla.Add(Tuple.Create<Icon,string>(SystemIcons.Warning,"Warning"));
-			bla.Add(Tuple.Create<Icon,string>(SystemIcons.Error,"Error"));
+			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Warning,"Warning",0));
+			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Error,"Error",1));
 //			bla.Add(Tuple.Create<Icon,string>(null,"None"));
 		}
 		
@@ -86,12 +86,12 @@ namespace ICSharpCode.CodeAnalysis
 					ruleAssemblies = value;
 					
 					if (initSuccess) {
-						////						OnOptionChanged(EventArgs.Empty);
 						ReloadRuleList();
 					}
 				}
 			}
 		}
+		
 		#endregion
 		
 		#region Rule string Property
@@ -106,19 +106,17 @@ namespace ICSharpCode.CodeAnalysis
 							b.Append(';');
 						if ((bool)rule.IsChecked)
 							b.Append('+');
-						
 						else
 							b.Append('-');
 						if (rule.isError)
 							b.Append('!');
 						b.Append(rule.Identifier);
 					}
-					Console.WriteLine("");
-					Console.WriteLine(b.ToString());
 				}
 			}
 			return b.ToString();
 		}
+		
 		
 		void ReadRuleString()
 		{
@@ -150,20 +148,41 @@ namespace ICSharpCode.CodeAnalysis
 					ruleNode.isError = error;
 				}
 			}
-			/*
-			foreach (SharpTreeNode cat in ruleTreeView.Root.Children) {
-				bool noneChecked = true;
-				foreach (RuleTreeNode rtn in cat.Children) {
-					if ((bool)rtn.IsChecked) {
-						noneChecked = false;
-						break;
+			userCheck = true;
+//			SetCategoryIcon();
+			SetCategoryIcon();
+		}
+
+		/*
+		void oldSetCategoryIcon()
+		{
+			foreach (CategoryTreeNode element in ruleTreeView.Root.Children) {
+				Console.WriteLine(" {0} - errorstate {1}",element.Text, element.ErrorState.ToString());
+				if (element.ErrorState > -1) {
+					element.Index = element.ErrorState;
+				}
+				Console.WriteLine("-------------------------");
+			}
+			
+		}
+		 */
+		
+		
+		void SetCategoryIcon() {
+			foreach (CategoryTreeNode element in ruleTreeView.Root.Children) {
+//				Console.WriteLine(" {0} ",element.Text);
+				if (!element.NewErrorState.HasValue) {
+					Console.WriteLine (" {0} is Mixed Mode",element.Text);
+				} else{
+					if (element.NewErrorState == true) {
+						Console.WriteLine (" {0} is Error",element.Text);
+						element.Index = 1;
+					} else {
+						Console.WriteLine (" {0} is Warning",element.Text);
 					}
 				}
-				cat.IsChecked = !noneChecked;
-			} */
-			userCheck = true;
+			}
 		}
-		
 		
 		string ruleString = "";
 		
@@ -229,18 +248,16 @@ namespace ICSharpCode.CodeAnalysis
 				} else {
 					foreach (FxCopCategory cat in ruleList) {
 						CategoryTreeNode catNode = new CategoryTreeNode(cat,bla);
+						catNode.PropertyChanged += OnPropertyChanged;
 						ruleTreeView.Root.Children.Add(catNode);
 						foreach (RuleTreeNode ruleNode in catNode.Children) {
+							ruleNode.PropertyChanged += OnPropertyChanged;
 							rules[ruleNode.Identifier] = ruleNode;
 						}
 					}
-					initSuccess = true;
+					
 					ReadRuleString();
-					foreach (var element in ruleTreeView.Root.Children) {
-						element.PropertyChanged += delegate {
-							base.IsDirty = true;
-						};
-					}
+					initSuccess = true;
 				}
 			}
 		}
@@ -248,9 +265,20 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void OnPropertyChanged(object sender,System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			base.IsDirty = true;
+			if (initSuccess) {
+				base.IsDirty = true;
+				if (e.PropertyName == "Index") {
+					RuleTreeNode r = sender as RuleTreeNode;
+					if (r != null) {
+						var p = r.Parent;
+						if (p != null) {
+							SetCategoryIcon();
+						}
+					}
+				}
+			}
 		}
-			
+		
 		
 		private string[] GetRuleAssemblyList(bool replacePath)
 		{
@@ -269,6 +297,7 @@ namespace ICSharpCode.CodeAnalysis
 			}
 			return list.ToArray();
 		}
+		
 		
 		private void ChangeRuleAssembliesButtonClick( object sender, RoutedEventArgs e)
 		{
@@ -289,183 +318,59 @@ namespace ICSharpCode.CodeAnalysis
 					this.RuleAssemblies = b.ToString();
 				} finally {
 					initSuccess = oldInitSuccess;
-//					base.IsDirty = true;
 				}
 			}
 		}
 		
-	
 		#endregion
-	
-		
-		#region TreeNodes
-		
-		class BaseTree:SharpTreeNode
-		{
-			private int index;
-			
-			public BaseTree(IEnumerable<Tuple<Icon,string>> ruleState)
-			{
-				this.RuleState = ruleState;
-			}
-			
-			public IEnumerable<Tuple<Icon,string>> RuleState {get;set;}
-			
-			
-			public virtual int Index {
-				get { return index; }
-				set {
-					if (index != value) {
-						index = value;
-						switch (index) {
-							case 0:
-								break;
-							case  1:
-								break;
-							case 2:
-								break;
-							default:
-								break;
-						}
-						base.RaisePropertyChanged("Index");
-					}
-				}
-					
-			}
-		}
-		
-		
-		class CategoryTreeNode : BaseTree
-		{
-			internal FxCopCategory category;
-			
-			public CategoryTreeNode(FxCopCategory category,IEnumerable<Tuple<Icon,string>> bla):base(bla)
-			{
-				this.category = category;
-				foreach (FxCopRule rule in category.Rules) {
-					this.Children.Add(new RuleTreeNode(rule,bla));
-				}
-			}
-			
-			
-			public override bool IsCheckable {
-				get { return true; }
-			}
-			
-			public override object Text {
-				get { return category.DisplayName; }
-			}
-			
-			
-			internal int ErrorState {
-				get {
-					bool allWarn = true;
-					bool allErr = true;
-					foreach (RuleTreeNode tn in Children) {
-						if (tn.isError)
-							allWarn = false;
-						else
-							allErr = false;
-					}
-					if (allErr)
-						return 1;
-					else if (allWarn)
-						return 0;
-					else 
-						return -1;
-				}
-			}
-		}
-		
-		
-		class RuleTreeNode :BaseTree
-		{
-			internal FxCopRule rule;
-//			internal bool isError;
-			bool error;
-			
-			internal bool isError {
-				get { return error; }
-				set { error = value;
-					if (error) {
-						base.Index = 1;
-					}
-				}
-			}
-			
-			public RuleTreeNode(FxCopRule rule,IEnumerable<Tuple<Icon,string>> ruleState):base(ruleState)
-			{
-				this.rule = rule;
-			}
-			
-			public override bool IsCheckable {
-				get { return true; }
-			}
-			
-			public override object Text {
-				get { return rule.CheckId + " : " + rule.DisplayName; }
-			}
-			
-			public string Identifier {
-				get {
-					return rule.CategoryName + "#" + rule.CheckId;
-				}
-			}
-			
-			public override int Index {
-				get { return base.Index; }
-				set { base.Index = value;
-					if (Index == 1) {
-						error = true;
-					}
-				}
-			}
-		}
-		
-		class MessageNode : SharpTreeNode
-		{
-			private string message;
-			
-			public MessageNode (string message)
-			{
-				this.message = message;
-			}
-			
-			public override object Text {
-				get { return message; }
-			}
-		}
-		#endregion
-		
 	}
+	
+
+	public class TypeSelector : DataTemplateSelector
+	{
 		
+		public DataTemplate ComboTemplate { get; set; }
+		public DataTemplate TxtTemplate { get; set; }
+		
+		public override DataTemplate SelectTemplate(object item, DependencyObject container)
+		{
+//			var element = item as RuleTreeNode;
+//			if (element != null) {
+//				return ComboTemplate;
+//			} else {
+//				return TxtTemplate;
+//			}
+			return ComboTemplate;
+		}
+			
+	}
+	
 	
 	[ValueConversion(typeof(System.Drawing.Icon), typeof(System.Windows.Media.ImageSource))]
 	public class ImageConverter : IValueConverter
-	{  
+	{
 		public object Convert(object value, Type targetType,
-		                      object parameter, CultureInfo culture)  
-		{ 
-			// empty images are empty... 
-			if (value == null) { return null; }  
-			var image = (System.Drawing.Icon)value; 
-			// Winforms Image we want to get the WPF Image from... 
-			var bitmap = new System.Windows.Media.Imaging.BitmapImage(); 
-			bitmap.BeginInit();  
-			MemoryStream memoryStream = new MemoryStream();   
-			// Save to a memory stream... 
-			image.Save(memoryStream);  
-			// Rewind the stream...  
-			memoryStream.Seek(0, System.IO.SeekOrigin.Begin);  
-			bitmap.StreamSource = memoryStream; 
-			bitmap.EndInit();  
-			return bitmap; 
-		} 
+		                      object parameter, CultureInfo culture)
+		{
+			// empty images are empty...
+			if (value == null) { return null; }
+			var image = (System.Drawing.Icon)value;
+			// Winforms Image we want to get the WPF Image from...
+			var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+			bitmap.BeginInit();
+			MemoryStream memoryStream = new MemoryStream();
+			// Save to a memory stream...
+			image.Save(memoryStream);
+			// Rewind the stream...
+			memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+			bitmap.StreamSource = memoryStream;
+			bitmap.EndInit();
+			return bitmap;
+		}
 		public object ConvertBack(object value, Type targetType,
-		                          object parameter, CultureInfo culture) 
-		{  
-			return null;  
-		}  
+		                          object parameter, CultureInfo culture)
+		{
+			return null;
+		}
 	}
-
 }

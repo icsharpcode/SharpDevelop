@@ -8,9 +8,43 @@
 	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
 	xmlns:local="clr-namespace:ICSharpCode.CodeAnalysis"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
-<optionpanels:ProjectOptionPanel.Resources>
-	<local:ImageConverter x:Key="imageConverter"></local:ImageConverter>
+	<optionpanels:ProjectOptionPanel.Resources>
+		<local:ImageConverter x:Key="imageConverter"></local:ImageConverter>
+		
+		<DataTemplate x:Key="comboTemplate">
+			<ComboBox  Background="Transparent" Width="100"
+			          HorizontalAlignment="Center" VerticalAlignment="Center"
+			          ItemsSource="{Binding Path=RuleState}"
+			          IsReadOnly="False"
+			          SelectedIndex="{Binding Index}">
+				
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						
+						<StackPanel Orientation="Horizontal">
+							<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
+							       Source="{Binding Item1,
+							Converter={StaticResource imageConverter}}"></Image>
+							<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
+						
+						</StackPanel>
+					
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			
+			</ComboBox>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="txtTemplate">
+			<TextBox Text="DDDDDDDDDDDD"></TextBox>
+		</DataTemplate>
+		
+		
+		<local:TypeSelector x:Key="TypeSelector" ComboTemplate="{StaticResource comboTemplate}"
+			TxtTemplate="{StaticResource txtTemplate}"></local:TypeSelector>
+	
 	</optionpanels:ProjectOptionPanel.Resources>
+	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid >
 			<Grid.RowDefinitions>
@@ -30,15 +64,15 @@
 			<CheckBox Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
 			          IsChecked="{Binding RunCodeAnalysis.Value}"
 			          Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.RunOnBuild}"></CheckBox>
-		
+			
 			<Button Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Margin="0,10,0,10"
 			        Style="{x:Static core:GlobalStyles.ButtonStyle}"
 			        Click="ChangeRuleAssembliesButtonClick"
 			        Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.AddRemoveRuleAssembly}"></Button>
-		
+			
 			<tv:SharpTreeView x:Name="ruleTreeView" ShowRoot="False" ShowLines="False" IsSynchronizedWithCurrentItem="True"
 				Grid.Row="2" Grid.ColumnSpan="3" SelectedItem="{Binding SelectedNode}">
-		
+				
 				<ListView.View>
 					<tv:SharpGridView >
 						<tv:SharpGridView.Columns>
@@ -49,26 +83,38 @@
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
-							
 						
-							<GridViewColumn Header="Action">
+							
+							<!--	http://finercode.net/2012/06/05/using-a-different-datatemplate-when-a-wpf-combobox-is-expanded/		-->
+							
+							<GridViewColumn Header="Action"
+							                CellTemplateSelector="{StaticResource TypeSelector}">
+							</GridViewColumn>
+						
+						</tv:SharpGridView.Columns>
+						
+						
+						<!--<GridViewColumn Header="Action" x:Name="xxx">
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
 										<ComboBox  Background="Transparent" Width="100"
 										          HorizontalAlignment="Center" VerticalAlignment="Center"
 										          ItemsSource="{Binding Path=RuleState}"
+										          IsReadOnly="False"
 										          SelectedIndex="{Binding Index}">
+											
 											<ComboBox.ItemTemplate>
 												<DataTemplate>
+													
 													<StackPanel Orientation="Horizontal">
 														<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
 														       Source="{Binding Item1,
 														Converter={StaticResource imageConverter}}"></Image>
-														<TextBlock VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
+														<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
+													
 													</StackPanel>
 										
 												</DataTemplate>
-											
 											</ComboBox.ItemTemplate>
 										
 										</ComboBox>
@@ -76,7 +122,9 @@
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
 
-						</tv:SharpGridView.Columns>
+						</tv:SharpGridView.Columns>-->
+					
+					
 					</tv:SharpGridView>
 				</ListView.View>
 			</tv:SharpTreeView>
