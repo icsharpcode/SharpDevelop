@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				if (CSharpAstResolver.IsUnresolvableNode(node))
 					throw new InvalidOperationException("Resolved unresolvable node");
 				if (!ParenthesizedExpression.ActsAsParenthesizedExpression(node))
-					if (!resolveResults.Add(result))
+					if (!resolveResults.Add(result) && result != ErrorResolveResult.UnknownError)
 						throw new InvalidOperationException("Duplicate resolve result");
 				
 				if (result.IsError && !allowErrors) {
