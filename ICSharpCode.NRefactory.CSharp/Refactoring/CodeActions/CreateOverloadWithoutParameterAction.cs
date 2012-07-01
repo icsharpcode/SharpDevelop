@@ -103,39 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return astType.Member(members[0].Name);
 			}
 
-			// reference, dynamic
-			if ((type.IsReferenceType ?? false) || type.Kind == TypeKind.Dynamic)
-				return new NullReferenceExpression ();
-
-			var typeDefinition = type.GetDefinition ();
-			if (typeDefinition != null) {
-				switch (typeDefinition.KnownTypeCode) {
-					case KnownTypeCode.Boolean:
-					return new PrimitiveExpression (false);
-
-					case KnownTypeCode.Char:
-					return new PrimitiveExpression ('\0');
-
-					case KnownTypeCode.SByte:
-					case KnownTypeCode.Byte:
-					case KnownTypeCode.Int16:
-					case KnownTypeCode.UInt16:
-					case KnownTypeCode.Int32:
-					case KnownTypeCode.UInt32:
-					case KnownTypeCode.Int64:
-					case KnownTypeCode.UInt64:
-					case KnownTypeCode.Single:
-					case KnownTypeCode.Double:
-					case KnownTypeCode.Decimal:
-					return new PrimitiveExpression (0);
-
-					case KnownTypeCode.NullableOfT:
-					return new NullReferenceExpression ();
-				}
-				if (type.Kind == TypeKind.Struct)
-					return new ObjectCreateExpression (astType.Clone ());
-			}
-			return new DefaultValueExpression (astType.Clone ());
+			return context.GetDefaultValueExpression (astType);
 		}
 	}
 }
