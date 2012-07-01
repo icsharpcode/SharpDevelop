@@ -119,6 +119,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public CSharpResolver WithCheckForOverflow(bool checkForOverflow)
 		{
+			if (checkForOverflow == this.checkForOverflow)
+				return this;
 			return new CSharpResolver(compilation, conversions, context, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, localVariableStack, objectInitializerStack);
 		}
 		
@@ -431,7 +433,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// evaluate as (E)(~(U)x);
 							var U = compilation.FindType(expression.ConstantValue.GetType());
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
-							return CheckErrorAndResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
+							return CheckErrorAndResolveUncheckedCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
 						} else {
 							return UnaryOperatorResolveResult(expression.Type, op, expression, isNullable);
 						}
@@ -911,7 +913,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rhs = ResolveCast(elementType, rhs);
 				if (rhs.IsError)
 					return rhs;
-				return CheckErrorAndResolveCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
+				return CheckErrorAndResolveUncheckedCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
 			}
 			IType resultType = MakeNullable(elementType, isNullable);
 			return BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs, isNullable);
@@ -937,7 +939,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rhs = ResolveCast(elementType, rhs);
 				if (rhs.IsError)
 					return rhs;
-				return CheckErrorAndResolveCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
+				return CheckErrorAndResolveUncheckedCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
 			}
 			IType resultType = MakeNullable(enumType, isNullable);
 			return BinaryOperatorResolveResult(resultType, lhs, op, rhs, isNullable);
@@ -1302,12 +1304,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return Utils.CSharpPrimitiveCast.Cast(targetType, input, this.CheckForOverflow);
 		}
 		
-		ResolveResult CheckErrorAndResolveCast(IType targetType, ResolveResult expression)
+		ResolveResult CheckErrorAndResolveUncheckedCast(IType targetType, ResolveResult expression)
 		{
 			if (expression.IsError)
 				return expression;
 			else
-				return ResolveCast(targetType, expression);
+				return WithCheckForOverflow(false).ResolveCast(targetType, expression);
 		}
 		#endregion
 		
