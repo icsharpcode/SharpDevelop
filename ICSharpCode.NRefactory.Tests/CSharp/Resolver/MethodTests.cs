@@ -125,6 +125,21 @@ class TestClass {
 			Assert.IsTrue(ReferenceEquals(j1, j2));
 			Assert.IsTrue(ReferenceEquals(value1, value2));
 		}
+		
+		[Test]
+		public void ResolveParameterDeclarationInIndexer()
+		{
+			string code = @"using System;
+class TestClass {
+	int[,] myField;
+	int this[$int i$, int j] {
+		get { return myField[i, j]; }
+		set { myField[i, j] = value; }
+	}
+}";
+			var rr = Resolve<LocalResolveResult>(code);
+			Assert.IsTrue(rr.IsParameter);
+		}
 
 		[Test]
 		public void ParameterIdentityInEventAdder()
