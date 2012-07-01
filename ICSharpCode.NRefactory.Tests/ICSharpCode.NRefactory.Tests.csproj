@@ -101,6 +101,7 @@
     <Compile Include="CSharp\CodeIssues\AccessToDisposedClosureTests.cs" />
     <Compile Include="CSharp\CodeIssues\AccessToModifiedClosureTests.cs" />
     <Compile Include="CSharp\CodeIssues\BitwiseOperationOnNonFlagsEnumIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CompareFloatWithEqualityOperatorIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ForControlVariableNotModifiedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableHidesMemberIssueTests.cs" />
