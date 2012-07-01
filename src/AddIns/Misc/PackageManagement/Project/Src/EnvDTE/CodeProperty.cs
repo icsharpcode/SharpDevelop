@@ -38,7 +38,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeTypeRef Type {
-			get { return new CodeTypeRef2(null, this, Property.ReturnType); }
+			get { return new CodeTypeRef2(Property.ProjectContent, this, Property.ReturnType); }
 		}
 		
 		public virtual CodeFunction Getter {

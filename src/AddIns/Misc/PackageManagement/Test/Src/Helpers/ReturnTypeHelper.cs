@@ -32,7 +32,5 @@ namespace PackageManagement.Tests.Helpers
 		{
 			ReturnType.Stub(t => t.GetUnderlyingClass()).Return(c);
 		}
-		
-		
 	}
 }

@@ -157,5 +157,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			Class.Stub(c => c.ClassType).Return(type);
 		}
+		
+		public void SetProjectForProjectContent(object project)
+		{
+			ProjectContentHelper.SetProjectForProjectContent(project);
+		}
 	}
 }

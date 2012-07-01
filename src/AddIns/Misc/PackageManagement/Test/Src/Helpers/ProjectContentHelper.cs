@@ -22,7 +22,7 @@ namespace PackageManagement.Tests.Helpers
 			ProjectContent.Stub(pc => pc.NamespaceNames).Return(NamespaceNames);
 		}
 		
-		public void SetProjectForProjectContent(IProject project)
+		public void SetProjectForProjectContent(object project)
 		{
 			ProjectContent.Stub(pc => pc.Project).Return(project);
 		}

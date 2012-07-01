@@ -268,6 +268,42 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void Type_PropertyTypeIsSystemString_TypeRefTypeInfoLocationIsExternal()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.SetPropertyReturnType("System.String");
+			helper.CreateProjectForProjectContent();
+			var classHelper = new ClassHelper();
+			classHelper.CreateClass("System.String");
+			classHelper.SetProjectForProjectContent(null);
+			helper.ReturnTypeHelper.AddUnderlyingClass(classHelper.Class);
+			CreateCodeProperty2();
+			
+			CodeTypeRef typeRef = property.Type;
+			vsCMInfoLocation location = typeRef.CodeType.InfoLocation;
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationExternal, location);
+		}
+		
+		[Test]
+		public void Type_PropertyTypeExistsInProject_TypeRefTypeInfoLocationIsProject()
+		{
+			helper.CreatePublicProperty("MyProperty");
+			helper.SetPropertyReturnType("MyType");
+			helper.CreateProjectForProjectContent();
+			var classHelper = new ClassHelper();
+			classHelper.CreateClass("MyType");
+			classHelper.SetProjectForProjectContent(helper.Project);
+			helper.ReturnTypeHelper.AddUnderlyingClass(classHelper.Class);
+			CreateCodeProperty2();
+			
+			CodeTypeRef typeRef = property.Type;
+			vsCMInfoLocation location = typeRef.CodeType.InfoLocation;
+			
+			Assert.AreEqual(vsCMInfoLocation.vsCMInfoLocationProject, location);
+		}
+		
+		[Test]
 		public void Kind_PublicProperty_ReturnsProperty()
 		{
 			helper.CreatePublicProperty("MyProperty");

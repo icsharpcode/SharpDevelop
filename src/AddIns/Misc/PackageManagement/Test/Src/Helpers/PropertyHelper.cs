@@ -122,5 +122,14 @@ namespace PackageManagement.Tests.Helpers
 			ReturnTypeHelper.AddDotNetName(fullName);
 			Property.Stub(p => p.ReturnType).Return(ReturnTypeHelper.ReturnType);
 		}
+		
+		public object Project {
+			get { return ProjectContentHelper.ProjectContent.Project; }
+		}
+		
+		public void CreateProjectForProjectContent()
+		{
+			ProjectContentHelper.SetProjectForProjectContent(ProjectHelper.CreateTestProject());
+		}
 	}
 }
