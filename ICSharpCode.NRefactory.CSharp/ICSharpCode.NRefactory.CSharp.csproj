@@ -261,6 +261,7 @@
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\AccessToDisposedClosureIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\AccessToModifiedClosureIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\AccessToClosureIssues\LocalVariableNamePicker.cs" />
+    <Compile Include="Refactoring\CodeIssues\BitwiseOperationOnNonFlagsEnumIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
