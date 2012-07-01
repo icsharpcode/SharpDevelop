@@ -1260,7 +1260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (c == Conversion.IdentityConversion)
 				return rr;
-			else if (rr.IsCompileTimeConstant && c != Conversion.None)
+			else if (rr.IsCompileTimeConstant && c != Conversion.None && !c.IsUserDefined)
 				return ResolveCast(targetType, rr);
 			else
 				return new ConversionResolveResult(targetType, rr, c, checkForOverflow);
@@ -1269,7 +1269,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveCast(IType targetType, ResolveResult expression)
 		{
 			// C# 4.0 spec: §7.7.6 Cast expressions
-			if (expression.IsCompileTimeConstant) {
+			Conversion c = conversions.ExplicitConversion(expression, targetType);
+			if (expression.IsCompileTimeConstant && !c.IsUserDefined) {
 				TypeCode code = ReflectionHelper.GetTypeCode(targetType);
 				if (code >= TypeCode.Boolean && code <= TypeCode.Decimal && expression.ConstantValue != null) {
 					try {
@@ -1293,7 +1294,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			Conversion c = conversions.ExplicitConversion(expression, targetType);
 			return new ConversionResolveResult(targetType, expression, c, checkForOverflow);
 		}
 		
