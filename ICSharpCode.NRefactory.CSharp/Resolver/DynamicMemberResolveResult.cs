@@ -17,35 +17,41 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace ICSharpCode.NRefactory.Semantics
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Represents an ambiguous type resolve result.
+	/// Represents the result of an access to a member of a dynamic object.
 	/// </summary>
-	public class AmbiguousTypeResolveResult : TypeResolveResult
+	public class DynamicMemberResolveResult : ResolveResult
 	{
-		public AmbiguousTypeResolveResult(IType type) : base(type)
+		/// <summary>
+		/// Target of the member access (a dynamic object).
+		/// </summary>
+		public readonly ResolveResult Target;
+
+		/// <summary>
+		/// Name of the accessed member.
+		/// </summary>
+		public readonly string Member;
+
+		public DynamicMemberResolveResult(ResolveResult target, string member) : base(SpecialType.Dynamic) {
+			this.Target = target;
+			this.Member = member;
+		}
+
+		public override string ToString()
 		{
+			return string.Format(CultureInfo.InvariantCulture, "[Dynamic member '{0}']", Member);
 		}
-		
-		public override bool IsError {
-			get { return true; }
-		}
-	}
-	
-	/// <summary>
-	/// Represents an ambiguous field/property/event access.
-	/// </summary>
-	public class AmbiguousMemberResolveResult : MemberResolveResult
-	{
-		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member) : base(targetResult, member)
-		{
-		}
-		
-		public override bool IsError {
-			get { return true; }
+
+		public override IEnumerable<ResolveResult> GetChildResults() {
+			return new[] { Target };
 		}
 	}
 }

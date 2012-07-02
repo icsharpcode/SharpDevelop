@@ -18,62 +18,56 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
-namespace ICSharpCode.NRefactory.Semantics
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Represents the result of resolving an expression.
+	/// Represents a single argument in a dynamic invocation.
 	/// </summary>
-	public class ResolveResult
+	public class DynamicInvocationArgument {
+		/// <summary>
+		/// Parameter name, if the argument is named. Null otherwise.
+		/// </summary>
+		public readonly string Name;
+
+		/// <summary>
+		/// Value of the argument.
+		/// </summary>
+		public readonly ResolveResult Value;
+
+		public DynamicInvocationArgument(string name, ResolveResult value) {
+			Name = name;
+			Value = value;
+		}
+	}
+
+	/// <summary>
+	/// Represents the result of an invocation of a member of a dynamic object.
+	/// </summary>
+	public class DynamicInvocationResolveResult : ResolveResult
 	{
-		readonly IType type;
-		
-		public ResolveResult(IType type)
-		{
-			if (type == null)
-				throw new ArgumentNullException("type");
-			this.type = type;
+		/// <summary>
+		/// Target of the invocation (a dynamic object).
+		/// </summary>
+		public readonly ResolveResult Target;
+
+		/// <summary>
+		/// Arguments for the call.
+		/// </summary>
+		public readonly IList<DynamicInvocationArgument> Arguments; 
+
+		public DynamicInvocationResolveResult(ResolveResult target, IList<DynamicInvocationArgument> arguments) : base(SpecialType.Dynamic) {
+			this.Target    = target;
+			this.Arguments = arguments ?? EmptyList<DynamicInvocationArgument>.Instance;
 		}
-		
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods",
-		                                                 Justification = "Unrelated to object.GetType()")]
-		public IType Type {
-			get { return type; }
-		}
-		
-		public virtual bool IsCompileTimeConstant {
-			get { return false; }
-		}
-		
-		public virtual object ConstantValue {
-			get { return null; }
-		}
-		
-		public virtual bool IsError {
-			get { return false; }
-		}
-		
+
 		public override string ToString()
 		{
-			return "[" + GetType().Name + " " + type + "]";
-		}
-		
-		public virtual IEnumerable<ResolveResult> GetChildResults()
-		{
-			return Enumerable.Empty<ResolveResult>();
-		}
-		
-		public virtual DomRegion GetDefinitionRegion()
-		{
-			return DomRegion.Empty;
-		}
-		
-		public virtual ResolveResult ShallowClone()
-		{
-			return (ResolveResult)MemberwiseClone();
+			return string.Format(CultureInfo.InvariantCulture, "[Dynamic invocation ]");
 		}
 	}
 }

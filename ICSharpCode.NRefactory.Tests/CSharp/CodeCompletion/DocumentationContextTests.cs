@@ -1,21 +1,21 @@
-// 
-// IntroduceConstantTests.cs
-//  
+//
+// DocumentationContextTests.cs
+//
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
-// 
-// Copyright (c) 2012 Xamarin <http://xamarin.com>
-// 
+//
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,68 +26,49 @@
 
 using System;
 using NUnit.Framework;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 
-namespace ICSharpCode.NRefactory.CSharp.CodeActions
+namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 {
-	[TestFixture]
-	public class IntroduceConstantTests : ContextActionTestBase
+	[TestFixture()]
+	public class DocumentationContextTests
 	{
 		[Test()]
-		public void TestLocalConstant ()
+		public void TestClosingTag()
 		{
-			Test<IntroduceConstantAction> (@"class TestClass
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+
+public class Test
 {
-	public void Hello ()
+	///<summary>Foo$<$
+	void TestFoo()
 	{
-		System.Console.WriteLine ($""Hello World"");
 	}
-}", @"class TestClass
-{
-	public void Hello ()
-	{
-		const string helloWorld = ""Hello World"";
-		System.Console.WriteLine (helloWorld);
-	}
-}");
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("/summary>"));
+			});
 		}
 
 		[Test()]
-		public void TestLocalConstantHexNumber ()
+		public void TestClosingTagMultiLine()
 		{
-			Test<IntroduceConstantAction> (@"class TestClass
-{
-	public void Hello ()
-	{
-		System.Console.WriteLine ($0xAFFE);
-	}
-}", @"class TestClass
-{
-	public void Hello ()
-	{
-		const int i = 0xAFFE;
-		System.Console.WriteLine (i);
-	}
-}");
-		}
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
 
-		[Test()]
-		public void TestFieldConstant ()
-		{
-			Test<IntroduceConstantAction> (@"class TestClass
+public class Test
 {
-	public void Hello ()
+	///<summary>
+	///Foo
+	///$<$
+	void TestFoo()
 	{
-		System.Console.WriteLine ($""Hello World"");
 	}
-}", @"class TestClass
-{
-	const string helloWorld = ""Hello World"";
-	public void Hello ()
-	{
-		System.Console.WriteLine (helloWorld);
-	}
-}", 1);
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("/summary>"));
+			});
 		}
 	}
 }
+

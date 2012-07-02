@@ -152,7 +152,15 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		int GetOffset(TextBox textBox, TextLocation location)
 		{
+			// TextBox uses 0-based coordinates, TextLocation is 1-based
 			return textBox.GetFirstCharIndexFromLine(location.Line - 1) + location.Column - 1;
+		}
+		
+		TextLocation GetTextLocation(TextBox textBox, int offset)
+		{
+			int line = textBox.GetLineFromCharIndex(offset);
+			int col = offset - textBox.GetFirstCharIndexFromLine(line);
+			return new TextLocation(line + 1, col + 1);
 		}
 		
 		void CSharpTreeViewAfterSelect(object sender, TreeViewEventArgs e)
@@ -203,68 +211,22 @@ namespace ICSharpCode.NRefactory.Demo
 			
 			ICompilation compilation = project.CreateCompilation();
 			
-			StoreInDictionaryNavigator navigator;
+			ResolveResult result;
 			if (csharpTreeView.SelectedNode != null) {
-				navigator = new StoreInDictionaryNavigator((AstNode)csharpTreeView.SelectedNode.Tag);
+				var selectedNode = (AstNode)csharpTreeView.SelectedNode.Tag;
+				CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
+				result = resolver.Resolve(selectedNode);
+				// CSharpAstResolver.Resolve() never returns null
 			} else {
-				navigator = new StoreInDictionaryNavigator();
-			}
-			CSharpAstResolver resolver = new CSharpAstResolver(compilation, compilationUnit, parsedFile);
-			resolver.ApplyNavigator(navigator);
-			csharpTreeView.BeginUpdate();
-			ShowResolveResultsInTree(csharpTreeView.Nodes, navigator);
-			csharpTreeView.EndUpdate();
-		}
-		
-		sealed class StoreInDictionaryNavigator : NodeListResolveVisitorNavigator
-		{
-			internal Dictionary<AstNode, ResolveResult> resolveResults = new Dictionary<AstNode, ResolveResult>();
-			internal Dictionary<AstNode, Conversion> conversions = new Dictionary<AstNode, Conversion>();
-			internal Dictionary<AstNode, IType> conversionTargetTypes = new Dictionary<AstNode, IType>();
-			bool resolveAll;
-			
-			public StoreInDictionaryNavigator(params AstNode[] nodes)
-				: base(nodes)
-			{
-				resolveAll = (nodes.Length == 0);
-			}
-			
-			public override ResolveVisitorNavigationMode Scan(AstNode node)
-			{
-				if (resolveAll)
-					return ResolveVisitorNavigationMode.Resolve;
-				else
-					return base.Scan(node);
-			}
-			
-			public override void Resolved(AstNode node, ResolveResult result)
-			{
-				resolveResults.Add(node, result);
-			}
-			
-			public override void ProcessConversion(Expression expression, ResolveResult result, Conversion conversion, IType targetType)
-			{
-				conversions.Add(expression, conversion);
-				conversionTargetTypes.Add(expression, targetType);
-			}
-		}
-		
-		void ShowResolveResultsInTree(TreeNodeCollection c, StoreInDictionaryNavigator n)
-		{
-			foreach (TreeNode t in c) {
-				AstNode node = t.Tag as AstNode;
-				if (node != null) {
-					ResolveResult rr;
-					string text = GetNodeTitle(node);
-					if (n.resolveResults.TryGetValue(node, out rr))
-						text += " " + rr.ToString();
-					if (n.conversions.ContainsKey(node)) {
-						text += " [" + n.conversions[node] + " to " + n.conversionTargetTypes[node] + "]";
-					}
-					t.Text = text;
+				TextLocation location = GetTextLocation(csharpCodeTextBox, csharpCodeTextBox.SelectionStart);
+				result = ResolveAtLocation.Resolve(compilation, parsedFile, compilationUnit, location);
+				if (result == null) {
+					MessageBox.Show("Could not find a resolvable node at the caret location.");
+					return;
 				}
-				ShowResolveResultsInTree(t.Nodes, n);
 			}
+			using (var dlg = new SemanticTreeDialog(result))
+				dlg.ShowDialog();
 		}
 		
 		void CSharpCodeTextBoxKeyDown(object sender, KeyEventArgs e)

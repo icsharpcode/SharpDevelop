@@ -22,6 +22,12 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.Semantics
 {
+	/// <summary>
+	/// Represents an implicit or explicit type conversion.
+	/// <c>conversionResolveResult.Input.Type</c> is the source type;
+	/// <c>conversionResolveResult.Type</c> is the target type.
+	/// The <see cref="Conversion"/> property provides details about the type of conversion.
+	/// </summary>
 	public class ConversionResolveResult : ResolveResult
 	{
 		public readonly ResolveResult Input;

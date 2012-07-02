@@ -17,35 +17,20 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.Semantics
+namespace ICSharpCode.NRefactory.TypeSystem
 {
-	/// <summary>
-	/// Represents an ambiguous type resolve result.
-	/// </summary>
-	public class AmbiguousTypeResolveResult : TypeResolveResult
+	[TestFixture]
+	public class LazyLoadedCecilLoaderTests : TypeSystemTests
 	{
-		public AmbiguousTypeResolveResult(IType type) : base(type)
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
 		{
-		}
-		
-		public override bool IsError {
-			get { return true; }
-		}
-	}
-	
-	/// <summary>
-	/// Represents an ambiguous field/property/event access.
-	/// </summary>
-	public class AmbiguousMemberResolveResult : MemberResolveResult
-	{
-		public AmbiguousMemberResolveResult(ResolveResult targetResult, IMember member) : base(targetResult, member)
-		{
-		}
-		
-		public override bool IsError {
-			get { return true; }
+			CecilLoader loader = new CecilLoader() { IncludeInternalMembers = true, LazyLoad = true };
+			IUnresolvedAssembly pc = loader.LoadAssemblyFile(typeof(TestCase.SimplePublicClass).Assembly.Location);
+			base.compilation = new SimpleCompilation(pc, CecilLoaderTests.Mscorlib);
 		}
 	}
 }

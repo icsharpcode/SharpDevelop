@@ -41,8 +41,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class CSharpResolver
 	{
 		static readonly ResolveResult ErrorResult = ErrorResolveResult.UnknownError;
-		static readonly ResolveResult DynamicResult = new ResolveResult(SpecialType.Dynamic);
-		static readonly ResolveResult NullResult = new ResolveResult(SpecialType.NullType);
 		
 		readonly ICompilation compilation;
 		internal readonly CSharpConversions conversions;
@@ -58,6 +56,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.compilation = compilation;
 			this.conversions = CSharpConversions.Get(compilation);
 			this.context = new CSharpTypeResolveContext(compilation.MainAssembly);
+			
+			var pc = compilation.MainAssembly.UnresolvedAssembly as CSharpProjectContent;
+			if (pc != null) {
+				this.checkForOverflow = pc.CompilerSettings.CheckForOverflow;
+			}
 		}
 		
 		public CSharpResolver(CSharpTypeResolveContext context)
@@ -116,6 +119,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public CSharpResolver WithCheckForOverflow(bool checkForOverflow)
 		{
+			if (checkForOverflow == this.checkForOverflow)
+				return this;
 			return new CSharpResolver(compilation, conversions, context, checkForOverflow, isWithinLambdaExpression, currentTypeDefinitionCache, localVariableStack, objectInitializerStack);
 		}
 		
@@ -428,7 +433,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// evaluate as (E)(~(U)x);
 							var U = compilation.FindType(expression.ConstantValue.GetType());
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
-							return CheckErrorAndResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
+							return CheckErrorAndResolveUncheckedCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
 						} else {
 							return UnaryOperatorResolveResult(expression.Type, op, expression, isNullable);
 						}
@@ -908,7 +913,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rhs = ResolveCast(elementType, rhs);
 				if (rhs.IsError)
 					return rhs;
-				return CheckErrorAndResolveCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
+				return CheckErrorAndResolveUncheckedCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
 			}
 			IType resultType = MakeNullable(elementType, isNullable);
 			return BinaryOperatorResolveResult(resultType, lhs, BinaryOperatorType.Subtract, rhs, isNullable);
@@ -934,7 +939,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				rhs = ResolveCast(elementType, rhs);
 				if (rhs.IsError)
 					return rhs;
-				return CheckErrorAndResolveCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
+				return CheckErrorAndResolveUncheckedCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
 			}
 			IType resultType = MakeNullable(enumType, isNullable);
 			return BinaryOperatorResolveResult(resultType, lhs, op, rhs, isNullable);
@@ -1257,7 +1262,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (c == Conversion.IdentityConversion)
 				return rr;
-			else if (rr.IsCompileTimeConstant && c != Conversion.None)
+			else if (rr.IsCompileTimeConstant && c != Conversion.None && !c.IsUserDefined)
 				return ResolveCast(targetType, rr);
 			else
 				return new ConversionResolveResult(targetType, rr, c, checkForOverflow);
@@ -1266,7 +1271,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveCast(IType targetType, ResolveResult expression)
 		{
 			// C# 4.0 spec: §7.7.6 Cast expressions
-			if (expression.IsCompileTimeConstant) {
+			Conversion c = conversions.ExplicitConversion(expression, targetType);
+			if (expression.IsCompileTimeConstant && !c.IsUserDefined) {
 				TypeCode code = ReflectionHelper.GetTypeCode(targetType);
 				if (code >= TypeCode.Boolean && code <= TypeCode.Decimal && expression.ConstantValue != null) {
 					try {
@@ -1290,7 +1296,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			Conversion c = conversions.ExplicitConversion(expression, targetType);
 			return new ConversionResolveResult(targetType, expression, c, checkForOverflow);
 		}
 		
@@ -1299,12 +1304,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return Utils.CSharpPrimitiveCast.Cast(targetType, input, this.CheckForOverflow);
 		}
 		
-		ResolveResult CheckErrorAndResolveCast(IType targetType, ResolveResult expression)
+		ResolveResult CheckErrorAndResolveUncheckedCast(IType targetType, ResolveResult expression)
 		{
 			if (expression.IsError)
 				return expression;
 			else
-				return ResolveCast(targetType, expression);
+				return WithCheckForOverflow(false).ResolveCast(targetType, expression);
 		}
 		#endregion
 		
@@ -1381,7 +1386,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							foundInCache = cache.TryGetValue(identifier, out r);
 					}
 				}
-				if (!foundInCache) {
+				if (foundInCache) {
+					r = (r != null ? r.ShallowClone() : null);
+				} else {
 					r = LookInCurrentType(identifier, typeArguments, lookupMode, parameterizeResultType);
 					if (cache != null) {
 						// also cache missing members (r==null)
@@ -1398,9 +1405,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				r = LookInUsingScopeNamespace(null, compilation.RootNamespace, identifier, typeArguments, parameterizeResultType);
 			} else {
 				if (k == 0 && lookupMode != NameLookupMode.TypeInUsingDeclaration) {
-					if (!context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
+					if (context.CurrentUsingScope.ResolveCache.TryGetValue(identifier, out r)) {
+						r = (r != null ? r.ShallowClone() : null);
+					} else {
 						r = LookInCurrentUsingScope(identifier, typeArguments, false, false);
-						r = context.CurrentUsingScope.ResolveCache.GetOrAdd(identifier, r);
+						context.CurrentUsingScope.ResolveCache.TryAdd(identifier, r);
 					}
 				} else {
 					r = LookInCurrentUsingScope(identifier, typeArguments, lookupMode == NameLookupMode.TypeInUsingDeclaration, parameterizeResultType);
@@ -1477,7 +1486,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (!(isInUsingDeclaration && u == currentUsingScope)) {
 						foreach (var pair in u.UsingAliases) {
 							if (pair.Key == identifier) {
-								return pair.Value;
+								return pair.Value.ShallowClone();
 							}
 						}
 					}
@@ -1589,7 +1598,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			if (target.Type.Kind == TypeKind.Dynamic)
-				return DynamicResult;
+				return new DynamicMemberResolveResult(target, identifier);
 			
 			MemberLookup lookup = CreateMemberLookup(lookupMode);
 			ResolveResult result;
@@ -1886,8 +1895,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §7.6.5
 			
-			if (target.Type.Kind == TypeKind.Dynamic)
-				return DynamicResult;
+			if (target.Type.Kind == TypeKind.Dynamic) {
+				return new DynamicInvocationResolveResult(target, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+			}
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
@@ -2297,7 +2307,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolvePrimitive(object value)
 		{
 			if (value == null) {
-				return NullResult;
+				return new ResolveResult(SpecialType.NullType);
 			} else {
 				TypeCode typeCode = Type.GetTypeCode(value.GetType());
 				IType type = compilation.FindType(typeCode);

@@ -28,11 +28,11 @@ using ICSharpCode.NRefactory.CSharp.Refactoring.ExtractMethod;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
+	[Ignore("FIXME!!")]
 	[TestFixture]
 	public class ExtractMethodTests : ContextActionTestBase
 	{
 
-		[Ignore("FIXME!!")]
 		[Test()]
 		public void ExtractMethodResultStatementTest()
 		{

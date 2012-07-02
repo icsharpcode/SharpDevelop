@@ -36,9 +36,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		
 		public readonly List<CSharpFile> Files = new List<CSharpFile>();
 		
-		public readonly bool AllowUnsafeBlocks;
-		public readonly bool CheckForOverflowUnderflow;
-		public readonly string[] PreprocessorDefines;
+		public readonly CompilerSettings CompilerSettings = new CompilerSettings();
 		
 		public IProjectContent ProjectContent;
 		
@@ -56,9 +54,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			
 			var p = new Microsoft.Build.Evaluation.Project(fileName);
 			this.AssemblyName = p.GetPropertyValue("AssemblyName");
-			this.AllowUnsafeBlocks = GetBoolProperty(p, "AllowUnsafeBlocks") ?? false;
-			this.CheckForOverflowUnderflow = GetBoolProperty(p, "CheckForOverflowUnderflow") ?? false;
-			this.PreprocessorDefines = p.GetPropertyValue("DefineConstants").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			this.CompilerSettings.AllowUnsafeBlocks = GetBoolProperty(p, "AllowUnsafeBlocks") ?? false;
+			this.CompilerSettings.CheckForOverflow = GetBoolProperty(p, "CheckForOverflowUnderflow") ?? false;
+			foreach (string symbol in p.GetPropertyValue("DefineConstants").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+				this.CompilerSettings.ConditionalSymbols.Add(symbol.Trim());
+			}
 			foreach (var item in p.GetItems("Compile")) {
 				Files.Add(new CSharpFile(this, Path.Combine(p.DirectoryPath, item.EvaluatedInclude)));
 			}
@@ -95,6 +95,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			this.ProjectContent = new CSharpProjectContent()
 				.SetAssemblyName(this.AssemblyName)
+				.SetCompilerSettings(this.CompilerSettings)
 				.AddAssemblyReferences(references)
 				.UpdateProjectContent(null, Files.Select(f => f.ParsedFile));
 		}
@@ -119,15 +120,6 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			if (val.Equals("false", StringComparison.OrdinalIgnoreCase))
 				return false;
 			return null;
-		}
-		
-		public CSharpParser CreateParser()
-		{
-			var settings = new Mono.CSharp.CompilerSettings();
-			settings.Unsafe = AllowUnsafeBlocks;
-			foreach (string define in PreprocessorDefines)
-				settings.AddConditionalSymbol(define);
-			return new CSharpParser(settings);
 		}
 		
 		public override string ToString()
@@ -176,7 +168,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			this.Content = new StringTextSource(File.ReadAllText(FileName));
 			this.LinesOfCode = 1 + this.Content.Text.Count(c => c == '\n');
 			
-			CSharpParser p = project.CreateParser();
+			CSharpParser p = new CSharpParser(project.CompilerSettings);
 			this.CompilationUnit = p.Parse(Content.CreateReader(), fileName);
 			if (p.HasErrors) {
 				Console.WriteLine("Error parsing " + fileName + ":");

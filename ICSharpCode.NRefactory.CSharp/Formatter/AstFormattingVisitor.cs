@@ -117,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			curIndent = new Indent(this.options);
 		}
 
-		protected virtual void VisitChildren (AstNode node)
+		protected override void VisitChildren (AstNode node)
 		{
 			if (!FormattingRegion.IsEmpty) {
 				if (node.EndLocation < FormattingRegion.Begin || node.StartLocation > FormattingRegion.End)
@@ -173,10 +173,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (change.Offset < previousChange.Offset + previousChange.RemovalLength) {
 						#if DEBUG
-						Console.WriteLine ("change 1:" + change);
+						Console.WriteLine ("change 1:" + change + " at " + document.GetLocation (change.Offset));
 						Console.WriteLine (change.StackTrace);
 
-						Console.WriteLine ("change 2:" + change);
+						Console.WriteLine ("change 2:" + previousChange + " at " + document.GetLocation (previousChange.Offset));
 						Console.WriteLine (previousChange.StackTrace);
 						#endif
 						throw new InvalidOperationException ("Detected overlapping changes " + change + "/" + previousChange);
@@ -1645,6 +1645,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (!anonymousMethodExpression.Body.IsNull) {
 				EnforceBraceStyle(policy.AnonymousMethodBraceStyle, anonymousMethodExpression.Body.LBraceToken, anonymousMethodExpression.Body.RBraceToken);
+				VisitBlockWithoutFixingBraces(anonymousMethodExpression.Body, policy.IndentBlocks);
+				return;
 			}
 			base.VisitAnonymousMethodExpression(anonymousMethodExpression);
 		}

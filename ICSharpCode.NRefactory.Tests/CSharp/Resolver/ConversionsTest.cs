@@ -33,15 +33,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	using C = Conversion;
 	
 	[TestFixture]
-	public unsafe class ConversionsTest
+	public unsafe class ConversionsTest : ResolverTestBase
 	{
-		ICompilation compilation;
 		CSharpConversions conversions;
 		
-		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			compilation = new SimpleCompilation(CecilLoaderTests.Mscorlib);
+			base.SetUp();
 			conversions = new CSharpConversions(compilation);
 		}
 		
@@ -511,6 +509,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType type1 = new ParameterizedType(resolvedB, new [] { compilation.FindType(KnownTypeCode.Double) });
 			IType type2 = new ParameterizedType(resolvedA, new [] { new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.String) }) });
 			Assert.IsFalse(conversions.ImplicitConversion(type1, type2).IsValid);
+		}
+
+		[Test]
+		public void ExplicitUserDefinedConversion() {
+			var rr = Resolve<ConversionResolveResult>(@"
+class C1 {}
+class C2 {
+	public static explicit operator C1(C2 c2) {
+		return null;
+	}
+}
+class C {
+	public void M() {
+		var c2 = new C2();
+		C1 c1 = $(C1)c2$;
+	}
+}");
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("op_Explicit", rr.Conversion.Method.Name);
 		}
 	}
 }

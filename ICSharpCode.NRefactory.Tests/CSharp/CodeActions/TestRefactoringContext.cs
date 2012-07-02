@@ -36,6 +36,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
@@ -89,23 +90,27 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				this.context = context;
 			}
 			
-			public override void Link (params AstNode[] nodes)
+			public override Task Link (params AstNode[] nodes)
 			{
 				// check that all links are valid.
 				foreach (var node in nodes) {
 					Assert.IsNotNull (GetSegment (node));
 				}
+				return new Task (() => {});
 			}
 			
-			public override void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
+			public override Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 			{
 				var entity = context.GetNode<EntityDeclaration>();
 				foreach (var node in nodes) {
 					InsertBefore(entity, node);
 				}
+				var t = new Task (() => {});
+				t.RunSynchronously ();
+				return t;
 			}
 
-			public override void InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
+			public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 			{
 				var unit = context.RootNode;
 				var insertType = unit.GetNodeAt<TypeDeclaration> (parentType.Region.Begin);
@@ -116,6 +121,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					InsertText (startOffset, output.Text);
 					output.RegisterTrackedSegments (this, startOffset);
 				}
+				var t = new Task (() => {});
+				t.RunSynchronously ();
+				return t;
 			}
 
 			void Rename (AstNode node, string newName)

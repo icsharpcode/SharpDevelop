@@ -59,7 +59,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		// The ResolveVisitor is also responsible for handling lambda expressions.
 		
 		static readonly ResolveResult errorResult = ErrorResolveResult.UnknownError;
-		readonly ResolveResult voidResult;
 		
 		CSharpResolver resolver;
 		/// <summary>Resolve result of the current LINQ query.</summary>
@@ -112,12 +111,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.resolver = resolver;
 			this.parsedFile = parsedFile;
 			this.navigator = skipAllNavigator;
-			this.voidResult = new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
 		}
 		
 		internal void SetNavigator(IResolveVisitorNavigator navigator)
 		{
 			this.navigator = navigator ?? skipAllNavigator;
+		}
+		
+		ResolveResult voidResult {
+			get {
+				return new ResolveResult(resolver.Compilation.FindType(KnownTypeCode.Void));
+			}
 		}
 		#endregion
 		
@@ -850,18 +854,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						resolver.CurrentTypeResolveContext, propertyOrIndexerDeclaration.EntityType, name,
 						explicitInterfaceType, parameterTypeReferences: parameterTypeReferences);
 				}
+				// We need to use the property as current member so that indexer parameters can be resolved correctly.
 				resolver = resolver.WithCurrentMember(member);
+				var resolverWithPropertyAsMember = resolver;
 				
 				for (AstNode node = propertyOrIndexerDeclaration.FirstChild; node != null; node = node.NextSibling) {
-					if (node.Role == PropertyDeclaration.SetterRole && member != null) {
-						resolver = resolver.PushBlock();
-						var setter = node as Accessor;
-						var setterRegion = setter.Body.GetRegion();
-						var valueRegion = new DomRegion(setterRegion.BeginLine, setterRegion.BeginColumn,
-						                                setterRegion.BeginLine, setterRegion.BeginColumn);
-						resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value", valueRegion));
+					if (node.Role == PropertyDeclaration.GetterRole && member is IProperty) {
+						resolver = resolver.WithCurrentMember(((IProperty)member).Getter);
 						Scan(node);
-						resolver = resolver.PopBlock();
+						resolver = resolverWithPropertyAsMember;
+					} else if (node.Role == PropertyDeclaration.SetterRole && member is IProperty) {
+						resolver = resolver.WithCurrentMember(((IProperty)member).Setter);
+						Scan(node);
+						resolver = resolverWithPropertyAsMember;
 					} else {
 						Scan(node);
 					}
@@ -903,18 +908,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				resolver = resolver.WithCurrentMember(member);
+				var resolverWithEventAsMember = resolver;
 				
-				if (member != null) {
-					resolver = resolver.PushBlock();
-					var adderRegion = eventDeclaration.AddAccessor.Body.GetRegion();
-					var valueRegion = new DomRegion(adderRegion.BeginLine, adderRegion.BeginColumn,
-					                                adderRegion.BeginLine, adderRegion.BeginColumn);
-					resolver = resolver.AddVariable(new DefaultParameter(member.ReturnType, "value", valueRegion));
-					ScanChildren(eventDeclaration);
-				} else {
-					ScanChildren(eventDeclaration);
+				for (AstNode node = eventDeclaration.FirstChild; node != null; node = node.NextSibling) {
+					if (node.Role == CustomEventDeclaration.AddAccessorRole && member is IEvent) {
+						resolver = resolver.WithCurrentMember(((IEvent)member).AddAccessor);
+						Scan(node);
+						resolver = resolverWithEventAsMember;
+					} else if (node.Role == CustomEventDeclaration.RemoveAccessorRole && member is IEvent) {
+						resolver = resolver.WithCurrentMember(((IEvent)member).RemoveAccessor);
+						Scan(node);
+						resolver = resolverWithEventAsMember;
+					} else {
+						Scan(node);
+					}
 				}
-				
+
 				if (member != null)
 					return new MemberResolveResult(null, member, false);
 				else
@@ -1586,7 +1595,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult IAstVisitor<ResolveResult>.VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression)
 		{
 			if (resolverEnabled) {
-				return Resolve(typeReferenceExpression.Type);
+				return Resolve(typeReferenceExpression.Type).ShallowClone();
 			} else {
 				Scan(typeReferenceExpression.Type);
 				return null;
@@ -2412,6 +2421,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			internal abstract AstNode BodyExpression { get; }
 			
 			internal abstract void EnforceMerge(ResolveVisitor parentVisitor);
+			
+			public override ResolveResult ShallowClone()
+			{
+				if (IsUndecided)
+					throw new NotSupportedException();
+				return base.ShallowClone();
+			}
 		}
 		
 		void MergeUndecidedLambdas()
@@ -3253,7 +3269,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (var clause in queryExpression.Clauses) {
 					currentQueryResult = Resolve(clause);
 				}
-				return currentQueryResult;
+				return WrapResult(currentQueryResult);
 			} finally {
 				currentQueryResult = oldQueryResult;
 				cancellationToken = oldCancellationToken;
