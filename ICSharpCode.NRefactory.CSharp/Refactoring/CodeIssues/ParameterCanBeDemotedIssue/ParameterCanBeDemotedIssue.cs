@@ -57,22 +57,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitMethodDeclaration(methodDeclaration);
 
-				var collector = new InvocationCollector(context);
+				var collector = new TypeCriteriaCollector(context);
 				methodDeclaration.AcceptVisitor(collector);
 				
 				foreach (var parameter in methodDeclaration.Parameters) {
 					var localResolveResult = context.Resolve(parameter) as LocalResolveResult;
 					var variable = localResolveResult.Variable;
-					IList<InvocationResolveResult> invocations;
-					if (!collector.Invocations.TryGetValue(variable, out invocations))
-						continue;
 					var currentType = localResolveResult.Type;
-					var candidateTypes = localResolveResult.Type.GetAllBaseTypes().ToList();
-					var possibleTypes = GetPossibleTypes(candidateTypes, invocations);
+					var candidateTypes = localResolveResult.Type.GetAllBaseTypes();
+					var possibleTypes = GetPossibleTypes(candidateTypes, collector.GetCriterion(variable));
 					var suggestedTypes = possibleTypes.Where(t => t != currentType);
-					if (suggestedTypes.Any())
+					if (suggestedTypes.Any()) {
 						AddIssue(parameter, context.TranslateString("Parameter can be demoted to base class"),
 						         GetActions(parameter, suggestedTypes));
+					}
 				}
 			}
 
@@ -87,52 +85,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					});
 				}
 			}
-
-			HashSet<IMember> GetNeededMembers(IEnumerable<InvocationResolveResult> invocations)
+			
+			IEnumerable<IType> GetPossibleTypes(IEnumerable<IType> types, ITypeCriterion criterion)
 			{
-				var members = new HashSet<IMember>();
-				foreach (var invocation in invocations) {
-					members.Add(invocation.Member);
-				}
-				return members;
-			}
-
-			static bool HasCommonMemberDeclaration(IEnumerable<IMember> acceptableMembers, IMember member)
-			{
-				var implementedInterfaceMembers = member.MemberDefinition.ImplementedInterfaceMembers;
-				if (implementedInterfaceMembers.Any()) {
-					return acceptableMembers.ContainsAny(implementedInterfaceMembers);
-				}
-				else {
-					return acceptableMembers.Contains(member.MemberDefinition);
-				}
-			}
-
-			bool SatisfiesMemberRequests(IType candidateType, HashSet<IMember> wantedMembers)
-			{
-				var allMembers = candidateType.GetMembers();
-				foreach (var wantedMember in wantedMembers) {
-					IEnumerable<IMember> acceptableMembers;
-					if (wantedMember.ImplementedInterfaceMembers.Any()) {
-						acceptableMembers = wantedMember.ImplementedInterfaceMembers.ToList();
-					} else {
-						acceptableMembers = new List<IMember>() { wantedMember.MemberDefinition };
-					}
-
-					var hasMember = allMembers.Any(m => HasCommonMemberDeclaration(acceptableMembers, m));
-					if (!hasMember)
-						return false;
-				}
-				return true;
-			}
-
-			IEnumerable<IType> GetPossibleTypes(IEnumerable<IType> types, IEnumerable<InvocationResolveResult> invocations)
-			{
-				var members = GetNeededMembers(invocations);
 				return from type in types
-					where SatisfiesMemberRequests(type, members)
-					orderby GetInheritanceDepth(type) ascending
-					select type;
+					where criterion.SatisfiedBy(type)
+						orderby GetInheritanceDepth(type) ascending
+						select type;
 			}
 
 			int GetInheritanceDepth(IType declaringType)
@@ -144,47 +103,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				return depth;
 			}
-		}
-
-		class InvocationCollector : DepthFirstAstVisitor
-		{
-			BaseRefactoringContext context;
-
-			public InvocationCollector(BaseRefactoringContext context)
-			{
-				this.context = context;
-				Invocations = new Dictionary<IVariable, IList<InvocationResolveResult>>();
-			}
-
-			public IDictionary<IVariable, IList<InvocationResolveResult>> Invocations { get; private set; }
-
-			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
-			{
-				base.VisitInvocationExpression(invocationExpression);
-				var resolveResult = context.Resolve(invocationExpression);
-				var invocationResolveResult = resolveResult as InvocationResolveResult;
-				if (invocationResolveResult == null)
-					return;
-				var parameterResolveResult = invocationResolveResult.TargetResult as LocalResolveResult;
-				if (parameterResolveResult == null)
-					return;
-				var variable = parameterResolveResult.Variable;
-				if (!Invocations.ContainsKey(variable))
-					Invocations[variable] = new List<InvocationResolveResult>();
-				Invocations[variable].Add(invocationResolveResult);
-			}
-		}
-	}
-	
-	static class IEnumerableExtensions
-	{
-		public static bool ContainsAny<T>(this IEnumerable<T> collection, IEnumerable<T> items)
-		{
-			foreach (var item in items) {
-				if (collection.Contains(item))
-					return true;
-			}
-			return false;
 		}
 	}
 }
