@@ -200,6 +200,28 @@ class C
 						var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
 						Assert.AreEqual(0, issues.Count);
 				}
+		
+		[Test]
+		public void IgnoresOwnMemberFunctions()
+		{
+			var input = @"
+class A
+{
+	protected static void F() { }
+}
+class B : A
+{
+	void Main()
+	{
+		F();
+		this.F();
+		base.F();
+	}
+}";
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
 		}
+	}
 }
 

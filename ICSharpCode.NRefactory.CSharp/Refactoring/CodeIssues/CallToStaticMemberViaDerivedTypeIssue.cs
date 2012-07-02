@@ -53,6 +53,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression(invocationExpression);
+				if (invocationExpression.Target is IdentifierExpression)
+					// Call within current class scope without 'this' or 'base'
+					return;
+				var expression = invocationExpression.Target as MemberReferenceExpression;
+				if (expression == null || expression.Target is ThisReferenceExpression)
+					// Call within current class scope using 'this' or 'base'
+					return;
 				var invocationResolveResult = context.Resolve(invocationExpression) as InvocationResolveResult;
 				if (invocationResolveResult == null)
 					return;
