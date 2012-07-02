@@ -49,8 +49,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
+			bool isSealedType;
+
+			public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
+			{
+				bool oldIsSealedType = isSealedType;
+				isSealedType = typeDeclaration.Modifiers.HasFlag(Modifiers.Sealed);
+				base.VisitTypeDeclaration(typeDeclaration);
+				isSealedType = oldIsSealedType;
+			}
+
 			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
 			{
+				if (isSealedType)
+					return;
 				var body = constructorDeclaration.Body;
 				if (body == null || body.IsNull)
 					return;
@@ -71,12 +83,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
+				base.VisitInvocationExpression(invocationExpression);
+				if (!IsCallDependentOnCurrentInstance(invocationExpression))
+					// Call within current class scope without 'this' or 'base'
+					return;
 				var targetMethod = context.Resolve(invocationExpression) as InvocationResolveResult;
 				if (targetMethod == null)
 					return;
-				if (targetMethod.IsVirtualCall)
+				if (targetMethod.IsVirtualCall) {
 					AddIssue(invocationExpression,
-					         context.TranslateString("Calling virtual functions in constructors is bad practice"));
+					         context.TranslateString("Constructors should not call virtual members"));
+				}
+			}
+
+			bool IsCallDependentOnCurrentInstance(InvocationExpression invocationExpression)
+			{
+				if (invocationExpression.Target is IdentifierExpression)
+					// Call within current class scope without 'this' or 'base'
+					return true;
+				var expression = invocationExpression.Target as MemberReferenceExpression;
+				if (expression == null || expression.Target is ThisReferenceExpression)
+					// Call within current class scope using 'this' or 'base'
+					return true;
+				return false;
 			}
 		}
 	}
