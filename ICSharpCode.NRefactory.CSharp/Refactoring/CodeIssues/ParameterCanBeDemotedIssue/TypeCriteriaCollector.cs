@@ -62,7 +62,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!TypeCriteria.ContainsKey(variable))
 				TypeCriteria[variable] = new List<ITypeCriterion>();
 			TypeCriteria[variable].Add(new HasMemberCriterion(invocationResolveResult.Member));
-			
 		}
 
 		class ConjunctionCriteria : ITypeCriterion

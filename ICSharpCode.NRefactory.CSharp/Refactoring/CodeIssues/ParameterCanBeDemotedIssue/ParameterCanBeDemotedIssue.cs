@@ -65,7 +65,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var variable = localResolveResult.Variable;
 					var currentType = localResolveResult.Type;
 					var candidateTypes = localResolveResult.Type.GetAllBaseTypes();
-					var possibleTypes = GetPossibleTypes(candidateTypes, collector.GetCriterion(variable));
+					var typeCriterion = collector.GetCriterion(variable);
+					if (typeCriterion == null)
+						// No usages in body
+						return;
+					var possibleTypes = GetPossibleTypes(candidateTypes, typeCriterion);
 					var suggestedTypes = possibleTypes.Where(t => t != currentType);
 					if (suggestedTypes.Any()) {
 						AddIssue(parameter, context.TranslateString("Parameter can be demoted to base class"),
@@ -81,7 +85,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var message = string.Format("{0} '{1}'", context.TranslateString("Demote parameter to "), typeName);
 					yield return new CodeAction(message, script => {
 						script.Replace(parameter.Type, new SimpleType(typeName));
-						Console.WriteLine(message + "\t|\t" + typeName);
 					});
 				}
 			}

@@ -79,6 +79,21 @@ class C
 		}
 
 		[Test]
+		public void IgnoresUnusedParameters()
+		{
+			var input = @"
+class A
+{
+	void F(A a1)
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
 		public void InterfaceTest()
 		{
 			var input = @"
