@@ -32,6 +32,8 @@ using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
+	
+	[ContextAction("Move to outer scope", Description = "Moves a declaration to the parent scope.")]
 	public class MoveToOuterScopeAction : ICodeActionProvider
 	{
 		#region ICodeActionProvider implementation
