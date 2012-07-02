@@ -20,23 +20,28 @@
 				
 				<ComboBox.ItemTemplate>
 					<DataTemplate>
-						
 						<StackPanel Orientation="Horizontal">
 							<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
 							       Source="{Binding Item1,
 							Converter={StaticResource imageConverter}}"></Image>
+							
 							<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
-						
 						</StackPanel>
-					
 					</DataTemplate>
 				</ComboBox.ItemTemplate>
-			
 			</ComboBox>
 		</DataTemplate>
 		
+		
 		<DataTemplate x:Key="txtTemplate">
-			<TextBox Text="DDDDDDDDDDDD"></TextBox>
+			<StackPanel Orientation="Horizontal">
+				<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
+				       Source="{Binding MixedModeIcon}"></Image>
+				
+				
+				<TextBlock Text="{Binding MixedModeText}"></TextBlock>
+			</StackPanel>
+		
 		</DataTemplate>
 		
 		

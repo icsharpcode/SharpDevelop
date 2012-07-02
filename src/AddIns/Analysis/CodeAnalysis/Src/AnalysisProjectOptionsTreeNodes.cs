@@ -8,7 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Media;
 
+using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.TreeView;
 
 namespace ICSharpCode.CodeAnalysis
@@ -53,16 +56,20 @@ namespace ICSharpCode.CodeAnalysis
 	public class CategoryTreeNode : BaseTree
 	{
 		internal FxCopCategory category;
+		private string mixedModeText;
+		private ImageSource mixedModeIcon;
 		
 		public CategoryTreeNode(FxCopCategory category,IEnumerable<Tuple<Icon,string,int>> bla):base(bla)
 		{
+			mixedModeText = StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.WarningErrorMixed}");
+			mixedModeIcon = PresentationResourceService.GetBitmapSource("Icons.16x16.ClosedFolderBitmap");
 			this.category = category;
 			foreach (FxCopRule rule in category.Rules) {
 				this.Children.Add(new RuleTreeNode(rule,bla));
 			}
 		}
 		
-		
+	
 		public override bool IsCheckable {
 			get { return true; }
 		}
@@ -83,7 +90,15 @@ namespace ICSharpCode.CodeAnalysis
 			}
 		}
 		
-
+		public ImageSource  MixedModeIcon {
+			get { return mixedModeIcon; }
+		}
+		
+		public string MixedModeText
+		{
+			get {return mixedModeText;}
+		}
+		
 		
 		public Nullable<bool> NewErrorState {
 			get {

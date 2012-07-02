@@ -50,8 +50,8 @@ namespace ICSharpCode.CodeAnalysis
 		{
 			InitializeComponent();
 			DataContext = this;
-			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Warning,"Warning",0));
-			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Error,"Error",1));
+			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Warning,ResourceService.GetString("Global.WarningText"),0));
+			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Error,ResourceService.GetString("Global.ErrorText"),1));
 //			bla.Add(Tuple.Create<Icon,string>(null,"None"));
 		}
 		
@@ -334,15 +334,25 @@ namespace ICSharpCode.CodeAnalysis
 		
 		public override DataTemplate SelectTemplate(object item, DependencyObject container)
 		{
-//			var element = item as RuleTreeNode;
-//			if (element != null) {
-//				return ComboTemplate;
-//			} else {
-//				return TxtTemplate;
-//			}
-			return ComboTemplate;
-		}
+			var rule = item as RuleTreeNode;
 			
+			if (rule != null) {
+				return ComboTemplate;
+			} 
+		
+			var cat = item as CategoryTreeNode;
+			
+			if (cat != null) {
+				if (!cat.NewErrorState.HasValue) {
+					//Mixed Mode
+					return TxtTemplate;
+				} else {
+					//All childs has same value
+					return ComboTemplate;
+				}
+			}
+			return ComboTemplate;
+		}	
 	}
 	
 	
