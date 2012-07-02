@@ -194,6 +194,24 @@ class A
 		}
 		
 		[Test]
+		public void IgnoresVariablesOnlyUsedInOneScope()
+		{
+			var input = @"
+class A
+{
+	void F()
+	{
+		A a = new A();
+		a.F();
+		a.F();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
 		public void DoesNotSuggestMovingIntoLoop()
 		{
 			var input = @"
@@ -203,6 +221,25 @@ class A
 	{
 		int val = 2;
 		while (true) {
+			val = 3;
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotSuggestMovingPastDependentCondition()
+		{
+			var input = @"
+class A
+{
+	void F()
+	{
+		int val = 2;
+		if (val == 2 || val == 1) {
 			val = 3;
 		}
 	}

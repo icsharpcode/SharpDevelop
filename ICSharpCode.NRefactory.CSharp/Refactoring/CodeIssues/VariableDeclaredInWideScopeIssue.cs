@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				                                where block != null
 				                                select block).LastOrDefault();
 
-				if (mostNestedBlockStatement != null) {
+				if (mostNestedBlockStatement != null && mostNestedBlockStatement != rootNode) {
 					AddIssue(variableDeclarationStatement, context.TranslateString("Variable could be moved to a nested scope"),
 					         GetActions(variableDeclarationStatement, mostNestedBlockStatement));
 				}
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				var previousPath = GetPath(assumedRoot, leaves.First());
 				int lowestIndex = previousPath.Count - 1;
-				foreach (var leaf in leaves) {
+				foreach (var leaf in leaves.Skip(1)) {
 					var currentPath = GetPath(assumedRoot, leaf);
 					lowestIndex = GetLowestCommonAncestorIndex(previousPath, currentPath, lowestIndex);
 					previousPath = currentPath;
@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			int GetLowestCommonAncestorIndex(IList<AstNode> path1, IList<AstNode> path2, int maxIndex)
 			{
 				var max = Math.Min(Math.Min(path1.Count, path2.Count), maxIndex);
-				for (int i = 0; i < max; i++) {
+				for (int i = 0; i <= max; i++) {
 					if (path1 [i] != path2 [i])
 						return i - 1;
 				}
@@ -136,7 +136,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				do {
 					reversePath.Add(to);
 					to = to.Parent;
-				} while (to != from);
+				} while (to != from.Parent);
 				reversePath.Reverse();
 				return reversePath;
 			}
