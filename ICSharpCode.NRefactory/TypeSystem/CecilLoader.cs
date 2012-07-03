@@ -1175,15 +1175,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public KeyValuePair<IMember, ResolveResult> ReadNamedArg(IType attributeType)
 			{
 				EntityType memberType;
-				switch (ReadByte()) {
-					case 0x53:
-						memberType = EntityType.Field;
-						break;
-					case 0x54:
-						memberType = EntityType.Property;
-						break;
-					default:
-						throw new NotSupportedException();
+				var b = ReadByte();
+				switch (b) {
+				case 0x53:
+					memberType = EntityType.Field;
+					break;
+				case 0x54:
+					memberType = EntityType.Property;
+					break;
+				default:
+					throw new NotSupportedException(string.Format("Custom member type 0x{0:x} is not supported.", b));
 				}
 				IType type = ReadCustomAttributeFieldOrPropType();
 				string name = ReadSerString();
@@ -1196,7 +1197,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				return new KeyValuePair<IMember, ResolveResult>(member, val);
 			}
-			
+
 			IType ReadCustomAttributeFieldOrPropType()
 			{
 				ICompilation compilation = currentResolvedAssembly.Compilation;
