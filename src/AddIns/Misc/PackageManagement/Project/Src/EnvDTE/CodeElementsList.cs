@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodeElementsList : CodeElements
+	public class CodeElementsList : MarshalByRefObject, CodeElements
 	{
 		List<CodeElement> elements = new List<CodeElement>();
 		
