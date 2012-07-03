@@ -284,11 +284,11 @@
     <Compile Include="CSharp\Parser\Statements\InvalidStatementsTests.cs" />
     <Compile Include="CSharp\Refactoring\NamingHelperTests.cs" />
     <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertToInitializerTests.cs" />
-    <Compile Include="CSharp\CodeIssues\CallToStaticMemberViaDerivedTypeTests.cs" />
     <Compile Include="CSharp\CodeActions\MoveToOuterScopeTests.cs" />
     <Compile Include="CSharp\CodeIssues\VariableDeclaredInWideScopeTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedTests.cs" />
     <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReferenceToStaticMemberViaDerivedTypeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

@@ -31,7 +31,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class CallToStaticMemberViaDerivedTypeTests : InspectionActionTestBase
+	public class ReferenceToStaticMemberViaDerivedTypeTests : InspectionActionTestBase
 	{
 		[Test]
 		public void MemberInvocation()
@@ -50,7 +50,7 @@ class C
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			Assert.AreEqual(11, issues [0].Start.Line);
 
@@ -87,7 +87,7 @@ class C
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			Assert.AreEqual(11, issues [0].Start.Line);
 			
@@ -124,7 +124,7 @@ class C
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			Assert.AreEqual(11, issues [0].Start.Line);
 			
@@ -164,7 +164,7 @@ class D
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			Assert.AreEqual(14, issues [0].Start.Line);
 			
@@ -210,7 +210,7 @@ namespace Second
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			Assert.AreEqual(16, issues [0].Start.Line);
 			
@@ -252,7 +252,7 @@ class B
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 		
@@ -274,7 +274,7 @@ class C
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 		
@@ -296,7 +296,7 @@ class B : A
 	}
 }";
 			TestRefactoringContext context;			
-			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			var issues = GetIssues(new ReferenceToStaticMemberViaDerivedTypeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
 	}

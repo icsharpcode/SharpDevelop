@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	                   Description = "Suggests using the class declaring a static function when calling it.",
 	                   Category = IssueCategories.CodeQualityIssues,
 	                   Severity = Severity.Suggestion)]
-	public class CallToStaticMemberViaDerivedTypeIssue : ICodeIssueProvider
+	public class ReferenceToStaticMemberViaDerivedTypeIssue : ICodeIssueProvider
 	{
 		#region ICodeIssueProvider implementation
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
