@@ -74,8 +74,7 @@ class C
 	{
 		b.Foo();
 	}
-}"
-			);
+}");
 		}
 
 		[Test]
@@ -135,8 +134,7 @@ class C
 	{
 		b.Foo();
 	}
-}"
-			);
+}");
 		}
 		
 		[Test]
@@ -193,8 +191,7 @@ class Test
 		c.Foo();
 		c.Bar();
 	}
-}"
-			);
+}");
 		}
 
 		string baseInput = @"
@@ -228,9 +225,9 @@ class E : D, IC
 			var input = baseInput + @"
 class Test
 {
-	void F(E d)
+	void F(E e)
 	{
-		d.Foo();
+		e.Foo();
 	}
 }";
 			TestRefactoringContext context;
@@ -242,12 +239,48 @@ class Test
 			CheckFix(context, issues [0], baseInput + @"
 class Test
 {
-	void F(IA d)
+	void F(IA e)
 	{
-		d.Foo();
+		e.Foo();
 	}
-}"
-			);
+}");
+		}
+
+		[Test]
+		public void RespectsOutgoingCallsTypeRestrictions()
+		{
+			var input = baseInput + @"
+class Test
+{
+	void F(E e)
+	{
+		e.Foo();
+		DemandType(e);
+	}
+
+	void DemandType(D d)
+	{
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issues [0], baseInput + @"
+class Test
+{
+	void F(D e)
+	{
+		e.Foo();
+		DemandType(e);
+	}
+
+	void DemandType(D d)
+	{
+	}
+}");
 		}
 	}
 }

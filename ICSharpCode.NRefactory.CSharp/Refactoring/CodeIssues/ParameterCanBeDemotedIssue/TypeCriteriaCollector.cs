@@ -26,6 +26,7 @@
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -47,6 +48,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return null;
 			return new ConjunctionCriteria(TypeCriteria[variable]);
 		}
+
+		void AddCriterion(IVariable variable, ITypeCriterion criterion)
+		{
+			if (!TypeCriteria.ContainsKey(variable))
+				TypeCriteria[variable] = new List<ITypeCriterion>();
+			TypeCriteria[variable].Add(criterion);
+		}
 		
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 		{
@@ -55,13 +63,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var invocationResolveResult = resolveResult as InvocationResolveResult;
 			if (invocationResolveResult == null)
 				return;
-			var parameterResolveResult = invocationResolveResult.TargetResult as LocalResolveResult;
-			if (parameterResolveResult == null)
+			CollectRestrictionsFromNodes(invocationExpression.Arguments);
+			var targetResolveResult = invocationResolveResult.TargetResult as LocalResolveResult;
+			if (targetResolveResult == null)
 				return;
-			var variable = parameterResolveResult.Variable;
-			if (!TypeCriteria.ContainsKey(variable))
-				TypeCriteria[variable] = new List<ITypeCriterion>();
-			TypeCriteria[variable].Add(new HasMemberCriterion(invocationResolveResult.Member));
+			var variable = targetResolveResult.Variable;
+			AddCriterion(variable, new HasMemberCriterion(invocationResolveResult.Member));
+		}
+
+		void CollectRestrictionsFromNodes(IEnumerable<Expression> expressions)
+		{
+			var identifiers =
+				from expression in expressions
+					from node in expression.DescendantsAndSelf
+					let identifier = node as IdentifierExpression
+					where identifier != null
+					select identifier;
+			foreach (var identifier in identifiers) {
+				var resolveResult2 = context.Resolve(identifier);
+				var argumentResolveResult = resolveResult2 as LocalResolveResult;
+				if (argumentResolveResult == null)
+					continue;
+				var expectedType = context.GetExpectedType(identifier);
+				AddCriterion(argumentResolveResult.Variable, new IsTypeCriterion(expectedType));
+			}
 		}
 
 		class ConjunctionCriteria : ITypeCriterion

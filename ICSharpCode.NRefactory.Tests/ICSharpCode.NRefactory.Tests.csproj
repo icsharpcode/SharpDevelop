@@ -289,6 +289,7 @@
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\ParameterCanBeDemotedTests.cs" />
     <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
     <Compile Include="CSharp\CodeIssues\ReferenceToStaticMemberViaDerivedTypeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
