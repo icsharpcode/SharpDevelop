@@ -50,39 +50,58 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
+			public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
+			{
+				base.VisitMemberReferenceExpression(memberReferenceExpression);
+				if (memberReferenceExpression == null || memberReferenceExpression.Target is ThisReferenceExpression)
+					// Call within current class scope using 'this' or 'base'
+					return;
+				var memberResolveResult = context.Resolve(memberReferenceExpression) as MemberResolveResult;
+				if (memberResolveResult == null)
+					return;
+				if (!memberResolveResult.Member.IsStatic)
+					return;
+				HandleMember(memberReferenceExpression, memberReferenceExpression.Target, memberResolveResult.Member, memberResolveResult.TargetResult);
+			}
+			
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression(invocationExpression);
 				if (invocationExpression.Target is IdentifierExpression)
 					// Call within current class scope without 'this' or 'base'
 					return;
-				var expression = invocationExpression.Target as MemberReferenceExpression;
-				if (expression == null || expression.Target is ThisReferenceExpression)
+				var memberReference = invocationExpression.Target as MemberReferenceExpression;
+				if (memberReference == null || memberReference.Target is ThisReferenceExpression)
 					// Call within current class scope using 'this' or 'base'
 					return;
 				var invocationResolveResult = context.Resolve(invocationExpression) as InvocationResolveResult;
 				if (invocationResolveResult == null)
 					return;
-				if (!invocationResolveResult.Member.IsStatic)
-					return;
-				var targetResolveResult = invocationResolveResult.TargetResult as TypeResolveResult;
-				if (targetResolveResult == null)
-					return;
-				if (targetResolveResult.Type.Equals(invocationResolveResult.Member.DeclaringType))
-					return;
-				AddIssue(invocationExpression.Target, context.TranslateString("Static method invoked via derived type"),
-				         GetActions(context, invocationExpression, invocationResolveResult.Member));
+				HandleMember(invocationExpression, memberReference.Target, invocationResolveResult.Member, invocationResolveResult.TargetResult);
 			}
 
-			IEnumerable<CodeAction> GetActions(BaseRefactoringContext context, InvocationExpression invocationExpression,
+			void HandleMember(Expression issueAnchor, Expression targetExpression, IMember member, ResolveResult targetResolveResult)
+			{
+				var typeResolveResult = targetResolveResult as TypeResolveResult;
+				if (typeResolveResult == null)
+					return;
+				if (!member.IsStatic)
+					return;
+				if (typeResolveResult.Type.Equals(member.DeclaringType))
+					return;
+				AddIssue(issueAnchor, context.TranslateString("Static method invoked via derived type"),
+				         GetActions(context, targetExpression, member));
+			}
+
+			IEnumerable<CodeAction> GetActions(BaseRefactoringContext context, Expression targetExpression,
 			                                   IMember member)
 			{
-				var csResolver = context.Resolver.GetResolverStateBefore(invocationExpression);
+				var csResolver = context.Resolver.GetResolverStateBefore(targetExpression);
 				var builder = new TypeSystemAstBuilder(csResolver);
 				var newType = builder.ConvertType(member.DeclaringType);
 				string description = string.Format("{0} '{1}'", context.TranslateString("Use base class"), newType.GetText());
 				yield return new CodeAction(description, script => {
-					script.Replace(((MemberReferenceExpression)invocationExpression.Target).Target, newType);
+					script.Replace(targetExpression, newType);
 				});
 			}
 		}

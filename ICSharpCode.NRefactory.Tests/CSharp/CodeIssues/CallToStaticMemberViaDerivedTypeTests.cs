@@ -30,13 +30,13 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
-		[TestFixture]
-		public class CallToStaticMemberViaDerivedTypeTests : InspectionActionTestBase
+	[TestFixture]
+	public class CallToStaticMemberViaDerivedTypeTests : InspectionActionTestBase
+	{
+		[Test]
+		public void MemberInvocation()
 		{
-				[Test]
-				public void BasicCase()
-				{
-						var input = @"
+			var input = @"
 class A
 {
 	public static void F() { }
@@ -49,12 +49,12 @@ class C
 		B.F();
 	}
 }";
-						TestRefactoringContext context;			
-						var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
-						Assert.AreEqual(1, issues.Count);
-						Assert.AreEqual(11, issues [0].Start.Line);
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(11, issues [0].Start.Line);
 
-						CheckFix(context, issues [0], @"
+			CheckFix(context, issues [0], @"
 class A
 {
 	public static void F() { }
@@ -66,13 +66,88 @@ class C
 	{
 		A.F();
 	}
-}");
-				}
+}"
+			);
+		}
 
-				[Test]
-				public void NestedClass()
-				{
-						var input = @"
+		[Test]
+		public void PropertyAccess()
+		{
+			var input = @"
+class A
+{
+	public static string Property { get; set; }
+}
+class B : A { }
+class C
+{
+	void Main()
+	{
+		System.Console.WriteLine(B.Property);
+	}
+}";
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(11, issues [0].Start.Line);
+			
+			CheckFix(context, issues [0], @"
+class A
+{
+	public static string Property { get; set; }
+}
+class B : A { }
+class C
+{
+	void Main()
+	{
+		System.Console.WriteLine(A.Property);
+	}
+}"
+			);
+		}
+		
+		[Test]
+		public void FieldAccess()
+		{
+			var input = @"
+class A
+{
+	public static string Property;
+}
+class B : A { }
+class C
+{
+	void Main()
+	{
+		System.Console.WriteLine(B.Property);
+	}
+}";
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(11, issues [0].Start.Line);
+			
+			CheckFix(context, issues [0], @"
+class A
+{
+	public static string Property;
+}
+class B : A { }
+class C
+{
+	void Main()
+	{
+		System.Console.WriteLine(A.Property);
+	}
+}"
+			);
+		}
+
+		[Test]
+		public void NestedClass()
+		{
+			var input = @"
 class A
 {
 	public class B
@@ -88,12 +163,12 @@ class D
 		A.C.F();
 	}
 }";
-						TestRefactoringContext context;			
-						var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
-						Assert.AreEqual(1, issues.Count);
-						Assert.AreEqual(14, issues [0].Start.Line);
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(14, issues [0].Start.Line);
 			
-						CheckFix(context, issues [0], @"
+			CheckFix(context, issues [0], @"
 class A
 {
 	public class B
@@ -108,13 +183,14 @@ class D
 	{
 		A.B.F();
 	}
-}");
-				}
+}"
+			);
+		}
 		
-				[Test]
-				public void ExpandsTypeWithNamespaceIfNeccessary()
-				{
-						var input = @"
+		[Test]
+		public void ExpandsTypeWithNamespaceIfNeccessary()
+		{
+			var input = @"
 namespace First
 {
 	class A
@@ -133,12 +209,12 @@ namespace Second
 		}
 	}
 }";
-						TestRefactoringContext context;			
-						var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
-						Assert.AreEqual(1, issues.Count);
-						Assert.AreEqual(16, issues [0].Start.Line);
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(16, issues [0].Start.Line);
 			
-						CheckFix(context, issues [0], @"
+			CheckFix(context, issues [0], @"
 namespace First
 {
 	class A
@@ -156,13 +232,14 @@ namespace Second
 			First.A.F();
 		}
 	}
-}");
-				}
+}"
+			);
+		}
 		
-				[Test]
-				public void IgnoresCorrectCalls()
-				{
-						var input = @"
+		[Test]
+		public void IgnoresCorrectCalls()
+		{
+			var input = @"
 class A
 {
 	public static void F() { }
@@ -174,15 +251,15 @@ class B
 		A.F();
 	}
 }";
-						TestRefactoringContext context;			
-						var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
-						Assert.AreEqual(0, issues.Count);
-				}
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 		
-				[Test]
-				public void IgnoresNonStaticCalls()
-				{
-						var input = @"
+		[Test]
+		public void IgnoresNonStaticCalls()
+		{
+			var input = @"
 class A
 {
 	public void F() { }
@@ -196,10 +273,10 @@ class C
 		b.F();
 	}
 }";
-						TestRefactoringContext context;			
-						var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
-						Assert.AreEqual(0, issues.Count);
-				}
+			TestRefactoringContext context;			
+			var issues = GetIssues(new CallToStaticMemberViaDerivedTypeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 		
 		[Test]
 		public void IgnoresOwnMemberFunctions()
