@@ -290,6 +290,7 @@
     <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
     <Compile Include="CSharp\CodeIssues\ReferenceToStaticMemberViaDerivedTypeTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterionTests.cs" />
+    <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -320,6 +321,7 @@
     <Folder Include="CSharp\Parser\Bugs\" />
     <Folder Include="CSharp\CodeActions\ConvertToInitializer\" />
     <Folder Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\" />
+    <Folder Include="Utils\CompositeFormatStringParser\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
