@@ -59,5 +59,10 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		public string SuggestedReplacementText { get; set; }
 		#endregion
+
+		public override string ToString ()
+		{
+			return string.Format ("[DefaultFormatStringError: StartLocation={0}, EndLocation={1}, Message={2}, OriginalText={3}, SuggestedReplacementText={4}]", StartLocation, EndLocation, Message, OriginalText, SuggestedReplacementText);
+		}
 	}
 }

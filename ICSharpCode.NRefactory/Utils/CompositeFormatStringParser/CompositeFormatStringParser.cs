@@ -127,18 +127,18 @@ namespace ICSharpCode.NRefactory.Utils
 
 		int ParseIndex (string format, ref int i)
 		{
-			int? maybeIndex = GetNumber (format, ref i);
-			if (maybeIndex.HasValue) {
-				return maybeIndex.Value;
+			int parsedCharacters;
+			int? maybeIndex = GetAndCheckNumber (format, ",:}", ref i, i, out parsedCharacters);
+			if (parsedCharacters == 0) {
+				AddError (new DefaultFormatStringError {
+					StartLocation = i,
+					EndLocation = i,
+					Message = "Missing index",
+					OriginalText = "",
+					SuggestedReplacementText = "0"
+				});
 			}
-			AddError (new DefaultFormatStringError {
-				StartLocation = i,
-				EndLocation = i,
-				Message = "Missing index",
-				OriginalText = "",
-				SuggestedReplacementText = "0"
-			});
-			return 0;
+			return maybeIndex ?? 0;
 		}
 
 		int? ParseAlignment(string format, ref int i, int length)
@@ -153,13 +153,18 @@ namespace ICSharpCode.NRefactory.Utils
 					var message = string.Format ("Unexpected end of string: '{0}'", originalText);
 					AddMissingEndBraceError(alignmentBegin, i, message, originalText);
 				} else {
-					int? number = GetNumber(format, ref i);
-					if (number.HasValue) {
-						return number;
-					} else {
-						AddInvalidNumberFormatError(i, "", "0");
-						return 0;
+					int parsedCharacters;
+					var number = GetAndCheckNumber(format, ",:}", ref i, alignmentBegin + 1, out parsedCharacters);
+					if (parsedCharacters == 0) {
+						AddError (new DefaultFormatStringError {
+							StartLocation = i,
+							EndLocation = i,
+							Message = "Missing alignment",
+							OriginalText = "",
+							SuggestedReplacementText = "0"
+						});
 					}
+					return number ?? 0;
 				}
 			}
 			return null;
@@ -211,6 +216,9 @@ namespace ICSharpCode.NRefactory.Utils
 		
 		int? GetNumber (string format, ref int index)
 		{
+			if (format.Length == 0) {
+				return null;
+			}
 			int sum = 0;
 			int i = index;
 			bool positive = format [i] != '-';
@@ -226,6 +234,20 @@ namespace ICSharpCode.NRefactory.Utils
 
 			index = i;
 			return positive ? sum : -sum;
+		}
+
+		int? GetAndCheckNumber(string format, string delimiters, ref int index, int numberFieldStart, out int parsedCharacters)
+		{
+			var numberText = GetUntil(format, delimiters, ref index);
+			parsedCharacters = numberText.Length;
+			int digitCount = 0;
+			int? number = GetNumber(numberText, ref digitCount);
+			if (digitCount != parsedCharacters) {
+				// Not the entire number field could be parsed
+				var suggestedNumber = (number ?? 0).ToString ();
+				AddInvalidNumberFormatError(numberFieldStart, format.Substring(numberFieldStart, index - numberFieldStart), suggestedNumber);
+			}
+			return number;
 		}
 
 		public static string UnEscape (string unEscaped)

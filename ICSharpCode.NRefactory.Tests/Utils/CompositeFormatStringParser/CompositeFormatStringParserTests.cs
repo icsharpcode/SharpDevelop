@@ -46,6 +46,9 @@ namespace ICSharpCode.NRefactory.Utils
 			Console.WriteLine("Actual format segments:");
 			foreach (var item in actualFormatSegments) {
 				Console.WriteLine(item.ToString());
+				foreach (var error in item.Errors) {
+					Console.WriteLine("\t{0}", error);
+				}
 			}
 
 			Assert.AreEqual(expectedFormatSegments, actualFormatSegments);
@@ -263,6 +266,42 @@ namespace ICSharpCode.NRefactory.Utils
 			ErrorTest(errors[0], "", "0", 1, 1);
 			ErrorTest(errors[1], "", "0", 2, 2);
 			ErrorTest(errors[2], "", "}", 3, 3);
+		}
+		
+		[Test]
+		public void InvalidNumberFormatInIndex()
+		{
+			var segments = ParseTest("{0 and then some invalid text}",
+			                         new FormatItem(0) { StartLocation = 0, EndLocation = 30 });
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], "0 and then some invalid text", "0", 1, 29);
+		}
+		
+		[Test]
+		public void InvalidNumberFormatTextBeforeDigitsInIndex()
+		{
+			var segments = ParseTest("{Some text 55}",
+			                         new FormatItem(0) { StartLocation = 0, EndLocation = 14 });
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], "Some text 55", "0", 1, 13);
+		}
+		
+		[Test]
+		public void InvalidNumberFormatInAlignment()
+		{
+			var segments = ParseTest("{0, 100 and then some invalid text}",
+			                         new FormatItem(0, 100) { StartLocation = 0, EndLocation = 35 });
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], " 100 and then some invalid text", "100", 3, 34);
+		}
+		
+		[Test]
+		public void InvalidNumberFormatTextBeforeDigitsInAlignment()
+		{
+			var segments = ParseTest("{0, Some text 55}",
+			                         new FormatItem(0, 0) { StartLocation = 0, EndLocation = 17 });
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], " Some text 55", "0", 3, 16);
 		}
 	}
 }
