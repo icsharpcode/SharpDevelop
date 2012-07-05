@@ -52,6 +52,21 @@ namespace ICSharpCode.NRefactory.Utils
 			return actualFormatSegments;
 		}
 
+		static IList<IFormatStringError> SegmentTest(int count, IFormatStringSegment segment)
+		{
+			var errors = segment.Errors.ToList();
+			Assert.AreEqual(count, errors.Count, "Too many or too few errors.");
+			return errors;
+		}
+
+		static void ErrorTest(IFormatStringError error, string originalText, string replacementText, int startLocation, int endLocation)
+		{
+			Assert.AreEqual(originalText, error.OriginalText, "OriginalText is incorrect.");
+			Assert.AreEqual(replacementText, error.SuggestedReplacementText, "SuggestedReplacementText is incorrect.");
+			Assert.AreEqual(startLocation, error.StartLocation, "StartLocation is incorrect.");
+			Assert.AreEqual(endLocation, error.EndLocation, "EndLocation is incorrect.");
+		}
+
 		[Test]
 		public void Index()
 		{
@@ -135,18 +150,99 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			ParseTest("A weird string: {0:{{}}}",
 			          new TextSegment("A weird string: "),
-			          new FormatItem(0, null, "{}") { StartLocation = 16, EndLocation = 24});
+			          new FormatItem(0, null, "{}") { StartLocation = 16, EndLocation = 24 });
+		}
+		
+		[Test]
+		public void EmptySubFormatString()
+		{
+			ParseTest("{0:}", new FormatItem(0, null, "") { StartLocation = 0, EndLocation = 4 });
 		}
 		
 		[Test]
 		public void EndsAfterOpenBrace()
 		{
 			var segments = ParseTest("{", new TextSegment("{"));
-			var segment = segments [0];
-			var errors = segment.Errors.ToList();
-			Assert.AreEqual(1, errors.Count, "Too many or too few errors.");
-			var error = errors [0];
-			Assert.AreEqual("{{", error.SuggestedReplacementText);
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], "{", "{{", 0, 1);
+		}
+		
+		[Test]
+		public void UnescapedLoneEndingBrace()
+		{
+			var segments = ParseTest("Some text {", new TextSegment("Some text {"));
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], "{", "{{", 10, 11);
+		}
+		
+		[Test]
+		public void EndAfterIndex()
+		{
+			var segments = ParseTest("Some text {0",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0) { StartLocation = 10, EndLocation = 12 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "}", 12, 12);
+		}
+		
+		[Test]
+		public void EndAfterComma()
+		{
+			var segments = ParseTest("Some text {0,",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0) { StartLocation = 10, EndLocation = 13 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], ",", "}", 12, 13);
+		}
+		
+		[Test]
+		public void EndAfterCommaAndSpaces()
+		{
+			var segments = ParseTest("Some text {0,   ",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0) { StartLocation = 10, EndLocation = 16 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], ",   ", "}", 12, 16);
+		}
+		
+		[Test]
+		public void EndAfterAlignment()
+		{
+			var segments = ParseTest("Some text {0, -34",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0, -34) { StartLocation = 10, EndLocation = 17 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "}", 17, 17);
+		}
+		
+		[Test]
+		public void EndAfterColon()
+		{
+			var segments = ParseTest("Some text {0:",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0, null, "") { StartLocation = 10, EndLocation = 13 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "}", 13, 13);
+		}
+		
+		[Test]
+		public void EndAfterSubFormatString()
+		{
+			var segments = ParseTest("Some text {0: asdf",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0, null, " asdf") { StartLocation = 10, EndLocation = 18 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "}", 18, 18);
+		}
+		
+		[Test]
+		public void MissingIndex()
+		{
+			var segments = ParseTest("Some text {}",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0) { StartLocation = 10, EndLocation = 12 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "0", 11, 11);
 		}
 	}
 }

@@ -41,6 +41,13 @@ namespace ICSharpCode.NRefactory.Utils
 
 	class DefaultFormatStringError : IFormatStringError
 	{
+		public DefaultFormatStringError()
+		{
+			Message = "";
+			OriginalText = "";
+			SuggestedReplacementText = "";
+		}
+
 		#region IFormatStringError implementation
 		public int StartLocation { get; set; }
 		
