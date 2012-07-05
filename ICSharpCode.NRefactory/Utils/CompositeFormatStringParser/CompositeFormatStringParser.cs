@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.Utils
 					} else {
 						// This is the end of the text segment and the start of a FormatItem
 						if (i - start > 0) {
-							yield return TextSegment.FromUnescapedText (format.Substring (start, i - start));
+							yield return new TextSegment (UnEscape (format.Substring (start, i - start)));
 							start = i;
 						}
 					}
@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.Utils
 			}
 			// Handle remaining text
 			if (start < length) {
-				yield return new TextSegment (TextSegment.UnEscape (format.Substring (start)), start);
+				yield return new TextSegment (UnEscape (format.Substring (start)), start);
 			}
 		}
 
@@ -153,12 +153,11 @@ namespace ICSharpCode.NRefactory.Utils
 					var message = string.Format ("Unexpected end of string: '{0}'", originalText);
 					AddMissingEndBraceError(alignmentBegin, i, message, originalText);
 				} else {
-					var number = GetUntil (format, ":}", ref i);
-					int value;
-					if (int.TryParse(number, NumberStyles.Integer, CultureInfo.InvariantCulture, out value)) {
-						return value;
+					int? number = GetNumber(format, ref i);
+					if (number.HasValue) {
+						return number;
 					} else {
-						AddInvalidNumberFormatError(i, number, "0");
+						AddInvalidNumberFormatError(i, "", "0");
 						return 0;
 					}
 				}
@@ -187,31 +186,9 @@ namespace ICSharpCode.NRefactory.Utils
 					}
 				}
 				var escaped = format.Substring (begin, i - begin);
-				return TextSegment.UnEscape (escaped);
+				return UnEscape (escaped);
 			}
 			return null;
-		}
-
-		string GetFormatItemText (string src, int index, out int endIndex)
-		{
-			int length = src.Length;
-			int begin = index;
-			while (index < length) {
-				var c = src [index];
-				++index;
-				if (c != '}') {
-					continue;
-				} else if (index + 1 < length && src [index + 1] == '}') {
-					// Step past escape sequence
-					++index;
-					continue;
-				} else {
-					// This is the end of the FormatItem
-					break;
-				}
-			}
-			endIndex = index < length ? index : length;
-			return src.Substring (begin, endIndex - begin);
 		}
 
 		void CheckForMissingEndBrace (string format, int i, int length)
@@ -251,6 +228,11 @@ namespace ICSharpCode.NRefactory.Utils
 			return positive ? sum : -sum;
 		}
 
+		public static string UnEscape (string unEscaped)
+		{
+			return unEscaped.Replace ("{{", "{").Replace ("}}", "}");
+		}
+
 		IList<IFormatStringError> errors;
 		
 		bool hasMissingEndBrace = false;
@@ -262,6 +244,7 @@ namespace ICSharpCode.NRefactory.Utils
 
 		void AddMissingEndBraceError(int start, int end, string message, string originalText)
 		{
+			// Only add a single missing end brace per format item
 			if (hasMissingEndBrace)
 				return;
 			AddError (new DefaultFormatStringError {

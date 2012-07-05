@@ -35,16 +35,6 @@ namespace ICSharpCode.NRefactory.Utils
 			EndLocation = endLocation ?? startLocation + text.Length;
 		}
 
-		public static IFormatStringSegment FromUnescapedText (string text)
-		{
-			return new TextSegment (UnEscape (text));
-		}
-
-		public static string UnEscape (string unEscaped)
-		{
-			return unEscaped.Replace ("{{", "{").Replace ("}}", "}");
-		}
-
 		public string Text { get; set; }
 
 		#region Equality
