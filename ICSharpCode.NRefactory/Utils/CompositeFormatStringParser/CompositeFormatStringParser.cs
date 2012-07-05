@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Utils
 {
@@ -151,11 +152,15 @@ namespace ICSharpCode.NRefactory.Utils
 					var originalText = format.Substring (alignmentBegin);
 					var message = string.Format ("Unexpected end of string: '{0}'", originalText);
 					AddMissingEndBraceError(alignmentBegin, i, message, originalText);
-				} else if (format [i] == '-') {
-					++i;
-					return -int.Parse (GetUntil (format, ":}", ref i));
 				} else {
-					return int.Parse (GetUntil (format, ":}", ref i));
+					var number = GetUntil (format, ":}", ref i);
+					int value;
+					if (int.TryParse(number, NumberStyles.Integer, CultureInfo.InvariantCulture, out value)) {
+						return value;
+					} else {
+						AddInvalidNumberFormatError(i, number, "0");
+						return 0;
+					}
 				}
 			}
 			return null;
@@ -267,6 +272,17 @@ namespace ICSharpCode.NRefactory.Utils
 				SuggestedReplacementText = "}"
 			});
 			hasMissingEndBrace = true;
+		}
+
+		void AddInvalidNumberFormatError (int i, string number, string replacementText)
+		{
+			AddError (new DefaultFormatStringError {
+				StartLocation = i,
+				EndLocation = i + number.Length,
+				Message = string.Format ("Invalid number '{0}'", number),
+				OriginalText = number,
+				SuggestedReplacementText = replacementText
+			});
 		}
 
 		IList<IFormatStringError> GetErrors ()

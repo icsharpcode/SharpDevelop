@@ -244,6 +244,26 @@ namespace ICSharpCode.NRefactory.Utils
 			var errors = SegmentTest(1, segments.Skip(1).First());
 			ErrorTest(errors[0], "", "0", 11, 11);
 		}
+		
+		[Test]
+		public void MissingAlignment()
+		{
+			var segments = ParseTest("Some text {0,}",
+			                         new TextSegment("Some text "),
+			                         new FormatItem(0, 0) { StartLocation = 10, EndLocation = 14 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "0", 13, 13);
+		}
+		
+		[Test]
+		public void MissingEveryThing()
+		{
+			var segments = ParseTest("{,:", new FormatItem(0, 0, "") { StartLocation = 0, EndLocation = 3 });
+			var errors = SegmentTest(3, segments.First());
+			ErrorTest(errors[0], "", "0", 1, 1);
+			ErrorTest(errors[1], "", "0", 2, 2);
+			ErrorTest(errors[2], "", "}", 3, 3);
+		}
 	}
 }
 
