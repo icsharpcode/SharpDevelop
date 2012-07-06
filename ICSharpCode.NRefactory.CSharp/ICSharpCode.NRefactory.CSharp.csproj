@@ -396,6 +396,7 @@
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\TypeCriteriaCollector.cs" />
     <Compile Include="Refactoring\CodeIssues\ReferenceToStaticMemberViaDerivedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterion.cs" />
+    <Compile Include="Refactoring\CodeIssues\FormatStringIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

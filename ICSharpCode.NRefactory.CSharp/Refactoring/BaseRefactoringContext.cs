@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.Editor;
 using System.ComponentModel.Design;
 using ICSharpCode.NRefactory.CSharp.Analysis;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -134,6 +135,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public DefiniteAssignmentAnalysis CreateDefiniteAssignmentAnalysis (Statement root)
 		{
 			return new DefiniteAssignmentAnalysis (root, resolver, CancellationToken);
+		}
+
+		/// <summary>
+		/// Parses a composite format string.
+		/// </summary>
+		/// <returns>
+		/// The format string parsing result.
+		/// </returns>
+		public virtual FormatStringParseResult ParseFormatString(string source)
+		{
+			return new CompositeFormatStringParser().Parse(source);
 		}
 		#endregion
 
