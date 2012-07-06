@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.Utils
 {
@@ -50,10 +51,12 @@ namespace ICSharpCode.NRefactory.Utils
 		/// <param name='format'>
 		/// The format string.
 		/// </param>
-		public IEnumerable<IFormatStringSegment> Parse (string format)
+		public FormatStringParseResult Parse (string format)
 		{
 			if (format == null)
 				throw new ArgumentNullException ("format");
+
+			var result = new FormatStringParseResult();
 
 			// Format string syntax: http://msdn.microsoft.com/en-us/library/txafckwd.aspx
 			int start = 0;
@@ -73,8 +76,8 @@ namespace ICSharpCode.NRefactory.Utils
 								}
 							}
 						};
-						yield return textSegment;
-						yield break;
+						result.Segments.Add(textSegment);
+						return result;
 					} else if (format [i + 1] == '{') {
 						// Escape sequence; we're still in a text segment
 						// Skip ahead to the char after the escape sequence
@@ -83,7 +86,7 @@ namespace ICSharpCode.NRefactory.Utils
 					} else {
 						// This is the end of the text segment and the start of a FormatItem
 						if (i - start > 0) {
-							yield return new TextSegment (UnEscape (format.Substring (start, i - start)));
+							result.Segments.Add(new TextSegment (UnEscape (format.Substring (start, i - start))));
 							start = i;
 						}
 					}
@@ -108,11 +111,11 @@ namespace ICSharpCode.NRefactory.Utils
 					// i may actually point outside of format; if that happens, we want the last position
 					var endLocation = Math.Min (length, i + 1);
 					var errors = GetErrors ();
-					yield return new FormatItem (index, alignment, argumentFormat) {
+					result.Segments.Add(new FormatItem (index, alignment, argumentFormat) {
 						StartLocation = start,
 						EndLocation = endLocation,
 						Errors = errors
-					};
+					});
 					ClearErrors ();
 
 					// The next potential text segment starts after this format item
@@ -121,8 +124,9 @@ namespace ICSharpCode.NRefactory.Utils
 			}
 			// Handle remaining text
 			if (start < length) {
-				yield return new TextSegment (UnEscape (format.Substring (start)), start);
+				result.Segments.Add(new TextSegment (UnEscape (format.Substring (start)), start));
 			}
+			return result;
 		}
 
 		int ParseIndex (string format, ref int i)
@@ -299,6 +303,23 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			hasMissingEndBrace = false;
 			errors = new List<IFormatStringError> ();
+		}
+	}
+
+	public class FormatStringParseResult
+	{
+		public FormatStringParseResult()
+		{
+			Segments = new List<IFormatStringSegment>();
+		}
+
+		public IList<IFormatStringSegment> Segments { get; private set; }
+
+		public bool HasErrors
+		{
+			get {
+				return Segments.SelectMany(segment => segment.Errors).Any();
+			}
 		}
 	}
 }

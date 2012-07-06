@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.Utils
 		IList<IFormatStringSegment> ParseTest(string format, params IFormatStringSegment[] expectedFormatSegments)
 		{
 			var parser = new CompositeFormatStringParser();
-			var actualFormatSegments = parser.Parse(format).ToList();
+			var actualFormatSegments = parser.Parse(format).Segments;
 
 			Console.WriteLine("Expected format segments:");
 			foreach (var item in expectedFormatSegments) {

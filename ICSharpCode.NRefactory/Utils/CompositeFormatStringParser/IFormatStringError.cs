@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.Utils
 		string SuggestedReplacementText { get; }
 	}
 
-	class DefaultFormatStringError : IFormatStringError
+	public class DefaultFormatStringError : IFormatStringError
 	{
 		public DefaultFormatStringError()
 		{
