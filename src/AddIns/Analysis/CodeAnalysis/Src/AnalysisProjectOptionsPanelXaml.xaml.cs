@@ -44,15 +44,10 @@ namespace ICSharpCode.CodeAnalysis
 		private bool userCheck;
 		private Dictionary<string, RuleTreeNode> rules = new Dictionary<string, RuleTreeNode>();
 		
-		private List<Tuple<Icon,string,int>> bla = new List<Tuple<Icon,string,int>>();
-		
 		public AnalysisProjectOptionsPanelXaml()
 		{
 			InitializeComponent();
 			DataContext = this;
-			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Warning,ResourceService.GetString("Global.WarningText"),0));
-			bla.Add(Tuple.Create<Icon,string,int>(SystemIcons.Error,ResourceService.GetString("Global.ErrorText"),1));
-//			bla.Add(Tuple.Create<Icon,string>(null,"None"));
 		}
 		
 		
@@ -169,19 +164,23 @@ namespace ICSharpCode.CodeAnalysis
 		
 		
 		void SetCategoryIcon() {
-			foreach (CategoryTreeNode element in ruleTreeView.Root.Children) {
+	
+			foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
 //				Console.WriteLine(" {0} ",element.Text);
-				if (!element.NewErrorState.HasValue) {
-					Console.WriteLine (" {0} is Mixed Mode",element.Text);
+				if (!categoryNode.NewErrorState.HasValue) {
+					Console.WriteLine (" {0} is Mixed Mode",categoryNode.Text);
+					categoryNode.AddMixedMode();
 				} else{
-					if (element.NewErrorState == true) {
-						Console.WriteLine (" {0} is Error",element.Text);
-						element.Index = 1;
+					if (categoryNode.NewErrorState == true) {
+						Console.WriteLine (" {0} is Error",categoryNode.Text);
+						categoryNode.Index = 1;
 					} else {
-						Console.WriteLine (" {0} is Warning",element.Text);
+						Console.WriteLine (" {0} is Warning",categoryNode.Text);
 					}
 				}
 			}
+			Console.WriteLine("--------------");
+		
 		}
 		
 		string ruleString = "";
@@ -247,7 +246,7 @@ namespace ICSharpCode.CodeAnalysis
 					ruleTreeView.Root.Children.Add(new MessageNode(StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.SpecifyFxCopPath}")));
 				} else {
 					foreach (FxCopCategory cat in ruleList) {
-						CategoryTreeNode catNode = new CategoryTreeNode(cat,bla);
+						CategoryTreeNode catNode = new CategoryTreeNode(cat);
 						catNode.PropertyChanged += OnPropertyChanged;
 						ruleTreeView.Root.Children.Add(catNode);
 						foreach (RuleTreeNode ruleNode in catNode.Children) {
@@ -322,7 +321,14 @@ namespace ICSharpCode.CodeAnalysis
 			}
 		}
 		
+		void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+//			throw new NotImplementedException();
+		}
+		
 		#endregion
+		
+
 	}
 	
 
@@ -334,6 +340,7 @@ namespace ICSharpCode.CodeAnalysis
 		
 		public override DataTemplate SelectTemplate(object item, DependencyObject container)
 		{
+			Console.WriteLine ("------- TypeSelector ---------");
 			var rule = item as RuleTreeNode;
 			
 			if (rule != null) {
@@ -359,7 +366,7 @@ namespace ICSharpCode.CodeAnalysis
 	[ValueConversion(typeof(System.Drawing.Icon), typeof(System.Windows.Media.ImageSource))]
 	public class ImageConverter : IValueConverter
 	{
-		public object Convert(object value, Type targetType,
+		public  object Convert(object value, Type targetType,
 		                      object parameter, CultureInfo culture)
 		{
 			// empty images are empty...

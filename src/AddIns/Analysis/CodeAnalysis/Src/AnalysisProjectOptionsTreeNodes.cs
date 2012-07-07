@@ -7,8 +7,12 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -22,13 +26,23 @@ namespace ICSharpCode.CodeAnalysis
 	public class BaseTree:SharpTreeNode
 	{
 		private int index;
-		
-		public BaseTree(IEnumerable<Tuple<Icon,string,int>> ruleState)
+
+		public BaseTree()
 		{
-			this.RuleState = ruleState;
+			RuleState = new ObservableCollection<Tuple<Icon,string>>(); 
+			this.RuleState.Add(Tuple.Create<Icon,string>(SystemIcons.Warning,ResourceService.GetString("Global.WarningText")));
+			this.RuleState.Add(Tuple.Create<Icon,string>(SystemIcons.Error,ResourceService.GetString("Global.ErrorText")));
+//			bla.Add(Tuple.Create<Icon,string>(null,"None"));
 		}
 		
-		public IEnumerable<Tuple<Icon,string,int>> RuleState {get;set;}
+		public ObservableCollection<Tuple<Icon,string>> RuleState {get;set;}
+		
+		private Tuple<Icon,string> selectedItem;
+		
+		public Tuple<Icon, string> SelectedNode {
+			get { return selectedItem; }
+			set { selectedItem = value; }
+		}
 		
 		
 		public virtual int Index {
@@ -36,40 +50,30 @@ namespace ICSharpCode.CodeAnalysis
 			set {
 				if (index != value) {
 					index = value;
-					switch (index) {
-						case 0:
-							break;
-						case  1:
-							break;
-						case 2:
-							break;
-						default:
-							break;
-					}
-					base.RaisePropertyChanged("Index");
 				}
+				base.RaisePropertyChanged("Index");
 			}
 		}
 	}
+
 	
 	
 	public class CategoryTreeNode : BaseTree
 	{
 		internal FxCopCategory category;
-		private string mixedModeText;
-		private ImageSource mixedModeIcon;
+		private Tuple<Icon,string>  mixedTuple;
 		
-		public CategoryTreeNode(FxCopCategory category,IEnumerable<Tuple<Icon,string,int>> bla):base(bla)
+		public CategoryTreeNode(FxCopCategory category):base()
 		{
-			mixedModeText = StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.WarningErrorMixed}");
-			mixedModeIcon = PresentationResourceService.GetBitmapSource("Icons.16x16.ClosedFolderBitmap");
+			
 			this.category = category;
 			foreach (FxCopRule rule in category.Rules) {
-				this.Children.Add(new RuleTreeNode(rule,bla));
+				this.Children.Add(new RuleTreeNode(rule));
 			}
+			
 		}
 		
-	
+
 		public override bool IsCheckable {
 			get { return true; }
 		}
@@ -83,22 +87,27 @@ namespace ICSharpCode.CodeAnalysis
 			set {
 				if (value != base.Index) {
 					base.Index = value;
-					foreach (RuleTreeNode rule in this.Children) {
-						rule.Index = Index;
+					if (mixedTuple == null) {
+						foreach (RuleTreeNode rule in this.Children) {
+							rule.Index = Index;
+						}
 					}
+					
 				}
 			}
 		}
 		
-		public ImageSource  MixedModeIcon {
-			get { return mixedModeIcon; }
-		}
 		
-		public string MixedModeText
+		public void AddMixedMode()
 		{
-			get {return mixedModeText;}
+			Bitmap b = (Bitmap)ResourceService.GetImageResource("Icons.16x16.ClosedFolderBitmap");
+			System.Drawing.Icon ico = (Icon)System.Drawing.Icon.FromHandle(b.GetHicon());
+			
+			mixedTuple = Tuple.Create<Icon,string>(ico,
+			StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.WarningErrorMixed}"));
+			RuleState.Add(mixedTuple);
+			Index = RuleState.Count -1;
 		}
-		
 		
 		public Nullable<bool> NewErrorState {
 			get {
@@ -153,15 +162,16 @@ namespace ICSharpCode.CodeAnalysis
 			set {
 				if (error != value) {
 					error = value;
+				
 					if (error) {
 						base.Index = 1;
 					}
 				}
-				
 			}
 		}
 		
-		public RuleTreeNode(FxCopRule rule,IEnumerable<Tuple<Icon,string,int>> ruleState):base(ruleState)
+	
+		public RuleTreeNode(FxCopRule rule):base()
 		{
 			this.rule = rule;
 		}
@@ -184,13 +194,16 @@ namespace ICSharpCode.CodeAnalysis
 		public override int Index {
 			get { return base.Index; }
 			set {
-				if (value != Index) {
-					if (Index == 1) {
-						error = true;
-					} else {
-						error = false;
-					}
+				if (base.Index != value) {
+					isError = value == 1;
 					base.Index = value;
+					
+//					if (base.Index == 1) {
+//						error = true;
+//					} else {
+//						error = false;
+//					}
+					Console.WriteLine ("RuleNode {0} - index {1} - error {2}",rule.DisplayName,Index, isError);
 				}
 			}
 		}
@@ -210,5 +223,4 @@ namespace ICSharpCode.CodeAnalysis
 			get { return message; }
 		}
 	}
-	
 }
