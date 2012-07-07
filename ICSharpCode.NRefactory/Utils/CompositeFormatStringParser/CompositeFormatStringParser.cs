@@ -108,6 +108,10 @@ namespace ICSharpCode.NRefactory.Utils
 					argumentFormat = ParseSubFormatString(format, ref i, length);
 					CheckForMissingEndBrace (format, i, length);
 
+					// Handle unclosed format items in the middle of fixed text
+					if (i < length && format[i] != '}')
+						--i;
+
 					// i may actually point outside of format; if that happens, we want the last position
 					var endLocation = Math.Min (length, i + 1);
 					var errors = GetErrors ();
@@ -209,11 +213,14 @@ namespace ICSharpCode.NRefactory.Utils
 			return;
 		}
 		
-		string GetUntil (string format, string delimiters, ref int index)
+		string GetText (string format, string delimiters, ref int index)
 		{
 			int start = index;
-			while (index < format.Length && !delimiters.Contains(format[index].ToString()))
+			while (index < format.Length && !delimiters.Contains(format[index].ToString())) {
+				if (format[index] == '{' && (index + 1 < format.Length && format[index + 1] != '{'))
+					break;
 				++index;
+			}
 			
 			return format.Substring (start, index - start);
 		}
@@ -240,16 +247,28 @@ namespace ICSharpCode.NRefactory.Utils
 			return positive ? sum : -sum;
 		}
 
-		int? GetAndCheckNumber(string format, string delimiters, ref int index, int numberFieldStart, out int parsedCharacters)
+		int? GetAndCheckNumber (string format, string delimiters, ref int index, int numberFieldStart, out int parsedCharacters)
 		{
-			var numberText = GetUntil(format, delimiters, ref index);
+			int fieldIndex = index;
+			var numberText = GetText (format, delimiters, ref fieldIndex);
+			int fieldEnd = fieldIndex;
 			parsedCharacters = numberText.Length;
-			int digitCount = 0;
-			int? number = GetNumber(numberText, ref digitCount);
-			if (digitCount != parsedCharacters) {
+			int numberLength = 0;
+			int? number = GetNumber (numberText, ref numberLength);
+			var endingChar = index + numberLength;
+			if (numberLength != parsedCharacters && fieldEnd < format.Length && delimiters.Contains (format [fieldEnd])) {
 				// Not the entire number field could be parsed
+				// The field actually ended as intended, so set the index to the end of the field
+				index = fieldEnd;
 				var suggestedNumber = (number ?? 0).ToString ();
-				AddInvalidNumberFormatError(numberFieldStart, format.Substring(numberFieldStart, index - numberFieldStart), suggestedNumber);
+				AddInvalidNumberFormatError (numberFieldStart, format.Substring (numberFieldStart, index - numberFieldStart), suggestedNumber);
+			} else if (numberLength != parsedCharacters) {
+				// Not the entire number field could be parsed
+				// The field didn't end, it was cut off so we are missing an ending brace
+				index = endingChar;
+				AddMissingEndBraceError (index, index, "Missing ending '}'", "");
+			} else {
+				index = endingChar;
 			}
 			return number;
 		}

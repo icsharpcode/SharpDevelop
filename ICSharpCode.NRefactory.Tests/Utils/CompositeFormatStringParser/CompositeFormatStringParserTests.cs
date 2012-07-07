@@ -303,6 +303,29 @@ namespace ICSharpCode.NRefactory.Utils
 			var errors = SegmentTest(1, segments.First());
 			ErrorTest(errors[0], " Some text 55", "0", 3, 16);
 		}
+		
+		[Test]
+		public void MissingEndBraceInsideFixedText()
+		{
+			var segments = ParseTest("Text {0 Text",
+			                         new TextSegment("Text "),
+			                         new FormatItem(0) { StartLocation = 5, EndLocation = 7 },
+									 new TextSegment(" Text", 7));
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "}", 7, 7);
+		}
+		
+		[Test]
+		public void MissingEndBraceInsideFixedTextEndingInAnotherFormatItem()
+		{
+			var segments = ParseTest("Text {0 Text {1}",
+			                         new TextSegment("Text "),
+			                         new FormatItem(0) { StartLocation = 5, EndLocation = 7 },
+			new TextSegment(" Text ", 7),
+			new FormatItem(1) { StartLocation = 13, EndLocation = 16 });
+			var errors = SegmentTest(1, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "}", 7, 7);
+		}
 	}
 }
 
