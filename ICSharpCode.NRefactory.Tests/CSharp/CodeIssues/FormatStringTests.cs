@@ -79,6 +79,23 @@ class TestClass
 }";
 
 			TestRefactoringContext context;
+			var issues = GetIssues(new FormatStringIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+			
+		[Test]
+		public void UnescapedLeftBrace()
+		{
+				var input = @"
+class TestClass
+{
+	void Foo()
+	{
+		string.Format(""a { a"", 1);
+	}
+}";
+
+			TestRefactoringContext context;
 			var issues = GetIssues (new FormatStringIssue (), input, out context);
 			Assert.AreEqual (1, issues.Count);
 		}

@@ -68,32 +68,38 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (!TryGetFormattingParameters(invocationResolveResult, invocationExpression, out format, out formatStart, out formatArguments))
 					return;
 				var parsingResult = context.ParseFormatString(format);
-				var formatItems = (from segment in parsingResult.Segments
-					let formatItem = segment as FormatItem
-						where formatItem != null
-						select formatItem).ToList();
-				CheckFormatItems(formatItems, formatStart, formatArguments, invocationExpression);
+				CheckSegments(parsingResult.Segments, formatStart, formatArguments, invocationExpression);
 			}
 
-			void CheckFormatItems(List<FormatItem> formatItems, TextLocation formatStart, IList<Expression> formatArguments, AstNode anchor)
+			void CheckSegments(IList<IFormatStringSegment> segments, TextLocation formatStart, IList<Expression> formatArguments, AstNode anchor)
 			{
 				int argumentCount = formatArguments.Count;
-				foreach (var formatItem in formatItems) {
-					var itemStart = new TextLocation(formatStart.Line, formatStart.Column + formatItem.StartLocation + 1);
-					var itemEnd = new TextLocation(formatStart.Line, formatStart.Column + formatItem.EndLocation + 1);
-					if (formatItem.Index >= argumentCount) {
-						var messageFormat = context.TranslateString("The index '{0}' is out of bounds of the passed arguments");
-						AddIssue(itemStart, itemEnd, string.Format(messageFormat, formatItem.Index));
-					}
-					if (formatItem.HasErrors) {
-						var errors = formatItem.Errors;
-						var errorMessage = string.Join(Environment.NewLine, errors.Select(error => error.Message).ToArray());
-						string messageFormat;
-						if (errors.Count > 1)
-							messageFormat = context.TranslateString("Format string syntax errors:\n{0}");
-						else
-							messageFormat = context.TranslateString("Format string syntax error: {0}");
-						AddIssue(itemStart, itemEnd, string.Format(messageFormat, errorMessage));
+				foreach (var segment in segments) {
+					var errors = segment.Errors.ToList();
+					var formatItem = segment as FormatItem;
+					if (formatItem != null) {
+						var segmentEnd = new TextLocation(formatStart.Line, formatStart.Column + segment.EndLocation + 1);
+						var segmentStart = new TextLocation(formatStart.Line, formatStart.Column + segment.StartLocation + 1);
+						if (formatItem.Index >= argumentCount) {
+							var outOfBounds = context.TranslateString("The index '{0}' is out of bounds of the passed arguments");
+							AddIssue(segmentStart, segmentEnd, string.Format(outOfBounds, formatItem.Index));
+						}
+						if (formatItem.HasErrors) {
+							var errorMessage = string.Join(Environment.NewLine, errors.Select(error => error.Message).ToArray());
+							string messageFormat;
+							if (errors.Count > 1) {
+								messageFormat = context.TranslateString("Multiple:\n{0}");
+							} else {
+								messageFormat = context.TranslateString("{0}");
+							}
+							AddIssue(segmentStart, segmentEnd, string.Format(messageFormat, errorMessage));
+						}
+					} else if (segment.HasErrors) {
+						foreach (var error in errors) {
+							var errorStart = new TextLocation(formatStart.Line, formatStart.Column + error.StartLocation + 1);
+							var errorEnd = new TextLocation(formatStart.Line, formatStart.Column + error.EndLocation + 1);
+							AddIssue(errorStart, errorEnd, error.Message);
+						}
 					}
 				}
 			}
