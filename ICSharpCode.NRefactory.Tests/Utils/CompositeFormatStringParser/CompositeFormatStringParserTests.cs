@@ -171,6 +171,15 @@ namespace ICSharpCode.NRefactory.Utils
 		}
 		
 		[Test]
+		public void UnescapedOpenBracesInFixedText()
+		{
+			var segments = ParseTest("a { { a", new TextSegment("a { { a"));
+			var errors = SegmentTest(2, segments.First());
+			ErrorTest(errors[0], "{", "{{", 2, 3);
+			ErrorTest(errors[1], "{", "{{", 4, 5);
+		}
+		
+		[Test]
 		public void UnescapedLoneEndingBrace()
 		{
 			var segments = ParseTest("Some text {", new TextSegment("Some text {"));
@@ -193,9 +202,10 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			var segments = ParseTest("Some text {0,",
 			                         new TextSegment("Some text "),
-			                         new FormatItem(0) { StartLocation = 10, EndLocation = 13 });
-			var errors = SegmentTest(1, segments.Skip(1).First());
-			ErrorTest(errors[0], ",", "}", 12, 13);
+			                         new FormatItem(0, 0) { StartLocation = 10, EndLocation = 13 });
+			var errors = SegmentTest(2, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "0", 13, 13);
+			ErrorTest(errors[1], "", "}", 13, 13);
 		}
 		
 		[Test]
@@ -203,9 +213,10 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			var segments = ParseTest("Some text {0,   ",
 			                         new TextSegment("Some text "),
-			                         new FormatItem(0) { StartLocation = 10, EndLocation = 16 });
-			var errors = SegmentTest(1, segments.Skip(1).First());
-			ErrorTest(errors[0], ",   ", "}", 12, 16);
+			                         new FormatItem(0, 0) { StartLocation = 10, EndLocation = 16 });
+			var errors = SegmentTest(2, segments.Skip(1).First());
+			ErrorTest(errors[0], "", "0", 16, 16);
+			ErrorTest(errors[1], "", "}", 16, 16);
 		}
 		
 		[Test]
@@ -321,10 +332,18 @@ namespace ICSharpCode.NRefactory.Utils
 			var segments = ParseTest("Text {0 Text {1}",
 			                         new TextSegment("Text "),
 			                         new FormatItem(0) { StartLocation = 5, EndLocation = 7 },
-			new TextSegment(" Text ", 7),
-			new FormatItem(1) { StartLocation = 13, EndLocation = 16 });
+			                         new TextSegment(" Text ", 7),
+			                         new FormatItem(1) { StartLocation = 13, EndLocation = 16 });
 			var errors = SegmentTest(1, segments.Skip(1).First());
 			ErrorTest(errors[0], "", "}", 7, 7);
+		}
+		
+		[Test]
+		public void EndWithEscapedBrace()
+		{
+			var segments = ParseTest("{0:}}", new FormatItem(0, null, "}") { StartLocation = 0, EndLocation = 5 });
+			var errors = SegmentTest(1, segments.First());
+			ErrorTest(errors[0], "", "}", 5, 5);
 		}
 	}
 }

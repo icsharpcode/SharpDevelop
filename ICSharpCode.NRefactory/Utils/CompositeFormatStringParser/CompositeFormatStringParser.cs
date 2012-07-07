@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.Utils
@@ -59,76 +58,74 @@ namespace ICSharpCode.NRefactory.Utils
 			var result = new FormatStringParseResult();
 
 			// Format string syntax: http://msdn.microsoft.com/en-us/library/txafckwd.aspx
-			int start = 0;
+			int textStart = 0;
 			var length = format.Length;
 			for (int i = 0; i < length; i++) {
-				if (format [i] == '{') {
-					if (i + 1 == length) {
-						// This is the end of the string.
-						var textSegment = new TextSegment (format.Substring (start, i - start + 1), start) {
-							Errors = {
-								new DefaultFormatStringError {
-									StartLocation = i,
-									EndLocation = i + 1,
-									Message = "Curly braces need to be escaped",
-									OriginalText = "{",
-									SuggestedReplacementText = "{{"
-								}
-							}
-						};
-						result.Segments.Add(textSegment);
-						return result;
-					} else if (format [i + 1] == '{') {
-						// Escape sequence; we're still in a text segment
-						// Skip ahead to the char after the escape sequence
-						++i;
-						continue;
-					} else {
-						// This is the end of the text segment and the start of a FormatItem
-						if (i - start > 0) {
-							result.Segments.Add(new TextSegment (UnEscape (format.Substring (start, i - start))));
-							start = i;
-						}
-					}
+				// Get fixed text
+				GetText (format, ref i);
 
+				if (i < format.Length && format [i] == '{') {
+					int formatItemStart = i;
 					int index;
 					int? alignment = null;
 					string argumentFormat = null;
+					var textSegmentErrors = new List<IFormatStringError>(GetErrors());
 
-					// Index
+					// Try to parse the parts of the format item
 					++i;
-					index = ParseIndex(format, ref i);
+					index = ParseIndex (format, ref i);
 					CheckForMissingEndBrace (format, i, length);
 
-					// Alignment
-					alignment = ParseAlignment(format, ref i, length);
+					alignment = ParseAlignment (format, ref i, length);
 					CheckForMissingEndBrace (format, i, length);
 
-					// Format string
-					argumentFormat = ParseSubFormatString(format, ref i, length);
+					argumentFormat = ParseSubFormatString (format, ref i, length);
 					CheckForMissingEndBrace (format, i, length);
 
-					// Handle unclosed format items in the middle of fixed text
-					if (i < length && format[i] != '}')
+					// Check what we parsed
+					if (i == formatItemStart + 1 && (i == length || (i < length && format [i] != '}'))) {
+						// There were no format item after all, this was just an
+						// unescaped left brace
+						SetErrors(textSegmentErrors);
+						AddError (new DefaultFormatStringError {
+							Message = "Unescaped '{'",
+							StartLocation = formatItemStart,
+							EndLocation = formatItemStart + 1,
+							OriginalText = "{",
+							SuggestedReplacementText = "{{"
+						});
+						continue;
+					} else if (formatItemStart - textStart > 0) {
+						// We have parsed a format item, end the text segment
+						var textSegment = new TextSegment (UnEscape (format.Substring (textStart, formatItemStart - textStart)));
+						textSegment.Errors = textSegmentErrors;
+						result.Segments.Add (textSegment);
+					}
+					
+					// Unclosed format items in fixed text gets advances i one step too far
+					if (i < length && format [i] != '}')
 						--i;
 
-					// i may actually point outside of format; if that happens, we want the last position
+					// i may actually point outside of format if there is a syntactical error
+					// if that happens, we want the last position
 					var endLocation = Math.Min (length, i + 1);
-					var errors = GetErrors ();
-					result.Segments.Add(new FormatItem (index, alignment, argumentFormat) {
-						StartLocation = start,
+					result.Segments.Add (new FormatItem (index, alignment, argumentFormat) {
+						StartLocation = formatItemStart,
 						EndLocation = endLocation,
-						Errors = errors
+						Errors = GetErrors ()
 					});
 					ClearErrors ();
 
 					// The next potential text segment starts after this format item
-					start = i + 1;
+					textStart = i + 1;
 				}
 			}
 			// Handle remaining text
-			if (start < length) {
-				result.Segments.Add(new TextSegment (UnEscape (format.Substring (start)), start));
+			if (textStart < length) {
+				var textSegment = new TextSegment (UnEscape (format.Substring (textStart)), textStart);
+				textSegment.Errors = GetErrors();
+				result.Segments.Add (textSegment);
+
 			}
 			return result;
 		}
@@ -156,24 +153,19 @@ namespace ICSharpCode.NRefactory.Utils
 				++i;
 				while (i < length && char.IsWhiteSpace(format [i]))
 					++i;
-				if (i == length) {
-					var originalText = format.Substring (alignmentBegin);
-					var message = string.Format ("Unexpected end of string: '{0}'", originalText);
-					AddMissingEndBraceError(alignmentBegin, i, message, originalText);
-				} else {
-					int parsedCharacters;
-					var number = GetAndCheckNumber(format, ",:}", ref i, alignmentBegin + 1, out parsedCharacters);
-					if (parsedCharacters == 0) {
-						AddError (new DefaultFormatStringError {
-							StartLocation = i,
-							EndLocation = i,
-							Message = "Missing alignment",
-							OriginalText = "",
-							SuggestedReplacementText = "0"
-						});
-					}
-					return number ?? 0;
+
+				int parsedCharacters;
+				var number = GetAndCheckNumber (format, ",:}", ref i, alignmentBegin + 1, out parsedCharacters);
+				if (parsedCharacters == 0) {
+					AddError (new DefaultFormatStringError {
+						StartLocation = i,
+						EndLocation = i,
+						Message = "Missing alignment",
+						OriginalText = "",
+						SuggestedReplacementText = "0"
+					});
 				}
+				return number ?? 0;
 			}
 			return null;
 		}
@@ -183,7 +175,8 @@ namespace ICSharpCode.NRefactory.Utils
 			if (i < length && format [i] == ':') {
 				++i;
 				int begin = i;
-				while (i < length) {
+				GetText(format, ref i);
+				/*while (i < length) {
 					char c = format [i];
 					if (c != '}') {
 						++i;
@@ -197,7 +190,7 @@ namespace ICSharpCode.NRefactory.Utils
 						// This is the end of the FormatItem
 						break;
 					}
-				}
+				}*/
 				var escaped = format.Substring (begin, i - begin);
 				return UnEscape (escaped);
 			}
@@ -206,23 +199,31 @@ namespace ICSharpCode.NRefactory.Utils
 
 		void CheckForMissingEndBrace (string format, int i, int length)
 		{
-			if (i == length && format [length - 1] != '}') {
-				AddMissingEndBraceError(i, i, "Missing '}'", "");
+			if (i == length) {// && format [length - 1] != '}') {
+				int j;
+				for (j = i - 1; format[j] == '}'; j--);
+				var oddEndBraceCount = (i - j) % 2 == 1;
+				if (oddEndBraceCount) {
+					AddMissingEndBraceError(i, i, "Missing '}'", "");
+				}
 				return;
 			}
 			return;
 		}
 		
-		string GetText (string format, string delimiters, ref int index)
+		void GetText (string format, ref int index, string delimiters = "")
 		{
-			int start = index;
-			while (index < format.Length && !delimiters.Contains(format[index].ToString())) {
-				if (format[index] == '{' && (index + 1 < format.Length && format[index + 1] != '{'))
+			while (index < format.Length) {// && !delimiters.Contains(format[index].ToString())) {
+				if (format [index] == '{' || format[index] == '}') {
+					if (index + 1 < format.Length && format [index + 1] == format[index])
+						++index;
+					else
+						break;
+				} else if (delimiters.Contains(format[index].ToString())) {
 					break;
+				}
 				++index;
-			}
-			
-			return format.Substring (start, index - start);
+			};
 		}
 		
 		int? GetNumber (string format, ref int index)
@@ -250,8 +251,9 @@ namespace ICSharpCode.NRefactory.Utils
 		int? GetAndCheckNumber (string format, string delimiters, ref int index, int numberFieldStart, out int parsedCharacters)
 		{
 			int fieldIndex = index;
-			var numberText = GetText (format, delimiters, ref fieldIndex);
+			GetText (format, ref fieldIndex, delimiters);
 			int fieldEnd = fieldIndex;
+			var numberText = format.Substring(index, fieldEnd - index);
 			parsedCharacters = numberText.Length;
 			int numberLength = 0;
 			int? number = GetNumber (numberText, ref numberLength);
@@ -316,6 +318,11 @@ namespace ICSharpCode.NRefactory.Utils
 		IList<IFormatStringError> GetErrors ()
 		{
 			return errors;
+		}
+		
+		void SetErrors (IList<IFormatStringError> errors)
+		{
+			this.errors = errors;
 		}
 
 		void ClearErrors ()
