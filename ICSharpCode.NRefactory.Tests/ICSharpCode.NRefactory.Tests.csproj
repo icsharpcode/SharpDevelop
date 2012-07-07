@@ -113,6 +113,7 @@
     <Compile Include="CSharp\CodeIssues\RedundantElseIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantFieldInitializerIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\TypeParameterNotUsedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\UnreachableCodeIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
     <Compile Include="CSharp\CodeDomConvertVisitorTests.cs" />
     <Compile Include="CSharp\InsertParenthesesVisitorTests.cs" />
