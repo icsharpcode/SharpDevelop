@@ -85,5 +85,12 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return new DefaultProjectContent();
 		}
+		
+		public IProjectBrowserUpdater ProjectBrowserUpdater;
+		
+		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
+		{
+			return ProjectBrowserUpdater;
+		}
 	}
 }

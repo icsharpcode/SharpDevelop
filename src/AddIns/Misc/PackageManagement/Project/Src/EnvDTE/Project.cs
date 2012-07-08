@@ -256,5 +256,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			return FileUtility.GetRelativePath(MSBuildProject.Directory, path);
 		}
+		
+		internal IProjectBrowserUpdater CreateProjectBrowserUpdater()
+		{
+			return projectService.CreateProjectBrowserUpdater();
+		}
 	}
 }

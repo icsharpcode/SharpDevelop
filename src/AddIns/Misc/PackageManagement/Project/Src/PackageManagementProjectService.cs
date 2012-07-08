@@ -94,5 +94,10 @@ namespace ICSharpCode.PackageManagement
 			add { ProjectService.SolutionFolderRemoved += value; }
 			remove { ProjectService.SolutionFolderRemoved -= value; }
 		}
+		
+		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
+		{
+			return new ThreadSafeProjectBrowserUpdater();
+		}
 	}
 }

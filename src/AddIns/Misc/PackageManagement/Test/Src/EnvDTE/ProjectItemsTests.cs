@@ -10,6 +10,7 @@ using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 using DTE = ICSharpCode.PackageManagement.EnvDTE;
 
 namespace PackageManagement.Tests.EnvDTE
@@ -38,6 +39,13 @@ namespace PackageManagement.Tests.EnvDTE
 		void AddDirectoryToFakeFileSystem(string parentDirectory, string childDirectory)
 		{
 			fakeFileService.AddDirectoryToFakeFileSystem(parentDirectory, childDirectory);
+		}
+		
+		IProjectBrowserUpdater CreateProjectBrowserUpdater()
+		{
+			IProjectBrowserUpdater projectBrowserUpdater = MockRepository.GenerateStub<IProjectBrowserUpdater>();
+			project.FakeProjectService.ProjectBrowserUpdater = projectBrowserUpdater;
+			return projectBrowserUpdater;
 		}
 		
 		[Test]
@@ -603,6 +611,35 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(ItemType.None, item.ItemType);
 			Assert.AreEqual(@"d:\projects\myproject\tools\packages\a.txt", item.FileName);
 			Assert.AreEqual(1, msbuildProject.Items.Count);
+		}
+		
+		[Test]
+		public void AddFromFile_FullFileNameIsInsideProject_ProjectBrowserUpdaterIsDisposed()
+		{
+			CreateProjectItems();
+			IProjectBrowserUpdater projectBrowserUpdater = CreateProjectBrowserUpdater();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string fileName = @"d:\projects\myproject\tools\test.cs";
+			
+			msbuildProject.ItemTypeToReturnFromGetDefaultItemType = ItemType.Page;
+			projectItems.AddFromFile(fileName);
+			
+			projectBrowserUpdater.AssertWasCalled(updater => updater.Dispose());
+		}
+				
+		[Test]
+		public void AddFromDirectory_EmptyDirectoryInsideProject_ProjectBrowserUpdaterIsDisposed()
+		{
+			CreateProjectItems();
+			IProjectBrowserUpdater projectBrowserUpdater = CreateProjectBrowserUpdater();
+			msbuildProject.FileName = @"d:\projects\myproject\myproject.csproj";
+			string directory = @"d:\projects\myproject\tools";
+			
+			projectItems.AddFromDirectory(directory);
+			
+			bool saved = msbuildProject.IsSaved;
+			
+			projectBrowserUpdater.AssertWasCalled(updater => updater.Dispose());
 		}
 	}
 }

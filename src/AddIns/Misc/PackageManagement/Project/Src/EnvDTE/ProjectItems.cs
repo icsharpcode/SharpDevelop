@@ -89,17 +89,21 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual ProjectItem AddFromDirectory(string directory)
 		{
-			ProjectItem directoryItem = project.AddDirectoryProjectItemUsingFullPath(directory);
-			project.Save();
-			return directoryItem;
+			using (IProjectBrowserUpdater updater = project.CreateProjectBrowserUpdater()) {
+				ProjectItem directoryItem = project.AddDirectoryProjectItemUsingFullPath(directory);
+				project.Save();
+				return directoryItem;
+			}
 		}
 		
 		public virtual ProjectItem AddFromFile(string fileName)
 		{
-			ProjectItem projectItem = project.AddFileProjectItemUsingFullPath(fileName);
-			project.Save();
-			fileService.ParseFile(fileName);
-			return projectItem;
+			using (IProjectBrowserUpdater updater = project.CreateProjectBrowserUpdater()) {
+				ProjectItem projectItem = project.AddFileProjectItemUsingFullPath(fileName);
+				project.Save();
+				fileService.ParseFile(fileName);
+				return projectItem;
+			}
 		}
 		
 		public virtual int Count {

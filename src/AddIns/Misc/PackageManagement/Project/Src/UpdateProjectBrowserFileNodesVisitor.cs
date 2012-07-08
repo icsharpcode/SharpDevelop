@@ -1,0 +1,141 @@
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.PackageManagement
+{
+	public class UpdateProjectBrowserFileNodesVisitor : ProjectBrowserTreeNodeVisitor
+	{
+		ProjectItemEventArgs projectItemEventArgs;
+		FileProjectItem newFileAddedToProject;
+		string directoryForNewFileAddedToProject;
+		
+		public UpdateProjectBrowserFileNodesVisitor(ProjectItemEventArgs projectItemEventArgs)
+		{
+			this.projectItemEventArgs = projectItemEventArgs;
+			this.newFileAddedToProject = projectItemEventArgs.ProjectItem as FileProjectItem;
+		}
+		
+		string DirectoryForNewFileAddedToProject {
+			get {
+				if (directoryForNewFileAddedToProject == null) {
+					directoryForNewFileAddedToProject = Path.GetDirectoryName(newFileAddedToProject.FileName);
+				}
+				return directoryForNewFileAddedToProject;
+			}
+		}
+		
+		public override object Visit(ProjectNode projectNode, object data)
+		{
+			if (IsFileAddedInProject(projectNode)) {
+				return Visit((DirectoryNode)projectNode, data);
+			}
+			return null;
+		}
+		
+		public override object Visit(DirectoryNode directoryNode, object data)
+		{
+			if (!ShouldVisitDirectoryNode(directoryNode))
+				return null;
+			
+			if (IsImmediateParentForNewFile(directoryNode)) {
+				AddFileNodeTo(directoryNode);
+			} else if (IsChildDirectoryNodeMissingForNewFile(directoryNode)) {
+				AddChildDirectoryNodeForNewFileTo(directoryNode);
+			} else {
+				return base.Visit(directoryNode, data);
+			}
+			return null;
+		}
+		
+		bool ShouldVisitDirectoryNode(DirectoryNode directoryNode)
+		{
+			return directoryNode.IsInitialized && IsNewFileInsideDirectory(directoryNode);
+		}
+		
+		bool IsNewFileInsideDirectory(DirectoryNode directoryNode)
+		{
+			return FileUtility.IsBaseDirectory(directoryNode.Directory, DirectoryForNewFileAddedToProject);
+		}
+		
+		bool IsFileAddedInProject(ProjectNode projectNode)
+		{
+			return projectNode.Project == newFileAddedToProject.Project;
+		}
+		
+		bool IsImmediateParentForNewFile(DirectoryNode directoryNode)
+		{
+			return FileUtility.IsBaseDirectory(DirectoryForNewFileAddedToProject, directoryNode.Directory);
+		}
+		
+		string GetDirectoryForFileAddedToProject()
+		{
+			return Path.GetDirectoryName(newFileAddedToProject.FileName);
+		}
+		
+		void AddChildDirectoryNodeForNewFileTo(DirectoryNode parentNode)
+		{
+			string childDirectory = GetMissingChildDirectory(parentNode.Directory);
+			AddDirectoryNodeTo(parentNode, childDirectory);
+		}
+		
+		string GetMissingChildDirectory(string parentDirectory)
+		{
+			string relativeDirectoryForNewFile = GetRelativeDirectoryForNewFile(parentDirectory);
+			string childDirectoryName = GetFirstChildDirectoryName(relativeDirectoryForNewFile);
+			return Path.Combine(parentDirectory, childDirectoryName);
+		}
+		
+		string GetRelativeDirectoryForNewFile(string baseDirectory)
+		{
+			return FileUtility.GetRelativePath(baseDirectory, DirectoryForNewFileAddedToProject);
+		}
+		
+		string GetFirstChildDirectoryName(string fullSubFolderPath)
+		{
+			return fullSubFolderPath.Split('\\').First();
+		}
+
+		void AddDirectoryNodeTo(TreeNode parentNode, string directory)
+		{
+			var directoryNode = new DirectoryNode(directory, FileNodeStatus.InProject);
+			directoryNode.InsertSorted(parentNode);
+		}
+
+		void AddFileNodeTo(TreeNode node)
+		{
+			var fileNode = new FileNode(newFileAddedToProject.FileName, FileNodeStatus.InProject);
+			fileNode.InsertSorted(node);
+		}
+		
+		bool IsChildDirectoryNodeMissingForNewFile(DirectoryNode parentDirectoryNode)
+		{
+			return !IsChildDirectoryNodeAlreadyAddedForNewFile(parentDirectoryNode);
+		}
+		
+		bool IsChildDirectoryNodeAlreadyAddedForNewFile(DirectoryNode parentDirectoryNode)
+		{
+			return GetChildDirectoryNodes(parentDirectoryNode)
+				.Any(childDirectoryNode => DirectoryOfNewFileStartsWith(childDirectoryNode));
+		}
+		
+		bool DirectoryOfNewFileStartsWith(DirectoryNode directoryNode)
+		{
+			return FileUtility.IsBaseDirectory(directoryNode.Directory, DirectoryForNewFileAddedToProject);
+		}
+		
+		IEnumerable<DirectoryNode> GetChildDirectoryNodes(ExtTreeNode parentNode)
+		{
+			return parentNode.AllNodes.OfType<DirectoryNode>();
+		}
+	}
+}

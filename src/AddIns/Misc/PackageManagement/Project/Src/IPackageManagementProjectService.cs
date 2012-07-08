@@ -25,6 +25,8 @@ namespace ICSharpCode.PackageManagement
 		
 		IEnumerable<IProject> GetOpenProjects();
 
-		IProjectContent GetProjectContent(IProject project);		
+		IProjectContent GetProjectContent(IProject project);
+
+		IProjectBrowserUpdater CreateProjectBrowserUpdater();
 	}
 }

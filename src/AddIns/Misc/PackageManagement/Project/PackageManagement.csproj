@@ -130,6 +130,7 @@
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
     <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
     <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
+    <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
     <Compile Include="Src\IFieldExtensions.cs" />
     <Compile Include="Src\IDocumentLoader.cs" />
@@ -225,6 +226,7 @@
     <Compile Include="Src\ParentPackageOperationEventArgs.cs" />
     <Compile Include="Src\ProcessPackageOperationsAction.cs" />
     <Compile Include="Src\ProjectBrowserRefresher.cs" />
+    <Compile Include="Src\ProjectBrowserUpdater.cs" />
     <Compile Include="Src\ProjectTemplatePackageRepositoryCache.cs" />
     <Compile Include="Src\ProjectTemplatePackagesSettingsFileName.cs" />
     <Compile Include="Src\RefactoringDocumentView.cs" />
@@ -381,6 +383,7 @@
     <Compile Include="Src\ThreadSafeDocument.cs" />
     <Compile Include="Src\ThreadSafeDocumentLine.cs" />
     <Compile Include="Src\ThreadSafePackageManagementEvents.cs" />
+    <Compile Include="Src\ThreadSafeProjectBrowserUpdater.cs" />
     <Compile Include="Src\UninstallPackageAction.cs" />
     <Compile Include="Src\UpdateAllPackagesInProject.cs" />
     <Compile Include="Src\UpdateAllPackagesInSolution.cs" />
@@ -427,6 +430,7 @@
     <Compile Include="Src\UpdatePackageActions.cs" />
     <Compile Include="Src\UpdatePackageActionsFactory.cs" />
     <Compile Include="Src\UpdatePackageInAllProjects.cs" />
+    <Compile Include="Src\UpdateProjectBrowserFileNodesVisitor.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\PackageManagementViewModels.cs" />
     <Compile Include="Src\VisualStudio\ComponentModel.cs" />

@@ -185,6 +185,7 @@
     <Compile Include="Src\PackageReferenceInstallerTests.cs" />
     <Compile Include="Src\PackageReferencesForProjectTests.cs" />
     <Compile Include="Src\ProjectBrowserRefresherTests.cs" />
+    <Compile Include="Src\ProjectBrowserUpdaterTests.cs" />
     <Compile Include="Src\ProjectTemplatePackageRepositoryCacheTests.cs" />
     <Compile Include="Src\RegisteredPackageRepositoriesTests.cs" />
     <Compile Include="Src\Helpers\ExceptionThrowingPackageManagementService.cs" />
@@ -361,6 +362,10 @@
     <Folder Include="Src\Scripting" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\bin\SharpDevelop.exe">
+      <Link>SharpDevelop.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
