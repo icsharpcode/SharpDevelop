@@ -82,6 +82,13 @@ namespace PackageManagement.Tests
 			ProjectService.AddProjectItem(unknownProject, fileProjectItem);
 		}
 		
+		void AddDirectoryToProject(string directory)
+		{
+			var fileProjectItem = new FileProjectItem(project, ItemType.Folder);
+			fileProjectItem.FileName = directory;
+			AddProjectItemToProject(fileProjectItem);
+		}
+		
 		void CreateProjectBrowserUpdater()
 		{
 			CreateProjectBrowserControl();
@@ -137,9 +144,9 @@ namespace PackageManagement.Tests
 			return parentNode.AllNodes.OfType<T>();
 		}
 		
-		DirectoryNode GetDirectoryChildNodeAtIndex(ProjectNode projectNode, int index)
+		DirectoryNode GetDirectoryChildNodeAtIndex(DirectoryNode directoryNode, int index)
 		{
-			return GetChildNodesOfType<DirectoryNode>(projectNode).ElementAt(index);
+			return GetChildNodesOfType<DirectoryNode>(directoryNode).ElementAt(index);
 		}
 		
 		[Test]
@@ -430,6 +437,74 @@ namespace PackageManagement.Tests
 			FileNode fileNode = GetFirstFileChildNode(secondDirectoryNode);
 			Assert.AreEqual(1, secondDirectoryNode.Nodes.Count);
 			Assert.AreEqual(@"d:\projects\MyProject\b\b.cs", fileNode.FileName);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithNoFilesAndDirectoryAddedToProject_DirectoryNodeAddedToProjectNode()
+		{
+			CreateProjectBrowserUpdater();
+			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
+			projectNode.Expanding();
+			
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder");
+			
+			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
+			Assert.AreEqual(@"d:\projects\MyProject\Subfolder", directoryNode.Directory);
+			Assert.AreEqual("Subfolder", directoryNode.Text);
+			Assert.AreEqual(FileNodeStatus.InProject, directoryNode.FileNodeStatus);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithOneDirectoryAndSubDirectoryAddedToProject_DirectoryNodeAddedToParentNode()
+		{
+			CreateProjectBrowserControl();
+			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1");
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
+			directoryNode.Expanding();
+			
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\Subfolder2");
+			
+			DirectoryNode childDirectoryNode = GetFirstDirectoryChildNode(directoryNode);
+			Assert.AreEqual(@"d:\projects\MyProject\Subfolder1\Subfolder2", childDirectoryNode.Directory);
+			Assert.AreEqual(FileNodeStatus.InProject, childDirectoryNode.FileNodeStatus);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithTwoDirectoriesAndDirectoryAddedToProject_DirectoryNodeAddedToProjectInAlphabeticalOrder()
+		{
+			CreateProjectBrowserControl();
+			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
+			AddDirectoryToProject(@"d:\projects\MyProject\a");
+			AddDirectoryToProject(@"d:\projects\MyProject\c");
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+			
+			AddDirectoryToProject(@"d:\projects\MyProject\b");
+			
+			DirectoryNode childDirectoryNode = GetDirectoryChildNodeAtIndex(projectNode, 1);
+			Assert.AreEqual(@"d:\projects\MyProject\b", childDirectoryNode.Directory);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithOneSubDirectoryWithTwoChildDirectoriesAndNewSubChildDirectoryAddedToProject_DirectoryNodeAddedInAlphabeticalOrder()
+		{
+			CreateProjectBrowserControl();
+			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1");
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\a");
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\c");
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
+			directoryNode.Expanding();
+			
+			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\b");
+			
+			DirectoryNode childDirectoryNode = GetDirectoryChildNodeAtIndex(directoryNode, 1);
+			Assert.AreEqual(@"d:\projects\MyProject\Subfolder1\b", childDirectoryNode.Directory);
 		}
 	}
 }

@@ -48,7 +48,7 @@ namespace ICSharpCode.PackageManagement
 				return null;
 			
 			if (IsImmediateParentForNewFile(directoryNode)) {
-				AddFileNodeTo(directoryNode);
+				AddFileOrDirectoryNodeTo(directoryNode);
 			} else if (IsChildDirectoryNodeMissingForNewFile(directoryNode)) {
 				AddChildDirectoryNodeForNewFileTo(directoryNode);
 			} else {
@@ -109,6 +109,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			var directoryNode = new DirectoryNode(directory, FileNodeStatus.InProject);
 			directoryNode.InsertSorted(parentNode);
+		}
+
+		void AddFileOrDirectoryNodeTo(DirectoryNode directoryNode)
+		{
+			if (newFileAddedToProject.ItemType == ItemType.Folder) {
+				AddDirectoryNodeTo(directoryNode, newFileAddedToProject.FileName);
+			} else {
+				AddFileNodeTo(directoryNode);
+			}
 		}
 
 		void AddFileNodeTo(TreeNode node)
