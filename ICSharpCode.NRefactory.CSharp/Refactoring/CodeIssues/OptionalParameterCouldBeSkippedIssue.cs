@@ -54,6 +54,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitInvocationExpression(invocationExpression);
 				var invocationResolveResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (invocationResolveResult == null)
+					return;
 				var argumentToParameterMap = invocationResolveResult.GetArgumentToParameterMap();
 				var resolvedParameters = invocationResolveResult.Member.Parameters;
 				var arguments = invocationExpression.Arguments.ToArray();
