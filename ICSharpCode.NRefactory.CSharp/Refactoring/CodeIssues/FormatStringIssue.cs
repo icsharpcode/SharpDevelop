@@ -58,6 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
+				Console.WriteLine(invocationExpression.GetText());
 				base.VisitInvocationExpression(invocationExpression);
 				var invocationResolveResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null)
@@ -114,9 +115,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				arguments = new List<Expression>();
 				var argumentToParameterMap = invocationResolveResult.GetArgumentToParameterMap();
 				var resolvedParameters = invocationResolveResult.Member.Parameters;
-				for (int i = 0; i < invocationExpression.Arguments.Count; i++) {
-					var parameter = resolvedParameters[argumentToParameterMap[i]];
-					var argument = invocationExpression.Arguments.Skip(i).First();
+				var allArguments = invocationExpression.Arguments.ToArray();
+				for (int i = 0; i < allArguments.Length; i++) {
+					var parameterIndex = argumentToParameterMap[i];
+					if (parameterIndex < 0 || parameterIndex >= resolvedParameters.Count) {
+						// No valid mapping for this parameter, skip it
+						continue;
+					}
+					var parameter = resolvedParameters[parameterIndex];
+					var argument = allArguments[i];
 					if (parameter.Type.Equals(stringType) && parameterNames.Contains(parameter.Name) && argument is PrimitiveExpression) {
 						format = (string)((PrimitiveExpression)argument).Value;
 						formatStart = argument.StartLocation;

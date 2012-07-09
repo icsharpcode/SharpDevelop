@@ -133,6 +133,23 @@ class TestClass
 			var issues = GetIssues (new FormatStringIssue (), input, out context);
 			Assert.AreEqual (0, issues.Count);
 		}
+		
+		[Test]
+		public void HandlesCallsWithExtraArguments()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo()
+	{
+		Foo(1);
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new FormatStringIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
 	}
 }
 
