@@ -58,7 +58,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
-				Console.WriteLine(invocationExpression.GetText());
 				base.VisitInvocationExpression(invocationExpression);
 				var invocationResolveResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null)
