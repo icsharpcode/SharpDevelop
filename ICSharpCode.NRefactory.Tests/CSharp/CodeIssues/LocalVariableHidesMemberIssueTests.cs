@@ -60,5 +60,56 @@ class TestClass
 }";
 			Test<LocalVariableHidesMemberIssue> (input, 1);
 		}
+
+		[Test]
+		public void TestForeach ()
+		{
+			var input = @"
+class TestClass
+{
+	int i;
+	void TestMethod ()
+	{
+		int[] array = new int [10];
+		foreach (var i in array) ;
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 1);
+		}
+
+		[Test]
+		public void TestStatic ()
+		{
+			var input = @"
+class TestClass
+{
+	static int i;
+	static void TestMethod2 ()
+	{
+		int i;
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 1);
+		}
+
+		[Test]
+		public void TestStaticNoIssue ()
+		{
+			var input = @"
+class TestClass
+{
+	static int i;
+	int j;
+	void TestMethod ()
+	{
+		int i;
+	}
+	static void TestMethod2 ()
+	{
+		int j;
+	}
+}";
+			Test<LocalVariableHidesMemberIssue> (input, 0);
+		}
 	}
 }

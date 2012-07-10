@@ -74,5 +74,37 @@ class TestClass
 }";
 			Test<ParameterHidesMemberIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestStatic ()
+		{
+			var input = @"
+class TestClass
+{
+	static int i;
+	static void TestMethod2 (int i)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 1);
+		}
+
+		[Test]
+		public void TestStaticNoIssue ()
+		{
+			var input = @"
+class TestClass
+{
+	static int i;
+	int j;
+	void TestMethod (int i)
+	{
+	}
+	static void TestMethod2 (int j)
+	{
+	}
+}";
+			Test<ParameterHidesMemberIssue> (input, 0);
+		}
 	}
 }

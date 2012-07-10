@@ -45,7 +45,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var typeResolveResult = ctx.Resolve (typeDecl) as TypeResolveResult;
 			if (typeResolveResult == null)
 				return false;
-			return typeResolveResult.Type.GetMembers (m => m.Name == variableName).Any ();
+
+			var entityDecl = node.GetParent<EntityDeclaration> ();
+			var isStatic = (entityDecl.Modifiers & Modifiers.Static) == Modifiers.Static;
+
+			return typeResolveResult.Type.GetMembers (m => m.Name == variableName && m.IsStatic	== isStatic).Any ();
 		}
 
 		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context);
