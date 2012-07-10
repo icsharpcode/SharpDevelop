@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -260,6 +261,22 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(1, partialClasses.Count);
 			Assert.AreEqual(codeClass, firstClass);
+		}
+		
+		[Test]
+		public void Members_GetFirstPropertyTwice_PropertiesAreConsideredEqualWhenAddedToList()
+		{
+			CreateProjectContent();
+			CreatePublicClass("MyClass");
+			helper.AddPropertyToClass("MyClass.MyProperty");
+			CodeProperty2 property = codeClass.Members.FirstCodeProperty2OrDefault();
+			var properties = new List<CodeProperty2>();
+			properties.Add(property);
+			
+			CodeProperty2 property2 = codeClass.Members.FirstCodeProperty2OrDefault();
+			
+			bool contains = properties.Contains(property2);
+			Assert.IsTrue(contains);
 		}
 	}
 }

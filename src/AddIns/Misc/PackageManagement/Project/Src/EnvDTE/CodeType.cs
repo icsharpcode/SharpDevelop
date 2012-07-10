@@ -8,6 +8,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeType : CodeElement
 	{
+		CodeTypeMembers members;
+		
 		/// <summary>
 		/// Note that projectContent may be different to the IClass.ProjectContent since the class
 		/// is retrieved from the namespace contents and could belong to a separate project or
@@ -46,7 +48,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Members {
-			get { return new CodeTypeMembers(ProjectContent, Class); }
+			get {
+				if (members == null) {
+					members = new CodeTypeMembers(ProjectContent, Class);
+				}
+				return members;
+			}
 		}
 		
 		public virtual CodeElements Bases {
