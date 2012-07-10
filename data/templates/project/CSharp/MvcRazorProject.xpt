@@ -237,10 +237,15 @@ namespace ${StandardNamespace}
 }
 ]]>
 			</File>
+			<File name="Views\_ViewStart.cshtml">
+<![CDATA[@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+]]>
+			</File>
 			<File name="Views\Home\Contact.cshtml">
 <![CDATA[@{
 	ViewBag.Title = "Contact";
-	Layout = "~/Views/Shared/_LayoutPage.cshtml";
 }
 
 <h2>Contact Us</h2>
@@ -255,7 +260,6 @@ Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 			<File name="Views\Home\Index.cshtml">
 <![CDATA[@{
 	ViewBag.Title = "Home";
-	Layout = "~/Views/Shared/_LayoutPage.cshtml";
 }
 
 <h2>Home</h2>
@@ -267,7 +271,7 @@ felis elit, ac scelerisque odio. Morbi ante mauris, sollicitudin eu posuere quis
 Aliquam suscipit tellus vel nunc elementum fringilla.</p>
 ]]>
 			</File>
-			<File name="Views\Shared\_LayoutPage.cshtml">
+			<File name="Views\Shared\_Layout.cshtml">
 <![CDATA[<!DOCTYPE html>
 <html>
 	<head>
