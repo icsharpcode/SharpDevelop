@@ -57,6 +57,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitMethodDeclaration(methodDeclaration);
 
+				var declarationResolveResult = context.Resolve(methodDeclaration) as MemberResolveResult;
+				if (declarationResolveResult == null)
+					return;
+				var member = declarationResolveResult.Member;
+				if (member.IsOverride || member.IsOverridable)
+					return;
+
 				var collector = new TypeCriteriaCollector(context);
 				methodDeclaration.AcceptVisitor(collector);
 				

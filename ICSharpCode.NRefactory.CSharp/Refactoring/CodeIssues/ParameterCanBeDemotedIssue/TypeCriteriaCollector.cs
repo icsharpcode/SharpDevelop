@@ -55,15 +55,33 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				TypeCriteria[variable] = new List<ITypeCriterion>();
 			TypeCriteria[variable].Add(criterion);
 		}
-		
+
+		public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
+		{
+			base.VisitMemberReferenceExpression(memberReferenceExpression);
+
+			var memberResolveResult = context.Resolve(memberReferenceExpression) as MemberResolveResult;
+			if (memberResolveResult == null)
+				return;
+			var targetResolveResult = memberResolveResult.TargetResult as LocalResolveResult;
+			if (targetResolveResult == null)
+				return;
+			var variable = targetResolveResult.Variable;
+			AddCriterion(variable, new HasMemberCriterion(memberResolveResult.Member));
+		}
+
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 		{
 			base.VisitInvocationExpression(invocationExpression);
+
 			var resolveResult = context.Resolve(invocationExpression);
 			var invocationResolveResult = resolveResult as InvocationResolveResult;
 			if (invocationResolveResult == null)
 				return;
 			CollectRestrictionsFromNodes(invocationExpression.Arguments);
+
+			// invocationExpression.Target resolves to a method group and VisitMemberReferenceExpression
+			// only handles members, so handle method groups here
 			var targetResolveResult = invocationResolveResult.TargetResult as LocalResolveResult;
 			if (targetResolveResult == null)
 				return;
@@ -73,18 +91,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		void CollectRestrictionsFromNodes(IEnumerable<Expression> expressions)
 		{
-			var identifiers =
-				from expression in expressions
-					from node in expression.DescendantsAndSelf
-					let identifier = node as IdentifierExpression
-					where identifier != null
-					select identifier;
-			foreach (var identifier in identifiers) {
-				var resolveResult2 = context.Resolve(identifier);
-				var argumentResolveResult = resolveResult2 as LocalResolveResult;
+			foreach (var expression in expressions) {
+				var resolveResult = context.Resolve(expression);
+				var argumentResolveResult = resolveResult as LocalResolveResult;
 				if (argumentResolveResult == null)
 					continue;
-				var expectedType = context.GetExpectedType(identifier);
+				var expectedType = context.GetExpectedType(expression);
 				AddCriterion(argumentResolveResult.Variable, new IsTypeCriterion(expectedType));
 			}
 		}

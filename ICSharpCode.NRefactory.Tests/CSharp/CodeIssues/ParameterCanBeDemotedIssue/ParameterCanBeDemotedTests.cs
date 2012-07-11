@@ -93,6 +93,88 @@ class A
 		}
 
 		[Test]
+		public void IgnoresOverrides()
+		{
+			var input = @"
+interface IA
+{
+	void Foo();
+}
+class B : IA
+{
+	public virtual void Foo() {}
+	public virtual void Bar() {}
+}
+class TestBase
+{
+	public void F(B b) {
+		b.Foo();
+		b.Bar();
+	}
+}
+class TestClass : TestBase
+{
+	public override void F(B b)
+	{
+		b.Foo();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void IgnoresOverridables()
+		{
+			var input = @"
+interface IA
+{
+	void Foo();
+}
+class B : IA
+{
+	public virtual void Foo() {}
+	public virtual void Bar() {}
+}
+class TestClass
+{
+	public virtual void F(B b)
+	{
+		b.Foo();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void HandlesNeededProperties()
+		{
+			var input = @"
+interface IA
+{
+	void Foo(string s);
+}
+class B : IA
+{
+	public virtual void Foo(string s) {}
+	public string Property { get; }
+}
+class TestClass
+{
+	public void F(B b)
+	{
+		b.Foo(b.Property);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+
+		[Test]
 		public void InterfaceTest()
 		{
 			var input = @"
@@ -279,6 +361,52 @@ class Test
 
 	void DemandType(D d)
 	{
+	}
+}");
+		}
+		
+		[Test]
+		public void RespectsOutgoingCallsTypeRestrictionsWhenPassingResultFromMember()
+		{
+			var input = @"
+interface IA
+{
+	void Foo(string s);
+	string Property { get; }
+}
+class B : IA
+{
+	public virtual void Foo(string s) {}
+	public string Property { get; }
+}
+class TestClass
+{
+	public void F(B b)
+	{
+		b.Foo(b.Property);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new ParameterCanBeDemotedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			CheckFix(context, issues [0], @"
+interface IA
+{
+	void Foo(string s);
+	string Property { get; }
+}
+class B : IA
+{
+	public virtual void Foo(string s) {}
+	public string Property { get; }
+}
+class TestClass
+{
+	public void F(IA b)
+	{
+		b.Foo(b.Property);
 	}
 }");
 		}
