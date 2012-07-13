@@ -74,5 +74,24 @@ class TestClass
 }";
 			Test<LocalVariableOnlyAssignedIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestOutArgument ()
+		{
+			var input1 = @"
+class TestClass
+{
+	void Test (out int i)
+	{
+		i = 1;
+	}
+	void TestMethod()
+	{
+		int i = 1;
+		Test (out i);
+	}
+}";
+			Test<LocalVariableOnlyAssignedIssue> (input1, 1);
+		}
 	}
 }

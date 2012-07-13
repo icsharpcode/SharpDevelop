@@ -75,6 +75,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 								assignment = true;
 								return;
 							}
+						} else if (parent is DirectionExpression) {
+							if (((DirectionExpression)parent).FieldDirection == FieldDirection.Out) {
+								assignment = true;
+								return;
+							}
 						}
 					}
 					nonAssignment = true;
