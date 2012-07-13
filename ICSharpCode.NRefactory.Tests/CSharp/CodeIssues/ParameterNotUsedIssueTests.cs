@@ -56,5 +56,33 @@ class TestClass {
 }";
 			Test<ParameterNotUsedIssue> (input, 0);
 		}
+
+		[Test]
+		public void TestLambda ()
+		{
+			var input = @"
+class TestClass {
+	void TestMethod ()
+	{
+		System.Action<int> a = i => {
+		};
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
+
+		[Test]
+		public void TestAnonymousMethod ()
+		{
+			var input = @"
+class TestClass {
+	void TestMethod ()
+	{
+		System.Action<int> a = delegate (int i) {
+		};
+	}
+}";
+			Test<ParameterNotUsedIssue> (input, 0);
+		}
 	}
 }

@@ -55,6 +55,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				base.VisitParameterDeclaration (parameterDeclaration);
 
+				if (!(parameterDeclaration.Parent is MethodDeclaration))
+					return;
+
 				var resolveResult = ctx.Resolve (parameterDeclaration) as LocalResolveResult;
 				if (resolveResult == null)
 					return;
