@@ -265,6 +265,7 @@
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\MultipleEnumerationIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantFieldInitializerIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\UnreachableCodeIssue.cs" />
@@ -286,6 +287,7 @@
     <Compile Include="Refactoring\RefactoringContext.cs" />
     <Compile Include="Refactoring\Script.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
+    <Compile Include="Refactoring\VariableReferenceGraph.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
     <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
     <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
