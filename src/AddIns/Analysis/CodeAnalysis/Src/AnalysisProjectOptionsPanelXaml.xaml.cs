@@ -144,43 +144,32 @@ namespace ICSharpCode.CodeAnalysis
 				}
 			}
 			userCheck = true;
-//			SetCategoryIcon();
 			SetCategoryIcon();
 		}
 
-		/*
-		void oldSetCategoryIcon()
-		{
-			foreach (CategoryTreeNode element in ruleTreeView.Root.Children) {
-				Console.WriteLine(" {0} - errorstate {1}",element.Text, element.ErrorState.ToString());
-				if (element.ErrorState > -1) {
-					element.Index = element.ErrorState;
-				}
-				Console.WriteLine("-------------------------");
-			}
-			
-		}
-		 */
-		
 		
 		void SetCategoryIcon() {
-	
+			
+			Console.WriteLine("SetCategoryicon");
 			foreach (CategoryTreeNode categoryNode in ruleTreeView.Root.Children) {
-//				Console.WriteLine(" {0} ",element.Text);
+				categoryNode.CheckMode();
+			/*
 				if (!categoryNode.NewErrorState.HasValue) {
-					Console.WriteLine (" {0} is Mixed Mode",categoryNode.Text);
+					Console.WriteLine ("\t{0} is Mixed Mode",categoryNode.Text);
 					categoryNode.AddMixedMode();
 				} else{
 					if (categoryNode.NewErrorState == true) {
-						Console.WriteLine (" {0} is Error",categoryNode.Text);
-						categoryNode.Index = 1;
+						Console.WriteLine ("\t{0} is Error",categoryNode.Text);
+//						categoryNode.Index = 1;
 					} else {
-						Console.WriteLine (" {0} is Warning",categoryNode.Text);
+						Console.WriteLine ("\t{0} is Warning",categoryNode.Text);
+//						categoryNode.Index = ;
 					}
 				}
+				*/
 			}
 			Console.WriteLine("--------------");
-		
+			
 		}
 		
 		string ruleString = "";
@@ -219,7 +208,6 @@ namespace ICSharpCode.CodeAnalysis
 
 		#endregion
 		
-		
 		#region RuleList
 		
 		void ReloadRuleList()
@@ -254,7 +242,6 @@ namespace ICSharpCode.CodeAnalysis
 							rules[ruleNode.Identifier] = ruleNode;
 						}
 					}
-					
 					ReadRuleString();
 					initSuccess = true;
 				}
@@ -265,16 +252,18 @@ namespace ICSharpCode.CodeAnalysis
 		private void OnPropertyChanged(object sender,System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (initSuccess) {
-				base.IsDirty = true;
+				Console.WriteLine("OnPropertyChanged {0}",e.PropertyName);
 				if (e.PropertyName == "Index") {
-					RuleTreeNode r = sender as RuleTreeNode;
-					if (r != null) {
-						var p = r.Parent;
-						if (p != null) {
-							SetCategoryIcon();
-						}
-					}
+					base.IsDirty = true;
+//				var rule = sender as RuleTreeNode;
+//				if (rule != null) {
+//					var cat = rule.Parent as CategoryTreeNode;
+//					if (cat != null) {
+//						cat.CheckMode();
+//					}
+//				}
 				}
+				
 			}
 		}
 		
@@ -321,73 +310,8 @@ namespace ICSharpCode.CodeAnalysis
 			}
 		}
 		
-		void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-//			throw new NotImplementedException();
-		}
-		
 		#endregion
 		
-
-	}
 	
-
-	public class TypeSelector : DataTemplateSelector
-	{
-		
-		public DataTemplate ComboTemplate { get; set; }
-		public DataTemplate TxtTemplate { get; set; }
-		
-		public override DataTemplate SelectTemplate(object item, DependencyObject container)
-		{
-			Console.WriteLine ("------- TypeSelector ---------");
-			var rule = item as RuleTreeNode;
-			
-			if (rule != null) {
-				return ComboTemplate;
-			} 
-		
-			var cat = item as CategoryTreeNode;
-			
-			if (cat != null) {
-				if (!cat.NewErrorState.HasValue) {
-					//Mixed Mode
-					return TxtTemplate;
-				} else {
-					//All childs has same value
-					return ComboTemplate;
-				}
-			}
-			return ComboTemplate;
-		}	
-	}
-	
-	
-	[ValueConversion(typeof(System.Drawing.Icon), typeof(System.Windows.Media.ImageSource))]
-	public class ImageConverter : IValueConverter
-	{
-		public  object Convert(object value, Type targetType,
-		                      object parameter, CultureInfo culture)
-		{
-			// empty images are empty...
-			if (value == null) { return null; }
-			var image = (System.Drawing.Icon)value;
-			// Winforms Image we want to get the WPF Image from...
-			var bitmap = new System.Windows.Media.Imaging.BitmapImage();
-			bitmap.BeginInit();
-			MemoryStream memoryStream = new MemoryStream();
-			// Save to a memory stream...
-			image.Save(memoryStream);
-			// Rewind the stream...
-			memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
-			bitmap.StreamSource = memoryStream;
-			bitmap.EndInit();
-			return bitmap;
-		}
-		public object ConvertBack(object value, Type targetType,
-		                          object parameter, CultureInfo culture)
-		{
-			return null;
-		}
 	}
 }

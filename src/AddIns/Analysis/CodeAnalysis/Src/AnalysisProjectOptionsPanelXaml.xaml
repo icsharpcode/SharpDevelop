@@ -8,63 +8,6 @@
 	xmlns:tv="http://icsharpcode.net/sharpdevelop/treeview"
 	xmlns:local="clr-namespace:ICSharpCode.CodeAnalysis"
 	xmlns:core="http://icsharpcode.net/sharpdevelop/core">
-	<optionpanels:ProjectOptionPanel.Resources>
-		
-		<local:ImageConverter x:Key="imageConverter"></local:ImageConverter>
-		
-		
-
-		<DataTemplate x:Key="comboTemplate">
-			<ComboBox  Background="Transparent" Width="100"
-			          HorizontalAlignment="Center" VerticalAlignment="Center"
-			          ItemsSource="{Binding Path=RuleState}"
-			          SelectedItem="{Binding SelectedNode}"
-			          IsReadOnly="False"
-			          SelectionChanged="ComboBox_SelectionChanged"
-			          SelectedIndex="{Binding Index}">
-				
-				<ComboBox.ItemTemplate>
-					<DataTemplate>
-						<StackPanel Orientation="Horizontal">
-							<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
-							       Source="{Binding Item1,
-							Converter={StaticResource imageConverter}}"></Image>
-							
-							<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
-						</StackPanel>
-					</DataTemplate>
-				</ComboBox.ItemTemplate>
-			</ComboBox>
-		</DataTemplate>
-		
-		<!--<DataTemplate.Triggers>
-			<DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor,
-			             AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="True">
-				<Setter TargetName="MyGrid" Property="Background" Value="Red" />
-			</DataTrigger>
-		</DataTemplate.Triggers>-->
-		
-	<!--	<DataTemplate x:Key="txtTemplate">
-			<StackPanel Orientation="Horizontal">
-				<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
-				       Source="{Binding MixedModeIcon}"></Image>
-				
-				
-				<TextBlock Text="{Binding MixedModeText}"></TextBlock>
-			</StackPanel>
-			<DataTemplate.Triggers>
-				<DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor,
-				             AncestorType={x:Type ListViewItem}}, Path=IsSelected}" Value="True">
-				
-				</DataTrigger>
-			</DataTemplate.Triggers>
-		</DataTemplate>
-		-->
-		
-	<!--	<local:TypeSelector x:Key="TypeSelector" ComboTemplate="{StaticResource comboTemplate}"
-			TxtTemplate="{StaticResource txtTemplate}"></local:TypeSelector>-->
-	
-	</optionpanels:ProjectOptionPanel.Resources>
 	
 	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<Grid >
@@ -92,7 +35,7 @@
 			        Content="{core:Localize ICSharpCode.CodeAnalysis.ProjectOptions.AddRemoveRuleAssembly}"></Button>
 			
 			<tv:SharpTreeView x:Name="ruleTreeView" ShowRoot="False" ShowLines="False" IsSynchronizedWithCurrentItem="True"
-				Grid.Row="2" Grid.ColumnSpan="3" SelectedItem="{Binding SelectedNode}">
+				Grid.Row="2" Grid.ColumnSpan="3">
 				
 				<ListView.View>
 					<tv:SharpGridView >
@@ -104,34 +47,24 @@
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
 							</GridViewColumn>
-						
 							
-							<!--	http://finercode.net/2012/06/05/using-a-different-datatemplate-when-a-wpf-combobox-is-expanded/		-->
-							
-						<!--	<GridViewColumn Header="Action"
-							                CellTemplateSelector="{StaticResource TypeSelector}">
-							</GridViewColumn>-->
-						
-<!--						</tv:SharpGridView.Columns>-->
-						
-							
-							<GridViewColumn Header="Action" x:Name="xxx">
+							<GridViewColumn Header="Action">
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal">
 										<ComboBox  Background="Transparent" Width="100" 
 										          HorizontalAlignment="Center" VerticalAlignment="Center"
 										          ItemsSource="{Binding Path=RuleState}"
+										          IsSynchronizedWithCurrentItem="True"
 										          IsReadOnly="False"
 										          SelectedIndex="{Binding Index}">
 											
 											<ComboBox.ItemTemplate>
 												<DataTemplate>
-													
 													<StackPanel Orientation="Horizontal">
 														<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
-														       Source="{Binding Item1,
-														Converter={StaticResource imageConverter}}"></Image>
+														       Source="{Binding Item1}"></Image>
+														
 														<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
 													
 													</StackPanel>
@@ -139,22 +72,11 @@
 												</DataTemplate>
 											</ComboBox.ItemTemplate>
 										</ComboBox>
-										
-										<TextBlock Text="{Binding Index}"  ></TextBlock>
-
 									</StackPanel>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-							<GridViewColumn Header="test">
-								<GridViewColumn.CellTemplate>
-									<DataTemplate>
-									<TextBox Text="{Binding Index}"></TextBox>
-									</DataTemplate>
-								</GridViewColumn.CellTemplate>
-							</GridViewColumn>
-						</tv:SharpGridView.Columns>
-					
+							</GridViewColumn>							
+						</tv:SharpGridView.Columns>					
 					
 					</tv:SharpGridView>
 				</ListView.View>

@@ -26,16 +26,42 @@ namespace ICSharpCode.CodeAnalysis
 	public class BaseTree:SharpTreeNode
 	{
 		private int index;
-
+		
+		
+	
 		public BaseTree()
 		{
-			RuleState = new ObservableCollection<Tuple<Icon,string>>(); 
-			this.RuleState.Add(Tuple.Create<Icon,string>(SystemIcons.Warning,ResourceService.GetString("Global.WarningText")));
-			this.RuleState.Add(Tuple.Create<Icon,string>(SystemIcons.Error,ResourceService.GetString("Global.ErrorText")));
+			RuleState = new ObservableCollection<Tuple<ImageSource,string>>(); 
+			
+			Icon icon = SystemIcons.Warning;
+			ImageSource imageSource = ToImageSource(icon);
+			this.RuleState.Add(Tuple.Create<ImageSource,string>(imageSource,
+			                                                    ResourceService.GetString("Global.WarningText")));
+			
+			icon = SystemIcons.Error;
+			imageSource = ToImageSource(icon);
+			this.RuleState.Add(Tuple.Create<ImageSource,string>(imageSource,
+			                                                    ResourceService.GetString("Global.ErrorText")));
 //			bla.Add(Tuple.Create<Icon,string>(null,"None"));
 		}
 		
-		public ObservableCollection<Tuple<Icon,string>> RuleState {get;set;}
+		private static ImageSource ToImageSource( Icon icon) 
+    {             
+        Bitmap bitmap = icon.ToBitmap(); 
+        IntPtr hBitmap = bitmap.GetHbitmap(); 
+ 
+        ImageSource wpfBitmap = Imaging.CreateBitmapSourceFromHBitmap( 
+            hBitmap, 
+            IntPtr.Zero, 
+            Int32Rect.Empty, 
+            BitmapSizeOptions.FromEmptyOptions()); 
+ 
+        return wpfBitmap; 
+    } 
+
+		
+		
+		public ObservableCollection<Tuple<ImageSource,string>> RuleState {get;set;}
 		
 		private Tuple<Icon,string> selectedItem;
 		
@@ -48,10 +74,7 @@ namespace ICSharpCode.CodeAnalysis
 		public virtual int Index {
 			get { return index; }
 			set {
-				if (index != value) {
-					index = value;
-				}
-				base.RaisePropertyChanged("Index");
+				index = value;
 			}
 		}
 	}
@@ -61,7 +84,7 @@ namespace ICSharpCode.CodeAnalysis
 	public class CategoryTreeNode : BaseTree
 	{
 		internal FxCopCategory category;
-		private Tuple<Icon,string>  mixedTuple;
+		private Tuple<ImageSource,string>  mixedModeTuple;
 		
 		public CategoryTreeNode(FxCopCategory category):base()
 		{
@@ -71,6 +94,7 @@ namespace ICSharpCode.CodeAnalysis
 				this.Children.Add(new RuleTreeNode(rule));
 			}
 			
+			CheckMode();
 		}
 		
 
@@ -87,27 +111,64 @@ namespace ICSharpCode.CodeAnalysis
 			set {
 				if (value != base.Index) {
 					base.Index = value;
-					if (mixedTuple == null) {
+					if (mixedModeTuple == null) {
+						Console.WriteLine("Set all to index");
 						foreach (RuleTreeNode rule in this.Children) {
 							rule.Index = Index;
 						}
+						base.RaisePropertyChanged("Index");
 					}
-					
 				}
 			}
 		}
 		
 		
-		public void AddMixedMode()
+		private void AddMixedMode()
 		{
-			Bitmap b = (Bitmap)ResourceService.GetImageResource("Icons.16x16.ClosedFolderBitmap");
-			System.Drawing.Icon ico = (Icon)System.Drawing.Icon.FromHandle(b.GetHicon());
-			
-			mixedTuple = Tuple.Create<Icon,string>(ico,
-			StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.WarningErrorMixed}"));
-			RuleState.Add(mixedTuple);
-			Index = RuleState.Count -1;
+			Console.WriteLine("AddMixedMode");
+			if (!RuleState.Contains(mixedModeTuple)) {
+				var image = PresentationResourceService.GetBitmapSource("Icons.16x16.ClosedFolderBitmap");
+				mixedModeTuple = Tuple.Create<ImageSource,string>(image,
+				                                              StringParser.Parse("${res:ICSharpCode.CodeAnalysis.ProjectOptions.WarningErrorMixed}"));
+				RuleState.Add(mixedModeTuple);
+				Index = RuleState.Count -1;
+				base.RaisePropertyChanged("Index");
+				CheckMode();
+			}
 		}
+		
+		private void RemoveMixedMode()
+		{
+			Console.WriteLine("RemoveMixedMode(");
+			if (mixedModeTuple != null) {
+				if (RuleState.Contains(mixedModeTuple)) {
+					RuleState.Remove(mixedModeTuple);
+					mixedModeTuple = null;
+					base.RaisePropertyChanged("Index");
+					CheckMode();
+				}
+			}
+		}
+		
+		public void CheckMode ()
+		{
+			Console.WriteLine("CheckMode");
+			if (!NewErrorState.HasValue) {
+				Console.WriteLine ("\t{0} is Mixed Mode",Text);
+				AddMixedMode();
+//				categoryNode.AddMixedMode();
+			} else{
+				RemoveMixedMode();
+				if (NewErrorState == true) {
+					Console.WriteLine ("\t{0} is Error",Text);
+//						categoryNode.Index = 1;
+				} else {
+					Console.WriteLine ("\t{0} is Warning",Text);
+//						categoryNode.Index = ;
+				}
+			}
+		}
+		
 		
 		public Nullable<bool> NewErrorState {
 			get {
@@ -160,13 +221,7 @@ namespace ICSharpCode.CodeAnalysis
 		internal bool isError {
 			get { return error; }
 			set {
-				if (error != value) {
-					error = value;
-				
-					if (error) {
-						base.Index = 1;
-					}
-				}
+				error = value;
 			}
 		}
 		
@@ -197,12 +252,8 @@ namespace ICSharpCode.CodeAnalysis
 				if (base.Index != value) {
 					isError = value == 1;
 					base.Index = value;
-					
-//					if (base.Index == 1) {
-//						error = true;
-//					} else {
-//						error = false;
-//					}
+					var p = Parent as CategoryTreeNode;
+					p.CheckMode();
 					Console.WriteLine ("RuleNode {0} - index {1} - error {2}",rule.DisplayName,Index, isError);
 				}
 			}
