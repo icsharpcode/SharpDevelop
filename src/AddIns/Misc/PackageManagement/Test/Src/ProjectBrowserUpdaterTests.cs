@@ -22,7 +22,8 @@ namespace PackageManagement.Tests
 		ProjectBrowserControl projectBrowser;
 		ProjectBrowserUpdater projectBrowserUpdater;
 		TestableProject project;
-		
+		ProjectNode projectNode;
+
 		[TestFixtureSetUp]
 		public void InitFixture()
 		{
@@ -36,15 +37,15 @@ namespace PackageManagement.Tests
 		}
 		
 		void AddDefaultDotNetNodeBuilderToAddinTree()
-		{			
-			string xml = 
+		{
+			string xml =
 				"<AddIn name='test'>\r\n" +
 				"	<Runtime>\r\n" +
 				"		<Import assembly=':ICSharpCode.SharpDevelop'/>\r\n" +
 				"	</Runtime>\r\n" +
 				"	<Path name = '/SharpDevelop/Views/ProjectBrowser/NodeBuilders'>\r\n" +
 				"		<Class id = 'DefaultBuilder'\r\n" +
-		       	"		       class = 'ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder'/>\r\n" +
+				"		       class = 'ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder'/>\r\n" +
 				"	</Path>\r\n" +
 				"</AddIn>";
 			
@@ -57,6 +58,13 @@ namespace PackageManagement.Tests
 		public void TearDown()
 		{
 			projectBrowser.Dispose();
+		}
+		
+		void CreateExpandedProjectNodeWithNoFiles(string projectfileName)
+		{
+			CreateProjectBrowserUpdater();
+			projectNode = AddProjectToProjectBrowser(projectfileName);
+			projectNode.Expanding();
 		}
 		
 		FileNode GetFirstFileChildNode(ExtTreeNode node)
@@ -133,7 +141,7 @@ namespace PackageManagement.Tests
 		{
 			ProjectService.AddProjectItem(project, item);
 		}
-				
+		
 		FileNode GetFileChildNodeAtIndex(ExtTreeNode node, int index)
 		{
 			return GetChildNodesOfType<FileNode>(node).ElementAt(index);
@@ -149,12 +157,86 @@ namespace PackageManagement.Tests
 			return GetChildNodesOfType<DirectoryNode>(directoryNode).ElementAt(index);
 		}
 		
+		void CreateExpandedProjectNodeWithDirectories(string projectFileName, params string[] directories)
+		{
+			CreateProjectBrowserControl();
+			projectNode = AddProjectToProjectBrowser(projectFileName);
+			AddDirectoriesToProject(directories);
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+		}
+		
+		void AddDirectoriesToProject(params string[] directories)
+		{
+			foreach (string directory in directories)
+			{
+				AddDirectoryToProject(directory);
+			}
+		}
+		
+		void CreateExpandedProjectNodeWithFiles(string projectFileName, params string[] fileNames)
+		{
+			CreateProjectBrowserControl();
+			projectNode = AddProjectToProjectBrowser(projectFileName);
+			AddFilesToProject(fileNames);
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+		}
+		
+		DirectoryNode ExpandFirstChildDirectory(ExtTreeNode parentNode)
+		{
+			DirectoryNode directoryNode = GetFirstDirectoryChildNode(parentNode);
+			directoryNode.Expanding();
+			return directoryNode;
+		}
+		
+		DirectoryNode ExpandChildDirectory(DirectoryNode parentNode, int index)
+		{
+			DirectoryNode directoryNode = GetDirectoryChildNodeAtIndex(parentNode, index);
+			directoryNode.Expanding();
+			return directoryNode;
+		}
+		
+		void AddFilesToProject(params string[] fileNames)
+		{
+			foreach (string fileName in fileNames)
+			{
+				AddFileToProject(fileName);
+			}
+		}
+		
+		void CreateProjectNodeWithOneFileInRootDirectoryExpanded(string projectFileName, string fileName)
+		{
+			CreateProjectBrowserControl();
+			projectNode = AddProjectToProjectBrowser(projectFileName);
+			AddFileToProject(fileName);
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+		}
+		
+		void AssertChildFileNodesCountAreEqual(int expectedCount, ExtTreeNode parentNode)
+		{
+			int count = GetChildNodesOfType<FileNode>(parentNode).Count();
+			Assert.AreEqual(expectedCount, count);
+		}
+		
+		DirectoryNode CreateExpandedProjectNodeWithFileInSubFolder(string projectFileName, string fileName)
+		{
+			CreateProjectBrowserControl();
+			projectNode = AddProjectToProjectBrowser(projectFileName);
+			AddFileToProject(fileName);
+			projectNode.Expanding();
+			DirectoryNode subfolderNode = GetFirstDirectoryChildNode(projectNode);
+			subfolderNode.Expanding();
+			CreateProjectBrowserUpdater(projectBrowser);
+			projectNode.Expanding();
+			return subfolderNode;
+		}
+		
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndFileAddedToProjectRootDirectory_FileNodeAddedToProjectBrowser()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddFileToProject(@"d:\projects\MyProject\test.cs");
 			
@@ -166,9 +248,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndReferenceAddedToProject_ReferenceIgnoredByProjectBrowserUpdater()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddReferenceToProject("System.Xml");
 			
@@ -179,9 +259,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndFileAddedToUnknownProject_FileProjectItemAddedIsIgnored()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddFileToUnknownProject(@"d:\projects\AnotherProject\test.cs");
 			
@@ -192,9 +270,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndFileAddedInSubDirectory_DirectoryNodeAddedToProjectNode()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddFileToProject(@"d:\projects\MyProject\Subfolder\test.cs");
 			
@@ -207,9 +283,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndFileAddedTwoSubFoldersBelowProjectRootDirectory_DirectoryNodeForFirstSubFolderAddedToProjectNode()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddFileToProject(@"d:\projects\MyProject\Subfolder1\Subfolder2\test.cs");
 			
@@ -221,9 +295,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndFileAddedInSubdirectory_NoFileNodeAddedToProjectNode()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddFileToProject(@"d:\projects\MyProject\Subfolder\test.cs");
 			
@@ -246,9 +318,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Dispose_ProjectWithNoFilesAndFileAddedToProjectRootDirectoryAfterUpdaterDisposed_NoFileNodeAdded()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			projectBrowserUpdater.Dispose();
 			
@@ -260,14 +330,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithTwoFilesAndFileAddedToProjectRootDirectory_FileNodeAddedToProjectBrowserInAlphabeticalOrder()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a.cs");
-			AddFileToProject(@"d:\projects\MyProject\c.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a.cs",
+				@"d:\projects\MyProject\c.cs");
 			
-			AddFileToProject(@"d:\projects\MyProject\b.cs");			
+			AddFileToProject(@"d:\projects\MyProject\b.cs");
 			
 			FileNode fileNode = GetFileChildNodeAtIndex(projectNode, 1);
 			Assert.AreEqual(@"d:\projects\MyProject\b.cs", fileNode.FileName);
@@ -276,14 +344,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithTwoFoldersAndFileInSubFolderAddedToProject_FileDirectoryNodeAddedToProjectBrowserInAlphabeticalOrder()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			AddFileToProject(@"d:\projects\MyProject\c\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs",
+				@"d:\projects\MyProject\c\a.cs");
 			
-			AddFileToProject(@"d:\projects\MyProject\b\test.cs");			
+			AddFileToProject(@"d:\projects\MyProject\b\test.cs");
 			
 			DirectoryNode directoryNode = GetDirectoryChildNodeAtIndex(projectNode, 1);
 			Assert.AreEqual(@"d:\projects\MyProject\b", directoryNode.Directory);
@@ -292,13 +358,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithOneFileInSubFolderAndNewFileAddedToSubFolder_DirectoryNodeNotAddedToProjectSinceItAlreadyExists()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs");
 			
-			AddFileToProject(@"d:\projects\MyProject\a\test.cs");		
+			AddFileToProject(@"d:\projects\MyProject\a\test.cs");
 			
 			int count = GetChildNodesOfType<DirectoryNode>(projectNode).Count();
 			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
@@ -310,13 +374,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithDirectoryNodeExpandedAndNewFileAddedToDirectory_FileAddedToDirectory()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\test.cs");
 			
@@ -327,13 +388,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithDirectoryNodeExpandedAndNewFileAddedToSubFolderOfExpandedDirectory_NoNewFileNodedAdded()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\b\test.cs");
 			
@@ -346,13 +404,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithDirectoryNodeExpandedAndNewFileAddedToSubFolderOfExpandedDirectory_DirectoryNodeAddedToDirectoryNode()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\b\test.cs");
 			
@@ -364,13 +419,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithDirectoryNodeExpandedAndNewFileAddedToSubFolderTwoLevelsBelowExpandedDirectory_DirectoryNodeAddedForChildSubFolder()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\b\c\test.cs");
 			
@@ -381,14 +433,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithDirectoryNodeExpandedAndNewFileAddedToSubFolderWhichAlreadyExistsInExpandedDirectory_NewDirectoryNodeNotAdded()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			AddFileToProject(@"d:\projects\MyProject\a\b\b.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs",
+				@"d:\projects\MyProject\a\b\b.cs");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\b\test.cs");
 			
@@ -401,15 +450,11 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithDirectoryNodeTwoLevelsDeepExpandedAndNewFileAddedToSubFolderOfExpandedDirectory_DirectoryNodeAddedToDirectoryNode()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\b\a.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode topLevelDirectoryNode = GetFirstDirectoryChildNode(projectNode);
-			topLevelDirectoryNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(topLevelDirectoryNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\b\a.cs");
+			DirectoryNode topLevelDirectoryNode = ExpandFirstChildDirectory(projectNode);
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(topLevelDirectoryNode);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\b\test.cs");
 			
@@ -421,16 +466,12 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithTwoDirectoryNodesExpandedAndNewFileAddedToFirstExpandedDirectory_SecondDirectoryNodeIsNotAffected()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddFileToProject(@"d:\projects\MyProject\a\a.cs");
-			AddFileToProject(@"d:\projects\MyProject\b\b.cs");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
-			DirectoryNode secondDirectoryNode = GetDirectoryChildNodeAtIndex(projectNode, 1);
-			secondDirectoryNode.Expanding();
+			CreateExpandedProjectNodeWithFiles(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a\a.cs",
+				@"d:\projects\MyProject\b\b.cs");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
+			DirectoryNode secondDirectoryNode = ExpandChildDirectory(projectNode, 1);
 			
 			AddFileToProject(@"d:\projects\MyProject\a\test.cs");
 			
@@ -442,9 +483,7 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithNoFilesAndDirectoryAddedToProject_DirectoryNodeAddedToProjectNode()
 		{
-			CreateProjectBrowserUpdater();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithNoFiles(@"d:\projects\MyProject\MyProject.csproj");
 			
 			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder");
 			
@@ -457,13 +496,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithOneDirectoryAndSubDirectoryAddedToProject_DirectoryNodeAddedToParentNode()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithDirectories(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\Subfolder1");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\Subfolder2");
 			
@@ -475,12 +511,10 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithTwoDirectoriesAndDirectoryAddedToProject_DirectoryNodeAddedToProjectInAlphabeticalOrder()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddDirectoryToProject(@"d:\projects\MyProject\a");
-			AddDirectoryToProject(@"d:\projects\MyProject\c");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
+			CreateExpandedProjectNodeWithDirectories(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\a",
+				@"d:\projects\MyProject\c");			
 			
 			AddDirectoryToProject(@"d:\projects\MyProject\b");
 			
@@ -491,20 +525,65 @@ namespace PackageManagement.Tests
 		[Test]
 		public void Constructor_ProjectWithOneSubDirectoryWithTwoChildDirectoriesAndNewSubChildDirectoryAddedToProject_DirectoryNodeAddedInAlphabeticalOrder()
 		{
-			CreateProjectBrowserControl();
-			ProjectNode projectNode = AddProjectToProjectBrowser(@"d:\projects\MyProject\MyProject.csproj");
-			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1");
-			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\a");
-			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\c");
-			CreateProjectBrowserUpdater(projectBrowser);
-			projectNode.Expanding();
-			DirectoryNode directoryNode = GetFirstDirectoryChildNode(projectNode);
-			directoryNode.Expanding();
+			CreateExpandedProjectNodeWithDirectories(
+				@"d:\projects\MyProject\MyProject.csproj",
+				@"d:\projects\MyProject\Subfolder1",
+				@"d:\projects\MyProject\Subfolder1\a",
+				@"d:\projects\MyProject\Subfolder1\c");
+			DirectoryNode directoryNode = ExpandFirstChildDirectory(projectNode);
 			
 			AddDirectoryToProject(@"d:\projects\MyProject\Subfolder1\b");
 			
 			DirectoryNode childDirectoryNode = GetDirectoryChildNodeAtIndex(directoryNode, 1);
 			Assert.AreEqual(@"d:\projects\MyProject\Subfolder1\b", childDirectoryNode.Directory);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithOneFileInRootDirectoryAndSameFileAddedAgain_ProjectBrowserNotChanged()
+		{
+			string projectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			string fileName = @"d:\projects\MyProject\test.cs";
+			CreateProjectNodeWithOneFileInRootDirectoryExpanded(projectFileName, fileName);
+			
+			AddFileToProject(fileName);
+			
+			AssertChildFileNodesCountAreEqual(1, projectNode);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithOneFileInRootDirectoryAndSameFileAddedAgainButWithDifferentCase_ProjectBrowserNotChanged()
+		{
+			string projectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			string fileName = @"d:\projects\MyProject\test.cs";
+			CreateProjectNodeWithOneFileInRootDirectoryExpanded(projectFileName, fileName);
+			
+			AddFileToProject(@"d:\PROJECTS\MYPROJECT\TEST.CS");
+			
+			AssertChildFileNodesCountAreEqual(1, projectNode);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithOneFileInSubDirectoryAndSameFileAddedAgain_ProjectBrowserNotChanged()
+		{
+			string projectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			string fileName = @"d:\projects\MyProject\Subfolder\test.cs";
+			DirectoryNode subfolderNode = CreateExpandedProjectNodeWithFileInSubFolder(projectFileName, fileName);
+			
+			AddFileToProject(@"d:\projects\MyProject\Subfolder\test.cs");
+			
+			AssertChildFileNodesCountAreEqual(1, subfolderNode);
+		}
+		
+		[Test]
+		public void Constructor_ProjectWithOneFileInSubDirectoryAndSameFileAddedAgainButWithDifferentCase_ProjectBrowserNotChanged()
+		{
+			string projectFileName = @"d:\projects\MyProject\MyProject.csproj";
+			string fileName = @"d:\projects\MyProject\Subfolder\test.cs";
+			DirectoryNode subfolderNode = CreateExpandedProjectNodeWithFileInSubFolder(projectFileName, fileName);
+			
+			AddFileToProject(@"d:\PROJECTS\MYPROJECT\SUBFOLDER\TEST.CS");
+			
+			AssertChildFileNodesCountAreEqual(1, subfolderNode);
 		}
 	}
 }

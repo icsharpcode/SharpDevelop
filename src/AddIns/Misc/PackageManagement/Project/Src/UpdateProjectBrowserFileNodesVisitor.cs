@@ -48,7 +48,9 @@ namespace ICSharpCode.PackageManagement
 				return null;
 			
 			if (IsImmediateParentForNewFile(directoryNode)) {
-				AddFileOrDirectoryNodeTo(directoryNode);
+				if (IsChildFileNodeMissingForNewFile(directoryNode)) {
+					AddFileOrDirectoryNodeTo(directoryNode);
+				}
 			} else if (IsChildDirectoryNodeMissingForNewFile(directoryNode)) {
 				AddChildDirectoryNodeForNewFileTo(directoryNode);
 			} else {
@@ -126,6 +128,22 @@ namespace ICSharpCode.PackageManagement
 			fileNode.InsertSorted(node);
 		}
 		
+		bool IsChildFileNodeMissingForNewFile(DirectoryNode parentDirectoryNode)
+		{
+			return !IsChildFileNodeAlreadyAddedForNewFile(parentDirectoryNode);
+		}
+		
+		bool IsChildFileNodeAlreadyAddedForNewFile(DirectoryNode parentDirectoryNode)
+		{
+			return GetChildFileNodes(parentDirectoryNode)
+				.Any(childFileNode => FileNodeMatchesNewFileAdded(childFileNode));
+		}
+		
+		bool FileNodeMatchesNewFileAdded(FileNode fileNode)
+		{
+			return FileUtility.IsEqualFileName(fileNode.FileName, newFileAddedToProject.FileName);
+		}
+		
 		bool IsChildDirectoryNodeMissingForNewFile(DirectoryNode parentDirectoryNode)
 		{
 			return !IsChildDirectoryNodeAlreadyAddedForNewFile(parentDirectoryNode);
@@ -140,6 +158,11 @@ namespace ICSharpCode.PackageManagement
 		bool DirectoryOfNewFileStartsWith(DirectoryNode directoryNode)
 		{
 			return FileUtility.IsBaseDirectory(directoryNode.Directory, DirectoryForNewFileAddedToProject);
+		}
+		
+		IEnumerable<FileNode> GetChildFileNodes(ExtTreeNode parentNode)
+		{
+			return parentNode.AllNodes.OfType<FileNode>();
 		}
 		
 		IEnumerable<DirectoryNode> GetChildDirectoryNodes(ExtTreeNode parentNode)
