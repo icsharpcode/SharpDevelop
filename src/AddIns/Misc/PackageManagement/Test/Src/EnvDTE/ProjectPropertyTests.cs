@@ -209,7 +209,29 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string fileName = (string)project.Properties.Item("OutputFileName").Value;
 			
-			Assert.AreEqual(@"MyProject.exe", fileName);
+			Assert.AreEqual("MyProject.exe", fileName);
+		}
+		
+		[Test]
+		public void Properties_GetDefaultNamespaceProperty_ReturnsRootNamespaceForProject()
+		{
+			CreateProperties();
+			msbuildProject.RootNamespace = "MyProjectRootNamespace";
+			
+			string defaultNamespace = (string)project.Properties.Item("DefaultNamespace").Value;
+			
+			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
+		}
+		
+		[Test]
+		public void Properties_GetDefaultNamespacePropertyUsingUppercaseName_ReturnsRootNamespaceForProject()
+		{
+			CreateProperties();
+			msbuildProject.RootNamespace = "MyProjectRootNamespace";
+			
+			string defaultNamespace = (string)project.Properties.Item("DEFAULTNAMESPACE").Value;
+			
+			Assert.AreEqual("MyProjectRootNamespace", defaultNamespace);
 		}
 	}
 }

@@ -30,6 +30,8 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return GetFullPath();
 			} else if (IsOutputFileName()) {
 				return GetOutputFileName();
+			} else if (IsDefaultNamespace()) {
+				return GetDefaultNamespace();
 			}
 			return EmptyStringIfNull(value);
 		}
@@ -63,6 +65,16 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			var targetFramework = new ProjectTargetFramework(MSBuildProject);
 			return targetFramework.TargetFrameworkName.ToString();
+		}
+		
+		bool IsDefaultNamespace()
+		{
+			return IsCaseInsensitiveMatch(Name, "DefaultNamespace");
+		}
+		
+		string GetDefaultNamespace()
+		{
+			return MSBuildProject.RootNamespace;
 		}
 		
 		MSBuildBasedProject MSBuildProject {

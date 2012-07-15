@@ -12,6 +12,7 @@ namespace PackageManagement.Tests.Helpers
 	{
 		public bool IsSaved;
 		string assemblyName;
+		string rootNamespace;
 		
 		public ItemType ItemTypeToReturnFromGetDefaultItemType {
 			get { return TestableProjectBehaviour.ItemTypeToReturnFromGetDefaultItemType; }
@@ -73,6 +74,11 @@ namespace PackageManagement.Tests.Helpers
 		public override string AssemblyName {
 			get { return assemblyName; }
 			set { assemblyName = value; }
+		}
+		
+		public override string RootNamespace {
+			get { return rootNamespace; }
+			set { rootNamespace = value; }
 		}
 	}
 }
