@@ -132,26 +132,27 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void AddIssue (AstNode node)
 			{
-				if (node.Parent is DirectionExpression && ((DirectionExpression)node.Parent).Expression == node)
-					return;
+				var title = ctx.TranslateString ("Remove redundant assignment");
 
-				// TODO: correct marking
-				AddIssue (node, ctx.TranslateString ("Remove redundant assignment"),
-					script => {
-						if (node is VariableInitializer) {
+				var variableInitializer = node as VariableInitializer;
+				if (variableInitializer != null) {
+					AddIssue (variableInitializer.Initializer, title,
+						script => {
 							var replacement = (VariableInitializer)node.Clone ();
 							replacement.Initializer = Expression.Null;
 							script.Replace (node, replacement);
-							return;
-						}
+						});
+				}
 
-						var assignmentExpr = (AssignmentExpression)node.Parent;
-						if (assignmentExpr.Parent is ExpressionStatement) {
-							script.Remove (assignmentExpr.Parent);
-						} else {
-							script.Replace (assignmentExpr, assignmentExpr.Right.Clone ());
-						}
-					});
+				var assignmentExpr = node.Parent as AssignmentExpression;
+				if (assignmentExpr == null)
+					return;
+				if (assignmentExpr.Parent is ExpressionStatement) {
+					AddIssue (assignmentExpr.Parent, title, script => script.Remove (assignmentExpr.Parent));
+				} else {
+					AddIssue (assignmentExpr.Left.StartLocation, assignmentExpr.OperatorToken.EndLocation, title, 
+						script => script.Replace (assignmentExpr, assignmentExpr.Right.Clone ()));
+				}
 			}
 
 			static bool IsAssignment (AstNode node)
