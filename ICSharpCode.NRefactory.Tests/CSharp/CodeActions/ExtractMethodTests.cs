@@ -31,6 +31,56 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class ExtractMethodTests : ContextActionTestBase
 	{
+		[Test()]
+		public void SimpleArgument()
+		{
+			Test<ExtractMethodAction>(@"class TestClass
+{
+	void TestMethod ()
+	{
+		int i = 5;
+		<-Console.WriteLine (i);->
+	}
+}
+", @"class TestClass
+{
+	static void NewMethod (int i)
+	{
+		Console.WriteLine (i);
+	}
+	void TestMethod ()
+	{
+		int i = 5;
+		NewMethod (i);
+	}
+}
+");
+		}
+		[Test()]
+		public void NoArgument()
+		{
+			Test<ExtractMethodAction>(@"class TestClass
+{
+	void TestMethod ()
+	{
+		int i = 5;
+		<-Console.WriteLine (""Hello World"");->
+	}
+}
+", @"class TestClass
+{
+	static void NewMethod ()
+	{
+		Console.WriteLine (""Hello World"");
+	}
+	void TestMethod ()
+	{
+		int i = 5;
+		NewMethod ();
+	}
+}
+");
+		}
 
 		[Test()]
 		public void ExtractMethodResultStatementTest()
@@ -246,7 +296,6 @@ class TestClass
 		/// <summary>
 		/// Bug 616199 - Extract method forgets to return a local var which is used in main method
 		/// </summary>
-		[Ignore("Fix me!")]
 		[Test()]
 		public void TestBug616199()
 		{
@@ -267,7 +316,7 @@ class TestClass
 	}
 	void TestMethod ()
 	{
-		string z = NewMethod ();
+		var z = NewMethod ();
 		string ret = ""test1"" + z;
 	}
 }
