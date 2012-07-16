@@ -1900,7 +1900,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §7.6.5
 			
 			if (target.Type.Kind == TypeKind.Dynamic) {
-				return new DynamicInvocationResolveResult(target, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+				return new DynamicInvocationResolveResult(target, DynamicInvocationType.Invocation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
 			}
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
