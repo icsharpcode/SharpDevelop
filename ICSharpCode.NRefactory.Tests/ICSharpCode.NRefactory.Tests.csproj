@@ -293,6 +293,7 @@
     <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParserTests.cs" />
     <Compile Include="CSharp\CodeIssues\FormatStringTests.cs" />
     <Compile Include="CSharp\CodeIssues\OptionalParameterCouldBeSkippedTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantCatchTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
