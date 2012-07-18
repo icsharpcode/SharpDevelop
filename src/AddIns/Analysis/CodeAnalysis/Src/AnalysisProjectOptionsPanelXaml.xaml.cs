@@ -140,7 +140,8 @@ namespace ICSharpCode.CodeAnalysis
 				RuleTreeNode ruleNode;
 				if (rules.TryGetValue(rule, out ruleNode)) {
 					ruleNode.IsChecked = active;
-					ruleNode.isError = error;
+					//ruleNode.isError = error;
+					ruleNode.Index = 1;
 				}
 			}
 			userCheck = true;
@@ -255,15 +256,7 @@ namespace ICSharpCode.CodeAnalysis
 				Console.WriteLine("OnPropertyChanged {0}",e.PropertyName);
 				if (e.PropertyName == "Index") {
 					base.IsDirty = true;
-//				var rule = sender as RuleTreeNode;
-//				if (rule != null) {
-//					var cat = rule.Parent as CategoryTreeNode;
-//					if (cat != null) {
-//						cat.CheckMode();
-//					}
-//				}
 				}
-				
 			}
 		}
 		
@@ -311,7 +304,5 @@ namespace ICSharpCode.CodeAnalysis
 		}
 		
 		#endregion
-		
-	
 	}
 }

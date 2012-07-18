@@ -52,31 +52,31 @@
 								<GridViewColumn.CellTemplate>
 									<DataTemplate>
 										<StackPanel Orientation="Horizontal">
-										<ComboBox  Background="Transparent" Width="100" 
-										          HorizontalAlignment="Center" VerticalAlignment="Center"
-										          ItemsSource="{Binding Path=RuleState}"
-										          IsSynchronizedWithCurrentItem="True"
-										          IsReadOnly="False"
-										          SelectedIndex="{Binding Index}">
-											
-											<ComboBox.ItemTemplate>
-												<DataTemplate>
-													<StackPanel Orientation="Horizontal">
-														<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
-														       Source="{Binding Item1}"></Image>
-														
-														<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
-													
-													</StackPanel>
+											<ComboBox  Background="Transparent" Width="100"
+											          HorizontalAlignment="Center" VerticalAlignment="Center"
+											          ItemsSource="{Binding Path=RuleState}"
+											          IsSynchronizedWithCurrentItem="True"
+											          IsReadOnly="False"
+											          SelectedIndex="{Binding Index}">
 												
-												</DataTemplate>
-											</ComboBox.ItemTemplate>
-										</ComboBox>
-									</StackPanel>
+												<ComboBox.ItemTemplate>
+													<DataTemplate>
+														<StackPanel Orientation="Horizontal">
+															<Image VerticalAlignment="Center" Height="15" Margin="3,0,5,0"
+															       Source="{Binding Item1}"></Image>
+															
+															<TextBlock  VerticalAlignment="Center" Text="{Binding Item2}"></TextBlock>
+														
+														</StackPanel>
+													
+													</DataTemplate>
+												</ComboBox.ItemTemplate>
+											</ComboBox>
+										</StackPanel>
 									</DataTemplate>
 								</GridViewColumn.CellTemplate>
-							</GridViewColumn>							
-						</tv:SharpGridView.Columns>					
+							</GridViewColumn>
+						</tv:SharpGridView.Columns>
 					
 					</tv:SharpGridView>
 				</ListView.View>
