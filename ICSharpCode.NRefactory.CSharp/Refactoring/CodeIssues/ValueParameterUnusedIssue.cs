@@ -28,6 +28,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Threading;
+using ICSharpCode.NRefactory.Semantics;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -81,15 +82,18 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 				if (node == null || node.IsNull)
 					return;
-				var variable = context.GetResolverStateBefore(node).LocalVariables
-					.Where(v => v.Name == "value").FirstOrDefault();
-				if (variable == null)
+				var localResolveResult = context.GetResolverStateBefore(node)
+					.LookupSimpleNameOrTypeName("value", new List<IType>(), NameLookupMode.Expression) as LocalResolveResult; 
+				if (localResolveResult == null)
 					return;
 
+				var variable = localResolveResult.Variable;
 				bool referenceFound = false;
 				var findRef = new FindReferences();
 				findRef.FindLocalReferences(variable, context.ParsedFile, compilationUnit, context.Compilation, (n, entity) => {
-					referenceFound = true;
+					if (n.StartLocation >= node.StartLocation && n.EndLocation <= node.EndLocation) {
+						referenceFound = true;
+					}
 				}, CancellationToken.None);
 
 				if(!referenceFound)
