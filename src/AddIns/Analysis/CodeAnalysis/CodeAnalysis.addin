@@ -20,10 +20,12 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
-		<OptionPanel id          = "CodeAnalysis"
+		
+		<!--<OptionPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
-		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>
-	<OptionPanel id          = "CodeAnalysis"
+		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanel"/>-->
+		
+		<OptionPanel id          = "CodeAnalysis"
 		             label       = "${res:ICSharpCode.CodeAnalysis}"
 		             class       = "ICSharpCode.CodeAnalysis.AnalysisProjectOptionsPanelXaml"/>
 	</Path>

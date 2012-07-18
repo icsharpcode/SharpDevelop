@@ -61,12 +61,12 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>AnalysisProjectOptions.cs</DependentUpon>
+    <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
+      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\AnalysisProjectOptions.resx">
-      <DependentUpon>AnalysisProjectOptions.cs</DependentUpon>
+    <Compile Include="Src\old_AnalysisProjectOptions.cs" />
+    <EmbeddedResource Include="Src\old_AnalysisProjectOptions.resx">
+      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\AnalysisProjectOptionsPanelXaml.xaml.cs">
       <DependentUpon>AnalysisProjectOptionsPanelXaml.xaml</DependentUpon>

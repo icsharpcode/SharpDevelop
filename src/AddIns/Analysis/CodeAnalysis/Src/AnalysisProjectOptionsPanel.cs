@@ -14,7 +14,7 @@ namespace ICSharpCode.CodeAnalysis
 		{
 			InitializeHelper();
 			
-			AnalysisProjectOptions po = new AnalysisProjectOptions();
+			old_AnalysisProjectOptions po = new old_AnalysisProjectOptions();
 			po.Dock = DockStyle.Fill;
 			Controls.Add(po);
 			

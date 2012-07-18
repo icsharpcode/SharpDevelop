@@ -3,7 +3,7 @@
 
 namespace ICSharpCode.CodeAnalysis
 {
-	partial class AnalysisProjectOptions : System.Windows.Forms.UserControl
+	partial class old_AnalysisProjectOptions : System.Windows.Forms.UserControl
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.

@@ -14,11 +14,11 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeAnalysis
 {
-	public partial class AnalysisProjectOptions
+	public partial class old_AnalysisProjectOptions
 	{
 		Dictionary<string, RuleTreeNode> rules = new Dictionary<string, RuleTreeNode>();
 		
-		public AnalysisProjectOptions()
+		public old_AnalysisProjectOptions()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
@@ -286,9 +286,9 @@ namespace ICSharpCode.CodeAnalysis
 		
 		class ConfigBinding : ConfigurationGuiBinding
 		{
-			readonly AnalysisProjectOptions po;
+			readonly old_AnalysisProjectOptions po;
 			
-			public ConfigBinding(AnalysisProjectOptions po)
+			public ConfigBinding(old_AnalysisProjectOptions po)
 			{
 				this.po = po;
 				this.TreatPropertyValueAsLiteral = false;
