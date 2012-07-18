@@ -105,9 +105,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				foreach (var node in nodes) {
 					InsertBefore(entity, node);
 				}
-				var t = new Task (() => {});
-				t.RunSynchronously ();
-				return t;
+				var tcs = new TaskCompletionSource<object> ();
+				tcs.SetResult (null);
+				return tcs.Task;
 			}
 
 			public override Task InsertWithCursor (string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
@@ -121,9 +121,9 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 					InsertText (startOffset, output.Text);
 					output.RegisterTrackedSegments (this, startOffset);
 				}
-				var t = new Task (() => {});
-				t.RunSynchronously ();
-				return t;
+				var tcs = new TaskCompletionSource<object> ();
+				tcs.SetResult (null);
+				return tcs.Task;
 			}
 
 			void Rename (AstNode node, string newName)

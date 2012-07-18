@@ -5241,7 +5241,7 @@ public class TestFoo
 		public void TestBug4961()
 		{
 			CombinedProviderTest(
-@"using System;
+				@"using System;
 using System.Collections.Generic;
 
 namespace EnumerationProblem
@@ -5323,7 +5323,47 @@ $mc->$
 			});
 		}
 		
+		/// <summary>
+		/// Bug 6146 - No intellisense on value keyword in property set method
+		/// </summary>
+		[Test()]
+		public void TestBug6146()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public FooBar Foo {
+		set {
+			$value.$
+		}
+	}
+}
 
+", provider => {
+				Assert.IsNotNull(provider.Find("Foo"));
+			});
+		}
+
+
+		[Test()]
+		public void TestBug6146Case2()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public FooBar Foo {
+		set {
+			$value.Foo.F$
+		}
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Foo"));
+			});
+		}
 
 
 	}
