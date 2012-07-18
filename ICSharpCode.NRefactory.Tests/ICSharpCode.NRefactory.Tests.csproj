@@ -100,6 +100,7 @@
     <Compile Include="CSharp\CodeActions\UseStringFormatTests.cs" />
     <Compile Include="CSharp\CodeIssues\AccessToDisposedClosureTests.cs" />
     <Compile Include="CSharp\CodeIssues\AccessToModifiedClosureTests.cs" />
+    <Compile Include="CSharp\CodeIssues\AssignmentMadeToSameVariableIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\BitwiseOperationOnNonFlagsEnumIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CompareFloatWithEqualityOperatorIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
