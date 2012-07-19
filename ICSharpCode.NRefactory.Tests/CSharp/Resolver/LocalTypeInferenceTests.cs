@@ -210,5 +210,35 @@ static class ExtMethods {
 			var rr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("System.Int32", rr.Type.ReflectionName);
 		}
+
+		[Test]
+		public void InfertypeFromOverwrittenMethodArguments()
+		{
+			string program = @"using System.Collections.Generic;
+		using System.Linq;
+		
+		public class A
+		{
+		}
+		
+		public class B : A
+		{
+		}
+		
+		class Program
+		{
+			static void Main(string[] args)
+			{
+				IEnumerable<B> list = new List<B>();
+				var arr = list.ToArray<A>();
+				$arr$.ToString();
+			}
+		}
+";
+			var lrr = Resolve<LocalResolveResult>(program);
+			Assert.AreEqual("A[]", lrr.Type.FullName);
+		}
+
+
 	}
 }
