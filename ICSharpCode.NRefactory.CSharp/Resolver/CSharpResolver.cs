@@ -1618,7 +1618,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					throw new NotSupportedException("Invalid value for NameLookupMode");
 			}
 			if (result is UnknownMemberResolveResult) {
-				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments, true);
+				// We intentionally use all extension methods here, not just the eligible ones.
+				// Proper eligibility checking is only possible for the full invocation
+				// (after we know the remaining arguments).
+				// The eligibility check in GetExtensionMethods is only intended for code completion.
+				var extensionMethods = GetExtensionMethods(identifier, typeArguments);
 				if (extensionMethods.Count > 0) {
 					return new MethodGroupResolveResult(target, identifier, EmptyList<MethodListWithDeclaringType>.Instance, typeArguments) {
 						extensionMethods = extensionMethods
@@ -1755,7 +1759,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (method.TypeParameters.Count != typeArguments.Count)
 							continue;
 						SpecializedMethod sm = new SpecializedMethod(method, new TypeParameterSubstitution(null, typeArguments));
-						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, true, out inferredTypes))
+						if (IsEligibleExtensionMethod(compilation, conversions, targetType, sm, false, out inferredTypes))
 							outputGroup.Add(sm);
 					} else {
 						if (IsEligibleExtensionMethod(compilation, conversions, targetType, method, true, out inferredTypes)) {

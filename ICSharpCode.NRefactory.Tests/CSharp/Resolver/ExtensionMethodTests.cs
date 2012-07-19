@@ -17,8 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -117,6 +119,84 @@ public static class XC {
 			Assert.IsTrue(isEligible);
 			Assert.AreEqual(1, inferredTypes.Length);
 			Assert.AreEqual("System.String", inferredTypes[0].ReflectionName);
+		}
+		
+		
+		[Test]
+		public void InferTypeFromOverwrittenMethodArguments()
+		{
+			string program = @"using System.Collections.Generic;
+		using System.Linq;
+		
+		public class A { }
+		
+		public class B : A { }
+		
+		class Program
+		{
+			static void Main(string[] args)
+			{
+				IEnumerable<B> list = new List<B>();
+				var arr = $list.ToArray<A>()$;
+			}
+		}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("A[]", rr.Type.ReflectionName);
+			Assert.AreEqual("System.Linq.Enumerable.ToArray", rr.Member.FullName);
+			Assert.AreEqual("A", ((SpecializedMethod)rr.Member).TypeArguments.Single().ReflectionName);
+		}
+		
+		[Test]
+		public void TypeInferenceBasedOnTargetTypeAndArgumentType()
+		{
+			string program = @"using System.Collections.Generic;
+		using System.Linq;
+		
+		public class A { }
+		public class B : A { }
+		
+		static class Program
+		{
+			static void Main(A a, B b)
+			{
+				var x = $b.Choose(a)$;
+			}
+			
+			public static T Choose<T>(this T a, T b) { }
+		}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.AreEqual("A", rr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void PartiallySpecializedMethod()
+		{
+			string program = @"using System.Collections.Generic;
+		using System.Linq;
+		
+		public class A { }
+		public class B : A { }
+		
+		static class Program
+		{
+			static void Main(A a, B b)
+			{
+				var x = $b.Choose$(a);
+			}
+			
+			public static T Choose<T>(this T a, T b) { }
+		}
+";
+			var rr = Resolve<MethodGroupResolveResult>(program);
+			Assert.IsFalse(rr.Methods.Any());
+			// We deliberately do not specialize the method unless partial specialization is requested explicitly.
+			// This is because the actual type (when considering the whole invocation, not just the method group)
+			// is actually A.
+			Assert.AreEqual("``0", rr.GetExtensionMethods().Single().Single().ReturnType.ReflectionName);
+			Assert.AreEqual("``0", rr.GetEligibleExtensionMethods(false).Single().Single().ReturnType.ReflectionName);
+			Assert.AreEqual("B", rr.GetEligibleExtensionMethods(true).Single().Single().ReturnType.ReflectionName);
 		}
 	}
 }
