@@ -248,6 +248,46 @@ class A
 			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
 		}
+		
+		[Test]
+		public void DoesNotSuggestMovingIntoTryCatch()
+		{
+			var input = @"
+class A
+{
+	void F()
+	{
+		int val = 2;
+		try {
+			System.Console.WriteLine(val);
+		} catch {
+			throw;
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void DoesNotSuggestMovingIntoBodyOfUsing()
+		{	
+			var input = @"
+using System.IO;
+class A
+{
+	void F()
+	{
+		using (FileStream fs = new FileStream("""", FileMode.Open, FileAccess.Read, FileShare.Read)) {
+			fs.Read(null, 0, 0);
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new VariableDeclaredInWideScopeIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 	}
 }
 

@@ -51,16 +51,21 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				this.context = context;
 			}
 
-			static IList<Type> loopStatements = new List<Type>() {
+			static IList<Type> blockingStatements = new List<Type>() {
 				typeof(WhileStatement),
 				typeof(ForeachStatement),
 				typeof(ForStatement),
-				typeof(DoWhileStatement)
+				typeof(DoWhileStatement),
+				typeof(TryCatchStatement)
 			};
 		
 			public override void VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement)
 			{
 				base.VisitVariableDeclarationStatement(variableDeclarationStatement);
+
+				if (!(variableDeclarationStatement.Parent is BlockStatement))
+					// We are somewhere weird, like a the ResourceAquisition of a using statement
+					return;
 
 				if (variableDeclarationStatement.Variables.Count > 1)
 					return;
@@ -81,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var path = GetPath(rootNode, lowestCommonAncestor);
 
 				var firstLoopStatement = (from node in path
-				                          where loopStatements.Contains(node.GetType())
+				                          where blockingStatements.Contains(node.GetType())
 				                          select node).FirstOrDefault();
 				IList<AstNode> possibleDestinationsPath;
 				if (firstLoopStatement == null) {
