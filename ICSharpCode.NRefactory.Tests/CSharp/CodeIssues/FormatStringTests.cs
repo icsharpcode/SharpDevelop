@@ -48,6 +48,27 @@ class TestClass
 			var issues = GetIssues (new FormatStringIssue (), input, out context);
 			Assert.AreEqual (1, issues.Count);
 		}
+		
+		[Test]
+		public void SupportsFixedArguments()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo()
+	{
+		Bar(""{0}"", 1);
+	}
+
+	void Bar(string format, string arg0)
+	{
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new FormatStringIssue (), input, out context);
+			Assert.AreEqual (0, issues.Count);
+		}
 
 		[Test]
 		public void FormatItemIndexOutOfRangeOfArguments()

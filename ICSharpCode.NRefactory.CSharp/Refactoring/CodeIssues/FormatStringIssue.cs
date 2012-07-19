@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					if (parameter.Type.Equals(stringType) && parameterNames.Contains(parameter.Name) && argument is PrimitiveExpression) {
 						format = (string)((PrimitiveExpression)argument).Value;
 						formatStart = argument.StartLocation;
-					} else if (parameter.IsParams || parameter.Type.Equals(objectType)) {
+					} else if (format != null || parameter.IsParams) {
 						arguments.Add(argument);
 					}
 				}
