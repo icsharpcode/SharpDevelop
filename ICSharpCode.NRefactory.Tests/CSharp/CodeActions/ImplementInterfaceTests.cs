@@ -236,14 +236,14 @@ public interface ITest : IA, IEnumerable
 
 class Foo : ITest
 {
-	#region IA implementation
-	public bool GetEnumerator ()
+	#region IEnumerable implementation
+	public IEnumerator GetEnumerator ()
 	{
 		throw new NotImplementedException ();
 	}
 	#endregion
-	#region IEnumerable implementation
-	IEnumerator IEnumerable.GetEnumerator ()
+	#region IA implementation
+	bool IA.GetEnumerator ()
 	{
 		throw new NotImplementedException ();
 	}
