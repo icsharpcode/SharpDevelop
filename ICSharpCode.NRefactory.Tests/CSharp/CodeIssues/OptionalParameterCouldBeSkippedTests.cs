@@ -69,6 +69,41 @@ class TestClass
 		}
 
 		[Test]
+		public void ChecksConstructors()
+		{
+			var input = @"
+class TestClass
+{
+	public TestClass(string a1 = ""a1"")
+	{
+	}
+
+	void Bar()
+	{
+		var foo = new TestClass (""a1"");
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			var issue = issues [0];
+			Assert.AreEqual(1, issue.Actions.Count);
+			
+			CheckFix(context, issues [0], @"
+class TestClass
+{
+	public TestClass(string a1 = ""a1"")
+	{
+	}
+
+	void Bar()
+	{
+		var foo = new TestClass ();
+	}
+}");
+		}
+
+		[Test]
 		public void IgnoresAllParametersPreceedingANeededOne()
 		{
 			var input = @"
