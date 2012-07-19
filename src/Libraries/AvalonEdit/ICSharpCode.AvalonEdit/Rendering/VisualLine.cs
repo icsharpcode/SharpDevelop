@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Utils;
@@ -186,6 +187,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			foreach (IVisualLineTransformer transformer in transformers) {
 				transformer.Transform(context, elements);
+			}
+			// For some strange reason, WPF requires that either all or none of the typography properties are set.
+			if (elements.Any(e => e.TextRunProperties.TypographyProperties != null)) {
+				// Fix typographic properties
+				foreach (VisualLineElement element in elements) {
+					if (element.TextRunProperties.TypographyProperties == null) {
+						element.TextRunProperties.SetTypographyProperties(new DefaultTextRunTypographyProperties());
+					}
+				}
 			}
 		}
 		
