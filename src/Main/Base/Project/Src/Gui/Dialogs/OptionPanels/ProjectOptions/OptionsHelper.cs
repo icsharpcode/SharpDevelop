@@ -4,7 +4,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
+
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	/// <summary>
@@ -13,7 +15,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public class OptionsHelper
 	{
 		
-		public static string BrowseForFolder(string description,string baseDirectory,string startLocation,string relativeLocation)
+		public static string BrowseForFolder(string description,string baseDirectory,
+		                                     string startLocation,string relativeLocation,
+		                                    TextBoxEditMode textBoxEditMode)
 		{
 			string startAt = startLocation;
 			if (!String.IsNullOrEmpty(relativeLocation)) {
@@ -30,12 +34,44 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					}
 					if (!path.EndsWith("\\") && !path.EndsWith("/"))
 						path += "\\";
-					return path;
+					if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+						return path;
+					} else {
+						return MSBuildInternals.Escape(path);
+					}
 				}
 				
 			}
 			return startLocation;
 		}
+		/*
+		public void Event(object sender, EventArgs e)
+			{
+				string startLocation = panel.baseDirectory;
+				if (startLocation != null) {
+					string text = panel.ControlDictionary[target].Text;
+					if (textBoxEditMode == TextBoxEditMode.EditRawProperty)
+						text = MSBuildInternals.Unescape(text);
+					startLocation = FileUtility.GetAbsolutePath(startLocation, text);
+				}
+				
+				using (FolderBrowserDialog fdiag = FileService.CreateFolderBrowserDialog(description, startLocation)) {
+					if (fdiag.ShowDialog() == DialogResult.OK) {
+						string path = fdiag.SelectedPath;
+						if (panel.baseDirectory != null) {
+							path = FileUtility.GetRelativePath(panel.baseDirectory, path);
+						}
+						if (!path.EndsWith("\\") && !path.EndsWith("/"))
+							path += "\\";
+						if (textBoxEditMode == TextBoxEditMode.EditEvaluatedProperty) {
+							panel.ControlDictionary[target].Text = path;
+						} else {
+							panel.ControlDictionary[target].Text = MSBuildInternals.Escape(path);
+						}
+					}
+				}
+			}
+		*/
 		
 		
 		public static string OpenFile (string filter)
