@@ -198,5 +198,42 @@ public static class XC {
 			Assert.AreEqual("``0", rr.GetEligibleExtensionMethods(false).Single().Single().ReturnType.ReflectionName);
 			Assert.AreEqual("B", rr.GetEligibleExtensionMethods(true).Single().Single().ReturnType.ReflectionName);
 		}
+		
+		[Test]
+		public void CreateDelegateFromExtensionMethod()
+		{
+			string program = @"using System;
+	static class Program
+	{
+		static void Main() {
+			Func<string> f = $"""".id$;
+		}
+		static string id(this string x) { return x; }
+	}
+";
+			Conversion c = GetConversion(program);
+			Assert.IsTrue(c.IsValid);
+			Assert.IsTrue(c.IsMethodGroupConversion);
+			Assert.AreEqual("Program.id", c.Method.FullName);
+		}
+		
+		[Test]
+		public void InferDelegateTypeFromExtensionMethod()
+		{
+			string program = @"using System;
+	static class Program
+	{
+		static void Main() {
+			$call("""".id)$;
+		}
+		
+		static string id(this string x) { return x; }
+		static T call<T>(Func<T> f) { }
+	}
+";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.AreEqual("System.String", rr.Type.FullName);
+		}
 	}
 }
