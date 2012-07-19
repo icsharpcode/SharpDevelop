@@ -175,22 +175,7 @@ namespace ICSharpCode.NRefactory.Utils
 			if (i < length && format [i] == ':') {
 				++i;
 				int begin = i;
-				GetText(format, ref i);
-				/*while (i < length) {
-					char c = format [i];
-					if (c != '}') {
-						++i;
-						continue;
-					}
-					if (i + 1 < length && format [i + 1] == '}') {
-						// Step past escape sequence
-						i += 2;
-						continue;
-					} else {
-						// This is the end of the FormatItem
-						break;
-					}
-				}*/
+				GetText(format, ref i, "", true);
 				var escaped = format.Substring (begin, i - begin);
 				return UnEscape (escaped);
 			}
@@ -199,7 +184,7 @@ namespace ICSharpCode.NRefactory.Utils
 
 		void CheckForMissingEndBrace (string format, int i, int length)
 		{
-			if (i == length) {// && format [length - 1] != '}') {
+			if (i == length) {
 				int j;
 				for (j = i - 1; format[j] == '}'; j--);
 				var oddEndBraceCount = (i - j) % 2 == 1;
@@ -211,11 +196,11 @@ namespace ICSharpCode.NRefactory.Utils
 			return;
 		}
 		
-		void GetText (string format, ref int index, string delimiters = "")
+		void GetText (string format, ref int index, string delimiters = "", bool allowEscape = false)
 		{
-			while (index < format.Length) {// && !delimiters.Contains(format[index].ToString())) {
+			while (index < format.Length) {
 				if (format [index] == '{' || format[index] == '}') {
-					if (index + 1 < format.Length && format [index + 1] == format[index])
+					if (index + 1 < format.Length && format [index + 1] == format[index] && allowEscape)
 						++index;
 					else
 						break;

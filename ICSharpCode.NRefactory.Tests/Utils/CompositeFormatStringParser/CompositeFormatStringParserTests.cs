@@ -119,6 +119,22 @@ namespace ICSharpCode.NRefactory.Utils
 		{
 			ParseTest("{{}}", new TextSegment("{}"));
 		}
+		
+		[Test]
+		public void CloseAndEscapeAfterIndex()
+		{
+			ParseTest("{0}}}",
+			          new FormatItem(0) { StartLocation = 0, EndLocation = 3},
+			new TextSegment("}") { StartLocation = 3, EndLocation = 5});
+		}
+		
+		[Test]
+		public void CloseAndEscapeAfterAlignment()
+		{
+			ParseTest("{0,-15}}}",
+			          new FormatItem(0, -15) { StartLocation = 0, EndLocation = 7},
+			new TextSegment("}") { StartLocation = 7, EndLocation = 9});
+		}
 
 		[Test]
 		public void TextSegment()
