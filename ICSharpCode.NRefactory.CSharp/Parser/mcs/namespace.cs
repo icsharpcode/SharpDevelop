@@ -591,6 +591,12 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public IEnumerable<string> Conditionals {
+			get {
+				return conditionals.Where (kv => kv.Value).Select (kv => kv.Key);
+			}
+		}
+
 		public string FileName {
 			get {
 				return file.Name;

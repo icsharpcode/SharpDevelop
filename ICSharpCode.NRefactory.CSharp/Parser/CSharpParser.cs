@@ -3669,7 +3669,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (top.LastYYValue is Mono.CSharp.Expression) {
 				conversionVisitor.Unit.TopExpression = ((Mono.CSharp.Expression)top.LastYYValue).Accept(conversionVisitor) as AstNode;
 			}
+
 			conversionVisitor.Unit.FileName = fileName;
+			conversionVisitor.Unit.Conditionals = top.Conditionals.ToArray ();
 			return conversionVisitor.Unit;
 		}
 		
@@ -3710,11 +3712,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var parser = Driver.Parse (reader, file, module, lineModifier);
-				
+
 				var top = new CompilerCompilationUnit () {
 					ModuleCompiled = module,
 					LocationsBag = parser.LocationsBag,
-					SpecialsBag = parser.Lexer.sbag
+					SpecialsBag = parser.Lexer.sbag,
+					Conditionals = parser.Lexer.SourceFile.Conditionals
 				};
 				var unit = Parse (top, fileName, lineModifier);
 				unit.Errors.AddRange (errorReportPrinter.Errors);
