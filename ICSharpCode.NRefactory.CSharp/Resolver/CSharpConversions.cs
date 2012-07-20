@@ -112,6 +112,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			c = ImplicitConversion(resolveResult.Type, toType);
 			if (c.IsValid) return c;
+			if (resolveResult.Type.Kind == TypeKind.Dynamic)
+				return Conversion.ImplicitDynamicConversion;
 			c = AnonymousFunctionConversion(resolveResult, toType);
 			if (c.IsValid) return c;
 			c = MethodGroupConversion(resolveResult, toType);
@@ -159,8 +161,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return Conversion.ImplicitReferenceConversion;
 			if (IsBoxingConversion(fromType, toType))
 				return Conversion.BoxingConversion;
-			if (fromType.Kind == TypeKind.Dynamic)
-				return Conversion.ImplicitDynamicConversion;
 			if (ImplicitTypeParameterConversion(fromType, toType)) {
 				// Implicit type parameter conversions that aren't also
 				// reference conversions are considered to be boxing conversions

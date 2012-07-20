@@ -161,8 +161,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		/// <param name="substituteInferredTypes">
 		/// Specifies whether to produce a <see cref="SpecializedMethod"/>
-		/// when type arguments could be inferred from <paramref name="targetType"/>. This parameter
-		/// is only used for inferred types and has no effect if the type parameters are
+		/// when type arguments could be inferred from <see cref="TargetType"/>.
+		/// This setting is only used for inferred types and has no effect if the type parameters are
 		/// specified explicitly.
 		/// </param>
 		/// <remarks>
