@@ -593,6 +593,8 @@ namespace Mono.CSharp {
 
 		public IEnumerable<string> Conditionals {
 			get {
+				if (conditionals == null)
+					return Enumerable.Empty<string> ();
 				return conditionals.Where (kv => kv.Value).Select (kv => kv.Key);
 			}
 		}
