@@ -767,7 +767,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								}
 							}
 							idx++;
-							foreach (var list in mgr.GetExtensionMethods ()) {
+							foreach (var list in mgr.GetEligibleExtensionMethods (true)) {
 								foreach (var method in list) {
 									if (idx < method.Parameters.Count && method.Parameters [idx].Type.Kind == TypeKind.Delegate) {
 										AutoSelect = false;
