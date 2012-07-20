@@ -76,8 +76,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return location;
 			}
 			set {
-				if (value == null)
-					throw new ArgumentNullException("value");
 				FreezableHelper.ThrowIfFrozen(this);
 				location = value;
 			}

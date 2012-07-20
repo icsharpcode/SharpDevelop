@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <returns>IProjectContent that represents the assembly</returns>
 		[CLSCompliant(false)]
-		public IUnresolvedAssembly LoadAssembly(AssemblyDefinition assemblyDefinition, string location = null)
+		public IUnresolvedAssembly LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
 			if (assemblyDefinition == null)
 				throw new ArgumentNullException("assemblyDefinition");
@@ -139,6 +139,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			this.currentAssembly = new CecilUnresolvedAssembly(assemblyDefinition.Name.Name, this.DocumentationProvider);
+			currentAssembly.Location = assemblyDefinition.MainModule.FullyQualifiedName;
 			currentAssembly.AssemblyAttributes.AddRange(assemblyAttributes);
 			currentAssembly.ModuleAttributes.AddRange(assemblyAttributes);
 			
@@ -186,7 +187,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			RegisterCecilObject(this.currentAssembly, assemblyDefinition);
 			
 			var result = this.currentAssembly;
-			result.Location = location;
 			this.currentAssembly = null;
 			this.currentModule = null;
 			return result;
