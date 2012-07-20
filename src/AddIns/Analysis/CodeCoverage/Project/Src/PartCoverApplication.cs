@@ -37,7 +37,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		void GetPartCoverApplicationFileName()
 		{
-			fileName = Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\PartCover\PartCover.exe");
+			fileName = Path.Combine(FileUtility.ApplicationRootPath, @"bin\Tools\OpenCover\OpenCover.Console.exe");
 			fileName = Path.GetFullPath(fileName);
 		}
 		
@@ -95,31 +95,37 @@ namespace ICSharpCode.CodeCoverage
 			AppendTargetWorkingDirectory();
 			AppendTargetArguments();
 			AppendCodeCoverageResultsFileName();
-			AppendIncludedItems();
-			AppendExcludedItems();
-			
+			AppendFilter();
 			return arguments.ToString().Trim();
 		}
 		
 		void AppendTarget()
 		{
-			arguments.AppendFormat("--target \"{0}\" ", Target);
+			arguments.AppendFormat("-register:user -target:\"{0}\" ", Target);
 		}
 		
 		void AppendTargetWorkingDirectory()
 		{
-			arguments.AppendFormat("--target-work-dir \"{0}\" ", GetTargetWorkingDirectory());
+			arguments.AppendFormat("-targetdir:\"{0}\" ", GetTargetWorkingDirectory());
 		}
 		
 		void AppendTargetArguments()
 		{
 			string targetArguments = GetTargetArguments();
-			arguments.AppendFormat("--target-args \"{0}\" ", targetArguments.Replace("\"", "\\\""));
+			arguments.AppendFormat("-targetargs:\"{0}\" ", targetArguments.Replace("\"", "\\\""));
 		}
 		
 		void AppendCodeCoverageResultsFileName()
 		{
-			arguments.AppendFormat("--output \"{0}\" ", CodeCoverageResultsFileName);
+			arguments.AppendFormat("-output:\"{0}\" ", CodeCoverageResultsFileName);
+		}
+
+		void AppendFilter()
+		{
+			arguments.Append("-filter:\"");
+			AppendIncludedItems();
+			AppendExcludedItems();
+			arguments.Append("\"");
 		}
 		
 		void AppendIncludedItems()
@@ -128,13 +134,13 @@ namespace ICSharpCode.CodeCoverage
 			if (includedItems.Count == 0) {
 				includedItems.Add("[*]*");
 			}
-			AppendItems("--include", includedItems);
+			AppendItems("+", includedItems);
 		}
 		
 		void AppendExcludedItems()
 		{
 			AppendEmptySpace();
-			AppendItems("--exclude", settings.Exclude);
+			AppendItems("-", settings.Exclude);
 		}
 		
 		void AppendEmptySpace()
@@ -152,7 +158,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			StringBuilder itemArgs = new StringBuilder();
 			foreach (string item in items) {
-				itemArgs.AppendFormat("{0} {1} ", optionName, item);
+				itemArgs.AppendFormat("{0}{1} ", optionName, item);
 			}
 			return itemArgs.ToString().Trim();
 		}
