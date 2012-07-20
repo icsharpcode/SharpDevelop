@@ -47,13 +47,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			readonly BaseRefactoringContext context;
 			readonly IType stringType;
-			readonly IType objectType;
 			
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
 				this.context = context;
 				stringType = context.Compilation.FindType(KnownTypeCode.String);
-				objectType = context.Compilation.FindType(KnownTypeCode.Object);
 			}
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
