@@ -3733,8 +3733,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (cu == null)
 				return Enumerable.Empty<EntityDeclaration> ();
 			var td = cu.Children.FirstOrDefault () as TypeDeclaration;
-			if (td != null)
-				return td.Members;
+			if (td != null) {
+				var members = td.Members.ToArray();
+				// detach members from parent
+				foreach (var m in members)
+					m.Remove();
+				return members;
+			}
 			return Enumerable.Empty<EntityDeclaration> ();
 		}
 		
@@ -3743,8 +3748,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			string code = "void M() { " + Environment.NewLine + reader.ReadToEnd () + "}";
 			var members = ParseTypeMembers (new StringReader (code), lineModifier - 1);
 			var method = members.FirstOrDefault () as MethodDeclaration;
-			if (method != null && method.Body != null)
-				return method.Body.Statements;
+			if (method != null && method.Body != null) {
+				var statements = method.Body.Statements.ToArray();
+				// detach statements from parent
+				foreach (var st in statements)
+					st.Remove();
+				return statements;
+			}
 			return Enumerable.Empty<Statement> ();
 		}
 		
@@ -3753,8 +3763,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			string code = reader.ReadToEnd () + " a;";
 			var members = ParseTypeMembers (new StringReader (code));
 			var field = members.FirstOrDefault () as FieldDeclaration;
-			if (field != null)
-				return field.ReturnType;
+			if (field != null) {
+				AstType type = field.ReturnType;
+				type.Remove();
+				return type;
+			}
 			return AstType.Null;
 		}
 		
@@ -3763,8 +3776,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			var es = ParseStatements (new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd () + ";"), -1).FirstOrDefault () as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
-				if (ae != null)
-					return ae.Right;
+				if (ae != null) {
+					Expression expr = ae.Right;
+					expr.Remove();
+					return expr;
+				}
 			}
 			return Expression.Null;
 		}
