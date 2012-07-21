@@ -275,5 +275,46 @@ class Test<T> where T : new() {
 			Assert.AreEqual(TypeKind.TypeParameter, rr.Type.Kind);
 			Assert.AreEqual(TypeKind.TypeParameter, rr.Member.DeclaringType.Kind);
 		}
+		
+		[Test]
+		public void CreateDelegateFromMethodGroup()
+		{
+			string program = @"using System;
+delegate void D(int i);
+class C {
+	void M(int y) {
+		D d = $new D(M)$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Conversion.IsIdentityConversion);
+			var rr2 = (ConversionResolveResult)rr.Input;
+			Assert.IsFalse(rr2.IsError);
+			Assert.IsTrue(rr2.Conversion.IsMethodGroupConversion);
+			
+			Assert.AreEqual("C.M", rr2.Conversion.Method.FullName);
+			var mgrr = (MethodGroupResolveResult)rr2.Input;
+			Assert.IsInstanceOf<ThisResolveResult>(mgrr.TargetResult);
+		}
+		
+		[Test]
+		public void CreateDelegateFromDelegate()
+		{
+			string program = @"using System;
+delegate void D1(int i);
+delegate void D2(int i);
+class C {
+	void M(D1 d1) {
+		D2 d2 = $new D2(d1)$;
+	}
+}";
+			var rr = Resolve<ConversionResolveResult>(program);
+			Assert.IsFalse(rr.IsError);
+			Assert.IsTrue(rr.Conversion.IsMethodGroupConversion);
+			Assert.AreEqual("D1.Invoke", rr.Conversion.Method.FullName);
+			var mgrr = (MethodGroupResolveResult)rr.Input;
+			Assert.IsInstanceOf<LocalResolveResult>(mgrr.TargetResult);
+		}
 	}
 }

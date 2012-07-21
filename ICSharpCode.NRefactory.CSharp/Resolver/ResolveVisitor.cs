@@ -1479,12 +1479,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames, false, initializerStatements);
 				if (arguments.Length == 1 && rr.Type.Kind == TypeKind.Delegate) {
-					// process conversion in case it's a delegate creation
-					ProcessConversionResult(objectCreateExpression.Arguments.Single(), rr as ConversionResolveResult);
-					// wrap the result so that the delegate creation is not handled as a reference
-					// to the target method - otherwise FindReferencedEntities would produce two results for
-					// the same delegate creation.
-					return WrapResult(rr);
+					// Apply conversion to argument if it directly wraps the argument
+					// (but not when creating a delegate from a delegate, as then there would be a MGRR for .Invoke in between)
+					// This is necessary for lambda type inference.
+					var crr = rr as ConversionResolveResult;
+					if (crr != null && crr.Input == arguments[0]) {
+						ProcessConversionResult(objectCreateExpression.Arguments.Single(), crr);
+						
+						// wrap the result so that the delegate creation is not handled as a reference
+						// to the target method - otherwise FindReferencedEntities would produce two results for
+						// the same delegate creation.
+						return WrapResult(rr);
+					} else {
+						return rr;
+					}
 				} else {
 					// process conversions in all other cases
 					ProcessConversionsInInvocation(null, objectCreateExpression.Arguments, rr as CSharpInvocationResolveResult);
