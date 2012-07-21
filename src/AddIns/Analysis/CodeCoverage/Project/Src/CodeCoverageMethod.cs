@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.CodeCoverage
@@ -39,34 +40,34 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public CodeCoverageMethod(string className, XmlReader reader)
+		public CodeCoverageMethod(string className, XElement reader)
 			: this(GetMethodName(reader), className, GetMethodAttributes(reader))
 		{
 			ReadMethodBodySize(reader);
 		}
 		
-		static string GetMethodName(XmlReader reader)
+		static string GetMethodName(XElement reader)
 		{
-			return reader.GetAttribute("name");
+			return reader.Element("Name").Value;
 		}
 		
-		static MethodAttributes GetMethodAttributes(XmlReader reader)
+		static MethodAttributes GetMethodAttributes(XElement reader)
 		{
-			string flags = reader.GetAttribute("flags");
-			if (flags != null) {
-				try {
-					return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
-				} catch (ArgumentException) { }
-			}
+			//string flags = reader.GetAttribute("flags");
+			//if (flags != null) {
+			//    try {
+			//        return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
+			//    } catch (ArgumentException) { }
+			//}
 			return MethodAttributes.Public;
 		}
 		
-		void ReadMethodBodySize(XmlReader reader)
+		void ReadMethodBodySize(XElement reader)
 		{
-			string bodySizeAsString = reader.GetAttribute("bodysize");
-			if (bodySizeAsString != null) {
-				methodBodySize = Int32.Parse(bodySizeAsString);
-			}
+			//string bodySizeAsString = reader.GetAttribute("bodysize");
+			//if (bodySizeAsString != null) {
+			//    methodBodySize = Int32.Parse(bodySizeAsString);
+			//}
 		}
 		
 		/// <summary>

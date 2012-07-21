@@ -3,6 +3,7 @@
 
 using System;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -28,25 +29,25 @@ namespace ICSharpCode.CodeCoverage
 			this.Length = length;
 		}
 		
-		public CodeCoverageSequencePoint(string document, XmlReader reader)
+		public CodeCoverageSequencePoint(string document, XElement reader)
 		{
 			this.Document = document;
 			Read(reader);
 		}
 
-		void Read(XmlReader reader)
+		void Read(XElement reader)
 		{
-			VisitCount = GetInteger(reader, "visit");
+			VisitCount = GetInteger(reader, "vc");
 			Line = GetInteger(reader, "sl");
 			Column = GetInteger(reader, "sc");
 			EndLine = GetInteger(reader, "el");
 			EndColumn = GetInteger(reader, "ec");
-			Length = GetInteger(reader, "len");
+			Length = EndColumn - Column; //GetInteger(reader, "len");
 		}
 		
-		int GetInteger(XmlReader reader, string attributeName)
+		int GetInteger(XElement reader, string attributeName)
 		{
-			string attributeValue = reader.GetAttribute(attributeName);
+			string attributeValue = reader.Attribute(attributeName).Value;
 			return GetInteger(attributeValue);
 		}
 		

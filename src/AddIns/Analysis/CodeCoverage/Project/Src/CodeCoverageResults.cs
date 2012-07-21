@@ -3,9 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
 {
@@ -23,13 +27,13 @@ namespace ICSharpCode.CodeCoverage
 		{
 		}
 		
-		public CodeCoverageResults(XmlReader reader)
+		public CodeCoverageResults(XContainer reader)
 		{
 			ReadResults(reader);
 		}
 		
 		public CodeCoverageResults(TextReader reader)
-			: this(new XmlTextReader(reader))
+			: this(XDocument.Load(reader))
 		{
 		}
 		
@@ -46,60 +50,59 @@ namespace ICSharpCode.CodeCoverage
 			get { return modules; }
 		}
 		
-		void ReadResults(XmlReader reader)
+		void ReadResults(XContainer reader)
 		{
-			CodeCoverageModule currentModule = null;
-			CodeCoverageMethod currentMethod = null;
-			string currentClassName = String.Empty;
-			
-			while (reader.Read()) {
-				switch (reader.NodeType) {
-					case XmlNodeType.Element:
-						if (reader.Name == "Type") {
-							currentModule = AddModule(reader);
-							currentClassName = reader.GetAttribute("name");
-						} else if ((reader.Name == "Method") && (currentModule != null)) {
-							currentMethod = AddMethod(currentModule, currentClassName, reader);
-						} else if ((reader.Name == "pt") && (currentMethod != null)) {
-							AddSequencePoint(currentMethod, reader);
-						} else if (reader.Name == "File") {
-							AddFileName(reader);
-						} else if (reader.Name == "Assembly") {
-							AddAssembly(reader);
-						}
-						break;
-				}
+			IEnumerable<XElement> modules = reader.Descendants("Module").Where(m => m.Attribute("skippedDueTo") == null);
+			foreach (XElement assembly in modules) {
+				AddAssembly(assembly);
 			}
-			reader.Close();
+			
+			foreach (XElement file in reader.Descendants("File")) {
+				AddFileName(file);
+			}
+
+			Parallel.ForEach(modules, RegisterAssembly);
+		}
+
+		private void RegisterAssembly(XElement assembly)
+		{
+			var classNames =
+				assembly.Elements("Classes").Elements("Class").Where(
+					c =>
+					!c.Element("FullName").Value.Contains("__") && !c.Element("FullName").Value.Contains("<") &&
+					!c.Element("FullName").Value.Contains("/") && c.Attribute("skippedDueTo") == null).Select(
+						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
+			Parallel.ForEach(classNames, className => AddModule(assembly, className));
 		}
 		
 		/// <summary>
 		/// Add module if it does not already exist.
 		/// </summary>
-		CodeCoverageModule AddModule(XmlReader reader)
+		CodeCoverageModule AddModule(XElement reader, string className)
 		{
-			string assemblyName = GetAssemblyName(reader);
-			foreach (CodeCoverageModule existingModule in modules) {
-				if (existingModule.Name == assemblyName) {
-					return existingModule;
-				}
-			}
-			
-			CodeCoverageModule module = new CodeCoverageModule(assemblyName);
+			CodeCoverageModule module = new CodeCoverageModule(className);
 			modules.Add(module);
+
+			var methods = reader
+				.Elements("Classes")
+				.Elements("Class")
+				.Where(c => c.Element("FullName").Value.StartsWith(className, StringComparison.Ordinal))
+				.Elements("Methods")
+				.Elements("Method");
+
+			Parallel.ForEach(methods, method => AddMethod(module, className, method));
 			return module;
 		}
 		
-		string GetAssemblyName(XmlReader reader)
-		{
-			string id = reader.GetAttribute("asmref");
-			return GetAssembly(id);
-		}
-		
-		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XmlReader reader)
+		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)
 		{
 			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
 			module.Methods.Add(method);
+			
+			var seqpntsOfFile = reader
+				.Elements("SequencePoints")
+				.Elements("SequencePoint");
+			Parallel.ForEach(seqpntsOfFile, sp => AddSequencePoint(method, sp, reader));
 			return method;
 		}
 		
@@ -109,20 +112,20 @@ namespace ICSharpCode.CodeCoverage
 		/// for types that are not part of the project but types from
 		/// the .NET framework. 
 		/// </summary>
-		void AddSequencePoint(CodeCoverageMethod method, XmlReader reader)
+		void AddSequencePoint(CodeCoverageMethod method, XElement reader, XElement methodNode)
 		{
-			string fileName = GetFileName(reader);
+			string fileName = GetFileName(methodNode);
 			
 			CodeCoverageSequencePoint sequencePoint = 
 				new CodeCoverageSequencePoint(fileName, reader);
 			method.SequencePoints.Add(sequencePoint);
 		}
 		
-		string GetFileName(XmlReader reader)
+		string GetFileName(XElement reader)
 		{
-			string fileId = reader.GetAttribute("fid");
+			XElement fileId = reader.Element("FileRef");
 			if (fileId != null) {
-				return GetFileName(fileId);
+				return GetFileName(fileId.Attribute("uid").Value);
 			}
 			return String.Empty;
 		}
@@ -156,20 +159,20 @@ namespace ICSharpCode.CodeCoverage
 		/// <summary>
 		/// Saves the filename and its associated id for reference.
 		/// </summary>
-		void AddFileName(XmlReader reader)
+		void AddFileName(XElement reader)
 		{
-			string id = reader.GetAttribute("id");
-			string fileName = reader.GetAttribute("url");
+			string id = reader.Attribute("uid").Value;
+			string fileName = reader.Attribute("fullPath").Value;
 			fileNames.Add(id, fileName);
 		}
 
 		/// <summary>
 		/// Saves the assembly and its associated id for reference.
 		/// </summary>
-		void AddAssembly(XmlReader reader)
+		void AddAssembly(XElement reader)
 		{
-			string id = reader.GetAttribute("id");
-			string name = reader.GetAttribute("name");
+			string id = reader.Attribute("hash").Value;
+			string name = reader.Element("ModuleName").Value;
 			assemblies.Add(id, name);
 		}
 	}

@@ -119,7 +119,7 @@ namespace ICSharpCode.CodeCoverage
 		{
 			arguments.AppendFormat("-output:\"{0}\" ", CodeCoverageResultsFileName);
 		}
-
+		
 		void AppendFilter()
 		{
 			arguments.Append("-filter:\"");
