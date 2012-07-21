@@ -87,9 +87,9 @@
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\ICodeCoverageTestRunnerFactory.cs" />
     <Compile Include="Src\IFileSystem.cs" />
-    <Compile Include="Src\PartCoverApplication.cs" />
-    <Compile Include="Src\PartCoverSettings.cs" />
-    <Compile Include="Src\PartCoverSettingsFactory.cs" />
+    <Compile Include="Src\OpenCoverApplication.cs" />
+    <Compile Include="Src\OpenCoverSettings.cs" />
+    <Compile Include="Src\OpenCoverSettingsFactory.cs" />
     <Compile Include="Src\RunAllTestsWithCodeCoverageCommand.cs" />
     <Compile Include="Src\SequencePointListViewSorter.cs" />
     <Compile Include="Src\ToggleCodeCoverageCommand.cs" />
