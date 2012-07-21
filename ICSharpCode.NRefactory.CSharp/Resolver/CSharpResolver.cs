@@ -1907,13 +1907,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null) {
 				if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
 					// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable method.
-					var or2 = new OverloadResolution(compilation, arguments, argumentNames, mgrr.TypeArguments.ToArray(), conversions);
+					var or2 = CreateOverloadResolution(arguments, argumentNames, mgrr.TypeArguments.ToArray());
 					var applicableMethods = mgrr.MethodsGroupedByDeclaringType.SelectMany(m => m, (x, m) => new { x.DeclaringType, Method = m }).Where(x => OverloadResolution.IsApplicable(or2.AddCandidate(x.Method))).ToList();
 
 					if (applicableMethods.Count > 1) {
 						ResolveResult actualTarget;
 						if (applicableMethods.All(x => x.Method.IsStatic) && !(mgrr.TargetResult is TypeResolveResult))
-							actualTarget = new TypeResolveResult(mgrr.TargetResult.Type);
+							actualTarget = new TypeResolveResult(mgrr.TargetType);
 						else
 							actualTarget = mgrr.TargetResult;
 
@@ -1930,7 +1930,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions);
 				if (or.BestCandidate != null) {
 					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
-						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetResult.Type));
+						return or.CreateResolveResult(new TypeResolveResult(mgrr.TargetType));
 					else
 						return or.CreateResolveResult(mgrr.TargetResult);
 				} else {
@@ -2081,7 +2081,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 
 			if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
 				// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable indexer.
-				var or2 = new OverloadResolution(compilation, arguments, argumentNames, null, conversions);
+				var or2 = CreateOverloadResolution(arguments, argumentNames, null);
 				var applicableIndexers = indexers.SelectMany(x => x).Where(m => OverloadResolution.IsApplicable(or2.AddCandidate(m))).ToList();
 
 				if (applicableIndexers.Count > 1) {

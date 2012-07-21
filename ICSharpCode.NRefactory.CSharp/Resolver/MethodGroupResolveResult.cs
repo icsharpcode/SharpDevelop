@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the type of the reference to the target object.
 		/// </summary>
 		public IType TargetType {
-			get { return targetResult.Type; }
+			get { return targetResult != null ? targetResult.Type : SpecialType.UnknownType; }
 		}
 		
 		/// <summary>
