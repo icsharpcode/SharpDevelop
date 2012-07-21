@@ -3469,6 +3469,73 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			#endregion
+			
+			#region XmlDoc
+			public DocumentationReference ConvertXmlDoc(DocumentationBuilder doc)
+			{
+				DocumentationReference result = new DocumentationReference();
+				if (doc.ParsedName != null) {
+					if (doc.ParsedName.Name == "<this>") {
+						result.EntityType = EntityType.Indexer;
+					} else {
+						result.MemberName = doc.ParsedName.Name;
+					}
+					if (doc.ParsedName.Left != null) {
+						result.DeclaringType = ConvertToType(doc.ParsedName.Left);
+					} else if (doc.ParsedBuiltinType != null) {
+						result.DeclaringType = ConvertToType(doc.ParsedBuiltinType);
+					}
+					if (doc.ParsedName.TypeParameters != null) {
+						for (int i = 0; i < doc.ParsedName.TypeParameters.Count; i++) {
+							result.TypeArguments.Add(ConvertToType(doc.ParsedName.TypeParameters[i]));
+						}
+					}
+				} else if (doc.ParsedBuiltinType != null) {
+					result.EntityType = EntityType.TypeDefinition;
+					result.DeclaringType = ConvertToType(doc.ParsedBuiltinType);
+				}
+				if (doc.ParsedParameters != null) {
+					result.HasParameterList = true;
+					result.Parameters.AddRange(doc.ParsedParameters.Select(ConvertXmlDocParameter));
+				}
+				if (doc.ParsedOperator != null) {
+					result.EntityType = EntityType.Operator;
+					result.OperatorType = (OperatorType)doc.ParsedOperator;
+					if (result.OperatorType == OperatorType.Implicit || result.OperatorType == OperatorType.Explicit) {
+						var returnTypeParam = result.Parameters.LastOrNullObject();
+						returnTypeParam.Remove(); // detach from parameter list
+						var returnType = returnTypeParam.Type;
+						returnType.Remove();
+						result.ConversionOperatorReturnType = returnType;
+					}
+					if (result.Parameters.Count == 0) {
+						// reset HasParameterList if necessary
+						result.HasParameterList = false;
+					}
+				}
+				return result;
+			}
+			
+			ParameterDeclaration ConvertXmlDocParameter(DocumentationParameter p)
+			{
+				ParameterDeclaration result = new ParameterDeclaration();
+				switch (p.Modifier) {
+					case Parameter.Modifier.OUT:
+						result.ParameterModifier = ParameterModifier.Out;
+						break;
+					case Parameter.Modifier.REF:
+						result.ParameterModifier = ParameterModifier.Ref;
+						break;
+					case Parameter.Modifier.PARAMS:
+						result.ParameterModifier = ParameterModifier.Params;
+						break;
+				}
+				if (p.Type != null) {
+					result.Type = ConvertToType(p.Type);
+				}
+				return result;
+			}
+			#endregion
 		}
 		
 		public CSharpParser ()
@@ -3796,12 +3863,39 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public DocumentationReference ParseDocumentationReference (string cref)
 		{
+			// see Mono.CSharp.DocumentationBuilder.HandleXrefCommon
 			if (cref == null)
 				throw new ArgumentNullException ("cref");
+			
+			// Additional symbols for < and > are allowed for easier XML typing
 			cref = cref.Replace ('{', '<').Replace ('}', '>');
-			// TODO: add support for parsing cref attributes
-			// (documentation_parsing production, see DocumentationBuilder.HandleXrefCommon)
-			throw new NotImplementedException ();
+			
+			lock (parseLock) {
+				errorReportPrinter = new ErrorReportPrinter("");
+				var ctx = new CompilerContext(compilerSettings.ToMono(), errorReportPrinter);
+				ctx.Settings.TabSize = 1;
+				var stream = new MemoryStream(Encoding.Unicode.GetBytes(cref));
+				var reader = new SeekableStreamReader(stream, Encoding.Unicode);
+				var file = new SourceFile("", "", 0);
+				Location.Initialize(new List<SourceFile> (new [] { file }));
+				var module = new ModuleContainer(ctx);
+				module.DocumentationBuilder = new DocumentationBuilder();
+				var source_file = new CompilationSourceFile (module);
+				var report = new Report (ctx, errorReportPrinter);
+				var parser = new Mono.CSharp.CSharpParser (reader, source_file, report);
+				parser.Lexer.putback_char = Tokenizer.DocumentationXref;
+				parser.Lexer.parsing_generic_declaration_doc = true;
+				parser.parse ();
+				if (report.Errors > 0) {
+//					Report.Warning (1584, 1, mc.Location, "XML comment on `{0}' has syntactically incorrect cref attribute `{1}'",
+//					                mc.GetSignatureForError (), cref);
+				}
+				
+				ConversionVisitor conversionVisitor = new ConversionVisitor (false, parser.LocationsBag);
+				DocumentationReference docRef = conversionVisitor.ConvertXmlDoc(module.DocumentationBuilder);
+				CompilerCallableEntryPoint.Reset();
+				return docRef;
+			}
 		}
 	}
 }
