@@ -272,6 +272,7 @@
     <Compile Include="Refactoring\CodeIssues\RedundantAssignmentIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantFieldInitializerIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantTypeCastIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\UnreachableCodeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\LocalVariableHidesMemberIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\VariableHidesMemberIssue\ParameterHidesMemberIssue.cs" />
