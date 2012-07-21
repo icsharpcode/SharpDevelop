@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
@@ -42,7 +41,7 @@ namespace ICSharpCode.CodeCoverage
 			Column = GetInteger(reader, "sc");
 			EndLine = GetInteger(reader, "el");
 			EndColumn = GetInteger(reader, "ec");
-			Length = EndColumn - Column; //GetInteger(reader, "len");
+			Length = 10; // TODO: need to find a way to get this. GetInteger(reader, "len");
 		}
 		
 		int GetInteger(XElement reader, string attributeName)

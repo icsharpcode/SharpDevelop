@@ -3,12 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace ICSharpCode.CodeCoverage
@@ -53,15 +49,13 @@ namespace ICSharpCode.CodeCoverage
 		void ReadResults(XContainer reader)
 		{
 			IEnumerable<XElement> modules = reader.Descendants("Module").Where(m => m.Attribute("skippedDueTo") == null);
-			foreach (XElement assembly in modules) {
-				AddAssembly(assembly);
-			}
-			
 			foreach (XElement file in reader.Descendants("File")) {
 				AddFileName(file);
 			}
-
-			Parallel.ForEach(modules, RegisterAssembly);
+			foreach (XElement assembly in modules) {
+				AddAssembly(assembly);
+				RegisterAssembly(assembly);
+			}
 		}
 
 		private void RegisterAssembly(XElement assembly)
@@ -72,7 +66,9 @@ namespace ICSharpCode.CodeCoverage
 					!c.Element("FullName").Value.Contains("__") && !c.Element("FullName").Value.Contains("<") &&
 					!c.Element("FullName").Value.Contains("/") && c.Attribute("skippedDueTo") == null).Select(
 						c => c.Element("FullName").Value).Distinct().OrderBy(name => name);
-			Parallel.ForEach(classNames, className => AddModule(assembly, className));
+			foreach (string className in classNames) {
+				AddModule(assembly, className);
+			}
 		}
 		
 		/// <summary>
@@ -89,8 +85,9 @@ namespace ICSharpCode.CodeCoverage
 				.Where(c => c.Element("FullName").Value.StartsWith(className, StringComparison.Ordinal))
 				.Elements("Methods")
 				.Elements("Method");
-
-			Parallel.ForEach(methods, method => AddMethod(module, className, method));
+			foreach (XElement method in methods) {
+				AddMethod(module, className, method);
+			}
 			return module;
 		}
 		
@@ -98,11 +95,12 @@ namespace ICSharpCode.CodeCoverage
 		{
 			CodeCoverageMethod method = new CodeCoverageMethod(className, reader);
 			module.Methods.Add(method);
-			
-			var seqpntsOfFile = reader
+			var points = reader
 				.Elements("SequencePoints")
 				.Elements("SequencePoint");
-			Parallel.ForEach(seqpntsOfFile, sp => AddSequencePoint(method, sp, reader));
+			foreach (XElement point in points) {
+				AddSequencePoint(method, point, reader);
+			}
 			return method;
 		}
 		
