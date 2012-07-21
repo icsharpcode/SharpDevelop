@@ -12,10 +12,10 @@ using UnitTesting.Tests.Utils;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class PartCoverSettingsFactoryTests
+	public class OpenCoverSettingsFactoryTests
 	{
-		PartCoverSettingsFactory factory;
-		PartCoverSettings partCoverSettings;
+		OpenCoverSettingsFactory factory;
+		OpenCoverSettings partCoverSettings;
 		MockCSharpProject project;
 		MockFileSystem fileSystem;
 		
@@ -23,7 +23,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void Init()
 		{
 			fileSystem = new MockFileSystem();
-			factory = new PartCoverSettingsFactory(fileSystem);
+			factory = new OpenCoverSettingsFactory(fileSystem);
 			project = new MockCSharpProject();
 		}
 		

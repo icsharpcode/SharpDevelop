@@ -12,13 +12,13 @@ using UnitTesting.Tests.Utils;
 namespace ICSharpCode.CodeCoverage.Tests.Testing
 {
 	[TestFixture]
-	public class PartCoverApplicationTests
+	public class OpenCoverApplicationTests
 	{
 		NUnitConsoleApplication nunitConsoleApp;
 		SelectedTests selectedTests;
 		UnitTestingOptions options;
-		PartCoverApplication partCoverApp;
-		PartCoverSettings partCoverSettings;
+		OpenCoverApplication partCoverApp;
+		OpenCoverSettings partCoverSettings;
 		
 		[Test]
 		public void FileNameWhenPartCoverApplicationConstructedWithFileNameParameterMatchesFileNameParameter()
@@ -31,8 +31,8 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		void CreatePartCoverApplication(string fileName)
 		{
 			CreateNUnitConsoleApplication();
-			partCoverSettings = new PartCoverSettings();
-			partCoverApp = new PartCoverApplication(fileName, nunitConsoleApp, partCoverSettings);
+			partCoverSettings = new OpenCoverSettings();
+			partCoverApp = new OpenCoverApplication(fileName, nunitConsoleApp, partCoverSettings);
 		}
 		
 		void CreateNUnitConsoleApplication()
@@ -49,14 +49,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		{
 			FileUtility.ApplicationRootPath = @"d:\sharpdevelop";
 			CreatePartCoverApplicationWithoutFileName();
-			string expectedPath = @"d:\sharpdevelop\bin\Tools\PartCover\PartCover.exe";
+			string expectedPath = @"d:\sharpdevelop\bin\Tools\OpenCover\OpenCover.Console.exe";
 			Assert.AreEqual(expectedPath, partCoverApp.FileName);
 		}
 		
 		void CreatePartCoverApplicationWithoutFileName()
 		{
 			CreateNUnitConsoleApplication();
-			partCoverApp = new PartCoverApplication(nunitConsoleApp, new PartCoverSettings());
+			partCoverApp = new OpenCoverApplication(nunitConsoleApp, new OpenCoverSettings());
 		}
 		
 		[Test]
@@ -64,7 +64,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		{
 			FileUtility.ApplicationRootPath = @"d:\sharpdevelop\..\sharpdevelop";
 			CreatePartCoverApplicationWithoutFileName();
-			string expectedPath = @"d:\sharpdevelop\bin\Tools\PartCover\PartCover.exe";
+			string expectedPath = @"d:\sharpdevelop\bin\Tools\OpenCover\OpenCover.Console.exe";
 			Assert.AreEqual(expectedPath, partCoverApp.FileName);
 		}
 		
@@ -101,7 +101,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		{
 			CreatePartCoverApplication();
 			string expectedOutputDirectory = 
-				@"c:\projects\MyTests\PartCover\coverage.xml";
+				@"c:\projects\MyTests\OpenCover\coverage.xml";
 			
 			Assert.AreEqual(expectedOutputDirectory, partCoverApp.CodeCoverageResultsFileName);
 		}
@@ -131,11 +131,11 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ProcessStartInfo processStartInfo = partCoverApp.GetProcessStartInfo();
 			
 			string expectedCommandLine =
-				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
-				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
-				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
-				"--include [*]*";
+				"-register:user -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
+				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
+				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
+				"-filter:\"+[*]* \"";
 
 			Assert.AreEqual(expectedCommandLine, processStartInfo.Arguments);
 		}
@@ -155,14 +155,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ProcessStartInfo processStartInfo = partCoverApp.GetProcessStartInfo();
 			
 			string expectedCommandLine =
-				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
-				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
-				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
-				"--include [MyTests]* " +
-				"--include [MoreTests]* " +
-				"--exclude [NUnit.Framework]* " +
-				"--exclude [MyProject]*";
+				"-register:user -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
+				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
+				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
+				"-filter:\"+[MyTests]* " +
+				"+[MoreTests]* " +
+				"-[NUnit.Framework]* " +
+				"-[MyProject]*\"";
 
 			Assert.AreEqual(expectedCommandLine, processStartInfo.Arguments);
 		}

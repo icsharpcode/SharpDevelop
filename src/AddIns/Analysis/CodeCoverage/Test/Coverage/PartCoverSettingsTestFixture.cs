@@ -21,24 +21,24 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 	/// that PartCover uses.
 	/// </summary>
 	[TestFixture]
-	public class PartCoverSettingsTestFixture
+	public class OpenCoverSettingsTestFixture
 	{
-		PartCoverSettings settings;
-		PartCoverSettings savedSettings;
+		OpenCoverSettings settings;
+		OpenCoverSettings savedSettings;
 		StringBuilder savedSettingsXml;
 		XmlDocument doc;
 		
 		[SetUp]
 		public void Init()
 		{
-			settings = new PartCoverSettings();
+			settings = new OpenCoverSettings();
 			settings.Include.Add("[a]*");
 			settings.Include.Add("[b]*");
 			settings.Exclude.Add("[c]*");
 			settings.Exclude.Add("[d]*");
 			savedSettingsXml = new StringBuilder();
 			settings.Save(new StringWriter(savedSettingsXml));
-			savedSettings = new PartCoverSettings(new StringReader(savedSettingsXml.ToString()));
+			savedSettings = new OpenCoverSettings(new StringReader(savedSettingsXml.ToString()));
 
 			doc = new XmlDocument();
 			doc.LoadXml(savedSettingsXml.ToString());
@@ -66,7 +66,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 					ProjectName = "test"
 				});
 			
-			Assert.AreEqual(@"C:\temp\test.PartCover.Settings", PartCoverSettings.GetFileName(project));
+			Assert.AreEqual(@"C:\temp\test.PartCover.Settings", OpenCoverSettings.GetFileName(project));
 		}
 		
 		[Test]

@@ -245,7 +245,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			ActionArguments<Task> args = CreateTestRunnerAndFirePartCoverProcessExitEventWhenNoCoverageFileProduced();
 			Task task = args.Arg;
 			
-			string description = @"No code coverage results file generated. c:\projects\MyTests\PartCover\coverage.xml";
+			string description = @"No code coverage results file generated. c:\projects\MyTests\OpenCover\coverage.xml";
 			int column = 1;
 			int line = 1;
 			Task expectedTask = new Task(null, description, column, line, TaskType.Error);
