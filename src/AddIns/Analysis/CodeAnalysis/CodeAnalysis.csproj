@@ -60,8 +60,8 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\AnalysisIdeOptionsPanelXaml.xaml.cs">
-      <DependentUpon>AnalysisIdeOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\AnalysisIdeOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisIdeOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
@@ -118,7 +118,7 @@
     <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\AnalysisIdeOptionsPanelXaml.xaml" />
+    <Page Include="Src\AnalysisIdeOptionsPanel.xaml" />
     <Page Include="Src\AnalysisProjectOptionsPanelXaml.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

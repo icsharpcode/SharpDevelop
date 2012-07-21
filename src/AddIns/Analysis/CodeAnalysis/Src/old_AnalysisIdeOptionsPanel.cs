@@ -13,7 +13,7 @@ namespace ICSharpCode.CodeAnalysis
 	/// <summary>
 	/// Option panel to choose the FxCop path from.
 	/// </summary>
-	public class AnalysisIdeOptionsPanel : XmlFormsOptionPanel
+	public class old_AnalysisIdeOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
