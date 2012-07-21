@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -66,6 +67,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual CodeNamespace Namespace {
 			get { return new CodeNamespace(ProjectContent, Class.Namespace); }
+		}
+		
+		public virtual ProjectItem ProjectItem {
+			get {
+				if (ProjectContent.Project != null) {
+					return new ProjectItem((MSBuildBasedProject)ProjectContent.Project, Class);
+				}
+				return null;
+			}
 		}
 	}
 }

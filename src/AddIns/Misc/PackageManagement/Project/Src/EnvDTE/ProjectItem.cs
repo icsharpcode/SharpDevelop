@@ -4,9 +4,11 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+
 using ICSharpCode.Core;
-using SD = ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
+using SD = ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
@@ -25,6 +27,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			this.ProjectItems = new DirectoryProjectItems(this);
 			CreateProperties();
 			Kind = GetKindFromFileProjectItemType();
+		}
+		
+		internal ProjectItem(MSBuildBasedProject project, IClass c)
+			: this(new Project(project), project.FindFile(c.CompilationUnit.FileName))
+		{
 		}
 		
 		string GetKindFromFileProjectItemType()
