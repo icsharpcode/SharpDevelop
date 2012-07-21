@@ -62,8 +62,8 @@
 	
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
-		<OptionPanel id    = "CodeAnalysisOptionPanel"
+	<OptionPanel id    = "CodeAnalysisOptionPanel"
 		             label = "${res:ICSharpCode.CodeAnalysis}"
-		             class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanel"/>
+		             class = "ICSharpCode.CodeAnalysis.AnalysisIdeOptionsPanelXaml"/>
 	</Path>
 </AddIn>

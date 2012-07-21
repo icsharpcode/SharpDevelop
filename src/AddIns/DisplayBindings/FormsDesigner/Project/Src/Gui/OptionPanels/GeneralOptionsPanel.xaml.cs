@@ -6,7 +6,6 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Windows;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 

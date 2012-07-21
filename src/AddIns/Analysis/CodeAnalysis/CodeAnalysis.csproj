@@ -60,7 +60,11 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptionsPanel.cs" />
+    <Compile Include="Src\AnalysisIdeOptionsPanelXaml.xaml.cs">
+      <DependentUpon>AnalysisIdeOptionsPanelXaml.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
     <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
       <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
     </Compile>
@@ -78,8 +82,8 @@
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
     <Compile Include="Src\FxCopLogger.cs" />
     <Compile Include="Src\SuppressMessageCommand.cs" />
-    <Compile Include="Src\AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\AnalysisIdeOptionPanel.xfrm" />
+    <Compile Include="Src\old_AnalysisIdeOptionsPanel.cs" />
+    <EmbeddedResource Include="Resources\old_AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\SharpTreeView\ICSharpCode.TreeView\ICSharpCode.TreeView.csproj">
@@ -114,6 +118,7 @@
     <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\AnalysisIdeOptionsPanelXaml.xaml" />
     <Page Include="Src\AnalysisProjectOptionsPanelXaml.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
