@@ -369,6 +369,7 @@ namespace Mono.CSharp
 		public ModuleContainer ModuleCompiled { get; set; }
 		public LocationsBag LocationsBag { get; set; }
 		public SpecialsBag SpecialsBag { get; set; }
+		public IEnumerable<string> Conditionals { get; set; }
 		public object LastYYValue { get; set; }
 	}
 

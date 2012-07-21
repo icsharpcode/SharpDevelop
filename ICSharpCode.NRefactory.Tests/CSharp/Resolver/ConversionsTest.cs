@@ -73,8 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void DynamicIdentityConversions()
 		{
-			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(object), typeof(ReflectionHelper.Dynamic)));
-			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(ReflectionHelper.Dynamic), typeof(object)));
+			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(object), typeof(dynamic)));
+			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(dynamic), typeof(object)));
 		}
 		
 		[Test]
@@ -155,12 +155,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
-		public void SimpleDynamicConversions()
+		public void ConversionToDynamic()
 		{
 			Assert.AreEqual(C.ImplicitReferenceConversion, ImplicitConversion(typeof(string),  typeof(dynamic)));
-			Assert.AreEqual(C.ImplicitDynamicConversion,   ImplicitConversion(typeof(dynamic), typeof(string)));
 			Assert.AreEqual(C.BoxingConversion,            ImplicitConversion(typeof(int),     typeof(dynamic)));
-			Assert.AreEqual(C.ImplicitDynamicConversion,   ImplicitConversion(typeof(dynamic), typeof(int)));
+		}
+		
+		[Test]
+		public void ConversionFromDynamic()
+		{
+			// There is no conversion from the type 'dynamic' to other types (except object).
+			// Such conversions only exists from dynamic expression.
+			// This is an important distinction for type inference (see TypeInferenceTests.IEnumerableCovarianceWithDynamic)
+			Assert.AreEqual(C.None, ImplicitConversion(typeof(dynamic), typeof(string)));
+			Assert.AreEqual(C.None, ImplicitConversion(typeof(dynamic), typeof(int)));
+			
+			var dynamicRR = new ResolveResult(SpecialType.Dynamic);
+			Assert.AreEqual(C.ImplicitDynamicConversion, conversions.ImplicitConversion(dynamicRR, compilation.FindType(typeof(string))));
+			Assert.AreEqual(C.ImplicitDynamicConversion, conversions.ImplicitConversion(dynamicRR, compilation.FindType(typeof(int))));
 		}
 		
 		[Test]

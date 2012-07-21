@@ -174,6 +174,13 @@ namespace Mono.CSharp
 
 		readonly SeekableStreamReader reader;
 		readonly CompilationSourceFile source_file;
+
+		public CompilationSourceFile SourceFile {
+			get {
+				return source_file;
+			}
+		}
+
 		readonly CompilerContext context;
 
 		SourceFile current_source;
