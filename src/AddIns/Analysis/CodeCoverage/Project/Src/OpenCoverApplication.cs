@@ -12,14 +12,14 @@ using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class PartCoverApplication
+	public class OpenCoverApplication
 	{
 		string fileName = String.Empty;
 		NUnitConsoleApplication nunitConsoleApp;
-		PartCoverSettings settings;
+		OpenCoverSettings settings;
 		StringBuilder arguments;
 		
-		public PartCoverApplication(string fileName, NUnitConsoleApplication nunitConsoleApp, PartCoverSettings settings)
+		public OpenCoverApplication(string fileName, NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
 		{
 			this.fileName = fileName;
 			this.nunitConsoleApp = nunitConsoleApp;
@@ -30,7 +30,7 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		public PartCoverApplication(NUnitConsoleApplication nunitConsoleApp, PartCoverSettings settings)
+		public OpenCoverApplication(NUnitConsoleApplication nunitConsoleApp, OpenCoverSettings settings)
 			: this(null, nunitConsoleApp, settings)
 		{
 		}
@@ -41,7 +41,7 @@ namespace ICSharpCode.CodeCoverage
 			fileName = Path.GetFullPath(fileName);
 		}
 		
-		public PartCoverSettings Settings {
+		public OpenCoverSettings Settings {
 			get { return settings; }
 		}
 		
@@ -76,7 +76,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		string GetOutputDirectory(IProject project)
 		{
-			return Path.Combine(project.Directory, "PartCover");
+			return Path.Combine(project.Directory, "OpenCover");
 		}
 		
 		public ProcessStartInfo GetProcessStartInfo()
@@ -89,7 +89,8 @@ namespace ICSharpCode.CodeCoverage
 		
 		string GetArguments()
 		{
-			arguments = new StringBuilder();
+			// IMPORTANT: https://github.com/sawilde/opencover/wiki/Usage
+			arguments = new StringBuilder("-register:user ");
 			
 			AppendTarget();
 			AppendTargetWorkingDirectory();
@@ -101,7 +102,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		void AppendTarget()
 		{
-			arguments.AppendFormat("-register:user -target:\"{0}\" ", Target);
+			arguments.AppendFormat("-target:\"{0}\" ", Target);
 		}
 		
 		void AppendTargetWorkingDirectory()

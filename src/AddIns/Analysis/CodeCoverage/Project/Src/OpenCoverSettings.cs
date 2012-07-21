@@ -17,28 +17,28 @@ namespace ICSharpCode.CodeCoverage
 	/// as a place to store the include and exclude regular expressions that the
 	/// user may set up on a per project basis.
 	/// </summary>
-	public class PartCoverSettings
+	public class OpenCoverSettings
 	{
 		static readonly string RootElementName = "PartCoverSettings";
 		static readonly string RuleElementName = "Rule";
 		StringCollection include = new StringCollection();
 		StringCollection exclude = new StringCollection();
 
-		public PartCoverSettings()
+		public OpenCoverSettings()
 		{
 		}
 		
-		public PartCoverSettings(string fileName) 
+		public OpenCoverSettings(string fileName) 
 			: this(new StreamReader(fileName, true))
 		{
 		}
 		
-		public PartCoverSettings(XmlReader reader)
+		public OpenCoverSettings(XmlReader reader)
 		{
 			ReadSettings(reader);
 		}
 		
-		public PartCoverSettings(TextReader reader) 
+		public OpenCoverSettings(TextReader reader) 
 			: this(new XmlTextReader(reader))
 		{
 		}

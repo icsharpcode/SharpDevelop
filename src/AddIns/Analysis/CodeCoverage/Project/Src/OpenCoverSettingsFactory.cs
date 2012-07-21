@@ -7,33 +7,33 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class PartCoverSettingsFactory
+	public class OpenCoverSettingsFactory
 	{
 		IFileSystem fileSystem;
 		
-		public PartCoverSettingsFactory(IFileSystem fileSystem)
+		public OpenCoverSettingsFactory(IFileSystem fileSystem)
 		{
 			this.fileSystem = fileSystem;
 		}
 		
-		public PartCoverSettingsFactory()
+		public OpenCoverSettingsFactory()
 			: this(new FileSystem())
 		{
 		}
 		
-		public PartCoverSettings CreatePartCoverSettings(IProject project)
+		public OpenCoverSettings CreatePartCoverSettings(IProject project)
 		{
-			string fileName = PartCoverSettings.GetFileName(project);
+			string fileName = OpenCoverSettings.GetFileName(project);
 			if (fileSystem.FileExists(fileName)) {
 				return CreatePartCoverSettingsFromFile(fileName);
 			}
-			return new PartCoverSettings();
+			return new OpenCoverSettings();
 		}
 		
-		PartCoverSettings CreatePartCoverSettingsFromFile(string fileName)
+		OpenCoverSettings CreatePartCoverSettingsFromFile(string fileName)
 		{
 			TextReader reader = fileSystem.CreateTextReader(fileName);
-			return new PartCoverSettings(reader);
+			return new OpenCoverSettings(reader);
 		}
 	}
 }
