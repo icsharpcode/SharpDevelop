@@ -64,8 +64,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public MethodGroupResolveResult(ResolveResult targetResult, string methodName, IList<MethodListWithDeclaringType> methods, IList<IType> typeArguments) : base(SpecialType.UnknownType)
 		{
-			if (targetResult == null)
-				throw new ArgumentNullException("targetResult");
 			if (methods == null)
 				throw new ArgumentNullException("methods");
 			this.targetResult = targetResult;
