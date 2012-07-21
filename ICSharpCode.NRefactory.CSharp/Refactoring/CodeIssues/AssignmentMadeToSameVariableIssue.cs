@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -76,15 +77,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 
-				var title = ctx.TranslateString ("Remove assignment");
-
+				AstNode node;
+				Action<Script> action;
 				if (assignmentExpression.Parent is ExpressionStatement) {
-					AddIssue (assignmentExpression.Parent, title,
-						script => script.Remove (assignmentExpression.Parent));
+					node = assignmentExpression.Parent;
+					action = script => script.Remove (assignmentExpression.Parent);
 				} else {
-					AddIssue (assignmentExpression, title,
-						script => script.Replace (assignmentExpression, assignmentExpression.Left.Clone ()));
+					node = assignmentExpression;
+					action = script => script.Replace (assignmentExpression, assignmentExpression.Left.Clone ());
 				}
+				AddIssue (node, ctx.TranslateString ("CS1717:Assignment made to same variable"),
+					new [] { new CodeAction (ctx.TranslateString ("Remove assignment"), action) });
 			}
 		}
 	}
