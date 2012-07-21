@@ -822,6 +822,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void ParamsAttribute_Property()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute));
+			IProperty prop = type.Properties.Single(p => p.Name == "Property");
+			var attr = prop.Attributes.Single();
+			Assert.AreEqual(type, attr.AttributeType);
+			
+			var normalArguments = ((ArrayCreateResolveResult)attr.PositionalArguments.Single()).InitializerElements;
+			Assert.AreEqual(0, normalArguments.Count);
+			
+			var namedArg = attr.NamedArguments.Single();
+			Assert.AreEqual(prop, namedArg.Key);
+			var arrayElements = ((ArrayCreateResolveResult)namedArg.Value).InitializerElements;
+			Assert.AreEqual(2, arrayElements.Count);
+		}
+		
+		[Test]
 		public void DoubleAttribute_ImplicitNumericConversion()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(DoubleAttribute));

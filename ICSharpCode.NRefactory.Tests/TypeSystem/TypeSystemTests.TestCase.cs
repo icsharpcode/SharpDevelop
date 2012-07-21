@@ -44,6 +44,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	public class ParamsAttribute : Attribute
 	{
 		public ParamsAttribute(params object[] x) {}
+		
+		[Params(Property = new string[] { "a", "b" })]
+		public string[] Property { get; set; }
 	}
 	
 	[Double(1)]
