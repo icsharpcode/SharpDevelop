@@ -10,13 +10,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class FileCodeModelCodeElements : CodeElementsList
 	{
-		Project project;
-		FileProjectItem projectItem;
+		ICompilationUnit compilationUnit;
 		
-		public FileCodeModelCodeElements(Project project, FileProjectItem projectItem)
+		public FileCodeModelCodeElements(ICompilationUnit compilationUnit)
 		{
-			this.project = project;
-			this.projectItem = projectItem;
+			this.compilationUnit = compilationUnit;
 			GetCodeElements();
 		}
 		
@@ -29,8 +27,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		IList<IUsing> GetNamespaceImports()
 		{
-			return project
-				.GetCompilationUnit(projectItem.FileName)
+			return compilationUnit
 				.UsingScope
 				.Usings;
 		}

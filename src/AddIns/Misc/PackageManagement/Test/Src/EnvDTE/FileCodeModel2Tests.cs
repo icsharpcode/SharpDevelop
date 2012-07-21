@@ -3,10 +3,12 @@
 
 using System;
 using ICSharpCode.EasyCodeDom;
+using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
+using Rhino.Mocks;
 
 namespace PackageManagement.Tests.EnvDTE
 {
@@ -19,6 +21,7 @@ namespace PackageManagement.Tests.EnvDTE
 		FakeFileService fakeFileService;
 		FileProjectItem fileProjectItem;
 		CompilationUnitHelper compilationUnitHelper;
+		IDocumentNamespaceCreator namespaceCreator;
 		
 		void CreateProjectWithOneFile()
 		{
@@ -44,7 +47,8 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateFileCodeModel()
 		{
-			fileCodeModel = new FileCodeModel2(project, fileProjectItem);
+			namespaceCreator = MockRepository.GenerateStub<IDocumentNamespaceCreator>();
+			fileCodeModel = new FileCodeModel2(project, fileProjectItem, namespaceCreator);
 		}
 		
 		CodeImport GetFirstCodeImportFromCodeElements()
@@ -99,6 +103,18 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeImport import = GetFirstCodeImportFromCodeElements();
 			
 			Assert.AreEqual("Test.CodeModel", import.Namespace);
+		}
+		
+		[Test]
+		public void AddImport_AddSystemXmlNamespace_NamespaceAndcompilationUnitPassedToNamespaceCreator()
+		{
+			CreateProjectWithOneFile();
+			CreateCompilationUnitForFileProjectItem();
+			CreateFileCodeModel();
+			
+			fileCodeModel.AddImport("System.Xml");
+			
+			namespaceCreator.AssertWasCalled(creator => creator.AddNamespace(compilationUnitHelper.CompilationUnit, "System.Xml"));
 		}
 	}
 }

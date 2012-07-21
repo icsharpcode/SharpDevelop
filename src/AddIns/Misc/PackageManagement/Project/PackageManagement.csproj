@@ -79,6 +79,7 @@
     <Compile Include="Src\Design\FakePackageOperation.cs" />
     <Compile Include="Src\Design\FakeSelectedProject.cs" />
     <Compile Include="Src\DocumentLoader.cs" />
+    <Compile Include="Src\DocumentNamespaceCreator.cs" />
     <Compile Include="Src\DomRegionExtensions.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute.cs" />
     <Compile Include="Src\EnvDTE\CodeAttribute2.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Src\EnvDTE\vsCMInfoLocation.cs" />
     <Compile Include="Src\EnvDTE\vsCMPropertyKind.cs" />
     <Compile Include="Src\EnvDTE\vsEPReplaceTextOptions.cs" />
+    <Compile Include="Src\IDocumentNamespaceCreator.cs" />
     <Compile Include="Src\IProjectBrowserUpdater.cs" />
     <Compile Include="Src\IRefactoringDocumentView.cs" />
     <Compile Include="Src\IFieldExtensions.cs" />
