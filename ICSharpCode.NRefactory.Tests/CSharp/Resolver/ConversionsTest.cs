@@ -524,7 +524,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 
 		[Test]
-		public void ExplicitUserDefinedConversion() {
+		public void ExplicitUserDefinedConversion()
+		{
 			var rr = Resolve<ConversionResolveResult>(@"
 class C1 {}
 class C2 {
@@ -540,6 +541,30 @@ class C {
 }");
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
 			Assert.AreEqual("op_Explicit", rr.Conversion.Method.Name);
+		}
+		
+		[Test]
+		public void ImplicitTypeParameterConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T t) where T : U {
+		U u = $t$;
+	}
+}";
+			Assert.AreEqual(C.BoxingConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void InvalidImplicitTypeParameterConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T t) where U : T {
+		U u = $t$;
+	}
+}";
+			Assert.AreEqual(C.None, GetConversion(program));
 		}
 	}
 }

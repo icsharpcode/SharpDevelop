@@ -471,7 +471,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool IdentityOrVarianceConversion(IType s, IType t, int subtypeCheckNestingDepth)
 		{
 			ITypeDefinition def = s.GetDefinition();
-			if (def != null && def.Equals(t.GetDefinition())) {
+			if (def != null) {
+				if (!def.Equals(t.GetDefinition()))
+					return false;
 				ParameterizedType ps = s as ParameterizedType;
 				ParameterizedType pt = t as ParameterizedType;
 				if (ps != null && pt != null) {
@@ -499,8 +501,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return false; // only of of them is parameterized, or counts don't match? -> not valid conversion
 				}
 				return true;
+			} else {
+				// not type definitions? we still need to check for equal types (e.g. s and t might be type parameters)
+				return s.Equals(t);
 			}
-			return false;
 		}
 		#endregion
 		
