@@ -95,6 +95,7 @@
     <Compile Include="Src\EnvDTE\CodeFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeGetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeGetterOrSetterFunction.cs" />
+    <Compile Include="Src\EnvDTE\CodeImport.cs" />
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeModelLanguageConstants.cs" />
@@ -115,6 +116,8 @@
     <Compile Include="Src\EnvDTE\Configuration.cs" />
     <Compile Include="Src\EnvDTE\Constants.cs" />
     <Compile Include="Src\EnvDTE\EditPoint.cs" />
+    <Compile Include="Src\EnvDTE\FileCodeModel2.cs" />
+    <Compile Include="Src\EnvDTE\FileCodeModelCodeElements.cs" />
     <Compile Include="Src\EnvDTE\ImplementedInterfacesOnClass.cs" />
     <Compile Include="Src\EnvDTE\IReturnTypeExtensions.cs" />
     <Compile Include="Src\EnvDTE\NamespaceName.cs" />

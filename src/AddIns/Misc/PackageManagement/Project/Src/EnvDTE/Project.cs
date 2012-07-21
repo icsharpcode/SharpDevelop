@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Construction;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -260,6 +260,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		internal IProjectBrowserUpdater CreateProjectBrowserUpdater()
 		{
 			return projectService.CreateProjectBrowserUpdater();
+		}
+		
+		internal ICompilationUnit GetCompilationUnit(string fileName)
+		{
+			return fileService.GetCompilationUnit(fileName);
 		}
 	}
 }

@@ -150,5 +150,48 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.IsTrue(msbuildProject.IsSaved);
 		}
+		
+		[Test]
+		public void FileCodeModel_ProjectDirectory_ReturnsNull()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"src\program.cs");
+		
+			ProjectItem directoryItem = projectItems.Item("src");
+			
+			FileCodeModel2 fileCodeModel = directoryItem.FileCodeModel;
+			
+			Assert.IsNull(fileCodeModel);
+		}
+		
+		[Test]
+		public void FileCodeModel_ProjectFile_ReturnsFileCodeModel()
+		{
+			CreateProjectItems();
+			msbuildProject.AddFile(@"src\program.cs");
+		
+			ProjectItem directoryItem = projectItems.Item("src");
+			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			
+			FileCodeModel2 fileCodeModel = fileItem.FileCodeModel;
+			
+			Assert.IsNotNull(fileCodeModel);
+		}
+		
+		[Test]
+		public void FileCodeModel_GetCodeElementsFromFileCodeModelForProjectFile_FileServicePassedToFileCodeModel()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"src\program.cs");
+		
+			ProjectItem directoryItem = projectItems.Item("src");
+			ProjectItem fileItem = directoryItem.ProjectItems.Item("program.cs");
+			
+			CodeElements codeElements = fileItem.FileCodeModel.CodeElements;
+			
+			Assert.AreEqual(@"d:\projects\MyProject\src\program.cs", fakeFileService.FileNamePassedToGetCompilationUnit);
+			Assert.AreEqual(0, codeElements.Count);
+		}
 	}
 }

@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PackageManagement
@@ -80,6 +81,11 @@ namespace ICSharpCode.PackageManagement
 		public void ParseFile(string fileName)
 		{
 			ParserService.ParseFile(fileName);
+		}
+		
+		public ICompilationUnit GetCompilationUnit(string fileName)
+		{
+			return ParserService.GetExistingParseInformation(fileName).CompilationUnit;
 		}
 	}
 }

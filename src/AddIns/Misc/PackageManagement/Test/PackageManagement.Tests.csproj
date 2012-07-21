@@ -83,6 +83,7 @@
     <Compile Include="Src\EnvDTE\CodeDelegateTests.cs" />
     <Compile Include="Src\EnvDTE\CodeElementsInNamespaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeFunctionTests.cs" />
+    <Compile Include="Src\EnvDTE\CodeImportTests.cs" />
     <Compile Include="Src\EnvDTE\CodeInterfaceTests.cs" />
     <Compile Include="Src\EnvDTE\CodeModelTests.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespaceTests.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Src\EnvDTE\CodeTypeTests.cs" />
     <Compile Include="Src\EnvDTE\CodeVariableTests.cs" />
     <Compile Include="Src\EnvDTE\EditPointTests.cs" />
+    <Compile Include="Src\EnvDTE\FileCodeModel2Tests.cs" />
     <Compile Include="Src\EnvDTE\NamespaceNameTests.cs" />
     <Compile Include="Src\EnvDTE\SolutionTests.cs" />
     <Compile Include="Src\Helpers\AttributeHelper.cs" />
@@ -115,6 +117,8 @@
     <Compile Include="Src\Helpers\TestablePackageFromRepository.cs" />
     <Compile Include="Src\Helpers\TestableProjectBehaviour.cs" />
     <Compile Include="Src\Helpers\TestableSelectedProjectsForUpdatedPackages.cs" />
+    <Compile Include="Src\Helpers\UsingHelper.cs" />
+    <Compile Include="Src\Helpers\UsingScopeHelper.cs" />
     <Compile Include="Src\InstalledPackageViewModelTests.cs" />
     <Compile Include="Src\ManagePackagesCommandTests.cs" />
     <Compile Include="Src\ConsolePackageActionRunnerTests.cs" />

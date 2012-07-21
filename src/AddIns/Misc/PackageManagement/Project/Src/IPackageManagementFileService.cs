@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -16,5 +17,6 @@ namespace ICSharpCode.PackageManagement
 		string[] GetDirectories(string path);
 		
 		void ParseFile(string fileName);
+		ICompilationUnit GetCompilationUnit(string fileName);
 	}
 }

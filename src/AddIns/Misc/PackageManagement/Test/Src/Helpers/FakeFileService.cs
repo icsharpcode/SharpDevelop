@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.PackageManagement;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace PackageManagement.Tests.Helpers
@@ -112,6 +112,16 @@ namespace PackageManagement.Tests.Helpers
 		public void ParseFile(string fileName)
 		{
 			FileNamePassedToParseFile = fileName;
+		}
+		
+		public string FileNamePassedToGetCompilationUnit;
+		public ICompilationUnit CompilationUnitToReturnFromGetCompilationUnit =
+			new DefaultCompilationUnit(new DefaultProjectContent());
+		
+		public ICompilationUnit GetCompilationUnit(string fileName)
+		{
+			FileNamePassedToGetCompilationUnit = fileName;
+			return CompilationUnitToReturnFromGetCompilationUnit;
 		}
 	}
 }

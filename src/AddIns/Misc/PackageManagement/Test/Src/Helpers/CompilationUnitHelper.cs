@@ -13,6 +13,7 @@ namespace PackageManagement.Tests.Helpers
 		public ICompilationUnit CompilationUnit;
 		public FakeCodeGenerator FakeCodeGenerator = new FakeCodeGenerator();
 		public List<IClass> Classes = new List<IClass>();
+		public UsingScopeHelper UsingScopeHelper = new UsingScopeHelper();
 		
 		public CompilationUnitHelper()
 		{
@@ -21,6 +22,7 @@ namespace PackageManagement.Tests.Helpers
 			language.Stub(lang => lang.CodeGenerator).Return(FakeCodeGenerator);
 			CompilationUnit.Stub(unit => unit.Language).Return(language);
 			CompilationUnit.Stub(unit => unit.Classes).Return(Classes);
+			CompilationUnit.Stub(unit => unit.UsingScope).Return(UsingScopeHelper.UsingScope);
 		}
 		
 		public void SetFileName(string fileName)
@@ -31,6 +33,16 @@ namespace PackageManagement.Tests.Helpers
 		public void AddClass(IClass c)
 		{
 			Classes.Add(c);
+		}
+		
+		public void AddNamespace(string name)
+		{
+			UsingScopeHelper.AddNamespace(name);
+		}
+		
+		public void AddNamespaceAlias(string alias, string namespaceName)
+		{
+			UsingScopeHelper.AddNamespaceAlias(alias, namespaceName);
 		}
 	}
 }

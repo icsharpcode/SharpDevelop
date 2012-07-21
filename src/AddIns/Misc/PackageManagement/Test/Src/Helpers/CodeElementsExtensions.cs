@@ -78,5 +78,10 @@ namespace PackageManagement.Tests.Helpers
 		{
 			return codeElements.FirstOrDefault() as CodeParameter;
 		}
+		
+		public static CodeImport FirstCodeImportOrDefault(this CodeElements codeElements)
+		{
+			return codeElements.FirstOrDefault() as CodeImport;
+		}
 	}
 }

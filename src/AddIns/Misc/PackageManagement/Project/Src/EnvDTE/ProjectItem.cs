@@ -29,10 +29,14 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		string GetKindFromFileProjectItemType()
 		{
-			if (projectItem.ItemType == ItemType.Folder) {
+			if (IsDirectory) {
 				return Constants.VsProjectItemKindPhysicalFolder;
 			}
 			return Constants.VsProjectItemKindPhysicalFile;
+		}
+		
+		bool IsDirectory {
+			get { return projectItem.ItemType == ItemType.Folder; }
 		}
 		
 		public ProjectItem()
@@ -117,6 +121,15 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			ContainingProject.DeleteFile(projectItem.FileName);
 			ContainingProject.Save();
+		}
+		
+		public FileCodeModel2 FileCodeModel {
+			get {
+				if (!IsDirectory) {
+					return new FileCodeModel2(ContainingProject, projectItem);
+				}
+				return null;
+			}
 		}
 	}
 }

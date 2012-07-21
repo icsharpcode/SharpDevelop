@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		vsCMElementAttribute = 7,
 		vsCMElementInterface = 8,
 		vsCMElementDelegate = 9,
-		vsCMElementStruct = 11
+		vsCMElementStruct = 11,
+		vsCMElementImportStmt = 35
 	}
 }
