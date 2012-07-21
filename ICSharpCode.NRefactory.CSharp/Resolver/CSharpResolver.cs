@@ -1908,11 +1908,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
 					// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable method.
 					var or2 = new OverloadResolution(compilation, arguments, argumentNames, mgrr.TypeArguments.ToArray(), conversions);
-					var applicableMethods = mgrr.Methods.Where(m => OverloadResolution.IsApplicable(or2.AddCandidate(m))).ToList();
+					var applicableMethods = mgrr.MethodsGroupedByDeclaringType.SelectMany(m => m, (x, m) => new { x.DeclaringType, Method = m }).Where(x => OverloadResolution.IsApplicable(or2.AddCandidate(x.Method))).ToList();
 
 					if (applicableMethods.Count > 1) {
 						ResolveResult actualTarget;
-						if (applicableMethods.All(m => m.IsStatic) && !(mgrr.TargetResult is TypeResolveResult))
+						if (applicableMethods.All(x => x.Method.IsStatic) && !(mgrr.TargetResult is TypeResolveResult))
 							actualTarget = new TypeResolveResult(mgrr.TargetResult.Type);
 						else
 							actualTarget = mgrr.TargetResult;
@@ -1921,7 +1921,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						foreach (var m in applicableMethods) {
 							if (l.Count == 0 || l[l.Count - 1].DeclaringType != m.DeclaringType)
 								l.Add(new MethodListWithDeclaringType(m.DeclaringType));
-							l[l.Count - 1].Add(m);
+							l[l.Count - 1].Add(m.Method);
 						}
 						return new DynamicInvocationResolveResult(new MethodGroupResolveResult(actualTarget, mgrr.MethodName, l, mgrr.TypeArguments), DynamicInvocationType.Invocation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
 					}
@@ -2166,13 +2166,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 
 			if (allApplicable != null && allApplicable.Count > 1) {
 				// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable constructor.
-				var l = new List<MethodListWithDeclaringType>();
-				foreach (var m in allApplicable) {
-					if (l.Count == 0 || l[l.Count - 1].DeclaringType != m.DeclaringType)
-						l.Add(new MethodListWithDeclaringType(m.DeclaringType));
-					l[l.Count - 1].Add(m);
-				}
-				return new DynamicInvocationResolveResult(new MethodGroupResolveResult(null, allApplicable[0].Name, l, null), DynamicInvocationType.ObjectCreation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly(), initializerStatements);
+				return new DynamicInvocationResolveResult(new MethodGroupResolveResult(null, allApplicable[0].Name, new[] { new MethodListWithDeclaringType(type, allApplicable) }, null), DynamicInvocationType.ObjectCreation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly(), initializerStatements);
 			}
 
 			if (or.BestCandidate != null) {
