@@ -94,12 +94,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var value = (bool)resolveResult.ConstantValue;
 				var conditionalExpr = condition.Parent as ConditionalExpression;
 				var ifElseStatement = condition.Parent as IfElseStatement;
+				var valueStr = value.ToString ().ToLower ();
+
 				if (conditionalExpr != null) {
 					var replaceExpr = value ? conditionalExpr.TrueExpression : conditionalExpr.FalseExpression;
-					AddIssue (condition, ctx.TranslateString ("Replace '?:' with '" + value + "' branch"),
+					AddIssue (condition, ctx.TranslateString ("Replace '?:' with '" + valueStr + "' branch"),
 						script => script.Replace (conditionalExpr, replaceExpr.Clone ()));
 				} else if (ifElseStatement != null) {
-					AddIssue (condition, ctx.TranslateString ("Replace 'if' with '" + value + "' branch"),
+					AddIssue (condition, ctx.TranslateString ("Replace 'if' with '" + valueStr + "' branch"),
 						script => {
 							var statement = value ? ifElseStatement.TrueStatement : ifElseStatement.FalseStatement;
 							var blockStatement = statement as BlockStatement;
@@ -121,7 +123,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							script.FormatText (ifElseStatement.Parent);
 						});
 				} else {
-					AddIssue (condition, ctx.TranslateString ("Replace expression with '" + value + "'"),
+					AddIssue (condition, ctx.TranslateString ("Replace expression with '" + valueStr + "'"),
 						script => script.Replace (condition, new PrimitiveExpression (value)));
 				}
 			}
