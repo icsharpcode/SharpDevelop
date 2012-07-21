@@ -1900,11 +1900,33 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §7.6.5
 			
 			if (target.Type.Kind == TypeKind.Dynamic) {
-				return new DynamicInvocationResolveResult(target, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+				return new DynamicInvocationResolveResult(target, DynamicInvocationType.Invocation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
 			}
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
+				if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
+					// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable method.
+					var or2 = new OverloadResolution(compilation, arguments, argumentNames, mgrr.TypeArguments.ToArray(), conversions);
+					var applicableMethods = mgrr.MethodsGroupedByDeclaringType.SelectMany(m => m, (x, m) => new { x.DeclaringType, Method = m }).Where(x => OverloadResolution.IsApplicable(or2.AddCandidate(x.Method))).ToList();
+
+					if (applicableMethods.Count > 1) {
+						ResolveResult actualTarget;
+						if (applicableMethods.All(x => x.Method.IsStatic) && !(mgrr.TargetResult is TypeResolveResult))
+							actualTarget = new TypeResolveResult(mgrr.TargetResult.Type);
+						else
+							actualTarget = mgrr.TargetResult;
+
+						var l = new List<MethodListWithDeclaringType>();
+						foreach (var m in applicableMethods) {
+							if (l.Count == 0 || l[l.Count - 1].DeclaringType != m.DeclaringType)
+								l.Add(new MethodListWithDeclaringType(m.DeclaringType));
+							l[l.Count - 1].Add(m.Method);
+						}
+						return new DynamicInvocationResolveResult(new MethodGroupResolveResult(actualTarget, mgrr.MethodName, l, mgrr.TypeArguments), DynamicInvocationType.Invocation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+					}
+				}
+
 				OverloadResolution or = mgrr.PerformOverloadResolution(compilation, arguments, argumentNames, checkForOverflow: checkForOverflow, conversions: conversions);
 				if (or.BestCandidate != null) {
 					if (or.BestCandidate.IsStatic && !or.IsExtensionMethodInvocation && !(mgrr.TargetResult is TypeResolveResult))
@@ -2043,10 +2065,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			switch (target.Type.Kind) {
 				case TypeKind.Dynamic:
-					for (int i = 0; i < arguments.Length; i++) {
-						arguments[i] = Convert(arguments[i], SpecialType.Dynamic);
-					}
-					return new ArrayAccessResolveResult(SpecialType.Dynamic, target, arguments);
+					return new DynamicInvocationResolveResult(target, DynamicInvocationType.Indexing, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
 					
 				case TypeKind.Array:
 				case TypeKind.Pointer:
@@ -2056,9 +2075,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			// §7.6.6.2 Indexer access
-			OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
+
 			MemberLookup lookup = CreateMemberLookup();
 			var indexers = lookup.LookupIndexers(target.Type);
+
+			if (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic)) {
+				// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable indexer.
+				var or2 = new OverloadResolution(compilation, arguments, argumentNames, null, conversions);
+				var applicableIndexers = indexers.SelectMany(x => x).Where(m => OverloadResolution.IsApplicable(or2.AddCandidate(m))).ToList();
+
+				if (applicableIndexers.Count > 1) {
+					return new DynamicInvocationResolveResult(target, DynamicInvocationType.Indexing, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly());
+				}
+			}
+
+			OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
 			or.AddMethodLists(indexers);
 			if (or.BestCandidate != null) {
 				return or.CreateResolveResult(target);
@@ -2122,12 +2153,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			OverloadResolution or = CreateOverloadResolution(arguments, argumentNames);
 			MemberLookup lookup = CreateMemberLookup();
+			var allApplicable = (arguments.Any(a => a.Type.Kind == TypeKind.Dynamic) ? new List<IMethod>() : null);
 			foreach (IMethod ctor in type.GetConstructors()) {
-				if (lookup.IsAccessible(ctor, allowProtectedAccess))
-					or.AddCandidate(ctor);
+				if (lookup.IsAccessible(ctor, allowProtectedAccess)) {
+					var orErrors = or.AddCandidate(ctor);
+					if (allApplicable != null && OverloadResolution.IsApplicable(orErrors))
+						allApplicable.Add(ctor);
+				}
 				else
 					or.AddCandidate(ctor, OverloadResolutionErrors.Inaccessible);
 			}
+
+			if (allApplicable != null && allApplicable.Count > 1) {
+				// If we have dynamic arguments, we need to represent the invocation as a dynamic invocation if there is more than one applicable constructor.
+				return new DynamicInvocationResolveResult(new MethodGroupResolveResult(null, allApplicable[0].Name, new[] { new MethodListWithDeclaringType(type, allApplicable) }, null), DynamicInvocationType.ObjectCreation, arguments.Select((a, i) => new DynamicInvocationArgument(argumentNames != null ? argumentNames[i] : null, a)).ToList().AsReadOnly(), initializerStatements);
+			}
+
 			if (or.BestCandidate != null) {
 				return or.CreateResolveResult(null, initializerStatements);
 			} else {
