@@ -185,6 +185,10 @@ namespace ICSharpCode.NRefactory.Semantics
 				get { return type == 0; }
 			}
 			
+			public override bool IsNullLiteralConversion {
+				get { return type == 1; }
+			}
+			
 			public override bool IsReferenceConversion {
 				get { return type == 3; }
 			}
@@ -362,6 +366,10 @@ namespace ICSharpCode.NRefactory.Semantics
 		}
 		
 		public virtual bool IsIdentityConversion {
+			get { return false; }
+		}
+		
+		public virtual bool IsNullLiteralConversion {
 			get { return false; }
 		}
 		
