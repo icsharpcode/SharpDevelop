@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeTypeRef2 Type {
-			get { return new CodeTypeRef2(method.ProjectContent, null, method.ReturnType); }
+			get { return new CodeTypeRef2(method.ProjectContent, this, method.ReturnType); }
 		}
 	}
 }

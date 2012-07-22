@@ -204,6 +204,17 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
+		public void Parameters_MethodHasOneStringParameter_CreatesCodeParameterWithCodeTypeRefThatHasParameterAsParent()
+		{
+			AddParameterToMethod("System.String", "test");
+			CreatePublicFunction("MyClass.MyMethod");
+			
+			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
+			
+			Assert.AreEqual(parameter, parameter.Type.Parent);
+		}
+		
+		[Test]
 		public void Type_MethodReturnsString_TypeRefHasSystemStringAsFullName()
 		{
 			CreatePublicFunction("MyClass.MyFunction");
@@ -223,6 +234,17 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeTypeRef2 typeRef = codeFunction.Type;
 			
 			Assert.AreEqual("string", typeRef.AsString);
+		}
+		
+		[Test]
+		public void Type_MethodReturnsString_TypeRefParentIsCodeFunction()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			AddReturnTypeToMethod("System.String");
+			
+			CodeTypeRef2 typeRef = codeFunction.Type;
+			
+			Assert.AreEqual(codeFunction, typeRef.Parent);
 		}
 	}
 }
