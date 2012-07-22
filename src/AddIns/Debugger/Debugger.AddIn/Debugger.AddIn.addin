@@ -61,8 +61,10 @@
 					          class="Debugger.AddIn.EnableBreakpointMenuCommand"
 					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.EnableBreakpoint}" />
 				</ComplexCondition>
+				<!--
 				<MenuItem id="BreakpointSeparator" type = "Separator" />
 				<MenuItem id="MenuBuilder" type="Builder" class="Debugger.AddIn.BreakpointChangeMenuBuilder" />
+				-->
 			</Condition>
 		</MenuItem>
 	</Path>
