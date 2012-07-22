@@ -166,7 +166,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			dragDropBookmark = bm;
 			dragDropStartPoint = dragDropCurrentPoint = e.GetPosition(this).Y;
 			if (TextView != null) {
-				TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+				TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 				if (area != null)
 					area.PreviewKeyDown += TextArea_PreviewKeyDown;
 			}
@@ -178,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				dragDropBookmark = null;
 				dragStarted = false;
 				if (TextView != null) {
-					TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+					TextArea area = TextView.GetService(typeof(TextArea)) as TextArea;
 					if (area != null)
 						area.PreviewKeyDown -= TextArea_PreviewKeyDown;
 				}
@@ -238,7 +238,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				if (e.ChangedButton == MouseButton.Left && TextView != null) {
 					// no bookmark on the line: create a new breakpoint
-					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+					ITextEditor textEditor = TextView.GetService(typeof(ITextEditor)) as ITextEditor;
 					if (textEditor != null) {
 						DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(BreakpointBookmark));
 						return;
@@ -247,7 +247,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					// create breakpoint for the other posible active contents
 					var viewContent = WorkbenchSingleton.Workbench.ActiveContent as AbstractViewContentWithoutFile;
 					if (viewContent != null) {
-						textEditor = viewContent.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+						textEditor = viewContent.GetService(typeof(ITextEditor)) as ITextEditor;
 						if (textEditor != null) {
 							DebuggerService.ToggleBreakpointAt(textEditor, line, typeof(DecompiledBreakpointBookmark));
 							return;

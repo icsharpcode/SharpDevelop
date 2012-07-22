@@ -995,7 +995,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		/// <returns>Returns the requested service instance, or null if the service cannot be found.</returns>
 		public virtual object GetService(Type serviceType)
 		{
-			return textView.Services.GetService(serviceType);
+			return textView.GetService(serviceType);
 		}
 		
 		/// <summary>

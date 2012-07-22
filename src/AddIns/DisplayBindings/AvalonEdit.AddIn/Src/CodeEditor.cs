@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -145,9 +146,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			this.FlowDirection = FlowDirection.LeftToRight; // code editing is always left-to-right
 			this.document = new TextDocument();
+			var documentServiceContainer = document.GetRequiredService<IServiceContainer>();
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
+			
 			textMarkerService = new TextMarkerService(document);
+			documentServiceContainer.AddService(typeof(ITextMarkerService), textMarkerService);
+			
 			iconBarManager = new IconBarManager();
+			documentServiceContainer.AddService(typeof(IBookmarkMargin), iconBarManager);
+			
 			if (CodeEditorOptions.Instance.EnableChangeMarkerMargin) {
 				changeWatcher = new DefaultChangeWatcher();
 			}
@@ -203,11 +210,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
 			textView.LineTransformers.Add(textMarkerService);
-			textView.Services.AddService(typeof(ITextMarkerService), textMarkerService);
 			
 			textView.Services.AddService(typeof(IEditorUIService), new AvalonEditEditorUIService(textView));
 			
-			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
 			if (changeWatcher != null) {
@@ -235,7 +240,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			foreach (var d in textEditor.TextArea.LeftMargins.OfType<IDisposable>())
 				d.Dispose();
-			((EnhancedScrollBar)textEditor.TextArea.GetService(typeof(EnhancedScrollBar))).Dispose();
+			textEditor.TextArea.GetRequiredService<EnhancedScrollBar>().Dispose();
 			textEditor.Dispose();
 		}
 		

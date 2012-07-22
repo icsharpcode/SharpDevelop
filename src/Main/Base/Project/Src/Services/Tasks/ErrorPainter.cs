@@ -24,10 +24,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			instances.Add(this);
 			this.textEditor = textEditor;
-			this.markerService = this.textEditor.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-			
-			if (this.markerService == null)
-				throw new InvalidOperationException("this ITextEditor has no text marker service!");
+			this.markerService = this.textEditor.GetRequiredService<ITextMarkerService>();
 			
 			TaskService.Added   += OnAdded;
 			TaskService.Removed += OnRemoved;

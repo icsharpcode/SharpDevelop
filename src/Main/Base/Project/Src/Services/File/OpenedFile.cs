@@ -124,6 +124,7 @@ namespace ICSharpCode.SharpDevelop
 			if (view == null)
 				throw new ArgumentNullException("view");
 			
+			bool success = false;
 			try {
 				if (currentView != view) {
 					if (currentView == null) {
@@ -139,9 +140,14 @@ namespace ICSharpCode.SharpDevelop
 						}
 					}
 				}
-			} catch (Exception) {
-				view.Dispose();
-				throw;
+				success = true;
+			} finally {
+				// Only in case of exceptions:
+				// (try-finally with bool is better than try-catch-rethrow because it causes the debugger to stop
+				// at the original error location, not at the rethrow)
+				if (!success) {
+					view.Dispose();
+				}
 			}
 		}
 		

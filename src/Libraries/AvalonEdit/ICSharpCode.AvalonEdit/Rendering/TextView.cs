@@ -1757,6 +1757,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Gets a service container used to associate services with the text view.
 		/// </summary>
+		/// <remarks>
+		/// This container does not provide document services -
+		/// use <c>TextView.GetService()</c> instead of <c>TextView.Services.GetService()</c> to ensure
+		/// that document services can be found as well.
+		/// </remarks>
 		public ServiceContainer Services {
 			get { return services; }
 		}
@@ -1766,7 +1771,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// If the service is not found in the <see cref="Services"/> container,
 		/// this method will also look for it in the current document's service provider.
 		/// </summary>
-		public object GetService(Type serviceType)
+		public virtual object GetService(Type serviceType)
 		{
 			object instance = services.GetService(serviceType);
 			if (instance == null && document != null) {

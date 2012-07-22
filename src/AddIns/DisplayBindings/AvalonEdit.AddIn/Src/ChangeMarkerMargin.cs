@@ -13,6 +13,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
@@ -114,13 +115,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (oldTextView != null) {
 				oldTextView.VisualLinesChanged -= VisualLinesChanged;
 				oldTextView.ScrollOffsetChanged -= ScrollOffsetChanged;
-				((TextArea)oldTextView.Services.GetService(typeof(TextArea))).KeyDown -= TextViewKeyDown;
+				oldTextView.GetRequiredService<TextArea>().KeyDown -= TextViewKeyDown;
 			}
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += VisualLinesChanged;
 				newTextView.ScrollOffsetChanged += ScrollOffsetChanged;
-				((TextArea)newTextView.Services.GetService(typeof(TextArea))).KeyDown += TextViewKeyDown;
+				newTextView.GetRequiredService<TextArea>().KeyDown += TextViewKeyDown;
 			}
 		}
 
@@ -169,8 +170,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			bool added;
 			string oldText = changeWatcher.GetOldVersionFromLine(line, out startLine, out added);
 			
-			TextEditor editor = this.TextView.Services.GetService(typeof(TextEditor)) as TextEditor;
-			markerService = this.TextView.Services.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+			TextEditor editor = this.TextView.GetService<TextEditor>();
+			markerService = this.TextView.GetService<ITextMarkerService>();
 			
 			LineChangeInfo zeroLineInfo = changeWatcher.GetChange(0);
 			

@@ -36,11 +36,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Retrieves the service of type <c>T</c> from the provider.
+		/// If the service cannot be found, this method returns <c>null</c>.
+		/// </summary>
 		public static T GetService<T>(this IServiceProvider provider) where T : class
 		{
 			return (T)provider.GetService(typeof(T));
 		}
 		
+		/// <summary>
+		/// Retrieves the service of type <c>T</c> from the provider.
+		/// If the service cannot be found, a <see cref="ServiceNotFoundException"/> will be thrown.
+		/// </summary>
 		public static T GetRequiredService<T>(this IServiceProvider provider) where T : class
 		{
 			object service = provider.GetService(typeof(T));
