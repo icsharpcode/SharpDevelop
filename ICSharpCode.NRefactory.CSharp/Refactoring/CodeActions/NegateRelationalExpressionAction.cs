@@ -29,28 +29,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	[ContextAction ("Negate an relational expression", Description = "Negate an relational expression.")]
 	public class NegateRelationalExpressionAction : SpecializedCodeAction<BinaryOperatorExpression>
 	{
-		static BinaryOperatorType NegateRelationalOperator (BinaryOperatorType op)
-		{
-			switch (op) {
-				case BinaryOperatorType.GreaterThan:
-					return BinaryOperatorType.LessThanOrEqual;
-				case BinaryOperatorType.GreaterThanOrEqual:
-					return BinaryOperatorType.LessThan;
-				case BinaryOperatorType.LessThan:
-					return BinaryOperatorType.GreaterThanOrEqual;
-				case BinaryOperatorType.LessThanOrEqual:
-					return BinaryOperatorType.GreaterThan;
-				case BinaryOperatorType.Equality:
-					return BinaryOperatorType.InEquality;
-				case BinaryOperatorType.InEquality:
-					return BinaryOperatorType.Equality;
-			}
-			return BinaryOperatorType.Any;
-		}
 
 		protected override CodeAction GetAction (RefactoringContext context, BinaryOperatorExpression node)
 		{
-			var newOp = NegateRelationalOperator (node.Operator);
+			var newOp = CSharpUtil.NegateRelationalOperator (node.Operator);
 			if (newOp != BinaryOperatorType.Any && node.OperatorToken.Contains (context.Location))
 				return new CodeAction (string.Format (context.TranslateString ("Negate {0}"), node.Operator),
 					script => {
