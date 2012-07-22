@@ -73,11 +73,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		*/
 		
-		
+		/// <summary>
+		/// Open File
+		/// </summary>
+		/// <param name="filter" or String.Empty></param>
+		/// <returns FileName></returns>
 		public static string OpenFile (string filter)
 		{
 			var dialog = new OpenFileDialog();
-			dialog.Filter = StringParser.Parse(filter);
+			if (String.IsNullOrEmpty(filter)) {
+				dialog.Filter = StringParser.Parse(filter);
+			}
+			
 			if (dialog.ShowDialog() ?? false) {
 				return dialog.FileName;
 			}

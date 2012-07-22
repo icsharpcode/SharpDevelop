@@ -17,8 +17,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
-using Microsoft.Win32;
-
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
@@ -30,7 +28,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		private const string iconsfilter = "${res:SharpDevelop.FileFilter.Icons}|*.ico|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string manifestFilter = "${res:Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles}|*.manifest|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
 		private const string win32filter = "Win32 Resource files|*.res|${res:SharpDevelop.FileFilter.AllFiles}|*.*";
-//		MSBuildBasedProject project;
 		
 		public ApplicationSettings()
 		{

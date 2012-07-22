@@ -21,6 +21,9 @@
 		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
 		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"/>
+	<OptionPanel id          = "SourceAnalysis"
+		             label       = "${res:AddIns.SourceAnalysis.Title}"
+		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanelXaml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
@@ -45,5 +48,6 @@
 		<OptionPanel id    = "SourceAnalysisOptionPanel"
 		             label = "${res:AddIns.SourceAnalysis.Title}"
 		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
+		
 	</Path>
 </AddIn>
