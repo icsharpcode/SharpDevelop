@@ -20,10 +20,10 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverSettings>\r\n" +
+			string xml = "<OpenCoverSettings>\r\n" +
 						"   <Rule/>\r\n" +
 						"   <Rule></Rule>\r\n" +
-						"</PartCoverSettings>";
+						"</OpenCoverSettings>";
 			
 			settings = new OpenCoverSettings(new StringReader(xml));
 		}

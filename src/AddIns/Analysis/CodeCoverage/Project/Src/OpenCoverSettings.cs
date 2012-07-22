@@ -12,14 +12,14 @@ using ICSharpCode.SharpDevelop.Project;
 namespace ICSharpCode.CodeCoverage
 {
 	/// <summary>
-	/// File that stores PartCover settings. This file has the same format as
-	/// PartCover requires, but is actually just used by the Code Coverage addin
+	/// File that stores OpenCover settings. This file has the same format as
+	/// OpenCover requires, but is actually just used by the Code Coverage addin
 	/// as a place to store the include and exclude regular expressions that the
 	/// user may set up on a per project basis.
 	/// </summary>
 	public class OpenCoverSettings
 	{
-		static readonly string RootElementName = "PartCoverSettings";
+		static readonly string RootElementName = "OpenCoverSettings";
 		static readonly string RuleElementName = "Rule";
 		StringCollection include = new StringCollection();
 		StringCollection exclude = new StringCollection();
@@ -44,11 +44,11 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Gets the NCover settings filename for the specified project.
+		/// Gets the OpenCover settings filename for the specified project.
 		/// </summary>
 		public static string GetFileName(IProject project)
 		{
-			return Path.ChangeExtension(project.FileName, "PartCover.Settings");
+			return Path.ChangeExtension(project.FileName, "OpenCover.Settings");
 		}
 		
 		/// <summary>
@@ -66,7 +66,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 	
 		/// <summary>
-		/// Writes the PartCover settings to the specified text writer.
+		/// Writes the OpenCover settings to the specified text writer.
 		/// </summary>
 		public void Save(TextWriter writer)
 		{
@@ -74,7 +74,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Saves the PartCover settings to the specified file.
+		/// Saves the OpenCover settings to the specified file.
 		/// </summary>
 		public void Save(string fileName)
 		{
@@ -82,7 +82,7 @@ namespace ICSharpCode.CodeCoverage
 		}
 		
 		/// <summary>
-		/// Writes the PartCover settings to the specified XmlTextWriter.
+		/// Writes the OpenCover settings to the specified XmlTextWriter.
 		/// </summary>
 		public void Save(XmlTextWriter writer)
 		{
@@ -98,7 +98,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		/// <summary>
 		/// Reads the include and exclude regular expressions from the
-		/// PartCover settings xml.
+		/// OpenCover settings xml.
 		/// </summary>
 		void ReadSettings(XmlReader reader)
 		{

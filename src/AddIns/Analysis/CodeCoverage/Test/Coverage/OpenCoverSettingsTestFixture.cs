@@ -57,7 +57,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		}
 		
 		[Test]
-		public void PartCoverSettingsFileName()
+		public void OpenCoverSettingsFileName()
 		{
 			MSBuildBasedProject project = new MSBuildBasedProject(
 				new ProjectCreateInformation {
@@ -66,19 +66,19 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 					ProjectName = "test"
 				});
 			
-			Assert.AreEqual(@"C:\temp\test.PartCover.Settings", OpenCoverSettings.GetFileName(project));
+			Assert.AreEqual(@"C:\temp\test.OpenCover.Settings", OpenCoverSettings.GetFileName(project));
 		}
 		
 		[Test]
 		public void FourRuleElements()
 		{			
-			Assert.AreEqual(4, doc.SelectNodes("/PartCoverSettings/Rule").Count);
+			Assert.AreEqual(4, doc.SelectNodes("/OpenCoverSettings/Rule").Count);
 		}
 		
 		[Test]
 		public void FirstRuleElement()
 		{
-			Assert.IsNotNull(doc.SelectSingleNode("/PartCoverSettings/Rule[text()='+[a]*']"));
+			Assert.IsNotNull(doc.SelectSingleNode("/OpenCoverSettings/Rule[text()='+[a]*']"));
 		}
 	}
 }

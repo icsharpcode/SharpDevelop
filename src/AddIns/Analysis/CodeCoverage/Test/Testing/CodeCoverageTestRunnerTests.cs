@@ -118,7 +118,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			string expectedCommandLine =
 				"-register:user -target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
 				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"-targetargs \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml /results=\\\"d:\\temp\\results.txt\\\"\" " +
+				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml /results=\\\"d:\\temp\\results.txt\\\"\" " +
 				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
 				"-filter:\"+[MyTests]* \"";
 			
@@ -215,12 +215,12 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		string GetCodeCoverageCommandLine()
 		{
 			return 
-				"\"d:\\sharpdevelop\\bin\\Tools\\PartCover\\PartCover.exe\" " +
-				"--target \"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
-				"--target-work-dir \"c:\\projects\\MyTests\\bin\\Debug\" " +
-				"--target-args \"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
-				"--output \"c:\\projects\\MyTests\\PartCover\\coverage.xml\" " +
-				"--include [*]*";
+				"\"d:\\sharpdevelop\\bin\\Tools\\OpenCover\\OpenCover.Console.exe\" -register:user " +
+				"-target:\"d:\\sharpdevelop\\bin\\Tools\\NUnit\\nunit-console-x86.exe\" " +
+				"-targetdir:\"c:\\projects\\MyTests\\bin\\Debug\" " +
+				"-targetargs:\"\\\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\\\" /noxml\" " + 
+				"-output:\"c:\\projects\\MyTests\\OpenCover\\coverage.xml\" " +
+				"-filter:\"+[*]* \"";
 		}
 		
 		[Test]

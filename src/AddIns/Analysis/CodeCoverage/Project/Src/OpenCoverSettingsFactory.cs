@@ -21,16 +21,16 @@ namespace ICSharpCode.CodeCoverage
 		{
 		}
 		
-		public OpenCoverSettings CreatePartCoverSettings(IProject project)
+		public OpenCoverSettings CreateOpenCoverSettings(IProject project)
 		{
 			string fileName = OpenCoverSettings.GetFileName(project);
 			if (fileSystem.FileExists(fileName)) {
-				return CreatePartCoverSettingsFromFile(fileName);
+				return CreateOpenCoverSettingsFromFile(fileName);
 			}
 			return new OpenCoverSettings();
 		}
 		
-		OpenCoverSettings CreatePartCoverSettingsFromFile(string fileName)
+		OpenCoverSettings CreateOpenCoverSettingsFromFile(string fileName)
 		{
 			TextReader reader = fileSystem.CreateTextReader(fileName);
 			return new OpenCoverSettings(reader);

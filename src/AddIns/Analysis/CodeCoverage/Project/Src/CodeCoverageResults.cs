@@ -76,7 +76,14 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		CodeCoverageModule AddModule(XElement reader, string className)
 		{
-			CodeCoverageModule module = new CodeCoverageModule(className);
+			string assemblyName = GetAssemblyName(reader);
+			foreach (CodeCoverageModule existingModule in modules) {
+				if (existingModule.Name == assemblyName) {
+					return existingModule;
+				}
+			}
+			
+			CodeCoverageModule module = new CodeCoverageModule(assemblyName);
 			modules.Add(module);
 
 			var methods = reader
@@ -89,6 +96,12 @@ namespace ICSharpCode.CodeCoverage
 				AddMethod(module, className, method);
 			}
 			return module;
+		}
+		
+		string GetAssemblyName(XElement reader)
+		{
+			string id = reader.Attribute("hash").Value;
+			return GetAssembly(id);
 		}
 		
 		CodeCoverageMethod AddMethod(CodeCoverageModule module, string className, XElement reader)

@@ -66,7 +66,7 @@ namespace ICSharpCode.CodeCoverage
 			NUnitConsoleApplication nunitConsoleApp = new NUnitConsoleApplication(selectedTests, options);
 			nunitConsoleApp.Results = base.TestResultsMonitor.FileName;
 			
-			OpenCoverSettings settings = settingsFactory.CreatePartCoverSettings(selectedTests.Project);
+			OpenCoverSettings settings = settingsFactory.CreateOpenCoverSettings(selectedTests.Project);
 			partCoverApplication = new OpenCoverApplication(nunitConsoleApp, settings);
 		}
 		
