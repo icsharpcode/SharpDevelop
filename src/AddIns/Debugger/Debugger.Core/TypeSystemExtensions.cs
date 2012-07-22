@@ -61,6 +61,7 @@ namespace Debugger
 		{
 			CecilLoader loader = new CecilLoader(true);
 			loader.IncludeInternalMembers = true;
+			loader.LazyLoad = true;
 			var asm = loader.LoadAssemblyFile(name);
 			var moduleMetadataInfo = new ModuleMetadataInfo(module);
 			foreach (var typeDef in asm.GetAllTypeDefinitions()) {

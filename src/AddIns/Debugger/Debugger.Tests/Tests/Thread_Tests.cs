@@ -49,10 +49,10 @@ namespace Debugger.Tests {
     <Paused>Thread_Tests.cs:12,4-12,40</Paused>
     <Thread>
       <Thread
-        Callstack="{[Method Debugger.Tests.Thread_Tests.Main]}"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main]"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main():System.Void]"
         Name=""
         Priority="Normal"
         RuntimeValue="null" />
@@ -60,10 +60,10 @@ namespace Debugger.Tests {
     <Paused>Thread_Tests.cs:15,4-15,40</Paused>
     <Thread>
       <Thread
-        Callstack="{[Method Debugger.Tests.Thread_Tests.Main]}"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main]"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main():System.Void]"
         Name=""
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}" />
@@ -71,10 +71,10 @@ namespace Debugger.Tests {
     <Paused>Thread_Tests.cs:17,4-17,40</Paused>
     <Thread>
       <Thread
-        Callstack="{[Method Debugger.Tests.Thread_Tests.Main]}"
+        Callstack="{[Method Debugger.Tests.Thread_Tests.Main():System.Void]}"
         IsAtSafePoint="True"
         IsInValidState="True"
-        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main]"
+        MostRecentStackFrame="[Method Debugger.Tests.Thread_Tests.Main():System.Void]"
         Name="ThreadName"
         Priority="AboveNormal"
         RuntimeValue="{System.Threading.Thread}" />
