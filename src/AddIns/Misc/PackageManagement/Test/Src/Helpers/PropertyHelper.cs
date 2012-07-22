@@ -8,14 +8,13 @@ using Rhino.Mocks;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class PropertyHelper
+	public class PropertyHelper : MethodOrPropertyHelper
 	{
 		public IProperty Property;
 		public ProjectContentHelper ProjectContentHelper = new ProjectContentHelper();
 		public ReturnTypeHelper ReturnTypeHelper = new ReturnTypeHelper();
 		
 		List<IAttribute> attributes = new List<IAttribute>();
-		List<IParameter> parameters = new List<IParameter>();
 		
 		/// <summary>
 		/// Property name should include class prefix (e.g. "Class1.MyProperty")
@@ -79,13 +78,6 @@ namespace PackageManagement.Tests.Helpers
 		{
 			HasGetter = false;
 			HasSetter = true;
-		}
-		
-		public void AddParameterToProperty(string name)
-		{
-			IParameter parameter = MockRepository.GenerateStub<IParameter>();
-			parameter.Stub(p => p.Name).Return(name);
-			parameters.Add(parameter);
 		}
 		
 		public void GetterModifierIsPrivate()

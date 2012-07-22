@@ -125,7 +125,7 @@ namespace PackageManagement.Tests.EnvDTE
 		public void Parameters_PropertyIsIndexerWithOneParameter_ReturnsOneParameter()
 		{
 			helper.CreatePublicProperty("MyProperty");
-			helper.AddParameterToProperty("item");
+			helper.AddParameter("item");
 			CreateCodeProperty2();
 			
 			CodeElements parameters = property.Parameters;

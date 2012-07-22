@@ -32,7 +32,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public CodeElements Parameters {
-			get { return new CodePropertyParameters(Property); }
+			get { return new CodeParameters(Property.Parameters); }
 		}
 	}
 }

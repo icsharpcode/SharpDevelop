@@ -2,23 +2,21 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PackageManagement.EnvDTE
 {
-	public class CodePropertyParameters : CodeElementsList
+	public class CodeParameters : CodeElementsList
 	{
-		IProperty property;
-		
-		public CodePropertyParameters(IProperty property)
+		public CodeParameters(IEnumerable<IParameter> parameters)
 		{
-			this.property = property;
-			AddParameters();
+			AddParameters(parameters);
 		}
 		
-		void AddParameters()
+		void AddParameters(IEnumerable<IParameter> parameters)
 		{
-			foreach (IParameter parameter in property.Parameters) {
+			foreach (IParameter parameter in parameters) {
 				AddParameters(parameter);
 			}
 		}

@@ -49,6 +49,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddDeclaringType(name);
 		}
 		
+		void AddParameterToMethod(string name)
+		{
+			helper.AddParameter(name);
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -143,6 +148,27 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			Assert.AreEqual(1, point.Line);
 			Assert.AreEqual(10, point.LineCharOffset);
+		}
+		
+		[Test]
+		public void Parameters_MethodHasNoParameters_ReturnsEmptyListOfItems()
+		{
+			CreatePublicFunction("MyClass.MyMethod");
+			
+			CodeElements parameters = codeFunction.Parameters;
+			
+			Assert.AreEqual(0, parameters.Count);
+		}
+		
+		[Test]
+		public void Parameters_MethodHasOneParameter_ReturnsOneCodeParameter()
+		{
+			AddParameterToMethod("test");
+			CreatePublicFunction("MyClass.MyMethod");
+			
+			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
+			
+			Assert.AreEqual("test", parameter.Name);
 		}
 	}
 }
