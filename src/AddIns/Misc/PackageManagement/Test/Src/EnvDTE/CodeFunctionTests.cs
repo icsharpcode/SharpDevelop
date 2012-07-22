@@ -54,6 +54,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddParameter(name);
 		}
 		
+		void AddParameterToMethod(string type, string name)
+		{
+			helper.AddParameter(type, name);
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -169,6 +174,28 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
 			
 			Assert.AreEqual("test", parameter.Name);
+		}
+		
+		[Test]
+		public void Parameters_MethodHasOneStringParameter_ReturnsOneCodeParameterWithStringType()
+		{
+			AddParameterToMethod("System.String", "test");
+			CreatePublicFunction("MyClass.MyMethod");
+			
+			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
+			
+			Assert.AreEqual("System.String", parameter.Type.AsFullName);
+		}
+		
+		[Test]
+		public void Parameters_MethodHasOneStringParameter_CreatesCodeParameterWithProjectContent()
+		{
+			AddParameterToMethod("System.String", "test");
+			CreatePublicFunction("MyClass.MyMethod");
+			
+			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
+			
+			Assert.AreEqual("string", parameter.Type.AsString);
 		}
 	}
 }

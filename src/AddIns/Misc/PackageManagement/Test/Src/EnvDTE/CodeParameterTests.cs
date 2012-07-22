@@ -14,7 +14,7 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void CreateParameter()
 		{
-			parameter = new CodeParameter(null);
+			parameter = new CodeParameter(null, null);
 		}
 		
 		[Test]

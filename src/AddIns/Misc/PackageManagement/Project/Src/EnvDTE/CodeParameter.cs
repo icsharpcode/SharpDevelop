@@ -8,10 +8,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeParameter : CodeElement
 	{
+		IProjectContent projectContent;
 		IParameter parameter;
 		
-		public CodeParameter(IParameter parameter)
+		public CodeParameter(IProjectContent projectContent, IParameter parameter)
 		{
+			this.projectContent = projectContent;
 			this.parameter = parameter;
 		}
 		
@@ -21,6 +23,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public override string Name {
 			get { return parameter.Name; }
+		}
+		
+		public virtual CodeTypeRef2 Type {
+			get { return new CodeTypeRef2(projectContent, null, parameter.ReturnType); }
 		}
 	}
 }

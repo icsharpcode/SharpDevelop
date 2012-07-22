@@ -52,7 +52,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		}
 		
 		public virtual CodeElements Parameters {
-			get { return new CodeParameters(method.Parameters); }
+			get { return new CodeParameters(method.ProjectContent, method.Parameters); }
 		}
 	}
 }

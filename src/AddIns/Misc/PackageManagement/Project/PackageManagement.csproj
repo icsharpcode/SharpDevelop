@@ -98,7 +98,7 @@
     <Compile Include="Src\EnvDTE\CodeGetterOrSetterFunction.cs" />
     <Compile Include="Src\EnvDTE\CodeImport.cs" />
     <Compile Include="Src\EnvDTE\CodeInterface.cs" />
-    <Compile Include="Src\EnvDTE\CodeMethodOrPropertyParameters.cs" />
+    <Compile Include="Src\EnvDTE\CodeParameters.cs" />
     <Compile Include="Src\EnvDTE\CodeModel.cs" />
     <Compile Include="Src\EnvDTE\CodeModelLanguageConstants.cs" />
     <Compile Include="Src\EnvDTE\CodeNamespace.cs" />

@@ -9,8 +9,11 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 {
 	public class CodeParameters : CodeElementsList
 	{
-		public CodeParameters(IEnumerable<IParameter> parameters)
+		IProjectContent projectContent;
+		
+		public CodeParameters(IProjectContent projectContent, IEnumerable<IParameter> parameters)
 		{
+			this.projectContent = projectContent;
 			AddParameters(parameters);
 		}
 		
@@ -23,7 +26,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		void AddParameters(IParameter parameter)
 		{
-			AddCodeElement(new CodeParameter(parameter));
+			AddCodeElement(new CodeParameter(projectContent, parameter));
 		}
 	}
 }

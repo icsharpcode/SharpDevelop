@@ -14,8 +14,19 @@ namespace PackageManagement.Tests.Helpers
 		
 		public void AddParameter(string name)
 		{
+			AddParameter("System.String", name);
+		}
+		
+		public void AddParameter(string type, string name)
+		{
 			IParameter parameter = MockRepository.GenerateStub<IParameter>();
 			parameter.Stub(p => p.Name).Return(name);
+			
+			var returnTypeHelper = new ReturnTypeHelper();
+			returnTypeHelper.CreateReturnType("System.String");
+			returnTypeHelper.AddDotNetName("System.String");
+			parameter.ReturnType = returnTypeHelper.ReturnType;
+			
 			parameters.Add(parameter);
 		}
 	}
