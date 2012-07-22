@@ -205,5 +205,19 @@ public class Form1 {
 					typeof(NamespaceDeclaration)
 				}, cu.Children.Select(c => c.GetType()).ToArray());
 		}
+		
+		[Ignore("Fixme!")]
+		[Test]
+		public void AssemblyAttributeBeforeClass()
+		{
+			var cu = new CSharpParser().Parse(new StringReader("using System; [assembly: Attr] class X {}"), "code.cs");
+			Assert.AreEqual(
+				new Type[] {
+					typeof(UsingDeclaration),
+					typeof(AttributeSection),
+					typeof(TypeDeclaration)
+				}, cu.Children.Select(c => c.GetType()).ToArray());
+			Assert.That(((TypeDeclaration)cu.LastChild).Attributes, Is.Empty);
+		}
 	}
 }

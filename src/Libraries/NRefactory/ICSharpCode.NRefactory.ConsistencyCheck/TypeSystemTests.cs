@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 						if (!typeDef.Equals(part.Resolve(assemblyContext)))
 							throw new InvalidOperationException();
 					}
-					foreach (var member in typeDef.Members) {
+					foreach (var member in IncludeAccessors(typeDef.Members)) {
 						var resolvedMember = member.UnresolvedMember.Resolve(assemblyContext);
 						if (!member.Equals(resolvedMember))
 							throw new InvalidOperationException();
@@ -75,12 +75,31 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 					else
 						context = compilation.TypeResolveContext;
 					// Include (potentially specialized) inherited members when testing ToMemberReference()
-					foreach (var member in typeDef.GetMembers()) {
+					foreach (var member in IncludeAccessors(typeDef.GetMembers())) {
 						var resolvedMember = member.ToMemberReference().Resolve(context);
 						if (!member.Equals(resolvedMember))
 							throw new InvalidOperationException();
 					}
 				}
+			}
+		}
+		
+		static IEnumerable<IMember> IncludeAccessors(IEnumerable<IMember> members)
+		{
+			foreach (var member in members) {
+				yield return member;
+				IProperty p = member as IProperty;
+				if (p != null && p.CanGet)
+					yield return p.Getter;
+				if (p != null && p.CanSet)
+					yield return p.Setter;
+				IEvent e = member as IEvent;
+				if (e != null && e.CanAdd)
+					yield return e.AddAccessor;
+				if (e != null && e.CanRemove)
+					yield return e.RemoveAccessor;
+				if (e != null && e.CanInvoke)
+					yield return e.InvokeAccessor;
 			}
 		}
 	}

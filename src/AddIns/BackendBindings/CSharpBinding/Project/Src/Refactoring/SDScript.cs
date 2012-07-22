@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CSharpBinding.Parser;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory;
@@ -71,24 +72,27 @@ namespace CSharpBinding.Refactoring
 			editor.Select(startOffset, endOffset - startOffset);
 		}
 		
-		public override void Link(params AstNode[] nodes)
+		static readonly Task completedTask = Task.FromResult<object>(null);
+		
+		public override Task Link(params AstNode[] nodes)
 		{
 			// TODO
+			return completedTask;
 		}
 		
-		public override void InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
+		public override Task InsertWithCursor(string operation, InsertPosition defaultPosition, IEnumerable<AstNode> nodes)
 		{
 			AstNode contextNode = context.GetNode();
 			if (contextNode == null)
-				return;
+				return completedTask;
 			var resolver = context.GetResolverStateBefore(contextNode);
-			InsertWithCursor(operation, resolver.CurrentTypeDefinition, nodes);
+			return InsertWithCursor(operation, resolver.CurrentTypeDefinition, nodes);
 		}
 		
-		public override void InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
+		public override Task InsertWithCursor(string operation, ITypeDefinition parentType, IEnumerable<AstNode> nodes)
 		{
 			if (parentType == null)
-				return;
+				return completedTask;
 			var currentPart = parentType.Parts.FirstOrDefault(p => p.ParsedFile != null && string.Equals(p.ParsedFile.FileName, editor.FileName, StringComparison.OrdinalIgnoreCase));
 			if (currentPart != null) {
 				var insertionPoints = InsertionPoint.GetInsertionPoints(editor.Document, currentPart);
@@ -100,6 +104,7 @@ namespace CSharpBinding.Refactoring
 					}
 				}
 			}
+			return completedTask;
 		}
 		
 		public override void Dispose()

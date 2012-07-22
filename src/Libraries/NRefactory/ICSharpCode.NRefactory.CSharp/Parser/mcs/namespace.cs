@@ -591,6 +591,14 @@ namespace Mono.CSharp {
 			}
 		}
 
+		public IEnumerable<string> Conditionals {
+			get {
+				if (conditionals == null)
+					return Enumerable.Empty<string> ();
+				return conditionals.Where (kv => kv.Value).Select (kv => kv.Key);
+			}
+		}
+
 		public string FileName {
 			get {
 				return file.Name;
@@ -1182,11 +1190,23 @@ namespace Mono.CSharp {
 
 					entry.Define (this);
 
+					//
+					// It's needed for repl only, when using clause cannot be resolved don't hold it in
+					// global list which is resolved for each evaluation
+					//
+					if (entry.ResolvedExpression == null) {
+						clauses.RemoveAt (i--);
+						continue;
+					}
+
 					Namespace using_ns = entry.ResolvedExpression as Namespace;
 					if (using_ns == null)
 						continue;
 
 					if (list.Contains (using_ns)) {
+						// Ensure we don't report the warning multiple times in repl
+						clauses.RemoveAt (i--);
+
 						Compiler.Report.Warning (105, 3, entry.Location,
 							"The using directive for `{0}' appeared previously in this namespace", using_ns.GetSignatureForError ());
 					} else {

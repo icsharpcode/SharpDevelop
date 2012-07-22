@@ -55,9 +55,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			if (file.FileName.EndsWith("DefaultResolvedTypeDefinition.cs"))
 				return; // skip due to MethodDeclarationTests.GenericMethodWithMultipleConstraints
 			
-			Roundtrip(file.Project.CreateParser(), file.FileName, code);
+			Roundtrip(new CSharpParser(file.Project.CompilerSettings), file.FileName, code);
 			// After trying unix-style newlines, also try windows-style newlines:
-			Roundtrip(file.Project.CreateParser(), file.FileName, code.Replace("\n", "\r\n"));
+			Roundtrip(new CSharpParser(file.Project.CompilerSettings), file.FileName, code.Replace("\n", "\r\n"));
 		}
 		
 		public static void Roundtrip(CSharpParser parser, string fileName, string code)

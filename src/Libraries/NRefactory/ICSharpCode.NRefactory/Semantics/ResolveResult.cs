@@ -70,5 +70,10 @@ namespace ICSharpCode.NRefactory.Semantics
 		{
 			return DomRegion.Empty;
 		}
+		
+		public virtual ResolveResult ShallowClone()
+		{
+			return (ResolveResult)MemberwiseClone();
+		}
 	}
 }

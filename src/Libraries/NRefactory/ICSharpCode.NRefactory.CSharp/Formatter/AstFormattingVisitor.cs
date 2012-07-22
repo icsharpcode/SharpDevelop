@@ -97,6 +97,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
+
+		public DomRegion FormattingRegion {
+			get;
+			set;
+		}
 		
 		public AstFormattingVisitor(CSharpFormattingOptions policy, IDocument document, TextEditorOptions options = null)
 		{
@@ -110,6 +115,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.document = document;
 			this.options = options ?? TextEditorOptions.Default;
 			curIndent = new Indent(this.options);
+		}
+
+		protected override void VisitChildren (AstNode node)
+		{
+			if (!FormattingRegion.IsEmpty) {
+				if (node.EndLocation < FormattingRegion.Begin || node.StartLocation > FormattingRegion.End)
+					return;
+			}
+
+			AstNode next;
+			for (var child = node.FirstChild; child != null; child = next) {
+				// Store next to allow the loop to continue
+				// if the visitor removes/replaces child.
+				next = child.NextSibling;
+				child.AcceptVisitor (this);
+			}
 		}
 		
 		/// <summary>
@@ -152,10 +173,10 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (change.Offset < previousChange.Offset + previousChange.RemovalLength) {
 						#if DEBUG
-						Console.WriteLine ("change 1:" + change);
+						Console.WriteLine ("change 1:" + change + " at " + document.GetLocation (change.Offset));
 						Console.WriteLine (change.StackTrace);
 
-						Console.WriteLine ("change 2:" + change);
+						Console.WriteLine ("change 2:" + previousChange + " at " + document.GetLocation (previousChange.Offset));
 						Console.WriteLine (previousChange.StackTrace);
 						#endif
 						throw new InvalidOperationException ("Detected overlapping changes " + change + "/" + previousChange);
@@ -1624,6 +1645,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (!anonymousMethodExpression.Body.IsNull) {
 				EnforceBraceStyle(policy.AnonymousMethodBraceStyle, anonymousMethodExpression.Body.LBraceToken, anonymousMethodExpression.Body.RBraceToken);
+				VisitBlockWithoutFixingBraces(anonymousMethodExpression.Body, policy.IndentBlocks);
+				return;
 			}
 			base.VisitAnonymousMethodExpression(anonymousMethodExpression);
 		}
@@ -1822,7 +1845,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					if (methodCallArgumentWrapping == Wrapping.DoNotWrap) {
 						ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
 					} else {
-						bool sameLine = rParToken.GetPrevNode().StartLocation.Line == rParToken.StartLocation.Line;
+						bool sameLine = rParToken.GetPrevNode().EndLocation.Line == rParToken.StartLocation.Line;
 						if (sameLine) {
 							ForceSpacesBeforeRemoveNewLines(rParToken, spaceWithinMethodCallParentheses);
 						} else {

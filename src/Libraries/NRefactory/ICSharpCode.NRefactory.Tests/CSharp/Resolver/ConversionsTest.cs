@@ -33,15 +33,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	using C = Conversion;
 	
 	[TestFixture]
-	public unsafe class ConversionsTest
+	public unsafe class ConversionsTest : ResolverTestBase
 	{
-		ICompilation compilation;
 		CSharpConversions conversions;
 		
-		[SetUp]
-		public void SetUp()
+		public override void SetUp()
 		{
-			compilation = new SimpleCompilation(CecilLoaderTests.Mscorlib);
+			base.SetUp();
 			conversions = new CSharpConversions(compilation);
 		}
 		
@@ -75,8 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void DynamicIdentityConversions()
 		{
-			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(object), typeof(ReflectionHelper.Dynamic)));
-			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(ReflectionHelper.Dynamic), typeof(object)));
+			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(object), typeof(dynamic)));
+			Assert.AreEqual(C.IdentityConversion, ImplicitConversion(typeof(dynamic), typeof(object)));
 		}
 		
 		[Test]
@@ -157,12 +155,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
-		public void SimpleDynamicConversions()
+		public void ConversionToDynamic()
 		{
 			Assert.AreEqual(C.ImplicitReferenceConversion, ImplicitConversion(typeof(string),  typeof(dynamic)));
-			Assert.AreEqual(C.ImplicitDynamicConversion,   ImplicitConversion(typeof(dynamic), typeof(string)));
 			Assert.AreEqual(C.BoxingConversion,            ImplicitConversion(typeof(int),     typeof(dynamic)));
-			Assert.AreEqual(C.ImplicitDynamicConversion,   ImplicitConversion(typeof(dynamic), typeof(int)));
+		}
+		
+		[Test]
+		public void ConversionFromDynamic()
+		{
+			// There is no conversion from the type 'dynamic' to other types (except object).
+			// Such conversions only exists from dynamic expression.
+			// This is an important distinction for type inference (see TypeInferenceTests.IEnumerableCovarianceWithDynamic)
+			Assert.AreEqual(C.None, ImplicitConversion(typeof(dynamic), typeof(string)));
+			Assert.AreEqual(C.None, ImplicitConversion(typeof(dynamic), typeof(int)));
+			
+			var dynamicRR = new ResolveResult(SpecialType.Dynamic);
+			Assert.AreEqual(C.ImplicitDynamicConversion, conversions.ImplicitConversion(dynamicRR, compilation.FindType(typeof(string))));
+			Assert.AreEqual(C.ImplicitDynamicConversion, conversions.ImplicitConversion(dynamicRR, compilation.FindType(typeof(int))));
 		}
 		
 		[Test]
@@ -511,6 +521,50 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType type1 = new ParameterizedType(resolvedB, new [] { compilation.FindType(KnownTypeCode.Double) });
 			IType type2 = new ParameterizedType(resolvedA, new [] { new ParameterizedType(resolvedB, new[] { compilation.FindType(KnownTypeCode.String) }) });
 			Assert.IsFalse(conversions.ImplicitConversion(type1, type2).IsValid);
+		}
+
+		[Test]
+		public void ExplicitUserDefinedConversion()
+		{
+			var rr = Resolve<ConversionResolveResult>(@"
+class C1 {}
+class C2 {
+	public static explicit operator C1(C2 c2) {
+		return null;
+	}
+}
+class C {
+	public void M() {
+		var c2 = new C2();
+		C1 c1 = $(C1)c2$;
+	}
+}");
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("op_Explicit", rr.Conversion.Method.Name);
+		}
+		
+		[Test]
+		public void ImplicitTypeParameterConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T t) where T : U {
+		U u = $t$;
+	}
+}";
+			Assert.AreEqual(C.BoxingConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void InvalidImplicitTypeParameterConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T t) where U : T {
+		U u = $t$;
+	}
+}";
+			Assert.AreEqual(C.None, GetConversion(program));
 		}
 	}
 }

@@ -144,7 +144,7 @@ namespace CSharpBinding.Refactoring
 							return null;
 						// Now rediscover this issue in the new context
 						var issue = this.Provider.GetIssues(context).FirstOrDefault(
-							i => context.GetOffset(i.Start) == newStart && context.GetOffset(i.End) == newEnd && i.Desription == this.Description);
+							i => context.GetOffset(i.Start) == newStart && context.GetOffset(i.End) == newEnd && i.Description == this.Description);
 						if (issue == null)
 							return null;
 						// Now look up the action within that issue:
@@ -259,7 +259,7 @@ namespace CSharpBinding.Refactoring
 									this,
 									issueProvider,
 									textSource.Version,
-									issue.Desription,
+									issue.Description,
 									context.GetOffset(issue.Start),
 									context.GetOffset(issue.End),
 									issue.Actions));

@@ -83,7 +83,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	object foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"		Console.WriteLine (foo);" + Environment.NewLine +
@@ -111,7 +110,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"class TestClass" + Environment.NewLine +
 				"{" + Environment.NewLine +
 				"	int foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"		foo = 0x10;" + Environment.NewLine +
@@ -141,7 +139,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				"{" + Environment.NewLine +
 				"	void FooBar(out string par) {}" + Environment.NewLine +
 				"	string foo;" + Environment.NewLine +
-				"" + Environment.NewLine +
 				"	void Test ()" + Environment.NewLine +
 				"	{" + Environment.NewLine +
 				"		FooBar(out foo);" + Environment.NewLine +
@@ -162,7 +159,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 }", @"static class TestClass
 {
 	static int foo;
-
 	public TestClass ()
 	{
 		foo = 5;
@@ -184,6 +180,33 @@ class Foo
 	}
 }
 ");
+		}
+
+		[Test()]
+		public void TestThisMemberReferenceCreation ()
+		{
+			string result = RunContextAction (
+				new CreateFieldAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	void Test ()" + Environment.NewLine +
+					"	{" + Environment.NewLine +
+					"		this.$foo = 0x10;" + Environment.NewLine +
+					"	}" + Environment.NewLine +
+					"}"
+			);
+
+			Assert.AreEqual (
+				"using System;" + Environment.NewLine +
+				"class TestClass" + Environment.NewLine +
+				"{" + Environment.NewLine +
+				"	int foo;" + Environment.NewLine +
+				"	void Test ()" + Environment.NewLine +
+				"	{" + Environment.NewLine +
+				"		this.foo = 0x10;" + Environment.NewLine +
+				"	}" + Environment.NewLine +
+				"}", result);
 		}
 
 	}

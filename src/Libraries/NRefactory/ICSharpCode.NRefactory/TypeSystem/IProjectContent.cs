@@ -43,6 +43,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IEnumerable<IAssemblyReference> AssemblyReferences { get; }
 		
 		/// <summary>
+		/// Gets the compiler settings object.
+		/// The concrete type of the settings object depends on the programming language used to implement this project.
+		/// </summary>
+		object CompilerSettings { get; }
+		
+		/// <summary>
 		/// Creates a new <see cref="ICompilation"/> that allows resolving within this project.
 		/// </summary>
 		/// <remarks>
@@ -63,7 +69,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Changes the assembly name of this project content.
 		/// </summary>
 		IProjectContent SetAssemblyName(string newAssemblyName);
-		
+
+		/// <summary>
+		/// Changes the location of this project content.
+		/// </summary>
+		IProjectContent SetLocation(string newLocation);
+
 		/// <summary>
 		/// Add assembly references to this project content.
 		/// </summary>
@@ -83,5 +94,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Removes types and attributes from oldFiles from the project, and adds those from newFiles.
 		/// </summary>
 		IProjectContent UpdateProjectContent(IEnumerable<IParsedFile> oldFiles, IEnumerable<IParsedFile> newFiles);
+		
+		/// <summary>
+		/// Sets the compiler settings object.
+		/// The concrete type of the settings object depends on the programming language used to implement this project.
+		/// Using the incorrect type of settings object results in an <see cref="ArgumentException"/>.
+		/// </summary>
+		IProjectContent SetCompilerSettings(object compilerSettings);
 	}
 }

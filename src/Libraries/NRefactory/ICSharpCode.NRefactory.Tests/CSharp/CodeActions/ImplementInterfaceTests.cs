@@ -56,7 +56,6 @@ class Foo : IDisposable
 		/// <summary>
 		/// Bug 663842 - Interface implementation does not include constraints
 		/// </summary>
-		[Ignore("TODO")]
 		[Test()]
 		public void TestBug663842()
 		{
@@ -82,21 +81,21 @@ interface ITest {
 class Foo : ITest
 {
 	#region ITest implementation
-	public void MyMethod1<T> (T t) where T : new ()
+	public void MyMethod1<T> (T t) where T : new()
 	{
-		throw new System.NotImplementedException ();
+		throw new NotImplementedException ();
 	}
 	public void MyMethod2<T> (T t) where T : class
 	{
-		throw new System.NotImplementedException ();
+		throw new NotImplementedException ();
 	}
 	public void MyMethod3<T> (T t) where T : struct
 	{
-		throw new System.NotImplementedException ();
+		throw new NotImplementedException ();
 	}
 	public void MyMethod4<T> (T t) where T : IDisposable, IServiceProvider
 	{
-		throw new System.NotImplementedException ();
+		throw new NotImplementedException ();
 	}
 	#endregion
 }
@@ -206,7 +205,6 @@ class Foo : ITest
 		/// <summary>
 		/// Bug 3365 - MD cannot implement IEnumerable interface correctly  - MD cannot implement IEnumerable interface correctly 
 		/// </summary>
-		[Ignore("TODO")]
 		[Test()]
 		public void TestBug3365()
 		{
@@ -238,19 +236,67 @@ public interface ITest : IA, IEnumerable
 
 class Foo : ITest
 {
-	#region ITest implementation
-	public bool GetEnumerator ()
+	#region IEnumerable implementation
+	public IEnumerator GetEnumerator ()
 	{
-		throw new System.NotImplementedException ();
+		throw new NotImplementedException ();
 	}
 	#endregion
-	#region IEnumerable implementation
-	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+	#region IA implementation
+	bool IA.GetEnumerator ()
 	{
-		throw new System.NotImplementedException ();
+		throw new NotImplementedException ();
 	}
 	#endregion
 }");
+		}
+
+
+		/// <summary>
+		/// Bug 4818 - Implement implicit does not handle 'params' types 
+		/// </summary>
+		[Test()]
+		public void TestBug4818()
+		{
+			Test<ImplementInterfaceAction>(@"using System;
+interface ITest {
+	void OnScenesAdded (params ITest[] scenes);
+}
+
+class Foo : $ITest
+{
+}
+", @"using System;
+interface ITest {
+	void OnScenesAdded (params ITest[] scenes);
+}
+
+class Foo : ITest
+{
+	#region ITest implementation
+	public void OnScenesAdded (params ITest[] scenes)
+	{
+		throw new NotImplementedException ();
+	}
+	#endregion
+}
+");
+
+			TestWrongContext<ImplementInterfaceAction>(@"using System;
+interface ITest {
+	void OnScenesAdded (params ITest[] scenes);
+}
+
+class Foo : $ITest
+{
+	#region ITest implementation
+	public void OnScenesAdded (params ITest[] scenes)
+	{
+		throw new NotImplementedException ();
+	}
+	#endregion
+}
+");
 		}
 	}
 }

@@ -199,46 +199,48 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			#endregion
 		}
 		
-		static CompletionDataList CreateProvider (string text, bool isCtrlSpace)
+		static CompletionDataList CreateProvider(string text, bool isCtrlSpace)
 		{
 			string parsedText;
 			string editorText;
-			int cursorPosition = text.IndexOf ('$');
-			int endPos = text.IndexOf ('$', cursorPosition + 1);
+			int cursorPosition = text.IndexOf('$');
+			int endPos = text.IndexOf('$', cursorPosition + 1);
 			if (endPos == -1) {
-				parsedText = editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1);
+				parsedText = editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1);
 			} else {
-				parsedText = text.Substring (0, cursorPosition) + new string (' ', endPos - cursorPosition) + text.Substring (endPos + 1);
-				editorText = text.Substring (0, cursorPosition) + text.Substring (cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring (endPos + 1);
+				parsedText = text.Substring(0, cursorPosition) + new string(' ', endPos - cursorPosition) + text.Substring(endPos + 1);
+				editorText = text.Substring(0, cursorPosition) + text.Substring(cursorPosition + 1, endPos - cursorPosition - 1) + text.Substring(endPos + 1);
 				cursorPosition = endPos - 1; 
 			}
-			var doc = new ReadOnlyDocument (editorText);
+			var doc = new ReadOnlyDocument(editorText);
 			
-			IProjectContent pctx = new CSharpProjectContent ();
-			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			IProjectContent pctx = new CSharpProjectContent();
+			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilationUnit = new CSharpParser ().Parse (parsedText, "program.cs");
-			compilationUnit.Freeze ();
+			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
+			compilationUnit.Freeze();
 			
-			var parsedFile = compilationUnit.ToTypeSystem ();
-			pctx = pctx.UpdateProjectContent (null, parsedFile);
+			var parsedFile = compilationUnit.ToTypeSystem();
+			pctx = pctx.UpdateProjectContent(null, parsedFile);
 			
-			var cmp = pctx.CreateCompilation ();
-			var loc = doc.GetLocation (cursorPosition);
+			var cmp = pctx.CreateCompilation();
+			var loc = doc.GetLocation(cursorPosition);
 			
-			var rctx = new CSharpTypeResolveContext (cmp.MainAssembly);
-			rctx = rctx.WithUsingScope (parsedFile.GetUsingScope (loc).Resolve (cmp));
+			var rctx = new CSharpTypeResolveContext(cmp.MainAssembly);
+			rctx = rctx.WithUsingScope(parsedFile.GetUsingScope(loc).Resolve(cmp));
 			
 
-			var curDef = parsedFile.GetInnermostTypeDefinition (loc);
+			var curDef = parsedFile.GetInnermostTypeDefinition(loc);
 			if (curDef != null) {
-				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
-				rctx = rctx.WithCurrentTypeDefinition (resolvedDef);
-				var curMember = resolvedDef.Members.FirstOrDefault (m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
-				if (curMember != null)
-					rctx = rctx.WithCurrentMember (curMember);
+				var resolvedDef = curDef.Resolve(rctx).GetDefinition();
+				rctx = rctx.WithCurrentTypeDefinition(resolvedDef);
+				var curMember = resolvedDef.Members.FirstOrDefault(m => m.Region.Begin <= loc && loc < m.BodyRegion.End);
+				if (curMember != null) {
+					rctx = rctx.WithCurrentMember(curMember);
+				}
 			}
-			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, rctx, compilationUnit, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, rctx);
 				
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
@@ -253,17 +255,18 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			};
 		}
 		
-		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent (string text, CompilationUnit compilationUnit)
+		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent(string text, CompilationUnit compilationUnit)
 		{
-			var doc = new ReadOnlyDocument (text);
-			IProjectContent pctx = new CSharpProjectContent ();
-			pctx = pctx.AddAssemblyReferences (new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			var parsedFile = compilationUnit.ToTypeSystem ();
+			var doc = new ReadOnlyDocument(text);
+			IProjectContent pctx = new CSharpProjectContent();
+			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
+			var parsedFile = compilationUnit.ToTypeSystem();
 			
-			pctx = pctx.UpdateProjectContent (null, parsedFile);
-			var cmp = pctx.CreateCompilation ();
+			pctx = pctx.UpdateProjectContent(null, parsedFile);
+			var cmp = pctx.CreateCompilation();
 			
-			var engine = new CSharpCompletionEngine (doc, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly), compilationUnit, parsedFile);
+			var mb = new DefaultCompletionContextProvider(doc, parsedFile);
+			var engine = new CSharpCompletionEngine (doc, mb, new TestFactory (), pctx, new CSharpTypeResolveContext (cmp.MainAssembly));
 			engine.EolMarker = Environment.NewLine;
 			engine.FormattingPolicy = FormattingOptionsFactory.CreateMono ();
 			return Tuple.Create (doc, engine);
@@ -4383,7 +4386,25 @@ namespace Test
 				Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
 			});
 		}
-		
+		[Test()]
+		public void TestNamedParameters2 ()
+		{
+			var provider = CreateCtrlSpaceProvider (
+@"class MyClass {
+    string Bar { get; set; }
+
+    void MethodOne(string foo="""", string bar="""")
+	{
+    }
+
+    void MethodTwo() {
+        MethodOne($$);
+    }
+}");
+			Assert.IsNotNull (provider.Find ("bar:"), "'bar:' not found.");
+			Assert.IsNotNull (provider.Find ("foo:"), "'foo:' not found.");
+		}
+
 		[Test()]
 		public void TestNamedParametersConstructorCase ()
 		{
@@ -4551,7 +4572,7 @@ class Test
     }
 }
 ");
-			Assert.AreEqual (4, provider.Count); // 2xTryParse + 2 fields
+			Assert.AreEqual (2, provider.Count); // 2 fields
 			Assert.IsNotNull (provider.Find ("Value1"), "field 'Value1' not found.");
 			Assert.IsNotNull (provider.Find ("Value2"), "field 'Value2' not found.");
 		}
@@ -5220,7 +5241,7 @@ public class TestFoo
 		public void TestBug4961()
 		{
 			CombinedProviderTest(
-@"using System;
+				@"using System;
 using System.Collections.Generic;
 
 namespace EnumerationProblem
@@ -5245,6 +5266,105 @@ namespace EnumerationProblem
 				Assert.IsNotNull(provider.Find("IwouldLoveIt"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 5191 - Creating extension method problem when typing "this" 
+		/// </summary>
+		[Test()]
+		public void TestBug5191()
+		{
+			CombinedProviderTest(
+@"using System;
+
+static class Ext
+{
+	$public static void Foo(t$
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("this"), "'this' not found.");
+			});
+
+			CombinedProviderTest(
+@"using System;
+
+static class Ext
+{
+	$public static void Foo(int foo, t$
+}
+", provider => {
+				Assert.IsNull(provider.Find("this"), "'this' found.");
+			});
+		}
+		
+		/// <summary>
+		/// Bug 5404 - Completion and highlighting for pointers 
+		/// </summary>
+		[Test()]
+		public void TestBug5404()
+		{
+			CombinedProviderTest(
+				@"using System;
+
+namespace TestConsole
+{
+unsafe class MainClass
+{
+public int i = 5, j =19;
+
+public static void Main (string[] args)
+{
+MainClass*  mc;
+$mc->$
+}
+}
+}
+", provider => {
+				Assert.IsNotNull(provider.Find("i"), "'i' not found.");
+			});
+		}
+		
+		/// <summary>
+		/// Bug 6146 - No intellisense on value keyword in property set method
+		/// </summary>
+		[Test()]
+		public void TestBug6146()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public FooBar Foo {
+		set {
+			$value.$
+		}
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Foo"));
+			});
+		}
+
+
+		[Test()]
+		public void TestBug6146Case2()
+		{
+			CombinedProviderTest(
+				@"using System;
+public class FooBar
+{
+	public FooBar Foo {
+		set {
+			$value.Foo.F$
+		}
+	}
+}
+
+", provider => {
+				Assert.IsNotNull(provider.Find("Foo"));
+			});
+		}
+
 
 	}
 }

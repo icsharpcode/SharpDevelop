@@ -31,21 +31,27 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class CSharpProjectContent : IProjectContent
 	{
 		string assemblyName;
+		string location;
 		Dictionary<string, IParsedFile> parsedFiles;
 		List<IAssemblyReference> assemblyReferences;
+		CompilerSettings compilerSettings;
 		
 		public CSharpProjectContent()
 		{
 			this.assemblyName = string.Empty;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>();
+			this.compilerSettings = new CompilerSettings();
+			compilerSettings.Freeze();
 		}
 		
 		protected CSharpProjectContent(CSharpProjectContent pc)
 		{
 			this.assemblyName = pc.assemblyName;
+			this.location = pc.location;
 			this.parsedFiles = new Dictionary<string, IParsedFile>(pc.parsedFiles, Platform.FileNameComparer);
 			this.assemblyReferences = new List<IAssemblyReference>(pc.assemblyReferences);
+			this.compilerSettings = pc.compilerSettings;
 		}
 		
 		public IEnumerable<IParsedFile> Files {
@@ -58,6 +64,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string AssemblyName {
 			get { return assemblyName; }
+		}
+
+		public string Location {
+			get { return location; }
+		}
+
+		public CompilerSettings CompilerSettings {
+			get { return compilerSettings; }
+		}
+		
+		object IProjectContent.CompilerSettings {
+			get { return compilerSettings; }
 		}
 		
 		public IEnumerable<IUnresolvedAttribute> AssemblyAttributes {
@@ -109,6 +127,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			CSharpProjectContent pc = Clone();
 			pc.assemblyName = newAssemblyName;
+			return pc;
+		}
+
+		public IProjectContent SetLocation(string location)
+		{
+			CSharpProjectContent pc = Clone();
+			pc.location = location;
+			return pc;
+		}
+		
+		public IProjectContent SetCompilerSettings(object compilerSettings)
+		{
+			if (!(compilerSettings is CompilerSettings))
+				throw new ArgumentException("Settings must be an instance of " + typeof(CompilerSettings).FullName, "compilerSettings");
+			CSharpProjectContent pc = Clone();
+			pc.compilerSettings = (CompilerSettings)compilerSettings;
+			pc.compilerSettings.Freeze();
 			return pc;
 		}
 		

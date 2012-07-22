@@ -161,5 +161,23 @@ namespace Bug5114
 ");
 			Assert.AreEqual("HandleLongPressGesture", rr.MethodName);
 		}
+
+		[Test]
+		public void ArrayInitializer()
+		{
+			Assert.IsNull(ResolveAtLocation(
+@"using System.Collections.Generic;
+class Foo { 
+	void Bar() 
+	{
+		var o = new Dictionary<int,int> () { 
+			{1$, 2 },
+			{1, 2 },
+			{1, 2 },
+			{1, 2 }
+		}; 
+	} 
+}"));
+		}
 	}
 }

@@ -72,21 +72,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VBDemo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="VBDemo.Designer.cs">
-      <DependentUpon>VBDemo.cs</DependentUpon>
+    <Compile Include="SemanticTreeDialog.cs" />
+    <Compile Include="SemanticTreeDialog.Designer.cs">
+      <DependentUpon>SemanticTreeDialog.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ICSharpCode.NRefactory.VB\ICSharpCode.NRefactory.VB.csproj">
-      <Project>{7B82B671-419F-45F4-B778-D9286F996EFA}</Project>
-      <Name>ICSharpCode.NRefactory.VB</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
@@ -100,8 +94,8 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VBDemo.resx">
-      <DependentUpon>VBDemo.cs</DependentUpon>
+    <EmbeddedResource Include="SemanticTreeDialog.resx">
+      <DependentUpon>SemanticTreeDialog.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

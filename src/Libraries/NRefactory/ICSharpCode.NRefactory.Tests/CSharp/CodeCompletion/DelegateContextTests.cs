@@ -72,6 +72,31 @@ public class Test
 				Assert.IsNotNull(provider.Find("delegate"));
 			});
 		}
+
+		/// <summary>
+		/// Bug 5207 - [regression] delegate completion like event completion 
+		/// </summary>
+		[Test()]
+		public void TestBug5207()
+		{
+			// note 'string bar = new Test ().ToString ()' would be valid.
+			CodeCompletionBugTests.CombinedProviderTest(
+@"using System;
+
+public class Test
+{
+	Action<int,int> foo;
+
+	void TestFoo()
+	{
+		$foo = d$
+	}
+}
+", provider => {
+				Assert.IsFalse(provider.AutoSelect);
+				Assert.IsNotNull(provider.Find("(arg1, arg2)"));
+			});
+		}
 	}
 }
 

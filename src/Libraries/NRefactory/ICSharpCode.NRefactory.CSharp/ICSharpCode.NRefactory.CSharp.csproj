@@ -14,7 +14,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\ICSharpCode.NRefactory.snk</AssemblyOriginatorKeyFile>
     <DelaySign>False</DelaySign>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
@@ -42,11 +42,10 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
-    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -184,6 +183,7 @@
     <Compile Include="OutputVisitor\IOutputFormatter.cs" />
     <Compile Include="OutputVisitor\CSharpOutputVisitor.cs" />
     <Compile Include="OutputVisitor\TextWriterOutputFormatter.cs" />
+    <Compile Include="Parser\CompilerSettings.cs" />
     <Compile Include="Parser\CSharpParser.cs" />
     <Compile Include="Parser\mcs\anonymous.cs" />
     <Compile Include="Parser\mcs\argument.cs" />
@@ -249,6 +249,8 @@
     <Compile Include="Refactoring\Script.cs" />
     <Compile Include="Refactoring\TypeSystemAstBuilder.cs" />
     <Compile Include="Resolver\CompositeResolveVisitorNavigator.cs" />
+    <Compile Include="Resolver\DynamicInvocationResolveResult.cs" />
+    <Compile Include="Resolver\DynamicMemberResolveResult.cs" />
     <Compile Include="Resolver\CSharpConversions.cs" />
     <Compile Include="Resolver\CSharpAstResolver.cs" />
     <Compile Include="Resolver\CSharpInvocationResolveResult.cs" />
@@ -294,7 +296,6 @@
     <Compile Include="Completion\CSharpCompletionEngine.cs" />
     <Compile Include="Completion\CSharpCompletionEngineBase.cs" />
     <Compile Include="Completion\CSharpParameterCompletionEngine.cs" />
-    <Compile Include="Completion\IMemberProvider.cs" />
     <Compile Include="Parser\mcs\module.cs" />
     <Compile Include="Parser\mcs\settings.cs" />
     <Compile Include="Parser\mcs\SourceMethodBuilder.cs" />
@@ -373,6 +374,9 @@
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementInterfaceExplicitAction.cs" />
     <Compile Include="Refactoring\CodeActions\ImplementAbstractMembersAction.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractFieldAction.cs" />
+    <Compile Include="Completion\ICompletionContextProvider.cs" />
+    <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

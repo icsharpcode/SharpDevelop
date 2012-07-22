@@ -56,6 +56,11 @@ namespace Mono.CSharp
 			XmlDocumentation = new XmlDocument ();
 			XmlDocumentation.PreserveWhitespace = false;
 		}
+		
+		internal DocumentationBuilder()
+		{
+			// for NRefactory CSharpParser.ParseDocumentationReference
+		}
 
 		Report Report {
 			get {

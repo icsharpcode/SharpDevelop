@@ -51,11 +51,10 @@ namespace CSharpBinding.Completion
 			
 			CSharpCompletionEngine cc = new CSharpCompletionEngine(
 				editor.Document,
+				new DefaultCompletionContextProvider(editor.Document, parseInfo.ParsedFile),
 				new CSharpCompletionDataFactory(),
 				pc,
-				parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location),
-				parseInfo.CompilationUnit,
-				parseInfo.ParsedFile
+				parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location)
 			);
 			
 			//cc.FormattingPolicy = ?

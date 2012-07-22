@@ -29,12 +29,11 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
-	[Ignore("TODO")]
 	[TestFixture]
 	public class ImplementAbstractMembersTest : ContextActionTestBase
 	{
 		[Test()]
-		public void TestSimpleInterface()
+		public void TestSimpleBaseType()
 		{
 			Test<ImplementAbstractMembersAction>(@"abstract class Simple {
 	public abstract void FooBar (string foo, int bar);
@@ -50,12 +49,13 @@ class Foo : $Simple
 class Foo : Simple
 {
 	#region implemented abstract members of Simple
-	public override void FooBar(string foo, int bar)
+	public override void FooBar (string foo, int bar)
 	{
-		throw new System.NotImplementedException();
+		throw new System.NotImplementedException ();
 	}
 	#endregion
-}");
+}
+");
 		}
 
 	}

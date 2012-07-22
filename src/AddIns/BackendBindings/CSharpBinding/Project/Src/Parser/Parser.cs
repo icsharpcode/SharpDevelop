@@ -183,12 +183,12 @@ namespace CSharpBinding.Parser
 			CSharpParser parser = new CSharpParser();
 			var expr = parser.ParseExpression(new StringReader(codeSnippet));
 			if (parser.HasErrors)
-				return new ErrorResolveResult(SpecialType.UnknownType, PrintErrorsAsString(parser.ErrorPrinter.Errors), TextLocation.Empty);
+				return new ErrorResolveResult(SpecialType.UnknownType, PrintErrorsAsString(parser.Errors), TextLocation.Empty);
 			CSharpAstResolver snippetResolver = new CSharpAstResolver(context, expr);
 			return snippetResolver.Resolve(expr, cancellationToken);
 		}
 		
-		string PrintErrorsAsString(List<Error> errors)
+		string PrintErrorsAsString(IEnumerable<Error> errors)
 		{
 			StringBuilder builder = new StringBuilder();
 			
