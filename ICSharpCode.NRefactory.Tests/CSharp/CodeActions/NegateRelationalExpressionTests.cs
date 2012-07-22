@@ -32,82 +32,21 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 	[TestFixture]
 	public class NegateRelationalExpressionTests : ContextActionTestBase
 	{
-		[Test]
-		public void TestGreaterThan ()
+		public void Test(string op, string negatedOp)
 		{
 			Test<NegateRelationalExpressionAction> (@"
 class TestClass
 {
 	void Test ()
 	{
-		var b = 1 $> 2;
+		var b = 1 $" + op + @" 2;
 	}
 }", @"
 class TestClass
 {
 	void Test ()
 	{
-		var b = 1 <= 2;
-	}
-}");
-		}
-
-		[Test]
-		public void TestGreaterThanOrEqual ()
-		{
-			Test<NegateRelationalExpressionAction> (@"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 $>= 2;
-	}
-}", @"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 < 2;
-	}
-}");
-		}
-
-		[Test]
-		public void TestLessThan ()
-		{
-			Test<NegateRelationalExpressionAction> (@"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 $< 2;
-	}
-}", @"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 >= 2;
-	}
-}");
-		}
-
-		[Test]
-		public void TestLessThanOrEqual ()
-		{
-			Test<NegateRelationalExpressionAction> (@"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 $<= 2;
-	}
-}", @"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 > 2;
+		var b = 1 " + negatedOp + @" 2;
 	}
 }");
 		}
@@ -115,41 +54,37 @@ class TestClass
 		[Test]
 		public void TestEquality ()
 		{
-			Test<NegateRelationalExpressionAction> (@"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 $== 2;
-	}
-}", @"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 != 2;
-	}
-}");
+			Test ("==", "!=");
 		}
 
 		[Test]
-		public void TestInequality ()
+		public void TestInEquality ()
 		{
-			Test<NegateRelationalExpressionAction> (@"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 $!= 2;
-	}
-}", @"
-class TestClass
-{
-	void Test ()
-	{
-		var b = 1 == 2;
-	}
-}");
+			Test ("!=", "==");
+		}
+
+		[Test]
+		public void TestGreaterThan ()
+		{
+			Test (">", "<=");
+		}
+
+		[Test]
+		public void TestGreaterThanOrEqual ()
+		{
+			Test (">=", "<");
+		}
+
+		[Test]
+		public void TestLessThan ()
+		{
+			Test ("<", ">=");
+		}
+
+		[Test]
+		public void TestLessThanOrEqual ()
+		{
+			Test ("<=", ">");
 		}
 	}
 }
