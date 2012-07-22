@@ -77,15 +77,17 @@ namespace ICSharpCode.CodeCoverage
 		CodeCoverageModule AddModule(XElement reader, string className)
 		{
 			string assemblyName = GetAssemblyName(reader);
+			CodeCoverageModule module = null;
 			foreach (CodeCoverageModule existingModule in modules) {
 				if (existingModule.Name == assemblyName) {
-					return existingModule;
+					module = existingModule;
+					break;
 				}
 			}
-			
-			CodeCoverageModule module = new CodeCoverageModule(assemblyName);
-			modules.Add(module);
-
+			if (module == null) {
+				module = new CodeCoverageModule(assemblyName);
+				modules.Add(module);
+			}
 			var methods = reader
 				.Elements("Classes")
 				.Elements("Class")
