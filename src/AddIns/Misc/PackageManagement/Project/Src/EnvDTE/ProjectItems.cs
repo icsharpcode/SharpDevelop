@@ -32,10 +32,25 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		public virtual void AddFromFileCopy(string filePath)
 		{
-			string include = Path.GetFileName(filePath);
+			string include = GetIncludePath(filePath);
 			CopyFileIntoProject(filePath, include);
 			project.AddFileProjectItemUsingPathRelativeToProject(include);
 			project.Save();
+		}
+		
+		string GetIncludePath(string filePath)
+		{
+			string fileName = Path.GetFileName(filePath);
+			if (Parent is Project) {
+				return fileName;
+			}
+			return GetIncludePath(Parent as ProjectItem, fileName);
+		}
+		
+		string GetIncludePath(ProjectItem projectItem, string fileName)
+		{
+			var item = Parent as ProjectItem;
+			return item.GetIncludePath(fileName);
 		}
 		
 		void ThrowExceptionIfFileExists(string filePath)

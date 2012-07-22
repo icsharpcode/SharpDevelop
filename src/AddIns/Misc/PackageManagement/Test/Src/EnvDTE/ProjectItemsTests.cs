@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.EnvDTE;
@@ -29,6 +30,14 @@ namespace PackageManagement.Tests.EnvDTE
 			msbuildProject = project.TestableProject;
 			projectItems = project.ProjectItems;
 			fakeFileService = project.FakeFileService;
+		}
+		
+		void CreateProjectItemsFromProjectSubFolder(string projectFileName, string folderName)
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = projectFileName;
+			msbuildProject.AddDirectory(folderName);
+			projectItems = project.ProjectItems.Item(folderName).ProjectItems;
 		}
 		
 		void AddFileToFakeFileSystem(string directory, string relativeFileName)
@@ -126,6 +135,21 @@ namespace PackageManagement.Tests.EnvDTE
 			};
 			
 			CollectionAssert.AreEqual(expectedFileNames, actualFileNames);
+		}
+		
+		[Test]
+		public void AddFromFileCopy_AddFileNameOutsideProjectFolderFromSubFolderProjectItems_FileIsIncludedInProjectInSubFolder()
+		{
+			string projectFileName = @"d:\projects\myproject\myproject\myproject.csproj";
+			CreateProjectItemsFromProjectSubFolder(projectFileName, "SubFolder");
+			string fileName = @"d:\projects\myproject\packages\tools\test.cs";
+			
+			projectItems.AddFromFileCopy(fileName);
+			
+			string addedFileName = @"d:\projects\myproject\myproject\SubFolder\test.cs";
+			FileProjectItem fileItem = msbuildProject.FindFile(addedFileName);
+			
+			Assert.AreEqual(@"SubFolder\test.cs", fileItem.Include);
 		}
 		
 		[Test]

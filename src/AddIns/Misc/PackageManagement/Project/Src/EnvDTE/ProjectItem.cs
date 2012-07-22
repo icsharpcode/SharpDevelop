@@ -138,5 +138,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 				return null;
 			}
 		}
+		
+		internal string GetIncludePath(string fileName)
+		{
+			string parentFileName = (string)GetProperty(FullPathPropertyName);
+			string relativeDirectory = ContainingProject.GetRelativePath(parentFileName);
+			return Path.Combine(relativeDirectory, fileName);
+		}
 	}
 }
