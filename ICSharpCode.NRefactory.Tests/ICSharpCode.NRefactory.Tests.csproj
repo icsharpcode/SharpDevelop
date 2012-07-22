@@ -95,6 +95,7 @@
     <Compile Include="CSharp\CodeActions\CreateOverloadWithoutParameterTests.cs" />
     <Compile Include="CSharp\CodeActions\ExtractAnonymousMethodTests.cs" />
     <Compile Include="CSharp\CodeActions\MergeNestedIfTests.cs" />
+    <Compile Include="CSharp\CodeActions\NegateRelationalExpressionTests.cs" />
     <Compile Include="CSharp\CodeActions\PutInsideUsingTests.cs" />
     <Compile Include="CSharp\CodeActions\SplitDeclarationListTests.cs" />
     <Compile Include="CSharp\CodeActions\UseStringFormatTests.cs" />
