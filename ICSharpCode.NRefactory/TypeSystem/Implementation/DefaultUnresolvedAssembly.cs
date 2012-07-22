@@ -378,6 +378,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					get { return parentNamespace; }
 				}
 				
+				IEnumerable<IAssembly> INamespace.ContributingAssemblies {
+					get { return new [] { assembly }; }
+				}
+				
 				IEnumerable<INamespace> INamespace.ChildNamespaces {
 					get { return childNamespaces; }
 				}
