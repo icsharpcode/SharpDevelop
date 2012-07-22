@@ -74,6 +74,7 @@
     <Compile Include="Src\Refactoring\CSharpContextActionWrapper.cs" />
     <Compile Include="Src\Refactoring\IssueManager.cs" />
     <Compile Include="Src\Refactoring\IssueOptionsViewModel.cs" />
+    <Compile Include="Src\Refactoring\SDRedundantUsingIssue.cs" />
     <Compile Include="Src\Refactoring\SDScript.cs" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <EmbeddedResource Include="Resources\MyNamespaceSupportForCSharp.cs" />

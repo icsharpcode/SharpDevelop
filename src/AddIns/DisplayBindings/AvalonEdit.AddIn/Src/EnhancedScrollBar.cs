@@ -214,6 +214,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.editor = enhanchedScrollBar.editor;
 				this.textMarkerService = enhanchedScrollBar.textMarkerService;
 				
+				this.Cursor = Cursors.Hand;
+				
 				triangleGeometry = new StreamGeometry();
 				using (var ctx = triangleGeometry.Open()) {
 					const double triangleSize = 6.5;
@@ -247,7 +249,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				var textView = editor.TextArea.TextView;
 				double documentHeight = textView.DocumentHeight;
 				foreach (var marker in textMarkerService.TextMarkers) {
-					if ((marker.MarkerTypes & (TextMarkerTypes.ScrollBarLeftTriangle | TextMarkerTypes.ScrollBarRightTriangle)) == 0)
+					if (!IsVisibleInAdorner(marker))
 						continue;
 					var location = document.GetLocation(marker.StartOffset);
 					double visualTop = textView.GetVisualTopByDocumentLine(location.Line);
@@ -270,6 +272,52 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 					drawingContext.Pop();
 				}
+			}
+			
+			bool IsVisibleInAdorner(ITextMarker marker)
+			{
+				return (marker.MarkerTypes & (TextMarkerTypes.ScrollBarLeftTriangle | TextMarkerTypes.ScrollBarRightTriangle)) != 0;
+			}
+			
+			protected override void OnMouseDown(MouseButtonEventArgs e)
+			{
+				base.OnMouseDown(e);
+				var marker = FindNextMarker(e);
+				if (marker != null) {
+					var location = editor.Document.GetLocation(marker.StartOffset);
+					// Use JumpTo() if possible
+					var textEditor = editor.TextArea.GetService(typeof(ITextEditor)) as ITextEditor;
+					if (textEditor != null)
+						textEditor.JumpTo(location.Line, location.Column);
+					else
+						editor.ScrollTo(location.Line, location.Column);
+				}
+			}
+			
+			ITextMarker FindNextMarker(MouseButtonEventArgs e)
+			{
+				var mousePos = e.GetPosition(this);
+				var renderSize = this.RenderSize;
+				var document = editor.Document;
+				var textView = editor.TextArea.TextView;
+				double documentHeight = textView.DocumentHeight;
+				
+				ITextMarker bestMarker = null;
+				double bestDistance = double.PositiveInfinity;
+				foreach (var marker in textMarkerService.TextMarkers) {
+					if (!IsVisibleInAdorner(marker))
+						continue;
+					var location = document.GetLocation(marker.StartOffset);
+					double visualTop = textView.GetVisualTopByDocumentLine(location.Line);
+					double renderPos = visualTop / documentHeight * renderSize.Height;
+					
+					double distance = Math.Abs(renderPos - mousePos.Y);
+					if (distance < bestDistance) {
+						bestDistance = distance;
+						bestMarker = marker;
+					}
+				}
+				return bestMarker;
 			}
 		}
 		#endregion

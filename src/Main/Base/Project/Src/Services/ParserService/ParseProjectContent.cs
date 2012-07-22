@@ -33,6 +33,14 @@ namespace ICSharpCode.SharpDevelop.Parser
 		IAssemblyReference[] references = { MinimalCorlib.Instance };
 		bool disposed;
 		
+		/// <summary>
+		/// Counter that gets decremented whenever a file gets parsed.
+		/// Once the counter reaches zero, it stays at zero and triggers
+		/// serialization of the project content on disposal.
+		/// This is intended to prevent serialization of (almost) unchanged projects.
+		/// </summary>
+		bool serializedProjectContentIsUpToDate;
+		
 		// time necessary for loading references, in relation to time for a single C# file
 		const int LoadingReferencesWorkAmount = 15;
 		
@@ -69,37 +77,55 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
 			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
+			IProjectContent pc;
+			bool serializeOnDispose;
 			lock (lockObj) {
 				if (disposed)
 					return;
 				disposed = true;
+				pc = this.projectContent;
+				serializeOnDispose = !this.serializedProjectContentIsUpToDate;
 			}
-			foreach (var parsedFile in projectContent.Files) {
+			foreach (var parsedFile in pc.Files) {
 				SD.ParserService.RemoveOwnerProject(FileName.Create(parsedFile.FileName), project);
 			}
-			var pc = projectContent;
-			Task.Run(
+			if (serializeOnDispose)
+				SerializeAsync(cacheFileName, pc).FireAndForget();
+		}
+		
+		#region Caching logic (serialization)
+		
+		static Task SerializeAsync(string cacheFileName, IProjectContent pc)
+		{
+			if (cacheFileName == null)
+				return Task.FromResult<object>(null);
+			return Task.Run(
 				delegate {
 					pc = pc.RemoveAssemblyReferences(pc.AssemblyReferences);
 					int serializableFileCount = 0;
 					List<IParsedFile> nonSerializableParsedFiles = new List<IParsedFile>();
 					foreach (var parsedFile in pc.Files) {
-						if (!parsedFile.GetType().IsSerializable || parsedFile.LastWriteTime == default(DateTime))
-							nonSerializableParsedFiles.Add(parsedFile);
-						else
+						if (IsSerializable(parsedFile))
 							serializableFileCount++;
+						else
+							nonSerializableParsedFiles.Add(parsedFile);
 					}
 					// remove non-serializable parsed files
 					if (nonSerializableParsedFiles.Count > 0)
 						pc = pc.UpdateProjectContent(nonSerializableParsedFiles, null);
-					if (serializableFileCount > 3)
+					if (serializableFileCount > 3) {
+						LoggingService.Debug("Serializing " + serializableFileCount + " files to " + cacheFileName);
 						SaveToCache(cacheFileName, pc);
-					else
+					} else {
 						RemoveCache(cacheFileName);
-				}).FireAndForget();
+					}
+				});
 		}
 		
-		#region Caching logic (serialization)
+		static bool IsSerializable(IParsedFile parsedFile)
+		{
+			return parsedFile != null && parsedFile.GetType().IsSerializable && parsedFile.LastWriteTime != default(DateTime);
+		}
 		
 		static string GetCacheFileName(FileName projectFileName)
 		{
@@ -139,9 +165,6 @@ namespace ICSharpCode.SharpDevelop.Parser
 		
 		static void SaveToCache(string cacheFileName, IProjectContent pc)
 		{
-			if (cacheFileName == null)
-				return;
-			LoggingService.Debug("Serializing to " + cacheFileName);
 			try {
 				Directory.CreateDirectory(Path.GetDirectoryName(cacheFileName));
 				using (FileStream fs = new FileStream(cacheFileName, FileMode.Create, FileAccess.Write)) {
@@ -160,7 +183,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}
 		}
 		
-		void RemoveCache(string cacheFileName)
+		static void RemoveCache(string cacheFileName)
 		{
 			if (cacheFileName == null)
 				return;
@@ -187,8 +210,10 @@ namespace ICSharpCode.SharpDevelop.Parser
 		{
 			// This method is called by the parser service within the parser service (per-file) lock.
 			lock (lockObj) {
-				if (!disposed)
+				if (!disposed) {
 					projectContent = projectContent.UpdateProjectContent(oldFile, newFile);
+					serializedProjectContentIsUpToDate = false;
+				}
 				SD.ParserService.InvalidateCurrentSolutionSnapshot();
 			}
 		}
@@ -228,6 +253,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			
 			object progressLock = new object();
 			double fileCountInverse = 1.0 / filesToParse.Count;
+			int fileCountLoadedFromCache = 0;
+			int fileCountParsed = 0;
+			int fileCountParsedAndSerializable = 0;
 			Parallel.ForEach(
 				filesToParse,
 				new ParallelOptions {
@@ -237,8 +265,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 				fileName => {
 					ITextSource content = finder.CreateForOpenFile(fileName);
 					bool wasLoadedFromCache = false;
+					IParsedFile parsedFile = null;
 					if (content == null && cachedPC != null) {
-						IParsedFile parsedFile = cachedPC.GetFile(fileName);
+						parsedFile = cachedPC.GetFile(fileName);
 						if (parsedFile != null && parsedFile.LastWriteTime == File.GetLastWriteTimeUtc(fileName)) {
 							SD.ParserService.RegisterParsedFile(fileName, project, parsedFile);
 							wasLoadedFromCache = true;
@@ -253,14 +282,26 @@ namespace ICSharpCode.SharpDevelop.Parser
 							}
 						}
 						if (content != null) {
-							SD.ParserService.ParseFile(fileName, content, project);
+							parsedFile = SD.ParserService.ParseFile(fileName, content, project);
 						}
 					}
 					lock (progressLock) {
+						if (wasLoadedFromCache) {
+							fileCountLoadedFromCache++;
+						} else {
+							fileCountParsed++;
+							if (IsSerializable(parsedFile))
+								fileCountParsedAndSerializable++;
+						}
 						progressMonitor.Progress += fileCountInverse;
 					}
-				}
-			);
+				});
+			LoggingService.Debug(projectContent.AssemblyName + ": ParseFiles() finished. "
+			                     + fileCountLoadedFromCache + " files were re-used from CC cache; "
+			                     + fileCountParsed + " files were parsed (" + fileCountParsedAndSerializable + " of those are serializable)");
+			lock (lockObj) {
+				serializedProjectContentIsUpToDate = (fileCountLoadedFromCache > 0 && fileCountParsedAndSerializable == 0);
+			}
 		}
 		
 		Task ResolveReferencesAsync(ICollection<ProjectItem> projectItems, IProgressMonitor progressMonitor)

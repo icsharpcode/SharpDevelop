@@ -220,11 +220,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				BuildParameters parameters = new BuildParameters(baseProject.MSBuildProjectCollection);
 				parameters.Loggers = loggers;
 				
-				LoggingService.Debug("Started build for ResolveAssemblyReferences");
+				//LoggingService.Debug("Started build for ResolveAssemblyReferences");
 				BuildResult result = BuildManager.DefaultBuildManager.Build(parameters, requestData);
 				if (result == null)
 					throw new InvalidOperationException("BuildResult is null");
-				LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
+				//LoggingService.Debug("Build for ResolveAssemblyReferences finished: " + result.OverallResult);
 			}
 			
 			IEnumerable<ProjectItemInstance> resolvedAssemblyProjectItems = project.GetItems("_ResolveAssemblyReferenceResolvedFiles");
