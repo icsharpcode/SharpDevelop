@@ -20,7 +20,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = "C#"
-		       class = "ICSharpCode.SharpDevelop.CSharpAmbience"/>
+		       class = "ICSharpCode.NRefactory.CSharp.CSharpAmbience"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">

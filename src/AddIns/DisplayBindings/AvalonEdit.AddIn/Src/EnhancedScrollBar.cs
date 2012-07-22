@@ -10,7 +10,11 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -215,6 +219,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.textMarkerService = enhanchedScrollBar.textMarkerService;
 				
 				this.Cursor = Cursors.Hand;
+				this.ToolTip = string.Empty;
 				
 				triangleGeometry = new StreamGeometry();
 				using (var ctx = triangleGeometry.Open()) {
@@ -282,7 +287,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			protected override void OnMouseDown(MouseButtonEventArgs e)
 			{
 				base.OnMouseDown(e);
-				var marker = FindNextMarker(e);
+				var marker = FindNextMarker(e.GetPosition(this));
 				if (marker != null) {
 					var location = editor.Document.GetLocation(marker.StartOffset);
 					// Use JumpTo() if possible
@@ -291,12 +296,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						textEditor.JumpTo(location.Line, location.Column);
 					else
 						editor.ScrollTo(location.Line, location.Column);
+					e.Handled = true;
 				}
 			}
 			
-			ITextMarker FindNextMarker(MouseButtonEventArgs e)
+			ITextMarker FindNextMarker(Point mousePos)
 			{
-				var mousePos = e.GetPosition(this);
 				var renderSize = this.RenderSize;
 				var document = editor.Document;
 				var textView = editor.TextArea.TextView;
@@ -318,6 +323,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					}
 				}
 				return bestMarker;
+			}
+			
+			protected override void OnToolTipOpening(ToolTipEventArgs e)
+			{
+				base.OnToolTipOpening(e);
+				var marker = FindNextMarker(Mouse.GetPosition(this));
+				if (marker != null && marker.ToolTip != null) {
+					this.ToolTip = marker.ToolTip;
+				} else {
+					// prevent tooltip from opening
+					e.Handled = true;
+				}
 			}
 		}
 		#endregion

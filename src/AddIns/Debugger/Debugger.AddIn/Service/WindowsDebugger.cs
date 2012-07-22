@@ -710,22 +710,21 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void HandleToolTipRequest(ToolTipRequestEventArgs e)
 		{
+			if (!(IsDebugging && CurrentProcess.IsPaused))
+				return;
 			if (e.ResolveResult == null)
 				return;
 			if (e.ResolveResult is LocalResolveResult || e.ResolveResult is MemberResolveResult || e.ResolveResult is InvocationResolveResult) {
-				Value result;
-				string text;
 				try {
 					ExpressionEvaluationVisitor eval = new ExpressionEvaluationVisitor(CurrentStackFrame, EvalThread, CurrentStackFrame.AppDomain.Compilation);
-					result = eval.Convert(e.ResolveResult);
-					text = new ResolveResultPrettyPrinter().Print(e.ResolveResult);
+					Value result = eval.Convert(e.ResolveResult);
+					string text = new ResolveResultPrettyPrinter().Print(e.ResolveResult);
+					e.SetToolTip(new DebuggerTooltipControl(ValueNode.GetTooltipFor(text, result)));
 				} catch (GetValueException ex) {
-					text = ex.Message;
-					result = null;
+					e.SetToolTip(ex.Message);
 				} catch (InvalidOperationException) {
 					return;
 				}
-				e.SetToolTip(new DebuggerTooltipControl(ValueNode.GetTooltipFor(text, result)));
 			}
 		}
 	}

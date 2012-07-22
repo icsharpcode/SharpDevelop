@@ -298,9 +298,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					var popupPosition = GetPopupPosition(e);
 					popupToolTip.HorizontalOffset = popupPosition.X;
 					popupToolTip.VerticalOffset = popupPosition.Y;
-					popupToolTip.IsOpen = true;
 					popupToolTip.StaysOpen = true;  // We will close it ourselves
+					
 					e.Handled = true;
+					popupToolTip.IsOpen = true;
 				} else {
 					if (toolTip == null) {
 						toolTip = new ToolTip();
@@ -318,8 +319,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					else
 						toolTip.Content = args.ContentToShow;
 					
-					toolTip.IsOpen = true;
 					e.Handled = true;
+					toolTip.IsOpen = true;
 				}
 			}
 		}

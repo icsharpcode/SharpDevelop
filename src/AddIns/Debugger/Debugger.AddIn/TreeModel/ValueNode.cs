@@ -279,6 +279,8 @@ namespace Debugger.AddIn.TreeModel
 		
 		public static TreeNode GetTooltipFor(string text, Value value)
 		{
+			if (value == null)
+				throw new ArgumentNullException("value");
 			return new ValueNode("Icons.16x16.Local", text, () => value);
 		}
 		

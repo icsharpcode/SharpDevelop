@@ -65,8 +65,6 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
-		<Class id    = ".NET"
-		       class = "ICSharpCode.SharpDevelop.NetAmbience"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

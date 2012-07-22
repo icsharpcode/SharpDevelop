@@ -372,6 +372,7 @@ namespace CSharpBinding
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
 			methodDeclaration.ReturnType.AcceptVisitor(this);
+			methodDeclaration.PrivateImplementationType.AcceptVisitor(this);
 			Colorize(methodDeclaration.NameToken, methodCallColor);
 			foreach (var node in methodDeclaration.TypeParameters)
 				node.AcceptVisitor(this);
