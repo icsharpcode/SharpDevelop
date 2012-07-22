@@ -103,5 +103,14 @@ namespace PackageManagement.Tests.Helpers
 			IClass declaringType = ProjectContentHelper.AddClassToProjectContent(name);
 			SetDeclaringType(declaringType);
 		}
+		
+		public void AddReturnTypeToMethod(string type)
+		{
+			var returnTypeHelper = new ReturnTypeHelper();
+			returnTypeHelper.CreateReturnType(type);
+			returnTypeHelper.AddDotNetName(type);
+			
+			Method.Stub(m => m.ReturnType).Return(returnTypeHelper.ReturnType);
+		}
 	}
 }

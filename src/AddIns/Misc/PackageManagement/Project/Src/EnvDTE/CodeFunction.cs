@@ -54,5 +54,9 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		public virtual CodeElements Parameters {
 			get { return new CodeParameters(method.ProjectContent, method.Parameters); }
 		}
+		
+		public virtual CodeTypeRef2 Type {
+			get { return new CodeTypeRef2(method.ProjectContent, null, method.ReturnType); }
+		}
 	}
 }

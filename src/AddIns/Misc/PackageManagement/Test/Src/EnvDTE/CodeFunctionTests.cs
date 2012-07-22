@@ -59,6 +59,11 @@ namespace PackageManagement.Tests.EnvDTE
 			helper.AddParameter(type, name);
 		}
 		
+		void AddReturnTypeToMethod(string type)
+		{
+			helper.AddReturnTypeToMethod(type);
+		}
+		
 		[Test]
 		public void Access_PublicFunction_ReturnsPublic()
 		{
@@ -196,6 +201,28 @@ namespace PackageManagement.Tests.EnvDTE
 			CodeParameter parameter = codeFunction.Parameters.FirstCodeParameterOrDefault();
 			
 			Assert.AreEqual("string", parameter.Type.AsString);
+		}
+		
+		[Test]
+		public void Type_MethodReturnsString_TypeRefHasSystemStringAsFullName()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			AddReturnTypeToMethod("System.String");
+			
+			CodeTypeRef2 typeRef = codeFunction.Type;
+			
+			Assert.AreEqual("System.String", typeRef.AsFullName);
+		}
+		
+		[Test]
+		public void Type_MethodReturnsString_TypeRefUsesProjectContentFromMethod()
+		{
+			CreatePublicFunction("MyClass.MyFunction");
+			AddReturnTypeToMethod("System.String");
+			
+			CodeTypeRef2 typeRef = codeFunction.Type;
+			
+			Assert.AreEqual("string", typeRef.AsString);
 		}
 	}
 }
