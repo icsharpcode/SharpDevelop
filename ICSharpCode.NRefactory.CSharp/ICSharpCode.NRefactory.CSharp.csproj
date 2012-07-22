@@ -266,6 +266,7 @@
     <Compile Include="Refactoring\CodeIssues\BitwiseOperationOnNonFlagsEnumIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CompareFloatWithEqualityOperatorIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ConstantConditionIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\DoubleNegationExpressionIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ExplicitConversionInForEachIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\IdenticalConditionalBranchIssue.cs" />
