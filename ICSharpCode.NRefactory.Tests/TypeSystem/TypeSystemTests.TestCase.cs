@@ -44,6 +44,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	public class ParamsAttribute : Attribute
 	{
 		public ParamsAttribute(params object[] x) {}
+		
+		[Params(Property = new string[] { "a", "b" })]
+		public string[] Property { get; set; }
 	}
 	
 	[Double(1)]
@@ -290,5 +293,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 
 	public class ClassThatImplementsEventExplicitly : IHasEvent {
 		event EventHandler IHasEvent.Event { add {} remove {} }
+	}
+
+	public interface IShadowTestBase {
+		void Method();
+		int this[int i] { get; set; }
+		int Prop { get; set; }
+		event EventHandler Evt;
+	}
+
+	public interface IShadowTestDerived : IShadowTestBase {
+		new void Method();
+		new int this[int i] { get; set; }
+		new int Prop { get; set; }
+		new event EventHandler Evt;
 	}
 }

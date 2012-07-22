@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole(MemberRole); }
 		}
 
-		string[] conditionals = null;
+		IList<string> conditionalSymbols = null;
 
 		List<Error> errors = new List<Error> ();
 		
@@ -76,12 +76,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// the conditional symbols at the start of the first token in the file - including the ones defined
 		/// in the source file.
 		/// </summary>
-		public string[] Conditionals {
+		public IList<string> ConditionalSymbols {
 			get {
-				return conditionals ?? new string[0];
+				return conditionalSymbols ?? EmptyList<string>.Instance;
 			}
 			internal set {
-				conditionals = value;
+				conditionalSymbols = value;
 			}
 		}
 

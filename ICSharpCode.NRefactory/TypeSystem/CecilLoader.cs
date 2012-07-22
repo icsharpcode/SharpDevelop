@@ -1676,7 +1676,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					bool getterVisible = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
 					bool setterVisible = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
 					if (getterVisible || setterVisible) {
-						EntityType type = property.Name == defaultMemberName ? EntityType.Indexer : EntityType.Property;
+						EntityType type = EntityType.Property;
+						if (property.HasParameters) {
+							// Try to detect indexer:
+							if (property.Name == defaultMemberName) {
+								type = EntityType.Indexer; // normal indexer
+							} else if (property.Name.EndsWith(".Item", StringComparison.Ordinal) && (property.GetMethod ?? property.SetMethod).HasOverrides) {
+								// explicit interface implementation of indexer
+								type = EntityType.Indexer;
+								// We can't really tell parameterized properties and indexers apart in this case without
+								// resolving the interface, so we rely on the "Item" naming convention instead.
+							}
+						}
 						members.Add(ReadProperty(property, td, type));
 					}
 				}

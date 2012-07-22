@@ -822,6 +822,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void ParamsAttribute_Property()
+		{
+			ITypeDefinition type = GetTypeDefinition(typeof(ParamsAttribute));
+			IProperty prop = type.Properties.Single(p => p.Name == "Property");
+			var attr = prop.Attributes.Single();
+			Assert.AreEqual(type, attr.AttributeType);
+			
+			var normalArguments = ((ArrayCreateResolveResult)attr.PositionalArguments.Single()).InitializerElements;
+			Assert.AreEqual(0, normalArguments.Count);
+			
+			var namedArg = attr.NamedArguments.Single();
+			Assert.AreEqual(prop, namedArg.Key);
+			var arrayElements = ((ArrayCreateResolveResult)namedArg.Value).InitializerElements;
+			Assert.AreEqual(2, arrayElements.Count);
+		}
+		
+		[Test]
 		public void DoubleAttribute_ImplicitNumericConversion()
 		{
 			ITypeDefinition type = GetTypeDefinition(typeof(DoubleAttribute));
@@ -978,6 +995,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public void ExplicitIndexerImplementationReturnsTheCorrectMembers() {
 			ITypeDefinition type = GetTypeDefinition(typeof(ClassThatImplementsIndexersExplicitly));
 
+			Assert.That(type.Properties.All(p => p.EntityType == EntityType.Indexer));
 			Assert.That(type.Properties.All(p => p.ImplementedInterfaceMembers.Count == 1));
 			Assert.That(type.Properties.All(p => p.Getter.ImplementedInterfaceMembers.Count == 1));
 			Assert.That(type.Properties.All(p => p.Setter.ImplementedInterfaceMembers.Count == 1));
@@ -1093,6 +1111,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.That(evt.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.Event" }));
 			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.add_Event" }));
 			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers.Select(p => p.ReflectionName).ToList(), Is.EqualTo(new[] { "ICSharpCode.NRefactory.TypeSystem.TestCase.IHasEvent.remove_Event" }));
+		}
+
+		[Test]
+		public void MembersDeclaredInDerivedInterfacesDoNotImplementBaseMembers() {
+			ITypeDefinition type = GetTypeDefinition(typeof(IShadowTestDerived));
+			var method = type.Methods.Single(m => m.Name == "Method");
+			var indexer = type.Properties.Single(p => p.IsIndexer);
+			var prop = type.Properties.Single(p => p.Name == "Prop");
+			var evt = type.Events.Single(e => e.Name == "Evt");
+
+			Assert.That(method.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(indexer.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(indexer.Getter.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(indexer.Setter.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(prop.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(prop.Getter.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(prop.Setter.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(evt.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(evt.AddAccessor.ImplementedInterfaceMembers, Is.Empty);
+			Assert.That(evt.RemoveAccessor.ImplementedInterfaceMembers, Is.Empty);
 		}
 	}
 }
