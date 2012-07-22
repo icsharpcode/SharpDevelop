@@ -44,7 +44,7 @@
 		</GroupBox>
 		<GroupBox Header="{core:Localize Global.Delete}">
 			<CheckBox Content="{core:Localize Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin}"
-			          IsChecked="{core:OptionBinding sd:FileService.DeleteToRecycleBin}" />
+			          IsChecked="{core:OptionBinding wb:FileService.DeleteToRecycleBin}" />
 		</GroupBox>
 	</StackPanel>
 </gui:OptionPanel>

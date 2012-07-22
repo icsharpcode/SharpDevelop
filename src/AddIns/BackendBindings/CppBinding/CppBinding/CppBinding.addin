@@ -48,11 +48,6 @@
 		       class="ICSharpCode.CppBinding.Project.SpecifyCliRuntimeLibraryCommand"/>
 	</Path>
 
-	<Path name = "/SharpDevelop/Workbench/Ambiences">
-		<Class id    = "C++"
-		       class = "ICSharpCode.CppBinding.CppAmbience"/>
-	</Path>
-
 	<Path name="/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id="C++Project"
 					insertbefore="AllFiles"
