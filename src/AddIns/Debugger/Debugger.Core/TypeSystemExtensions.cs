@@ -30,20 +30,61 @@ namespace Debugger
 			public Dictionary<IUnresolvedEntity, uint> MetadataTokens = new Dictionary<IUnresolvedEntity, uint>();
 			public Dictionary<uint, IUnresolvedMethod> TokenToMethod = new Dictionary<uint, IUnresolvedMethod>();
 			public Dictionary<IUnresolvedMember, ITypeReference[]> LocalVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
+			readonly CecilLoader typeRefLoader;
 			
-			public ModuleMetadataInfo(Module module)
+			public ModuleMetadataInfo(Module module, Mono.Cecil.ModuleDefinition cecilModule)
 			{
 				this.Module = module;
+				
+				typeRefLoader = new CecilLoader();
+				typeRefLoader.SetCurrentModule(cecilModule);
 			}
 			
-			public void AddMethod(IUnresolvedMethod method, CecilLoader loader)
+			public void AddMember(IUnresolvedEntity entity, Mono.Cecil.MemberReference cecilObject)
 			{
-				var cecilMethod = loader.GetCecilObject(method);
-				uint token = cecilMethod.MetadataToken.ToUInt32();
-				this.MetadataTokens[method] = token;
-				this.TokenToMethod[token] = method;
-				if (cecilMethod.HasBody)
-					this.LocalVariableTypes[method] = cecilMethod.Body.Variables.Select(v => loader.ReadTypeReference(v.VariableType)).ToArray();
+				uint token = cecilObject.MetadataToken.ToUInt32();
+				this.MetadataTokens[entity] = token;
+				
+				var cecilMethod = cecilObject as Mono.Cecil.MethodDefinition;
+				if (cecilMethod != null) {
+					IUnresolvedMethod method = (IUnresolvedMethod)entity;
+					this.TokenToMethod[token] = method;
+					if (cecilMethod.HasBody) {
+						var locals = cecilMethod.Body.Variables;
+						if (locals.Count > 0) {
+							this.LocalVariableTypes[method] = locals.Select(v => typeRefLoader.ReadTypeReference(v.VariableType)).ToArray();
+						}
+						if (cecilMethod.RVA != 0) {
+							// The method was loaded from image - we can free the memory for the body
+							// because Cecil will re-initialize it on demand
+							cecilMethod.Body = null;
+						}
+					}
+				}
+			}
+		}
+		
+		// used to prevent Cecil from loading referenced assemblies
+		sealed class DummyAssemblyResolver : Mono.Cecil.IAssemblyResolver
+		{
+			public Mono.Cecil.AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name)
+			{
+				return null;
+			}
+			
+			public Mono.Cecil.AssemblyDefinition Resolve(string fullName)
+			{
+				return null;
+			}
+			
+			public Mono.Cecil.AssemblyDefinition Resolve(Mono.Cecil.AssemblyNameReference name, Mono.Cecil.ReaderParameters parameters)
+			{
+				return null;
+			}
+			
+			public Mono.Cecil.AssemblyDefinition Resolve(string fullName, Mono.Cecil.ReaderParameters parameters)
+			{
+				return null;
 			}
 		}
 		
@@ -57,39 +98,18 @@ namespace Debugger
 			return Task.Run(() => LoadModule(module, name));
 		}
 		
-		static IUnresolvedAssembly LoadModule(Module module, string name)
+		static IUnresolvedAssembly LoadModule(Module module, string fileName)
 		{
-			CecilLoader loader = new CecilLoader(true);
+			var param = new Mono.Cecil.ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
+			var cecilModule = Mono.Cecil.ModuleDefinition.ReadModule(fileName, param);
+			
+			var moduleMetadataInfo = new ModuleMetadataInfo(module, cecilModule);
+			var loader = new CecilLoader();
 			loader.IncludeInternalMembers = true;
 			loader.LazyLoad = true;
-			var asm = loader.LoadAssemblyFile(name);
-			var moduleMetadataInfo = new ModuleMetadataInfo(module);
-			foreach (var typeDef in asm.GetAllTypeDefinitions()) {
-				var cecilTypeDef = loader.GetCecilObject(typeDef);
-				loader.SetCurrentModule(cecilTypeDef.Module);
-				moduleMetadataInfo.MetadataTokens[typeDef] = cecilTypeDef.MetadataToken.ToUInt32();
-				foreach (var member in typeDef.Fields) {
-					var cecilMember = loader.GetCecilObject(member);
-					moduleMetadataInfo.MetadataTokens[member] = cecilMember.MetadataToken.ToUInt32();
-				}
-				foreach (var member in typeDef.Methods) {
-					moduleMetadataInfo.AddMethod(member, loader);
-				}
-				foreach (var member in typeDef.Properties) {
-					if (member.CanGet)
-						moduleMetadataInfo.AddMethod(member.Getter, loader);
-					if (member.CanSet)
-						moduleMetadataInfo.AddMethod(member.Setter, loader);
-				}
-				foreach (var member in typeDef.Events) {
-					if (member.CanAdd)
-						moduleMetadataInfo.AddMethod(member.AddAccessor, loader);
-					if (member.CanRemove)
-						moduleMetadataInfo.AddMethod(member.RemoveAccessor, loader);
-					if (member.CanInvoke)
-						moduleMetadataInfo.AddMethod(member.InvokeAccessor, loader);
-				}
-			}
+			loader.OnEntityLoaded = moduleMetadataInfo.AddMember;
+			
+			var asm = loader.LoadAssembly(cecilModule.Assembly);
 			weakTable.Add(asm, moduleMetadataInfo);
 			return asm;
 		}
@@ -441,8 +461,18 @@ namespace Debugger
 		{
 			Module module = compilation.GetAppDomain().Process.GetModule(corFunction.GetModule());
 			var info = GetInfo(module.Assembly);
-			var unresolved = info.TokenToMethod[corFunction.GetToken()];
-			return unresolved.Resolve(new SimpleTypeResolveContext(module.Assembly));
+			uint functionToken = corFunction.GetToken();
+			IUnresolvedMethod unresolvedMethod;
+			if (!info.TokenToMethod.TryGetValue(functionToken, out unresolvedMethod)) {
+				// The type containing this function wasn't loaded yet
+				uint classToken = corFunction.GetClass().GetToken();
+				var definition = ToTypeDefinitionReference(module, classToken).Resolve(new SimpleTypeResolveContext(module.Assembly)).GetDefinition();
+				if (definition == null)
+					throw new InvalidOperationException("Could not find class for token " + classToken);
+				definition.Methods.ToList(); // enforce loading the methods so that they get added to the dictionary
+				unresolvedMethod = info.TokenToMethod[functionToken];
+			}
+			return unresolvedMethod.Resolve(new SimpleTypeResolveContext(module.Assembly));
 		}
 	}
 }

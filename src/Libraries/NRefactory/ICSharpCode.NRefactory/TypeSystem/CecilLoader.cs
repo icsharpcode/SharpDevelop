@@ -55,6 +55,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// the Cecil objects to stay in memory (which can significantly increase memory usage).
 		/// It also prevents serialization of the Cecil-loaded type system.
 		/// </summary>
+		/// <remarks>
+		/// Because the type system can be used on multiple threads, but Cecil is not
+		/// thread-safe for concurrent read access, the CecilLoader will lock on the <see cref="ModuleDefinition"/> instance
+		/// for every delay-loading operation.
+		/// If you access the Cecil objects directly in your application, you may need to take the same lock.
+		/// </remarks>
 		public bool LazyLoad { get; set; }
 		
 		/// <summary>
@@ -73,6 +79,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public CancellationToken CancellationToken { get; set; }
 		
 		/// <summary>
+		/// This delegate gets executed whenever an entity was loaded.
+		/// </summary>
+		/// <remarks>
+		/// This callback may be to build a dictionary that maps between
+		/// entities and cecil objects.
+		/// Warning: if delay-loading is used and the type system is accessed by multiple threads,
+		/// the callback may be invoked concurrently on multiple threads.
+		/// </remarks>
+		public Action<IUnresolvedEntity, MemberReference> OnEntityLoaded { get; set; }
+		
+		/// <summary>
 		/// Gets a value indicating whether this instance stores references to the cecil objects.
 		/// </summary>
 		/// <value>
@@ -87,16 +104,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
 		/// </summary>
+		public CecilLoader()
+		{
+			// Enable interning by default.
+			this.InterningProvider = new SimpleInterningProvider();
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ICSharpCode.NRefactory.TypeSystem.CecilLoader"/> class.
+		/// </summary>
 		/// <param name='createCecilReferences'>
 		/// If true references to the cecil objects are hold. In this case the cecil loader can do a type system -> cecil mapping.
 		/// </param>
-		public CecilLoader (bool createCecilReferences = false)
+		[Obsolete("The built-in entity<->cecil mapping is obsolete. Use the OnEntityLoaded callback instead!")]
+		public CecilLoader(bool createCecilReferences) : this()
 		{
 			if (createCecilReferences)
 				typeSystemTranslationTable = new Dictionary<object, object> ();
-			
-			// Enable interning by default.
-			this.InterningProvider = new SimpleInterningProvider();
 		}
 		
 		/// <summary>
@@ -108,6 +132,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.typeSystemTranslationTable = loader.typeSystemTranslationTable;
 			this.IncludeInternalMembers = loader.IncludeInternalMembers;
 			this.LazyLoad = loader.LazyLoad;
+			this.OnEntityLoaded = loader.OnEntityLoaded;
 			this.currentModule = loader.currentModule;
 			this.currentAssembly = loader.currentAssembly;
 			// don't use interning - the interning provider is most likely not thread-safe
@@ -169,12 +194,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							continue;
 						
 						if (this.LazyLoad) {
-							currentAssembly.AddTypeDefinition(new LazyCecilTypeDefinition(cecilLoaderCloneForLazyLoading, td));
+							var t = new LazyCecilTypeDefinition(cecilLoaderCloneForLazyLoading, td);
+							currentAssembly.AddTypeDefinition(t);
+							RegisterCecilObject(t, td);
 						} else {
 							var t = CreateTopLevelTypeDefinition(td);
 							cecilTypeDefs.Add(td);
 							typeDefs.Add(t);
 							currentAssembly.AddTypeDefinition(t);
+							// The registration will happen after the members are initialized
 						}
 					}
 				}
@@ -184,7 +212,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				InitTypeDefinition(cecilTypeDefs[i], typeDefs[i]);
 			}
 			
-			RegisterCecilObject(this.currentAssembly, assemblyDefinition);
+			AddToTypeSystemTranslationTable(this.currentAssembly, assemblyDefinition);
 			
 			var result = this.currentAssembly;
 			this.currentAssembly = null;
@@ -249,9 +277,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("fileName");
 			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
-			var result = LoadAssembly(asm);
-			RegisterCecilObject(result, asm);
-			return result;
+			return LoadAssembly(asm);
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
@@ -1742,7 +1768,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					this.ApplyInterningProvider(loader.InterningProvider);
 				}
 				this.Freeze();
-				loader.RegisterCecilObject(this, typeDefinition);
 			}
 			
 			public override string Namespace {
@@ -1772,7 +1797,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					var result = LazyInit.VolatileRead(ref this.baseTypes);
 					if (result != null) {
 						return result;
-					} else {
+					}
+					lock (loader.currentModule) {
 						result = new List<ITypeReference>();
 						loader.InitBaseTypes(cecilTypeDef, result);
 						return LazyInit.GetOrSet(ref this.baseTypes, FreezableHelper.FreezeList(result));
@@ -1785,7 +1811,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					var result = LazyInit.VolatileRead(ref this.nestedTypes);
 					if (result != null) {
 						return result;
-					} else {
+					}
+					lock (loader.currentModule) {
+						if (this.nestedTypes != null)
+							return this.nestedTypes;
 						result = new List<IUnresolvedTypeDefinition>();
 						loader.InitNestedTypes(cecilTypeDef, this, result);
 						return LazyInit.GetOrSet(ref this.nestedTypes, FreezableHelper.FreezeList(result));
@@ -1798,7 +1827,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					var result = LazyInit.VolatileRead(ref this.members);
 					if (result != null) {
 						return result;
-					} else {
+					}
+					lock (loader.currentModule) {
+						if (this.members != null)
+							return this.members;
 						result = new List<IUnresolvedMember>();
 						loader.InitMembers(cecilTypeDef, this, result);
 						return LazyInit.GetOrSet(ref this.members, FreezableHelper.FreezeList(result));
@@ -2160,7 +2192,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		void FinishReadMember(AbstractUnresolvedMember member, object cecilDefinition)
+		void FinishReadMember(AbstractUnresolvedMember member, MemberReference cecilDefinition)
 		{
 			if (this.InterningProvider != null)
 				member.ApplyInterningProvider(this.InterningProvider);
@@ -2171,7 +2203,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Type system translation table
 		readonly Dictionary<object, object> typeSystemTranslationTable;
 		
-		void RegisterCecilObject(object typeSystemObject, object cecilObject)
+		void RegisterCecilObject(IUnresolvedEntity typeSystemObject, MemberReference cecilObject)
+		{
+			if (OnEntityLoaded != null)
+				OnEntityLoaded(typeSystemObject, cecilObject);
+			
+			AddToTypeSystemTranslationTable(typeSystemObject, cecilObject);
+		}
+		
+		void AddToTypeSystemTranslationTable(object typeSystemObject, object cecilObject)
 		{
 			if (typeSystemTranslationTable != null) {
 				// When lazy-loading, the dictionary might be shared between multiple cecil-loaders that are used concurrently
