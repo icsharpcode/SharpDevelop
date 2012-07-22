@@ -11,5 +11,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		IRefactoringDocument RefactoringDocument { get; }
 		ICompilationUnit Parse();
+		void IndentLines(int beginLine, int endLine);
 	}
 }

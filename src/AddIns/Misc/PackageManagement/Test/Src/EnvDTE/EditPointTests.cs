@@ -20,6 +20,7 @@ namespace PackageManagement.Tests.EnvDTE
 		TextPoint endPoint;
 		EditPoint editPoint;
 		IRefactoringDocument document;
+		IRefactoringDocumentView documentView;
 		IDocumentLoader documentLoader;
 		
 		[SetUp]
@@ -33,6 +34,8 @@ namespace PackageManagement.Tests.EnvDTE
 		void CreateDocumentLoader()
 		{
 			document = MockRepository.GenerateStub<IRefactoringDocument>();
+			documentView = MockRepository.GenerateStub<IRefactoringDocumentView>();
+			documentView.Stub(view => view.RefactoringDocument).Return(document);
 			documentLoader = MockRepository.GenerateStub<IDocumentLoader>();
 		}
 
@@ -79,11 +82,16 @@ namespace PackageManagement.Tests.EnvDTE
 		
 		void DocumentFileName(string fileName)
 		{
-			documentLoader.Stub(loader => loader.LoadRefactoringDocument(fileName)).Return(document);
+			documentLoader.Stub(loader => loader.LoadRefactoringDocumentView(fileName)).Return(documentView);
+		}
+		
+		void AssertDocumentViewIndentLinesWasNotCalled()
+		{
+			documentView.AssertWasNotCalled(view => view.IndentLines(Arg<int>.Is.Anything, Arg<int>.Is.Anything));
 		}
 		
 		[Test]
-		public void ReplaceText_FieldEndPointCreatedFromStartPoint_ReplacesTextBetweenStartAndEndPoint()
+		public void ReplaceText_EditPointCreatedFromFieldStartPoint_ReplacesTextBetweenStartAndEndPoint()
 		{
 			string fileName = @"d:\projects\test.cs";
 			var fieldRegion = new DomRegion(1, 5, 3, 12);
@@ -99,7 +107,7 @@ namespace PackageManagement.Tests.EnvDTE
 		}
 		
 		[Test]
-		public void ReplaceText_MethodEndPointCreatedFromStartPoint_ReplacesTextBetweenStartAndEndPoint()
+		public void ReplaceText_EditPointCreatedFromMethodStartPoint_ReplacesTextBetweenStartAndEndPoint()
 		{
 			string fileName = @"d:\projects\test.cs";
 			var methodRegion = new DomRegion(1, 5, 1, 10);
@@ -114,6 +122,45 @@ namespace PackageManagement.Tests.EnvDTE
 			ReplaceText("Test");
 			
 			document.AssertWasCalled(d => d.Replace(5, 15, "Test"));
+		}
+		
+		[Test]
+		public void ReplaceText_EditPointCreatedFromFieldStartPointAndTextIsFourLines_IndentsLinesTwoThreeFourFiveAndSix()
+		{
+			string fileName = @"d:\projects\test.cs";
+			var fieldRegion = new DomRegion(1, 5, 1, 10);
+			CreateField(fileName, fieldRegion);
+			DocumentOffsetToReturn(line: 1, column: 5, offset: 5);
+			DocumentOffsetToReturn(line: 1, column: 12, offset: 10);
+			DocumentFileName(fileName);
+			CreateFieldEditPoint();
+			
+			string replacementText = 
+				"First\r\n" +
+				"Second\r\n" +
+				"Third\r\n" +
+				"Fourth\r\n" +
+				"Five";
+			
+			ReplaceText(replacementText);
+			
+			documentView.AssertWasCalled(view => view.IndentLines(2, 6));
+		}
+		
+		[Test]
+		public void ReplaceText_EditPointCreatedFromFieldStartPointAndTextIsSingleLine_TextIsNotIndented()
+		{
+			string fileName = @"d:\projects\test.cs";
+			var fieldRegion = new DomRegion(1, 5, 1, 10);
+			CreateField(fileName, fieldRegion);
+			DocumentOffsetToReturn(line: 1, column: 5, offset: 5);
+			DocumentOffsetToReturn(line: 1, column: 12, offset: 10);
+			DocumentFileName(fileName);
+			CreateFieldEditPoint();
+			
+			ReplaceText("Test");
+			
+			AssertDocumentViewIndentLinesWasNotCalled();
 		}
 	}
 }

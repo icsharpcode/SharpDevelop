@@ -10,6 +10,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 	public class EditPoint : TextPoint
 	{
 		IRefactoringDocument document;
+		IRefactoringDocumentView documentView;
 		
 		internal EditPoint(FilePosition filePosition, IDocumentLoader documentLoader)
 			: base(filePosition, documentLoader)
@@ -27,11 +28,13 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			int offset = GetStartOffset();
 			int endOffset = GetEndOffset(endPoint);
 			document.Replace(offset, endOffset - offset, text);
+			IndentReplacedText(text);
 		}
 		
 		void OpenDocument()
 		{
-			document = DocumentLoader.LoadRefactoringDocument(FilePosition.FileName);
+			documentView = DocumentLoader.LoadRefactoringDocumentView(FilePosition.FileName);
+			document = documentView.RefactoringDocument;
 		}
 		
 		int GetStartOffset()
@@ -42,6 +45,23 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		int GetEndOffset(TextPoint endPoint)
 		{
 			return document.PositionToOffset(endPoint.Line, endPoint.LineCharOffset);
+		}
+		
+		/// <summary>
+		/// Indents all lines apart from the first one since it is assumed
+		/// that the first line had the correct indentation.
+		/// </summary>
+		void IndentReplacedText(string text)
+		{
+			int lineCount = GetLineCount(text);
+			if (lineCount > 1) {
+				documentView.IndentLines(Line + 1, Line + lineCount);
+			}
+		}
+		
+		int GetLineCount(string text)
+		{
+			return text.Split('\n').Length;
 		}
 	}
 }
