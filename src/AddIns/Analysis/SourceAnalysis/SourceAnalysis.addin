@@ -18,12 +18,12 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
+		<!---<OptionPanel id          = "SourceAnalysis"
+		             label       = "${res:AddIns.SourceAnalysis.Title}"
+		             class       = "MattEverson.SourceAnalysis.old_AnalysisProjectOptionsPanel"/>-->
 		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
 		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"/>
-	<OptionPanel id          = "SourceAnalysis"
-		             label       = "${res:AddIns.SourceAnalysis.Title}"
-		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanelXaml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">

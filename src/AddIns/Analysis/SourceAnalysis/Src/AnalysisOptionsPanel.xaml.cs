@@ -25,9 +25,9 @@ namespace MattEverson.SourceAnalysis
 	/// <summary>
 	/// Interaction logic for AnalysisIdeOptionsPanelXaml.xaml
 	/// </summary>
-	public partial class AnalysisProjectOptionsPanelXaml : ProjectOptionPanel
+	public partial class AnalysisProjectOptionsPanel : ProjectOptionPanel
 	{
-		public AnalysisProjectOptionsPanelXaml()
+		public AnalysisProjectOptionsPanel()
 		{
 			InitializeComponent();
 		}

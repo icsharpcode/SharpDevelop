@@ -66,22 +66,22 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\AnalysisOptionsPanelXaml.xaml.cs">
-      <DependentUpon>AnalysisOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\AnalysisOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptionsPanel.cs" />
-    <Compile Include="Src\AnalysisProjectOptions.Designer.cs">
-      <DependentUpon>AnalysisProjectOptions.cs</DependentUpon>
+    <Compile Include="Src\old_AnalysisProjectOptionsPanel.cs" />
+    <Compile Include="Src\old_AnalysisProjectOptions.Designer.cs">
+      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\AnalysisProjectOptions.cs" />
-    <EmbeddedResource Include="Src\AnalysisProjectOptions.resx">
-      <DependentUpon>AnalysisProjectOptions.cs</DependentUpon>
+    <Compile Include="Src\old_AnalysisProjectOptions.cs" />
+    <EmbeddedResource Include="Src\old_AnalysisProjectOptions.resx">
+      <DependentUpon>old_AnalysisProjectOptions.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\StyleCopWrapper.cs" />
     <Compile Include="Src\CheckCurrentProjectCommand.cs" />
     <Compile Include="Src\AnalysisIdeOptionsPanel.cs" />
-    <EmbeddedResource Include="Resources\AnalysisIdeOptionPanel.xfrm" />
+    <EmbeddedResource Include="Resources\old_AnalysisIdeOptionPanel.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
@@ -111,7 +111,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\AnalysisOptionsPanelXaml.xaml" />
+    <Page Include="Src\AnalysisOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
