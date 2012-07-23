@@ -295,6 +295,7 @@
     <Compile Include="CSharp\CodeIssues\OptionalParameterCouldBeSkippedTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantCatchTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantToStringTests.cs" />
+    <Compile Include="CSharp\CodeIssues\CallToObjectEqualsViaBaseTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

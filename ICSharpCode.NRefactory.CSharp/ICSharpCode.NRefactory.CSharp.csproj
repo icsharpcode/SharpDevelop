@@ -400,6 +400,7 @@
     <Compile Include="Refactoring\CodeIssues\OptionalParameterCouldBeSkippedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantCatchIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantToStringIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\CallToObjectEqualsViaBaseIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
