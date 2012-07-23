@@ -3,7 +3,7 @@
              xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
              xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<StackPanel Orientation="Vertical">
+	<StackPanel Orientation="Vertical" Background="White">
 		<ToolBar ToolBarTray.IsLocked="True" ToolBar.OverflowMode="Never">
 			<Button x:Name="revertButton"
 				Content="{sd:Localize AddIns.Subversion.Revert}"

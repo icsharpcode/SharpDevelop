@@ -10,8 +10,12 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using ICSharpCode.AvalonEdit.AddIn.Options;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -38,6 +42,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} else {
 				editor.Copy();
 			}
+		}
+		
+		public void CopyEditorSettings(TextEditor source)
+		{
+			string language = source.SyntaxHighlighting != null ? source.SyntaxHighlighting.Name : null;
+			editor.TextArea.TextView.LineTransformers.RemoveWhere(x => x is HighlightingColorizer);
+			editor.TextArea.TextView.LineTransformers.Insert(0, new CustomizableHighlightingColorizer(source.SyntaxHighlighting.MainRuleSet, CustomizedHighlightingColor.FetchCustomizations(language)));
+			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(editor, CustomizedHighlightingColor.FetchCustomizations(language));
+			HighlightingOptions.ApplyToRendering(editor, CustomizedHighlightingColor.FetchCustomizations(language));
+			editor.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 	}
 }

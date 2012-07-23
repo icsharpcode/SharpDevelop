@@ -8,11 +8,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Widgets.MyersDiff;
 
@@ -220,11 +220,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				
 				DiffControl differ = new DiffControl();
-				differ.editor.SyntaxHighlighting = editor.SyntaxHighlighting;
+				differ.CopyEditorSettings(editor);
 				differ.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
 				differ.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 				differ.editor.Document.Text = oldText;
-				differ.Background = Brushes.White;
 				
 				if (oldText == string.Empty) {
 					differ.editor.Visibility = Visibility.Collapsed;
@@ -248,7 +247,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				tooltip.Child = new Border() {
 					Child = differ,
-					BorderBrush = Brushes.Black,
+					BorderBrush = editor.TextArea.Foreground,
 					BorderThickness = new Thickness(1)
 				};
 				
