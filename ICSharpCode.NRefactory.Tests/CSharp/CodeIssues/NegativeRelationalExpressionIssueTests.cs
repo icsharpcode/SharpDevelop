@@ -1,5 +1,5 @@
 ﻿// 
-// NegativeEqualityExpressionIssueTests.cs
+// NegativeRelationalExpressionIssueTests.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -30,7 +30,7 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.CodeIssues
 {
 	[TestFixture]
-	public class DoubleNegationExpressionIssueTests : InspectionActionTestBase
+	public class NegativeRelationalExpressionIssueTests : InspectionActionTestBase
 	{
 
 		public void Test (string op, string negatedOp)
@@ -51,7 +51,7 @@ class TestClass
 		var x = 1 " + negatedOp + @" 2;
 	}
 }";
-			Test<DoubleNegationExpressionIssue> (input, 1, output);
+			Test<NegativeRelationalExpressionIssue> (input, 1, output);
 		}
 
 		[Test]

@@ -1,5 +1,5 @@
 ﻿// 
-// DoubleNegationExpressionIssue.cs
+// NegativeRelationalExpressionIssue.cs
 // 
 // Author:
 //      Mansheng Yang <lightyang0@gmail.com>
@@ -28,12 +28,12 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-	[IssueDescription ("Simplify double negation expression",
-					   Description = "Simplify double negation expression",
+	[IssueDescription ("Simplify negative relational expression",
+					   Description = "Simplify negative relational expression",
 					   Category = IssueCategories.Improvements,
 					   Severity = Severity.Suggestion,
 					   IssueMarker = IssueMarker.Underline)]
-	public class DoubleNegationExpressionIssue : ICodeIssueProvider
+	public class NegativeRelationalExpressionIssue : ICodeIssueProvider
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (negatedOp == BinaryOperatorType.Any)
 					return;
 
-				AddIssue (unaryOperatorExpression, ctx.TranslateString ("Simplify negative equality expression"),
+				AddIssue (unaryOperatorExpression, ctx.TranslateString ("Simplify negative relational expression"),
 					script => script.Replace (unaryOperatorExpression,
 						new BinaryOperatorExpression (binaryOperatorExpr.Left.Clone (), negatedOp,
 					          	binaryOperatorExpr.Right.Clone ())));
