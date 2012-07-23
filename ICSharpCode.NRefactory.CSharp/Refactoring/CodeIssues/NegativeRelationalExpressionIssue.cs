@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -47,6 +48,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 			}
 
+			bool IsFloatingPoint (AstNode node)
+			{
+				var typeDef = ctx.Resolve (node).Type.GetDefinition ();
+				return typeDef != null &&
+					(typeDef.KnownTypeCode == KnownTypeCode.Single || typeDef.KnownTypeCode == KnownTypeCode.Double);
+			}
+
 			public override void VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression)
 			{
 				base.VisitUnaryOperatorExpression (unaryOperatorExpression);
@@ -64,6 +72,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				var negatedOp = CSharpUtil.NegateRelationalOperator(binaryOperatorExpr.Operator);
 				if (negatedOp == BinaryOperatorType.Any)
+					return;
+
+				if (IsFloatingPoint (binaryOperatorExpr.Left) || IsFloatingPoint (binaryOperatorExpr.Right))
 					return;
 
 				AddIssue (unaryOperatorExpression, ctx.TranslateString ("Simplify negative relational expression"),

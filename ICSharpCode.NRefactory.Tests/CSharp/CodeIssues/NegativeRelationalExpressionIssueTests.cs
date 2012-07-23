@@ -89,5 +89,19 @@ class TestClass
 		{
 			Test ("<=", ">");
 		}
+
+		[Test]
+		public void TestFloatingPoint ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (double d)
+	{
+		var x = !(d > 0.1);
+	}
+}";
+			Test<NegativeRelationalExpressionIssue> (input, 0);
+		}
 	}
 }
