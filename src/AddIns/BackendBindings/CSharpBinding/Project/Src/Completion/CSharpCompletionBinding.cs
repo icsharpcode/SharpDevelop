@@ -49,12 +49,13 @@ namespace CSharpBinding.Completion
 			if (pc == null)
 				return false;
 			
+			var context = parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location);
 			CSharpCompletionEngine cc = new CSharpCompletionEngine(
 				editor.Document,
 				new DefaultCompletionContextProvider(editor.Document, parseInfo.ParsedFile),
-				new CSharpCompletionDataFactory(),
+				new CSharpCompletionDataFactory(context),
 				pc,
-				parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location)
+				context
 			);
 			
 			//cc.FormattingPolicy = ?

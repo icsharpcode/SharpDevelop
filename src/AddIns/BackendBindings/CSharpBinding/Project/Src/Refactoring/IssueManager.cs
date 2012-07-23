@@ -267,6 +267,7 @@ namespace CSharpBinding.Refactoring
 						}
 					}, cancellationToken);
 			} catch (TaskCanceledException) {
+			} catch (OperationCanceledException) {
 			}
 			if (!cancellationToken.IsCancellationRequested) {
 				analyzedVersion = textSource.Version;

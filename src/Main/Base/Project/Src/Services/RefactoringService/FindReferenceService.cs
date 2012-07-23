@@ -191,7 +191,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			Dictionary<TypeName, TypeGraphNode> dict = new Dictionary<TypeName, TypeGraphNode>();
 			foreach (ICompilation compilation in compilations) {
 				foreach (ITypeDefinition typeDef in compilation.MainAssembly.GetAllTypeDefinitions()) {
-					dict.Add(new TypeName(typeDef), new TypeGraphNode(typeDef));
+					// Overwrite previous entry - duplicates can occur if there are multiple versions of the
+					// same project loaded in the solution (e.g. separate .csprojs for separate target frameworks)
+					dict[new TypeName(typeDef)] = new TypeGraphNode(typeDef);
 				}
 			}
 			foreach (ICompilation compilation in compilations) {

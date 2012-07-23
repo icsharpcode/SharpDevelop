@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
 
@@ -12,6 +13,15 @@ namespace CSharpBinding.Completion
 {
 	class CSharpCompletionDataFactory : ICompletionDataFactory
 	{
+		readonly CSharpTypeResolveContext contextAtCaret;
+		
+		public CSharpCompletionDataFactory(CSharpTypeResolveContext contextAtCaret)
+		{
+			if (contextAtCaret == null)
+				throw new ArgumentNullException("contextAtCaret");
+			this.contextAtCaret = contextAtCaret;
+		}
+		
 		public ICompletionData CreateEntityCompletionData(IUnresolvedEntity entity)
 		{
 			return new CompletionData(entity.Name) {
@@ -86,7 +96,7 @@ namespace CSharpBinding.Completion
 		
 		public ICompletionData CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
 		{
-			throw new NotImplementedException();
+			return new OverrideCompletionData(declarationBegin, m, contextAtCaret);
 		}
 		
 		public ICompletionData CreateNewPartialCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
