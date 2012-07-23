@@ -44,11 +44,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		class GatherVisitor : GatherVisitorBase
 		{
-			ITypeDefinition objectTypeDefinition;
-
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
-			{				
-				objectTypeDefinition = context.Compilation.FindType(KnownTypeCode.Object).GetDefinition();
+			{
 			}
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
@@ -59,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					return;
 				}
 				var resolveResult = ctx.Resolve(invocationExpression) as InvocationResolveResult;
-				if (resolveResult == null || !objectTypeDefinition.Equals(resolveResult.Member.DeclaringTypeDefinition)) {
+				if (resolveResult == null || !resolveResult.Member.DeclaringTypeDefinition.IsKnownType(KnownTypeCode.Object)) {
 					return;
 				}
 				var title = ctx.TranslateString("Call to base.Equals resolves to Object.Equals, which is reference equality");

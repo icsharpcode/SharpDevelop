@@ -42,16 +42,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		class GatherVisitor : GatherVisitorBase
 		{
-			ITypeDefinition objectTypeDefinition;
-			
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
-			{				
-				objectTypeDefinition = context.Compilation.FindType(KnownTypeCode.Object).GetDefinition();
+			{
 			}
 
 			public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 			{
-				// Check that this declaration is a GetHashCode override, _then_ recurse
+				// Check that this declaration is a GetHashCode override, _then_ continue traversing
 
 				if (methodDeclaration.Name != "GetHashCode") {
 					return;
@@ -68,7 +65,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				base.VisitInvocationExpression(invocationExpression);
 
 				var resolveResult = ctx.Resolve(invocationExpression) as InvocationResolveResult;
-				if (resolveResult == null || !objectTypeDefinition.Equals(resolveResult.Member.DeclaringTypeDefinition)) {
+				if (resolveResult == null || !resolveResult.Member.DeclaringTypeDefinition.IsKnownType(KnownTypeCode.Object)) {
 					return;
 				}
 				AddIssue(invocationExpression, ctx.TranslateString("Call resolves to Object.GetHashCode, which is reference based"));
