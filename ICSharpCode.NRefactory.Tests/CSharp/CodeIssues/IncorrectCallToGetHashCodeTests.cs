@@ -50,6 +50,25 @@ class Foo
 		}
 
 		[Test]
+		public void NonObjectBase()
+		{
+			var input = @"
+class Foo
+{
+}
+class Bar : Foo
+{
+	public override int GetHashCode()
+	{
+		return base.GetHashCode();
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new IncorrectCallToObjectGetHashCodeIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+		}
+
+		[Test]
 		public void DoesNotCheckOutsideOverriddenGetHashCode()
 		{
 			var input = @"

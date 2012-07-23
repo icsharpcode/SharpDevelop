@@ -58,6 +58,37 @@ class Foo
 	}
 }");
 		}
+		
+		[Test]
+		public void NonObjectBase()
+		{
+			var input = @"
+class Foo
+{
+}
+class Bar : Foo
+{
+	void Baz ()
+	{
+		bool b = base.Equals (""blah"");
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new CallToObjectEqualsViaBaseIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues, @"
+class Foo
+{
+}
+class Bar : Foo
+{
+	void Baz ()
+	{
+		bool b = object.ReferenceEquals (this, ""blah"");
+	}
+}");
+		}
 	}
 }
 
