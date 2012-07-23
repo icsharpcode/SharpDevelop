@@ -308,8 +308,7 @@ namespace CSharpBinding
 		public override void VisitSimpleType(SimpleType simpleType)
 		{
 			Colorize(simpleType.IdentifierToken, GetColor(resolver.Resolve(simpleType)));
-			foreach (AstNode node in simpleType.TypeArguments)
-				node.AcceptVisitor(this);
+			simpleType.TypeArguments.AcceptVisitor(this);
 		}
 		
 		public override void VisitMemberType(MemberType memberType)
@@ -318,8 +317,7 @@ namespace CSharpBinding
 			// This is required so that the resulting HighlightedSections are sorted correctly.
 			memberType.Target.AcceptVisitor(this);
 			Colorize(memberType.MemberNameToken, GetColor(resolver.Resolve(memberType)));
-			foreach (AstNode node in memberType.TypeArguments)
-				node.AcceptVisitor(this);
+			memberType.TypeArguments.AcceptVisitor(this);
 		}
 		
 		public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
@@ -332,8 +330,7 @@ namespace CSharpBinding
 				Colorize(ident, GetColor(rr));
 			}
 			
-			foreach (AstNode node in identifierExpression.TypeArguments)
-				node.AcceptVisitor(this);
+			identifierExpression.TypeArguments.AcceptVisitor(this);
 		}
 		
 		public override void VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression)
@@ -343,8 +340,7 @@ namespace CSharpBinding
 			ResolveResult rr = resolver.Resolve(memberReferenceExpression);
 			Colorize(memberReferenceExpression.MemberNameToken, GetColor(rr));
 			
-			foreach (AstNode node in memberReferenceExpression.TypeArguments)
-				node.AcceptVisitor(this);
+			memberReferenceExpression.TypeArguments.AcceptVisitor(this);
 		}
 		
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
@@ -364,14 +360,12 @@ namespace CSharpBinding
 					Colorize(identifier, GetColor(targetRR));
 				}
 				
-				foreach (AstNode node in target.GetChildrenByRole(Roles.TypeArgument))
-					node.AcceptVisitor(this);
+				target.GetChildrenByRole(Roles.TypeArgument).AcceptVisitor(this);
 			} else {
 				target.AcceptVisitor(this);
 			}
 			
-			foreach (AstNode node in invocationExpression.Arguments)
-				node.AcceptVisitor(this);
+			invocationExpression.Arguments.AcceptVisitor(this);
 		}
 		
 		public override void VisitAccessor(Accessor accessor)
@@ -386,37 +380,35 @@ namespace CSharpBinding
 		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
+			//methodDeclaration.Attributes.AcceptVisitor(this);
 			methodDeclaration.ReturnType.AcceptVisitor(this);
 			methodDeclaration.PrivateImplementationType.AcceptVisitor(this);
 			Colorize(methodDeclaration.NameToken, methodCallColor);
-			foreach (var node in methodDeclaration.TypeParameters)
-				node.AcceptVisitor(this);
-			foreach (var node in methodDeclaration.Parameters)
-				node.AcceptVisitor(this);
-			foreach (var node in methodDeclaration.Constraints)
-				node.AcceptVisitor(this);
+			methodDeclaration.TypeParameters.AcceptVisitor(this);
+			methodDeclaration.Parameters.AcceptVisitor(this);
+			methodDeclaration.Constraints.AcceptVisitor(this);
 			methodDeclaration.Body.AcceptVisitor(this);
 		}
 		
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
+			//typeDeclaration.Attributes.AcceptVisitor(this);
+			
 			if (typeDeclaration.ClassType == ClassType.Enum || typeDeclaration.ClassType == ClassType.Struct)
 				Colorize(typeDeclaration.NameToken, valueTypeColor);
 			else
 				Colorize(typeDeclaration.NameToken, referenceTypeColor);
 			
-			foreach (var node in typeDeclaration.TypeParameters)
-				node.AcceptVisitor(this);
-			foreach (var node in typeDeclaration.BaseTypes)
-				node.AcceptVisitor(this);
-			foreach (var node in typeDeclaration.Constraints)
-				node.AcceptVisitor(this);
-			foreach (var node in typeDeclaration.Members)
-				node.AcceptVisitor(this);
+			typeDeclaration.TypeParameters.AcceptVisitor(this);
+			typeDeclaration.BaseTypes.AcceptVisitor(this);
+			typeDeclaration.Constraints.AcceptVisitor(this);
+			typeDeclaration.Members.AcceptVisitor(this);
 		}
 		
 		public override void VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration)
 		{
+			//typeParameterDeclaration.Attributes.AcceptVisitor(this);
+			
 			if (typeParameterDeclaration.Variance == VarianceModifier.Contravariant)
 				Colorize(typeParameterDeclaration.VarianceToken, parameterModifierColor);
 			
@@ -437,8 +429,8 @@ namespace CSharpBinding
 				bool isValueType = constraint.BaseTypes.OfType<PrimitiveType>().Any(p => p.Keyword == "struct");
 				Colorize(constraint.GetChildByRole(Roles.Identifier), isValueType ? valueTypeColor : referenceTypeColor);
 			}
-			foreach (var baseType in constraint.BaseTypes)
-				baseType.AcceptVisitor(this);
+			
+			constraint.BaseTypes.AcceptVisitor(this);
 		}
 		
 		public override void VisitVariableInitializer(VariableInitializer variableInitializer)
