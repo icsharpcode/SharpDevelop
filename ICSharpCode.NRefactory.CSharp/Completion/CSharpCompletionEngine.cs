@@ -1321,6 +1321,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (currentType != null) {
 				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
+						if (nestedType.IsSynthetic)
+							continue;
 						string name = nestedType.Name;
 						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 							name = name.Substring(0, name.Length - "Attribute".Length);
@@ -2443,7 +2445,9 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			if (resolveResult is TypeResolveResult || includeStaticMembers) {
-				foreach (var nested in type.GetNestedTypes ()) {
+				foreach (var nested in type.GetNestedTypes (t => !t.IsSynthetic)) {
+					if (!lookup.IsAccessible(nested.GetDefinition(), isProtectedAllowed))
+						continue;
 					IType addType = typePred != null ? typePred(nested) : nested;
 					if (addType != null)
 						result.AddType(addType, addType.Name);
