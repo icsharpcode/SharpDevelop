@@ -119,23 +119,6 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// For new code, please use the overload taking StringTagPair[]!
-		/// </summary>
-		[Obsolete("Please use the overload taking StringTagPair[]!")]
-		public static string Parse(string input, string[,] customTags)
-		{
-			if (customTags == null)
-				return Parse(input);
-			if (customTags.GetLength(1) != 2)
-				throw new ArgumentException("incorrect dimension");
-			StringTagPair[] pairs = new StringTagPair[customTags.GetLength(0)];
-			for (int i = 0; i < pairs.Length; i++) {
-				pairs[i] = new StringTagPair(customTags[i, 0], customTags[i, 1]);
-			}
-			return Parse(input, pairs);
-		}
-		
-		/// <summary>
 		/// Evaluates a property using the StringParser. Equivalent to StringParser.Parse("${" + propertyName + "}");
 		/// </summary>
 		public static string GetValue(string propertyName, params StringTagPair[] customTags)

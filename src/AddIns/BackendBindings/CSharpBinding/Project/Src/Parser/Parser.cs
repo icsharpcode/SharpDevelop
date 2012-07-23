@@ -98,16 +98,21 @@ namespace CSharpBinding.Parser
 				if (index > -1) {
 					if (document == null)
 						document = new ReadOnlyDocument(fileContent);
-					int startOffset = document.GetOffset(comment.StartLocation);
 					int commentSignLength = comment.CommentType == CommentType.Documentation || comment.CommentType == CommentType.MultiLineDocumentation ? 3 : 2;
 					int commentEndSignLength = comment.CommentType == CommentType.MultiLine || comment.CommentType == CommentType.MultiLineDocumentation ? 2 : 0;
+					int commentStartOffset = document.GetOffset(comment.StartLocation) + commentSignLength;
+					int commentEndOffset = document.GetOffset(comment.EndLocation) - commentEndSignLength;
 					do {
-						int absoluteOffset = startOffset + index + commentSignLength;
+						int absoluteOffset = commentStartOffset + index;
 						var startLocation = document.GetLocation(absoluteOffset);
-						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, document.GetOffset(comment.EndLocation) - commentEndSignLength);
+						int endOffset = Math.Min(document.GetLineByNumber(startLocation.Line).EndOffset, commentEndOffset);
 						string content = document.GetText(absoluteOffset, endOffset - absoluteOffset);
+						if (content.Length < matchLength) {
+							// HACK: workaround parser bug with multi-line documentation comments
+							break;
+						}
 						tagComments.Add(new TagComment(content.Substring(0, matchLength), new DomRegion(cu.FileName, startLocation.Line, startLocation.Column), content.Substring(matchLength)));
-						index = comment.Content.IndexOfAny(TaskListTokens, endOffset - startOffset - commentSignLength, out matchLength);
+						index = comment.Content.IndexOfAny(TaskListTokens, endOffset - commentStartOffset, out matchLength);
 					} while (index > -1);
 				}
 			}

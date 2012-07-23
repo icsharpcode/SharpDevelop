@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				if (versionComparison > 0 || index < 0) {
 					// We're going backwards in time, or are requesting a project that is not an owner
 					// for this entry.
-					var parseInfo = parser.Parse(fileName, fileContent, fullParseInformationRequested, parentProject, cancellationToken);
+					var parseInfo = ParseWithExceptionHandling(fileContent, fullParseInformationRequested, parentProject, cancellationToken);
 					FreezableHelper.Freeze(parseInfo.ParsedFile);
 					return new ProjectEntry(parentProject, parseInfo.ParsedFile, parseInfo);
 				} else {
@@ -210,13 +210,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 				
 				ParseInformationEventArgs[] results = new ParseInformationEventArgs[entries.Count];
 				for (int i = 0; i < entries.Count; i++) {
-					ParseInformation parseInfo;
-					try {
-						parseInfo = parser.Parse(fileName, fileContent, fullParseInformationRequested, entries[i].Project, cancellationToken);
-					} catch (Exception ex) {
-						SD.LoggingService.Error("Got " + ex.GetType().Name + " while parsing " + fileName);
-						throw;
-					}
+					var parseInfo = ParseWithExceptionHandling(fileContent, fullParseInformationRequested, entries[i].Project, cancellationToken);
 					if (parseInfo == null)
 						throw new NullReferenceException(parser.GetType().Name + ".Parse() returned null");
 					if (fullParseInformationRequested && !parseInfo.IsFullParseInformation)
@@ -243,6 +237,20 @@ namespace ICSharpCode.SharpDevelop.Parser
 			}  // exit lock
 			parserService.RegisterForCacheExpiry(this);
 			return result;
+		}
+
+		ParseInformation ParseWithExceptionHandling(ITextSource fileContent, bool fullParseInformationRequested, IProject project, CancellationToken cancellationToken)
+		{
+			#if DEBUG
+			if (Debugger.IsAttached)
+				return parser.Parse(fileName, fileContent, fullParseInformationRequested, project, cancellationToken);
+			#endif
+			try {
+				return parser.Parse(fileName, fileContent, fullParseInformationRequested, project, cancellationToken);
+			} catch (Exception ex) {
+				SD.LoggingService.Error("Got " + ex.GetType().Name + " while parsing " + fileName);
+				throw;
+			}
 		}
 		#endregion
 		
