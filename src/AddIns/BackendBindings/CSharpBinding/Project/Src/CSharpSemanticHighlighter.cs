@@ -230,11 +230,15 @@ namespace CSharpBinding
 			HighlightedLine line = new HighlightedLine(textEditor.Document, documentLine);
 			this.line = line;
 			this.lineNumber = lineNumber;
-			try {
+			if (Debugger.IsAttached) {
 				parseInfo.CompilationUnit.AcceptVisitor(this);
-			} catch (Exception ex) {
-				hasCrashed = true;
-				throw new ApplicationException("Error highlighting line " + lineNumber, ex);
+			} else {
+				try {
+					parseInfo.CompilationUnit.AcceptVisitor(this);
+				} catch (Exception ex) {
+					hasCrashed = true;
+					throw new ApplicationException("Error highlighting line " + lineNumber, ex);
+				}
 			}
 			this.line = null;
 			this.resolver = null;
@@ -346,13 +350,24 @@ namespace CSharpBinding
 		public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 		{
 			Expression target = invocationExpression.Target;
-			target.AcceptVisitor(this);
-			
-			var rr = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
-			if (rr != null && !rr.IsDelegateInvocation) {
-				if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
-					Colorize(target.GetChildByRole(Roles.Identifier),  methodCallColor);
+			if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
+				// apply color to target's target
+				target.GetChildByRole(Roles.TargetExpression).AcceptVisitor(this);
+				
+				// highlight the method call
+				var identifier = target.GetChildByRole(Roles.Identifier);
+				var invocationRR = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (invocationRR != null && !invocationRR.IsDelegateInvocation) {
+					Colorize(identifier, methodCallColor);
+				} else {
+					ResolveResult targetRR = resolver.Resolve(target);
+					Colorize(identifier, GetColor(targetRR));
 				}
+				
+				foreach (AstNode node in target.GetChildrenByRole(Roles.TypeArgument))
+					node.AcceptVisitor(this);
+			} else {
+				target.AcceptVisitor(this);
 			}
 			
 			foreach (AstNode node in invocationExpression.Arguments)
