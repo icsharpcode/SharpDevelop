@@ -132,5 +132,118 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(PreProcessorDirectiveType.Pragma, ppd.Type);
 			Assert.AreEqual("warning disable 809", ppd.Argument);
 		}
+		
+		const string elifProgram = @"
+#if AAA
+class A { }
+#elif BBB
+class B { }
+#endif";
+		
+		[Test]
+		[Ignore("parser bug (missing comment node)")]
+		public void ElifBothFalse()
+		{
+			CSharpParser parser = new CSharpParser();
+			var cu = parser.Parse(elifProgram, "elif.cs");
+			Assert.IsFalse(parser.HasErrors);
+			
+			Assert.AreEqual(new Role[] {
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective
+			                }, cu.Children.Select(c => c.Role).ToArray());
+			var aaa = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
+			Assert.IsFalse(aaa.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
+			Assert.AreEqual("AAA", aaa.Argument);
+			
+			var bbb = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(1);
+			Assert.IsFalse(bbb.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.Elif, bbb.Type);
+			Assert.AreEqual("BBB", bbb.Argument);
+		}
+		
+		[Test]
+		[Ignore("parser bug (bbb.Take is true, should be false)")]
+		public void ElifBothTrue()
+		{
+			CSharpParser parser = new CSharpParser();
+			parser.CompilerSettings.ConditionalSymbols.Add("AAA");
+			var cu = parser.Parse(elifProgram, "elif.cs");
+			Assert.IsFalse(parser.HasErrors);
+			
+			Assert.AreEqual(new Role[] {
+			                	Roles.PreProcessorDirective,
+			                	NamespaceDeclaration.MemberRole,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective
+			                }, cu.Children.Select(c => c.Role).ToArray());
+			var aaa = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
+			Assert.IsTrue(aaa.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
+			Assert.AreEqual("AAA", aaa.Argument);
+			
+			var bbb = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(1);
+			Assert.IsFalse(bbb.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.Elif, bbb.Type);
+			Assert.AreEqual("BBB", bbb.Argument);
+		}
+		
+		[Test]
+		[Ignore("parser bug (bbb.Take is true, should be false)")]
+		public void ElifFirstTaken()
+		{
+			CSharpParser parser = new CSharpParser();
+			parser.CompilerSettings.ConditionalSymbols.Add("AAA");
+			var cu = parser.Parse(elifProgram, "elif.cs");
+			Assert.IsFalse(parser.HasErrors);
+			
+			Assert.AreEqual(new Role[] {
+			                	Roles.PreProcessorDirective,
+			                	NamespaceDeclaration.MemberRole,
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective
+			                }, cu.Children.Select(c => c.Role).ToArray());
+			var aaa = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
+			Assert.IsTrue(aaa.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
+			Assert.AreEqual("AAA", aaa.Argument);
+			
+			var bbb = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(1);
+			Assert.IsFalse(bbb.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.Elif, bbb.Type);
+			Assert.AreEqual("BBB", bbb.Argument);
+		}
+		
+		[Test]
+		public void ElifSecondTaken()
+		{
+			CSharpParser parser = new CSharpParser();
+			parser.CompilerSettings.ConditionalSymbols.Add("BBB");
+			var cu = parser.Parse(elifProgram, "elif.cs");
+			Assert.IsFalse(parser.HasErrors);
+			
+			Assert.AreEqual(new Role[] {
+			                	Roles.PreProcessorDirective,
+			                	Roles.Comment,
+			                	Roles.PreProcessorDirective,
+			                	NamespaceDeclaration.MemberRole,
+			                	Roles.PreProcessorDirective
+			                }, cu.Children.Select(c => c.Role).ToArray());
+			var aaa = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(0);
+			Assert.IsFalse(aaa.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.If, aaa.Type);
+			Assert.AreEqual("AAA", aaa.Argument);
+			
+			var bbb = cu.GetChildrenByRole(Roles.PreProcessorDirective).ElementAt(1);
+			Assert.IsTrue(bbb.Take);
+			Assert.AreEqual(PreProcessorDirectiveType.Elif, bbb.Type);
+			Assert.AreEqual("BBB", bbb.Argument);
+		}
 	}
 }

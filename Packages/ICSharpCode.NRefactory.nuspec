@@ -2,9 +2,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>ICSharpCode.NRefactory</id>
-    <version>5.0.1</version>
+    <version>5.1.0</version>
     <title>NRefactory</title>
-    <authors>Daniel Grunwald, Mike Krüger</authors>
+    <authors>Daniel Grunwald, Mike Krüger, Erik Källén</authors>
     <owners>Daniel Grunwald</owners>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
     <projectUrl>https://github.com/icsharpcode/NRefactory/</projectUrl>

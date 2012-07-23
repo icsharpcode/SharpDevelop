@@ -18,6 +18,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
@@ -233,6 +234,20 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.AreEqual(new TextLocation(1, 1), pe.StartLocation);
 			Assert.AreEqual(new TextLocation(1, 2), pe.EndLocation);
 			Assert.AreEqual("0", pe.LiteralValue);
+		}
+		
+		[Test]
+		[Ignore("Mono parser crash")]
+		public void LargeVerbatimString()
+		{
+			StringBuilder b = new StringBuilder();
+			for (int i = 0; i < 10000; i++) {
+				b.Append(i.ToString());
+				b.Append("\r\n");
+			}
+			string literal = b.ToString();
+			var pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("@\"" + literal + "\"");
+			Assert.AreEqual(literal, pe.Value);
 		}
 	}
 }

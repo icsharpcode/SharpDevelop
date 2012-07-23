@@ -29,7 +29,6 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 
 namespace ICSharpCode.NRefactory.CSharp.CodeActions
 {
-	[Ignore("TODO")]
 	[TestFixture]
 	public class ImplementInterfaceExplicitTests : ContextActionTestBase
 	{
@@ -44,9 +43,9 @@ class Foo : $IDisposable
 class Foo : IDisposable
 {
 	#region IDisposable implementation
-	void IDisposable.Dispose()
+	void IDisposable.Dispose ()
 	{
-		throw new NotImplementedException();
+		throw new NotImplementedException ();
 	}
 	#endregion
 }
