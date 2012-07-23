@@ -140,19 +140,23 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			while (insertionStack.Peek() < insertionEndPos) {
 				int end = insertionStack.Pop();
 				// insert the portion from newSectionStart to end
+				if (end > newSectionStart) {
+					this.Sections.Insert(pos++, new HighlightedSection {
+					                     	Offset = newSectionStart,
+					                     	Length = end - newSectionStart,
+					                     	Color = color
+					                     });
+					newSectionStart = end;
+				}
+			}
+			if (insertionEndPos > newSectionStart) {
 				this.Sections.Insert(pos++, new HighlightedSection {
 				                     	Offset = newSectionStart,
-				                     	Length = end - newSectionStart,
+				                     	Length = insertionEndPos - newSectionStart,
 				                     	Color = color
 				                     });
-				newSectionStart = end;
+				newSectionStart = insertionEndPos;
 			}
-			this.Sections.Insert(pos++, new HighlightedSection {
-			                     	Offset = newSectionStart,
-			                     	Length = insertionEndPos - newSectionStart,
-			                     	Color = color
-			                     });
-			newSectionStart = insertionEndPos;
 		}
 		#endregion
 		

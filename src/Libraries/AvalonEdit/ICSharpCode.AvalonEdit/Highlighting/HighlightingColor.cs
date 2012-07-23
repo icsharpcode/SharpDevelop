@@ -117,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			return "[" + GetType() + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
+			return "[" + GetType().Name + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
 		}
 	}
 }
