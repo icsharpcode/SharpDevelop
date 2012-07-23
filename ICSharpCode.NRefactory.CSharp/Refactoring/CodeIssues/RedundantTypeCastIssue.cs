@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 				var expectedType = GetExpectedType (typeCastNode);
 				var exprType = ctx.Resolve (expr).Type;
-				if (exprType.GetAllBaseTypes ().Any (t => t == expectedType))
+				if (exprType.GetAllBaseTypes ().Any (t => t.Equals(expectedType)))
 					AddIssue (typeCastNode, expr, castStart, castEnd);
 			}
 		}
