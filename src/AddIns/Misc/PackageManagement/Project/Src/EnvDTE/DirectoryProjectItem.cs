@@ -29,10 +29,10 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		static string GetLastDirectoryName(string relativePath)
 		{
-			string[] directoryNames = relativePath.Split('\\');
-			if (directoryNames.Length > 1) {
-				return directoryNames[1];
-			}
+//			string[] directoryNames = relativePath.Split('\\');
+//			if (directoryNames.Length > 1) {
+//				return directoryNames[1];
+//			}
 			return relativePath;
 		}
 		

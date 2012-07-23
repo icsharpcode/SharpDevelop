@@ -57,6 +57,13 @@ namespace PackageManagement.Tests.EnvDTE
 			return projectBrowserUpdater;
 		}
 		
+		DTE.ProjectItem GetChildItem(ProjectItems projectItems, string name)
+		{
+			return projectItems
+				.OfType<DTE.ProjectItem>()
+				.SingleOrDefault(item => item.Name == name);
+		}
+		
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsIncludedInProjectInProjectFolder()
 		{
@@ -664,6 +671,22 @@ namespace PackageManagement.Tests.EnvDTE
 			bool saved = msbuildProject.IsSaved;
 			
 			projectBrowserUpdater.AssertWasCalled(updater => updater.Dispose());
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneFileInFolderTwoLevelsDeep_FolderTwoLevelsDeepFullPathIsFullDirectoryName()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\Program.cs");
+			
+			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
+			DTE.ProjectItem scaffolderFolderItem = GetChildItem(codeTemplatesFolderItem.ProjectItems, "Scaffolders");
+			
+			string directory = (string)scaffolderFolderItem.Properties.Item(DTE.ProjectItem.FullPathPropertyName).Value;
+			
+			string expectedDirectory = @"d:\projects\MyProject\CodeTemplates\Scaffolders";
+			Assert.AreEqual(expectedDirectory, directory);
 		}
 	}
 }
