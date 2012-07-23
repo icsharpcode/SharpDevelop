@@ -401,6 +401,7 @@
     <Compile Include="Refactoring\CodeIssues\RedundantCatchIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantToStringIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CallToObjectEqualsViaBaseIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\IncorrectCallToObjectGetHashCodeIssue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
