@@ -48,14 +48,39 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			{
 			}
 
-			bool IsFloatingPoint(Expression expr)
+			static bool IsFloatingPointType (IType type)
 			{
-				var resolveResult = ctx.Resolve (expr);
-				if (resolveResult == null)
-					return false;
-				var typeDef = resolveResult.Type.GetDefinition ();
-				return typeDef != null && 
+				var typeDef = type.GetDefinition ();
+				return typeDef != null &&
 					(typeDef.KnownTypeCode == KnownTypeCode.Single || typeDef.KnownTypeCode == KnownTypeCode.Double);
+			}
+
+			bool IsFloatingPoint(AstNode node)
+			{
+				return IsFloatingPointType (ctx.Resolve (node).Type);
+			}
+
+			bool IsNaN (AstNode node)
+			{
+				var memberReferenceExpr = node as MemberReferenceExpression;
+				if (memberReferenceExpr == null)
+					return false;
+				var typeReferenceExpr = memberReferenceExpr.Target as TypeReferenceExpression;
+				if (typeReferenceExpr == null)
+					return false;
+				return IsFloatingPointType (ctx.ResolveType (typeReferenceExpr.Type)) && 
+					memberReferenceExpr.MemberName == "NaN";
+			}
+
+			void AddIsNaNIssue(BinaryOperatorExpression binaryOperatorExpr, Expression argExpr)
+			{
+				AddIssue (binaryOperatorExpr, ctx.TranslateString ("Use double.IsNan()"), script => {
+					Expression expr = new InvocationExpression (new MemberReferenceExpression (
+						new TypeReferenceExpression (new PrimitiveType ("double")), "IsNaN"), argExpr.Clone ());
+					if (binaryOperatorExpr.Operator == BinaryOperatorType.InEquality)
+						expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr);
+					script.Replace (binaryOperatorExpr, expr);
+				});
 			}
 
 			public override void VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression)
@@ -65,7 +90,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (binaryOperatorExpression.Operator != BinaryOperatorType.Equality &&
 					binaryOperatorExpression.Operator != BinaryOperatorType.InEquality)
 					return;
-				if (IsFloatingPoint(binaryOperatorExpression.Left) || IsFloatingPoint(binaryOperatorExpression.Right)) {
+
+				if (IsNaN(binaryOperatorExpression.Left)) {
+					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Right);
+				} else if (IsNaN (binaryOperatorExpression.Right)) {
+					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Left);
+				} else if (IsFloatingPoint(binaryOperatorExpression.Left) || IsFloatingPoint(binaryOperatorExpression.Right)) {
 					AddIssue (binaryOperatorExpression, ctx.TranslateString ("Compare a difference with EPSILON"),
 						script =>
 						{

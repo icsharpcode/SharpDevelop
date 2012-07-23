@@ -66,5 +66,29 @@ class TestClass
 		{
 			Test ("!=", ">");
 		}
+
+		[Test]
+		public void TestNaN ()
+		{
+			var input = @"
+class TestClass
+{
+	void TestMethod (double x)
+	{
+		bool test = x == double.NaN;
+		bool test2 = x != double.NaN;
+	}
+}";
+			var output = @"
+class TestClass
+{
+	void TestMethod (double x)
+	{
+		bool test = double.IsNaN (x);
+		bool test2 = !double.IsNaN (x);
+	}
+}";
+			Test<CompareFloatWithEqualityOperatorIssue> (input, 2, output);
+		}
 	}
 }
