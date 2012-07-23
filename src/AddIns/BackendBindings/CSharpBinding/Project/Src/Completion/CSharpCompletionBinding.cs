@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CSharpBinding.Parser;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -45,41 +46,43 @@ namespace CSharpBinding.Completion
 					return false;
 			}
 			ICompilation compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
-			var pc = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
-			if (pc == null)
+			var projectContent = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
+			if (projectContent == null)
 				return false;
 			
-			var context = parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location);
-			CSharpCompletionEngine cc = new CSharpCompletionEngine(
+			var completionContextProvider = new DefaultCompletionContextProvider(editor.Document, parseInfo.ParsedFile);
+			var typeResolveContext = parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location);
+			var completionFactory = new CSharpCompletionDataFactory(typeResolveContext);
+			CSharpCompletionEngine cce = new CSharpCompletionEngine(
 				editor.Document,
-				new DefaultCompletionContextProvider(editor.Document, parseInfo.ParsedFile),
-				new CSharpCompletionDataFactory(context),
-				pc,
-				context
+				completionContextProvider,
+				completionFactory,
+				projectContent,
+				typeResolveContext
 			);
 			
-			//cc.FormattingPolicy = ?
-			cc.EolMarker = DocumentUtilitites.GetLineTerminator(editor.Document, editor.Caret.Line);
-			//cc.IndentString = ?
+			cce.FormattingPolicy = FormattingOptionsFactory.CreateSharpDevelop();
+			cce.EolMarker = DocumentUtilitites.GetLineTerminator(editor.Document, editor.Caret.Line);
+			cce.IndentString = editor.Options.IndentationString;
 			
 			int startPos, triggerWordLength;
 			IEnumerable<ICompletionData> completionData;
 			if (ctrlSpace) {
-				if (!cc.TryGetCompletionWord(editor.Caret.Offset, out startPos, out triggerWordLength)) {
+				if (!cce.TryGetCompletionWord(editor.Caret.Offset, out startPos, out triggerWordLength)) {
 					startPos = editor.Caret.Offset;
 					triggerWordLength = 0;
 				}
-				completionData = cc.GetCompletionData(startPos, true);
+				completionData = cce.GetCompletionData(startPos, true);
 			} else {
 				startPos = editor.Caret.Offset;
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
 					if (startPos > 1 && char.IsLetterOrDigit (editor.Document.GetCharAt (startPos - 2)))
 						return false;
-					completionData = cc.GetCompletionData(startPos, false);
+					completionData = cce.GetCompletionData(startPos, false);
 					startPos--;
 					triggerWordLength = 1;
 				} else {
-					completionData = cc.GetCompletionData(startPos, false);
+					completionData = cce.GetCompletionData(startPos, false);
 					triggerWordLength = 0;
 				}
 			}
@@ -90,9 +93,26 @@ namespace CSharpBinding.Completion
 				list.SortItems();
 				list.PreselectionLength = editor.Caret.Offset - startPos;
 				list.PostselectionLength = Math.Max(0, startPos + triggerWordLength - editor.Caret.Offset);
-				list.SuggestedItem = list.Items.FirstOrDefault(i => i.Text == cc.DefaultCompletionString);
+				list.SuggestedItem = list.Items.FirstOrDefault(i => i.Text == cce.DefaultCompletionString);
 				editor.ShowCompletionWindow(list);
 				return true;
+			}
+			
+			if (!ctrlSpace) {
+				// Method Insight
+				var pce = new CSharpParameterCompletionEngine(
+					editor.Document,
+					completionContextProvider,
+					completionFactory,
+					projectContent,
+					typeResolveContext
+				);
+				var provider = pce.GetParameterDataProvider(editor.Caret.Offset, completionChar) as CSharpParameterDataProvider;
+				if (provider != null && provider.items.Count > 0) {
+					var insightWindow = editor.ShowInsightWindow(provider.items);
+					insightWindow.StartOffset = provider.StartOffset;
+					return true;
+				}
 			}
 			return false;
 		}

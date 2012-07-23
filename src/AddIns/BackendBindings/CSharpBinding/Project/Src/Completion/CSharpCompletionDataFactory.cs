@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
@@ -11,7 +13,7 @@ using ICSharpCode.SharpDevelop;
 
 namespace CSharpBinding.Completion
 {
-	class CSharpCompletionDataFactory : ICompletionDataFactory
+	class CSharpCompletionDataFactory : ICompletionDataFactory, IParameterCompletionDataFactory
 	{
 		readonly CSharpTypeResolveContext contextAtCaret;
 		
@@ -91,7 +93,7 @@ namespace CSharpBinding.Completion
 		
 		public ICompletionData CreateEventCreationCompletionData(string varName, IType delegateType, IEvent evt, string parameterDefinition, IUnresolvedMember currentMember, IUnresolvedTypeDefinition currentType)
 		{
-			throw new NotImplementedException();
+			return new CompletionData("TODO: event creation");
 		}
 		
 		public ICompletionData CreateNewOverrideCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IMember m)
@@ -101,7 +103,7 @@ namespace CSharpBinding.Completion
 		
 		public ICompletionData CreateNewPartialCompletionData(int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 		{
-			throw new NotImplementedException();
+			return new CompletionData("TODO: partial completion");
 		}
 		
 		public IEnumerable<ICompletionData> CreateCodeTemplateCompletionData()
@@ -113,5 +115,34 @@ namespace CSharpBinding.Completion
 		{
 			yield break;
 		}
+		
+		#region IParameterCompletionDataFactory implementation
+		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider(int startOffset, IType type)
+		{
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			return new CSharpParameterDataProvider(startOffset, type.GetConstructors().Select(m => new CSharpInsightItem(m, ambience)));
+		}
+		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider(int startOffset, IEnumerable<IMethod> methods)
+		{
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			return new CSharpParameterDataProvider(startOffset, methods.Select(m => new CSharpInsightItem(m, ambience)));
+		}
+		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateDelegateDataProvider(int startOffset, IType type)
+		{
+			return new CSharpParameterDataProvider(startOffset, Enumerable.Empty<CSharpInsightItem>());
+		}
+		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider(int startOffset, IType type, AstNode resolvedNode)
+		{
+			throw new NotImplementedException();
+		}
+		
+		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider(int startOffset, IEnumerable<IType> types)
+		{
+			throw new NotImplementedException();
+		}
+		#endregion
 	}
 }
