@@ -2,11 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory.Completion;
+using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace CSharpBinding.Completion
@@ -14,73 +17,84 @@ namespace CSharpBinding.Completion
 	sealed class CSharpInsightItem : IInsightItem
 	{
 		public readonly IParameterizedMember Method;
-		readonly IAmbience ambience;
 		
-		public CSharpInsightItem(IParameterizedMember method, IAmbience ambience)
+		public CSharpInsightItem(IParameterizedMember method)
 		{
 			this.Method = method;
-			this.ambience = ambience;
 		}
 		
-		string header;
+		TextBlock header;
 		
 		public object Header {
 			get {
 				if (header == null) {
-					ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
-					header = ambience.ConvertEntity(Method);
+					header = new TextBlock();
+					GenerateHeader();
 				}
 				return header;
 			}
 		}
 		
+		int highlightedParameterIndex = -1;
+		
+		public void HighlightParameter(int parameterIndex)
+		{
+			if (highlightedParameterIndex == parameterIndex)
+				return;
+			this.highlightedParameterIndex = parameterIndex;
+			if (header != null)
+				GenerateHeader();
+		}
+		
+		void GenerateHeader()
+		{
+			CSharpAmbience ambience = new CSharpAmbience();
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			var stringBuilder = new StringBuilder();
+			var formatter = new ParameterHighlightingOutputFormatter(stringBuilder, highlightedParameterIndex);
+			ambience.ConvertEntity(Method, formatter, FormattingOptionsFactory.CreateSharpDevelop());
+			var inlineBuilder = new HighlightedInlineBuilder(stringBuilder.ToString());
+			inlineBuilder.SetFontWeight(formatter.parameterStartOffset, formatter.parameterLength, FontWeights.Bold);
+			header.Inlines.Clear();
+			header.Inlines.AddRange(inlineBuilder.CreateRuns());
+		}
+		
 		public object Content {
 			get { return null; }
 		}
-	}
-	
-	sealed class CSharpParameterDataProvider : IParameterDataProvider
-	{
-		readonly int startOffset;
-		internal readonly IReadOnlyList<CSharpInsightItem> items;
 		
-		public CSharpParameterDataProvider(int startOffset, IEnumerable<CSharpInsightItem> items)
+		sealed class ParameterHighlightingOutputFormatter : TextWriterOutputFormatter
 		{
-			this.startOffset = startOffset;
-			this.items = items.ToList();
-		}
-		
-		int IParameterDataProvider.Count {
-			get { return items.Count; }
-		}
-		
-		public int StartOffset {
-			get { return startOffset; }
-		}
-		
-		string IParameterDataProvider.GetHeading(int overload, string[] parameterDescription, int currentParameter)
-		{
-			throw new NotImplementedException();
-		}
-		
-		string IParameterDataProvider.GetDescription(int overload, int currentParameter)
-		{
-			throw new NotImplementedException();
-		}
-		
-		string IParameterDataProvider.GetParameterDescription(int overload, int paramIndex)
-		{
-			throw new NotImplementedException();
-		}
-		
-		int IParameterDataProvider.GetParameterCount(int overload)
-		{
-			throw new NotImplementedException();
-		}
-		
-		bool IParameterDataProvider.AllowParameterList(int overload)
-		{
-			throw new NotImplementedException();
+			StringBuilder b;
+			int highlightedParameterIndex;
+			int parameterIndex;
+			internal int parameterStartOffset;
+			internal int parameterLength;
+			
+			public ParameterHighlightingOutputFormatter(StringBuilder b, int highlightedParameterIndex)
+				: base(new StringWriter(b))
+			{
+				this.b = b;
+				this.highlightedParameterIndex = highlightedParameterIndex;
+			}
+			
+			public override void StartNode(AstNode node)
+			{
+				if (parameterIndex == highlightedParameterIndex && node is ParameterDeclaration) {
+					parameterStartOffset = b.Length;
+				}
+				base.StartNode(node);
+			}
+			
+			public override void EndNode(AstNode node)
+			{
+				base.EndNode(node);
+				if (node is ParameterDeclaration) {
+					if (parameterIndex == highlightedParameterIndex)
+						parameterLength = b.Length - parameterStartOffset;
+					parameterIndex++;
+				}
+			}
 		}
 	}
 }

@@ -4,15 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using CSharpBinding.Parser;
+
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.SharpDevelop.Parser;
 
 namespace CSharpBinding.Completion
 {
@@ -38,27 +35,17 @@ namespace CSharpBinding.Completion
 		
 		bool ShowCompletion(ITextEditor editor, char completionChar, bool ctrlSpace)
 		{
-			// Don't require the very latest parse information, an older cached version is OK.
-			var parseInfo = SD.ParserService.GetCachedParseInformation(editor.FileName) as CSharpFullParseInformation;
-			if (parseInfo == null) {
-				parseInfo = SD.ParserService.Parse(editor.FileName, editor.Document) as CSharpFullParseInformation;
-				if (parseInfo == null)
-					return false;
-			}
-			ICompilation compilation = SD.ParserService.GetCompilationForFile(editor.FileName);
-			var projectContent = compilation.MainAssembly.UnresolvedAssembly as IProjectContent;
-			if (projectContent == null)
+			var completionContext = CSharpCompletionContext.Get(editor);
+			if (completionContext == null)
 				return false;
 			
-			var completionContextProvider = new DefaultCompletionContextProvider(editor.Document, parseInfo.ParsedFile);
-			var typeResolveContext = parseInfo.ParsedFile.GetTypeResolveContext(compilation, editor.Caret.Location);
-			var completionFactory = new CSharpCompletionDataFactory(typeResolveContext);
+			var completionFactory = new CSharpCompletionDataFactory(this, editor, completionContext.TypeResolveContextAtCaret);
 			CSharpCompletionEngine cce = new CSharpCompletionEngine(
 				editor.Document,
-				completionContextProvider,
+				completionContext.CompletionContextProvider,
 				completionFactory,
-				projectContent,
-				typeResolveContext
+				completionContext.ProjectContent,
+				completionContext.TypeResolveContextAtCaret
 			);
 			
 			cce.FormattingPolicy = FormattingOptionsFactory.CreateSharpDevelop();
@@ -102,15 +89,15 @@ namespace CSharpBinding.Completion
 				// Method Insight
 				var pce = new CSharpParameterCompletionEngine(
 					editor.Document,
-					completionContextProvider,
+					completionContext.CompletionContextProvider,
 					completionFactory,
-					projectContent,
-					typeResolveContext
+					completionContext.ProjectContent,
+					completionContext.TypeResolveContextAtCaret
 				);
-				var provider = pce.GetParameterDataProvider(editor.Caret.Offset, completionChar) as CSharpParameterDataProvider;
-				if (provider != null && provider.items.Count > 0) {
-					var insightWindow = editor.ShowInsightWindow(provider.items);
-					insightWindow.StartOffset = provider.StartOffset;
+				var newInsight = pce.GetParameterDataProvider(editor.Caret.Offset, completionChar) as CSharpMethodInsight;
+				if (newInsight != null && newInsight.items.Count > 0) {
+					newInsight.UpdateHighlightedParameter(pce);
+					newInsight.Show();
 					return true;
 				}
 			}

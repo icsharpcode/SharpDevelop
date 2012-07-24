@@ -3,27 +3,36 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace CSharpBinding.Completion
 {
-	class CSharpCompletionDataFactory : ICompletionDataFactory, IParameterCompletionDataFactory
+	sealed class CSharpCompletionDataFactory : ICompletionDataFactory, IParameterCompletionDataFactory
 	{
+		readonly CSharpCompletionBinding binding;
+		readonly ITextEditor editor;
 		readonly CSharpTypeResolveContext contextAtCaret;
 		
-		public CSharpCompletionDataFactory(CSharpTypeResolveContext contextAtCaret)
+		public CSharpCompletionDataFactory(CSharpCompletionBinding binding, ITextEditor editor, CSharpTypeResolveContext contextAtCaret)
 		{
-			if (contextAtCaret == null)
-				throw new ArgumentNullException("contextAtCaret");
+			Debug.Assert(binding != null);
+			Debug.Assert(editor != null);
+			Debug.Assert(contextAtCaret != null);
+			this.binding = binding;
+			this.editor = editor;
 			this.contextAtCaret = contextAtCaret;
 		}
 		
+		#region ICompletionDataFactory implementation
 		public ICompletionData CreateEntityCompletionData(IUnresolvedEntity entity)
 		{
 			return new CompletionData(entity.Name) {
@@ -81,7 +90,7 @@ namespace CSharpBinding.Completion
 		
 		public ICompletionData CreateVariableCompletionData(IVariable variable)
 		{
-			return new CompletionData(variable.Name) { 
+			return new CompletionData(variable.Name) {
 				Image = ClassBrowserIconService.LocalVariable
 			};
 		}
@@ -115,33 +124,37 @@ namespace CSharpBinding.Completion
 		{
 			yield break;
 		}
+		#endregion
 		
 		#region IParameterCompletionDataFactory implementation
+		IParameterDataProvider CreateMethodDataProvider(int startOffset, IEnumerable<IParameterizedMember> methods)
+		{
+			return new CSharpMethodInsight(binding, editor, startOffset, from m in methods where m != null select new CSharpInsightItem(m));
+		}
+		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateConstructorProvider(int startOffset, IType type)
 		{
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
-			return new CSharpParameterDataProvider(startOffset, type.GetConstructors().Select(m => new CSharpInsightItem(m, ambience)));
+			return CreateMethodDataProvider(startOffset, type.GetConstructors());
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateMethodDataProvider(int startOffset, IEnumerable<IMethod> methods)
 		{
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
-			return new CSharpParameterDataProvider(startOffset, methods.Select(m => new CSharpInsightItem(m, ambience)));
+			return CreateMethodDataProvider(startOffset, methods);
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateDelegateDataProvider(int startOffset, IType type)
 		{
-			return new CSharpParameterDataProvider(startOffset, Enumerable.Empty<CSharpInsightItem>());
+			return CreateMethodDataProvider(startOffset, new[] { type.GetDelegateInvokeMethod() });
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateIndexerParameterDataProvider(int startOffset, IType type, AstNode resolvedNode)
 		{
-			throw new NotImplementedException();
+			return CreateMethodDataProvider(startOffset, type.GetProperties(p => p.IsIndexer));
 		}
 		
 		IParameterDataProvider IParameterCompletionDataFactory.CreateTypeParameterDataProvider(int startOffset, IEnumerable<IType> types)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		#endregion
 	}
