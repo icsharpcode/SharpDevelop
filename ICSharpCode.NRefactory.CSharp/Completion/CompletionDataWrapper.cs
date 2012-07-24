@@ -76,20 +76,44 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		HashSet<string> usedTypes = new HashSet<string> ();
 
-		static bool IsBrowsable(IEntity entity)
+		/// <summary>
+		/// Gets the EditorBrowsableState of an entity.
+		/// </summary>
+		/// <returns>
+		/// The editor browsable state.
+		/// </returns>
+		/// <param name='entity'>
+		/// Entity.
+		/// </param>
+		public static System.ComponentModel.EditorBrowsableState GetEditorBrowsableState(IEntity entity)
 		{
 			var browsable = entity.Attributes.FirstOrDefault(attr => attr.AttributeType.Name == "BrowsableAttribute" && attr.AttributeType.Namespace == "System.ComponentModel");
-			if (browsable != null && browsable.PositionalArguments.Count == 1 && browsable.PositionalArguments [0].ConstantValue is bool)
-				return (bool)browsable.PositionalArguments [0].ConstantValue;
-
+			if (browsable != null && browsable.PositionalArguments.Count == 1 && browsable.PositionalArguments [0].ConstantValue is bool) {
+				if (!((bool)browsable.PositionalArguments [0].ConstantValue))
+					return System.ComponentModel.EditorBrowsableState.Never;
+			}
+			
 			var browsableState = entity.Attributes.FirstOrDefault(attr => attr.AttributeType.Name == "EditorBrowsableAttribute" && attr.AttributeType.Namespace == "System.ComponentModel");
 			if (browsableState != null && browsableState.PositionalArguments.Count == 1) {
 				try {
-					var state = (System.ComponentModel.EditorBrowsableState)browsableState.PositionalArguments [0].ConstantValue;
-					return state != System.ComponentModel.EditorBrowsableState.Never;
+					return (System.ComponentModel.EditorBrowsableState)browsableState.PositionalArguments [0].ConstantValue;
 				} catch (Exception) {}
 			}
-			return true;
+			return System.ComponentModel.EditorBrowsableState.Always;
+		}
+
+		/// <summary>
+		/// Determines if an entity should be shown in the code completion window.
+		/// </summary>
+		/// <returns>
+		/// <c>true</c> if the entity should be shown; otherwise, <c>false</c>.
+		/// </returns>
+		/// <param name='entity'>
+		/// The entity.
+		/// </param>
+		public static bool IsBrowsable(IEntity entity)
+		{
+			return GetEditorBrowsableState (entity) != System.ComponentModel.EditorBrowsableState.Never;
 		}
 
 		public ICompletionData AddType(IType type, string shortType)
