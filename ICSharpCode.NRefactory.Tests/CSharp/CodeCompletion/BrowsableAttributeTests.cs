@@ -35,17 +35,44 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 		[Test()]
 		public void TestEditorBrowsableAttributeClasses ()
 		{
-			
+			int cp;
+			var engine1 = CodeCompletionBugTests.CreateEngine (
+				@"
+using System;
+using System.ComponentModel;
+
+[EditorBrowsable(EditorBrowsableState.Always)]
+public class BrowsableTest {}
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public class NotBrowsableTest {}
+", out cp);
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+				@"class Test
+{
+	void Test ()
+	{
+		$B$
+	}
+}", false, engine1.ctx.CurrentAssembly.UnresolvedAssembly);
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("BrowsableTest"), "'BrowsableTest' not found.");
+			Assert.IsNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' found.");
+		}
+
+		[Test()]
+		public void TestEditorBrowsableAttributeClassesSameAssembly ()
+		{
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
 				@"
 using System;
 using System.ComponentModel;
 
 [EditorBrowsable(EditorBrowsableState.Always)]
-class BrowsableTest {}
+public class BrowsableTest {}
 
 [EditorBrowsable(EditorBrowsableState.Never)]
-class NotBrowsableTest {}
+public class NotBrowsableTest {}
 
 class Test
 {
@@ -56,12 +83,42 @@ class Test
 }");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("BrowsableTest"), "'BrowsableTest' not found.");
+			Assert.IsNotNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' not found.");
+		}
+
+		[Test()]
+		public void TestEditorBrowsableAttributeMembers ()
+		{
+			int cp;
+			var engine1 = CodeCompletionBugTests.CreateEngine (
+				@"
+using System;
+using System.ComponentModel;
+public class FooBar
+{
+	[EditorBrowsable(EditorBrowsableState.Always)]
+	public int BrowsableTest { get; set; }
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public int NotBrowsableTest { get; set; }
+}
+", out cp);
+			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
+				@"class Test : FooBar
+{
+	void Test ()
+	{
+		$B$
+	}
+}", false, engine1.ctx.CurrentAssembly.UnresolvedAssembly);
+			Assert.IsNotNull (provider, "provider == null");
+			Assert.IsNotNull (provider.Find ("BrowsableTest"), "'BrowsableTest' not found.");
 			Assert.IsNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' found.");
 		}
 
-		
+
 		[Test()]
-		public void TestEditorBrowsableAttributeMembers ()
+		public void TestEditorBrowsableAttributeMembersSameAssembly ()
 		{
 			
 			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
@@ -84,7 +141,7 @@ class Test
 }");
 			Assert.IsNotNull (provider, "provider == null");
 			Assert.IsNotNull (provider.Find ("BrowsableTest"), "'BrowsableTest' not found.");
-			Assert.IsNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' found.");
+			Assert.IsNotNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' not found.");
 		}
 	}
 }
