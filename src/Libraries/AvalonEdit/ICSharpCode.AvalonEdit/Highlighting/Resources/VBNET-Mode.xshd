@@ -18,6 +18,8 @@
 	<Color name="FunctionKeywords" foreground="Blue" exampleText="CInt(a)" />
 	<Color name="ContextKeywords" foreground="Blue" exampleText="Declare Unicode Sub SomeMethod" />
 	
+	<Property name="DocCommentMarker" value="'''" />
+	
 	<RuleSet ignoreCase="true">
 		<Span color="String">
 			<Begin>"</Begin>

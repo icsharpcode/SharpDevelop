@@ -22,8 +22,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Pen borderPen;
 		Brush backgroundBrush;
 		TextView textView;
-		readonly Color borderColor = Color.FromArgb(52, 30, 130, 255);	//Color.FromArgb(180, 70, 230, 70))
-		readonly Color fillColor = Color.FromArgb(22, 30, 130, 255); 	//Color.FromArgb(40, 60, 255, 60)
+		public readonly Color DefaultBorderColor = Color.FromArgb(52, 30, 130, 255);	//Color.FromArgb(180, 70, 230, 70))
+		public readonly Color DefaultFillColor = Color.FromArgb(22, 30, 130, 255); 	//Color.FromArgb(40, 60, 255, 60)
 		readonly int borderThickness = 1;
 		readonly int cornerRadius = 1;
 		
@@ -45,8 +45,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			this.textView = textView;
-			this.borderPen = new Pen(new SolidColorBrush(borderColor), borderThickness);
-			this.backgroundBrush = new SolidColorBrush(fillColor);
+			this.borderPen = new Pen(new SolidColorBrush(DefaultBorderColor), borderThickness);
+			this.backgroundBrush = new SolidColorBrush(DefaultFillColor);
 			this.borderPen.Freeze();
 			this.backgroundBrush.Freeze();
 			this.textView.BackgroundRenderers.Add(this);

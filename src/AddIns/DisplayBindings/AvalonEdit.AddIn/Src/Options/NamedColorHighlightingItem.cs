@@ -2,13 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Options
 {
@@ -127,7 +129,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		
 		public void ShowExample(TextArea exampleTextArea)
 		{
-			exampleTextArea.Document.Text = color.ExampleText;
+			exampleTextArea.Document.Text = StringParser.Parse(color.ExampleText, GetXshdProperties().ToArray());
+		}
+		
+		IEnumerable<StringTagPair> GetXshdProperties()
+		{
+			IHighlightingDefinition2 def = ParentDefinition as IHighlightingDefinition2;
+			if (def == null)
+				yield break;
+			foreach (var p in def.Properties)
+				yield return new StringTagPair(p.Key, p.Value);
 		}
 		
 		event System.ComponentModel.PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged { add {} remove {} }

@@ -64,6 +64,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 					case "RuleSet":
 						c.Add(ParseRuleSet(reader));
 						break;
+					case "Property":
+						c.Add(ParseProperty(reader));
+						break;
 					case "Color":
 						c.Add(ParseNamedColor(reader));
 						break;
@@ -83,6 +86,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 						throw new NotSupportedException("Unknown element " + reader.Name);
 				}
 			}
+		}
+		
+		static XshdElement ParseProperty(XmlReader reader)
+		{
+			XshdProperty property = new XshdProperty();
+			SetPosition(property, reader);
+			property.Name = reader.GetAttribute("name");
+			property.Value = reader.GetAttribute("value");
+			return property;
 		}
 		
 		static XshdRuleSet ParseRuleSet(XmlReader reader)
