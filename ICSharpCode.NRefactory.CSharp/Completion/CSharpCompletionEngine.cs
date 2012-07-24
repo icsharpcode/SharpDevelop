@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						return contextList.Result;
 					}
 					
-					foreach (var m in initializerResult.Item1.Type.GetMembers (m => !m.IsSynthetic && m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
+					foreach (var m in initializerResult.Item1.Type.GetMembers (m => m.IsPublic && (m.EntityType == EntityType.Property || m.EntityType == EntityType.Field))) {
 						contextList.AddMember(m);
 					}
 					
@@ -543,7 +543,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								var wrapper = new CompletionDataWrapper(this);
 								if (currentType != null) {
 									//							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-									foreach (var method in currentType.Methods) {
+									foreach (var method in ctx.CurrentTypeDefinition.Methods) {
 										if (MatchDelegate(delegateType, method) /*&& method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) &&*/) {
 											wrapper.AddMember(method);
 											//									data.SetText (data.CompletionText + ";");
@@ -1200,16 +1200,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddVariable(variable);
 				}
 			}
-			
-			if (currentMember is IUnresolvedParameterizedMember && !(node is AstType)) {
-				var param = (IParameterizedMember)currentMember.CreateResolved(ctx);
+
+			if (state.CurrentMember is IParameterizedMember && !(node is AstType)) {
+				var param = (IParameterizedMember)state.CurrentMember;
 				foreach (var p in param.Parameters) {
 					wrapper.AddVariable(p);
 				}
 			}
 			
-			if (currentMember is IUnresolvedMethod) {
-				var method = (IUnresolvedMethod)currentMember;
+			if (state.CurrentMember is IMethod) {
+				var method = (IMethod)state.CurrentMember;
 				foreach (var p in method.TypeParameters) {
 					wrapper.AddTypeParameter(p);
 				}
@@ -1319,10 +1319,8 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			if (currentType != null) {
-				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
+				for (var ct = ctx.CurrentTypeDefinition; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
-						if (nestedType.IsSynthetic)
-							continue;
 						string name = nestedType.Name;
 						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
 							name = name.Substring(0, name.Length - "Attribute".Length);
@@ -1333,7 +1331,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							continue;
 						}
 						
-						var type = typePred(nestedType.Resolve(ctx));
+						var type = typePred(nestedType);
 						if (type != null) {
 							var a2 = wrapper.AddType(type, name);
 							if (a2 != null && callback != null) {
@@ -1351,8 +1349,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							if (member is IMethod && ((IMethod)member).FullName == "System.Object.Finalize") {
 								continue;
 							}
-							if (member.IsSynthetic)
-								continue;
 							if (member.EntityType == EntityType.Operator) {
 								continue;
 							}
@@ -1369,7 +1365,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 						var declaring = def.DeclaringTypeDefinition;
 						while (declaring != null) {
-							foreach (var member in declaring.GetMembers (m => m.IsStatic && !m.IsSynthetic)) {
+							foreach (var member in declaring.GetMembers (m => m.IsStatic)) {
 								if (memberPred == null || memberPred(member)) {
 									wrapper.AddMember(member);
 								}
@@ -1378,8 +1374,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				foreach (var p in currentType.TypeParameters) {
-					wrapper.AddTypeParameter(p);
+				if (ctx.CurrentTypeDefinition != null) {
+					foreach (var p in ctx.CurrentTypeDefinition.TypeParameters) {
+						wrapper.AddTypeParameter(p);
+					}
 				}
 			}
 			var scope = ctx.CurrentUsingScope;
@@ -1916,7 +1914,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return;
 			}
 			foreach (var m in curType.GetMembers ().Reverse ()) {
-				if (m.IsSynthetic || curType.Kind != TypeKind.Interface && !m.IsOverridable) {
+				if (curType.Kind != TypeKind.Interface && !m.IsOverridable) {
 					continue;
 				}
 				// filter out the "Finalize" methods, because finalizers should be done with destructors.
@@ -1987,7 +1985,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		bool MatchDelegate(IType delegateType, IUnresolvedMethod method)
+		bool MatchDelegate(IType delegateType, IMethod method)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod();
 			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count) {
@@ -1995,7 +1993,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			for (int i = 0; i < delegateMethod.Parameters.Count; i++) {
-				if (!delegateMethod.Parameters [i].Type.Equals(method.Parameters [i].Type.Resolve(ctx))) {
+				if (!delegateMethod.Parameters [i].Type.Equals(method.Parameters [i].Type)) {
 					return false;
 				}
 			}
@@ -2151,8 +2149,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var nr = (NamespaceResolveResult)resolveResult;
 				if (!(resolvedNode.Parent is UsingDeclaration || resolvedNode.Parent != null && resolvedNode.Parent.Parent is UsingDeclaration)) {
 					foreach (var cl in nr.Namespace.Types) {
-						if (cl.IsSynthetic)
-							continue;
 						string name = cl.Name;
 						if (hintType != null && hintType.Kind != TypeKind.Array && cl.Kind == TypeKind.Interface) {
 							continue;
@@ -2291,8 +2287,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				var namespaceContents = new CompletionDataWrapper(this);
 				
 				foreach (var cl in nr.Namespace.Types) {
-					if (cl.IsSynthetic)
-						continue;
 					IType addType = typePred != null ? typePred(cl) : cl;
 					if (addType != null)
 						namespaceContents.AddType(addType, addType.Name);
@@ -2393,8 +2387,6 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				
 				var filteredList = new List<IMember>();
 				foreach (var member in type.GetMembers ()) {
-					if (member.IsSynthetic)
-						continue;
 					if (member.EntityType == EntityType.Indexer || member.EntityType == EntityType.Operator || member.EntityType == EntityType.Constructor || member.EntityType == EntityType.Destructor) {
 						continue;
 					}
@@ -2445,7 +2437,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			if (resolveResult is TypeResolveResult || includeStaticMembers) {
-				foreach (var nested in type.GetNestedTypes (t => !t.IsSynthetic)) {
+				foreach (var nested in type.GetNestedTypes ()) {
 					if (!lookup.IsAccessible(nested.GetDefinition(), isProtectedAllowed))
 						continue;
 					IType addType = typePred != null ? typePred(nested) : nested;
