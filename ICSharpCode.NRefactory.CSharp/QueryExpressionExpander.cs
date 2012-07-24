@@ -28,11 +28,11 @@ namespace ICSharpCode.NRefactory.CSharp {
 	}
 
 	public class QueryExpressionExpander {
-		class Visitor : IAstVisitor<AstNode> {
+		class Visitor : DepthFirstAstVisitor<AstNode> {
 			int currentTransparentParameter;
 			const string TransparentParameterNameTemplate = "<>x{0}";
 
-			AstNode Default(AstNode node) {
+			protected override AstNode VisitChildren(AstNode node) {
 				List<AstNode> newChildren = null;
 				
 				int i = 0;
@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				currentTransparentType.Add(Tuple.Create(identifier, new List<string>()));
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryExpression(QueryExpression queryExpression) {
+			public override AstNode VisitQueryExpression(QueryExpression queryExpression) {
 				var oldTransparentType = currentTransparentType;
 				var oldResult = currentResult;
 				var oldEatSelect = eatSelect;
@@ -185,13 +185,13 @@ namespace ICSharpCode.NRefactory.CSharp {
 				}
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause) {
+			public override AstNode VisitQueryContinuationClause(QueryContinuationClause queryContinuationClause) {
 				var prev = VisitNested(queryContinuationClause.PrecedingQuery, null);
 				AddFirstMemberToCurrentTransparentType(queryContinuationClause.IdentifierToken);
 				return prev;
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryFromClause(QueryFromClause queryFromClause) {
+			public override AstNode VisitQueryFromClause(QueryFromClause queryFromClause) {
 				if (currentResult == null) {
 					AddFirstMemberToCurrentTransparentType(queryFromClause.IdentifierToken);
 					if (queryFromClause.Type.IsNull) {
@@ -226,7 +226,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				}
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryLetClause(QueryLetClause queryLetClause) {
+			public override AstNode VisitQueryLetClause(QueryLetClause queryLetClause) {
 				var param = CreateParameterForCurrentRangeVariable();
 				var body = AddMemberToCurrentTransparentType(param, queryLetClause.IdentifierToken, queryLetClause.Expression, true);
 				var lambda = CreateLambda(new[] { param }, body);
@@ -234,12 +234,12 @@ namespace ICSharpCode.NRefactory.CSharp {
 				return currentResult.Invoke("Select", lambda);
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryWhereClause(QueryWhereClause queryWhereClause) {
+			public override AstNode VisitQueryWhereClause(QueryWhereClause queryWhereClause) {
 				var param = CreateParameterForCurrentRangeVariable();
 				return currentResult.Invoke("Where", CreateLambda(new[] { param }, VisitNested(queryWhereClause.Condition, param)));
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryJoinClause(QueryJoinClause queryJoinClause) {
+			public override AstNode VisitQueryJoinClause(QueryJoinClause queryJoinClause) {
 				Expression resultSelectorBody = null;
 				var inExpression = VisitNested(queryJoinClause.InExpression, null);
 				var key1SelectorFirstParam = CreateParameterForCurrentRangeVariable();
@@ -277,7 +277,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				}
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryOrderClause(QueryOrderClause queryOrderClause) {
+			public override AstNode VisitQueryOrderClause(QueryOrderClause queryOrderClause) {
 				var current = currentResult;
 				bool first = true;
 				foreach (var o in queryOrderClause.Orderings) {
@@ -292,11 +292,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				return current;
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryOrdering(QueryOrdering queryOrdering) {
-				return null;
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitQuerySelectClause(QuerySelectClause querySelectClause) {
+			public override AstNode VisitQuerySelectClause(QuerySelectClause querySelectClause) {
 				if (eatSelect) {
 					eatSelect = false;
 					return currentResult;
@@ -311,7 +307,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				return currentResult.Invoke("Select", lambda);
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitQueryGroupClause(QueryGroupClause queryGroupClause) {
+			public override AstNode VisitQueryGroupClause(QueryGroupClause queryGroupClause) {
 				var param = CreateParameterForCurrentRangeVariable();
 				var keyLambda = CreateLambda(new[] { param }, VisitNested(queryGroupClause.Key, param));
 
@@ -326,433 +322,11 @@ namespace ICSharpCode.NRefactory.CSharp {
 				}
 			}
 
-			AstNode IAstVisitor<AstNode>.VisitIdentifierExpression(IdentifierExpression identifierExpression) {
+			public override AstNode VisitIdentifierExpression(IdentifierExpression identifierExpression) {
 				Expression subst;
 				activeRangeVariableSubstitutions.TryGetValue(identifierExpression.Identifier, out subst);
 				return subst != null ? subst.Clone() : null;
 			}
-
-#region Uninteresting methods
-			AstNode IAstVisitor<AstNode>.VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression) {
-				return Default(anonymousMethodExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUndocumentedExpression(UndocumentedExpression undocumentedExpression) {
-				return Default(undocumentedExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression) {
-				return Default(arrayCreateExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitArrayInitializerExpression(ArrayInitializerExpression arrayInitializerExpression) {
-				return Default(arrayInitializerExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitAsExpression(AsExpression asExpression) {
-				return Default(asExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitAssignmentExpression(AssignmentExpression assignmentExpression) {
-				return Default(assignmentExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitBaseReferenceExpression(BaseReferenceExpression baseReferenceExpression) {
-				return Default(baseReferenceExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression) {
-				return Default(binaryOperatorExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCastExpression(CastExpression castExpression) {
-				return Default(castExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCheckedExpression(CheckedExpression checkedExpression) {
-				return Default(checkedExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitConditionalExpression(ConditionalExpression conditionalExpression) {
-				return Default(conditionalExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression) {
-				return Default(defaultValueExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitDirectionExpression(DirectionExpression directionExpression) {
-				return Default(directionExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitIndexerExpression(IndexerExpression indexerExpression) {
-				return Default(indexerExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitInvocationExpression(InvocationExpression invocationExpression) {
-				return Default(invocationExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitIsExpression(IsExpression isExpression) {
-				return Default(isExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitLambdaExpression(LambdaExpression lambdaExpression) {
-				return Default(lambdaExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression) {
-				return Default(memberReferenceExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression) {
-				return Default(namedArgumentExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitNamedExpression(NamedExpression namedExpression) {
-				return Default(namedExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression) {
-				return Default(nullReferenceExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression) {
-				return Default(objectCreateExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitAnonymousTypeCreateExpression(AnonymousTypeCreateExpression anonymousTypeCreateExpression) {
-				return Default(anonymousTypeCreateExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression) {
-				return Default(parenthesizedExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression) {
-				return Default(pointerReferenceExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitPrimitiveExpression(PrimitiveExpression primitiveExpression) {
-				return Default(primitiveExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitSizeOfExpression(SizeOfExpression sizeOfExpression) {
-				return Default(sizeOfExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitStackAllocExpression(StackAllocExpression stackAllocExpression) {
-				return Default(stackAllocExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression) {
-				return Default(thisReferenceExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitTypeOfExpression(TypeOfExpression typeOfExpression) {
-				return Default(typeOfExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitTypeReferenceExpression(TypeReferenceExpression typeReferenceExpression) {
-				return Default(typeReferenceExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression) {
-				return Default(unaryOperatorExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUncheckedExpression(UncheckedExpression uncheckedExpression) {
-				return Default(uncheckedExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitEmptyExpression(EmptyExpression emptyExpression) {
-				return Default(emptyExpression);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitAttribute(Attribute attribute) {
-				return Default(attribute);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitAttributeSection(AttributeSection attributeSection) {
-				return Default(attributeSection);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration) {
-				return Default(delegateDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration) {
-				return Default(namespaceDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitTypeDeclaration(TypeDeclaration typeDeclaration) {
-				return Default(typeDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUsingAliasDeclaration(UsingAliasDeclaration usingAliasDeclaration) {
-				return Default(usingAliasDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUsingDeclaration(UsingDeclaration usingDeclaration) {
-				return Default(usingDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitExternAliasDeclaration(ExternAliasDeclaration externAliasDeclaration) {
-				return Default(externAliasDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitBlockStatement(BlockStatement blockStatement) {
-				return Default(blockStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitBreakStatement(BreakStatement breakStatement) {
-				return Default(breakStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCheckedStatement(CheckedStatement checkedStatement) {
-				return Default(checkedStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitContinueStatement(ContinueStatement continueStatement) {
-				return Default(continueStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitDoWhileStatement(DoWhileStatement doWhileStatement) {
-				return Default(doWhileStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitEmptyStatement(EmptyStatement emptyStatement) {
-				return Default(emptyStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitExpressionStatement(ExpressionStatement expressionStatement) {
-				return Default(expressionStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitFixedStatement(FixedStatement fixedStatement) {
-				return Default(fixedStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitForeachStatement(ForeachStatement foreachStatement) {
-				return Default(foreachStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitForStatement(ForStatement forStatement) {
-				return Default(forStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement) {
-				return Default(gotoCaseStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitGotoDefaultStatement(GotoDefaultStatement gotoDefaultStatement) {
-				return Default(gotoDefaultStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitGotoStatement(GotoStatement gotoStatement) {
-				return Default(gotoStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitIfElseStatement(IfElseStatement ifElseStatement) {
-				return Default(ifElseStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitLabelStatement(LabelStatement labelStatement) {
-				return Default(labelStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitLockStatement(LockStatement lockStatement) {
-				return Default(lockStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitReturnStatement(ReturnStatement returnStatement) {
-				return Default(returnStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitSwitchStatement(SwitchStatement switchStatement) {
-				return Default(switchStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitSwitchSection(SwitchSection switchSection) {
-				return Default(switchSection);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCaseLabel(CaseLabel caseLabel) {
-				return Default(caseLabel);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitThrowStatement(ThrowStatement throwStatement) {
-				return Default(throwStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitTryCatchStatement(TryCatchStatement tryCatchStatement) {
-				return Default(tryCatchStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCatchClause(CatchClause catchClause) {
-				return Default(catchClause);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUncheckedStatement(UncheckedStatement uncheckedStatement) {
-				return Default(uncheckedStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUnsafeStatement(UnsafeStatement unsafeStatement) {
-				return Default(unsafeStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitUsingStatement(UsingStatement usingStatement) {
-				return Default(usingStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement) {
-				return Default(variableDeclarationStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitWhileStatement(WhileStatement whileStatement) {
-				return Default(whileStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitYieldBreakStatement(YieldBreakStatement yieldBreakStatement) {
-				return Default(yieldBreakStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitYieldReturnStatement(YieldReturnStatement yieldReturnStatement) {
-				return Default(yieldReturnStatement);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitAccessor(Accessor accessor) {
-				return Default(accessor);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration) {
-				return Default(constructorDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitConstructorInitializer(ConstructorInitializer constructorInitializer) {
-				return Default(constructorInitializer);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration) {
-				return Default(destructorDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration) {
-				return Default(enumMemberDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitEventDeclaration(EventDeclaration eventDeclaration) {
-				return Default(eventDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCustomEventDeclaration(CustomEventDeclaration customEventDeclaration) {
-				return Default(customEventDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitFieldDeclaration(FieldDeclaration fieldDeclaration) {
-				return Default(fieldDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration) {
-				return Default(indexerDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitMethodDeclaration(MethodDeclaration methodDeclaration) {
-				return Default(methodDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration) {
-				return Default(operatorDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitParameterDeclaration(ParameterDeclaration parameterDeclaration) {
-				return Default(parameterDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration) {
-				return Default(propertyDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitVariableInitializer(VariableInitializer variableInitializer) {
-				return Default(variableInitializer);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitFixedFieldDeclaration(FixedFieldDeclaration fixedFieldDeclaration) {
-				return Default(fixedFieldDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitFixedVariableInitializer(FixedVariableInitializer fixedVariableInitializer) {
-				return Default(fixedVariableInitializer);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCompilationUnit(CompilationUnit compilationUnit) {
-				return Default(compilationUnit);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitSimpleType(SimpleType simpleType) {
-				return Default(simpleType);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitMemberType(MemberType memberType) {
-				return Default(memberType);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitComposedType(ComposedType composedType) {
-				return Default(composedType);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitArraySpecifier(ArraySpecifier arraySpecifier) {
-				return Default(arraySpecifier);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitPrimitiveType(PrimitiveType primitiveType) {
-				return Default(primitiveType);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitComment(Comment comment) {
-				return Default(comment);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitWhitespace(WhitespaceNode whitespaceNode) {
-				return Default(whitespaceNode);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitText(TextNode textNode) {
-				return Default(textNode);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitNewLine(NewLineNode newLineNode) {
-				return Default(newLineNode);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitPreProcessorDirective(PreProcessorDirective preProcessorDirective) {
-				return Default(preProcessorDirective);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitDocumentationReference(DocumentationReference documentationReference) {
-				return Default(documentationReference);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration) {
-				return Default(typeParameterDeclaration);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitConstraint(Constraint constraint) {
-				return Default(constraint);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitCSharpTokenNode(CSharpTokenNode cSharpTokenNode) {
-				return Default(cSharpTokenNode);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitIdentifier(Identifier identifier) {
-				return Default(identifier);
-			}
-
-			AstNode IAstVisitor<AstNode>.VisitPatternPlaceholder(AstNode placeholder, Pattern pattern) {
-				return Default(pattern);
-			}
-#endregion
 		}
 
 		/// <summary>
