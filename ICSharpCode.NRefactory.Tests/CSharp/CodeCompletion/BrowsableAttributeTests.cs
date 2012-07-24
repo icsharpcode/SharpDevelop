@@ -33,59 +33,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 	public class BrowsableAttributeTests : TestBase
 	{
 		[Test()]
-		public void TestBrowsableClasses ()
-		{
-			
-			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
-				@"
-using System;
-using System.ComponentModel;
-
-[Browsable(true)]
-class BrowsableTest {}
-
-[Browsable(false)]
-class NotBrowsableTest {}
-
-class Test
-{
-	void Test ()
-	{
-		$B$
-	}
-}");
-			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.Find ("BrowsableTest"), "'BrowsableTest' not found.");
-			Assert.IsNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' found.");
-		}
-
-		[Test()]
-		public void TestBrowsableMembers ()
-		{
-			CompletionDataList provider = CodeCompletionBugTests.CreateProvider (
-				@"
-using System;
-using System.ComponentModel;
-
-class Test
-{
-	[Browsable(true)]
-	int BrowsableTest { get; set; }
-
-	[Browsable(false)]
-	int NotBrowsableTest { get; set; }
-
-	void Test ()
-	{
-		$B$
-	}
-}");
-			Assert.IsNotNull (provider, "provider == null");
-			Assert.IsNotNull (provider.Find ("BrowsableTest"), "'BrowsableTest' not found.");
-			Assert.IsNull (provider.Find ("NotBrowsableTest"), "'NotBrowsableTest' found.");
-		}
-
-		[Test()]
 		public void TestEditorBrowsableAttributeClasses ()
 		{
 			
