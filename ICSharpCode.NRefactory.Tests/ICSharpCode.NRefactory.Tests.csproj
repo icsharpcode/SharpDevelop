@@ -151,6 +151,7 @@
     <Compile Include="CSharp\Parser\Expression\UnaryOperatorExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\AttributeSectionTests.cs" />
     <Compile Include="CSharp\Parser\ParseUtil.cs" />
+    <Compile Include="CSharp\QueryExpressionExpanderTests.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilderTests.cs" />
     <Compile Include="CSharp\Resolver\AnonymousTypeTests.cs" />
     <Compile Include="CSharp\Resolver\ArrayCreateTests.cs" />
