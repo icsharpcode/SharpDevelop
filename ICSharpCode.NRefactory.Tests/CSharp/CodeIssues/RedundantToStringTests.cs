@@ -104,6 +104,91 @@ class Foo
 		}
 		
 		[Test]
+		public void FormatStringTests ()
+		{
+			var input = @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string s = string.Format(""{0}"", i.ToString());
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantToStringIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string s = string.Format(""{0}"", i);
+	}
+}");
+		}
+		
+		[Test]
+		public void HandlesNonLiteralFormatParameter ()
+		{
+			var input = @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string format = ""{0}"";
+		string s = string.Format(format, i.ToString());
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantToStringIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string format = ""{0}"";
+		string s = string.Format(format, i);
+	}
+}");
+		}
+		
+		[Test]
+		public void FormatStringWithNonObjectParameterTests ()
+		{
+			var input = @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string s = FakeFormat(""{0} {1}"", i.ToString(), i.ToString());
+	}
+
+	void FakeFormat(string format, string arg0, object arg1)
+	{
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantToStringIssue (), input, out context);
+			Assert.AreEqual (1, issues.Count);
+			CheckFix (context, issues, @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string s = FakeFormat(""{0} {1}"", i.ToString(), i);
+	}
+
+	void FakeFormat(string format, string arg0, object arg1)
+	{
+	}
+}");
+		}
+		
+		[Test]
 		public void DetectsBlacklistedCalls ()
 		{
 			var input = @"

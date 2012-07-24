@@ -291,12 +291,12 @@
     <Compile Include="CSharp\CodeIssues\ReferenceToStaticMemberViaDerivedTypeTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterionTests.cs" />
     <Compile Include="Utils\CompositeFormatStringParser\CompositeFormatStringParserTests.cs" />
-    <Compile Include="CSharp\CodeIssues\FormatStringTests.cs" />
     <Compile Include="CSharp\CodeIssues\OptionalParameterCouldBeSkippedTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantCatchTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantToStringTests.cs" />
     <Compile Include="CSharp\CodeIssues\CallToObjectEqualsViaBaseTests.cs" />
     <Compile Include="CSharp\CodeIssues\IncorrectCallToGetHashCodeTests.cs" />
+    <Compile Include="CSharp\CodeIssues\FormatStringIssues\FormatStringTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
@@ -328,6 +328,7 @@
     <Folder Include="CSharp\CodeActions\ConvertToInitializer\" />
     <Folder Include="CSharp\CodeIssues\ParameterCanBeDemotedIssue\" />
     <Folder Include="Utils\CompositeFormatStringParser\" />
+    <Folder Include="CSharp\CodeIssues\FormatStringIssues\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

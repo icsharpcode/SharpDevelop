@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
 using ICSharpCode.NRefactory.Utils;
@@ -58,11 +57,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var invocationResolveResult = context.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null)
 					return;
-				string format;
+				Expression formatArgument;
 				IList<Expression> formatArguments;
 				TextLocation formatStart;
-				if (!TryGetFormattingParameters(invocationResolveResult, invocationExpression, out format, out formatStart, out formatArguments))
+				if (!FormatStringHelper.TryGetFormattingParameters(invocationResolveResult, invocationExpression,
+				                                                   out formatArgument, out formatStart, out formatArguments, null)) {
 					return;
+				}
+				var primitiveArgument = formatArgument as PrimitiveExpression;
+				if (primitiveArgument == null || !(primitiveArgument.Value is String))
+					return;
+				var format = (string)primitiveArgument.Value;
 				var parsingResult = context.ParseFormatString(format);
 				CheckSegments(parsingResult.Segments, formatStart, formatArguments, invocationExpression);
 			}
@@ -98,35 +103,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						}
 					}
 				}
-			}
-
-			static string[] parameterNames = { "format", "frmt", "fmt" };
-
-			bool TryGetFormattingParameters(CSharpInvocationResolveResult invocationResolveResult, InvocationExpression invocationExpression,
-			                                out string format, out TextLocation formatStart, out IList<Expression> arguments)
-			{
-				format = null;
-				formatStart = default(TextLocation);
-				arguments = new List<Expression>();
-				var argumentToParameterMap = invocationResolveResult.GetArgumentToParameterMap();
-				var resolvedParameters = invocationResolveResult.Member.Parameters;
-				var allArguments = invocationExpression.Arguments.ToArray();
-				for (int i = 0; i < allArguments.Length; i++) {
-					var parameterIndex = argumentToParameterMap[i];
-					if (parameterIndex < 0 || parameterIndex >= resolvedParameters.Count) {
-						// No valid mapping for this parameter, skip it
-						continue;
-					}
-					var parameter = resolvedParameters[parameterIndex];
-					var argument = allArguments[i];
-					if (parameter.Type.IsKnownType(KnownTypeCode.String) && parameterNames.Contains(parameter.Name) && argument is PrimitiveExpression) {
-						format = (string)((PrimitiveExpression)argument).Value;
-						formatStart = argument.StartLocation;
-					} else if (format != null || parameter.IsParams) {
-						arguments.Add(argument);
-					}
-				}
-				return format != null;
 			}
 		}
 	}

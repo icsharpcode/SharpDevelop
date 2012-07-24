@@ -60,6 +60,29 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 			
 			HashSet<AstNode> processedNodes = new HashSet<AstNode>();
+
+			void CheckExpressionInAutoCallContext(Expression expression)
+			{
+				if (expression is InvocationExpression) {
+					CheckInvocationInAutoCallContext((InvocationExpression)expression);
+				}
+			}
+			
+			void CheckInvocationInAutoCallContext(InvocationExpression invocationExpression)
+			{
+				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
+				if (memberExpression == null) {
+					return;
+				}
+				var resolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (resolveResult == null) {
+					return;
+				}
+				if (resolveResult.Member.Name != "ToString") {
+					return;
+				}
+				AddRedundantToStringIssue(memberExpression, invocationExpression);
+			}
 			
 			void AddRedundantToStringIssue(MemberReferenceExpression memberExpression, InvocationExpression invocationExpression)
 			{
@@ -125,48 +148,41 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					expressions.Add(expression);
 				}
 			}
-			
-			void CheckExpressionInAutoCallContext(Expression expression)
-			{
-				if (expression is InvocationExpression) {
-					CheckInvocationInAutoCallContext((InvocationExpression)expression);
-				}
-			}
-			
-			void CheckInvocationInAutoCallContext(InvocationExpression invocationExpression)
-			{
-				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
-				if (memberExpression == null) {
-					return;
-				}
-				var resolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
-				if (resolveResult == null) {
-					return;
-				}
-				if (resolveResult.Member.Name != "ToString") {
-					return;
-				}
-				AddRedundantToStringIssue(memberExpression, invocationExpression);
-			}
 			#endregion
 
-			#region Invocation expressions
+			#region Invocation expression
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression(invocationExpression);
 
+				var invocationResolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (invocationResolveResult == null) {
+					return;
+				}
+				IMember member = invocationResolveResult.Member;
+
+				// "".ToString()
+				CheckTargetedObject(invocationExpression, invocationResolveResult.TargetResult.Type, member);
+
+				// Check list of members that call ToString() automatically
+				CheckAutomaticToStringCallers(invocationExpression, member);
+
+				// Check formatting calls
+				CheckFormattingCall(invocationExpression, invocationResolveResult);
+			}
+
+			void CheckTargetedObject(InvocationExpression invocationExpression, IType type, IMember member)
+			{
 				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
-				if (memberExpression == null) {
-					return;
+				if (memberExpression != null) {
+					if (type.IsKnownType(KnownTypeCode.String) && member.Name == "ToString") {
+						AddRedundantToStringIssue(memberExpression, invocationExpression);
+					}
 				}
-				var targetResolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
-				if (targetResolveResult == null) {
-					return;
-				}
-				if (targetResolveResult.TargetResult.Type.IsKnownType(KnownTypeCode.String) && targetResolveResult.Member.Name == "ToString") {
-					AddRedundantToStringIssue(memberExpression, invocationExpression);
-				}
-				IMember member = targetResolveResult.Member;
+			}
+			
+			void CheckAutomaticToStringCallers(InvocationExpression invocationExpression, IMember member)
+			{
 				if (member.IsOverride) {
 					member = InheritanceHelper.GetBaseMember(member);
 					if (member == null) {
@@ -175,12 +191,28 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				var key = new Tuple<string, int>(member.ReflectionName, invocationExpression.Arguments.Count);
 				Tuple<int, int> checkInfo;
-				if (!membersCallingToString.TryGetValue(key, out checkInfo)) {
-					return;
+				if (membersCallingToString.TryGetValue(key, out checkInfo)) {
+					var arguments = invocationExpression.Arguments.ToList();
+					for (int i = checkInfo.Item1; i < Math.Min(invocationExpression.Arguments.Count, checkInfo.Item2 + 1); ++i) {
+						CheckExpressionInAutoCallContext(arguments[i]);
+					}
 				}
-				var arguments = invocationExpression.Arguments.ToList();
-				for (int i = checkInfo.Item1; i < Math.Min(invocationExpression.Arguments.Count, checkInfo.Item2 + 1); ++i) {
-					CheckExpressionInAutoCallContext(arguments[i]);
+			}
+
+			void CheckFormattingCall(InvocationExpression invocationExpression, CSharpInvocationResolveResult invocationResolveResult)
+			{
+				Expression formatArgument;
+				IList<Expression> formatArguments;
+				TextLocation formatStart;
+				// Only check parameters that are of type object: String means it is neccessary, others
+				// means that there is another problem (ie no matching overload of the method).
+				Func<IParameter, Expression, bool> predicate =
+					(parameter, argument) => parameter.Type.GetDefinition().IsKnownType(KnownTypeCode.Object);
+				if (FormatStringHelper.TryGetFormattingParameters(invocationResolveResult, invocationExpression,
+				                                                  out formatArgument, out formatStart, out formatArguments, predicate)) {
+					foreach (var argument in formatArguments) {
+						CheckExpressionInAutoCallContext(argument);
+					}
 				}
 			}
 			#endregion

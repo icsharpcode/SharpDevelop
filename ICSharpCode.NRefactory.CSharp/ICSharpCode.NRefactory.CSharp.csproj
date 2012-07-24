@@ -396,13 +396,14 @@
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\TypeCriteriaCollector.cs" />
     <Compile Include="Refactoring\CodeIssues\ReferenceToStaticMemberViaDerivedTypeIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\ParameterCanBeDemotedIssue\IsTypeCriterion.cs" />
-    <Compile Include="Refactoring\CodeIssues\FormatStringIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\OptionalParameterCouldBeSkippedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantCatchIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantToStringIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\CallToObjectEqualsViaBaseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\IncorrectCallToObjectGetHashCodeIssue.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
+    <Compile Include="Refactoring\CodeIssues\FormatStringIssues\FormatStringIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\FormatStringIssues\FormatStringHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -417,6 +418,7 @@
     <Folder Include="Refactoring\CodeIssues\InconsistentNamingIssue\" />
     <Folder Include="Refactoring\CodeActions\ExtractMethod\" />
     <Folder Include="Refactoring\CodeActions\ConvertToInitializer\" />
+    <Folder Include="Refactoring\CodeIssues\FormatStringIssues\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
