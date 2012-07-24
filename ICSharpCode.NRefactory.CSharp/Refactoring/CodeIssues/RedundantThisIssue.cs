@@ -45,6 +45,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	       IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantThisIssue : ICodeIssueProvider
 	{
+		/// <summary>
+		/// Specifies whether to ignore redundant 'this' in constructors.
+		/// "this.Name = name;"
+		/// </summary>
+		public bool IgnoreConstructors = true;
+		
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
 			return new GatherVisitor(context, this).GetIssues();
@@ -68,6 +74,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 
 				return null;
+			}
+			
+			public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+			{
+				if (inspector.IgnoreConstructors)
+					return;
+				base.VisitConstructorDeclaration(constructorDeclaration);
 			}
 
 			public override void VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression)
