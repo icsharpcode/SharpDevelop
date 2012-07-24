@@ -334,7 +334,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 		/// </summary>
 		/// <param name="node"></param>
 		/// <returns></returns>
-		public QueryExpressionExpansionResult ExpandQueryPattern(AstNode node) {
+		public QueryExpressionExpansionResult ExpandQueryExpression(AstNode node) {
 			var visitor = new Visitor();
 			var astNode = node.AcceptVisitor(visitor);
 			if (astNode != null) {
