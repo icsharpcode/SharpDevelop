@@ -274,6 +274,7 @@
     <Compile Include="CSharp\CodeActions\ImplementAbstractMembersTest.cs" />
     <Compile Include="CSharp\CodeActions\ExtractFieldTests.cs" />
     <Compile Include="CSharp\CodeCompletion\DocumentationContextTests.cs" />
+    <Compile Include="CSharp\CodeCompletion\BrowsableAttributeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">

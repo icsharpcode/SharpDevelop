@@ -136,15 +136,6 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (entity.Name);
 			}
 			
-			public ICompletionData CreateEntityCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedEntity entity, string text)
-			{
-				return new CompletionData (text);
-			}
-
-			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition type, string shortType)
-			{
-				return new CompletionData (shortType);
-			}
 
 			public ICompletionData CreateTypeCompletionData (ICSharpCode.NRefactory.TypeSystem.IType type, string shortType)
 			{
@@ -166,7 +157,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 				return new CompletionData (variable.Name);
 			}
 
-			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeParameter parameter)
+			public ICompletionData CreateVariableCompletionData (ICSharpCode.NRefactory.TypeSystem.ITypeParameter parameter)
 			{
 				return new CompletionData (parameter.Name);
 			}
@@ -199,6 +190,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			#endregion
 		}
 		
+		public static IUnresolvedAssembly SystemAssembly { get { return systemAssembly.Value; } }
+		static readonly Lazy<IUnresolvedAssembly> systemAssembly = new Lazy<IUnresolvedAssembly>(
+			delegate {
+			return new CecilLoader().LoadAssemblyFile(typeof(System.ComponentModel.BrowsableAttribute).Assembly.Location);
+		});
+		
 		static CompletionDataList CreateProvider(string text, bool isCtrlSpace)
 		{
 			string parsedText;
@@ -215,8 +212,8 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			var doc = new ReadOnlyDocument(editorText);
 			
 			IProjectContent pctx = new CSharpProjectContent();
-			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			
+			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore, SystemAssembly });
+
 			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
 			compilationUnit.Freeze();
 			

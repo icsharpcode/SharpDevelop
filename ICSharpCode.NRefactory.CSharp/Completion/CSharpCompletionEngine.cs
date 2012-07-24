@@ -543,7 +543,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 								var wrapper = new CompletionDataWrapper(this);
 								if (currentType != null) {
 									//							bool includeProtected = DomType.IncludeProtected (dom, typeFromDatabase, resolver.CallingType);
-									foreach (var method in currentType.Methods) {
+									foreach (var method in ctx.CurrentTypeDefinition.Methods) {
 										if (MatchDelegate(delegateType, method) /*&& method.IsAccessibleFrom (dom, resolver.CallingType, resolver.CallingMember, includeProtected) &&*/) {
 											wrapper.AddMember(method);
 											//									data.SetText (data.CompletionText + ";");
@@ -1200,16 +1200,16 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					wrapper.AddVariable(variable);
 				}
 			}
-			
-			if (currentMember is IUnresolvedParameterizedMember && !(node is AstType)) {
-				var param = (IParameterizedMember)currentMember.CreateResolved(ctx);
+
+			if (state.CurrentMember is IParameterizedMember && !(node is AstType)) {
+				var param = (IParameterizedMember)state.CurrentMember;
 				foreach (var p in param.Parameters) {
 					wrapper.AddVariable(p);
 				}
 			}
 			
-			if (currentMember is IUnresolvedMethod) {
-				var method = (IUnresolvedMethod)currentMember;
+			if (state.CurrentMember is IMethod) {
+				var method = (IMethod)state.CurrentMember;
 				foreach (var p in method.TypeParameters) {
 					wrapper.AddTypeParameter(p);
 				}
@@ -1319,7 +1319,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		{
 			var lookup = new MemberLookup(ctx.CurrentTypeDefinition, Compilation.MainAssembly);
 			if (currentType != null) {
-				for (var ct = currentType; ct != null; ct = ct.DeclaringTypeDefinition) {
+				for (var ct = ctx.CurrentTypeDefinition; ct != null; ct = ct.DeclaringTypeDefinition) {
 					foreach (var nestedType in ct.NestedTypes) {
 						string name = nestedType.Name;
 						if (IsAttributeContext(node) && name.EndsWith("Attribute") && name.Length > "Attribute".Length) {
@@ -1331,7 +1331,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 							continue;
 						}
 						
-						var type = typePred(nestedType.Resolve(ctx));
+						var type = typePred(nestedType);
 						if (type != null) {
 							var a2 = wrapper.AddType(type, name);
 							if (a2 != null && callback != null) {
@@ -1374,8 +1374,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 						}
 					}
 				}
-				foreach (var p in currentType.TypeParameters) {
-					wrapper.AddTypeParameter(p);
+				if (ctx.CurrentTypeDefinition != null) {
+					foreach (var p in ctx.CurrentTypeDefinition.TypeParameters) {
+						wrapper.AddTypeParameter(p);
+					}
 				}
 			}
 			var scope = ctx.CurrentUsingScope;
@@ -1983,7 +1985,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return result;
 		}
 		
-		bool MatchDelegate(IType delegateType, IUnresolvedMethod method)
+		bool MatchDelegate(IType delegateType, IMethod method)
 		{
 			var delegateMethod = delegateType.GetDelegateInvokeMethod();
 			if (delegateMethod == null || delegateMethod.Parameters.Count != method.Parameters.Count) {
@@ -1991,7 +1993,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 			
 			for (int i = 0; i < delegateMethod.Parameters.Count; i++) {
-				if (!delegateMethod.Parameters [i].Type.Equals(method.Parameters [i].Type.Resolve(ctx))) {
+				if (!delegateMethod.Parameters [i].Type.Equals(method.Parameters [i].Type)) {
 					return false;
 				}
 			}
