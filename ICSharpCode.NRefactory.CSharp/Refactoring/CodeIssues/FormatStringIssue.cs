@@ -46,12 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		class GatherVisitor : GatherVisitorBase
 		{
 			readonly BaseRefactoringContext context;
-			readonly IType stringType;
 			
 			public GatherVisitor(BaseRefactoringContext context) : base (context)
 			{
 				this.context = context;
-				stringType = context.Compilation.FindType(KnownTypeCode.String);
 			}
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
@@ -121,7 +119,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					}
 					var parameter = resolvedParameters[parameterIndex];
 					var argument = allArguments[i];
-					if (parameter.Type.Equals(stringType) && parameterNames.Contains(parameter.Name) && argument is PrimitiveExpression) {
+					if (parameter.Type.IsKnownType(KnownTypeCode.String) && parameterNames.Contains(parameter.Name) && argument is PrimitiveExpression) {
 						format = (string)((PrimitiveExpression)argument).Value;
 						formatStart = argument.StartLocation;
 					} else if (format != null || parameter.IsParams) {

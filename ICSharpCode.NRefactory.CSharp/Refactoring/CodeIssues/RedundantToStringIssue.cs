@@ -46,10 +46,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		
 		class GatherVisitor : GatherVisitorBase
 		{
-			IType stringType;
-
-			IType objectType;
-
 			static Tuple<int, int> onlyFirst = Tuple.Create (0, 0);
 
 			static IDictionary<Tuple<string, int>, Tuple<int, int>> membersCallingToString = new Dictionary<Tuple<string, int>, Tuple<int, int>> {
@@ -61,8 +57,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						
 			public GatherVisitor (BaseRefactoringContext context) : base (context)
 			{
-				stringType = context.Compilation.FindType(KnownTypeCode.String);
-				objectType = context.Compilation.FindType(KnownTypeCode.Object);
 			}
 			
 			HashSet<AstNode> processedNodes = new HashSet<AstNode>();
@@ -93,7 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				int stringExpressionCount = 0;
 				foreach (var expression in expressions) {
 					var resolveResult = ctx.Resolve(expression);
-					if (resolveResult.Type == stringType) {
+					if (resolveResult.Type.IsKnownType(KnownTypeCode.String)) {
 						stringExpressionCount++;
 					}
 					if (stringExpressionCount > 1) {
@@ -169,7 +163,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (targetResolveResult == null) {
 					return;
 				}
-				if (targetResolveResult.TargetResult.Type == stringType && targetResolveResult.Member.Name == "ToString") {
+				if (targetResolveResult.TargetResult.Type.IsKnownType(KnownTypeCode.String) && targetResolveResult.Member.Name == "ToString") {
 					AddRedundantToStringIssue(memberExpression, invocationExpression);
 				}
 				IMember member = targetResolveResult.Member;
