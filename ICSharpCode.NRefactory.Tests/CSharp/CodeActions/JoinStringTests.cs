@@ -37,14 +37,14 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 			Test<JoinStringAction> (@"
 class TestClass
 {
-	string TestMethod ()
+	string TestMethod (string arg)
 	{
 		return " + input + @";
 	}
 }", @"
 class TestClass
 {
-	string TestMethod ()
+	string TestMethod (string arg)
 	{
 		return " + output + @";
 	}
@@ -55,6 +55,7 @@ class TestClass
 		public void TestRegularString ()
 		{
 			Test ("\"a\" $+ \"a\"", "\"aa\"");
+			Test ("arg + \"a\" $+ \"a\"", "arg + \"aa\"");
 		}
 
 		[Test]

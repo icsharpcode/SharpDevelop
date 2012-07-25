@@ -31,10 +31,19 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		protected override CodeAction GetAction (RefactoringContext context, BinaryOperatorExpression node)
 		{
-			var left = node.Left as PrimitiveExpression;
+			if (node.Operator != BinaryOperatorType.Add)
+				return null;
+
+			PrimitiveExpression left;
+			var leftBinaryOperatorExpr = node.Left as BinaryOperatorExpression;
+			if (leftBinaryOperatorExpr != null && leftBinaryOperatorExpr.Operator == BinaryOperatorType.Add) {
+				left = leftBinaryOperatorExpr.Right as PrimitiveExpression;
+			} else {
+				left = node.Left as PrimitiveExpression;
+			}
 			var right = node.Right as PrimitiveExpression;
 
-			if (node.Operator != BinaryOperatorType.Add || left == null || right == null ||
+			if (left == null || right == null ||
 				!(left.Value is string) || !(right.Value is string) || !node.OperatorToken.Contains(context.Location))
 				return null;
 
