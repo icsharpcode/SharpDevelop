@@ -73,22 +73,26 @@ class TestClass
 			var input = @"
 class TestClass
 {
-	void TestMethod (double x)
+	void TestMethod (double x, float y)
 	{
-		bool test = x == double.NaN;
+		bool test = x == System.Double.NaN;
 		bool test2 = x != double.NaN;
+		bool test3 = y == float.NaN;
+		bool test4 = x != float.NaN
 	}
 }";
 			var output = @"
 class TestClass
 {
-	void TestMethod (double x)
+	void TestMethod (double x, float y)
 	{
 		bool test = double.IsNaN (x);
 		bool test2 = !double.IsNaN (x);
+		bool test3 = float.IsNaN (y);
+		bool test4 = !double.IsNaN (x);
 	}
 }";
-			Test<CompareFloatWithEqualityOperatorIssue> (input, 2, output);
+			Test<CompareFloatWithEqualityOperatorIssue> (input, 3, output);
 		}
 	}
 }

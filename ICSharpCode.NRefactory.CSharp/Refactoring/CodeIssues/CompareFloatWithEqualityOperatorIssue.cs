@@ -60,27 +60,34 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				return IsFloatingPointType (ctx.Resolve (node).Type);
 			}
 
-			bool IsNaN (AstNode node)
+			bool IsNaN (AstNode node, out string floatType)
 			{
-				var memberReferenceExpr = node as MemberReferenceExpression;
-				if (memberReferenceExpr == null)
+				floatType = "";
+				var rr = ctx.Resolve (node);
+				if (!rr.IsCompileTimeConstant)
 					return false;
-				var typeReferenceExpr = memberReferenceExpr.Target as TypeReferenceExpression;
-				if (typeReferenceExpr == null)
-					return false;
-				return IsFloatingPointType (ctx.ResolveType (typeReferenceExpr.Type)) && 
-					memberReferenceExpr.MemberName == "NaN";
+
+				if (rr.ConstantValue is double && double.IsNaN ((double)rr.ConstantValue)) {
+					floatType = "double";
+					return true;
+				}
+				if (rr.ConstantValue is float && float.IsNaN ((float)rr.ConstantValue)) {
+					floatType = "float";
+					return true;
+				}
+				return false;
 			}
 
-			void AddIsNaNIssue(BinaryOperatorExpression binaryOperatorExpr, Expression argExpr)
+			void AddIsNaNIssue(BinaryOperatorExpression binaryOperatorExpr, Expression argExpr, string floatType)
 			{
-				AddIssue (binaryOperatorExpr, ctx.TranslateString ("Use double.IsNan()"), script => {
-					Expression expr = new InvocationExpression (new MemberReferenceExpression (
-						new TypeReferenceExpression (new PrimitiveType ("double")), "IsNaN"), argExpr.Clone ());
-					if (binaryOperatorExpr.Operator == BinaryOperatorType.InEquality)
-						expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr);
-					script.Replace (binaryOperatorExpr, expr);
-				});
+				AddIssue (binaryOperatorExpr, string.Format(ctx.TranslateString ("Use {0}.IsNan()"), floatType),
+					script => {
+						Expression expr = new InvocationExpression (new MemberReferenceExpression (
+							new TypeReferenceExpression (new PrimitiveType (floatType)), "IsNaN"), argExpr.Clone ());
+						if (binaryOperatorExpr.Operator == BinaryOperatorType.InEquality)
+							expr = new UnaryOperatorExpression (UnaryOperatorType.Not, expr);
+						script.Replace (binaryOperatorExpr, expr);
+					});
 			}
 
 			public override void VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression)
@@ -91,20 +98,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					binaryOperatorExpression.Operator != BinaryOperatorType.InEquality)
 					return;
 
-				if (IsNaN(binaryOperatorExpression.Left)) {
-					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Right);
-				} else if (IsNaN (binaryOperatorExpression.Right)) {
-					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Left);
+				string floatType;
+				if (IsNaN(binaryOperatorExpression.Left, out floatType)) {
+					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Right, floatType);
+				} else if (IsNaN (binaryOperatorExpression.Right, out floatType)) {
+					AddIsNaNIssue (binaryOperatorExpression, binaryOperatorExpression.Left, floatType);
 				} else if (IsFloatingPoint(binaryOperatorExpression.Left) || IsFloatingPoint(binaryOperatorExpression.Right)) {
 					AddIssue (binaryOperatorExpression, ctx.TranslateString ("Compare a difference with EPSILON"),
-						script =>
-						{
+						script => {
 							// Math.Abs(diff) op EPSILON
 							var diff = new BinaryOperatorExpression (binaryOperatorExpression.Left.Clone (),
 								BinaryOperatorType.Subtract, binaryOperatorExpression.Right.Clone ());
 							var abs = new InvocationExpression (
 								new MemberReferenceExpression (
-									new TypeReferenceExpression (new SimpleType("System.Math")), 
+									new TypeReferenceExpression (new SimpleType ("System.Math")),
 									"Abs"),
 								diff);
 							var op = binaryOperatorExpression.Operator == BinaryOperatorType.Equality ?
