@@ -967,7 +967,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return;
 				}
 				foreach (var ctorParameter in ctorParameterTypes.Resolve(context)) {
-					positionalArguments.Add(reader.ReadFixedArg(ctorParameter));
+					ResolveResult arg = reader.ReadFixedArg(ctorParameter);
+					positionalArguments.Add(arg);
+					if (arg.IsError) {
+						// After a decoding error, we must stop decoding the blob because
+						// we might have read too few bytes due to the error.
+						// Just fill up the remaining arguments with ErrorResolveResult:
+						while (positionalArguments.Count < ctorParameterTypes.Count)
+							positionalArguments.Add(ErrorResolveResult.UnknownError);
+						return;
+					}
 				}
 				ushort numNamed = reader.ReadUInt16();
 				for (int i = 0; i < numNamed; i++) {
@@ -1131,6 +1140,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						ResolveResult[] elements = new ResolveResult[numElem];
 						for (int i = 0; i < elements.Length; i++) {
 							elements[i] = ReadElem(elementType);
+							// Stop decoding when encountering an error:
+							if (elements[i].IsError)
+								return ErrorResolveResult.UnknownError;
 						}
 						return new ArrayCreateResolveResult(argType, null, elements);
 					}
