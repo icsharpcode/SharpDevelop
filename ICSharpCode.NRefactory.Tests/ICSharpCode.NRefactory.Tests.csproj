@@ -108,6 +108,7 @@
     <Compile Include="CSharp\CodeIssues\CompareFloatWithEqualityOperatorIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ConstantConditionIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ExplicitConversionInForEachIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ExpressionIsAlwaysOfProvidedTypeIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ForControlVariableNotModifiedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\IdenticalConditionalBranchIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\LocalVariableHidesMemberIssueTests.cs" />
