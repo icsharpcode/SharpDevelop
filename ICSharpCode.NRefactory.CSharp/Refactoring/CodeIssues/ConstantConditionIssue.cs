@@ -96,12 +96,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var ifElseStatement = condition.Parent as IfElseStatement;
 				var valueStr = value.ToString ().ToLower ();
 
+				CodeAction action;
 				if (conditionalExpr != null) {
 					var replaceExpr = value ? conditionalExpr.TrueExpression : conditionalExpr.FalseExpression;
-					AddIssue (condition, ctx.TranslateString ("Replace '?:' with '" + valueStr + "' branch"),
+					action = new CodeAction (
+						string.Format (ctx.TranslateString ("Replace '?:' with '{0}' branch"), valueStr),
 						script => script.Replace (conditionalExpr, replaceExpr.Clone ()));
 				} else if (ifElseStatement != null) {
-					AddIssue (condition, ctx.TranslateString ("Replace 'if' with '" + valueStr + "' branch"),
+					action = new CodeAction (
+						string.Format (ctx.TranslateString ("Replace 'if' with '{0}' branch"), valueStr),
 						script => {
 							var statement = value ? ifElseStatement.TrueStatement : ifElseStatement.FalseStatement;
 							var blockStatement = statement as BlockStatement;
@@ -123,9 +126,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 							script.FormatText (ifElseStatement.Parent);
 						});
 				} else {
-					AddIssue (condition, ctx.TranslateString ("Replace expression with '" + valueStr + "'"),
+					action = new CodeAction (
+						string.Format (ctx.TranslateString ("Replace expression with '{0}'"), valueStr),
 						script => script.Replace (condition, new PrimitiveExpression (value)));
 				}
+				AddIssue (condition, string.Format (ctx.TranslateString ("Condition is always '{0}'"), valueStr), 
+					new [] { action });
 			}
 
 			void RemoveText (Script script, TextLocation start, TextLocation end)
