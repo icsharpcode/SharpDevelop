@@ -33,12 +33,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		protected override CodeAction GetAction (RefactoringContext context, BinaryOperatorExpression node)
 		{
 			var newOp = CSharpUtil.NegateRelationalOperator (node.Operator);
-			if (newOp != BinaryOperatorType.Any && node.OperatorToken.Contains (context.Location))
-				return new CodeAction (string.Format (context.TranslateString ("Negate {0}"), node.Operator),
+			if (newOp != BinaryOperatorType.Any && node.OperatorToken.Contains (context.Location)) {
+				var operatorToken = BinaryOperatorExpression.GetOperatorRole (node.Operator).Token;
+				return new CodeAction (string.Format (context.TranslateString ("Negate '{0}'"), operatorToken),
 					script => {
 						var expr = new BinaryOperatorExpression (node.Left.Clone (), newOp, node.Right.Clone ());
 						script.Replace (node, expr);
 					});
+			}
 			return null;
 		}
 
