@@ -395,6 +395,55 @@ class TestClass
 		}
 
 		[Test]
+		public void HandlesIrrelevantAccessesAtTheEnd()
+		{
+			Test<ConvertToInitializerAction>(baseText + @"
+		var tc = new TestClass();
+		tc.Property = ""1"";
+		var tc$2 = new TestClass();
+		tc2.Property = ""2"";
+		tc2.Nested = new TestClass();
+		tc2.Nested.Property = ""3"";
+		tc.Nested = tc2;
+	}
+}", baseText + @"
+		var tc = new TestClass();
+		tc.Property = ""1"";
+		var tc2 = new TestClass() {
+			Property = ""2"",
+			Nested = new TestClass() {
+				Property = ""3""
+			}
+		};
+		tc.Nested = tc2;
+	}
+}");
+		}
+		
+		[Test]
+		public void HandlesAssignmentWhereRightExpressionIsNotVisited()
+		{
+			Test<ConvertToInitializerAction>(baseText + @"
+		var tc = new TestClass();
+		tc.Property = ""1"";
+		var tc$2 = new TestClass();
+		tc2.Property = ""2"";
+		tc2.Nested = tc;
+		tc.Nested = tc2;
+	}
+}", baseText + @"
+		var tc = new TestClass();
+		tc.Property = ""1"";
+		var tc2 = new TestClass() {
+			Property = ""2"",
+			Nested = tc
+		};
+		tc.Nested = tc2;
+	}
+}");
+		}
+
+		[Test]
 		public void HandlesAssignmentToExistingVariable()
 		{
 			Test<ConvertToInitializerAction>(baseText + @"

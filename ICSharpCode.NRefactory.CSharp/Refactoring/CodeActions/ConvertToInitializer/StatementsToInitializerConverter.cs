@@ -221,16 +221,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			Expression initializer;
 			if (rightResolveResult != null) {
 				var rightPath = InitializerPath.FromResolveResult(rightResolveResult);
-				initializer = initializers [rightPath];
-				initializer.AddReplacementAnnotation(node);
+				if (initializers.ContainsKey(rightPath)) {
+					initializer = initializers [rightPath];
+				} else {
+					initializer = right.Clone();
+				}
 			} else {
-				initializer = right.CloneWithReplacementAnnotation(node);
+				initializer = right.Clone();
 			}
 			var leftResolveResult = context.Resolve(left);
 			var leftPath = InitializerPath.FromResolveResult(leftResolveResult);
 			AddOldAnnotationsToInitializer(leftPath, initializer);
 
 			if (leftResolveResult is LocalResolveResult) {
+				AstNodeExtensions.AddReplacementAnnotation(initializer, node);
 				initializers [leftPath] = initializer;
 				return true;
 			}
@@ -242,13 +246,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var parentKey = leftPath.GetParentPath();
 			var member = leftPath.MemberPath.Last();
 
-			InsertImplicitInitializersForPath(parentKey);
+			var success = InsertImplicitInitializersForPath(parentKey);
+			if (!success)
+				return false;
 
 			var parentInitializer = initializers [parentKey];
 			AddToInitializer(parentInitializer, comments.ToArray());
 			comments.Clear();
 
 			AddToInitializer(parentInitializer, new NamedExpression(member.Name, initializer));
+			AstNodeExtensions.AddReplacementAnnotation(initializer, node);
 			initializers [leftPath] = initializer;
 			return true;
 		}
@@ -336,18 +343,24 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return initializers.Any(item => item.Key.VariableRoot.Equals(variable));
 		}
 
-		void InsertImplicitInitializersForPath(InitializerPath path)
+		bool InsertImplicitInitializersForPath(InitializerPath path)
 		{
 			if (initializers.ContainsKey(path))
-				return;
+				return true;
+
+			if (path.MemberPath.Count == 0)
+				return false;
 			var parentPath = path.GetParentPath();
-			InsertImplicitInitializersForPath(parentPath);
+			var success = InsertImplicitInitializersForPath(parentPath);
+			if (!success)
+				return false;
 
 			var parentInitializer = initializers [parentPath];
 			var initializer = new ArrayInitializerExpression();
 			var namedExpression = new NamedExpression(path.MemberPath [path.MemberPath.Count - 1].Name, initializer);
 			AddToInitializer(parentInitializer, namedExpression);
 			initializers [path] = initializer;
+			return true;
 		}
 
 	}
