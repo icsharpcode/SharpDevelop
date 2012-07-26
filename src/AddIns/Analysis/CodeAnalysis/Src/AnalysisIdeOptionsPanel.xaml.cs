@@ -39,9 +39,9 @@ namespace ICSharpCode.CodeAnalysis
 		
 		private void FindFxCopPath_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			string s = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;");
-			if (!String.IsNullOrEmpty(s)) {
-				string path = Path.GetDirectoryName(s);
+			string fn = OptionsHelper.OpenFile("${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe;");
+			if (!String.IsNullOrEmpty(fn)) {
+				string path = Path.GetDirectoryName(fn);
 				if (FxCopWrapper.IsFxCopPath(path)) {
 					FxCopPath = path;
 				} else {

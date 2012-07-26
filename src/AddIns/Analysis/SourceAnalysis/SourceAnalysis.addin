@@ -18,9 +18,9 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
-		<!---<OptionPanel id          = "SourceAnalysis"
+		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
-		             class       = "MattEverson.SourceAnalysis.old_AnalysisProjectOptionsPanel"/>-->
+		             class       = "MattEverson.SourceAnalysis.old_AnalysisProjectOptionsPanel"/>
 		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
 		             class       = "MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"/>
@@ -47,7 +47,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id    = "SourceAnalysisOptionPanel"
 		             label = "${res:AddIns.SourceAnalysis.Title}"
-		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
-		
+		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanelXaml"/>
+	
 	</Path>
 </AddIn>

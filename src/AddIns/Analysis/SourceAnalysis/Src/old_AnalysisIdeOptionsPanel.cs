@@ -14,11 +14,12 @@ namespace MattEverson.SourceAnalysis
 	/// <summary>
 	/// Option panel to choose the StyleCop path from.
 	/// </summary>
-	public class AnalysisIdeOptionsPanel : XmlFormsOptionPanel
+
+	public  class old_AnalysisIdeOptionsPanel : XmlFormsOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("MattEverson.SourceAnalysis.Resources.AnalysisIdeOptionPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("MattEverson.SourceAnalysis.Resources.old_AnalysisIdeOptionPanel.xfrm"));
 			
 			ShowStatus();
 			Get<Button>("FindStyleCopPath").Click += FindStyleCopPathClick;
@@ -81,4 +82,5 @@ namespace MattEverson.SourceAnalysis
 			}
 		}
 	}
+	
 }
