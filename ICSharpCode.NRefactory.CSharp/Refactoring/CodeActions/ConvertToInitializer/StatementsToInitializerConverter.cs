@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			initializers [mainInitializerPath] = variableInitializer.Initializer.Clone();
 
 			Convert(statements);
-			statements = initializers [mainInitializerPath].GetReplacedNodes();
+			statements = ReplacementNodeHelper.GetReplacedNodes(initializers [mainInitializerPath]);
 			return new VariableInitializer(mainInitializerPath.RootName, initializers [mainInitializerPath]);
 		}
 
@@ -87,7 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			initializers [mainInitializerPath] = assignmentExpression.Right.Clone();
 
 			Convert(statements);
-			statements = initializers [mainInitializerPath].GetReplacedNodes();
+			statements = ReplacementNodeHelper.GetReplacedNodes(initializers [mainInitializerPath]);
 			return new AssignmentExpression(new IdentifierExpression(mainInitializerPath.RootName), initializers [mainInitializerPath]);
 		}
 
@@ -96,24 +96,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			foreach (var node in originalStatements) {
 				var comment = node as Comment;
 				if (comment != null) {
-					comments.Add((Comment)comment.CloneWithReplacementAnnotation(node));
+					comments.Add((Comment)ReplacementNodeHelper.CloneWithReplacementAnnotation(comment, node));
 					continue;
 				}
-				VariableInitializer variableInitializer;
-				if (TryGetVariableInitializer(node, out variableInitializer)) {
-					var targetResolveResult = context.Resolve(variableInitializer) as LocalResolveResult;
-					var sourceResolveResult = context.Resolve(variableInitializer.Initializer) as LocalResolveResult;
-					if (!HasDependency(variableInitializer.Initializer) || CanReplaceDependent(sourceResolveResult)) {
-						PushNewVariable(targetResolveResult.Variable, variableInitializer.Initializer, node);
-					} else {
-						break;
-					}
+				var success = TryHandleInitializer(node);
+				if (success) {
 					continue;
 				}
 				var expressionStatement = node as ExpressionStatement;
 				if (expressionStatement == null)
 					break;
-				bool success = TryHandleAssignmentExpression(expressionStatement);
+				success = TryHandleAssignmentExpression(expressionStatement);
 				if (success) {
 					continue;
 				}
@@ -123,6 +116,25 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 				break;
 			}
+		}
+
+		bool TryHandleInitializer(AstNode node)
+		{
+			VariableInitializer variableInitializer;
+			var variableDeclarationStatement = node as VariableDeclarationStatement;
+			if (variableDeclarationStatement == null) {
+				variableInitializer = VariableInitializer.Null;
+				return false;
+			}
+			variableInitializer = variableDeclarationStatement.Variables.FirstOrNullObject();
+			if (variableInitializer.IsNull)
+				return false;
+			var sourceResolveResult = context.Resolve(variableInitializer.Initializer) as LocalResolveResult;
+			if (HasDependency(variableInitializer.Initializer) && !CanReplaceDependent(sourceResolveResult))
+				return false;
+			var targetResolveResult = context.Resolve(variableInitializer) as LocalResolveResult;
+			AddNewVariable(targetResolveResult.Variable, variableInitializer.Initializer, node);
+			return true;
 		}
 
 		bool TryHandleAddCall(ExpressionStatement expressionStatement)
@@ -144,9 +156,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (argumentLocalResolveResult != null) {
 				var initializerPath = InitializerPath.FromResolveResult(argumentLocalResolveResult);
 				argument = initializers [initializerPath];
-				argument.AddReplacementAnnotation(expressionStatement);
+				ReplacementNodeHelper.AddReplacementAnnotation(argument, expressionStatement);
 			} else {
-				argument = argument.CloneWithReplacementAnnotation(expressionStatement);
+				argument = ReplacementNodeHelper.CloneWithReplacementAnnotation(argument, expressionStatement);
 			}
 
 			var targetPath = InitializerPath.FromResolveResult(targetResult);
@@ -170,23 +182,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		bool CanReplaceDependent(ResolveResult resolveResult)
 		{
-			if (resolveResult == null)
-				return false;
 			return resolveResult is LocalResolveResult;
 		}
 
-		bool TryGetVariableInitializer(AstNode node, out VariableInitializer variableInitializer)
-		{
-			var variableDeclarationStatement = node as VariableDeclarationStatement;
-			if (variableDeclarationStatement == null) {
-				variableInitializer = VariableInitializer.Null;
-				return false;
-			}
-			variableInitializer = variableDeclarationStatement.Variables.FirstOrNullObject();
-			return !variableInitializer.IsNull;
-		}
-
-		void PushNewVariable(IVariable variable, Expression initializer, AstNode node)
+		void AddNewVariable(IVariable variable, Expression initializer, AstNode node)
 		{
 			var variablePath = new InitializerPath(variable);
 			var rightResolveResult = context.Resolve(initializer) as LocalResolveResult;
@@ -200,7 +199,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					mainInitializerPath = variablePath;
 				}
 			} else {
-				initializers [variablePath] = initializer.CloneWithReplacementAnnotation(node);
+				initializers [variablePath] = ReplacementNodeHelper.CloneWithReplacementAnnotation(initializer, node);
 			}
 		}
 
@@ -208,7 +207,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			if (targetPath != null) {
 				if (initializers.ContainsKey(targetPath)) {
-					foreach (var astNode in initializers[targetPath].GetAllReplacementAnnotations()) {
+					foreach (var astNode in ReplacementNodeHelper.GetAllReplacementAnnotations(initializers[targetPath])) {
 						initializer.AddAnnotation(astNode);
 					}
 				}
@@ -218,6 +217,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		bool PushAssignment(Expression left, Expression right, AstNode node)
 		{
 			var rightResolveResult = context.Resolve(right) as LocalResolveResult;
+			var leftResolveResult = context.Resolve(left);
+			var leftPath = InitializerPath.FromResolveResult(leftResolveResult);
 			Expression initializer;
 			if (rightResolveResult != null) {
 				var rightPath = InitializerPath.FromResolveResult(rightResolveResult);
@@ -229,12 +230,12 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			} else {
 				initializer = right.Clone();
 			}
-			var leftResolveResult = context.Resolve(left);
-			var leftPath = InitializerPath.FromResolveResult(leftResolveResult);
+			// Move replacement annotations over, in case this is the second assignment
+			// to the same variable.
 			AddOldAnnotationsToInitializer(leftPath, initializer);
 
 			if (leftResolveResult is LocalResolveResult) {
-				AstNodeExtensions.AddReplacementAnnotation(initializer, node);
+				ReplacementNodeHelper.AddReplacementAnnotation(initializer, node);
 				initializers [leftPath] = initializer;
 				return true;
 			}
@@ -255,7 +256,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			comments.Clear();
 
 			AddToInitializer(parentInitializer, new NamedExpression(member.Name, initializer));
-			AstNodeExtensions.AddReplacementAnnotation(initializer, node);
+			ReplacementNodeHelper.AddReplacementAnnotation(initializer, node);
 			initializers [leftPath] = initializer;
 			return true;
 		}
@@ -370,46 +371,44 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		public AstNode ReplacedNode { get; set; }
 	}
 
-	static class AstNodeExtensions
+	class ReplacementNodeHelper
 	{
-		public static void AddReplacementAnnotation(this AstNode node, AstNode replacedNode)
+		public static void AddReplacementAnnotation(AstNode node, AstNode replacedNode)
 		{
 			node.AddAnnotation(new ReplacementNodeAnnotation() {
 				ReplacedNode = replacedNode
 			});
 		}
 
-		public static AstNode CloneWithReplacementAnnotation(this AstNode node, AstNode replacedNode)
+		public static AstNode CloneWithReplacementAnnotation(AstNode node, AstNode replacedNode)
 		{
 			var newNode = node.Clone();
-			newNode.AddReplacementAnnotation(replacedNode);
+			AddReplacementAnnotation(newNode, replacedNode);
 			return newNode;
 		}
 
-		public static Expression CloneWithReplacementAnnotation(this Expression expression, AstNode replacedNode)
+		public static Expression CloneWithReplacementAnnotation(Expression expression, AstNode replacedNode)
 		{
-			var newNode = expression.Clone();
-			newNode.AddReplacementAnnotation(replacedNode);
-			return newNode;
+			var newExpression = expression.Clone();
+			AddReplacementAnnotation(newExpression, replacedNode);
+			return newExpression;
 		}
 
-		public static IEnumerable<ReplacementNodeAnnotation> GetAllReplacementAnnotations(this AstNode node)
+		public static IEnumerable<ReplacementNodeAnnotation> GetAllReplacementAnnotations(AstNode node)
 		{
-			foreach (var n in node.DescendantsAndSelf) {
-				var annotations = n.Annotations.Where(a => a is ReplacementNodeAnnotation)
-					.Select<object, ReplacementNodeAnnotation>(a2 => (ReplacementNodeAnnotation)a2);
-				foreach (var annotation in annotations) {
-					yield return annotation;
-				}
-			}
+			return
+				from n in node.DescendantsAndSelf
+					from annotation in n.Annotations
+					let replacementAnnotation = annotation as ReplacementNodeAnnotation
+					where replacementAnnotation != null
+					select replacementAnnotation;
 		}
 
-		public static IList<AstNode> GetReplacedNodes(this Expression expression)
+		public static IList<AstNode> GetReplacedNodes(AstNode expression)
 		{
 			return GetAllReplacementAnnotations(expression)
-				.Select<ReplacementNodeAnnotation, AstNode>(a => a.ReplacedNode)
+				.Select(a => a.ReplacedNode)
 				.ToList();
 		}
 	}
 }
-
