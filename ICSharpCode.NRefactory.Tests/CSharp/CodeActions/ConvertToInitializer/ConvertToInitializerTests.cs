@@ -77,10 +77,9 @@ class TestClass
 			Property = ""Value""
 		};
 	}
-}"
-			);
+}");
 		}
-
+		
 		[Test]
 		public void SimpleCollection()
 		{
@@ -95,8 +94,32 @@ class TestClass
 			""string2""
 		};
 	}
-}"
-			);
+}");
+		}
+		
+		[Test]
+		public void MultiElementCollection()
+		{
+			Test<ConvertToInitializerAction>(baseText + @"
+		var tc0 = new TestClass();
+		var collection = new System.Collections.Generic.Dictionary$<string, TestClass> ();
+		var tc1 = new TestClass();
+		tc1.Property = ""tc1"";
+		collection.Add(""string1"", tc1);
+		var tc2 = new TestClass();
+		tc2.Property = ""tc2"";
+		collection.Add(""string2"", tc2);
+		collection.Add(""string0"", tc0);
+	}
+}", baseText + @"
+		var tc0 = new TestClass();
+		var collection = new System.Collections.Generic.Dictionary<string> () {
+			{""string1"", new TestClass() { Property = ""tc1""}},
+			{""string2"", new TestClass() { Property = ""tc2""}}
+		};
+		collection.Add(""string0"", tc0);
+	}
+}");
 		}
 
 		[Test]
@@ -126,8 +149,7 @@ class TestClass
 			}
 		};
 	}
-}"
-			);
+}");
 		}
 
 		[Test]

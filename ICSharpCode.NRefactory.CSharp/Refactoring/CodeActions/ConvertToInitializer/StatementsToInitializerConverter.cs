@@ -146,25 +146,30 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var invocationResolveResult = context.Resolve(invocationExpression) as InvocationResolveResult;
 			if (invocationResolveResult == null)
 				return false;
-			if (invocationResolveResult.Member.Name != "Add" || invocationResolveResult.Arguments.Count != 1)
+			if (invocationResolveResult.Member.Name != "Add")
 				return false;
 			var targetResult = invocationResolveResult.TargetResult;
 			if (targetResult is MemberResolveResult)
 				return false;
-			var argument = invocationExpression.Arguments.First();
-			var argumentLocalResolveResult = context.Resolve(argument) as LocalResolveResult;
-			if (argumentLocalResolveResult != null) {
-				var initializerPath = InitializerPath.FromResolveResult(argumentLocalResolveResult);
-				argument = initializers [initializerPath];
-				ReplacementNodeHelper.AddReplacementAnnotation(argument, expressionStatement);
-			} else {
-				argument = ReplacementNodeHelper.CloneWithReplacementAnnotation(argument, expressionStatement);
+
+			ArrayInitializerExpression tuple = new ArrayInitializerExpression();
+			foreach (var argument in invocationExpression.Arguments) {
+				var argumentLocalResolveResult = context.Resolve(argument) as LocalResolveResult;
+				if (argumentLocalResolveResult != null) {
+					var initializerPath = InitializerPath.FromResolveResult(argumentLocalResolveResult);
+					if (initializerPath == null || !initializers.ContainsKey(initializerPath))
+						return false;
+					tuple.Elements.Add(initializers[initializerPath]);
+				} else {
+					tuple.Elements.Add(argument.Clone());
+				}
 			}
+			ReplacementNodeHelper.AddReplacementAnnotation(tuple, expressionStatement);
 
 			var targetPath = InitializerPath.FromResolveResult(targetResult);
 			InsertImplicitInitializersForPath(targetPath);
 			var targetInitializer = initializers [targetPath];
-			AddToInitializer(targetInitializer, argument);
+			AddToInitializer(targetInitializer, tuple);
 			return true;
 		}
 
