@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		public string EolMarker { get; set; }
 		
 		public string IndentString { get; set; }
-#endregion
+		#endregion
 		
 		#region Result properties
 		public bool AutoCompleteEmptyMatch;
@@ -2014,34 +2014,47 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 					"delegate",
 					"Creates anonymous delegate.",
 					"delegate {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-				);
+					);
 			}
 			var sb = new StringBuilder("(");
 			var sbWithoutTypes = new StringBuilder("(");
+			var state = GetState();
+			var builder = new TypeSystemAstBuilder(state);
+			
 			for (int k = 0; k < delegateMethod.Parameters.Count; k++) {
 				if (k > 0) {
 					sb.Append(", ");
 					sbWithoutTypes.Append(", ");
 				}
-				var parameterType = delegateMethod.Parameters [k].Type;
-				sb.Append(GetShortType(parameterType, GetState()));
-				sb.Append(" ");
-				sb.Append(delegateMethod.Parameters [k].Name);
+				var convertedParameter = builder.ConvertParameter (delegateMethod.Parameters [k]);
+				if (convertedParameter.ParameterModifier == ParameterModifier.Params)
+					convertedParameter.ParameterModifier = ParameterModifier.None;
+				sb.Append(convertedParameter.GetText (FormattingPolicy));
 				sbWithoutTypes.Append(delegateMethod.Parameters [k].Name);
 			}
+			
 			sb.Append(")");
 			sbWithoutTypes.Append(")");
 			completionList.AddCustom(
 				"delegate" + sb,
 				"Creates anonymous delegate.",
 				"delegate" + sb + " {" + EolMarker + thisLineIndent + IndentString + "|" + delegateEndString
-			);
-			if (!completionList.Result.Any(data => data.DisplayText == sbWithoutTypes.ToString())) {
+				);
+
+			if (!completionList.Result.Any(data => data.DisplayText == sb.ToString())) {
+				completionList.AddCustom(
+					sb.ToString(),
+					"Creates typed lambda expression.",
+					sb + " => |" + (addSemicolon ? ";" : "")
+					);
+			}
+
+			if (!delegateMethod.Parameters.Any (p => p.IsOut || p.IsRef) && !completionList.Result.Any(data => data.DisplayText == sbWithoutTypes.ToString())) {
 				completionList.AddCustom(
 					sbWithoutTypes.ToString(),
 					"Creates lambda expression.",
 					sbWithoutTypes + " => |" + (addSemicolon ? ";" : "")
-				);
+					);
 			}
 			/* TODO:Make factory method out of it.
 			// It's  needed to temporarly disable inserting auto matching bracket because the anonymous delegates are selectable with '('
@@ -2055,7 +2068,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}*/
 			return sb.ToString();
 		}
-		
+
 		bool IsAccessibleFrom(IEntity member, ITypeDefinition calledType, IMember currentMember, bool includeProtected)
 		{
 			if (currentMember == null) {

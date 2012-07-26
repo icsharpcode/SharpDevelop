@@ -97,6 +97,30 @@ public class Test
 				Assert.IsNotNull(provider.Find("(arg1, arg2)"));
 			});
 		}
+
+
+		[Test()]
+		public void TestRefOutParams()
+		{
+			CodeCompletionBugTests.CombinedProviderTest(
+				@"using System;
+public delegate void FooBar (out int foo, ref int bar, params object[] additional);
+
+public class Test
+{
+	FooBar foo;
+
+	void TestFoo()
+	{
+		$foo = d$
+	}
+}
+", provider => {
+				Assert.IsFalse(provider.AutoSelect);
+				Assert.IsNotNull(provider.Find("(out int foo, ref int bar, object[] additional)"));
+				Assert.IsNull(provider.Find("(foo, bar, additional)"));
+			});
+		}
 	}
 }
 
