@@ -45,11 +45,20 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	       IssueMarker = IssueMarker.GrayOut)]
 	public class RedundantThisIssue : ICodeIssueProvider
 	{
+		bool ignoreConstructors = true;
+
 		/// <summary>
 		/// Specifies whether to ignore redundant 'this' in constructors.
 		/// "this.Name = name;"
 		/// </summary>
-		public bool IgnoreConstructors = true;
+		public bool IgnoreConstructors {
+			get {
+				return ignoreConstructors;
+			}
+			set {
+				ignoreConstructors = value;
+			}
+		}
 		
 		public IEnumerable<CodeIssue> GetIssues(BaseRefactoringContext context)
 		{
