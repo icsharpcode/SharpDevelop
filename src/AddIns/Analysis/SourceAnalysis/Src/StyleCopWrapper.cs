@@ -24,7 +24,7 @@ namespace MattEverson.SourceAnalysis
 		
 		public static string FindStyleCopPath()
 		{
-			string styleCopPath = AnalysisIdeOptionsPanelXaml.StyleCopPath;				
+			string styleCopPath = AnalysisIdeOptionsPanel.StyleCopPath;				
 			if (IsStyleCopPath(styleCopPath)) {
 				return styleCopPath;
 			}

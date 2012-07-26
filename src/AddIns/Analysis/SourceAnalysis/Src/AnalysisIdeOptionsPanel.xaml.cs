@@ -26,11 +26,11 @@ namespace MattEverson.SourceAnalysis
 	/// <summary>
 	/// Interaction logic for AnalysisIdeOptionsPanelXaml.xaml
 	/// </summary>
-	public partial class AnalysisIdeOptionsPanelXaml : OptionPanel
+	public partial class AnalysisIdeOptionsPanel : OptionPanel
 	{
 		private bool enableModifyStyleCopSettings;
 		
-		public AnalysisIdeOptionsPanelXaml()
+		public AnalysisIdeOptionsPanel()
 		{
 			InitializeComponent();
 			DataContext = this;

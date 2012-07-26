@@ -47,7 +47,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id    = "SourceAnalysisOptionPanel"
 		             label = "${res:AddIns.SourceAnalysis.Title}"
-		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanelXaml"/>
+		             class = "MattEverson.SourceAnalysis.AnalysisIdeOptionsPanel"/>
 	
 	</Path>
 </AddIn>

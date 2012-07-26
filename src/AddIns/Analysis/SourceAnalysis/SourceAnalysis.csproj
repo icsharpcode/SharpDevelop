@@ -66,8 +66,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\AnalysisIdeOptionsPanelXaml.xaml.cs">
-      <DependentUpon>AnalysisIdeOptionsPanelXaml.xaml</DependentUpon>
+    <Compile Include="Src\AnalysisIdeOptionsPanel.xaml.cs">
+      <DependentUpon>AnalysisIdeOptionsPanel.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\AnalysisOptionsPanel.xaml.cs">
@@ -115,7 +115,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\AnalysisIdeOptionsPanelXaml.xaml" />
+    <Page Include="Src\AnalysisIdeOptionsPanel.xaml" />
     <Page Include="Src\AnalysisOptionsPanel.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
