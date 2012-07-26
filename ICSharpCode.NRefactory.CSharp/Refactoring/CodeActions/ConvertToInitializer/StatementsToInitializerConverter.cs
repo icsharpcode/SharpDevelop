@@ -325,7 +325,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (resolveResult == null)
 					continue;
 				var initializerPath = InitializerPath.FromResolveResult(resolveResult);
-				if (initializers.ContainsKey(initializerPath))
+				if (initializerPath != null && initializers.ContainsKey(initializerPath))
 					return true;
 			}
 			return false;

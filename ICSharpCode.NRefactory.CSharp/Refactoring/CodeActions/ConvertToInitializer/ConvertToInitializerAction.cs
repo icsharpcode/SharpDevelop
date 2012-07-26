@@ -58,10 +58,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (initializerRR == null)
 				return null;
 			IList<AstNode> statements = GetNodes(context.GetNode<Statement>());
-			if (statements.Count == 0)
-				return null;
 			var converter = new StatementsToInitializerConverter(context);
 			var newInitializer = converter.ConvertToInitializer(initializer, ref statements);
+			if (statements.Count == 0)
+				return null;
 			return MakeAction(context, initializer, newInitializer, statements);
 		}
 
@@ -70,15 +70,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var expression = expressionStatement.Expression as AssignmentExpression;
 			if (expression == null)
 				return null;
+			if (!(expression.Right is ObjectCreateExpression))
+				return null;
 			var expressionResolveResult = context.Resolve(expression.Left);
-			var variableResolveResult = expressionResolveResult as LocalResolveResult;
 			if (!(expressionResolveResult is LocalResolveResult) && !(expressionResolveResult is MemberResolveResult))
 				return null;
 			IList<AstNode> statements = GetNodes(context.GetNode<Statement>());
-			if (statements.Count == 0)
-				return null;
 			var converter = new StatementsToInitializerConverter(context);
 			var newExpression = converter.ConvertToInitializer(expression, ref statements);
+			if (statements.Count == 0)
+				return null;
 			return MakeAction(context, expression, newExpression, statements);
 		}
 		

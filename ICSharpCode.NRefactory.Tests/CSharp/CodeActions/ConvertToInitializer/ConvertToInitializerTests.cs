@@ -485,7 +485,7 @@ class TestClass
 }"
 			);
 		}
-
+		
 		[Test]
 		public void StopsAtUnresolvableAssignmentTarget()
 		{
@@ -501,7 +501,17 @@ class TestClass
 		Variable.Nested = new TestClass();
 	}
 }"
-			);
+			                                 );
+		}
+		
+		[Test]
+		public void NoActionForSingleStepInitializers()
+		{
+			TestWrongContext<ConvertToInitializerAction>(baseText + @"
+		var variable = new Test$Class ();
+		var s = string.Empty;
+	}
+}");
 		}
 
 		[Test]
@@ -518,7 +528,7 @@ class TestClass
 }"
 			);
 		}
-
+		
 		[Test]
 		public void IgnoresSingleCreation()
 		{
@@ -529,8 +539,23 @@ class TestClass
 	{
 		var variable = new $TestClass();
 	}
-}"
-			);
+}");
+		}
+		
+		[Test]
+		public void DoesNotCrashOnDeclarationInitializedToVariable()
+		{
+			TestWrongContext<ConvertToInitializerAction>(@"
+class TestClass
+{
+	void F()
+	{
+		var s = """";
+		s$ = ""2"";
+		// And another statement to make the converter even try
+		s = """";
+	}
+}");
 		}
 	}
 }
