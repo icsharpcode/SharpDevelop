@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			var actual = new QueryExpressionExpander().ExpandQueryExpression(node);
 			AssertCorrect(actual.AstNode, "args.Select(a => int.Parse(a))");
 			dynamic astNode = actual.AstNode;
-			AssertLookupCorrect(actual.RangeVariables, new[] { Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken) });
+			AssertLookupCorrect(actual.RangeVariables, new[] { Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)) });
 			AssertLookupCorrect(actual.Expressions, new[] { Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target), Tuple.Create(new TextLocation(1, 16), actual.AstNode) });
 		}
 
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			var actual = new QueryExpressionExpander().ExpandQueryExpression(node);
 			AssertCorrect(actual.AstNode, "args.Cast<object>().Select(a => int.Parse(a))");
 			dynamic astNode = actual.AstNode;
-			AssertLookupCorrect(actual.RangeVariables, new[] { Tuple.Create(new TextLocation(1, 13), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken) });
+			AssertLookupCorrect(actual.RangeVariables, new[] { Tuple.Create(new TextLocation(1, 13), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)) });
 			AssertLookupCorrect(actual.Expressions, new[] { Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target), Tuple.Create(new TextLocation(1, 23), actual.AstNode) });
 		}
 
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "args.Select(a => new { a, b = int.Parse(a) }).Select(x0 => x0.a + x0.b.ToString())");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 20), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "args.Select(a => new { a, b = int.Parse(a) }).Select(x0 => new { x0, c = x0.b + 1 }).Select(x1 => x1.x0.a + x1.x0.b.ToString() + x1.c.ToString())");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 20), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 				Tuple.Create(new TextLocation(1, 41), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
@@ -97,8 +97,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.SelectMany(i => arr2, (i, j) => i + j)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 1)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -114,9 +114,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "outer.Select(i => new { i, j = F(i) }).SelectMany(x0 => x0.j.Result, (x1, k) => x1.i + x1.j + k)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
-				Tuple.Create(new TextLocation(1, 35), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 35), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 1)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
@@ -133,9 +133,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "outer.Select(i => new { i, j = F(i) }).SelectMany(x0 => x0.j.Result, (x1, k) => new { x1, k }).Select(x2 => new { x2, l = x2.x1.i + x2.x1.j + x2.k }).Select(x3 => x3.x2.x1.i + x3.x2.x1.j + x3.x2.k + x3.l)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
-				Tuple.Create(new TextLocation(1, 35), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 35), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 1)),
 				Tuple.Create(new TextLocation(1, 53), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -154,8 +154,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.SelectMany(i => arr2, (i, j) => new { i, j }).Select(x0 => new { x0, k = x0.i + x0.j }).Select(x1 => x1.x0.i + x1.x0.j + x1.k)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 1)),
 				Tuple.Create(new TextLocation(1, 35), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -173,9 +173,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.SelectMany(i => arr2, (i, j) => new { i, j }).SelectMany(x0 => arr3, (x1, k) => x1.i + x1.j + k)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 1).Parameters, 1).NameToken),
-				Tuple.Create(new TextLocation(1, 36), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 1).Parameters, 1)),
+				Tuple.Create(new TextLocation(1, 36), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 1)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
@@ -192,7 +192,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr.GroupBy(i => i.field)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -207,7 +207,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr.GroupBy(i => i.field, i => i.something)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -222,7 +222,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr.Select(i => new { i, j = F(i) }).GroupBy(x0 => x0.i.field, x1 => x1.i)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 19), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -239,8 +239,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Join(arr2, i => i.keyi, j => j.keyj, (i, j) => i + j)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Arguments, 2).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Arguments, 2).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -256,8 +256,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Join(arr2, i => i.keyi, j => j.keyj, (i, j) => new { i, j }).Select(x0 => new { x0, k = x0.i + x0.j }).Select(x1 => x1.x0.i + x1.x0.j + x1.k)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 2).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 2).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 59), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -275,9 +275,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Select(i => new { i, j = F(i) }).Join(arr2, x0 => x0.j.keyj, k => k.keyk, (x1, k) => x1.i + x1.j + k)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 20), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
-				Tuple.Create(new TextLocation(1, 34), (AstNode)ElementAt(ElementAt(astNode.Arguments, 2).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 34), (AstNode)ElementAt(ElementAt(astNode.Arguments, 2).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
@@ -294,8 +294,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.GroupJoin(arr2, i => i.keyi, j => j.keyj, (i, g) => F(i, g))");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 60), (AstNode)ElementAt(ElementAt(astNode.Arguments, 3).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 1).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 60), (AstNode)ElementAt(ElementAt(astNode.Arguments, 3).Parameters, 1)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -311,8 +311,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.GroupJoin(arr2, i => i.keyi, j => j.keyj, (i, g) => new { i, g }).Select(x0 => new { x0, k = x0.i + x0.g }).Select(x1 => x1.x0.i + x1.x0.g + x1.k)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 60), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 3).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 60), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 3).Parameters, 1)),
 				Tuple.Create(new TextLocation(1, 66), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -330,9 +330,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Select(i => new { i, j = F(i) }).GroupJoin(arr2, x0 => x0.j.keyj, k => k.keyk, (x1, g) => F(x1.i, x1.j, g))");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 20), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
-				Tuple.Create(new TextLocation(1, 73), (AstNode)ElementAt(ElementAt(astNode.Arguments, 3).Parameters, 1).NameToken),
+				Tuple.Create(new TextLocation(1, 73), (AstNode)ElementAt(ElementAt(astNode.Arguments, 3).Parameters, 1)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
@@ -349,7 +349,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Where(i => i > 5).Select(i => i + 1)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
@@ -365,7 +365,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Select(i => new { i, j = i + 1 }).Where(x0 => x0.i > x0.j).Select(x1 => x1.i + x1.j)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 20), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -383,7 +383,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Where(i => i > 5)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -399,7 +399,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Select(i => i)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -414,7 +414,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.OrderBy(i => i.field1)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
@@ -431,7 +431,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.Select(i => new { i, j = i + 1 }).OrderBy(x0 => x0.i + x0.j).Select(x1 => x1.i)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0)),
 				Tuple.Create(new TextLocation(1, 20), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Body.Initializers, 1).NameToken),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
@@ -451,7 +451,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.OrderBy(i => i.field1).ThenBy(i => i.field2)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),
@@ -484,9 +484,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 			AssertCorrect(actual.AstNode, "arr1.SelectMany(i => arr2, (i, j) => i + j).Where(a => a > 5).Select(a => a + 1)");
 			dynamic astNode = actual.AstNode;
 			AssertLookupCorrect(actual.RangeVariables, new[] {
-				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0).NameToken),
-				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 1).NameToken),
-				Tuple.Create(new TextLocation(1, 49), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0).NameToken),
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 0).Parameters, 0)),
+				Tuple.Create(new TextLocation(1, 21), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Target.Target.Arguments, 1).Parameters, 1)),
+				Tuple.Create(new TextLocation(1, 49), (AstNode)ElementAt(ElementAt(astNode.Target.Target.Arguments, 0).Parameters, 0)),
 			});
 			AssertLookupCorrect(actual.Expressions, new[] {
 				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target.Target.Target),

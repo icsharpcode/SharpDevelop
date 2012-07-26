@@ -13,14 +13,14 @@ namespace ICSharpCode.NRefactory.CSharp {
 		/// <summary>
 		/// Maps original range variables to some node in the new tree that represents them.
 		/// </summary>
-		public IDictionary<Identifier, Identifier> RangeVariables { get; private set; }
+		public IDictionary<Identifier, AstNode> RangeVariables { get; private set; }
 
 		/// <summary>
 		/// Maps clauses to method calls. The keys will always be either a <see cref="QueryClause"/> or a <see cref="QueryOrdering"/>
 		/// </summary>
 		public IDictionary<AstNode, Expression> Expressions { get; private set; }
 
-		public QueryExpressionExpansionResult(AstNode astNode, IDictionary<Identifier, Identifier> rangeVariables, IDictionary<AstNode, Expression> expressions) {
+		public QueryExpressionExpansionResult(AstNode astNode, IDictionary<Identifier, AstNode> rangeVariables, IDictionary<AstNode, Expression> expressions) {
 			AstNode = astNode;
 			RangeVariables = rangeVariables;
 			Expressions = expressions;
@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				return null;
 			}
 
-			public IDictionary<Identifier, Identifier> rangeVariables = new Dictionary<Identifier, Identifier>();
+			public IDictionary<Identifier, AstNode> rangeVariables = new Dictionary<Identifier, AstNode>();
 			public IDictionary<AstNode, Expression> expressions = new Dictionary<AstNode, Expression>();
 
 			Dictionary<string, Expression> activeRangeVariableSubstitutions = new Dictionary<string, Expression>();
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				if (currentTransparentType.Count == 1) {
 					var clonedRangeVariable = (Identifier)currentTransparentType[0].Item1.Clone();
 					if (!rangeVariables.ContainsKey(currentTransparentType[0].Item1))
-						rangeVariables[currentTransparentType[0].Item1] = clonedRangeVariable;
+						rangeVariables[currentTransparentType[0].Item1] = param;
 					param.AddChild(clonedRangeVariable, Roles.Identifier);
 				}
 				else {
@@ -219,8 +219,9 @@ namespace ICSharpCode.NRefactory.CSharp {
 						body = AddMemberToCurrentTransparentType(resultParam, queryFromClause.IdentifierToken, new IdentifierExpression(queryFromClause.Identifier), false);
 					}
 
-					var resultSelector = CreateLambda(new[] { resultParam, CreateParameter(clonedIdentifier) }, body);
-					rangeVariables[queryFromClause.IdentifierToken] = clonedIdentifier;
+					var resultSelectorParam2 = CreateParameter(clonedIdentifier);
+					var resultSelector = CreateLambda(new[] { resultParam, resultSelectorParam2 }, body);
+					rangeVariables[queryFromClause.IdentifierToken] = resultSelectorParam2;
 
 					return currentResult.Invoke("SelectMany", innerSelector, resultSelector);
 				}
@@ -244,8 +245,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 				var inExpression = VisitNested(queryJoinClause.InExpression, null);
 				var key1SelectorFirstParam = CreateParameterForCurrentRangeVariable();
 				var key1Selector = CreateLambda(new[] { key1SelectorFirstParam }, VisitNested(queryJoinClause.OnExpression, key1SelectorFirstParam));
-				var key2Param = Identifier.Create(queryJoinClause.JoinIdentifier);
-				var key2Selector = CreateLambda(new[] { CreateParameter(key2Param) }, VisitNested(queryJoinClause.EqualsExpression, null));
+				var key2Param = CreateParameter(Identifier.Create(queryJoinClause.JoinIdentifier));
+				var key2Selector = CreateLambda(new[] { key2Param }, VisitNested(queryJoinClause.EqualsExpression, null));
 
 				var resultSelectorFirstParam = CreateParameterForCurrentRangeVariable();
 
@@ -269,8 +270,8 @@ namespace ICSharpCode.NRefactory.CSharp {
 					if (resultSelectorBody == null)
 						resultSelectorBody = AddMemberToCurrentTransparentType(resultSelectorFirstParam, queryJoinClause.IntoIdentifierToken, new IdentifierExpression(queryJoinClause.IntoIdentifier), false);
 
-					var intoParam = Identifier.Create(queryJoinClause.IntoIdentifier);
-					var resultSelector = CreateLambda(new[] { resultSelectorFirstParam, CreateParameter(intoParam) }, resultSelectorBody);
+					var intoParam = CreateParameter(Identifier.Create(queryJoinClause.IntoIdentifier));
+					var resultSelector = CreateLambda(new[] { resultSelectorFirstParam, intoParam }, resultSelectorBody);
 					rangeVariables[queryJoinClause.IntoIdentifierToken] = intoParam;
 
 					return currentResult.Invoke("GroupJoin", inExpression, key1Selector, key2Selector, resultSelector);
@@ -292,12 +293,19 @@ namespace ICSharpCode.NRefactory.CSharp {
 				return current;
 			}
 
+			bool IsSingleRangeVariable(Expression expr) {
+				if (currentTransparentType.Count > 1)
+					return false;
+				var unpacked = ParenthesizedExpression.UnpackParenthesizedExpression(expr);
+				return expr is IdentifierExpression && ((IdentifierExpression)expr).Identifier == currentTransparentType[0].Item1.Name;
+			}
+
 			public override AstNode VisitQuerySelectClause(QuerySelectClause querySelectClause) {
 				if (eatSelect) {
 					eatSelect = false;
 					return currentResult;
 				}
-				else if (currentTransparentType.Count == 1 && ((QueryExpression)querySelectClause.Parent).Clauses.Count > 2 && querySelectClause.Expression is IdentifierExpression && ((IdentifierExpression)querySelectClause.Expression).Identifier == currentTransparentType[0].Item1.Name) {
+				else if (((QueryExpression)querySelectClause.Parent).Clauses.Count > 2 && IsSingleRangeVariable(querySelectClause.Expression)) {
 					// A simple query that ends with a trivial select should be removed.
 					return currentResult;
 				}
@@ -311,7 +319,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				var param = CreateParameterForCurrentRangeVariable();
 				var keyLambda = CreateLambda(new[] { param }, VisitNested(queryGroupClause.Key, param));
 
-				if (currentTransparentType.Count == 1 && queryGroupClause.Projection is IdentifierExpression && ((IdentifierExpression)queryGroupClause.Projection).Identifier == currentTransparentType[0].Item1.Name) {
+				if (IsSingleRangeVariable(queryGroupClause.Projection)) {
 					// We are grouping by the single active range variable, so we can use the single argument form of GroupBy
 					return currentResult.Invoke("GroupBy", keyLambda);
 				}
