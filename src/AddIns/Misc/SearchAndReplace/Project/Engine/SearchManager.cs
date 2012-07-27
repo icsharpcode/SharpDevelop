@@ -332,12 +332,7 @@ namespace SearchAndReplace
 			
 			public static SearchRegion CreateSearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)
 			{
-				ITextEditor editor = GetActiveTextEditor();
-				if (editor != null) {
-					return new SearchRegion(files, strategy, location);
-				}
-				
-				return null;
+				return new SearchRegion(files, strategy, location);
 			}
 			
 			SearchRegion(FileName[] files, ISearchStrategy strategy, SearchLocation location)
