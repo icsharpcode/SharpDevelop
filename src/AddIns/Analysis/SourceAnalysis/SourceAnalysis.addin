@@ -20,9 +20,6 @@
 	<Path name = "/SharpDevelop/BackendBindings/ProjectOptions/AllManaged">
 		<OptionPanel id          = "SourceAnalysis"
 		             label       = "${res:AddIns.SourceAnalysis.Title}"
-		             class       = "ICSharpCode.SourceAnalysis.old_AnalysisProjectOptionsPanel"/>
-		<OptionPanel id          = "SourceAnalysis"
-		             label       = "${res:AddIns.SourceAnalysis.Title}"
 		             class       = "ICSharpCode.SourceAnalysis.AnalysisProjectOptionsPanel"/>
 	</Path>
 	
