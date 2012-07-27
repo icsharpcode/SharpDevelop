@@ -203,9 +203,11 @@ namespace ICSharpCode.Core
 			if (configDirectory == null)
 				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 				                               applicationName);
-			PropertyService.InitializeService(configDirectory,
-			                                  dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
-			                                  propertiesName);
+			var container = ServiceSingleton.ServiceProvider.GetRequiredService<IServiceContainer>();
+			container.AddService(typeof(IPropertyService), new PropertyServiceImpl(
+				configDirectory,
+				dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
+				propertiesName));
 			ResourceService.InitializeService(Path.Combine(PropertyService.DataDirectory, "resources"));
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}

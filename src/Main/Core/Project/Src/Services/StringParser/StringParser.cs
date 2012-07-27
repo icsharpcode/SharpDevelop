@@ -224,7 +224,7 @@ namespace ICSharpCode.Core
 				defaultValue = propertyName.Substring(pos + 2);
 				propertyName = propertyName.Substring(0, pos);
 			}
-			Properties properties = PropertyService.PropertiesContainer;
+			Properties properties = ServiceSingleton.ServiceProvider.GetRequiredService<IPropertyService>().MainPropertiesContainer;
 			pos = propertyName.IndexOf('/');
 			while (pos >= 0) {
 				properties = properties.NestedProperties(propertyName.Substring(0, pos));

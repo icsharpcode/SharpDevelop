@@ -35,7 +35,6 @@ namespace ICSharpCode.SharpDevelop
 		public static void InitializeForUnitTests()
 		{
 			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
-			PropertyService.InitializeServiceForUnitTests();
 			ServiceSingleton.ServiceProvider = container;
 		}
 		
@@ -79,6 +78,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IMessageService MessageService {
 			get { return GetRequiredService<IMessageService>(); }
+		}
+		
+		public static IPropertyService PropertyService {
+			get { return GetRequiredService<IPropertyService>(); }
 		}
 		
 		public static IEditorControlService EditorControlService {

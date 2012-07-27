@@ -14,50 +14,20 @@ namespace ICSharpCode.Core
 {
 	public static class PropertyService
 	{
-		static string propertyFileName;
-		
-		static string configDirectory;
-		static string dataDirectory;
-		
-		static Properties properties;
-		
-		public static bool Initialized {
-			get { return properties != null; }
+		static IPropertyService Service {
+			get { return ServiceSingleton.ServiceProvider.GetRequiredService<IPropertyService>(); }
 		}
 		
-		/// <summary>
-		/// Initializes the service for unit-testing (reset properties to an empty property container).
-		/// Use <c>SD.InitializeForUnitTests()</c> instead, that initializes the property service and more.
-		/// </summary>
-		public static void InitializeServiceForUnitTests()
-		{
-			properties = null;
-			configDirectory = null;
-			dataDirectory = null;
-			propertyFileName = null;
-			properties = new Properties();
-		}
-
-		public static void InitializeService(string configDirectory, string dataDirectory, string propertiesName)
-		{
-			if (properties != null)
-				throw new InvalidOperationException("Service is already initialized.");
-			PropertyService.configDirectory = configDirectory;
-			PropertyService.dataDirectory = dataDirectory;
-			propertyFileName = propertiesName + ".xml";
-			LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName));
+		static Properties properties {
+			get { return Service.MainPropertiesContainer; }
 		}
 		
 		public static string ConfigDirectory {
-			get {
-				return configDirectory;
-			}
+			get { return Service.ConfigDirectory; }
 		}
 		
 		public static string DataDirectory {
-			get {
-				return dataDirectory;
-			}
+			get { return Service.DataDirectory; }
 		}
 		
 		/// <inheritdoc cref="Properties.Get{T}(string, T)"/>
@@ -88,13 +58,6 @@ namespace ICSharpCode.Core
 		public static bool Contains(string key)
 		{
 			return properties.Contains(key);
-		}
-		
-		/// <summary>
-		/// Gets the main property container.
-		/// </summary>
-		internal static Properties PropertiesContainer {
-			get { return properties; }
 		}
 		
 		/// <inheritdoc cref="Properties.Set{T}(string, T)"/>
@@ -163,47 +126,9 @@ namespace ICSharpCode.Core
 			properties.Remove(key);
 		}
 		
-		static bool LoadPropertiesFromStream(string fileName)
-		{
-			if (!File.Exists(fileName)) {
-				properties = new Properties();
-				return false;
-			}
-			try {
-				using (LockPropertyFile()) {
-					properties = Properties.Load(fileName);
-					return true;
-				}
-			} catch (XmlException ex) {
-				MessageService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
-			}
-			properties = new Properties();
-			return false;
-		}
-		
 		public static void Save()
 		{
-			if (string.IsNullOrEmpty(configDirectory) || string.IsNullOrEmpty(propertyFileName))
-				throw new InvalidOperationException("No file name was specified on service creation");
-			
-			string fileName = Path.Combine(configDirectory, propertyFileName);
-			using (LockPropertyFile()) {
-				properties.Save(fileName);
-			}
-		}
-		
-		/// <summary>
-		/// Acquires an exclusive lock on the properties file so that it can be opened safely.
-		/// </summary>
-		public static IDisposable LockPropertyFile()
-		{
-			Mutex mutex = new Mutex(false, "PropertyServiceSave-30F32619-F92D-4BC0-BF49-AA18BF4AC313");
-			mutex.WaitOne();
-			return new CallbackOnDispose(
-				delegate {
-					mutex.ReleaseMutex();
-					mutex.Close();
-				});
+			Service.Save();
 		}
 		
 		public static event PropertyChangedEventHandler PropertyChanged {

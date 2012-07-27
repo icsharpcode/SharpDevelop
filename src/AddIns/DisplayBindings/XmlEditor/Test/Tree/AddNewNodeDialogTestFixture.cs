@@ -6,9 +6,9 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -36,7 +36,7 @@ namespace XmlEditor.Tests.Tree
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			PropertyService.InitializeServiceForUnitTests();
+			SD.InitializeForUnitTests();
 		}
 		
 		[SetUp]

@@ -122,6 +122,9 @@ namespace ICSharpCode.Core
 		#endregion
 		
 		#region Keys/Contains
+		/// <summary>
+		/// Gets the keys that are in use by this properties container.
+		/// </summary>
 		public IReadOnlyList<string> Keys {
 			get {
 				lock (syncRoot) {
