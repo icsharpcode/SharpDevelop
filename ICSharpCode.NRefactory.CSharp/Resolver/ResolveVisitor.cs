@@ -659,7 +659,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (node.Role == Roles.Variable) {
 					IMember member;
 					if (parsedFile != null) {
-						member = GetMemberFromLocation(node.StartLocation);
+						member = GetMemberFromLocation(node);
 					} else {
 						string name = ((VariableInitializer)node).Name;
 						member = AbstractUnresolvedMember.Resolve(resolver.CurrentTypeResolveContext, entityType, name);
@@ -676,11 +676,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return voidResult;
 		}
 		
-		IMember GetMemberFromLocation(TextLocation location)
+		IMember GetMemberFromLocation(AstNode node)
 		{
 			ITypeDefinition typeDef = resolver.CurrentTypeDefinition;
 			if (typeDef == null)
 				return null;
+			TextLocation location = TypeSystemConvertVisitor.GetStartLocationAfterAttributes(node);
 			return typeDef.GetMembers(
 				delegate (IUnresolvedMember m) {
 					if (m.ParsedFile != parsedFile)
@@ -777,7 +778,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			try {
 				IMember member;
 				if (parsedFile != null) {
-					member = GetMemberFromLocation(memberDeclaration.StartLocation);
+					member = GetMemberFromLocation(memberDeclaration);
 				} else {
 					// Re-discover the method:
 					EntityType entityType = memberDeclaration.EntityType;
@@ -840,7 +841,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			try {
 				IMember member;
 				if (parsedFile != null) {
-					member = GetMemberFromLocation(propertyOrIndexerDeclaration.StartLocation);
+					member = GetMemberFromLocation(propertyOrIndexerDeclaration);
 				} else {
 					// Re-discover the property:
 					string name = propertyOrIndexerDeclaration.Name;
@@ -896,7 +897,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			try {
 				IMember member;
 				if (parsedFile != null) {
-					member = GetMemberFromLocation(eventDeclaration.StartLocation);
+					member = GetMemberFromLocation(eventDeclaration);
 				} else {
 					string name = eventDeclaration.Name;
 					AstType explicitInterfaceAstType = eventDeclaration.PrivateImplementationType;
@@ -1019,7 +1020,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				
 				IMember member = null;
 				if (parsedFile != null) {
-					member = GetMemberFromLocation(enumMemberDeclaration.StartLocation);
+					member = GetMemberFromLocation(enumMemberDeclaration);
 				} else if (resolver.CurrentTypeDefinition != null) {
 					string name = enumMemberDeclaration.Name;
 					member = resolver.CurrentTypeDefinition.GetFields(f => f.Name == name, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault();

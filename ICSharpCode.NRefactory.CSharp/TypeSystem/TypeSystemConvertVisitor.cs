@@ -22,13 +22,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ICSharpCode.NRefactory.CSharp.Analysis;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem.ConstantValues;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 {
@@ -99,12 +96,18 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		{
 			if (node == null || node.IsNull)
 				return DomRegion.Empty;
+			else
+				return MakeRegion(GetStartLocationAfterAttributes(node), node.EndLocation);
+		}
+		
+		internal static TextLocation GetStartLocationAfterAttributes(AstNode node)
+		{
 			AstNode child = node.FirstChild;
 			// Skip attributes and comments between attributes for the purpose of
 			// getting a declaration's region.
 			while (child != null && (child is AttributeSection || child.NodeType == NodeType.Whitespace))
 				child = child.NextSibling;
-			return MakeRegion((child ?? node).StartLocation, node.EndLocation);
+			return (child ?? node).StartLocation;
 		}
 		
 		DomRegion MakeBraceRegion(AstNode node)
