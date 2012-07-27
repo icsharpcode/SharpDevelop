@@ -116,7 +116,8 @@ namespace ICSharpCode.Core
 					return true;
 				}
 			} catch (XmlException ex) {
-				MessageService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
+				var msgService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+				msgService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
 			}
 			properties = new Properties();
 			return false;

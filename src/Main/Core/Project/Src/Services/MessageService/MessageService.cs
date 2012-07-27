@@ -18,19 +18,10 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Shows an exception error.
-		/// </summary>
-		public static void ShowException(Exception ex)
-		{
-			ShowException(ex, null);
-		}
-		
-		/// <summary>
 		/// Shows an error using a message box.
 		/// </summary>
 		public static void ShowError(string message)
 		{
-			LoggingService.Error(message);
 			Service.ShowError(message);
 		}
 		
@@ -42,44 +33,15 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowErrorFormatted(string formatstring, params object[] formatitems)
 		{
-			ShowError(Format(formatstring, formatitems));
+			Service.ShowErrorFormatted(formatstring, formatitems);
 		}
 		
 		/// <summary>
 		/// Shows an exception.
 		/// </summary>
-		public static void ShowException(Exception ex, string message)
+		public static void ShowException(Exception ex, string message = null)
 		{
-			LoggingService.Error(message, ex);
-			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
 			Service.ShowException(ex, message);
-		}
-		
-		/// <summary>
-		/// Shows an exception.
-		/// </summary>
-		public static void ShowHandledException(Exception ex)
-		{
-			ShowHandledException(ex, null);
-		}
-
-		/// <summary>
-		/// Shows an exception.
-		/// </summary>
-		public static void ShowHandledException(Exception ex, string message)
-		{
-			LoggingService.Error(message, ex);
-			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
-			message = GetMessage(message, ex);
-			Service.ShowError(message);
-		}
-		
-		static string GetMessage(string message, Exception ex)
-		{
-			if (message == null) {
-				return ex.Message;
-			}
-			return message + "\r\n\r\n" + ex.Message;
 		}
 		
 		/// <summary>
@@ -99,35 +61,26 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static void ShowWarningFormatted(string formatstring, params object[] formatitems)
 		{
-			ShowWarning(Format(formatstring, formatitems));
+			Service.ShowWarningFormatted(formatstring, formatitems);
 		}
 		
 		/// <summary>
 		/// Asks the user a Yes/No question, using "Yes" as the default button.
 		/// Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
 		/// </summary>
-		public static bool AskQuestion(string question, string caption)
+		public static bool AskQuestion(string question, string caption = null)
 		{
 			return Service.AskQuestion(question, caption);
 		}
 		
 		public static bool AskQuestionFormatted(string caption, string formatstring, params object[] formatitems)
 		{
-			return AskQuestion(Format(formatstring, formatitems), caption);
+			return Service.AskQuestion(StringParser.Format(formatstring, formatitems), caption);
 		}
 		
 		public static bool AskQuestionFormatted(string formatstring, params object[] formatitems)
 		{
-			return AskQuestion(Format(formatstring, formatitems));
-		}
-		
-		/// <summary>
-		/// Asks the user a Yes/No question, using "Yes" as the default button.
-		/// Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
-		/// </summary>
-		public static bool AskQuestion(string question)
-		{
-			return AskQuestion(question, StringParser.Parse("${res:Global.QuestionText}"));
+			return Service.AskQuestion(StringParser.Format(formatstring, formatitems));
 		}
 		
 		/// <summary>
@@ -167,16 +120,12 @@ namespace ICSharpCode.Core
 			return Service.ShowInputBox(caption, dialogText, defaultValue);
 		}
 		
-		static string defaultMessageBoxTitle = "MessageBox";
-		static string productName = "Application Name";
-		
 		/// <summary>
 		/// Gets/Sets the name of the product using ICSharpCode.Core.
 		/// Is used by the string parser as replacement for ${ProductName}.
 		/// </summary>
 		public static string ProductName {
-			get { return productName; }
-			set { productName = value; }
+			get { return Service.ProductName; }
 		}
 		
 		/// <summary>
@@ -184,45 +133,27 @@ namespace ICSharpCode.Core
 		/// by the message service.
 		/// </summary>
 		public static string DefaultMessageBoxTitle {
-			get { return defaultMessageBoxTitle; }
-			set { defaultMessageBoxTitle = value; }
-		}
-		
-		public static void ShowMessage(string message)
-		{
-			ShowMessage(message, DefaultMessageBoxTitle);
+			get { return Service.DefaultMessageBoxTitle; }
 		}
 		
 		public static void ShowMessageFormatted(string formatstring, params object[] formatitems)
 		{
-			ShowMessage(Format(formatstring, formatitems));
+			Service.ShowMessageFormatted(formatstring, null, formatitems);
 		}
 		
 		public static void ShowMessageFormatted(string caption, string formatstring, params object[] formatitems)
 		{
-			ShowMessage(Format(formatstring, formatitems), caption);
+			Service.ShowMessageFormatted(formatstring, caption, formatitems);
 		}
 		
-		public static void ShowMessage(string message, string caption)
+		public static void ShowMessage(string message, string caption = null)
 		{
-			LoggingService.Info(message);
 			Service.ShowMessage(message, caption);
 		}
 		
-		public static string Format(string formatstring, object[] formatitems)
+		public static void ShowHandledException(Exception ex, string message = null)
 		{
-			try {
-				return String.Format(StringParser.Parse(formatstring), formatitems);
-			} catch (FormatException ex) {
-				LoggingService.Warn(ex);
-				
-				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
-				foreach(object formatitem in formatitems) {
-					b.Append("\nItem: ");
-					b.Append(formatitem);
-				}
-				return b.ToString();
-			}
+			Service.ShowHandledException(ex, message);
 		}
 	}
 }

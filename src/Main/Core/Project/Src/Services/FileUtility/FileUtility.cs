@@ -457,7 +457,8 @@ namespace ICSharpCode.Core
 		public static bool TestFileExists(string filename)
 		{
 			if (!File.Exists(filename)) {
-				MessageService.ShowWarning(StringParser.Parse("${res:Fileutility.CantFindFileError}", new StringTagPair("FILE", filename)));
+				var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+				messageService.ShowWarning(StringParser.Parse("${res:Fileutility.CantFindFileError}", new StringTagPair("FILE", filename)));
 				return false;
 			}
 			return true;

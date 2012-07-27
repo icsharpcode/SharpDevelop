@@ -13,6 +13,16 @@ namespace ICSharpCode.Core
 	public interface IMessageService
 	{
 		/// <summary>
+		/// Shows an exception.
+		/// </summary>
+		void ShowException(Exception ex, string message = null);
+		
+		/// <summary>
+		/// Shows an exception.
+		/// </summary>
+		void ShowHandledException(Exception ex, string message = null);
+		
+		/// <summary>
 		/// Shows an error.
 		/// </summary>
 		void ShowError(string message);
@@ -26,20 +36,26 @@ namespace ICSharpCode.Core
 		void ShowErrorFormatted(string formatstring, params object[] formatitems);
 		
 		/// <summary>
-		/// Shows an exception.
-		/// </summary>
-		void ShowException(Exception ex, string message);
-		
-		/// <summary>
 		/// Shows a warning message.
 		/// </summary>
 		void ShowWarning(string message);
 		
 		/// <summary>
+		/// Shows a warning message.
+		/// <paramref name="formatstring"/> is first passed through the
+		/// <see cref="StringParser"/>,
+		/// then through <see cref="string.Format(string, object)"/>, using the formatitems as arguments.
+		/// </summary>
+		void ShowWarningFormatted(string formatstring, params object[] formatitems);
+		
+		void ShowMessage(string message, string caption = null);
+		void ShowMessageFormatted(string formatstring, string caption, params object[] formatitems);
+		
+		/// <summary>
 		/// Asks the user a Yes/No question, using "Yes" as the default button.
 		/// Returns <c>true</c> if yes was clicked, <c>false</c> if no was clicked.
 		/// </summary>
-		bool AskQuestion(string question, string caption);
+		bool AskQuestion(string question, string caption = null);
 		
 		/// <summary>
 		/// Shows a custom dialog.
@@ -57,8 +73,25 @@ namespace ICSharpCode.Core
 		/// <param name="buttontexts">The captions of the buttons.</param>
 		/// <returns>The number of the button that was clicked, or -1 if the dialog was closed  without clicking a button.</returns>
 		int ShowCustomDialog(string caption, string dialogText, int acceptButtonIndex, int cancelButtonIndex, params string[] buttontexts);
+		
+		/// <summary>
+		/// Shows an input box.
+		/// </summary>
+		/// <param name="caption"></param>
+		/// <param name="dialogText"></param>
+		/// <param name="defaultValue"></param>
+		/// <returns></returns>
 		string ShowInputBox(string caption, string dialogText, string defaultValue);
-		void ShowMessage(string message, string caption);
+		
+		/// <summary>
+		/// Gets the default message box title.
+		/// </summary>
+		string DefaultMessageBoxTitle { get; }
+		
+		/// <summary>
+		/// Gets the application product name.
+		/// </summary>
+		string ProductName { get; }
 		
 		/// <summary>
 		/// Show a message informing the user about a save error.

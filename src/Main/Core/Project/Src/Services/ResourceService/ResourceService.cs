@@ -24,8 +24,9 @@ namespace ICSharpCode.Core
 		const string imageResources = "BitmapResources";
 		
 		static string resourceDirectory;
+		static IPropertyService propertyService;
 		
-		public static void InitializeService(string resourceDirectory)
+		public static void InitializeService(string resourceDirectory, IPropertyService propertyService)
 		{
 			if (ResourceService.resourceDirectory != null)
 				throw new InvalidOperationException("Service is already initialized.");
@@ -33,18 +34,18 @@ namespace ICSharpCode.Core
 				throw new ArgumentNullException("resourceDirectory");
 			
 			ResourceService.resourceDirectory = resourceDirectory;
-			
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
+			ResourceService.propertyService = propertyService;
+			propertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
 			LoadLanguageResources(ResourceService.Language);
 		}
 		
 		public static string Language {
 			get {
-				return PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
+				return propertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
 			}
 			set {
 				if (Language != value) {
-					PropertyService.Set(uiLanguageProperty, value);
+					propertyService.Set(uiLanguageProperty, value);
 				}
 			}
 		}

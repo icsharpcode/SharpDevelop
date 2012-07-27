@@ -92,8 +92,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return;
 			}
 			string name = listBox.SelectedItem.ToString();
-			if (MessageService.AskQuestionFormatted("${res:Dialog.EditAvailableConfigurationsDialog.ConfirmRemoveConfigurationOrPlatform}",
-			                                        new string[] { name }))
+			if (MessageService.AskQuestion(StringParser.Format(
+				"${res:Dialog.EditAvailableConfigurationsDialog.ConfirmRemoveConfigurationOrPlatform}", name)))
 			{
 				if (project != null) {
 					Remove(project, name, editPlatforms);

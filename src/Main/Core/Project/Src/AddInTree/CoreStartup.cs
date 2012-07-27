@@ -97,8 +97,6 @@ namespace ICSharpCode.Core
 				throw new ArgumentNullException("applicationName");
 			this.applicationName = applicationName;
 			propertiesName = applicationName + "Properties";
-			MessageService.DefaultMessageBoxTitle = applicationName;
-			MessageService.ProductName = applicationName;
 		}
 		
 		/// <summary>
@@ -189,7 +187,7 @@ namespace ICSharpCode.Core
 					command.Run();
 				} catch (Exception ex) {
 					// allow startup to continue if some commands fail
-					MessageService.ShowException(ex);
+					ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>().ShowException(ex);
 				}
 			}
 		}
@@ -204,11 +202,12 @@ namespace ICSharpCode.Core
 				configDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 				                               applicationName);
 			var container = ServiceSingleton.ServiceProvider.GetRequiredService<IServiceContainer>();
-			container.AddService(typeof(IPropertyService), new PropertyServiceImpl(
+			var propertyService = new PropertyServiceImpl(
 				configDirectory,
 				dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
-				propertiesName));
-			ResourceService.InitializeService(Path.Combine(PropertyService.DataDirectory, "resources"));
+				propertiesName);
+			container.AddService(typeof(IPropertyService), propertyService);
+			ResourceService.InitializeService(Path.Combine(propertyService.DataDirectory, "resources"), propertyService);
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}
 		

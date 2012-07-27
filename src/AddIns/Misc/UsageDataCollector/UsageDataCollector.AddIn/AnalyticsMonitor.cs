@@ -132,7 +132,7 @@ namespace ICSharpCode.UsageDataCollector
 					}
 					
 					if (session != null) {
-						session.OnException = MessageService.ShowException;
+						session.OnException = ex => MessageService.ShowException(ex);
 						session.AddEnvironmentData(appEnvironmentProperties);
 						
 						sessionOpened = true;

@@ -10,6 +10,8 @@ namespace ICSharpCode.SharpDevelop.Logging
 	{
 		public override void ShowException(Exception ex, string message)
 		{
+			SD.LoggingService.Error(message, ex);
+			SD.LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
 			if (ex != null)
 				ExceptionBox.ShowErrorBox(ex, message);
 			else

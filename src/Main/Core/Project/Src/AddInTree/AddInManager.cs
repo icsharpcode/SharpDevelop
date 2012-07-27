@@ -184,9 +184,10 @@ namespace ICSharpCode.Core
 					Directory.Delete(targetDir, true);
 				} catch (Exception ex) {
 					disabled.Add(addInName);
-					MessageService.ShowError("Error removing " + addInName + ":\n" +
+					var messageService = ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>();
+					messageService.ShowError("Error removing " + addInName + ":\n" +
 					                         ex.Message + "\nThe AddIn will be " +
-					                         "removed on the next start of " + MessageService.ProductName +
+					                         "removed on the next start of " + messageService.ProductName +
 					                         " and is disabled for now.");
 					return false;
 				}

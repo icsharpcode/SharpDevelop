@@ -19,6 +19,7 @@ namespace ICSharpCode.Core.Implementation
 			if (writer == null)
 				throw new ArgumentNullException("writer");
 			this.writer = writer;
+			this.DefaultMessageBoxTitle = this.ProductName = "SharpDevelop";
 		}
 		
 		public void ShowError(string message)
@@ -26,13 +27,23 @@ namespace ICSharpCode.Core.Implementation
 			writer.WriteLine(message);
 		}
 		
-		public void ShowException(Exception ex, string message)
+		public void ShowException(Exception ex, string message = null)
 		{
 			if (message != null) {
 				writer.WriteLine(message);
 			}
 			if (ex != null) {
 				writer.WriteLine(ex.ToString());
+			}
+		}
+		
+		public void ShowHandledException(Exception ex, string message = null)
+		{
+			if (message != null) {
+				writer.WriteLine(message);
+			}
+			if (ex != null) {
+				writer.WriteLine(ex.Message);
 			}
 		}
 		
@@ -81,7 +92,20 @@ namespace ICSharpCode.Core.Implementation
 		
 		public void ShowErrorFormatted(string formatstring, params object[] formatitems)
 		{
-			writer.WriteLine(MessageService.Format(formatstring, formatitems));
+			writer.WriteLine(StringParser.Format(formatstring, formatitems));
 		}
+		
+		public void ShowWarningFormatted(string formatstring, params object[] formatitems)
+		{
+			writer.WriteLine(StringParser.Format(formatstring, formatitems));
+		}
+		
+		public void ShowMessageFormatted(string formatstring, string caption, params object[] formatitems)
+		{
+			writer.WriteLine(StringParser.Format(formatstring, formatitems));
+		}
+		
+		public string DefaultMessageBoxTitle { get; set; }
+		public string ProductName { get; set; }
 	}
 }

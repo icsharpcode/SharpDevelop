@@ -143,7 +143,7 @@ namespace ICSharpCode.Core
 				if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
 					return DateTime.Now.ToShortTimeString();
 				if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
-					return MessageService.ProductName;
+					return ServiceSingleton.ServiceProvider.GetRequiredService<IMessageService>().ProductName;
 				if (propertyName.Equals("GUID", StringComparison.OrdinalIgnoreCase))
 					return Guid.NewGuid().ToString().ToUpperInvariant();
 				if (propertyName.Equals("USER", StringComparison.OrdinalIgnoreCase))
@@ -151,7 +151,7 @@ namespace ICSharpCode.Core
 				if (propertyName.Equals("Version", StringComparison.OrdinalIgnoreCase))
 					return RevisionClass.FullVersion;
 				if (propertyName.Equals("CONFIGDIRECTORY", StringComparison.OrdinalIgnoreCase))
-					return PropertyService.ConfigDirectory;
+					return ServiceSingleton.ServiceProvider.GetRequiredService<IPropertyService>().ConfigDirectory;
 				
 				foreach (IStringTagProvider provider in stringTagProviders) {
 					string result = provider.ProvideString(propertyName, customTags);
@@ -204,6 +204,26 @@ namespace ICSharpCode.Core
 						else
 							return null;
 				}
+			}
+		}
+		
+		/// <summary>
+		/// Applies the StringParser to the formatstring; and then calls <c>string.Format</c> on the result:
+		/// <code>return string.Format(StringParser.Parse(formatstring), formatitems);</code>
+		/// </summary>
+		public static string Format(string formatstring, params object[] formatitems)
+		{
+			try {
+				return String.Format(StringParser.Parse(formatstring), formatitems);
+			} catch (FormatException ex) {
+				LoggingService.Warn(ex);
+				
+				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
+				foreach(object formatitem in formatitems) {
+					b.Append("\nItem: ");
+					b.Append(formatitem);
+				}
+				return b.ToString();
 			}
 		}
 		
