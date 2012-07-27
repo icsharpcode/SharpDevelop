@@ -18,7 +18,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the selected class in the test tree view.
 		/// </summary>
-		ITypeDefinition SelectedClass {get;}
+		TestClass SelectedClass {get;}
 		
 		/// <summary>
 		/// Gets the selected project for the selected node

@@ -71,7 +71,7 @@ namespace ICSharpCode.UnitTesting
 		/// <summary>
 		/// Gets the class of the currently selected tree node.
 		/// </summary>
-		public ITypeDefinition SelectedClass {
+		public TestClass SelectedClass {
 			get {
 				ClassUnitTestNode classNode = SelectedItem as ClassUnitTestNode;
 				if (classNode == null) {
@@ -79,7 +79,7 @@ namespace ICSharpCode.UnitTesting
 				}
 				
 				if (classNode != null) {
-					return classNode.TestClass.Resolve();
+					return classNode.TestClass;
 				}
 				return null;
 			}

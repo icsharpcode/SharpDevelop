@@ -64,6 +64,9 @@ namespace ICSharpCode.UnitTesting
 			ProjectService.ProjectAdded += ProjectService_ProjectAdded;
 			ProjectService.ProjectRemoved += ProjectService_ProjectRemoved;
 			SD.ParserService.LoadSolutionProjectsThread.Finished += SD_ParserService_LoadSolutionProjectsThread_Finished;
+			// TODO: get rid of static service.
+			// We don't even know for sure that we're on the main thread when the cctor runs
+			SD_ParserService_LoadSolutionProjectsThread_Finished(null, null);
 		}
 
 		static void SD_ParserService_LoadSolutionProjectsThread_Finished(object sender, EventArgs e)

@@ -46,8 +46,8 @@ namespace ICSharpCode.UnitTesting
 		public static ITypeDefinition GetClass(object caller)
 		{
 			ITestTreeView testTreeView = caller as ITestTreeView;
-			if (testTreeView != null) {
-				return testTreeView.SelectedClass;
+			if (testTreeView != null && testTreeView.SelectedClass != null) {
+				return testTreeView.SelectedClass.Resolve();
 			}
 //			ClassNode classNode = caller as ClassNode;
 //			if (classNode != null)

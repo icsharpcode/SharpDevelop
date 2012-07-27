@@ -65,6 +65,8 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
+			if (type.IsAbstract)
+				return false;
 			var testAttribute = NUnitTestFramework.testAttribute.Resolve(compilation.TypeResolveContext);
 			var testCaseAttribute = NUnitTestFramework.testCaseAttribute.Resolve(compilation.TypeResolveContext);
 			return type.Methods.Any(m => m.Attributes.Any(a => a.AttributeType.Equals(testAttribute) || a.AttributeType.Equals(testCaseAttribute)));

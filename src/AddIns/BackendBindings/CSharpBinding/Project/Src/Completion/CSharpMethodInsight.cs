@@ -8,6 +8,7 @@ using System.Linq;
 
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
@@ -20,6 +21,7 @@ namespace CSharpBinding.Completion
 		readonly CSharpCompletionBinding binding;
 		readonly ITextEditor editor;
 		IInsightWindow window;
+		CSharpInsightItem initiallySelectedItem;
 		
 		public CSharpMethodInsight(CSharpCompletionBinding binding, ITextEditor editor, int startOffset, IEnumerable<CSharpInsightItem> items)
 		{
@@ -38,6 +40,8 @@ namespace CSharpBinding.Completion
 			window.StartOffset = startOffset;
 			// closing the window at the end of the parameter list is handled by the CaretPositionChanged event
 			window.EndOffset = editor.Document.TextLength;
+			if (initiallySelectedItem != null)
+				window.SelectedItem = initiallySelectedItem;
 			window.CaretPositionChanged += window_CaretPositionChanged;
 		}
 		
@@ -65,6 +69,15 @@ namespace CSharpBinding.Completion
 			if (parameterIndex < 0 && window != null) {
 				window.Close();
 			} else {
+				if (window == null || parameterIndex > ((CSharpInsightItem)window.SelectedItem).Method.Parameters.Count) {
+					var newItem = items.FirstOrDefault(i => parameterIndex <= i.Method.Parameters.Count);
+					if (newItem != null) {
+						if (window != null)
+							window.SelectedItem = newItem;
+						else
+							initiallySelectedItem = newItem;
+					}
+				}
 				if (parameterIndex > 0)
 					parameterIndex--; // NR returns 1-based parameter index
 				foreach (var item in items)

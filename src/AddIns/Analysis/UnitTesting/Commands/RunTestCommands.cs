@@ -531,7 +531,7 @@ namespace ICSharpCode.UnitTesting
 			get { return null; }
 		}
 		
-		public ITypeDefinition SelectedClass {
+		public TestClass SelectedClass {
 			get { return null; }
 		}
 		

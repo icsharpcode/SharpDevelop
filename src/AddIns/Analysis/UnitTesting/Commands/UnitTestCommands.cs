@@ -57,33 +57,26 @@ namespace ICSharpCode.UnitTesting
 		{
 			ITestTreeView treeView = Owner as ITestTreeView;
 			if (treeView != null) {
-				IMethod method = treeView.SelectedMethod.Resolve();
-				ITypeDefinition c = treeView.SelectedClass;
+				var method = treeView.SelectedMethod;
+				var c = treeView.SelectedClass;
 				if (method != null) {
-					GotoMember(method);
+					GotoMember(method.Resolve());
 				} else if (c != null) {
-					GotoClass(c);
+					GotoClass(c.Resolve());
 				}
 			}
 		}
 		
 		void GotoMember(IMember member)
 		{
-			GotoFilePosition(member.Region);
+			if (member != null)
+				NavigationService.NavigateTo(member);
 		}
 		
 		void GotoClass(ITypeDefinition c)
 		{
-			GotoFilePosition(c.Region);
-		}
-		
-		void GotoFilePosition(DomRegion filePosition)
-		{
-			if (filePosition.IsEmpty) {
-				fileService.OpenFile(new FileName(filePosition.FileName));
-			} else {
-				fileService.JumpToFilePosition(new FileName(filePosition.FileName), filePosition.BeginLine, filePosition.BeginColumn);
-			}
+			if (c != null)
+				NavigationService.NavigateTo(c);
 		}
 	}
 	
