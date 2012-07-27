@@ -159,7 +159,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					var initializerPath = InitializerPath.FromResolveResult(argumentLocalResolveResult);
 					if (initializerPath == null || !initializers.ContainsKey(initializerPath))
 						return false;
-					tuple.Elements.Add(initializers[initializerPath]);
+					// Add a clone, since we do not yet know if this is where the initializer will be used
+					var initializerClone = initializers[initializerPath].Clone();
+					tuple.Elements.Add(initializerClone);
 				} else {
 					tuple.Elements.Add(argument.Clone());
 				}
@@ -167,6 +169,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			ReplacementNodeHelper.AddReplacementAnnotation(tuple, expressionStatement);
 
 			var targetPath = InitializerPath.FromResolveResult(targetResult);
+			if (targetPath == null || !initializers.ContainsKey(targetPath))
+				return false;
 			InsertImplicitInitializersForPath(targetPath);
 			var targetInitializer = initializers [targetPath];
 			AddToInitializer(targetInitializer, tuple);
@@ -196,12 +200,14 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			var rightResolveResult = context.Resolve(initializer) as LocalResolveResult;
 			if (rightResolveResult != null) {
 				var rightPath = InitializerPath.FromResolveResult(rightResolveResult);
-				var rightInitializer = initializers [rightPath];
-				if (rightInitializer != null) {
-					rightInitializer.AddAnnotation(new ReplacementNodeAnnotation() { ReplacedNode = node });
+				if (rightPath != null && initializers.ContainsKey(rightPath)) {
+					var rightInitializer = initializers [rightPath];
+					ReplacementNodeHelper.AddReplacementAnnotation(rightInitializer, node);
 					initializers.Remove(rightPath);
 					initializers [variablePath] = rightInitializer;
-					mainInitializerPath = variablePath;
+					if (rightPath == mainInitializerPath) {
+						mainInitializerPath = variablePath;
+					}
 				}
 			} else {
 				initializers [variablePath] = ReplacementNodeHelper.CloneWithReplacementAnnotation(initializer, node);
@@ -223,7 +229,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			var rightResolveResult = context.Resolve(right) as LocalResolveResult;
 			var leftResolveResult = context.Resolve(left);
-			var leftPath = InitializerPath.FromResolveResult(leftResolveResult);
 			Expression initializer;
 			if (rightResolveResult != null) {
 				var rightPath = InitializerPath.FromResolveResult(rightResolveResult);
@@ -234,6 +239,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				}
 			} else {
 				initializer = right.Clone();
+			}
+			var leftPath = InitializerPath.FromResolveResult(leftResolveResult);
+			if (leftPath == null) {
+				return false;
 			}
 			// Move replacement annotations over, in case this is the second assignment
 			// to the same variable.

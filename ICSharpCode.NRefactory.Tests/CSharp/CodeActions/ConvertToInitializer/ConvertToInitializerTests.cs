@@ -114,14 +114,14 @@ class TestClass
 }", baseText + @"
 		var tc0 = new TestClass();
 		var collection = new System.Collections.Generic.Dictionary<string> () {
-			{""string1"", new TestClass() { Property = ""tc1""}},
-			{""string2"", new TestClass() { Property = ""tc2""}}
+			{""string1"", new TestClass() { Property = ""tc1"" }},
+			{""string2"", new TestClass() { Property = ""tc2"" }}
 		};
 		collection.Add(""string0"", tc0);
 	}
 }");
 		}
-
+		
 		[Test]
 		public void CollectionOfObjects()
 		{
@@ -148,6 +148,25 @@ class TestClass
 				}
 			}
 		};
+	}
+}");
+		}
+		
+		[Test]
+		public void UnknownTargetForAdd()
+		{
+			Test<ConvertToInitializerAction>(baseText + @"
+		var collection = new System.Collections.Generic.List<string> ();
+		var item $= new TestClass ();
+		item.Property = ""Value1"";
+		collection.Add(item);
+	}
+}", baseText + @"
+		var collection = new System.Collections.Generic.List<string> ();
+		var item = new TestClass() {
+			Property = ""Value1""
+		};
+		collection.Add(item);
 	}
 }");
 		}
@@ -479,10 +498,9 @@ class TestClass
 			Nested = new TestClass()
 		};
 	}
-}"
-			);
+}");
 		}
-
+		
 		[Test]
 		public void HandlesAssignmentToFinalVariable()
 		{
@@ -496,8 +514,26 @@ class TestClass
 			Property = ""Value""
 		};
 	}
-}"
-			);
+}");
+		}
+		
+		[Test]
+		public void FinalVariableAssignmentOfOtherInitializer()
+		{
+			Test<ConvertToInitializerAction>(baseText + @"
+		var tc $= new TestClass ();
+		tc.Property = ""Value"";
+		var _variable = new TestClass ();
+		var variable = _variable;
+	}
+}", baseText + @"
+		var tc = new TestClass () {
+			Property = ""Value""
+		};
+		var _variable = new Test$Class ();
+		var variable = _variable;
+	}
+}");
 		}
 
 		[Test]
