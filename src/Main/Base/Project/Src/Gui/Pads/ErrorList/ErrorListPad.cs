@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			properties = PropertyService.NestedProperties("ErrorListPad");
 			
 			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			SD.ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);

@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.displayedTokens = new Dictionary<string, bool>();
 			
 			RedrawContent();
-			ResourceService.LanguageChanged += delegate { RedrawContent(); };
+			SD.ResourceService.LanguageChanged += delegate { RedrawContent(); };
 			
 			InitializeToolStrip();
 

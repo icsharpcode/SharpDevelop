@@ -62,8 +62,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			
 			startup.StartCoreServices();
 			Assembly exe = Assembly.Load(properties.ResourceAssemblyName);
-			ResourceService.RegisterNeutralStrings(new ResourceManager("ICSharpCode.SharpDevelop.Resources.StringResources", exe));
-			ResourceService.RegisterNeutralImages(new ResourceManager("ICSharpCode.SharpDevelop.Resources.BitmapResources", exe));
+			SD.ResourceService.RegisterNeutralStrings(new ResourceManager("ICSharpCode.SharpDevelop.Resources.StringResources", exe));
+			SD.ResourceService.RegisterNeutralImages(new ResourceManager("ICSharpCode.SharpDevelop.Resources.BitmapResources", exe));
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
 			MenuCommand.KnownCommandCreator = CreateICommandForWPFCommand;
@@ -181,8 +181,9 @@ namespace ICSharpCode.SharpDevelop.Sda
 				LoggingService.Info("Unloading services...");
 				try {
 					WorkbenchSingleton.OnWorkbenchUnloaded();
+					var propertyService = SD.PropertyService;
 					((IDisposable)SD.Services).Dispose(); // dispose all services
-					PropertyService.Save();
+					propertyService.Save();
 				} catch (Exception ex) {
 					LoggingService.Warn("Exception during unloading", ex);
 					if (exception == null) {

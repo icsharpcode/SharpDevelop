@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
@@ -82,6 +83,10 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static IPropertyService PropertyService {
 			get { return GetRequiredService<IPropertyService>(); }
+		}
+		
+		public static Core.IResourceService ResourceService {
+			get { return GetRequiredService<Core.IResourceService>(); }
 		}
 		
 		public static IEditorControlService EditorControlService {

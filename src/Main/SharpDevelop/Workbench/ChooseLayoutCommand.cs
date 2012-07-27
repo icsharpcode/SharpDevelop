@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		public ChooseLayoutCommand()
 		{
 			LayoutConfiguration.LayoutChanged += new EventHandler(LayoutChanged);
-			ResourceService.LanguageChanged += new EventHandler(ResourceService_LanguageChanged);
+			SD.ResourceService.LanguageChanged += new EventHandler(ResourceService_LanguageChanged);
 		}
 
 		void ResourceService_LanguageChanged(object sender, EventArgs e)

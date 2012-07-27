@@ -17,13 +17,15 @@ namespace ICSharpCode.Core.Presentation
 	public static class PresentationResourceService
 	{
 		static readonly Dictionary<string, BitmapSource> bitmapCache = new Dictionary<string, BitmapSource>();
+		static readonly IResourceService resourceService;
 		
 		static PresentationResourceService()
 		{
-			ResourceService.ClearCaches += ResourceService_ClearCaches;
+			resourceService = ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>();
+			resourceService.LanguageChanged += OnLanguageChanged;
 		}
 		
-		static void ResourceService_ClearCaches(object sender, EventArgs e)
+		static void OnLanguageChanged(object sender, EventArgs e)
 		{
 			lock (bitmapCache) {
 				bitmapCache.Clear();
@@ -59,11 +61,13 @@ namespace ICSharpCode.Core.Presentation
 		/// </exception>
 		public static BitmapSource GetBitmapSource(string name)
 		{
+			if (resourceService == null)
+				throw new ArgumentNullException("resourceService");
 			lock (bitmapCache) {
 				BitmapSource bs;
 				if (bitmapCache.TryGetValue(name, out bs))
 					return bs;
-				System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)ResourceService.GetImageResource(name);
+				System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)resourceService.GetImageResource(name);
 				if (bmp == null) {
 					throw new ResourceNotFoundException(name);
 				}

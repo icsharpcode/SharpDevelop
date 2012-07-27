@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			this.dockLayout = dockLayout;
 			viewContents = new ViewContentCollection(this);
 			
-			ResourceService.LanguageChanged += OnTabPageTextChanged;
+			SD.ResourceService.LanguageChanged += OnTabPageTextChanged;
 		}
 		
 		protected override void FocusContent()
@@ -284,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 		
 		void Dispose()
 		{
-			ResourceService.LanguageChanged -= OnTabPageTextChanged;
+			SD.ResourceService.LanguageChanged -= OnTabPageTextChanged;
 			// DetachContent must be called before the controls are disposed
 			List<IViewContent> viewContents = this.ViewContents.ToList();
 			this.ViewContents.Clear();

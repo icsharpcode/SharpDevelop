@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static void ValidateLanguage()
 		{
-			ResourceService.Language = GetLanguage(ResourceService.Language).Code;
+			SD.ResourceService.Language = GetLanguage(SD.ResourceService.Language).Code;
 		}
 	}
 }

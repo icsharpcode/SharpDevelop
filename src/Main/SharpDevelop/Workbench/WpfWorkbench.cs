@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			
 			requerySuggestedEventHandler = new EventHandler(CommandManager_RequerySuggested);
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
-			ResourceService.LanguageChanged += OnLanguageChanged;
+			SD.ResourceService.LanguageChanged += OnLanguageChanged;
 			
 			SD.StatusBar.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}

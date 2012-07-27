@@ -6,6 +6,7 @@ using System.ComponentModel;
 using ICSharpCode.AvalonEdit.Search;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -23,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public SearchPanelLocalization()
 		{
-			ResourceService.LanguageChanged += delegate { PropertiesChanged(); };
+			SD.ResourceService.LanguageChanged += delegate { PropertiesChanged(); };
 		}
 		
 		public override string ErrorText {

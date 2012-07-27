@@ -12,6 +12,10 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
+		/// <summary>
+	/// Compatibility class; forwards calls to the IPropertyService.
+	/// TODO: Remove
+	/// </summary>
 	public static class PropertyService
 	{
 		static IPropertyService Service {

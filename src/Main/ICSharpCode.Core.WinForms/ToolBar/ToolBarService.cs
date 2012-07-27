@@ -74,17 +74,18 @@ namespace ICSharpCode.Core.WinForms
 		}
 		
 		class LanguageChangeWatcher {
+			readonly IResourceService resourceService = ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>();
 			ToolStrip toolStrip;
 			public LanguageChangeWatcher(ToolStrip toolStrip) {
 				this.toolStrip = toolStrip;
 				toolStrip.Disposed += Disposed;
-				ResourceService.LanguageChanged += OnLanguageChanged;
+				resourceService.LanguageChanged += OnLanguageChanged;
 			}
 			void OnLanguageChanged(object sender, EventArgs e) {
 				ToolbarService.UpdateToolbarText(toolStrip);
 			}
 			void Disposed(object sender, EventArgs e) {
-				ResourceService.LanguageChanged -= OnLanguageChanged;
+				resourceService.LanguageChanged -= OnLanguageChanged;
 			}
 		}
 		

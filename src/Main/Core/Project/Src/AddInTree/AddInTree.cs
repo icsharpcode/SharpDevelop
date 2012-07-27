@@ -234,14 +234,14 @@ namespace ICSharpCode.Core
 				{
 					string path = Path.Combine(addInRoot, bitmapResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
-					ResourceService.RegisterNeutralImages(resourceManager);
+					ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>().RegisterNeutralImages(resourceManager);
 				}
 				
 				foreach(string stringResource in addIn.StringResources)
 				{
 					string path = Path.Combine(addInRoot, stringResource);
 					ResourceManager resourceManager = ResourceManager.CreateFileBasedResourceManager(Path.GetFileNameWithoutExtension(path), Path.GetDirectoryName(path), null);
-					ResourceService.RegisterNeutralStrings(resourceManager);
+					ServiceSingleton.ServiceProvider.GetRequiredService<IResourceService>().RegisterNeutralStrings(resourceManager);
 				}
 			}
 			addIns.Add(addIn);
