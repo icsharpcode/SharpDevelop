@@ -12,7 +12,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace MattEverson.SourceAnalysis
+namespace ICSharpCode.SourceAnalysis
 {
 	public partial class AnalysisProjectOptions
 	{

@@ -9,7 +9,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace MattEverson.SourceAnalysis {
+namespace ICSharpCode.SourceAnalysis {
     public class old_AnalysisProjectOptionsPanel : AbstractXmlFormsProjectOptionPanel {
 		
 		public override void LoadPanelContents() {

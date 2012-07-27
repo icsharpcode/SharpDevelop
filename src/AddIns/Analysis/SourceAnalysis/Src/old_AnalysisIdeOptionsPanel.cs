@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace MattEverson.SourceAnalysis
+namespace ICSharpCode.SourceAnalysis
 {
 	/// <summary>
 	/// Option panel to choose the StyleCop path from.
@@ -19,7 +19,7 @@ namespace MattEverson.SourceAnalysis
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("MattEverson.SourceAnalysis.Resources.old_AnalysisIdeOptionPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.SourceAnalysis.Resources.old_AnalysisIdeOptionPanel.xfrm"));
 			
 			ShowStatus();
 			Get<Button>("FindStyleCopPath").Click += FindStyleCopPathClick;

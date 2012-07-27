@@ -20,7 +20,7 @@ using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace MattEverson.SourceAnalysis
+namespace ICSharpCode.SourceAnalysis
 {
 	/// <summary>
 	/// Interaction logic for AnalysisIdeOptionsPanelXaml.xaml

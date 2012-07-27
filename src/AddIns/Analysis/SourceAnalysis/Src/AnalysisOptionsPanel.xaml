@@ -1,5 +1,5 @@
 <optionpanels:ProjectOptionPanel
-	x:Class="MattEverson.SourceAnalysis.AnalysisProjectOptionsPanel"
+	x:Class="ICSharpCode.SourceAnalysis.AnalysisProjectOptionsPanel"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop"
