@@ -104,5 +104,9 @@ namespace ICSharpCode.SharpDevelop
 		public static IGlobalAssemblyCacheService GlobalAssemblyCache {
 			get { return GetRequiredService<IGlobalAssemblyCacheService>(); }
 		}
+		
+		public static IAddInTree AddInTree {
+			get { return GetRequiredService<IAddInTree>(); }
+		}
 	}
 }

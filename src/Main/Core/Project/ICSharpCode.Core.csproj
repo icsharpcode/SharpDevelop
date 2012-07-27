@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddInTree\AddInTreeImpl.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddIn.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddInLoadException.cs" />
     <Compile Include="Src\AddInTree\AddIn\AssemblyLocator.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddInTree.cs" />
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
+    <Compile Include="Src\AddInTree\IAddInTree.cs" />
     <Compile Include="Src\AddInTree\TopologicalSort.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
     <Compile Include="Src\CoreException.cs" />
@@ -118,7 +120,6 @@
     <Compile Include="Src\Services\MessageService\MessageService.cs" />
     <Compile Include="Src\Services\PropertyService\Properties.cs" />
     <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
-    <Compile Include="Src\Services\RegistryService\RegistryService.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
     <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
     <Compile Include="Src\Services\ServiceSingleton.cs" />
@@ -146,7 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
-    <Folder Include="Src\Services\RegistryService" />
     <Folder Include="Src\Services\ResourceService" />
     <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
       <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>

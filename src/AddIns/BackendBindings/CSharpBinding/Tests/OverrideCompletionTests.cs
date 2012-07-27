@@ -3,10 +3,15 @@
 
 using CSharpBinding.Completion;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using System;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Parser;
 using NUnit.Framework;
 using Rhino.Mocks;
 
@@ -16,7 +21,6 @@ namespace CSharpBinding.Tests
 	/// Tests code completion after the 'override' keyword
 	/// </summary>
 	[TestFixture]
-	[Ignore("Override completion is not yet implemented")]
 	public class OverrideCompletionTests
 	{
 		string programStart = @"using System;
@@ -40,13 +44,22 @@ class DerivedClass : BaseClass {
 		MockTextEditor textEditor;
 		bool keyPressResult;
 		
+		static readonly IUnresolvedAssembly Corlib = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+		
 		[SetUp]
 		public void SetUp()
 		{
+			SD.InitializeForUnitTests();
 			textEditor = new MockTextEditor();
 			textEditor.Document.Text = programStart + "override " + programEnd;
 			textEditor.Caret.Offset = programStart.Length + "override ".Length;
-			textEditor.CreateParseInformation();
+			var parseInfo = textEditor.CreateParseInformation();
+			var pc = new CSharpProjectContent().UpdateProjectContent(null, parseInfo.ParsedFile);
+			pc = pc.AddAssemblyReferences(new[] { Corlib });
+			var compilation = pc.CreateCompilation();
+			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStub<IParserService>());
+			SD.ParserService.Stub(p => p.GetCachedParseInformation(textEditor.FileName)).Return(parseInfo);
+			SD.ParserService.Stub(p => p.GetCompilationForFile(textEditor.FileName)).Return(compilation);
 			CSharpCompletionBinding completion = new CSharpCompletionBinding();
 			keyPressResult = completion.HandleKeyPressed(textEditor, ' ');
 		}
@@ -72,7 +85,7 @@ class DerivedClass : BaseClass {
 			Assert.AreEqual(
 				new string[] {
 					"AbstractEvent", "AbstractMethod()", "AbstractProperty",
-					"Equals(obj : Object)", "GetHashCode()", "ToString()",
+					"Equals(object obj)", "GetHashCode()", "ToString()",
 					"VirtualEvent", "VirtualMethod()", "VirtualProperty"
 				}, itemNames);
 		}
@@ -83,6 +96,7 @@ class DerivedClass : BaseClass {
 		}
 		
 		[Test]
+		[Ignore("Implement formatter")]
 		public void OverrideAbstractMethod()
 		{
 			CompletionContext context = new CompletionContext();
@@ -96,11 +110,12 @@ class DerivedClass : BaseClass {
 				"  {\n" +
 				"    throw new NotImplementedException();\n" +
 				"  }" + programEnd),
-				Normalize(textEditor.Document.Text)
-			);
+			                Normalize(textEditor.Document.Text)
+			               );
 		}
 		
 		[Test]
+		[Ignore("Implement formatter")]
 		public void OverrideVirtualMethod()
 		{
 			CompletionContext context = new CompletionContext();
@@ -114,11 +129,12 @@ class DerivedClass : BaseClass {
 				"  {\n" +
 				"    base.VirtualMethod();\n" +
 				"  }" + programEnd),
-				Normalize(textEditor.Document.Text)
-			);
+			                Normalize(textEditor.Document.Text)
+			               );
 		}
 		
 		[Test]
+		[Ignore("Implement formatter")]
 		public void OverrideVirtualProperty()
 		{
 			CompletionContext context = new CompletionContext();
@@ -132,8 +148,8 @@ class DerivedClass : BaseClass {
 				"    get { return base.VirtualProperty; }\n" +
 				"    set { base.VirtualProperty = value; }\n" +
 				"  }" + programEnd),
-				Normalize(textEditor.Document.Text)
-			);
+			                Normalize(textEditor.Document.Text)
+			               );
 		}
 		
 		[Test]
@@ -147,8 +163,8 @@ class DerivedClass : BaseClass {
 			textEditor.LastCompletionItemList.Complete(context, item);
 			Assert.AreEqual(Normalize(
 				programStart + "public override event EventHandler VirtualEvent;" + programEnd),
-				Normalize(textEditor.Document.Text)
-			);
+			                Normalize(textEditor.Document.Text)
+			               );
 		}
 	}
 }

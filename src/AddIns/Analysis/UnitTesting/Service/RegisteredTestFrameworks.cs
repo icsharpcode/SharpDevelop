@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -11,7 +13,7 @@ namespace ICSharpCode.UnitTesting
 {
 	public class RegisteredTestFrameworks : IRegisteredTestFrameworks
 	{
-		List<TestFrameworkDescriptor> testFrameworkDescriptors;
+		IReadOnlyList<TestFrameworkDescriptor> testFrameworkDescriptors;
 		public const string AddInPath = "/SharpDevelop/UnitTesting/TestFrameworks";
 		
 		public RegisteredTestFrameworks(IAddInTree addInTree)

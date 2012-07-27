@@ -69,8 +69,10 @@ namespace MSHelpSystem.Commands
 		public override void Run()
 		{
 			string path;
-			if (!RegistryService.GetRegistryValue(RegistryHive.LocalMachine, @"SOFTWARE\Microsoft\Help\v1.0",
-			                                      "AppRoot", RegistryValueKind.String, out path)) {
+			using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Help\v1.0")) {
+				path = key != null ? key.GetValue("AppRoot") as string : null;
+			}
+			if (string.IsNullOrEmpty(path)) {
 				MessageService.ShowError("${res:AddIns.HelpViewer.HLMNotFound}");
 				return;
 			}

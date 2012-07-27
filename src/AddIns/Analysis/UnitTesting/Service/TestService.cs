@@ -28,8 +28,7 @@ namespace ICSharpCode.UnitTesting
 		static void CreateRegisteredTestFrameworks()
 		{
 			if (testFrameworks == null) {
-				UnitTestAddInTree addInTree = new UnitTestAddInTree();
-				testFrameworks = new RegisteredTestFrameworks(addInTree);
+				testFrameworks = new RegisteredTestFrameworks(SD.AddInTree);
 			}
 		}
 		

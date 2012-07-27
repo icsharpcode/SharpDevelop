@@ -78,7 +78,6 @@
       <DependentUpon>UnitTestingOptionsPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Gui\UnitTestsPad.cs" />
-    <Compile Include="Implementation\UnitTestAddInTree.cs" />
     <Compile Include="Implementation\UnitTestBuildOptions.cs" />
     <Compile Include="Implementation\UnitTestBuildProjectFactory.cs" />
     <Compile Include="Implementation\UnitTestDebuggerService.cs" />
@@ -86,7 +85,6 @@
     <Compile Include="Implementation\UnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Implementation\UnitTestTaskService.cs" />
     <Compile Include="Implementation\UnitTestWorkbench.cs" />
-    <Compile Include="Interfaces\IAddInTree.cs" />
     <Compile Include="Interfaces\IBuildOptions.cs" />
     <Compile Include="Interfaces\IBuildProjectFactory.cs" />
     <Compile Include="Interfaces\IFileSystem.cs" />

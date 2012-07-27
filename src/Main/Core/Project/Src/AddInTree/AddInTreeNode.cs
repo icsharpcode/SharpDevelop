@@ -108,16 +108,6 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Builds the child items in this path.
-		/// </summary>
-		/// <param name="caller">The owner used to create the objects.</param>
-		[Obsolete("Use the generic BuildChildItems version instead")]
-		public ArrayList BuildChildItems(object caller)
-		{
-			return new ArrayList(this.BuildChildItems<object>(caller));
-		}
-		
-		/// <summary>
 		/// Builds a specific child items in this path.
 		/// </summary>
 		/// <param name="childItemID">

@@ -21,7 +21,7 @@ namespace ICSharpCode.Core.Tests.Utils
 			: this(assembly, hintPath, new List<AddIn>())
 		{
 		}
-		public DerivedRuntime(string assembly, string hintPath, IList<AddIn> addIns)
+		public DerivedRuntime(string assembly, string hintPath, IReadOnlyList<AddIn> addIns)
 			: base(assembly, hintPath, addIns)
 		{
 		}

@@ -74,21 +74,6 @@ namespace ICSharpCode.Core
 			this.conditions = conditions;
 		}
 		
-		[Obsolete("Use BuildItemArgs.Conditions instead")]
-		public ConditionFailedAction GetFailedAction(object caller)
-		{
-			return Condition.GetFailedAction(conditions, caller);
-		}
-		
-//
-//		public void BinarySerialize(BinaryWriter writer)
-//		{
-//			writer.Write(AddInTree.GetNameOffset(name));
-//			writer.Write(AddInTree.GetAddInOffset(addIn));
-//			properties.BinarySerialize(writer);
-//		}
-//
-		
 		internal object BuildItem(BuildItemArgs args)
 		{
 			IDoozer doozer;

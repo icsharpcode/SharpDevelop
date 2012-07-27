@@ -301,7 +301,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			try {
 				string file = GetPreferenceFileName(solutionFileName);
-				Properties properties = null;
 				if (FileUtility.IsValidPath(file) && File.Exists(file)) {
 					try {
 						return Properties.Load(file);

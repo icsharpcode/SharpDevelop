@@ -19,7 +19,7 @@ namespace ICSharpCode.Core
 		IList<LazyLoadDoozer> definedDoozers = new List<LazyLoadDoozer>();
 		IList<LazyConditionEvaluator> definedConditionEvaluators = new List<LazyConditionEvaluator>();
 		ICondition[] conditions;
-		IList<AddIn> addIns;
+		IReadOnlyList<AddIn> addIns;
 		bool isActive = true;
 		bool isAssemblyLoaded;
 		readonly object lockObj = new object(); // used to protect mutable parts of runtime
@@ -41,7 +41,7 @@ namespace ICSharpCode.Core
 		{
 		}
 		
-		public Runtime(string assembly, string hintPath, IList<AddIn> addIns)
+		public Runtime(string assembly, string hintPath, IReadOnlyList<AddIn> addIns)
 		{
 			this.assembly = assembly;
 			this.hintPath = hintPath;

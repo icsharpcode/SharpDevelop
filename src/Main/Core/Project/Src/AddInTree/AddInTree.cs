@@ -69,7 +69,7 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Gets the list of loaded AddIns.
 		/// </summary>
-		public static IList<AddIn> AddIns {
+		public static IReadOnlyList<AddIn> AddIns {
 			get {
 				return addIns.AsReadOnly();
 			}
@@ -103,16 +103,6 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.
-		/// This method throws a <see cref="TreePathNotFoundException"/> when the
-		/// path does not exist.
-		/// </summary>
-		public static AddInTreeNode GetTreeNode(string path)
-		{
-			return GetTreeNode(path, true);
-		}
-		
-		/// <summary>
-		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.
 		/// </summary>
 		/// <param name="path">The path of the AddIn tree node</param>
 		/// <param name="throwOnNotFound">
@@ -120,7 +110,7 @@ namespace ICSharpCode.Core
 		/// <see cref="TreePathNotFoundException"/> when the path does not exist.
 		/// If set to <c>false</c>, <c>null</c> is returned for non-existing paths.
 		/// </param>
-		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound)
+		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound = true)
 		{
 			if (path == null || path.Length == 0) {
 				return rootNode;
@@ -178,7 +168,7 @@ namespace ICSharpCode.Core
 		/// <param name="throwOnNotFound">If true, throws a <see cref="TreePathNotFoundException"/>
 		/// if the path is not found. If false, an empty ArrayList is returned when the
 		/// path is not found.</param>
-		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound)
+		public static List<T> BuildItems<T>(string path, object caller, bool throwOnNotFound = true)
 		{
 			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
 			if (node == null)

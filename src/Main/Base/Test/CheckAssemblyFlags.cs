@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
-	[TestFixture, Ignore]
+	[TestFixture]
 	public class CheckAssemblyFlags
 	{
 		string binPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..");
