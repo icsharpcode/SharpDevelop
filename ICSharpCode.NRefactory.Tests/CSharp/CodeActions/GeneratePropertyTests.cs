@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GeneratePropertyTests.cs
 //  
 // Author:
@@ -106,6 +106,32 @@ class TestClass
 	}
 	int myField, myOtherField;
 }");
+		}
+		
+		[Test]
+		public void CannotGeneratePropertyForReadOnlyField()
+		{
+			TestWrongContext (
+				new GeneratePropertyAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	readonly int $myField;" + Environment.NewLine +
+					"}"
+			);
+		}
+		
+		[Test]
+		public void CannotGeneratePropertyForConst()
+		{
+			TestWrongContext (
+				new GeneratePropertyAction (),
+				"using System;" + Environment.NewLine +
+					"class TestClass" + Environment.NewLine +
+					"{" + Environment.NewLine +
+					"	const int $myField = 0;" + Environment.NewLine +
+					"}"
+			);
 		}
 	}
 }
