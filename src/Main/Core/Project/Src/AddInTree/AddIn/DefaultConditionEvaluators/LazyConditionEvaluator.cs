@@ -8,7 +8,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Condition evaluator that lazy-loads another condition evaluator and executes it.
 	/// </summary>
-	public class LazyConditionEvaluator : IConditionEvaluator
+	sealed class LazyConditionEvaluator : IConditionEvaluator
 	{
 		AddIn addIn;
 		string name;
@@ -20,14 +20,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public string ClassName {
-			get {
-				return className;
-			}
-		}
-		
 		public LazyConditionEvaluator(AddIn addIn, Properties properties)
 		{
+			if (addIn == null)
+				throw new ArgumentNullException("addIn");
 			this.addIn      = addIn;
 			this.name       = properties["name"];
 			this.className  = properties["class"];
@@ -36,10 +32,9 @@ namespace ICSharpCode.Core
 		public bool IsValid(object caller, Condition condition)
 		{
 			IConditionEvaluator evaluator = (IConditionEvaluator)addIn.CreateObject(className);
-			if (evaluator == null) {
+			if (evaluator == null)
 				return false;
-			}
-			AddInTree.ConditionEvaluators[name] = evaluator;
+			addIn.AddInTree.ConditionEvaluators[name] = evaluator;
 			return evaluator.IsValid(caller, condition);
 		}
 		
@@ -49,6 +44,5 @@ namespace ICSharpCode.Core
 			                     className,
 			                     name);
 		}
-		
 	}
 }

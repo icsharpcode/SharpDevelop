@@ -11,7 +11,6 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// The property service.
 	/// </summary>
-	[FallbackService(typeof(PropertyServiceImpl))]
 	public interface IPropertyService : INotifyPropertyChanged
 	{
 		/// <summary>

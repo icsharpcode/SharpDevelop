@@ -7,9 +7,9 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.AddInManager
 {
@@ -82,7 +82,7 @@ namespace ICSharpCode.AddInManager
 			int index = 0;
 			AddInControl addInControl;
 			
-			List<AddIn> addInList = new List<AddIn>(AddInTree.AddIns);
+			List<AddIn> addInList = new List<AddIn>(SD.AddInTree.AddIns);
 			addInList.Sort(delegate(AddIn a, AddIn b) {
 			               	return a.Name.CompareTo(b.Name);
 			               });
@@ -317,7 +317,7 @@ namespace ICSharpCode.AddInManager
 			Dictionary<string, Version> modifiedAddIns = new Dictionary<string, Version>();
 			
 			// add available addins
-			foreach (AddIn addIn in AddInTree.AddIns) {
+			foreach (AddIn addIn in SD.AddInTree.AddIns) {
 				if (addIn.Action != AddInAction.Enable && addIn.Action != AddInAction.Install)
 					continue;
 				if (addIns.Contains(addIn))
@@ -351,7 +351,7 @@ namespace ICSharpCode.AddInManager
 			}
 			
 			// add dependencies to the to-be-changed addins
-			foreach (AddIn addIn in AddInTree.AddIns) {
+			foreach (AddIn addIn in SD.AddInTree.AddIns) {
 				if (addIn.Action != AddInAction.Enable && addIn.Action != AddInAction.Install)
 					continue;
 				if (addIns.Contains(addIn))
@@ -428,7 +428,7 @@ namespace ICSharpCode.AddInManager
 		
 		string GetDisplayName(string identity)
 		{
-			foreach (AddIn addIn in AddInTree.AddIns) {
+			foreach (AddIn addIn in SD.AddInTree.AddIns) {
 				if (addIn.Manifest.Identities.ContainsKey(identity))
 					return addIn.Name;
 			}
@@ -503,7 +503,7 @@ namespace ICSharpCode.AddInManager
 			foreach (InstallableAddIn addInPackage in addInPackages) {
 				string identity = addInPackage.AddIn.Manifest.PrimaryIdentity;
 				AddIn foundAddIn = null;
-				foreach (AddIn addIn in AddInTree.AddIns) {
+				foreach (AddIn addIn in SD.AddInTree.AddIns) {
 					if (addIn.Action != AddInAction.Install
 					    && addIn.Manifest.Identities.ContainsKey(identity))
 					{
@@ -552,7 +552,7 @@ namespace ICSharpCode.AddInManager
 			foreach (InstallableAddIn addInPackage in shownAddInPackages) {
 				string identity = addInPackage.AddIn.Manifest.PrimaryIdentity;
 				AddIn foundAddIn = null;
-				foreach (AddIn addIn in AddInTree.AddIns) {
+				foreach (AddIn addIn in SD.AddInTree.AddIns) {
 					if (addIn.Manifest.Identities.ContainsKey(identity)) {
 						foundAddIn = addIn;
 						break;

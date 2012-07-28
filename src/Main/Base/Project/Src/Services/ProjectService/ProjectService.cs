@@ -72,8 +72,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				WorkbenchSingleton.Workbench.ActiveViewContentChanged += ActiveViewContentChanged;
 				FileService.FileRenamed += FileServiceFileRenamed;
 				FileService.FileRemoved += FileServiceFileRemoved;
-				ApplicationStateInfoService.RegisterStateGetter("ProjectService.OpenSolution", delegate { return OpenSolution; });
-				ApplicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
+				
+				var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
+				if (applicationStateInfoService != null) {
+					applicationStateInfoService.RegisterStateGetter("ProjectService.OpenSolution", delegate { return OpenSolution; });
+					applicationStateInfoService.RegisterStateGetter("ProjectService.CurrentProject", delegate { return CurrentProject; });
+				}
 			}
 		}
 
@@ -429,7 +433,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets the list of file filters.
 		/// </summary>
-		public static IList<FileFilterDescriptor> GetFileFilters()
+		public static IReadOnlyList<FileFilterDescriptor> GetFileFilters()
 		{
 			return AddInTree.BuildItems<FileFilterDescriptor>("/SharpDevelop/Workbench/FileFilter", null);
 		}
@@ -439,9 +443,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static string GetAllProjectsFilter(object caller, bool includeSolutions)
 		{
-			var filters = AddInTree.BuildItems<FileFilterDescriptor>("/SharpDevelop/Workbench/Combine/FileFilter", null);
+			IEnumerable<FileFilterDescriptor> filters = AddInTree.BuildItems<FileFilterDescriptor>("/SharpDevelop/Workbench/Combine/FileFilter", null);
 			if (!includeSolutions)
-				filters.RemoveAll(f => f.ContainsExtension(".sln"));
+				filters = filters.Where(f => !f.ContainsExtension(".sln"));
 			StringBuilder b = new StringBuilder(StringParser.Parse("${res:SharpDevelop.Solution.AllKnownProjectFormats}|"));
 			bool first = true;
 			foreach (var filter in filters) {

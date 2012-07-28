@@ -87,7 +87,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			workbench.SetMemento(PropertyService.NestedProperties(workbenchMemento));
 			workbench.WorkbenchLayout = layout;
 			
-			ApplicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });
+			var applicationStateInfoService = SD.GetService<ApplicationStateInfoService>();
+			if (applicationStateInfoService != null) {
+				applicationStateInfoService.RegisterStateGetter(activeContentState, delegate { return WorkbenchSingleton.Workbench.ActiveContent; });
+			}
 			
 			OnWorkbenchCreated();
 			
@@ -118,8 +121,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (!Project.ProjectService.IsClosingCanceled()) {
 				Project.ProjectService.CloseSolution();
 				NavigationService.Unload();
-				
-				ApplicationStateInfoService.UnregisterStateGetter(activeContentState);
 				
 				WorkbenchUnloaded(null, EventArgs.Empty);
 				

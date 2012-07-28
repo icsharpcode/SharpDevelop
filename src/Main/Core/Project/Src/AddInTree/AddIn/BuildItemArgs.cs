@@ -28,7 +28,7 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// The caller passed to <see cref="AddInTree.BuildItem(string,object)"/>.
+		/// The caller passed to <see cref="IAddInTree.BuildItem(string,object)"/>.
 		/// </summary>
 		public object Caller {
 			get { return caller; }
@@ -46,6 +46,13 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public AddIn AddIn {
 			get { return codon.AddIn; }
+		}
+		
+		/// <summary>
+		/// The whole AddIn tree.
+		/// </summary>
+		public IAddInTree AddInTree {
+			get { return codon.AddIn.AddInTree; }
 		}
 		
 		/// <summary>

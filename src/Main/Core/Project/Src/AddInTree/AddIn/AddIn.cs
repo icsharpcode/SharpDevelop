@@ -11,6 +11,7 @@ namespace ICSharpCode.Core
 {
 	public sealed class AddIn
 	{
+		IAddInTree addInTree;
 		Properties    properties = new Properties();
 		List<Runtime> runtimes   = new List<Runtime>();
 		List<string> bitmapResources = new List<string>();
@@ -23,7 +24,21 @@ namespace ICSharpCode.Core
 		bool enabled;
 		
 		static bool hasShownErrorMessage = false;
-
+		
+		internal AddIn(IAddInTree addInTree)
+		{
+			if (addInTree == null)
+				throw new ArgumentNullException("addInTree");
+			this.addInTree = addInTree;
+		}
+		
+		/// <summary>
+		/// Gets the parent AddIn-Tree that contains this AddIn.
+		/// </summary>
+		public IAddInTree AddInTree {
+			get { return addInTree; }
+		}
+		
 		public object CreateObject(string className)
 		{
 			Type t = FindType(className);
@@ -142,7 +157,7 @@ namespace ICSharpCode.Core
 			set { action = value; }
 		}
 		
-		public List<Runtime> Runtimes {
+		public IReadOnlyList<Runtime> Runtimes {
 			get { return runtimes; }
 		}
 		
@@ -189,10 +204,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		internal AddIn()
-		{
-		}
-		
 		static void SetupAddIn(XmlReader reader, AddIn addIn, string hintPath)
 		{
 			while (reader.Read()) {
@@ -217,7 +228,7 @@ namespace ICSharpCode.Core
 							break;
 						case "Runtime":
 							if (!reader.IsEmptyElement) {
-								Runtime.ReadSection(reader, addIn, hintPath);
+								addIn.runtimes.AddRange(Runtime.ReadSection(reader, addIn, hintPath));
 							}
 							break;
 						case "Include":
@@ -266,12 +277,12 @@ namespace ICSharpCode.Core
 			return paths[pathName];
 		}
 		
-		public static AddIn Load(TextReader textReader, string hintPath = null, XmlNameTable nameTable = null)
+		public static AddIn Load(IAddInTree addInTree, TextReader textReader, string hintPath = null, XmlNameTable nameTable = null)
 		{
 			if (nameTable == null)
 				nameTable = new NameTable();
 			try {
-				AddIn addIn = new AddIn();
+				AddIn addIn = new AddIn(addInTree);
 				using (XmlTextReader reader = new XmlTextReader(textReader, nameTable)) {
 					while (reader.Read()){
 						if (reader.IsStartElement()) {
@@ -292,11 +303,11 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static AddIn Load(string fileName, XmlNameTable nameTable = null)
+		public static AddIn Load(IAddInTree addInTree, string fileName, XmlNameTable nameTable = null)
 		{
 			try {
 				using (TextReader textReader = File.OpenText(fileName)) {
-					AddIn addIn = Load(textReader, Path.GetDirectoryName(fileName), nameTable);
+					AddIn addIn = Load(addInTree, textReader, Path.GetDirectoryName(fileName), nameTable);
 					addIn.addInFileName = fileName;
 					return addIn;
 				}

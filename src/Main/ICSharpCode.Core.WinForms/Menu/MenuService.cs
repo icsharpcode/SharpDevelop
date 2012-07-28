@@ -16,7 +16,7 @@ namespace ICSharpCode.Core.WinForms
 			AddItemsToMenu(collection, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
 		}
 		
-		static void AddItemsToMenu(ToolStripItemCollection collection, List<MenuItemDescriptor> descriptors)
+		static void AddItemsToMenu(ToolStripItemCollection collection, IEnumerable<MenuItemDescriptor> descriptors)
 		{
 			foreach (MenuItemDescriptor descriptor in descriptors) {
 				object item = CreateMenuItemFromDescriptor(descriptor);
@@ -71,7 +71,7 @@ namespace ICSharpCode.Core.WinForms
 				return null;
 			}
 			try {
-				List<MenuItemDescriptor> descriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, true);
+				var descriptors = AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, true);
 				ContextMenuStrip contextMenu = new ContextMenuStrip();
 				contextMenu.Items.Add(new ToolStripMenuItem("dummy"));
 				contextMenu.Opening += delegate {

@@ -10,6 +10,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Provides string and bitmap resources.
 	/// </summary>
+	[FallbackService(typeof(DummyResourceService))]
 	public interface IResourceService
 	{
 		/// <summary>
@@ -56,5 +57,47 @@ namespace ICSharpCode.Core
 		void RegisterImages(string baseResourceName, Assembly assembly);
 		
 		void RegisterNeutralImages(ResourceManager imageManager);
+	}
+	
+	sealed class DummyResourceService : IResourceService
+	{
+		event EventHandler IResourceService.LanguageChanged { add {} remove {} }
+		
+		string IResourceService.Language {
+			get { return "en"; }
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		string IResourceService.GetString(string name)
+		{
+			return null;
+		}
+		
+		object IResourceService.GetImageResource(string name)
+		{
+			return null;
+		}
+		
+		void IResourceService.RegisterStrings(string baseResourceName, Assembly assembly)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IResourceService.RegisterNeutralStrings(ResourceManager stringManager)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IResourceService.RegisterImages(string baseResourceName, Assembly assembly)
+		{
+			throw new NotImplementedException();
+		}
+		
+		void IResourceService.RegisterNeutralImages(ResourceManager imageManager)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -173,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (el.HasAttribute("path")) {
 						string path = el.GetAttribute("path");
 						#if DEBUG
-						ICommand command = (ICommand)AddInTree.BuildItem(path, null);
+						ICommand command = (ICommand)SD.AddInTree.BuildItem(path, null);
 						if (command == null)
 							throw new TemplateLoadException("Unknown create action " + path);
 						#endif

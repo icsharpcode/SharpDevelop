@@ -3,15 +3,23 @@
 
 using System;
 using Gui.Pads.ProjectBrowser.TreeNodes;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Tests.WebReferences;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop.Tests.ServiceReferences
 {
 	[TestFixture]
 	public class DirectoryNodeFactoryTests
 	{
+		[TestFixtureSetUpAttribute]
+		public void FixtureSetUp()
+		{
+			SD.InitializeForUnitTests();
+		}
+		
 		MSBuildBasedProject project;
 		
 		void CreateProject()

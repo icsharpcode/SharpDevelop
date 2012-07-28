@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.Core;
@@ -14,6 +13,7 @@ using ICSharpCode.Core.Tests.Utils;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
+using Rhino.Mocks;
 
 namespace ICSharpCode.SharpDevelop.Tests.Highlighting
 {
@@ -36,18 +36,16 @@ namespace ICSharpCode.SharpDevelop.Tests.Highlighting
 			assembly.AddManifestResourceStream("ICSharpCode.Xml.xshd", predefinedManifestResourceStream);
 			
 			// Create addins.
-			AddIn addIn = AddIn.Load(new StringReader(GetAddInXml()));
+			IAddInTree addInTree = MockRepository.GenerateStrictMock<IAddInTree>();
+			AddIn addIn = AddIn.Load(addInTree, new StringReader(GetAddInXml()));
 			addIn.FileName = @"D:\SharpDevelop\AddIns\MyAddIn.addin";
 			addIn.Enabled = true;
 			
-			List<AddIn> addIns = new List<AddIn>();
-			addIns.Add(addIn);
-			
 			// Create runtimes.
-			testRuntime = new DerivedRuntime("MyAddIn.dll", String.Empty, addIns);
+			testRuntime = new DerivedRuntime(addInTree, "MyAddIn.dll", String.Empty);
 			testRuntime.AssemblyFileNames.Add("MyAddIn.dll", assembly);
 			
-			unloadedRuntime = new DerivedRuntime("UnLoadedAssembly.dll", String.Empty, addIns);
+			unloadedRuntime = new DerivedRuntime(addInTree, "UnLoadedAssembly.dll", String.Empty);
 			unloadedRuntime.AssemblyFileNames.Add("UnLoadedAssembly.dll", null);
 			unloadedRuntime.LoadAssemblyFromExceptionToThrow = new FileNotFoundException("UnloadedAssembly.dll not found.");
 			

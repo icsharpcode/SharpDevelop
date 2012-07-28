@@ -77,7 +77,7 @@ namespace ICSharpCode.Core
 		internal object BuildItem(BuildItemArgs args)
 		{
 			IDoozer doozer;
-			if (!AddInTree.Doozers.TryGetValue(Name, out doozer))
+			if (!addIn.AddInTree.Doozers.TryGetValue(Name, out doozer))
 				throw new CoreException("Doozer " + Name + " not found! " + ToString());
 			
 			if (!doozer.HandleConditions) {

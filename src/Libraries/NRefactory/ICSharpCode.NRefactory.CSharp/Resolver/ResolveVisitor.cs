@@ -265,7 +265,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (node.IsNull)
 				return;
 			Log.WriteLine("Resolved '{0}' to {1}", node, result);
-			Debug.Assert(!CSharpAstResolver.IsUnresolvableNode(node));
+			// In rare cases, ArraySpecifier and NamedArgumentExpression can get resolved,
+			// for example in 'new NonExistingType(a: b)' the ScanChildren() call in the object create expression
+			// will cause the named argument expression to be scanned, which can cause it to be resolved
+			// (depending on the navigator).
+			Debug.Assert(!CSharpAstResolver.IsUnresolvableNode(node) || node is ArraySpecifier || node is NamedArgumentExpression);
+			
 			// The state should be stored before the result is.
 			Debug.Assert(resolverBeforeDict.ContainsKey(node));
 			// Don't store results twice.

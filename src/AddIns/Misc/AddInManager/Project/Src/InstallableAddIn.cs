@@ -4,8 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace ICSharpCode.AddInManager
@@ -34,7 +34,7 @@ namespace ICSharpCode.AddInManager
 					file.Close();
 				}
 			} else {
-				addIn = AddIn.Load(fileName);
+				addIn = AddIn.Load(SD.AddInTree, fileName);
 			}
 			if (addIn.Manifest.PrimaryIdentity == null)
 				throw new AddInLoadException(ResourceService.GetString("AddInManager.AddInMustHaveIdentity"));
@@ -54,7 +54,7 @@ namespace ICSharpCode.AddInManager
 				throw new AddInLoadException("The package must contain one .addin file.");
 			using (Stream s = file.GetInputStream(addInEntry)) {
 				using (StreamReader r = new StreamReader(s)) {
-					addIn = AddIn.Load(r);
+					addIn = AddIn.Load(SD.AddInTree, r);
 				}
 			}
 		}
@@ -76,7 +76,7 @@ namespace ICSharpCode.AddInManager
 				
 				addIn.Action = AddInAction.Install;
 				if (!isUpdate) {
-					AddInTree.InsertAddIn(addIn);
+					((AddInTreeImpl)SD.AddInTree).InsertAddIn(addIn);
 				}
 			} else {
 				ICSharpCode.Core.AddInManager.AddExternalAddIns(new AddIn[] { addIn });

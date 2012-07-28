@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop
 			string language = DefaultAmbienceName;
 			IAmbience ambience;
 			try {
-				ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
+				ambience = (IAmbience)SD.AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
 			} catch (TreePathNotFoundException) {
 				ambience = null;
 			}

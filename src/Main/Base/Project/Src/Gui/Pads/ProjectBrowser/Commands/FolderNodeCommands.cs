@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		int GetFileFilterIndex(IProject project, IList<FileFilterDescriptor> fileFilters)
+		int GetFileFilterIndex(IProject project, IReadOnlyList<FileFilterDescriptor> fileFilters)
 		{
 			if (project != null) {
 				ProjectBindingDescriptor projectCodon = ProjectBindingService.GetCodonPerLanguageName(project.Language);

@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectBrowserControl.Dock = DockStyle.Fill;
 			Controls.Add(projectBrowserControl);
 			
-			if (AddInTree.ExistsTreeNode("/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard")) {
+			if (SD.AddInTree.GetTreeNode("/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard", false) != null) {
 				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
 				toolStrip.ShowItemToolTips  = true;
 				toolStrip.Dock = DockStyle.Top;

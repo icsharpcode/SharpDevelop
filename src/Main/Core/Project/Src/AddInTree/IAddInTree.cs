@@ -2,17 +2,27 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace ICSharpCode.Core
 {
-	[FallbackService(typeof(AddInTreeImpl))]
 	public interface IAddInTree
 	{
 		/// <summary>
 		/// Gets the AddIns that are registered for this AddIn tree.
 		/// </summary>
 		IReadOnlyList<AddIn> AddIns { get; }
+		
+		/// <summary>
+		/// Gets a dictionary of registered doozers.
+		/// </summary>
+		ConcurrentDictionary<string, IDoozer> Doozers { get; }
+		
+		/// <summary>
+		/// Gets a dictionary of registered condition evaluators.
+		/// </summary>
+		ConcurrentDictionary<string, IConditionEvaluator> ConditionEvaluators { get; }
 		
 		/// <summary>
 		/// Builds the items in the path. Ensures that all items have the type T.
@@ -32,6 +42,8 @@ namespace ICSharpCode.Core
 		/// <exception cref="TreePathNotFoundException">The path does not
 		/// exist or does not point to an item.</exception>
 		object BuildItem(string path, object caller);
+		
+		object BuildItem(string path, object caller, IEnumerable<ICondition> additionalConditions);
 		
 		/// <summary>
 		/// Gets the <see cref="AddInTreeNode"/> representing the specified path.

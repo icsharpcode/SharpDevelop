@@ -52,7 +52,8 @@ namespace ICSharpCode.Core
 		public bool IsValid(object owner)
 		{
 			try {
-				return AddInTree.ConditionEvaluators[name].IsValid(owner, this);
+				var addInTree = ServiceSingleton.ServiceProvider.GetRequiredService<IAddInTree>();
+				return addInTree.ConditionEvaluators[name].IsValid(owner, this);
 			} catch (KeyNotFoundException) {
 				throw new CoreException("Condition evaluator " + name + " not found!");
 			}

@@ -112,6 +112,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static AddInTreeImpl AddInTree {
+			get { return (AddInTreeImpl)ServiceSingleton.ServiceProvider.GetRequiredService(typeof(IAddInTree)); }
+		}
+		
 		/// <summary>
 		/// Installs the AddIns from AddInInstallTemp to the UserAddInPath.
 		/// In case of installation errors, a error message is displayed to the user

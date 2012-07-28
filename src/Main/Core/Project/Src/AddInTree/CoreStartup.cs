@@ -35,6 +35,7 @@ namespace ICSharpCode.Core
 		string configDirectory;
 		string dataDirectory;
 		string applicationName;
+		AddInTreeImpl addInTree;
 		
 		/// <summary>
 		/// Sets the name used for the properties (only name, without path or extension).
@@ -173,16 +174,16 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public void RunInitialization()
 		{
-			AddInTree.Load(addInFiles, disabledAddIns);
+			addInTree.Load(addInFiles, disabledAddIns);
 			
 			// perform service registration
 			var container = ServiceSingleton.ServiceProvider.GetService<IServiceContainer>();
 			if (container != null)
-				AddInTree.BuildItems<object>("/SharpDevelop/Services", container, false);
+				addInTree.BuildItems<object>("/SharpDevelop/Services", container, false);
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
-			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
+			foreach (ICommand command in addInTree.BuildItems<ICommand>("/Workspace/Autostart", null, false)) {
 				try {
 					command.Run();
 				} catch (Exception ex) {
@@ -206,9 +207,14 @@ namespace ICSharpCode.Core
 				configDirectory,
 				dataDirectory ?? Path.Combine(FileUtility.ApplicationRootPath, "data"),
 				propertiesName);
+			var applicationStateInfoService = new ApplicationStateInfoService();
+			addInTree = new AddInTreeImpl(applicationStateInfoService);
+			
 			container.AddService(typeof(IPropertyService), propertyService);
 			container.AddService(typeof(IResourceService), new ResourceServiceImpl(
 				Path.Combine(propertyService.DataDirectory, "resources"), propertyService));
+			container.AddService(typeof(IAddInTree), addInTree);
+			container.AddService(typeof(ApplicationStateInfoService), applicationStateInfoService);
 			StringParser.RegisterStringTagProvider(new AppNameProvider { appName = applicationName });
 		}
 		

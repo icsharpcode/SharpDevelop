@@ -255,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				case "RunCommand":
 					if (el.HasAttribute("path")) {
 						try {
-							ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
+							ICommand command = (ICommand)SD.AddInTree.BuildItem(el.GetAttribute("path"), null);
 							return projectCreateInformation => {
 								command.Owner = projectCreateInformation;
 								command.Run();

@@ -12,7 +12,7 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
-	sealed class PropertyServiceImpl : IPropertyService
+	public sealed class PropertyServiceImpl : IPropertyService
 	{
 		string propertyFileName;
 		

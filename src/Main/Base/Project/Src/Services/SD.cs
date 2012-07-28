@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-
+using System.Linq.Expressions;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Implementation;
 using ICSharpCode.SharpDevelop.Editor;
@@ -31,11 +31,14 @@ namespace ICSharpCode.SharpDevelop
 		/// contains only the following services:
 		/// - ILoggingService (logging to Diagnostics.Trace)
 		/// - IMessageService (writing to Console.Out)
-		/// - PropertyService gets initialized with empty in-memory property container
+		/// - IPropertyService (empty in-memory property container)
+		/// - AddInTree (empty tree with no AddIns loaded)
 		/// </summary>
 		public static void InitializeForUnitTests()
 		{
 			var container = new SharpDevelopServiceContainer(ServiceSingleton.FallbackServiceProvider);
+			container.AddService(typeof(IPropertyService), new PropertyServiceImpl());
+			container.AddService(typeof(IAddInTree), new AddInTreeImpl(null));
 			ServiceSingleton.ServiceProvider = container;
 		}
 		

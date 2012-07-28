@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Controls;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -29,6 +30,7 @@ namespace XmlEditor.Tests.Editor
 		[SetUp]
 		public void Init()
 		{
+			SD.InitializeForUnitTests();
 			LoadBarSchema();
 			LoadFooSchema();
 			fooSchemaData.IsReadOnly = true;

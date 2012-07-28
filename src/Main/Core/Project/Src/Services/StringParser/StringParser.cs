@@ -168,8 +168,11 @@ namespace ICSharpCode.Core
 				// before allocaing the prefix/propertyName strings
 				// All other prefixed properties {prefix:Key} shoulg get handled in the switch below.
 				if (propertyName.StartsWith("res:", StringComparison.OrdinalIgnoreCase)) {
+					var resourceService = ServiceSingleton.ServiceProvider.GetService<IResourceService>();
+					if (resourceService == null)
+						return null;
 					try {
-						return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
+						return Parse(resourceService.GetString(propertyName.Substring(4)), customTags);
 					} catch (ResourceNotFoundException) {
 						return null;
 					}
@@ -181,7 +184,7 @@ namespace ICSharpCode.Core
 					case "SDKTOOLPATH":
 						return FileUtility.GetSdkPath(propertyName);
 					case "ADDINPATH":
-						foreach (AddIn addIn in AddInTree.AddIns) {
+						foreach (var addIn in ServiceSingleton.ServiceProvider.GetRequiredService<IAddInTree>().AddIns) {
 							if (addIn.Manifest.Identities.ContainsKey(propertyName)) {
 								return System.IO.Path.GetDirectoryName(addIn.FileName);
 							}

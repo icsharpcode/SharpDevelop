@@ -96,15 +96,6 @@ namespace ICSharpCode.AvalonEdit
 			                     this.line, this.column, this.visualColumn);
 		}
 		
-		/// <summary>
-		/// Obsolete. Use the Location property instead.
-		/// </summary>
-		[Obsolete("Use the Location property instead.")]
-		public static implicit operator TextLocation(TextViewPosition position)
-		{
-			return new TextLocation(position.Line, position.Column);
-		}
-		
 		#region Equals and GetHashCode implementation
 		// The code in this region is useful if you want to use this structure in collections.
 		// If you don't need it, you can just remove the region and the ": IEquatable<Struct1>" declaration.

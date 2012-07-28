@@ -147,11 +147,11 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			BrowserPane browser = workbench.ActiveViewContent as BrowserPane;
 			if (browser == null) return;
 			if (browser.HtmlViewPane == this) {
-				WorkbenchSingleton.StatusBar.SetMessage(webBrowser.StatusText);
+				SD.StatusBar.SetMessage(webBrowser.StatusText);
 			}
 		}
 		
-		static List<SchemeExtensionDescriptor> descriptors;
+		static IReadOnlyList<SchemeExtensionDescriptor> descriptors;
 		
 		public static ISchemeExtension GetScheme(string name)
 		{
