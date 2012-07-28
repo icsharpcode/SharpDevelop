@@ -69,6 +69,11 @@ namespace PackageManagement.Tests.EnvDTE
 			return projectItems.OfType<DTE.ProjectItem>().FirstOrDefault();
 		}
 		
+		List<DTE.ProjectItem> GetAllChildItems(ProjectItems projectItems)
+		{
+			return projectItems.OfType<DTE.ProjectItem>().ToList();
+		}
+		
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsIncludedInProjectInProjectFolder()
 		{
@@ -722,6 +727,40 @@ namespace PackageManagement.Tests.EnvDTE
 			DTE.ProjectItem jqueryPluginFileItem = jqueryPluginFolderItem.ProjectItems.Item("jQueryPlugin.ps1");
 			
 			Assert.AreEqual("jQueryPlugin.ps1", jqueryPluginFileItem.Name);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasTwoFilesInFolderTwoLevelsDeep_TopLevelFolderOnlyHasOneProjectItemForChildFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File1.cs");
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File2.cs");
+			
+			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
+			List<DTE.ProjectItem> childItems = GetAllChildItems(codeTemplatesFolderItem.ProjectItems);
+			DTE.ProjectItem scaffoldersFolderItem = childItems.FirstOrDefault();
+			
+			Assert.AreEqual(1, childItems.Count);
+			Assert.AreEqual("Scaffolders", scaffoldersFolderItem.Name);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasTwoFilesInFolderTwoLevelsDeepAndProjectItemsForChildFolderCalledTwice_TopLevelFolderOnlyHasOneProjectItemForChildFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File1.cs");
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File2.cs");
+			
+			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
+			List<DTE.ProjectItem> childItems = GetAllChildItems(codeTemplatesFolderItem.ProjectItems);
+			// Call ProjectItems again.
+			childItems = GetAllChildItems(codeTemplatesFolderItem.ProjectItems);
+			DTE.ProjectItem scaffoldersFolderItem = childItems.FirstOrDefault();
+			
+			Assert.AreEqual(1, childItems.Count);
+			Assert.AreEqual("Scaffolders", scaffoldersFolderItem.Name);
 		}
 	}
 }

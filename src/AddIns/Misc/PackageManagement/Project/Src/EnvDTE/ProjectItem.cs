@@ -42,7 +42,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 			return Constants.VsProjectItemKindPhysicalFile;
 		}
 		
-		bool IsDirectory {
+		internal bool IsDirectory {
 			get { return projectItem.ItemType == ItemType.Folder; }
 		}
 		
