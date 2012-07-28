@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				bookmark = bookmarks[bookmarks.Count - 1]; // jump around to last bookmark
 			}
 			if (bookmark != null) {
-				FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, bookmark.ColumnNumber);
+				SD.FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, bookmark.ColumnNumber);
 			}
 		}
 	}
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				bookmark = bookmarks[0]; // jump around to first bookmark
 			}
 			if (bookmark != null) {
-				FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, bookmark.ColumnNumber);
+				SD.FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, bookmark.ColumnNumber);
 			}
 		}
 	}

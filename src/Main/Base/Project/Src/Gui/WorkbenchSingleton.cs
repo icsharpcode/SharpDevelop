@@ -70,7 +70,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LanguageService.ValidateLanguage();
 			
 			DisplayBindingService.InitializeService();
-			FileService.InitializeService();
 			TaskService.Initialize();
 			Bookmarks.BookmarkManager.Initialize();
 			Project.CustomToolsService.Initialize();
@@ -123,8 +122,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				NavigationService.Unload();
 				
 				WorkbenchUnloaded(null, EventArgs.Empty);
-				
-				FileService.Unload();
 			}
 		}
 		

@@ -18,22 +18,6 @@ namespace ICSharpCode.SharpDevelop
 {
 	public static class FileService
 	{
-		static bool serviceInitialized;
-		
-		internal static void Unload()
-		{
-			SD.ParserService.LoadSolutionProjectsThread.Finished -= ParserServiceLoadSolutionProjectsThreadEnded;
-			serviceInitialized = false;
-		}
-		
-		internal static void InitializeService()
-		{
-			if (!serviceInitialized) {
-				SD.ParserService.LoadSolutionProjectsThread.Finished += ParserServiceLoadSolutionProjectsThreadEnded;
-				serviceInitialized = true;
-			}
-		}
-		
 		/// <summary>
 		/// Checks if the path is valid <b>and shows a MessageBox if it is not valid</b>.
 		/// Do not use in non-UI methods.
@@ -51,39 +35,6 @@ namespace ICSharpCode.SharpDevelop
 		public static bool CheckDirectoryEntryName(string name)
 		{
 			return SD.FileService.CheckDirectoryEntryName(name);
-		}
-		
-		internal sealed class LoadFileWrapper
-		{
-			readonly IDisplayBinding binding;
-			readonly bool switchToOpenedView;
-			
-			public LoadFileWrapper(IDisplayBinding binding, bool switchToOpenedView)
-			{
-				this.binding = binding;
-				this.switchToOpenedView = switchToOpenedView;
-			}
-			
-			public void Invoke(string fileName)
-			{
-				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(FileName.Create(fileName));
-				try {
-					IViewContent newContent = binding.CreateContentForFile(file);
-					if (newContent != null) {
-						DisplayBindingService.AttachSubWindows(newContent, false);
-						WorkbenchSingleton.Workbench.ShowView(newContent, switchToOpenedView);
-					}
-				} finally {
-					file.CloseIfAllViewsClosed();
-				}
-			}
-		}
-		
-		static void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
-		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
-				DisplayBindingService.AttachSubWindows(content, true);
-			}
 		}
 		
 		public static bool IsOpen(string fileName)

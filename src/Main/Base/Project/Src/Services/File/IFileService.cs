@@ -152,6 +152,15 @@ namespace ICSharpCode.SharpDevelop
 		IViewContent OpenFile(FileName fileName, bool switchToOpenedView = true);
 		
 		/// <summary>
+		/// Opens a view content for the specified file using the specified display binding.
+		/// </summary>
+		/// <param name="fileName">The name of the file to open.</param>
+		/// <param name="displayBinding">The display binding to use for opening the file.</param>
+		/// <param name="switchToOpenedView">Specifies whether to switch to the view for the specified file.</param>
+		/// <returns>The existing or opened <see cref="IViewContent"/> for the specified file.</returns>
+		IViewContent OpenFileWith(FileName fileName, IDisplayBinding displayBinding, bool switchToOpenedView = true);
+		
+		/// <summary>
 		/// Opens a new unsaved file.
 		/// </summary>
 		/// <param name="defaultName">The (unsaved) name of the to open</param>

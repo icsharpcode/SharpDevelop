@@ -247,22 +247,22 @@ namespace ICSharpCode.SharpDevelop.Commands
 				fdiag.CheckFileExists = true;
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					OpenFiles(fdiag.FileNames);
+					OpenFiles(Array.ConvertAll(fdiag.FileNames, FileName.Create));
 				}
 			}
 		}
 		
-		protected virtual void OpenFiles(string[] fileNames)
+		protected virtual void OpenFiles(FileName[] fileNames)
 		{
-			foreach (string name in fileNames) {
-				FileService.OpenFile(name);
+			foreach (var name in fileNames) {
+				SD.FileService.OpenFile(name);
 			}
 		}
 	}
 	
 	public class OpenFileWith : OpenFile
 	{
-		protected override void OpenFiles(string[] fileNames)
+		protected override void OpenFiles(FileName[] fileNames)
 		{
 			OpenFilesWith(fileNames);
 		}
@@ -270,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		/// <summary>
 		/// Shows the OpenWith dialog for the specified files.
 		/// </summary>
-		public static void OpenFilesWith(string[] fileNames)
+		public static void OpenFilesWith(FileName[] fileNames)
 		{
 			if (fileNames.Length == 0)
 				return;
@@ -288,8 +288,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 				defaultCodonIndex = 0;
 			using (OpenWithDialog dlg = new OpenWithDialog(codons, defaultCodonIndex, Path.GetExtension(fileNames[0]))) {
 				if (dlg.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
-					foreach (string fileName in fileNames) {
-						FileUtility.ObservedLoad(new FileService.LoadFileWrapper(dlg.SelectedBinding.Binding, true).Invoke, fileName);
+					foreach (var fileName in fileNames) {
+						SD.FileService.OpenFileWith(fileName, dlg.SelectedBinding.Binding, true);
 					}
 				}
 			}

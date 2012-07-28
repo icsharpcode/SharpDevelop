@@ -19,6 +19,18 @@ namespace ICSharpCode.SharpDevelop.Workbench
 {
 	sealed class FileService : IFileService
 	{
+		public FileService()
+		{
+			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserServiceLoadSolutionProjectsThreadEnded;
+		}
+		
+		void ParserServiceLoadSolutionProjectsThreadEnded(object sender, EventArgs e)
+		{
+			foreach (IViewContent content in SD.Workbench.ViewContentCollection.ToArray()) {
+				DisplayBindingService.AttachSubWindows(content, true);
+			}
+		}
+		
 		#region Options
 		/// <summary>used for OptionBinding</summary>
 		public static FileService Instance {
@@ -288,10 +300,47 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			if (binding == null) {
 				binding = new ErrorFallbackBinding("Could not find any display binding for " + Path.GetFileName(fileName));
 			}
-			if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new SharpDevelop.FileService.LoadFileWrapper(binding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
-				SD.FileService.RecentOpen.AddRecentFile(fileName);
+			if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(binding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
+				RecentOpen.AddRecentFile(fileName);
 			}
 			return GetOpenFile(fileName);
+		}
+		
+		/// <inheritdoc/>
+		public IViewContent OpenFileWith(FileName fileName, IDisplayBinding displayBinding, bool switchToOpenedView)
+		{
+			if (displayBinding == null)
+				throw new ArgumentNullException("displayBinding");
+			if (FileUtility.ObservedLoad(new NamedFileOperationDelegate(new LoadFileWrapper(displayBinding, switchToOpenedView).Invoke), fileName) == FileOperationResult.OK) {
+				RecentOpen.AddRecentFile(fileName);
+			}
+			return GetOpenFile(fileName);
+		}
+		
+		sealed class LoadFileWrapper
+		{
+			readonly IDisplayBinding binding;
+			readonly bool switchToOpenedView;
+			
+			public LoadFileWrapper(IDisplayBinding binding, bool switchToOpenedView)
+			{
+				this.binding = binding;
+				this.switchToOpenedView = switchToOpenedView;
+			}
+			
+			public void Invoke(string fileName)
+			{
+				OpenedFile file = SD.FileService.GetOrCreateOpenedFile(FileName.Create(fileName));
+				try {
+					IViewContent newContent = binding.CreateContentForFile(file);
+					if (newContent != null) {
+						DisplayBindingService.AttachSubWindows(newContent, false);
+						WorkbenchSingleton.Workbench.ShowView(newContent, switchToOpenedView);
+					}
+				} finally {
+					file.CloseIfAllViewsClosed();
+				}
+			}
 		}
 		
 		/// <inheritdoc/>

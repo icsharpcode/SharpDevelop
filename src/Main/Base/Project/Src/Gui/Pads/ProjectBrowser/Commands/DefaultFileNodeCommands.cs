@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		/// </summary>
 		static void OpenWith(string fileName)
 		{
-			ICSharpCode.SharpDevelop.Commands.OpenFileWith.OpenFilesWith(new string[] { fileName });
+			ICSharpCode.SharpDevelop.Commands.OpenFileWith.OpenFilesWith(new [] { FileName.Create(fileName) });
 		}
 	}
 	

@@ -33,9 +33,13 @@ namespace ICSharpCode.Core
 			Type interfaceType = args.AddIn.FindType(args.Codon.Id);
 			if (interfaceType != null) {
 				string className = args.Codon.Properties["class"];
+				bool serviceLoading = false;
 				// Use ServiceCreatorCallback to lazily create the service
 				container.AddService(
 					interfaceType, delegate {
+						if (serviceLoading)
+							throw new InvalidOperationException("Found cyclic dependency when initializating " + className);
+						serviceLoading = true;
 						return args.AddIn.CreateObject(className);
 					});
 			}
