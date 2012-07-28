@@ -130,6 +130,13 @@ namespace ICSharpCode.SharpDevelop
 			return new ReadOnlyCollectionWrapper<T>(arr);
 		}
 		
+		public static V GetOrDefault<K,V>(this IReadOnlyDictionary<K, V> dict, K key)
+		{
+			V ret;
+			dict.TryGetValue(key, out ret);
+			return ret;
+		}
+		
 		public static IEnumerable<WinForms.Control> GetRecursive(this WinForms.Control.ControlCollection collection)
 		{
 			return collection.Cast<WinForms.Control>().Flatten(c => c.Controls.Cast<WinForms.Control>());

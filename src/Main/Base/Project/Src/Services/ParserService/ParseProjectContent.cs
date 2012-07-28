@@ -213,8 +213,18 @@ namespace ICSharpCode.SharpDevelop.Parser
 				if (!disposed) {
 					projectContent = projectContent.UpdateProjectContent(oldFile, newFile);
 					serializedProjectContentIsUpToDate = false;
+					SD.ParserService.InvalidateCurrentSolutionSnapshot();
 				}
-				SD.ParserService.InvalidateCurrentSolutionSnapshot();
+			}
+		}
+		
+		public void SetCompilerSettings(object compilerSettings)
+		{
+			lock (lockObj) {
+				if (!disposed) {
+					projectContent = projectContent.SetCompilerSettings(compilerSettings);
+					SD.ParserService.InvalidateCurrentSolutionSnapshot();
+				}
 			}
 		}
 		

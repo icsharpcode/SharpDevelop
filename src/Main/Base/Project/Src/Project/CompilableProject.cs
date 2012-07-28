@@ -347,7 +347,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (parseProjectContentContainer != null)
 					throw new InvalidOperationException("Already initialized.");
 				parseProjectContentContainer = new ParseProjectContentContainer(this, initialProjectContent);
+				parseProjectContentContainer.SetCompilerSettings(CreateCompilerSettings());
 			}
+		}
+		
+		protected virtual object CreateCompilerSettings()
+		{
+			return null;
 		}
 		
 		public override IProjectContent ProjectContent {

@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			IProjectContent pc = project.ProjectContent;
 			if (pc != null) {
 				foreach (IUnresolvedTypeDefinition c in pc.TopLevelTypeDefinitions) {
-					foreach (IMethod m in c.Methods) {
+					foreach (var m in c.Methods) {
 						if (m.IsStatic && m.Name == "Main") {
 							results.Add(c);
 						}

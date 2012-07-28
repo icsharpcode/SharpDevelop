@@ -71,9 +71,12 @@ namespace CSharpBinding.Parser
 		public ParseInformation Parse(FileName fileName, ITextSource fileContent, bool fullParseInformationRequested,
 		                              IProject parentProject, CancellationToken cancellationToken)
 		{
-			CSharpParser parser = new CSharpParser();
+			var csharpProject = parentProject as CSharpProject;
+			
+			CSharpParser parser = new CSharpParser(csharpProject != null ? csharpProject.CompilerSettings : null);
 			parser.GenerateTypeSystemMode = !fullParseInformationRequested;
-			CompilationUnit cu = parser.Parse(fileContent.CreateReader(), fileName);
+			
+			CompilationUnit cu = parser.Parse(fileContent, fileName);
 			cu.Freeze();
 			
 			CSharpParsedFile file = cu.ToTypeSystem();

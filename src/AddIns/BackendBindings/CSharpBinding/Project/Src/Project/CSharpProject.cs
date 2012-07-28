@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-
+using System.Threading;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
@@ -46,6 +46,8 @@ namespace CSharpBinding
 		{
 			reparseReferencesSensitiveProperties.Add("TargetFrameworkVersion");
 			reparseCodeSensitiveProperties.Add("DefineConstants");
+			reparseCodeSensitiveProperties.Add("AllowUnsafeBlocks");
+			reparseCodeSensitiveProperties.Add("CheckForOverflowUnderflow");
 		}
 		
 		public CSharpProject(ProjectLoadInformation loadInformation)
@@ -89,6 +91,45 @@ namespace CSharpBinding
 			} else {
 				base.StartBuild(options, feedbackSink);
 			}
+		}
+		
+		volatile CompilerSettings compilerSettings;
+		
+		public CompilerSettings CompilerSettings {
+			get {
+				if (compilerSettings == null)
+					CreateCompilerSettings();
+				return compilerSettings;
+			}
+		}
+		
+		protected override object CreateCompilerSettings()
+		{
+			// This method gets called when the project content is first created;
+			// or when any of the ReparseSensitiveProperties has changed.
+			CompilerSettings settings = new CompilerSettings();
+			settings.AllowUnsafeBlocks = GetBoolProperty("AllowUnsafeBlocks") ?? false;
+			settings.CheckForOverflow = GetBoolProperty("CheckForOverflowUnderflow") ?? false;
+			
+			string symbols = GetEvaluatedProperty("DefineConstants");
+			if (symbols != null) {
+				foreach (string symbol in symbols.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+					settings.ConditionalSymbols.Add(symbol.Trim());
+				}
+			}
+			settings.Freeze();
+			compilerSettings = settings;
+			return settings;
+		}
+		
+		bool? GetBoolProperty(string propertyName)
+		{
+			string val = GetEvaluatedProperty(propertyName);
+			if ("true".Equals(val, StringComparison.OrdinalIgnoreCase))
+				return true;
+			if ("false".Equals(val, StringComparison.OrdinalIgnoreCase))
+				return false;
+			return null;
 		}
 		
 		protected override ProjectBehavior CreateDefaultBehavior()
