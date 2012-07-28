@@ -779,5 +779,21 @@ namespace PackageManagement.Tests.EnvDTE
 			Assert.AreEqual(1, childItems.Count);
 			Assert.AreEqual("duplicate.cs", duplicateFileItem.Name);
 		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasTwoFilesInFolderTwoLevelsDeepButParentFolderHasDifferentCase_TopLevelFolderOnlyHasOneProjectItemForChildFolder()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\File1.cs");
+			msbuildProject.AddFile(@"CodeTemplates\SCAFFOLDERS\File2.cs");
+			
+			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
+			List<DTE.ProjectItem> childItems = GetAllChildItems(codeTemplatesFolderItem.ProjectItems);
+			DTE.ProjectItem scaffoldersFolderItem = childItems.FirstOrDefault();
+			
+			Assert.AreEqual(1, childItems.Count);
+			Assert.AreEqual("Scaffolders", scaffoldersFolderItem.Name);
+		}
 	}
 }

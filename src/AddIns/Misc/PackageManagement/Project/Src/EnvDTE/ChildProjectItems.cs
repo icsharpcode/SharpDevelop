@@ -62,7 +62,7 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool SeenChildProjectItemBefore(ProjectItem childProjectItem)
 		{
-			if (ProjectItems.Any(item => item.Name == childProjectItem.Name)) {
+			if (ProjectItems.Any(item => item.IsMatchByName(childProjectItem.Name))) {
 				return true;
 			}
 			ProjectItems.Add(childProjectItem);
