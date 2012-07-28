@@ -125,6 +125,7 @@
     <Compile Include="CSharp\CodeIssues\RedundantElseIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantFieldInitializerIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantTypeCastIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\ReferenceEqualsCalledWithValueTypeIssueTest.cs" />
     <Compile Include="CSharp\CodeIssues\TypeParameterNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\UnreachableCodeIssueTests.cs" />
     <Compile Include="CSharp\CSharpAmbienceTests.cs" />
