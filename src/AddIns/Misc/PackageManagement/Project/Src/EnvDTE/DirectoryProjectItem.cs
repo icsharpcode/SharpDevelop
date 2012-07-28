@@ -3,6 +3,8 @@
 
 using System;
 using System.IO;
+using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using SD = ICSharpCode.SharpDevelop.Project;
@@ -23,17 +25,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		static FileProjectItem CreateFileProjectItem(Project project, string relativePath)
 		{
-			string directory = GetLastDirectoryName(relativePath);
-			return new FileProjectItem(project.MSBuildProject, ItemType.Folder, directory);
+			return new FileProjectItem(project.MSBuildProject, ItemType.Folder, relativePath);
 		}
 		
-		static string GetLastDirectoryName(string relativePath)
+		static string GetSubdirectoryName(string relativePath)
 		{
-//			string[] directoryNames = relativePath.Split('\\');
-//			if (directoryNames.Length > 1) {
-//				return directoryNames[1];
-//			}
-			return relativePath;
+			return relativePath.Split('\\').First();
 		}
 		
 		public DirectoryProjectItem(Project project, FileProjectItem projectItem)

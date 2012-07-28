@@ -64,6 +64,11 @@ namespace PackageManagement.Tests.EnvDTE
 				.SingleOrDefault(item => item.Name == name);
 		}
 		
+		DTE.ProjectItem GetFirstChildItem(ProjectItems projectItems)
+		{
+			return projectItems.OfType<DTE.ProjectItem>().FirstOrDefault();
+		}
+		
 		[Test]
 		public void AddFromFileCopy_AddFileNameOutsideProjectFolder_FileIsIncludedInProjectInProjectFolder()
 		{
@@ -687,6 +692,36 @@ namespace PackageManagement.Tests.EnvDTE
 			
 			string expectedDirectory = @"d:\projects\MyProject\CodeTemplates\Scaffolders";
 			Assert.AreEqual(expectedDirectory, directory);
+		}
+		
+		[Test]
+		public void GetEnumerator_ProjectHasOneFileInFolderThreeLevelsDeep_FileReturnedInProjectItems()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\jQueryPlugin\jQueryPlugin.ps1");
+			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
+			DTE.ProjectItem scaffolderFolderItem = GetChildItem(codeTemplatesFolderItem.ProjectItems, "Scaffolders");
+			DTE.ProjectItem jqueryPluginFolderItem = GetChildItem(scaffolderFolderItem.ProjectItems, "jQueryPlugin");
+			
+			DTE.ProjectItem jqueryPluginFileItem = GetFirstChildItem(jqueryPluginFolderItem.ProjectItems);
+			
+			Assert.AreEqual("jQueryPlugin.ps1", jqueryPluginFileItem.Name);
+		}
+		
+		[Test]
+		public void Item_GetFileProjectItemByNameWhenProjectHasOneFileInFolderThreeLevelsDeep_ReturnsFileProjectItem()
+		{
+			CreateProjectItems();
+			msbuildProject.FileName = @"d:\projects\MyProject\MyProject.csproj";
+			msbuildProject.AddFile(@"CodeTemplates\Scaffolders\jQueryPlugin\jQueryPlugin.ps1");
+			DTE.ProjectItem codeTemplatesFolderItem = GetChildItem(projectItems, "CodeTemplates");
+			DTE.ProjectItem scaffolderFolderItem = GetChildItem(codeTemplatesFolderItem.ProjectItems, "Scaffolders");
+			DTE.ProjectItem jqueryPluginFolderItem = GetChildItem(scaffolderFolderItem.ProjectItems, "jQueryPlugin");
+			
+			DTE.ProjectItem jqueryPluginFileItem = jqueryPluginFolderItem.ProjectItems.Item("jQueryPlugin.ps1");
+			
+			Assert.AreEqual("jQueryPlugin.ps1", jqueryPluginFileItem.Name);
 		}
 	}
 }
