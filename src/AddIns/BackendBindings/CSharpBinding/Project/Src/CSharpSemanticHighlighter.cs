@@ -33,10 +33,12 @@ namespace CSharpBinding
 		readonly HighlightingColor fieldAccessColor;
 		readonly HighlightingColor valueKeywordColor;
 		readonly HighlightingColor parameterModifierColor;
+		readonly HighlightingColor inactiveCodeColor;
 		
 		List<IDocumentLine> invalidLines = new List<IDocumentLine>();
 		List<CachedLine> cachedLines = new List<CachedLine>();
 		bool hasCrashed;
+		bool forceParseOnNextRefresh;
 		
 		int lineNumber;
 		HighlightedLine line;
@@ -61,6 +63,7 @@ namespace CSharpBinding
 			this.fieldAccessColor = highlightingDefinition.GetNamedColor("FieldAccess");
 			this.valueKeywordColor = highlightingDefinition.GetNamedColor("NullOrValueKeywords");
 			this.parameterModifierColor = highlightingDefinition.GetNamedColor("ParameterModifiers");
+			this.inactiveCodeColor = highlightingDefinition.GetNamedColor("InactiveCode");
 			
 			SD.ParserService.ParseInformationUpdated += ParserService_ParseInformationUpdated;
 			SD.ParserService.LoadSolutionProjectsThread.Finished += ParserService_LoadSolutionProjectsThreadEnded;
@@ -146,6 +149,7 @@ namespace CSharpBinding
 		{
 			cachedLines.Clear();
 			invalidLines.Clear();
+			forceParseOnNextRefresh = true;
 			syntaxHighlighter.InvalidateAll();
 		}
 		
@@ -208,7 +212,13 @@ namespace CSharpBinding
 				return cachedLine.HighlightedLine;
 			}
 			
-			var parseInfo = SD.ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version) as CSharpFullParseInformation;
+			CSharpFullParseInformation parseInfo;
+			if (forceParseOnNextRefresh) {
+				forceParseOnNextRefresh = false;
+				parseInfo = SD.ParserService.Parse(textEditor.FileName, textEditor.Document) as CSharpFullParseInformation;
+			} else {
+				parseInfo = SD.ParserService.GetCachedParseInformation(textEditor.FileName, textEditor.Document.Version) as CSharpFullParseInformation;
+			}
 			if (parseInfo == null) {
 				if (!invalidLines.Contains(documentLine))
 					invalidLines.Add(documentLine);
@@ -278,10 +288,10 @@ namespace CSharpBinding
 		{
 			if (color == null)
 				return;
-			if (start.Line == lineNumber && end.Line == lineNumber) {
+			if (start.Line <= lineNumber && end.Line >= lineNumber) {
 				int lineStartOffset = line.DocumentLine.Offset;
-				int startOffset = lineStartOffset + start.Column - 1;
-				int endOffset = lineStartOffset + end.Column - 1;
+				int startOffset = lineStartOffset + (start.Line == lineNumber ? start.Column - 1 : 0);
+				int endOffset = lineStartOffset + (end.Line == lineNumber ? end.Column - 1 : line.DocumentLine.Length);
 				if (line.Sections.Count > 0) {
 					HighlightedSection prevSection = line.Sections.Last();
 					if (startOffset < prevSection.Offset + prevSection.Length)
@@ -347,12 +357,18 @@ namespace CSharpBinding
 		{
 			Expression target = invocationExpression.Target;
 			if (target is IdentifierExpression || target is MemberReferenceExpression || target is PointerReferenceExpression) {
+				var invocationRR = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+				if (invocationRR != null && IsInactiveConditionalMethod(invocationRR.Member)) {
+					// mark the whole invocation expression as inactive code
+					Colorize(invocationExpression, inactiveCodeColor);
+					return;
+				}
+				
 				// apply color to target's target
 				target.GetChildByRole(Roles.TargetExpression).AcceptVisitor(this);
 				
 				// highlight the method call
 				var identifier = target.GetChildByRole(Roles.Identifier);
-				var invocationRR = resolver.Resolve(invocationExpression) as CSharpInvocationResolveResult;
 				if (invocationRR != null && !invocationRR.IsDelegateInvocation) {
 					Colorize(identifier, methodCallColor);
 				} else {
@@ -364,8 +380,38 @@ namespace CSharpBinding
 			} else {
 				target.AcceptVisitor(this);
 			}
-			
-			invocationExpression.Arguments.AcceptVisitor(this);
+			// Visit arguments and comments within the arguments:
+			for (AstNode child = target.NextSibling; child != null; child = child.NextSibling) {
+				child.AcceptVisitor(this);
+			}
+		}
+		
+		bool IsInactiveConditionalMethod(IParameterizedMember member)
+		{
+			if (member.EntityType != EntityType.Method || member.ReturnType.Kind != TypeKind.Void)
+				return false;
+			while (member.IsOverride)
+				member = (IParameterizedMember)InheritanceHelper.GetBaseMember(member);
+			return IsInactiveConditional(member.Attributes);
+		}
+		
+		bool IsInactiveConditional(IList<IAttribute> attributes)
+		{
+			bool hasConditionalAttribute = false;
+			foreach (var attr in attributes) {
+				if (attr.AttributeType.Name == "ConditionalAttribute" && attr.AttributeType.Namespace == "System.Diagnostics" && attr.PositionalArguments.Count == 1) {
+					string symbol = attr.PositionalArguments[0].ConstantValue as string;
+					if (symbol != null) {
+						hasConditionalAttribute = true;
+						var cu = this.resolver.RootNode as CompilationUnit;
+						if (cu != null) {
+							if (cu.ConditionalSymbols.Contains(symbol))
+								return false; // conditional is active
+						}
+					}
+				}
+			}
+			return hasConditionalAttribute;
 		}
 		
 		public override void VisitAccessor(Accessor accessor)
@@ -380,34 +426,40 @@ namespace CSharpBinding
 		
 		public override void VisitMethodDeclaration(MethodDeclaration methodDeclaration)
 		{
-			//methodDeclaration.Attributes.AcceptVisitor(this);
-			methodDeclaration.ReturnType.AcceptVisitor(this);
-			methodDeclaration.PrivateImplementationType.AcceptVisitor(this);
-			Colorize(methodDeclaration.NameToken, methodCallColor);
-			methodDeclaration.TypeParameters.AcceptVisitor(this);
-			methodDeclaration.Parameters.AcceptVisitor(this);
-			methodDeclaration.Constraints.AcceptVisitor(this);
-			methodDeclaration.Body.AcceptVisitor(this);
+			for (AstNode child = methodDeclaration.FirstChild; child != null; child = child.NextSibling) {
+				if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber) {
+					if (child.Role == Roles.Identifier) {
+						// child == methodDeclaration.NameToken
+						Colorize(child, methodCallColor);
+					} else {
+						child.AcceptVisitor(this);
+					}
+				}
+			}
 		}
 		
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
-			//typeDeclaration.Attributes.AcceptVisitor(this);
-			
-			if (typeDeclaration.ClassType == ClassType.Enum || typeDeclaration.ClassType == ClassType.Struct)
-				Colorize(typeDeclaration.NameToken, valueTypeColor);
-			else
-				Colorize(typeDeclaration.NameToken, referenceTypeColor);
-			
-			typeDeclaration.TypeParameters.AcceptVisitor(this);
-			typeDeclaration.BaseTypes.AcceptVisitor(this);
-			typeDeclaration.Constraints.AcceptVisitor(this);
-			typeDeclaration.Members.AcceptVisitor(this);
+			// Type declarations often contain #if directives, so we must make sure
+			// to also visit the comments.
+			for (AstNode child = typeDeclaration.FirstChild; child != null; child = child.NextSibling) {
+				if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber) {
+					if (child.Role == Roles.Identifier) {
+						// child == typeDeclaration.NameToken
+						if (typeDeclaration.ClassType == ClassType.Enum || typeDeclaration.ClassType == ClassType.Struct)
+							Colorize(typeDeclaration.NameToken, valueTypeColor);
+						else
+							Colorize(typeDeclaration.NameToken, referenceTypeColor);
+					} else {
+						child.AcceptVisitor(this);
+					}
+				}
+			}
 		}
 		
 		public override void VisitTypeParameterDeclaration(TypeParameterDeclaration typeParameterDeclaration)
 		{
-			//typeParameterDeclaration.Attributes.AcceptVisitor(this);
+			typeParameterDeclaration.Attributes.AcceptVisitor(this);
 			
 			if (typeParameterDeclaration.Variance == VarianceModifier.Contravariant)
 				Colorize(typeParameterDeclaration.VarianceToken, parameterModifierColor);
@@ -439,6 +491,13 @@ namespace CSharpBinding
 				Colorize(variableInitializer.NameToken, fieldAccessColor);
 			}
 			variableInitializer.Initializer.AcceptVisitor(this);
+		}
+		
+		public override void VisitComment(Comment comment)
+		{
+			if (comment.CommentType == CommentType.InactiveCode) {
+				Colorize(comment, inactiveCodeColor);
+			}
 		}
 		#endregion
 	}

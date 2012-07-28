@@ -205,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			List<string> targets = new List<string>();
-			if (baseProject.HasProjectType(ProjectTypeGuids.PortableLibrary)) {
+			if (baseProject.MinimumSolutionVersion >= Solution.SolutionVersionVS2010) {
 				targets.Add("ResolveReferences");
 				targets.Add("DesignTimeResolveAssemblyReferences");
 			} else {

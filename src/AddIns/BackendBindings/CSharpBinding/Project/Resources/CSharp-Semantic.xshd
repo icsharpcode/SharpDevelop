@@ -35,6 +35,7 @@
 	<Color name="ValueTypes" fontWeight="bold" foreground="#004085" exampleText="System.#{#DateTime#}# date;"/>
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.#{#ToString#}#();"/>
 	<Color name="FieldAccess" fontStyle="italic" exampleText="return this.#{#name#}#;"/>
+	<Color name="InactiveCode" foreground="Gray" exampleText="Deactivated by #if"/>
 	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">

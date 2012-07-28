@@ -57,7 +57,7 @@ class DerivedClass : BaseClass {
 			var pc = new CSharpProjectContent().UpdateProjectContent(null, parseInfo.ParsedFile);
 			pc = pc.AddAssemblyReferences(new[] { Corlib });
 			var compilation = pc.CreateCompilation();
-			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStub<IParserService>());
+			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStrictMock<IParserService>());
 			SD.ParserService.Stub(p => p.GetCachedParseInformation(textEditor.FileName)).Return(parseInfo);
 			SD.ParserService.Stub(p => p.GetCompilationForFile(textEditor.FileName)).Return(compilation);
 			CSharpCompletionBinding completion = new CSharpCompletionBinding();

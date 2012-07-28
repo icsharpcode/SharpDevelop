@@ -238,9 +238,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			lock (SyncRoot) {
 				if (parseProjectContentContainer == null)
 					return; // parsing hasn't started yet; no need to re-parse
+				if (references) {
+					parseProjectContentContainer.ReparseReferences();
+				}
+				if (code) {
+					parseProjectContentContainer.SetCompilerSettings(CreateCompilerSettings());
+					parseProjectContentContainer.ReparseCode();
+				}
 			}
-			#warning Reparse
-			throw new NotImplementedException();
 		}
 		
 		[Browsable(false)]

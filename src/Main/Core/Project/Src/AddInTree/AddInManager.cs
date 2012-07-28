@@ -265,7 +265,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		/// <param name="addIns">
 		/// The list of AddIns to add. (use <see cref="AddIn"/> instances
-		/// created by <see cref="AddIn.Load(TextReader,string,XmlNameTable)"/>).
+		/// created by <see cref="AddIn.Load(IAddInTree,TextReader,string,XmlNameTable)"/>).
 		/// </param>
 		public static void AddExternalAddIns(IList<AddIn> addIns)
 		{
@@ -289,7 +289,7 @@ namespace ICSharpCode.Core
 		/// AddIns.
 		/// </summary>
 		/// The list of AddIns to remove.
-		/// (use external AddIns from the <see cref="AddInTree.AddIns"/> collection).
+		/// (use external AddIns from the <see cref="IAddInTree.AddIns"/> collection).
 		public static void RemoveExternalAddIns(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();

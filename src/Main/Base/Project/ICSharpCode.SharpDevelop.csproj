@@ -740,6 +740,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Util\AtomicBoolean.cs" />
     <Compile Include="Src\Util\MultiDictionary.cs" />
     <Compile Include="Src\Util\DotnetDetection.cs" />
     <Compile Include="Src\Util\FakeXmlViewContent.cs" />

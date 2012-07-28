@@ -22,14 +22,55 @@ Stuff that was renamed/moved:
 	IReturnType -> ITypeReference (unresolved) or IType (resolved)
 	Location -> TextLocation in ICSharpCode.NRefactory
 	TextLocation -> moved to ICSharpCode.NRefactory
-	ParserService -> SD.ParserService
 
 Functionality changes:
-	The result of a parser run (ParseInformation) now may contain a fully parsed AST.
-	The ParserService may cache such full ASTs, but may also drop them from memory at any time.
-	This will be implemented by keeping the last N accessed files in the cache. (currently we just keep the caches around forever)
-	Every parse information also contains an IParsedFile instance with the type system information.
-	The IParsedFile is stored permanently (both in ParserService and in the IProjectContents).
+
+	Static services replaced with interfaces:
+		To make writing unit tests easier, the static services in SharpDevelop are getting
+		replaced with interfaces. The class "SD" has static properties to get references
+		to the services, so the call "ResourceService.GetString()" becomes "SD.ResourceService.GetString()".
+		
+		In unit tests, Rhino.Mocks can be used to easily create mocks of the services:
+			SD.InitializeForUnitTests(); // removes services from previous test cases
+			SD.Services.AddService(typeof(IParserService), MockRepository.GenerateStrictMock<IParserService>());
+			SD.ParserService.Stub(p => p.GetCachedParseInformation(textEditor.FileName)).Return(parseInfo);
+			SD.ParserService.Stub(p => p.GetCompilationForFile(textEditor.FileName)).Return(compilation);
+		
+		It is possible to define a service interface in ICSharpCode.SharpDevelop.dll and have the implementation
+		somewhere else (SD will find it using the AddInTree).
+		This allows for AddIns to consume each other's functionality (e.g. debugger accessing the decompiler service)
+		without having to define a custom extension point.
+		The long-term goal is to have only interfaces and helper classes in ICSharpCode.SharpDevelop.dll (the API for AddIns)
+		and have the implementation details in SharpDevelop.exe (which AddIns aren't supposed to reference).
+
+
+	SD.MainThread:
+		The new best way to invoke a call on the main thread is:
+			SD.MainThread.InvokeAsync(delegate { ... }).FireAndForget();
+		
+		Note that InvokeAsync returns a Task (like all .NET 4.5 *Async APIs). If any exceptions occur while
+		executing the delegate, they will get stored in the task object. This can cause the exception to get
+		silently ignored if the task object isn't used later. The "FireAndForget()" extension method solves
+		this problem by reporting any (future) errors to the message service.
+
+
+	SD.PropertyService:
+		The Get()/Set() methods no longer support nested Properties objects or lists of elements -
+		you will need to use the new dedicated GetList()/SetList()/NestedProperties() methods for that.
+		
+		The Get() method no longer causes the default value to be stored in the container; and GetList()
+		results in a read-only list - an explicit SetList() call is required to store the resulting value again.
+		
+		However, a nested properties container still is connected with its parent, and any changes done
+		to the nested container will get saves without having to call the SetNestedProperties() method.
+
+
+	SD.ParserService:
+		The result of a parser run (ParseInformation) now may contain a fully parsed AST.
+		The ParserService may cache such full ASTs, but may also drop them from memory at any time.
+		This will be implemented by keeping the last N accessed files in the cache. (currently we just keep the caches around forever)
+		Every parse information also contains an IParsedFile instance with the type system information.
+		The IParsedFile is stored permanently (both in ParserService and in the IProjectContents).
 
 
 Context Actions vs. Member Context Menu:
