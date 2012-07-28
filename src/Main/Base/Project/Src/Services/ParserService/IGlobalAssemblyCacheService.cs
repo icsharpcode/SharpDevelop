@@ -3,12 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Parser
 {
 	/// <summary>
 	/// Interface for global assembly cache service.
 	/// </summary>
+	[SDService]
 	public interface IGlobalAssemblyCacheService
 	{
 		/// <summary>

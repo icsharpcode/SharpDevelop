@@ -11,7 +11,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// <summary>
 	/// Allows creating new text editor instances and accessing the default text editor options.
 	/// </summary>
-	[FallbackService(typeof(EditorControlServiceFallback))]
+	[SDService(FallbackImplementation = typeof(EditorControlServiceFallback))]
 	public interface IEditorControlService
 	{
 		ITextEditor CreateEditor(out object control);

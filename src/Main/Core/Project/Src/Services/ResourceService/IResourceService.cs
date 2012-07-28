@@ -10,7 +10,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Provides string and bitmap resources.
 	/// </summary>
-	[FallbackService(typeof(DummyResourceService))]
+	[SDService(FallbackImplementation = typeof(FallbackResourceService))]
 	public interface IResourceService
 	{
 		/// <summary>
@@ -59,7 +59,7 @@ namespace ICSharpCode.Core
 		void RegisterNeutralImages(ResourceManager imageManager);
 	}
 	
-	sealed class DummyResourceService : IResourceService
+	sealed class FallbackResourceService : IResourceService
 	{
 		event EventHandler IResourceService.LanguageChanged { add {} remove {} }
 		

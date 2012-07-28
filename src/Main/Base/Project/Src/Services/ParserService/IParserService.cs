@@ -21,6 +21,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <summary>
 	/// Manages parse runs and caches ParseInformation.
 	/// </summary>
+	[SDService]
 	public interface IParserService
 	{
 		/// <summary>

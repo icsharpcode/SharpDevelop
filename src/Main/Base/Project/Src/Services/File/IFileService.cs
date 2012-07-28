@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <summary>
 	/// File service.
 	/// </summary>
+	[SDService]
 	public interface IFileService
 	{
 		#region Options

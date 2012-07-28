@@ -6,7 +6,7 @@ using ICSharpCode.Core.Implementation;
 
 namespace ICSharpCode.Core
 {
-	[FallbackService(typeof(FallbackLoggingService))]
+	[SDService(FallbackImplementation = typeof(FallbackLoggingService))]
 	public interface ILoggingService
 	{
 		void Debug(object message);

@@ -7,11 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 
+using ICSharpCode.Core;
+
 namespace ICSharpCode.SharpDevelop
 {
 	/// <summary>
 	/// Represents a thread running a message loop.
 	/// </summary>
+	[SDService]
 	public interface IMessageLoop
 	{
 		/// <summary>

@@ -11,6 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
+	[SDService]
 	public interface IStatusBarService
 	{
 		//bool Visible { get; set; }

@@ -12,6 +12,7 @@ namespace ICSharpCode.Core
 	/// This service is used to summarize important information
 	/// about the state of the application when an exception occurs.
 	/// </summary>
+	[SDService]
 	public class ApplicationStateInfoService
 	{
 		readonly Dictionary<string, Func<object>> stateGetters = new Dictionary<string, Func<object>>(StringComparer.InvariantCulture);

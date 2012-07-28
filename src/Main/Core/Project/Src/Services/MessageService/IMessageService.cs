@@ -9,7 +9,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Interface for the MessageService.
 	/// </summary>
-	[FallbackService(typeof(FallbackMessageService))]
+	[SDService(FallbackImplementation = typeof(FallbackMessageService))]
 	public interface IMessageService
 	{
 		/// <summary>

@@ -13,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Parser
 	/// <summary>
 	/// Portions of parser service that deal with loading external assemblies for code completion.
 	/// </summary>
+	[SDService]
 	public interface IAssemblyParserService
 	{
 		IUnresolvedAssembly GetAssembly(FileName fileName, CancellationToken cancellationToken = default(CancellationToken));

@@ -14,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// This is the basic interface to the workspace.
 	/// </summary>
+	[SDService]
 	public interface IWorkbench : IMementoCapable
 	{
 		/// <summary>

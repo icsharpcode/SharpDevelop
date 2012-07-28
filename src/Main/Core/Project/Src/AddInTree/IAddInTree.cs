@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.Core
 {
+	[SDService]
 	public interface IAddInTree
 	{
 		/// <summary>
