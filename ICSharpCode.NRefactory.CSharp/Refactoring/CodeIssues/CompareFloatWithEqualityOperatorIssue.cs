@@ -80,6 +80,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void AddIsNaNIssue(BinaryOperatorExpression binaryOperatorExpr, Expression argExpr, string floatType)
 			{
+				if (ctx.Resolve (argExpr).Type.ReflectionName != "System.Single")
+					floatType = "double";
 				AddIssue (binaryOperatorExpr, string.Format(ctx.TranslateString ("Use {0}.IsNan()"), floatType),
 					script => {
 						Expression expr = new InvocationExpression (new MemberReferenceExpression (

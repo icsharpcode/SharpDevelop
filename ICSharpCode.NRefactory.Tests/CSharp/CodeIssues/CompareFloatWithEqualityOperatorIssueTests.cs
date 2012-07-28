@@ -78,7 +78,7 @@ class TestClass
 		bool test = x == System.Double.NaN;
 		bool test2 = x != double.NaN;
 		bool test3 = y == float.NaN;
-		bool test4 = x != float.NaN
+		bool test4 = x != float.NaN;
 	}
 }";
 			var output = @"
@@ -92,7 +92,7 @@ class TestClass
 		bool test4 = !double.IsNaN (x);
 	}
 }";
-			Test<CompareFloatWithEqualityOperatorIssue> (input, 3, output);
+			Test<CompareFloatWithEqualityOperatorIssue> (input, 4, output);
 		}
 	}
 }
