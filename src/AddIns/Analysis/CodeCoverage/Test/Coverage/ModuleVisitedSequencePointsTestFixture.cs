@@ -99,7 +99,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void ModuleGetVisitedCodeLength_FooModule_ReturnsTotalLengthOfAllVisitedMethodSequencePoints()
 		{
 			int length = FooModule.GetVisitedCodeLength();
-			int expectedLength = 9;
+			int expectedLength = 4;
 			Assert.AreEqual(expectedLength, length);
 		}
 		
@@ -107,7 +107,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void ModuleGetUnvisitedCodeLength_FooModule_ReturnsTotalLengthOfAllNonVisitedMethodSequencePoints()
 		{
 			int length = FooModule.GetUnvisitedCodeLength();
-			int expectedLength = 3;
+			int expectedLength = 2;
 			Assert.AreEqual(expectedLength, length);
 		}
 		
@@ -115,7 +115,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void ModuleGetVisitedCodeLength_BarModule_ReturnsTotalLengthOfAllVisitedMethodSequencePoints()
 		{
 			int length = BarModule.GetVisitedCodeLength();
-			int expectedLength = 11;
+			int expectedLength = 2;
 			Assert.AreEqual(expectedLength, length);
 		}
 		
@@ -123,7 +123,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void ModuleGetUnvisitedCodeLength_BarModule_ReturnsTotalLengthOfAllNonVisitedMethodSequencePoints()
 		{
 			int length = BarModule.GetUnvisitedCodeLength();
-			int expectedLength = 4;
+			int expectedLength = 1;
 			Assert.AreEqual(expectedLength, length);
 		}
 		

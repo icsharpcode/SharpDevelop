@@ -73,7 +73,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodName_ModuleHasOneMethod_ReturnsExpectedMethodName()
 		{
 			string name = FirstModuleFirstMethod.Name;
-			string expectedName = "System.Void Foo.Tests.FooTestFixture::.SimpleTest()";
+			string expectedName = "System.Void Foo.Tests.FooTestFixture::SimpleTest()";
 			Assert.AreEqual(expectedName, name);
 		}
 		
@@ -118,7 +118,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 			point.EndColumn = 4;
 			point.Line = 20;
 			point.EndLine = 20;
-			point.Length = 2;
+			point.Length = 1;
 			
 			Assert.AreEqual(point, FirstModuleFirstMethodFirstSequencePoint);
 		}

@@ -25,7 +25,7 @@ namespace ICSharpCode.CodeCoverage
 			this.Column = column;
 			this.EndLine = endLine;
 			this.EndColumn = endColumn;
-			this.Length = length;
+			this.Length = 1;
 		}
 		
 		public CodeCoverageSequencePoint(string document, XElement reader)
@@ -41,7 +41,7 @@ namespace ICSharpCode.CodeCoverage
 			Column = GetInteger(reader, "sc");
 			EndLine = GetInteger(reader, "el");
 			EndColumn = GetInteger(reader, "ec");
-			Length = 10; // TODO: need to find a way to get this. GetInteger(reader, "len");
+			Length = 1; // TODO: need to find a way to get this. GetInteger(reader, "len");
 		}
 		
 		int GetInteger(XElement reader, string attributeName)
