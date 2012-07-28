@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 using ICSharpCode.NRefactory.Semantics;
 
