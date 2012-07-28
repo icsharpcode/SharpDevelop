@@ -252,7 +252,7 @@ namespace CSharpBinding
 			}
 			this.line = null;
 			this.resolver = null;
-			Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
+			//Debug.WriteLine("Semantic highlighting for line {0} - added {1} sections", lineNumber, line.Sections.Count);
 			if (textEditor.Document.Version != null) {
 				cachedLines.Add(new CachedLine(line, textEditor.Document.Version));
 			}
@@ -438,6 +438,36 @@ namespace CSharpBinding
 			}
 		}
 		
+		public override void VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration)
+		{
+			HandleConstructorOrDestructor(constructorDeclaration);
+		}
+		
+		public override void VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration)
+		{
+			HandleConstructorOrDestructor(destructorDeclaration);
+		}
+		
+		void HandleConstructorOrDestructor(AstNode constructorDeclaration)
+		{
+			for (AstNode child = constructorDeclaration.FirstChild; child != null; child = child.NextSibling) {
+				if (child.StartLocation.Line <= lineNumber && child.EndLocation.Line >= lineNumber) {
+					if (child.Role == Roles.Identifier) {
+						// child == constructorDeclaration.NameToken
+						var currentTypeDef = resolver.GetResolverStateBefore(constructorDeclaration).CurrentTypeDefinition;
+						if (currentTypeDef != null && ((Identifier)child).Name == currentTypeDef.Name) {
+							if (currentTypeDef.IsReferenceType == true)
+								Colorize(child, referenceTypeColor);
+							else if (currentTypeDef.IsReferenceType == false)
+								Colorize(child, valueTypeColor);
+						}
+					} else {
+						child.AcceptVisitor(this);
+					}
+				}
+			}
+		}
+		
 		public override void VisitTypeDeclaration(TypeDeclaration typeDeclaration)
 		{
 			// Type declarations often contain #if directives, so we must make sure
@@ -498,6 +528,16 @@ namespace CSharpBinding
 			if (comment.CommentType == CommentType.InactiveCode) {
 				Colorize(comment, inactiveCodeColor);
 			}
+		}
+		
+		public override void VisitAttribute(ICSharpCode.NRefactory.CSharp.Attribute attribute)
+		{
+			ITypeDefinition attrDef = resolver.Resolve(attribute.Type).Type.GetDefinition();
+			if (attrDef != null && IsInactiveConditional(attrDef.Attributes)) {
+				Colorize(attribute, inactiveCodeColor);
+				return;
+			}
+			VisitChildren(attribute);
 		}
 		#endregion
 	}

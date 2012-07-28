@@ -162,6 +162,9 @@ namespace ICSharpCode.SharpDevelop.Parser
 			} catch (SerializationException ex) {
 				LoggingService.Warn(ex);
 				return null;
+			} catch (InvalidCastException ex) {
+				LoggingService.Warn(ex);
+				return null;
 			}
 		}
 		
