@@ -67,7 +67,11 @@ namespace ICSharpCode.NRefactory.Utils
 			dict.Clear();
 		}
 		
+		#if NET45
+		public IReadOnlyList<TValue> this[TKey key] {
+		#else
 		public IList<TValue> this[TKey key] {
+		#endif
 			get {
 				List<TValue> list;
 				if (dict.TryGetValue(key, out list))
