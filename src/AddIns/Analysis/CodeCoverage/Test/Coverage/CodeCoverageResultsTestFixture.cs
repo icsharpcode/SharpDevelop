@@ -155,14 +155,14 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void GetVisitedCodeLength_FirstMethod_ReturnsSummedLengthOfVisitedSequencePoints()
 		{
 			int length = FirstModuleFirstMethod.GetVisitedCodeLength();
-			Assert.AreEqual(3, length);
+			Assert.AreEqual(2, length);
 		}
 		
 		[Test]
 		public void GetUnvisitedCodeLength_FirstMethod_ReturnsSummedLengthOfUnvisitedSequencePoints()
 		{
 			int length = FirstModuleFirstMethod.GetUnvisitedCodeLength();
-			Assert.AreEqual(4, length);
+			Assert.AreEqual(1, length);
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void MethodUnvisitedCodeLength_MethodWithNoSequencePoints_ReturnsBodySize()
 		{
 			int unvisitedCodeLength = FirstModuleFirstMethod.GetUnvisitedCodeLength();
-			int expectedUnvisitedCodeLength = 42;
+			int expectedUnvisitedCodeLength = 0;
 			Assert.AreEqual(expectedUnvisitedCodeLength, unvisitedCodeLength);
 		}
 	}

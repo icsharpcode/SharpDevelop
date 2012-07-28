@@ -44,6 +44,18 @@ namespace ICSharpCode.CodeCoverage
 			: this(GetMethodName(reader), className, GetMethodAttributes(reader))
 		{
 			ReadMethodBodySize(reader);
+			XAttribute isGetter = reader.Attribute("isGetter");
+			XAttribute isSetter = reader.Attribute("isSetter");
+			if (isGetter != null && isSetter != null && IsPropertyMethodName()) {
+				try {
+					IsProperty = Convert.ToBoolean(isGetter.Value) || Convert.ToBoolean(isSetter.Value);
+				} catch (FormatException) {
+					IsProperty = false;
+				}
+			}
+			else {
+				IsProperty = false;
+			}
 		}
 		
 		static string GetMethodName(XElement reader)
@@ -53,12 +65,6 @@ namespace ICSharpCode.CodeCoverage
 		
 		static MethodAttributes GetMethodAttributes(XElement reader)
 		{
-			//string flags = reader.GetAttribute("flags");
-			//if (flags != null) {
-			//    try {
-			//        return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
-			//    } catch (ArgumentException) { }
-			//}
 			return MethodAttributes.Public;
 		}
 		
@@ -73,11 +79,7 @@ namespace ICSharpCode.CodeCoverage
 		/// <summary>
 		/// Returns true if the method is a getter or setter method for a property.
 		/// </summary>
-		public bool IsProperty {
-			get { 
-				return IsSpecialMethodName() && IsPropertyMethodName();
-			}
-		}
+		public bool IsProperty { get; private set; }
 		
 		bool IsSpecialMethodName()
 		{
@@ -86,7 +88,7 @@ namespace ICSharpCode.CodeCoverage
 		
 		 bool IsPropertyMethodName()
 		{
-			return name.StartsWith("get_") || name.StartsWith("set_");
+			return name.Contains("::get_") || name.Contains("::set_");
 		}
 		
 		public string Name {

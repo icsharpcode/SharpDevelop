@@ -32,7 +32,11 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t\t\t\t\t\t<Method visited=\"true\" cyclomaticComplexity=\"1\" sequenceCoverage=\"100\" branchCoverage=\"100\" isConstructor=\"false\" isStatic=\"false\" isGetter=\"false\" isSetter=\"false\">\r\n" +
 				"\t\t\t\t\t\t\t<MetadataToken>100663297</MetadataToken>\r\n" +
 				"\t\t\t\t\t\t\t<Name>System.Boolean NUnit.Framework.NotEqualAsserter::Fail()</Name>\r\n" +
-				"\t\t\t\t\t\t\t<SequencePoints />\r\n" +
+				"\t\t\t\t\t\t\t<SequencePoints>\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"\t\t\t\t\t\t\t\t<SequencePoint vc=\"0\" sl=\"19\" sc=\"3\" el=\"19\" ec=\"18\" />\r\n" +
+				"\t\t\t\t\t\t\t</SequencePoints>\r\n" +
 				"\t\t\t\t\t\t</Method>\r\n" +
 				"\t\t\t\t\t</Methods>\r\n" +
 				"\t\t\t\t</Class>\r\n" +
