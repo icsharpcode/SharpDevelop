@@ -12,10 +12,10 @@ using UnitTesting.Tests.Utils;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class PartCoverSettingsFactoryTests
+	public class OpenCoverSettingsFactoryTests
 	{
-		PartCoverSettingsFactory factory;
-		PartCoverSettings partCoverSettings;
+		OpenCoverSettingsFactory factory;
+		OpenCoverSettings openCoverSettings;
 		MockCSharpProject project;
 		MockFileSystem fileSystem;
 		
@@ -23,38 +23,38 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 		public void Init()
 		{
 			fileSystem = new MockFileSystem();
-			factory = new PartCoverSettingsFactory(fileSystem);
+			factory = new OpenCoverSettingsFactory(fileSystem);
 			project = new MockCSharpProject();
 		}
 		
 		[Test]
-		public void CreatePartCoverSettingsWhenFileDoesNotExistCreatesSettingsWithNoPartCoverIncludes()
+		public void CreateOpenCoverSettingsWhenFileDoesNotExistCreatesSettingsWithNoPartCoverIncludes()
 		{
 			fileSystem.FileExistsReturnValue = false;
-			CreatePartCoverSettingsFromFactory();
-			Assert.AreEqual(0, partCoverSettings.Include.Count);
+			CreateOpenCoverSettingsFromFactory();
+			Assert.AreEqual(0, openCoverSettings.Include.Count);
 		}
 		
-		void CreatePartCoverSettingsFromFactory()
+		void CreateOpenCoverSettingsFromFactory()
 		{
-			partCoverSettings = factory.CreatePartCoverSettings(project);
+			openCoverSettings = factory.CreateOpenCoverSettings(project);
 		}
 		
 		[Test]
-		public void CreatePartCoverSettingsWhenFileExistsCreatesSettingsFromFile()
+		public void CreateOpenCoverSettingsWhenFileExistsCreatesSettingsFromFile()
 		{
-			string partCoverSettingsXml =
-				"<PartCoverSettings>\r\n" +
+			string openCoverSettingsXml =
+				"<OpenCoverSettings>\r\n" +
 				"   <Rule>+test</Rule>\r\n" +
-				"</PartCoverSettings>";
+				"</OpenCoverSettings>";
 			
-			StringReader reader = new StringReader(partCoverSettingsXml);
+			StringReader reader = new StringReader(openCoverSettingsXml);
 			fileSystem.CreateTextReaderReturnValue = reader;
 			
 			fileSystem.FileExistsReturnValue = true;
 			
-			CreatePartCoverSettingsFromFactory();
-			Assert.AreEqual("test", partCoverSettings.Include[0]);
+			CreateOpenCoverSettingsFromFactory();
+			Assert.AreEqual("test", openCoverSettings.Include[0]);
 		}
 	}
 }
