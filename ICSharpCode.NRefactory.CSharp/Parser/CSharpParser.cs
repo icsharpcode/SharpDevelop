@@ -2387,7 +2387,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (binaryExpression.Left != null)
 					result.AddChild ((Expression)binaryExpression.Left.Accept (this), BinaryOperatorExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (binaryExpression.Location)), BinaryOperatorExpression.GetOperatorRole (result.Operator));
+				var location = LocationsBag.GetLocations (binaryExpression);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), BinaryOperatorExpression.GetOperatorRole (result.Operator));
 				if (binaryExpression.Right != null)
 					result.AddChild ((Expression)binaryExpression.Right.Accept (this), BinaryOperatorExpression.RightRole);
 				return result;
@@ -2399,7 +2401,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Operator = BinaryOperatorType.NullCoalescing;
 				if (nullCoalescingOperator.LeftExpression != null)
 					result.AddChild ((Expression)nullCoalescingOperator.LeftExpression.Accept (this), BinaryOperatorExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (nullCoalescingOperator.Location)), BinaryOperatorExpression.NullCoalescingRole);
+				var location = LocationsBag.GetLocations (nullCoalescingOperator);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), BinaryOperatorExpression.NullCoalescingRole);
 				if (nullCoalescingOperator.RightExpression != null)
 					result.AddChild ((Expression)nullCoalescingOperator.RightExpression.Accept (this), BinaryOperatorExpression.RightRole);
 				return result;
@@ -3073,7 +3077,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.Operator = AssignmentOperatorType.Assign;
 				if (simpleAssign.Target != null)
 					result.AddChild ((Expression)simpleAssign.Target.Accept (this), AssignmentExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (simpleAssign.Location)), AssignmentExpression.AssignRole);
+				var location = LocationsBag.GetLocations (simpleAssign);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), AssignmentExpression.AssignRole);
 				if (simpleAssign.Source != null) {
 					result.AddChild ((Expression)simpleAssign.Source.Accept (this), AssignmentExpression.RightRole);
 				}
@@ -3118,7 +3124,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (compoundAssign.Target != null)
 					result.AddChild ((Expression)compoundAssign.Target.Accept (this), AssignmentExpression.LeftRole);
-				result.AddChild (new CSharpTokenNode (Convert (compoundAssign.Location)), AssignmentExpression.GetOperatorRole (result.Operator));
+				var location = LocationsBag.GetLocations (compoundAssign);
+				if (location != null)
+					result.AddChild (new CSharpTokenNode (Convert (location[0])), AssignmentExpression.GetOperatorRole (result.Operator));
 				if (compoundAssign.Source != null)
 					result.AddChild ((Expression)compoundAssign.Source.Accept (this), AssignmentExpression.RightRole);
 				return result;
@@ -3778,11 +3786,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				var file = new SourceFile (fileName, fileName, 0);
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
-				var parser = Driver.Parse (reader, file, module, lineModifier);
-
+				var session = new ParserSession ();
+				session.LocationsBag = new LocationsBag ();
+				var report = new Report (ctx, errorReportPrinter);
+				var parser = Driver.Parse (reader, file, module, session, report, lineModifier);
 				var top = new CompilerCompilationUnit () {
 					ModuleCompiled = module,
-					LocationsBag = parser.LocationsBag,
+					LocationsBag = session.LocationsBag,
 					SpecialsBag = parser.Lexer.sbag,
 					Conditionals = parser.Lexer.SourceFile.Conditionals
 				};
@@ -3879,10 +3889,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				var file = new SourceFile("", "", 0);
 				Location.Initialize(new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer(ctx);
-				module.DocumentationBuilder = new DocumentationBuilder();
+				module.DocumentationBuilder = new DocumentationBuilder(module);
 				var source_file = new CompilationSourceFile (module);
 				var report = new Report (ctx, errorReportPrinter);
-				var parser = new Mono.CSharp.CSharpParser (reader, source_file, report);
+				ParserSession session = new ParserSession ();
+				session.LocationsBag = new LocationsBag ();
+				var parser = new Mono.CSharp.CSharpParser (reader, source_file, report, session);
 				parser.Lexer.putback_char = Tokenizer.DocumentationXref;
 				parser.Lexer.parsing_generic_declaration_doc = true;
 				parser.parse ();
@@ -3891,7 +3903,7 @@ namespace ICSharpCode.NRefactory.CSharp
 //					                mc.GetSignatureForError (), cref);
 				}
 				
-				ConversionVisitor conversionVisitor = new ConversionVisitor (false, parser.LocationsBag);
+				ConversionVisitor conversionVisitor = new ConversionVisitor (false, session.LocationsBag);
 				DocumentationReference docRef = conversionVisitor.ConvertXmlDoc(module.DocumentationBuilder);
 				CompilerCallableEntryPoint.Reset();
 				return docRef;

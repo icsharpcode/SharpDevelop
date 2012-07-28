@@ -47,6 +47,8 @@ namespace Mono.CSharp
 		//
 		Dictionary<string, XmlDocument> StoredDocuments = new Dictionary<string, XmlDocument> ();
 
+		ParserSession session;
+
 		public DocumentationBuilder (ModuleContainer module)
 		{
 			doc_module = new ModuleContainer (module.Compiler);
@@ -55,11 +57,6 @@ namespace Mono.CSharp
 			this.module = module;
 			XmlDocumentation = new XmlDocument ();
 			XmlDocumentation.PreserveWhitespace = false;
-		}
-		
-		internal DocumentationBuilder()
-		{
-			// for NRefactory CSharpParser.ParseDocumentationReference
 		}
 
 		Report Report {
@@ -329,12 +326,18 @@ namespace Mono.CSharp
 
 			var encoding = module.Compiler.Settings.Encoding;
 			var s = new MemoryStream (encoding.GetBytes (cref));
-			SeekableStreamReader seekable = new SeekableStreamReader (s, encoding);
 
-			var source_file = new CompilationSourceFile (doc_module);
+			var source_file = new CompilationSourceFile (doc_module, mc.Location.SourceFile);
 			var report = new Report (doc_module.Compiler, new NullReportPrinter ());
 
-			var parser = new CSharpParser (seekable, source_file, report);
+			if (session == null)
+				session = new ParserSession () {
+					UseJayGlobalArrays = true
+				};
+
+			SeekableStreamReader seekable = new SeekableStreamReader (s, encoding, session.StreamReaderBuffer);
+
+			var parser = new CSharpParser (seekable, source_file, report, session);
 			ParsedParameters = null;
 			ParsedName = null;
 			ParsedBuiltinType = null;
