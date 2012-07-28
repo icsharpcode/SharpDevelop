@@ -495,23 +495,6 @@
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
 								<File Source="..\..\doc\SharpDevelopInfoResources.txt" Id="SharpDevelopInfoResources.txt" Name="SharpDevelopInfoResources.txt" />
 							</Component>
-							<Directory Id="TechNoteFolder" Name="technotes">
-								<Component Guid="167B7AF9-7267-4AD4-9C47-3373F0329840" Id="SharpDevelopTechNoteFiles" DiskId="1">
-									<File Source="..\..\doc\technotes\Versioning.html" Id="Versioning.html" Name="Versioning.html" />
-									<File Source="..\..\doc\technotes\AddInBuildingGuide.rtf" Id="AddInBuildingGuide.rtf" Name="AddInBuildingGuide.rtf" />
-									<File Source="..\..\doc\technotes\AddInManager.rtf" Id="AddInManager.rtf" Name="AddInManager.rtf" />
-									<File Source="..\..\doc\technotes\AddInTree.rtf" Id="AddInTree.rtf" Name="AddInTree.rtf" />
-									<File Source="..\..\doc\technotes\CodingStyleGuide.rtf" Id="CodingStyleGuide.rtf" Name="CodingStyleGuide.rtf" />
-									<File Source="..\..\doc\technotes\ConditionList.html" Id="ConditionList.html" Name="ConditionList.html" />
-									<File Source="..\..\doc\technotes\DoozerList.html" Id="DoozerList.html" Name="DoozerList.html" />
-									<File Source="..\..\doc\technotes\listing.css" Name="listing.css" Id="listing.css" />
-									<File Source="..\..\doc\technotes\TechicalWritingMadeEasier.rtf" Id="TechicalWritingMadeEasier.rtf" Name="TechicalWritingMadeEasier.rtf" />
-									<File Source="..\..\doc\technotes\TheFineArtOfCommenting.rtf" Id="TheFineArtOfCommenting.rtf" Name="TheFineArtOfCommenting.rtf" />
-								</Component>
-								<Component Guid="B5E6404F-E602-42AA-9C3A-996425AC3B40" Id="AddInWritingHelpWebsiteShortcut" DiskId="1">
-									<File Id="AddInWritingHelp.url" Name="AddIn Writing Help.url" Source="..\..\doc\technotes\AddIn Writing Help.url" KeyPath="yes" />
-								</Component>
-							</Directory>
 						</Directory>
 						<Directory Id="DataFolder" Name="data">
 							<Directory Id="ConversionStyleSheetsFolder" Name="ConversionStyleSheets">
@@ -952,8 +935,8 @@
 							<Component Guid="BD536EB3-6629-4699-9083-673B6175E044" Id="ICSharpCode.SharpDevelop.addin" DiskId="1">
 								<File Source="..\..\AddIns\ICSharpCode.SharpDevelop.addin" Id="ICSharpCode.SharpDevelop.addin" Name="ICSharpCode.SharpDevelop.addin" />
 							</Component>
-							<!--
 							<Directory Id="AnalysisFolder" Name="Analysis">
+								<!--
 								<Directory Id="CodeAnalysisFolder" Name="CodeAnalysis">
 									<Component Guid="6CF33D51-953D-4E5F-840C-7FDCFD757520" Id="CodeAnalysisFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\CodeAnalysis\CodeAnalysis.dll" Id="CodeAnalysis.dll" Name="CodeAnalysis.dll" Assembly=".net" AssemblyApplication="CodeAnalysis.dll" AssemblyManifest="CodeAnalysis.dll" KeyPath="yes" />
@@ -965,13 +948,13 @@
 										<File Source="..\..\AddIns\Analysis\CodeCoverage\CodeCoverage.dll" Id="CodeCoverage.dll" Name="CodeCoverage.dll" Assembly=".net" AssemblyApplication="CodeCoverage.dll" AssemblyManifest="CodeCoverage.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\Analysis\CodeCoverage\CodeCoverage.addin" Id="CodeCoverage.addin" Name="CodeCoverage.addin" />
 									</Component>
-								</Directory>
+								</Directory>-->
 								<Directory Id="UnitTestingFolder" Name="UnitTesting">
 									<Component Guid="F2F7F12D-1920-49BC-86B0-65B5A1B76516" Id="UnitTestingAddInFiles" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll" Id="UnitTesting.dll" Name="UnitTesting.dll" Assembly=".net" AssemblyApplication="UnitTesting.dll" AssemblyManifest="UnitTesting.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\Analysis\UnitTesting\UnitTesting.addin" Id="UnitTesting.addin" Name="UnitTesting.addin" />
 									</Component>
-								</Directory>
+								</Directory><!--
 								<Directory Id="SourceAnalysis" Name="SourceAnalysis">
 									<Component Guid="C9D099BC-CF4D-404A-BB2F-B13D4541DA0F" Id="SharpDevelopSourceAnalysisTargets" DiskId="1">
 										<File Source="..\..\AddIns\Analysis\SourceAnalysis\SharpDevelop.SourceAnalysis.targets" Name="SharpDevelop.SourceAnalysis.targets" Id="SharpDevelop.SourceAnalysis.targets" KeyPath="yes" />
@@ -1029,9 +1012,8 @@
 										<File Id="ICSharpCode.NRefactory.CSharp.dll_CQA" Name="ICSharpCode.NRefactory.CSharp.dll" Source="..\..\AddIns\Analysis\CodeQuality\ICSharpCode.NRefactory.CSharp.dll" />
 										<File Source="..\..\AddIns\Analysis\CodeQuality\CodeQuality.addin" Id="CodeQuality.addin" Name="CodeQuality.addin" />
 									</Component>
-								</Directory>
+								</Directory>-->
 							</Directory>
-							-->
 							<Directory Id="BackendBindingsFolder" Name="BackendBindings">
 								<Directory Id="CSharpBindingFolder" Name="CSharpBinding">
 									<Component Guid="1E6F20EC-6BF4-45C0-AE99-319FBF568BD1" Id="CSharpBindingFiles" DiskId="1">
@@ -1590,7 +1572,6 @@
 								</Directory>
 								-->
 							</Directory>
-							<!--
 							<Directory Id="DebuggerFolder" Name="Debugger">
 								<Component Guid="27C66A5A-0149-45F4-B1AF-C320FE005E6B" Id="DebuggerAddInFiles" DiskId="1">
 									<File Source="..\..\AddIns\Debugger\Debugger.AddIn.addin" Id="Debugger.AddIn.addin" Name="Debugger.AddIn.addin" />
@@ -1598,7 +1579,6 @@
 									<File Source="..\..\AddIns\Debugger\Debugger.Core.dll" Id="Debugger.Core.dll" Name="Debugger.Core.dll" />
 								</Component>
 							</Directory>
-							-->
 							<Directory Id="MiscAddInsFolder" Name="Misc">
 								<Directory Id="AddInManagerFolder" Name="AddInManager">
 									<Component Guid="AA44E205-CCE8-46F3-B84B-D031BDB3570D" Id="AddInManagerSharpZipLibDll" DiskId="1">

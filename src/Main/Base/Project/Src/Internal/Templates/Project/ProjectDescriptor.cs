@@ -179,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						#endif
 						return project => {
 							#if !DEBUG
-							ICommand command = (ICommand)AddInTree.BuildItem(path, null);
+							ICommand command = (ICommand)SD.AddInTree.BuildItem(path, null);
 							#endif
 							if (command != null) {
 								command.Owner = project;

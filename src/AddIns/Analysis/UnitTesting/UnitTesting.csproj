@@ -38,6 +38,7 @@
   <ItemGroup>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -54,11 +55,6 @@
     </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\..\..\Tools\NUnit\lib\nunit.core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.uikit">
-      <HintPath>..\..\..\Tools\NUnit\lib\nunit.uikit.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>

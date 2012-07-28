@@ -199,7 +199,6 @@
 				<ComponentRef Id="MonoCecilDll"/>
 				<ComponentRef Id="AvalonDockDll"/>
 				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
-				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
@@ -365,8 +364,8 @@
 				<ComponentRef Id="AddInScoutFiles"/>
 				<!--<ComponentRef Id="CodeAnalysisFiles"/>
 				<ComponentRef Id="CodeQualityFiles"/>
-				<ComponentRef Id="CodeCoverageFiles"/>
-				<ComponentRef Id="DebuggerAddInFiles"/>-->
+				<ComponentRef Id="CodeCoverageFiles"/>-->
+				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
 				<ComponentRef Id="FiletypeRegistererFiles"/>
 				<ComponentRef Id="HtmlHelp2Files"/>
@@ -378,14 +377,13 @@
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
 				<ComponentRef Id="GitAddInDll"/>
-				<!--<ComponentRef Id="UnitTestingAddInFiles"/>-->
+				<ComponentRef Id="UnitTestingAddInFiles"/>
 				<ComponentRef Id="SyntaxModesFiles"/>
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>
 				<ComponentRef Id="SharpDevelopAppPathRegistrySetting"/>
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
-				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				<ComponentRef Id="InteropPartCoverDll"/>
 				<ComponentRef Id="PartCoverDll"/>

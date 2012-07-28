@@ -1869,10 +1869,6 @@
 			<MenuItem id    = "ViewReadme"
 			          label = "${res:XML.MainMenu.HelpMenu.ReadMe}"
 			          link  = "home://doc/ReadMe.rtf" />
-			<MenuItem id    = "ViewStyleguide"
-			          label = "${res:XML.MainMenu.HelpMenu.StyleGuide}"
-			          link  = "home://doc/technotes/CodingStyleGuide.rtf" />
-			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "Web" label = "${res:XML.MainMenu.HelpMenu.WebMenu}" type="Menu">
 				<MenuItem id = "SharpDevelop" label = "SharpDevelop" type="Menu">
 					<MenuItem id = "Downloads" label = "Downloads" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/Download/" />
@@ -1899,7 +1895,7 @@
 					<MenuItem id = "DotGNU" label = "DotGNU" icon = "Icons.16x16.WebSearchIcon" link = "http://www.dotgnu.org" />
 				</MenuItem>
 			</MenuItem>
-			<MenuItem id = "Separator3" type = "Separator" />
+			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "About"
 			          label = "${res:XML.MainMenu.HelpMenu.About}"
 			          icon = "Icons.16x16.AboutIcon"
