@@ -18,12 +18,12 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		{
 			this.ProjectItem = projectItem;
 			this.Project = projectItem.ContainingProject;
-			this.ChildDirectoryProjectItems = new List<ProjectItem>();
+			this.ProjectItems = new List<ProjectItem>();
 		}
 		
 		ProjectItem ProjectItem { get; set; }
 		Project Project { get; set; }
-		List<ProjectItem> ChildDirectoryProjectItems { get; set; }
+		List<ProjectItem> ProjectItems { get; set; }
 		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
@@ -54,22 +54,18 @@ namespace ICSharpCode.PackageManagement.EnvDTE
 		
 		bool IgnoreChildProjectItem(ProjectItem item)
 		{
-			if (item == null) {
-				return true;
+			if (item != null) {
+				return SeenChildProjectItemBefore(item);
 			}
-			
-			if (item.IsDirectory) {
-				return ChildDirectoryProjectItemSeenBefore(item);
-			}
-			return false;
+			return true;
 		}
 		
-		bool ChildDirectoryProjectItemSeenBefore(ProjectItem directoryProjectItem)
+		bool SeenChildProjectItemBefore(ProjectItem childProjectItem)
 		{
-			if (ChildDirectoryProjectItems.Any(item => item.Name == directoryProjectItem.Name)) {
+			if (ProjectItems.Any(item => item.Name == childProjectItem.Name)) {
 				return true;
 			}
-			ChildDirectoryProjectItems.Add(directoryProjectItem);
+			ProjectItems.Add(childProjectItem);
 			return false;
 		}
 	}
