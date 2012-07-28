@@ -7,9 +7,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Debugger.Interop.CorDebug;
 using Debugger.MetaData;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil.Metadata;
@@ -27,10 +29,11 @@ namespace Debugger
 		class ModuleMetadataInfo
 		{
 			public readonly Module Module;
-			public Dictionary<IUnresolvedEntity, uint> MetadataTokens = new Dictionary<IUnresolvedEntity, uint>();
-			public Dictionary<uint, IUnresolvedMethod> TokenToMethod = new Dictionary<uint, IUnresolvedMethod>();
-			public Dictionary<IUnresolvedMember, ITypeReference[]> LocalVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
+			Dictionary<IUnresolvedEntity, uint> metadataTokens = new Dictionary<IUnresolvedEntity, uint>();
+			Dictionary<uint, IUnresolvedMethod> tokenToMethod = new Dictionary<uint, IUnresolvedMethod>();
+			Dictionary<IUnresolvedMember, ITypeReference[]> localVariableTypes = new Dictionary<IUnresolvedMember, ITypeReference[]>();
 			readonly CecilLoader typeRefLoader;
+			readonly ReaderWriterLockSlim rwLock = new ReaderWriterLockSlim();
 			
 			public ModuleMetadataInfo(Module module, Mono.Cecil.ModuleDefinition cecilModule)
 			{
@@ -42,24 +45,67 @@ namespace Debugger
 			
 			public void AddMember(IUnresolvedEntity entity, Mono.Cecil.MemberReference cecilObject)
 			{
-				uint token = cecilObject.MetadataToken.ToUInt32();
-				this.MetadataTokens[entity] = token;
-				
-				var cecilMethod = cecilObject as Mono.Cecil.MethodDefinition;
-				if (cecilMethod != null) {
-					IUnresolvedMethod method = (IUnresolvedMethod)entity;
-					this.TokenToMethod[token] = method;
-					if (cecilMethod.HasBody) {
-						var locals = cecilMethod.Body.Variables;
-						if (locals.Count > 0) {
-							this.LocalVariableTypes[method] = locals.Select(v => typeRefLoader.ReadTypeReference(v.VariableType)).ToArray();
-						}
-						if (cecilMethod.RVA != 0) {
-							// The method was loaded from image - we can free the memory for the body
-							// because Cecil will re-initialize it on demand
-							cecilMethod.Body = null;
+				rwLock.EnterWriteLock();
+				try {
+					uint token = cecilObject.MetadataToken.ToUInt32();
+					metadataTokens[entity] = token;
+					
+					var cecilMethod = cecilObject as Mono.Cecil.MethodDefinition;
+					if (cecilMethod != null) {
+						IUnresolvedMethod method = (IUnresolvedMethod)entity;
+						tokenToMethod[token] = method;
+						if (cecilMethod.HasBody) {
+							var locals = cecilMethod.Body.Variables;
+							if (locals.Count > 0) {
+								localVariableTypes[method] = locals.Select(v => typeRefLoader.ReadTypeReference(v.VariableType)).ToArray();
+							}
+							if (cecilMethod.RVA != 0) {
+								// The method was loaded from image - we can free the memory for the body
+								// because Cecil will re-initialize it on demand
+								cecilMethod.Body = null;
+							}
 						}
 					}
+				} finally {
+					rwLock.ExitWriteLock();
+				}
+			}
+			
+			public IReadOnlyList<ITypeReference> GetLocalVariableTypes(IUnresolvedMember member)
+			{
+				rwLock.EnterReadLock();
+				try {
+					ITypeReference[] result;
+					if (localVariableTypes.TryGetValue(member, out result))
+						return result;
+					else
+						return EmptyList<ITypeReference>.Instance;
+				} finally {
+					rwLock.ExitReadLock();
+				}
+			}
+			
+			public uint GetMetadataToken(IUnresolvedEntity entity)
+			{
+				rwLock.EnterReadLock();
+				try {
+					return metadataTokens[entity];
+				} finally {
+					rwLock.ExitReadLock();
+				}
+			}
+			
+			public IUnresolvedMethod GetMethodFromToken(uint functionToken)
+			{
+				rwLock.EnterReadLock();
+				try {
+					IUnresolvedMethod method;
+					if (tokenToMethod.TryGetValue(functionToken, out method))
+						return method;
+					else
+						return null;
+				} finally {
+					rwLock.ExitReadLock();
 				}
 			}
 		}
@@ -132,25 +178,25 @@ namespace Debugger
 		public static uint GetMetadataToken(this ITypeDefinition typeDefinition)
 		{
 			var info = GetInfo(typeDefinition.ParentAssembly);
-			return info.MetadataTokens[typeDefinition.Parts[0]];
+			return info.GetMetadataToken(typeDefinition.Parts[0]);
 		}
 		
 		public static uint GetMetadataToken(this IField field)
 		{
 			var info = GetInfo(field.ParentAssembly);
-			return info.MetadataTokens[field.UnresolvedMember];
+			return info.GetMetadataToken(field.UnresolvedMember);
 		}
 		
 		public static uint GetMetadataToken(this IMethod method)
 		{
 			var info = GetInfo(method.ParentAssembly);
-			return info.MetadataTokens[method.UnresolvedMember];
+			return info.GetMetadataToken(method.UnresolvedMember);
 		}
 		
 		public static IType GetLocalVariableType(this IMethod method, int index)
 		{
 			var info = GetInfo(method.ParentAssembly);
-			var variableTypes = info.LocalVariableTypes[method.UnresolvedMember];
+			var variableTypes = info.GetLocalVariableTypes(method.UnresolvedMember);
 			return variableTypes[index].Resolve(new SimpleTypeResolveContext(method));
 		}
 		#endregion
@@ -200,7 +246,7 @@ namespace Debugger
 			ITypeDefinition typeDef = type.GetDefinition();
 			appDomain = GetAppDomain(typeDef.Compilation);
 			var info = GetInfo(typeDef.ParentAssembly);
-			uint token = info.MetadataTokens[typeDef.Parts[0]];
+			uint token = info.GetMetadataToken(typeDef.Parts[0]);
 			ICorDebugClass corClass = info.Module.CorModule.GetClassFromToken(token);
 			List<ICorDebugType> corGenArgs = new List<ICorDebugType>();
 			ParameterizedType pt = type as ParameterizedType;
@@ -462,15 +508,17 @@ namespace Debugger
 			Module module = compilation.GetAppDomain().Process.GetModule(corFunction.GetModule());
 			var info = GetInfo(module.Assembly);
 			uint functionToken = corFunction.GetToken();
-			IUnresolvedMethod unresolvedMethod;
-			if (!info.TokenToMethod.TryGetValue(functionToken, out unresolvedMethod)) {
+			var unresolvedMethod = info.GetMethodFromToken(functionToken);
+			if (unresolvedMethod == null) {
 				// The type containing this function wasn't loaded yet
 				uint classToken = corFunction.GetClass().GetToken();
 				var definition = ToTypeDefinitionReference(module, classToken).Resolve(new SimpleTypeResolveContext(module.Assembly)).GetDefinition();
 				if (definition == null)
 					throw new InvalidOperationException("Could not find class for token " + classToken);
 				definition.Methods.ToList(); // enforce loading the methods so that they get added to the dictionary
-				unresolvedMethod = info.TokenToMethod[functionToken];
+				unresolvedMethod = info.GetMethodFromToken(functionToken);
+				if (unresolvedMethod == null)
+					throw new InvalidOperationException("Could not find function with token " + functionToken);
 			}
 			return unresolvedMethod.Resolve(new SimpleTypeResolveContext(module.Assembly));
 		}
