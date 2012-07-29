@@ -4,8 +4,8 @@
 using System;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Framework;
 
@@ -49,42 +49,40 @@ namespace ICSharpCode.CodeAnalysis
 				}
 				IProject project = ProjectService.GetProject(engineWorker.ProjectFileName);
 				if (project != null) {
-					IProjectContent pc = ParserService.GetProjectContent(project);
-					if (pc != null) {
-						if (error.FileName != null) {
-							int pos = error.FileName.IndexOf("positionof#", StringComparison.Ordinal);
-							if (pos >= 0) {
-								string memberName = error.FileName.Substring(pos+11);
-								FilePosition filePos = GetPosition(pc, memberName);
-								if (filePos.IsEmpty == false && filePos.CompilationUnit != null) {
-									error.FileName = filePos.FileName ?? "";
-									error.Line = filePos.Line;
-									error.Column = filePos.Column;
-								} else {
-									error.FileName = null;
-								}
+					if (error.FileName != null) {
+						int pos = error.FileName.IndexOf("positionof#", StringComparison.Ordinal);
+						if (pos >= 0) {
+							ICompilation compilation = SD.ParserService.GetCompilation(project);
+							string memberName = error.FileName.Substring(pos+11);
+							DomRegion filePos = GetPosition(compilation, memberName);
+							if (!filePos.IsEmpty) {
+								error.FileName = filePos.FileName ?? "";
+								error.Line = filePos.BeginLine;
+								error.Column = filePos.BeginColumn;
+							} else {
+								error.FileName = null;
 							}
 						}
-						
-						if (moreData.Length > 1 && !string.IsNullOrEmpty(moreData[0])) {
-							error.Tag = new FxCopTaskTag {
-								ProjectContent = pc,
-								TypeName = moreData[0],
-								MemberName = moreData[1],
-								Category = error.HelpKeyword,
-								CheckID = checkId
-							};
-						} else {
-							error.Tag = new FxCopTaskTag {
-								ProjectContent = pc,
-								Category = error.HelpKeyword,
-								CheckID = checkId
-							};
-						}
-						error.ContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu";
-						if (moreData.Length > 2) {
-							(error.Tag as FxCopTaskTag).MessageID = moreData[2];
-						}
+					}
+					
+					if (moreData.Length > 1 && !string.IsNullOrEmpty(moreData[0])) {
+						error.Tag = new FxCopTaskTag {
+							Project = project,
+							TypeName = moreData[0],
+							MemberName = moreData[1],
+							Category = error.HelpKeyword,
+							CheckID = checkId
+						};
+					} else {
+						error.Tag = new FxCopTaskTag {
+							Project = project,
+							Category = error.HelpKeyword,
+							CheckID = checkId
+						};
+					}
+					error.ContextMenuAddInTreeEntry = "/SharpDevelop/Pads/ErrorList/CodeAnalysisTaskContextMenu";
+					if (moreData.Length > 2) {
+						(error.Tag as FxCopTaskTag).MessageID = moreData[2];
 					}
 				}
 				nextChainElement.HandleError(error);
@@ -95,8 +93,10 @@ namespace ICSharpCode.CodeAnalysis
 				nextChainElement.HandleBuildEvent(e);
 			}
 			
-			static FilePosition GetPosition(IProjectContent pc, string memberName)
+			static DomRegion GetPosition(ICompilation compilation, string memberName)
 			{
+				throw new NotImplementedException();
+				/*
 				// memberName is a special syntax used by our FxCop task:
 				// className#memberName
 				int pos = memberName.IndexOf('#');
@@ -104,14 +104,14 @@ namespace ICSharpCode.CodeAnalysis
 					return FilePosition.Empty;
 				string className = memberName.Substring(0, pos);
 				memberName = memberName.Substring(pos + 1);
-				return SuppressMessageCommand.GetPosition(pc, className, memberName);
+				return SuppressMessageCommand.GetPosition(pc, className, memberName);*/
 			}
 		}
 	}
 	
 	public class FxCopTaskTag
 	{
-		public IProjectContent ProjectContent { get; set; }
+		public IProject Project { get; set; }
 		public string TypeName { get; set; }
 		public string MemberName { get; set; }
 		public string Category { get; set; }

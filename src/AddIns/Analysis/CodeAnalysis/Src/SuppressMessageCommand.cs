@@ -4,16 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
-using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.CodeAnalysis
 {
@@ -22,11 +19,12 @@ namespace ICSharpCode.CodeAnalysis
 		public override void Run()
 		{
 			TaskView view = (TaskView)Owner;
-			foreach (Task t in new List<Task>(view.SelectedTasks)) {
+			foreach (SDTask t in view.SelectedTasks.ToList()) {
 				FxCopTaskTag tag = t.Tag as FxCopTaskTag;
 				if (tag == null)
 					continue;
-				CodeGenerator codegen = tag.ProjectContent.Language.CodeGenerator;
+				throw new NotImplementedException();
+				/*CodeGenerator codegen = tag.ProjectContent.Language.CodeGenerator;
 				if (codegen == null)
 					continue;
 				FilePosition p;
@@ -57,10 +55,11 @@ namespace ICSharpCode.CodeAnalysis
 				document.Insert(line.Offset, code);
 				provider.TextEditor.JumpTo(p.Line, p.Column);
 				TaskService.Remove(t);
-				ParserService.ParseViewContent(viewContent);
+				ParserService.ParseViewContent(viewContent);*/
 			}
 		}
 		
+		/*
 		internal static FilePosition GetPosition(IProjectContent pc, string className, string memberName)
 		{
 			IClass c = pc.GetClassByReflectionName(className, false);
@@ -102,11 +101,11 @@ namespace ICSharpCode.CodeAnalysis
 				return false;
 			
 			return a.Line > b.Line;
-		}
+		}*/
 		
 		const string NamespaceName = "System.Diagnostics.CodeAnalysis";
 		const string AttributeName = "SuppressMessage";
-		
+		/*
 		static Ast.AbstractNode CreateSuppressAttribute(ICompilationUnit cu, FxCopTaskTag tag)
 		{
 			//System.Diagnostics.CodeAnalysis.SuppressMessageAttribute
@@ -129,35 +128,6 @@ namespace ICSharpCode.CodeAnalysis
 				AttributeTarget = tag.MemberName == null ? "assembly" : null,
 				Attributes = { a }
 			};
-		}
-		
-		static bool CheckImports(ICompilationUnit cu)
-		{
-			if (CheckImports(cu.ProjectContent.DefaultImports))
-				return true;
-			return CheckImports(cu.UsingScope);
-		}
-		
-		static bool CheckImports(IUsingScope scope)
-		{
-			foreach (IUsing u in scope.Usings) {
-				if (CheckImports(u)) {
-					return true;
-				}
-			}
-			foreach (IUsingScope childscope in scope.ChildScopes) {
-				if (CheckImports(childscope))
-					return true;
-			}
-			return false;
-		}
-		
-		static bool CheckImports(IUsing u)
-		{
-			if (u == null)
-				return false;
-			else
-				return u.Usings.Contains(NamespaceName);
-		}
+		}*/
 	}
 }

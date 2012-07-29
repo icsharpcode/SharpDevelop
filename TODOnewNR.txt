@@ -13,6 +13,14 @@ Commented code, needs to be ported and re-enabled:
 
 --> See TODO-list on Google Docs
 
+Important features (self-hosting):
+	Ctrl+Space Completion
+	ctor snippet
+	Rename refactoring
+	Run unit test from icon bar margin
+	"Add using" context action (and other resolve error MD context actions)
+	ILSpy-AddIn
+
 Stuff that was renamed/moved:
 	ICSharpCode.SharpDevelop.Dom -> the type system and resolvers now are part of ICSharpCode.NRefactory
 	IDocument -> moved to ICSharpCode.NRefactory.Editor

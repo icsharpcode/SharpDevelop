@@ -4,29 +4,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+
 using Debugger.MetaData;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Services;
 
 //using Debugger.AddIn.Visualizers;
 //using Debugger.AddIn.Visualizers.Utils;
-
-
-
-
-
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -55,8 +46,8 @@ namespace Debugger.AddIn.TreeModel
 			get { return this.Value; }
 		}
 		
-		public ValueNode(string imageName, string name, Func<Value> getValue, Action<Value> setValue = null)
-			: base(imageName, name, string.Empty, string.Empty, null)
+		public ValueNode(IImage image, string name, Func<Value> getValue, Action<Value> setValue = null)
+			: base(image, name, string.Empty, string.Empty, null)
 		{
 			if (getValue == null)
 				throw new ArgumentNullException("getValue");
@@ -132,7 +123,7 @@ namespace Debugger.AddIn.TreeModel
 					}
 				} else if (val.Type.Kind == TypeKind.Pointer) {
 					if (val.Dereference() != null) {
-						this.GetChildren = () => new[] { new ValueNode("Icons.16x16.Local", "*" + this.Name, () => GetValue().Dereference()) };
+						this.GetChildren = () => new[] { new ValueNode(ClassBrowserIconService.LocalVariable, "*" + this.Name, () => GetValue().Dereference()) };
 					}
 				}
 				
@@ -236,32 +227,6 @@ namespace Debugger.AddIn.TreeModel
 			return menu;
 		}
 		
-		public static string GetImageForMember(IMember memberInfo)
-		{
-			string name = string.Empty;
-			
-			if (memberInfo.IsPublic) {
-			} else if (memberInfo.IsInternal) {
-				name += "Internal";
-			} else if (memberInfo.IsProtected) {
-				name += "Protected";
-			} else if (memberInfo.IsPrivate) {
-				name += "Private";
-			}
-			
-			if (memberInfo is FieldInfo) {
-				name += "Field";
-			} else if (memberInfo is PropertyInfo) {
-				name += "Property";
-			} else if (memberInfo is MethodInfo) {
-				name += "Method";
-			} else {
-				throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
-			}
-			
-			return "Icons.16x16." + name;
-		}
-		
 		/// <summary>
 		/// The root of any node evaluation is valid stack frame.
 		/// </summary>
@@ -281,7 +246,7 @@ namespace Debugger.AddIn.TreeModel
 		{
 			if (value == null)
 				throw new ArgumentNullException("value");
-			return new ValueNode("Icons.16x16.Local", text, () => value);
+			return new ValueNode(ClassBrowserIconService.LocalVariable, text, () => value);
 		}
 		
 		public static IEnumerable<TreeNode> GetLocalVariables()
@@ -289,12 +254,12 @@ namespace Debugger.AddIn.TreeModel
 			var stackFrame = GetCurrentStackFrame();
 			foreach(var par in stackFrame.MethodInfo.Parameters.Select((p, i) => new { Param = p, Index = i})) {
 				var parCopy = par;
-				yield return new ValueNode("Icons.16x16.Parameter", par.Param.Name, () => GetCurrentStackFrame().GetArgumentValue(par.Index));
+				yield return new ValueNode(ClassBrowserIconService.Parameter, par.Param.Name, () => GetCurrentStackFrame().GetArgumentValue(par.Index));
 			}
 			if (stackFrame.HasSymbols) {
 				foreach(LocalVariable locVar in stackFrame.GetLocalVariables(stackFrame.IP)) {
 					var locVarCopy = locVar;
-					yield return new ValueNode("Icons.16x16.Local", locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
+					yield return new ValueNode(ClassBrowserIconService.LocalVariable, locVar.Name, () => locVarCopy.GetValue(GetCurrentStackFrame()));
 				}
 			} else {
 				WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
@@ -332,7 +297,7 @@ namespace Debugger.AddIn.TreeModel
 			IType baseType = shownType.DirectBaseTypes.FirstOrDefault(t => t.Kind != TypeKind.Interface);
 			if (baseType != null) {
 				yield return new TreeNode(
-					"Icons.16x16.Class",
+					ClassBrowserIconService.Class,
 					StringParser.Parse("${res:MainWindow.Windows.Debug.LocalVariables.BaseClass}"),
 					baseType.Name,
 					baseType.FullName,
@@ -391,8 +356,8 @@ namespace Debugger.AddIn.TreeModel
 		{
 			foreach(var memberInfo in members.OrderBy(m => m.Name)) {
 				var memberInfoCopy = memberInfo;
-				string imageName = GetImageForMember(memberInfo);
-				yield return new ValueNode(imageName, memberInfo.Name, () => GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberInfoCopy));
+				var icon = ClassBrowserIconService.GetIcon(memberInfo);
+				yield return new ValueNode(icon, memberInfo.Name, () => GetValue().GetMemberValue(WindowsDebugger.EvalThread, memberInfoCopy));
 			}
 		}
 		
@@ -415,7 +380,7 @@ namespace Debugger.AddIn.TreeModel
 			if (count == 0) {
 				return new [] { new TreeNode("(empty)", null) };
 			} else {
-				return Enumerable.Range(0, count).Select(i => new ValueNode("Icons.16x16.Field", "[" + i + "]", () => list.GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
+				return Enumerable.Range(0, count).Select(i => new ValueNode(ClassBrowserIconService.Field, "[" + i + "]", () => list.GetPropertyValue(WindowsDebugger.EvalThread, itemProp, Eval.CreateValue(WindowsDebugger.EvalThread, i))));
 			}
 		}
 		
@@ -470,7 +435,7 @@ namespace Debugger.AddIn.TreeModel
 					}
 					sb.Append("]");
 					int[] indicesCopy = indices;
-					yield return new ValueNode("Icons.16x16.Field", sb.ToString(), () => GetValue().GetArrayElement(indicesCopy));
+					yield return new ValueNode(ClassBrowserIconService.Field, sb.ToString(), () => GetValue().GetArrayElement(indicesCopy));
 				}
 				yield break;
 			}

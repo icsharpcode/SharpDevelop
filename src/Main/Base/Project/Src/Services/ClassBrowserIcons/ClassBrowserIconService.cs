@@ -25,25 +25,15 @@ namespace ICSharpCode.SharpDevelop
 		#endregion
 		
 		#region Entity Images
-		[Obsolete]
 		public static readonly IImage Class = GetIImage(CompletionImage.Class.BaseImage);
-		[Obsolete]
 		public static readonly IImage Struct = GetIImage(CompletionImage.Struct.BaseImage);
-		[Obsolete]
 		public static readonly IImage Interface = GetIImage(CompletionImage.Interface.BaseImage);
-		[Obsolete]
 		public static readonly IImage Enum = GetIImage(CompletionImage.Enum.BaseImage);
-		[Obsolete]
 		public static readonly IImage Method = GetIImage(CompletionImage.Method.BaseImage);
-		[Obsolete]
 		public static readonly IImage Property = GetIImage(CompletionImage.Property.BaseImage);
-		[Obsolete]
 		public static readonly IImage Field = GetIImage(CompletionImage.Field.BaseImage);
-		[Obsolete]
 		public static readonly IImage Delegate = GetIImage(CompletionImage.Delegate.BaseImage);
-		[Obsolete]
 		public static readonly IImage Event = GetIImage(CompletionImage.Event.BaseImage);
-		[Obsolete]
 		public static readonly IImage Indexer = GetIImage(CompletionImage.Indexer.BaseImage);
 		#endregion
 		

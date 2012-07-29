@@ -1448,16 +1448,13 @@
 										<File Source="..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll" Id="FormsDesigner.dll" Name="FormsDesigner.dll" Assembly=".net" AssemblyApplication="FormsDesigner.dll" AssemblyManifest="FormsDesigner.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.addin" Id="FormsDesigner.addin" Name="FormsDesigner.addin" />
 									</Component>
-								</Directory>
+								</Directory>-->
 								<Directory Id="IconEditorFolder" Name="IconEditor">
-									<Component Guid="13031705-82B1-46D8-8749-453A6A313A3B" Id="IconEditorExe" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditor.exe" Id="IconEditor.exe" Name="IconEditor.exe" Assembly=".net" AssemblyApplication="IconEditor.exe" AssemblyManifest="IconEditor.exe" KeyPath="yes" />
-									</Component>
 									<Component Guid="A6F985C3-09A5-4650-9A8E-239BBC737B10" Id="IconEditorAddInFiles" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditorAddIn.dll" Id="ICSharpCode.IconEditorAddIn.dll" Name="ICSharpCode.IconEditorAddIn.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditorAddIn.dll" AssemblyManifest="ICSharpCode.IconEditorAddIn.dll" KeyPath="yes" />
 										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditorAddIn.addin" Id="IconEditorAddIn.addin" Name="IconEditorAddIn.addin" />
 									</Component>
-								</Directory>
+								</Directory><!--
 								<Directory Id="ResourceEditorFolder" Name="ResourceEditor">
 									<Component Guid="010A8620-382C-477B-9330-51A8B6C48A7A" Id="ResourceEditorFiles" DiskId="1">
 										<File Source="..\..\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.dll" Id="ResourceEditor.dll" Name="ResourceEditor.dll" Assembly=".net" AssemblyApplication="ResourceEditor.dll" AssemblyManifest="ResourceEditor.dll" KeyPath="yes" />

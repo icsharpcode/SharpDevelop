@@ -342,10 +342,9 @@
 				<ComponentRef Id="WixUIMinimalProjectTemplate"/>
 				<ComponentRef Id="WixUIInstallDirProjectTemplate"/>
 				<ComponentRef Id="WixUIFeatureTreeProjectTemplate"/>
-				<ComponentRef Id="FormsDesignerFiles"/>
+				<ComponentRef Id="FormsDesignerFiles"/>-->
 				<ComponentRef Id="IconEditorAddInFiles"/>
-				<ComponentRef Id="IconEditorExe"/>
-				<ComponentRef Id="ResourceEditorFiles"/>
+				<!--<ComponentRef Id="ResourceEditorFiles"/>
 				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>

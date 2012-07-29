@@ -100,9 +100,9 @@ namespace Debugger.AddIn.TreeModel
 			this.GetChildren = getChildren;
 		}
 		
-		public TreeNode(string imageName, string name, string value, string type, Func<IEnumerable<TreeNode>> getChildren)
+		public TreeNode(IImage image, string name, string value, string type, Func<IEnumerable<TreeNode>> getChildren)
 		{
-			this.Image = string.IsNullOrEmpty(imageName) ? null : new ResourceServiceImage(imageName);
+			this.Image = image;
 			this.Name = name;
 			this.Value = value;
 			this.Type = type;

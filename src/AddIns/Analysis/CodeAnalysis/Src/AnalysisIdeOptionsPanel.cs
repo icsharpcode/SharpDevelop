@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using System;
 using System.IO;
@@ -53,10 +54,10 @@ namespace ICSharpCode.CodeAnalysis
 		
 		public static string FxCopPath {
 			get {
-				return PropertyService.Get("CodeAnalysis.FxCopPath");
+				return SD.PropertyService.Get("CodeAnalysis.FxCopPath", string.Empty);
 			}
 			set {
-				PropertyService.Set("CodeAnalysis.FxCopPath", value);
+				SD.PropertyService.Set("CodeAnalysis.FxCopPath", value);
 			}
 		}
 	}
