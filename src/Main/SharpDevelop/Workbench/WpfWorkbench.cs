@@ -16,7 +16,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Navigation;
-
+using System.Windows.Threading;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Gui;
@@ -302,18 +302,24 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			}
 		}
 		
+		bool activeWindowWasChanged;
+		
 		void OnActiveWindowChanged(object sender, EventArgs e)
 		{
-			if (closeAll)
+			if (activeWindowWasChanged)
 				return;
-			
-			if (workbenchLayout != null) {
-				this.ActiveContent = workbenchLayout.ActiveContent;
-				this.ActiveWorkbenchWindow = workbenchLayout.ActiveWorkbenchWindow;
-			} else {
-				this.ActiveContent = null;
-				this.ActiveWorkbenchWindow = null;
-			}
+			activeWindowWasChanged = true;
+			Dispatcher.BeginInvoke(new Action(
+				delegate {
+					activeWindowWasChanged = false;
+					if (workbenchLayout != null) {
+						this.ActiveContent = workbenchLayout.ActiveContent;
+						this.ActiveWorkbenchWindow = workbenchLayout.ActiveWorkbenchWindow;
+					} else {
+						this.ActiveContent = null;
+						this.ActiveWorkbenchWindow = null;
+					}
+				}));
 		}
 		
 		IViewContent activeViewContent;
@@ -431,41 +437,21 @@ namespace ICSharpCode.SharpDevelop.Workbench
 			return null;
 		}
 		
-		/// <summary>
-		/// Flag used to prevent repeated ActiveWindowChanged events during CloseAllViews().
-		/// </summary>
-		bool closeAll;
-		
 		public void CloseAllViews()
 		{
 			WorkbenchSingleton.AssertMainThread();
-			try {
-				closeAll = true;
-				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
-					window.CloseWindow(false);
-				}
-			} finally {
-				closeAll = false;
-				OnActiveWindowChanged(this, EventArgs.Empty);
+			foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
+				window.CloseWindow(false);
 			}
 		}
 		
 		public bool CloseAllSolutionViews()
 		{
 			bool result = true;
-			
-			WorkbenchSingleton.AssertMainThread();
-			try {
-				closeAll = true;
-				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
-					if (window.ActiveViewContent != null && window.ActiveViewContent.CloseWithSolution)
-						result &= window.CloseWindow(false);
-				}
-			} finally {
-				closeAll = false;
-				OnActiveWindowChanged(this, EventArgs.Empty);
+			foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
+				if (window.ActiveViewContent != null && window.ActiveViewContent.CloseWithSolution)
+					result &= window.CloseWindow(false);
 			}
-			
 			return result;
 		}
 		
