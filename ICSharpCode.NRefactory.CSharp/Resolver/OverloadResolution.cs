@@ -781,15 +781,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return null;
 		}
 		
+		/// <summary>
+		/// Returns the arguments for the method call in the order they were provided (not in the order of the parameters).
+		/// Arguments are wrapped in a <see cref="ConversionResolveResult"/> if an implicit conversion is being applied
+		/// to them when calling the method.
+		/// </summary>
 		public IList<ResolveResult> GetArgumentsWithConversions()
 		{
 			if (bestCandidate == null)
 				return arguments;
 			else
-				return GetArgumentsWithConversions(null);
+				return GetArgumentsWithConversions(null, null);
 		}
 		
-		IList<ResolveResult> GetArgumentsWithConversions(ResolveResult targetResolveResult)
+		/// <summary>
+		/// Returns the arguments for the method call in the order they were provided (not in the order of the parameters).
+		/// Arguments are wrapped in a <see cref="ConversionResolveResult"/> if an implicit conversion is being applied
+		/// to them when calling the method.
+		/// For arguments where an explicit argument name was provided, the argument will
+		/// be wrapped in a <see cref="NamedArgumentResolveResult"/>.
+		/// </summary>
+		public IList<ResolveResult> GetArgumentsWithConversionsAndNames()
+		{
+			if (bestCandidate == null)
+				return arguments;
+			else
+				return GetArgumentsWithConversions(null, GetBestCandidateWithSubstitutedTypeArguments());
+		}
+		
+		IList<ResolveResult> GetArgumentsWithConversions(ResolveResult targetResolveResult, IParameterizedMember bestCandidateForNamedArguments)
 		{
 			var conversions = this.ArgumentConversions;
 			ResolveResult[] args = new ResolveResult[arguments.Length];
@@ -797,22 +817,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				var argument = arguments[i];
 				if (this.IsExtensionMethodInvocation && i == 0 && targetResolveResult != null)
 					argument = targetResolveResult;
-				if (conversions[i] == Conversion.IdentityConversion) {
-					args[i] = argument;
-				} else {
-					int parameterIndex = bestCandidate.ArgumentToParameterMap[i];
-					IType parameterType;
-					if (parameterIndex >= 0) {
-						parameterType = bestCandidate.ParameterTypes[parameterIndex];
-					} else {
-						parameterType = SpecialType.UnknownType;
-					}
-					if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
-						args[i] = new CSharpResolver(compilation).WithCheckForOverflow(CheckForOverflow).ResolveCast(parameterType, argument);
-					} else {
-						args[i] = new ConversionResolveResult(parameterType, argument, conversions[i], CheckForOverflow);
+				int parameterIndex = bestCandidate.ArgumentToParameterMap[i];
+				if (parameterIndex >= 0 && conversions[i] != Conversion.IdentityConversion) {
+					// Wrap argument in ConversionResolveResult
+					IType parameterType = bestCandidate.ParameterTypes[parameterIndex];
+					if (parameterType.Kind != TypeKind.Unknown) {
+						if (arguments[i].IsCompileTimeConstant && conversions[i] != Conversion.None) {
+							argument = new CSharpResolver(compilation).WithCheckForOverflow(CheckForOverflow).ResolveCast(parameterType, argument);
+						} else {
+							argument = new ConversionResolveResult(parameterType, argument, conversions[i], CheckForOverflow);
+						}
 					}
 				}
+				if (bestCandidateForNamedArguments != null && argumentNames[i] != null) {
+					// Wrap argument in NamedArgumentResolveResult
+					if (parameterIndex >= 0) {
+						argument = new NamedArgumentResolveResult(bestCandidateForNamedArguments.Parameters[parameterIndex], argument, bestCandidateForNamedArguments);
+					} else {
+						argument = new NamedArgumentResolveResult(argumentNames[i], argument);
+					}
+				}
+				args[i] = argument;
 			}
 			return args;
 		}
@@ -857,7 +882,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return new CSharpInvocationResolveResult(
 				this.IsExtensionMethodInvocation ? new TypeResolveResult(member.DeclaringType) : targetResolveResult,
 				member,
-				GetArgumentsWithConversions(targetResolveResult),
+				GetArgumentsWithConversions(targetResolveResult, member),
 				this.BestCandidateErrors,
 				this.IsExtensionMethodInvocation,
 				this.BestCandidateIsExpandedForm,

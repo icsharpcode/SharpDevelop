@@ -120,6 +120,7 @@
     <Compile Include="Semantics\InvocationResolveResult.cs" />
     <Compile Include="Semantics\LocalResolveResult.cs" />
     <Compile Include="Semantics\MemberResolveResult.cs" />
+    <Compile Include="Semantics\NamedArgumentResolveResult.cs" />
     <Compile Include="Semantics\NamespaceResolveResult.cs" />
     <Compile Include="Semantics\OperatorResolveResult.cs" />
     <Compile Include="Semantics\ResolveResult.cs" />
