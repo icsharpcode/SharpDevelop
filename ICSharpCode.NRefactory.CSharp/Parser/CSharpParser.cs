@@ -3822,7 +3822,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerable<Statement> ParseStatements (TextReader reader, int lineModifier = 0)
 		{
-			string code = "void M() { " + Environment.NewLine + reader.ReadToEnd () + "}";
+			// the dummy method is async so that 'await' expressions are parsed as expected
+			string code = "async void M() { " + Environment.NewLine + reader.ReadToEnd () + "}";
 			var members = ParseTypeMembers (new StringReader (code), lineModifier - 1);
 			var method = members.FirstOrDefault () as MethodDeclaration;
 			if (method != null && method.Body != null) {

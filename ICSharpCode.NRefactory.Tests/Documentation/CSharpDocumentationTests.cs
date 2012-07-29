@@ -137,5 +137,37 @@ class Base {
 			Assert.AreEqual("Overridden summary", element.Children[0].TextContent);
 			Assert.AreEqual("Base remarks", element.Children[1].TextContent);
 		}
+		
+		[Test]
+		public void DocumentationAboveAttribute()
+		{
+			Init(@"using System;
+/// <summary/>
+[SomeAttribute]
+class Test { }");
+			Assert.AreEqual("<summary/>", typeDefinition.Documentation.ToString());
+		}
+		
+		[Test]
+		public void DocumentationAboveAttribute2()
+		{
+			Init(@"using System;
+/// <summary/>
+[SomeAttribute] // a comment on the attribute
+class Test { }");
+			Assert.AreEqual("<summary/>", typeDefinition.Documentation.ToString());
+		}
+		
+		[Test]
+		public void DocumentationAboveAttributeInRegion()
+		{
+			Init(@"using System;
+/// <summary/>
+#region R
+[SomeAttribute]
+#endregion
+class Test { }");
+			Assert.AreEqual("<summary/>", typeDefinition.Documentation.ToString());
+		}
 	}
 }
