@@ -1433,11 +1433,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							namedArgs.Add(namedArg);
 						
 					}
-					attributes[i] = new ResolvedSecurityAttribute {
-						AttributeType = attributeType,
-						NamedArguments = namedArgs,
-						PositionalArguments = new ResolveResult[] { securityActionRR }
-					};
+					attributes[i] = new DefaultAttribute(
+						attributeType,
+						positionalArguments: new ResolveResult[] { securityActionRR },
+						namedArguments: namedArgs);
 				}
 			}
 			
@@ -1479,37 +1478,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			{
 				return secDecl.Resolve(context.CurrentAssembly)[index];
 			}
-		}
-		
-		sealed class ResolvedSecurityAttribute : IAttribute
-		{
-			public IType AttributeType { get; internal set; }
-			
-			DomRegion IAttribute.Region {
-				get { return DomRegion.Empty; }
-			}
-			
-			volatile IMethod constructor;
-			
-			public IMethod Constructor {
-				get {
-					IMethod ctor = this.constructor;
-					if (ctor == null) {
-						foreach (IMethod candidate in this.AttributeType.GetConstructors(m => m.Parameters.Count == 1)) {
-							if (candidate.Parameters[0].Type.Equals(this.PositionalArguments[0].Type)) {
-								ctor = candidate;
-								break;
-							}
-						}
-						this.constructor = ctor;
-					}
-					return ctor;
-				}
-			}
-			
-			public IList<ResolveResult> PositionalArguments { get; internal set; }
-			
-			public IList<KeyValuePair<IMember, ResolveResult>> NamedArguments { get; internal set; }
 		}
 		#endregion
 		#endregion
