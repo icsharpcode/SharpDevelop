@@ -474,8 +474,6 @@ namespace IconEditor
 		/// </summary>
 		public void SetImage(Bitmap bitmap, bool storeCompressed)
 		{
-			if (this.Type == IconEntryType.Classic)
-				throw new InvalidOperationException("Cannot use SetImage on classic entries");
 			if (bitmap.Width != width || bitmap.Height != height) {
 				bitmap = new Bitmap(bitmap, width, height);
 			}

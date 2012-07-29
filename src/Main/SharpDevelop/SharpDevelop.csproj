@@ -139,8 +139,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ProfilingSessions\Session20120329_181957.sdps" />
-    <Content Include="ProfilingSessions\Session20120329_182016.sdps" />
     <ProjectReference Include="..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
       <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
       <Name>AvalonDock</Name>

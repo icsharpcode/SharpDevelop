@@ -14,4 +14,4 @@ using System.Reflection;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyCopyright("2005-2012 David Srbecký")]
-[assembly: AssemblyVersion("4.0.0.0")]
+[assembly: AssemblyVersion("5.0.0.0")]

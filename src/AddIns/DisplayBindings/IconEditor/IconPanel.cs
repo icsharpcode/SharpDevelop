@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop;
 
 namespace IconEditor
 {
@@ -79,6 +80,7 @@ namespace IconEditor
 					IntPtr oldHBitmap = Gdi32.SelectObject(memDC, srcHBitmap);
 					Gdi32.BitBlt(destDC, drawOffset, drawOffset, size.Width, size.Height, memDC, 0, 0, Gdi32.SRCAND);
 					
+					// TODO: review if the objects get destroyed correctly
 					Gdi32.SelectObject(memDC, oldHBitmap);
 					Gdi32.DeleteObject(srcHBitmap);
 					Gdi32.DeleteDC(memDC);
@@ -172,7 +174,6 @@ namespace IconEditor
 		void IconPanelMouseMove(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left) {
-				/*
 				if (mouseDownLocation.IsEmpty == false) {
 					int dx = Math.Abs(e.X - mouseDownLocation.X);
 					int dy = Math.Abs(e.Y - mouseDownLocation.Y);
@@ -182,31 +183,28 @@ namespace IconEditor
 						this.DoDragDrop(bitmap, DragDropEffects.Copy);
 					}
 				}
-				*/
 			}
 		}
 		
 		void IconPanelDragEnter(object sender, DragEventArgs e)
 		{
-			/*
 			if (e.Data.GetDataPresent(typeof(Bitmap)))
 				e.Effect = DragDropEffects.Copy;
 			else
 				e.Effect = DragDropEffects.None;
-			*/
 		}
 		
 		void IconPanelDragDrop(object sender, DragEventArgs e)
 		{
-			/*try {
+			try {
 				Bitmap bmp = (Bitmap)e.Data.GetData(typeof(Bitmap));
 				if (bmp != null) {
 					entry.SetImage(bmp, entry.IsCompressed);
 					this.Entry = entry; // re-display entry
 				}
 			} catch (Exception ex) {
-				MessageBox.Show(ex.ToString());
-			}*/
+				SD.MessageService.ShowHandledException(ex);
+			}
 		}
 	}
 }

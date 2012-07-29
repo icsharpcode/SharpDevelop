@@ -96,7 +96,7 @@ namespace IconEditor
 			table.Visible = true;
 		}
 		
-		Color[] backgroundColors = {SystemColors.Control, SystemColors.Window, SystemColors.Desktop, SystemColors.ControlText};
+		Color[] backgroundColors = { SystemColors.Control, Color.Black, Color.White, Color.Teal, Color.DeepSkyBlue, Color.Red };
 		
 		void ColorComboBoxDrawItem(object sender, DrawItemEventArgs e)
 		{
