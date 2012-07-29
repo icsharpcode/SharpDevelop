@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -288,17 +289,31 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Gets all descendants of this node (excluding this node itself).
 		/// </summary>
 		public IEnumerable<AstNode> Descendants {
-			get {
-				return Utils.TreeTraversal.PreOrder (this.Children, n => n.Children);
-			}
+			get { return GetDescendants(false); }
 		}
 		
 		/// <summary>
 		/// Gets all descendants of this node (including this node itself).
 		/// </summary>
 		public IEnumerable<AstNode> DescendantsAndSelf {
-			get {
-				return Utils.TreeTraversal.PreOrder (this, n => n.Children);
+			get { return GetDescendants(true); }
+		}
+		
+		IEnumerable<AstNode> GetDescendants(bool includeSelf)
+		{
+			if (includeSelf)
+				yield return this;
+			Stack<AstNode> nextStack = new Stack<AstNode>();
+			nextStack.Push(null);
+			AstNode pos = firstChild;
+			while (pos != null) {
+				if (pos.nextSibling != null)
+					nextStack.Push(pos.nextSibling);
+				yield return pos;
+				if (pos.firstChild != null)
+					pos = pos.firstChild;
+				else
+					pos = nextStack.Pop();
 			}
 		}
 		
@@ -322,7 +337,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return Ancestors.OfType<T>().FirstOrDefault();
 		}
-				
+		
 		public AstNodeCollection<T> GetChildrenByRole<T> (Role<T> role) where T : AstNode
 		{
 			return new AstNodeCollection<T> (this, role);

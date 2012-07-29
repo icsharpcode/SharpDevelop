@@ -24,31 +24,122 @@ using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
+	/// <summary>
+	/// Determines the fastest way to retrieve a List{IdentifierExpression} of all identifiers
+	/// in a compilation unit.
+	/// </summary>
 	public class VisitorBenchmark
 	{
 		public static void Run(IEnumerable<CompilationUnit> files)
 		{
 			files = files.ToList();
-			RunTest("DepthFirstAstVisitor", files, cu => cu.AcceptVisitor(new DepthFirst()));
-			RunTest("DepthFirstAstVisitor<object>", files, cu => cu.AcceptVisitor(new DepthFirst<object>()));
-			RunTest("DepthFirstAstVisitor<int>", files, cu => cu.AcceptVisitor(new DepthFirst<int>()));
-			RunTest("DepthFirstAstVisitor<object, object>", files, cu => cu.AcceptVisitor(new DepthFirst<object, object>(), null));
-			RunTest("DepthFirstAstVisitor<int, int>", files, cu => cu.AcceptVisitor(new DepthFirst<int, int>(), 0));
-			RunTest("ObservableAstVisitor", files, cu => cu.AcceptVisitor(new ObservableAstVisitor()));
-			RunTest("ObservableAstVisitor<object, object>", files, cu => cu.AcceptVisitor(new ObservableAstVisitor<object, object>(), null));
-			RunTest("ObservableAstVisitor<int, int>", files, cu => cu.AcceptVisitor(new ObservableAstVisitor<int, int>(), 0));
+			
+			RunTest("recursive method using for", files, (cu, list) => WalkTreeFor(cu, list));
+			RunTest("recursive method using foreach", files, (cu, list) => WalkTreeForEach(cu, list));
+			RunTest("non-recursive loop", files, (cu, list) => WalkTreeNonRecursive(cu, list));
+			RunTest("foreach over Descendants.OfType()", files, (cu, list) => {
+			        	foreach (var node in cu.Descendants.OfType<IdentifierExpression>()) {
+			        		list.Add(node);
+			        	}
+			        });
+			RunTest("DepthFirstAstVisitor", files, (cu, list) => cu.AcceptVisitor(new DepthFirst(list)));
+			RunTest("DepthFirstAstVisitor<object>", files, (cu, list) => cu.AcceptVisitor(new DepthFirst<object>(list)));
+			RunTest("DepthFirstAstVisitor<object, object>", files, (cu, list) => cu.AcceptVisitor(new DepthFirst<object, object>(list), null));
+			RunTest("ObservableAstVisitor", files, (cu, list) => {
+			        	var visitor = new ObservableAstVisitor();
+			        	visitor.EnterIdentifierExpression += list.Add;
+			        	cu.AcceptVisitor(visitor);
+			        });
+			RunTest("ObservableAstVisitor<object, object>", files, (cu, list) => {
+			        	var visitor = new ObservableAstVisitor<object, object>();
+			        	visitor.IdentifierExpressionVisited += (id, data) => list.Add(id);
+			        	cu.AcceptVisitor(visitor, null);
+			        });
 		}
 		
-		class DepthFirst : DepthFirstAstVisitor {}
-		class DepthFirst<T> : DepthFirstAstVisitor<T> {}
-		class DepthFirst<T, S> : DepthFirstAstVisitor<T, S> {}
-		
-		static void RunTest(string text, IEnumerable<CompilationUnit> files, Action<CompilationUnit> action)
+		static void WalkTreeForEach(AstNode node, List<IdentifierExpression> list)
 		{
+			foreach (AstNode child in node.Children) {
+				IdentifierExpression id = child as IdentifierExpression;
+				if (id != null) {
+					list.Add(id);
+				}
+				WalkTreeForEach(child, list);
+			}
+		}
+		
+		static void WalkTreeFor(AstNode node, List<IdentifierExpression> list)
+		{
+			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
+				IdentifierExpression id = child as IdentifierExpression;
+				if (id != null) {
+					list.Add(id);
+				}
+				WalkTreeFor(child, list);
+			}
+		}
+		
+		static void WalkTreeNonRecursive(AstNode root, List<IdentifierExpression> list)
+		{
+			AstNode pos = root;
+			while (pos != null) {
+				{
+					IdentifierExpression id = pos as IdentifierExpression;
+					if (id != null) {
+						list.Add(id);
+					}
+				}
+				if (pos.FirstChild != null) {
+					pos = pos.FirstChild;
+				} else {
+					pos = pos.GetNextNode();
+				}
+			}
+		}
+		
+		class DepthFirst : DepthFirstAstVisitor {
+			readonly List<IdentifierExpression> list;
+			public DepthFirst(List<IdentifierExpression> list) { this.list = list; }
+			public override void VisitIdentifierExpression(IdentifierExpression identifierExpression)
+			{
+				list.Add(identifierExpression);
+				base.VisitIdentifierExpression(identifierExpression);
+			}
+		}
+		class DepthFirst<T> : DepthFirstAstVisitor<T> {
+			readonly List<IdentifierExpression> list;
+			public DepthFirst(List<IdentifierExpression> list) { this.list = list; }
+			public override T VisitIdentifierExpression(IdentifierExpression identifierExpression)
+			{
+				list.Add(identifierExpression);
+				return base.VisitIdentifierExpression(identifierExpression);
+			}
+		}
+		class DepthFirst<T, S> : DepthFirstAstVisitor<T, S> {
+			readonly List<IdentifierExpression> list;
+			public DepthFirst(List<IdentifierExpression> list) { this.list = list; }
+			public override S VisitIdentifierExpression(IdentifierExpression identifierExpression, T data)
+			{
+				list.Add(identifierExpression);
+				return base.VisitIdentifierExpression(identifierExpression, data);
+			}
+		}
+		
+		static void RunTest(string text, IEnumerable<CompilationUnit> files, Action<CompilationUnit, List<IdentifierExpression>> action)
+		{
+			// validation:
+			var list = new List<IdentifierExpression>();
+			foreach (var file in files) {
+				list.Clear();
+				action(file, list);
+				if (!list.SequenceEqual(file.Descendants.OfType<IdentifierExpression>()))
+					throw new InvalidOperationException();
+			}
 			Stopwatch w = Stopwatch.StartNew();
 			foreach (var file in files) {
 				for (int i = 0; i < 20; i++) {
-					action(file);
+					list.Clear();
+					action(file, list);
 				}
 			}
 			w.Stop();

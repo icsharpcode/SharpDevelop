@@ -3809,7 +3809,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			var cu = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
 			if (cu == null)
 				return Enumerable.Empty<EntityDeclaration> ();
-			var td = cu.Children.FirstOrDefault () as TypeDeclaration;
+			var td = cu.FirstChild as TypeDeclaration;
 			if (td != null) {
 				var members = td.Members.ToArray();
 				// detach members from parent
