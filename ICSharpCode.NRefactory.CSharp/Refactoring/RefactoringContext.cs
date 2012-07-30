@@ -154,21 +154,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			return baseName + (number > 0 ? (number + 1).ToString () : "");
 		}
-
-		NamingHelper namingHelper = null;
-		public string GenerateVariableName(AstType type)
-		{
-			if (namingHelper == null)
-				namingHelper = new NamingHelper(this);
-			return namingHelper.GenerateVariableName(type);
-		}
-
-		public string GenerateVariableName(IType type)
-		{
-			if (namingHelper == null)
-				namingHelper = new NamingHelper(this);
-			return namingHelper.GenerateVariableName(type);
-		}
 		#endregion
 	}
 }

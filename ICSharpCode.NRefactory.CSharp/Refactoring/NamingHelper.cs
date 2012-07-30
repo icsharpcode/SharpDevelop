@@ -33,17 +33,17 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
 	public class NamingHelper
 	{
-		ISet<string> UsedVariableNames;
+		ISet<string> usedVariableNames;
 		RefactoringContext context;
 
 		public NamingHelper(RefactoringContext context)
 		{
 			this.context = context;
-			var astNode = context.GetNode<Statement>();
-			if (UsedVariableNames == null) {
+			if (usedVariableNames == null) {
 				var visitor = new VariableFinderVisitor();
+				var astNode = context.GetNode<Statement>();
 				astNode.AcceptVisitor(visitor);
-				UsedVariableNames = visitor.VariableNames;
+				usedVariableNames = visitor.VariableNames;
 			}
 		}
 
@@ -88,21 +88,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 
 			var names = WordParser.BreakWords(name);
-
-			var possibleName = new StringBuilder();
-			for (int i = 0; i < names.Count; i++) {
-				possibleName.Length = 0;
-				for (int j = i; j < names.Count; j++) {
-					if (string.IsNullOrEmpty(names [j])) {
-						continue;
-					}
-					if (j == i) { 
-						names [j] = Char.ToLower(names [j] [0]) + names [j].Substring(1);
-					}
-					possibleName.Append(names [j]);
-				}
-				yield return possibleName.ToString();
+			if (names.Count > 0) {
+				names [0] = Char.ToLower(names [0] [0]) + names [0].Substring(1);
 			}
+			yield return string.Join("", names);
 		}
 
 		/// <summary>
@@ -119,8 +108,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			string firstSuggestion = null;
 			foreach (var name in NamingHelper.GenerateNameProposals(type)) {
 				firstSuggestion = firstSuggestion ?? name;
-				if (NameIsUnused(name))
+				if (NameIsUnused(name)) {
+					usedVariableNames.Add(name);
 					return name;
+				}
 			}
 			// If we get here, all of the standard suggestions are already used.
 			// This will at least be the second variable named based on firstSuggestion, so start at 2
@@ -129,12 +120,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			do {
 				proposedName = firstSuggestion + counter++;
 			} while (!NameIsUnused(proposedName));
+			usedVariableNames.Add(proposedName);
 			return proposedName;
 		}
 
 		bool NameIsUnused(string name)
 		{
-			return !UsedVariableNames.Contains(name) && LookupVariable(name) == null;
+			return !usedVariableNames.Contains(name) && LookupVariable(name) == null;
 		}
 
 		/// <summary>
@@ -192,8 +184,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		IVariable LookupVariable(string name)
 		{
-			var astNode = context.GetNode<BlockStatement>();
-			var resolverState = context.Resolver.GetResolverStateAfter(astNode.LastChild.PrevSibling);
+			var blockStatement = context.GetNode<BlockStatement>();
+			var resolverState = context.GetResolverStateAfter(blockStatement.RBraceToken.PrevSibling);
 			var simpleNameRR = resolverState.ResolveSimpleName(name, new List<IType>()) as LocalResolveResult;
 			if (simpleNameRR == null)
 				return null;

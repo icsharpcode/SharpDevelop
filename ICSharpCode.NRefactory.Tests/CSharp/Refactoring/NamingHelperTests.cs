@@ -27,11 +27,9 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.CodeActions;
 using ICSharpCode.NRefactory.CSharp;
-using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
-
 		[TestFixture]
 		public class NamingHelperTests
 		{
@@ -51,7 +49,7 @@ class A
 	{ $ }
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.AreEqual("i", name);
 				}
@@ -69,7 +67,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
 				}
@@ -87,7 +85,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
 				}
@@ -105,7 +103,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
 				}
@@ -122,7 +120,7 @@ class A
 			$
 	}
 }", true);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
 				}
@@ -139,7 +137,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
 				}
@@ -156,7 +154,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsFalse(name == "i", "i was already used and should not be proposed.");
 				}
@@ -177,7 +175,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.AreEqual("i3", name);
 				}
@@ -202,7 +200,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.IsTrue(name == "i");
 				}
@@ -221,7 +219,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.AreEqual("i2", name);
 				}
@@ -229,7 +227,6 @@ class A
 				[Test]
 				public void GenerateVariableNameIgnoresFixedVariables()
 				{
-						// Snippet tests that identifiers from in, into and let clauses are found
 						var context = MakeContext(@"
 class A
 {
@@ -240,7 +237,7 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.AreEqual("j", name);
 				}
@@ -258,13 +255,13 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new PrimitiveType("int"));
+						var name = new NamingHelper(context).GenerateVariableName(new PrimitiveType("int"));
 						Assert.NotNull(name);
 						Assert.AreEqual("i2", name);
 				}
-
+		
 				[Test]
-				public void GenerateVariableNameForComposedType()
+				public void GenerateVariableNameForCustomType()
 				{
 						var context = MakeContext(@"
 class A
@@ -275,9 +272,29 @@ class A
 	}
 }"
 						);
-						var name = context.GenerateVariableName(new SimpleType() { Identifier = "VariableNameGenerationTester" });
+						var name = new NamingHelper(context).GenerateVariableName(new SimpleType() { Identifier = "VariableNameGenerationTester" });
 						Assert.NotNull(name);
 						Assert.AreEqual("variableNameGenerationTester", name);
+				}
+		
+				[Test]
+				public void GenerateVariableNameDoesNotRepeatNames()
+				{
+						var context = MakeContext(@"
+class A
+{
+	void F()
+	{
+		$
+	}
+}"
+						);
+						var namingHelper = new NamingHelper(context);
+						var name1 = namingHelper.GenerateVariableName(new PrimitiveType("int"));
+						var name2 = namingHelper.GenerateVariableName(new PrimitiveType("int"));
+						Assert.NotNull(name1);
+						Assert.NotNull(name2);
+						Assert.AreNotEqual(name1, name2, "The generated names should not repeat.");
 				}
 		}
 }

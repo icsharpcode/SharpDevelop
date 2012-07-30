@@ -116,9 +116,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		static ForeachStatement MakeForeach(Expression node, IType type, RefactoringContext context)
 		{
+			var namingHelper = new NamingHelper(context);
 			return new ForeachStatement() {
 				VariableType = new SimpleType("var"),
-				VariableName = context.GenerateVariableName(type),
+				VariableName = namingHelper.GenerateVariableName(type),
 				InExpression = node.Clone(),
 				EmbeddedStatement = new BlockStatement()
 			};
