@@ -393,6 +393,22 @@ namespace ICSharpCode.NRefactory.CSharp {
 		}
 
 		[Test]
+		public void TrivialSelectIsEliminatedAfterWhereEvenWhenParenthesized() {
+			var node = ParseUtilCSharp.ParseExpression<QueryExpression>("from i in arr1 where i > 5 select (i)");
+			var actual = new QueryExpressionExpander().ExpandQueryExpressions(node);
+			AssertCorrect(actual.AstNode, "arr1.Where(i => i > 5)");
+			dynamic astNode = actual.AstNode;
+			AssertLookupCorrect(actual.RangeVariables, new[] {
+				Tuple.Create(new TextLocation(1, 6), (AstNode)ElementAt(ElementAt(astNode.Arguments, 0).Parameters, 0)),
+			});
+			AssertLookupCorrect(actual.Expressions, new[] {
+				Tuple.Create(new TextLocation(1, 1), (AstNode)astNode.Target.Target),
+				Tuple.Create(new TextLocation(1, 22), (AstNode)astNode),
+				Tuple.Create(new TextLocation(1, 28), (AstNode)astNode),
+			});
+		}
+
+		[Test]
 		public void TrivialSelectIsNotEliminatingWhenTheOnlyOperation() {
 			var node = ParseUtilCSharp.ParseExpression<QueryExpression>("from i in arr1 select i");
 			var actual = new QueryExpressionExpander().ExpandQueryExpressions(node);

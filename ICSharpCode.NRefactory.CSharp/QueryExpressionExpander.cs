@@ -297,7 +297,7 @@ namespace ICSharpCode.NRefactory.CSharp {
 				if (currentTransparentType.Count > 1)
 					return false;
 				var unpacked = ParenthesizedExpression.UnpackParenthesizedExpression(expr);
-				return expr is IdentifierExpression && ((IdentifierExpression)expr).Identifier == currentTransparentType[0].Item1.Name;
+				return unpacked is IdentifierExpression && ((IdentifierExpression)unpacked).Identifier == currentTransparentType[0].Item1.Name;
 			}
 
 			public override AstNode VisitQuerySelectClause(QuerySelectClause querySelectClause) {
