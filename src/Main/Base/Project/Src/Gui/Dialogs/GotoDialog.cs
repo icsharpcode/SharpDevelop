@@ -61,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			public object Tag;
 			public string Text { get; private set; }
+			public bool InCurrentFile { get; private set; }
 			IImage image;
 			int matchType;
 			
@@ -68,15 +69,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 				get { return image.ImageSource; }
 			}
 			
-			public GotoEntry(string text, IImage image, int matchType)
+			public GotoEntry(string text, IImage image, int matchType, bool inCurrentFile)
 			{
 				this.Text = text;
 				this.image = image;
 				this.matchType = matchType;
+				this.InCurrentFile = inCurrentFile;
 			}
 			
 			public int CompareTo(GotoEntry other)
 			{
+				if ((matchType < MatchType_FullMatch_CaseInsensitive) && (other.matchType < MatchType_FullMatch_CaseInsensitive))
+				{
+					if (InCurrentFile && !other.InCurrentFile)
+						return -1;
+					if (!InCurrentFile && other.InCurrentFile)
+						return 1;
+				}
 				int r = matchType.CompareTo(other.matchType);
 				if (r != 0)
 					return -r;
@@ -148,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				AddSourceFiles(text, 0);
 				foreach (IUnresolvedTypeDefinition c in SearchClasses(text)) {
-					AddItem(c, GetMatchType(text, c.Name));
+					AddItem(c, GetMatchType(text, c.Name), false);
 				}
 				AddAllMembersMatchingText(text);
 			}
@@ -166,20 +175,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 				IParsedFile parseInfo = SD.ParserService.GetExistingParsedFile(editor.FileName);
 				if (parseInfo != null) {
 					foreach (IUnresolvedTypeDefinition c in parseInfo.TopLevelTypeDefinitions) {
-						AddAllMembersMatchingText(c, text);
+						AddAllMembersMatchingText(c, text, true);
 					}
 				}
 			}
 		}
 
-		void AddAllMembersMatchingText(IUnresolvedTypeDefinition c, string text)
+		void AddAllMembersMatchingText(IUnresolvedTypeDefinition c, string text, bool inCurrentFile)
 		{
 			foreach (IUnresolvedTypeDefinition innerClass in c.NestedTypes) {
-				AddAllMembersMatchingText(innerClass, text);
+				AddAllMembersMatchingText(innerClass, text, inCurrentFile);
 			}
 			foreach (IUnresolvedMember m in c.Members) {
 				if (m.EntityType != EntityType.Constructor) {
-					AddItemIfMatchText(text, m, ClassBrowserIconService.Method);
+					AddItemIfMatchText(text, m, ClassBrowserIconService.GetIcon(m), inCurrentFile);
 				}
 			}
 		}
@@ -210,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (item.Project != null) {
 						display += StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + item.Project.Name;
 					}
-					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), matchType);
+					AddItem(display, ClassBrowserIconService.GotoArrow, new FileLineReference(fileName, lineNumber), matchType, false);
 				}
 			}
 		}
@@ -222,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ITextEditor editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.LineCount, Math.Max(1, num));
-					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue);
+					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrow, num, int.MaxValue, false);
 				}
 			}
 		}
@@ -285,32 +294,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void AddItem(string text, IImage image, object tag, int matchType)
+		void AddItem(string text, IImage image, object tag, int matchType, bool inCurrentFile)
 		{
 			if (!visibleEntries.Add(text))
 				return;
-			GotoEntry item = new GotoEntry(text, image, matchType);
+			GotoEntry item = new GotoEntry(text, image, matchType, inCurrentFile);
 			item.Tag = tag;
 			newItems.Add(item);
 		}
 		
-		void AddItem(IUnresolvedTypeDefinition c, int matchType)
+		void AddItem(IUnresolvedTypeDefinition c, int matchType, bool inCurrentFile)
 		{
-			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType);
+			AddItem(c, ClassBrowserIconService.GetIcon(c), matchType, inCurrentFile);
 		}
 		
-		void AddItemIfMatchText(string text, IUnresolvedMember member, IImage image)
+		void AddItemIfMatchText(string text, IUnresolvedMember member, IImage image, bool inCurrentFile)
 		{
 			string name = member.Name;
 			int matchType = GetMatchType(text, name);
 			if (matchType >= 0) {
-				AddItem(member, image, matchType);
+				AddItem(member, image, matchType, inCurrentFile);
 			}
 		}
 		
-		void AddItem(IUnresolvedEntity e, IImage image, int matchType)
+		void AddItem(IUnresolvedEntity e, IImage image, int matchType, bool inCurrentFile)
 		{
-			AddItem(e.Name + " (" + e.FullName + ")", image, e, matchType);
+			AddItem(e.Name + " (" + e.FullName + ")", image, e, matchType, inCurrentFile);
 		}
 		
 		void cancelButtonClick(object sender, RoutedEventArgs e)

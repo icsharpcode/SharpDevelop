@@ -121,7 +121,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "src\AddIns\Dis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor.Tests", "src\AddIns\DisplayBindings\XmlEditor\Test\XmlEditor.Tests.csproj", "{FC0FE702-A87D-4D70-A9B6-1ECCD611125F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditorAddIn", "src\AddIns\DisplayBindings\IconEditor\IconEditorAddIn.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditor", "src\AddIns\DisplayBindings\IconEditor\IconEditor.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{AF5E0DC1-1FA0-4346-A436-0C817C68F7C1}"
 	ProjectSection(SolutionItems) = postProject

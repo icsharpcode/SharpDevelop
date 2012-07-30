@@ -13,8 +13,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		{
 			if ("Selection".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
 				return new SnippetSelectionElement() { Indentation = GetWhitespaceBefore(snippetInfo.SnippetText, snippetInfo.Position).Length };
-			if ("Caret".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
-				return new SnippetCaretElement();
+			if ("Caret".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase)) {
+				// If a ${Selection} exists, use the ${Caret} only if there is text selected
+				// (if no text is selected, ${Selection} will set the caret
+				if (snippetInfo.SnippetText.IndexOf("${Selection}", StringComparison.OrdinalIgnoreCase) >= 0)
+					return new SnippetCaretElement(setCaretOnlyIfTextIsSelected: true);
+				else
+					return new SnippetCaretElement();
+			}
 			
 			return null;
 		}

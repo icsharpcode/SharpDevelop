@@ -9,7 +9,7 @@ using System.Reflection;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("IconEditorAddIn")]
+[assembly: AssemblyTitle("IconEditor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]

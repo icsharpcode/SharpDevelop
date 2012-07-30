@@ -1,7 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-namespace IconEditor
+namespace ICSharpCode.IconEditor
 {
 	partial class EditorPanel : System.Windows.Forms.UserControl
 	{
@@ -32,24 +32,48 @@ namespace IconEditor
 		private void InitializeComponent()
 		{
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.label2 = new System.Windows.Forms.Label();
+			this.addFormatButton = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.colorComboBox = new System.Windows.Forms.ComboBox();
 			this.table = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLabel = new System.Windows.Forms.Label();
-			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2.SuspendLayout();
 			this.table.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panel2
 			// 
+			this.panel2.Controls.Add(this.label2);
+			this.panel2.Controls.Add(this.addFormatButton);
 			this.panel2.Controls.Add(this.label1);
 			this.panel2.Controls.Add(this.colorComboBox);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panel2.Location = new System.Drawing.Point(0, 0);
 			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(297, 30);
+			this.panel2.Size = new System.Drawing.Size(422, 50);
 			this.panel2.TabIndex = 4;
+			// 
+			// label2
+			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.label2.Location = new System.Drawing.Point(3, 29);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(416, 18);
+			this.label2.TabIndex = 3;
+			this.label2.Text = "Right-click on the individual images to see more options.";
+			// 
+			// addFormatButton
+			// 
+			this.addFormatButton.Location = new System.Drawing.Point(171, 3);
+			this.addFormatButton.Name = "addFormatButton";
+			this.addFormatButton.Size = new System.Drawing.Size(131, 23);
+			this.addFormatButton.TabIndex = 2;
+			this.addFormatButton.Text = "Add Custom Format...";
+			this.addFormatButton.UseVisualStyleBackColor = true;
+			this.addFormatButton.Click += new System.EventHandler(this.AddFormatButtonClick);
 			// 
 			// label1
 			// 
@@ -67,7 +91,7 @@ namespace IconEditor
 			this.colorComboBox.FormattingEnabled = true;
 			this.colorComboBox.Location = new System.Drawing.Point(108, 3);
 			this.colorComboBox.Name = "colorComboBox";
-			this.colorComboBox.Size = new System.Drawing.Size(46, 24);
+			this.colorComboBox.Size = new System.Drawing.Size(46, 21);
 			this.colorComboBox.TabIndex = 0;
 			this.colorComboBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ColorComboBoxDrawItem);
 			this.colorComboBox.SelectedIndexChanged += new System.EventHandler(this.ColorComboBoxSelectedIndexChanged);
@@ -80,11 +104,11 @@ namespace IconEditor
 			this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.table.Controls.Add(this.tableLabel, 0, 0);
 			this.table.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.table.Location = new System.Drawing.Point(0, 30);
+			this.table.Location = new System.Drawing.Point(0, 50);
 			this.table.Name = "table";
 			this.table.RowCount = 1;
 			this.table.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.table.Size = new System.Drawing.Size(297, 200);
+			this.table.Size = new System.Drawing.Size(422, 212);
 			this.table.TabIndex = 5;
 			// 
 			// tableLabel
@@ -96,28 +120,19 @@ namespace IconEditor
 			this.tableLabel.Text = "Icon Editor";
 			this.tableLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// panel1
-			// 
-			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 230);
-			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(297, 32);
-			this.panel1.TabIndex = 6;
-			this.panel1.Visible = false;
-			// 
 			// EditorPanel
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.Controls.Add(this.table);
-			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.panel2);
 			this.Name = "EditorPanel";
-			this.Size = new System.Drawing.Size(297, 262);
+			this.Size = new System.Drawing.Size(422, 262);
 			this.panel2.ResumeLayout(false);
 			this.table.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
-		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Button addFormatButton;
 		private System.Windows.Forms.Label tableLabel;
 		private System.Windows.Forms.TableLayoutPanel table;
 		private System.Windows.Forms.ComboBox colorComboBox;

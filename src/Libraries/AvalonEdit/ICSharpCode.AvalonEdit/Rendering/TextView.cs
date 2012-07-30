@@ -696,10 +696,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
 			}
 			visibleVisualLines = null;
-			visualLine.IsDisposed = true;
-			foreach (TextLine textLine in visualLine.TextLines) {
-				textLine.Dispose();
-			}
+			visualLine.Dispose();
 			RemoveInlineObjects(visualLine);
 		}
 		#endregion

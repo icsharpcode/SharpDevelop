@@ -107,7 +107,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HexEditor", "src\AddIns\Dis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "src\AddIns\DisplayBindings\XmlEditor\Project\XmlEditor.csproj", "{DCA2703D-250A-463E-A68A-07ED105AE6BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditorAddIn", "src\AddIns\DisplayBindings\IconEditor\IconEditorAddIn.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IconEditor", "src\AddIns\DisplayBindings\IconEditor\IconEditor.csproj", "{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analysis", "Analysis", "{7019F43E-DFD7-4D1C-8C96-E75D55646DE7}"
 	ProjectSection(SolutionItems) = postProject

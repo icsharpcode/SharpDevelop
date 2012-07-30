@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Runtime.Serialization;
+using System.Windows.Input;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.NRefactory.Editor;
 
@@ -13,10 +15,32 @@ namespace ICSharpCode.AvalonEdit.Snippets
 	[Serializable]
 	public class SnippetCaretElement : SnippetElement
 	{
+		[OptionalField]
+		bool setCaretOnlyIfTextIsSelected;
+		
+		/// <summary>
+		/// Creates a new SnippetCaretElement.
+		/// </summary>
+		public SnippetCaretElement()
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new SnippetCaretElement.
+		/// </summary>
+		/// <param name="setCaretOnlyIfSelectionExists">
+		/// If set to true, the caret is set only when some text was selected.
+		/// This is useful 
+		/// </param>
+		public SnippetCaretElement(bool setCaretOnlyIfTextIsSelected)
+		{
+			this.setCaretOnlyIfTextIsSelected = setCaretOnlyIfTextIsSelected;
+		}
+		
 		/// <inheritdoc/>
 		public override void Insert(InsertionContext context)
 		{
-			if (!string.IsNullOrEmpty(context.SelectedText))
+			if (!setCaretOnlyIfTextIsSelected || !string.IsNullOrEmpty(context.SelectedText))
 				SetCaret(context);
 		}
 		

@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace SharpReportSamples
 {
@@ -113,7 +114,7 @@ namespace SharpReportSamples
 			else if (s == "NoConnectionReport") {
 				this.RunProviderIndependent(reportName);
 			} else if (s =="EventLog")
-				this.RunEventLogger(reportName);
+				this.RunEventLogger_Pdf(reportName);
 			
 			else {
 				
@@ -338,12 +339,12 @@ namespace SharpReportSamples
 		
 		
 		//Handles  SectionRenderEvent
-//		int hour = 0;
+		int hour = 0;
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e )
 		{
 			string sectionName = e.Section.Name;
-			/*
+			
 			if (sectionName == ReportSectionNames.ReportHeader) {
 				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);
 			} 
@@ -362,14 +363,14 @@ namespace SharpReportSamples
 					int newhour = dateTime.Hour;
 					if (hour != newhour) {
 						hour = newhour;
-						e.Section.Items[0].DrawBorder = true;
+//						e.Section.Items[0].DrawBorder = true;
 						e.Section.Items[0].FrameColor = Color.Black;
 //						e.Section.Items[0].BackColor = Color.LightGray;
 						time.DBValue = dateTime.Hour.ToString();
 						time.ContentAlignment = ContentAlignment.MiddleLeft;
 					
 					} else {
-						time.DrawBorder = false;
+//						time.DrawBorder = false;
 						e.Section.Items[0].FrameColor = Color.White;
 //						e.Section.Items[0].BackColor = Color.White;
 						time.DBValue = dateTime.Minute.ToString() + ":" + dateTime.Second.ToString();
@@ -413,7 +414,7 @@ namespace SharpReportSamples
 			else{
 				throw new WrongSectionException(sectionName);
 			}
-			*/
+			
 		}
 		
 		

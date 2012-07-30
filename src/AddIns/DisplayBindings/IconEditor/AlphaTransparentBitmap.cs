@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace IconEditor
+namespace ICSharpCode.IconEditor
 {
 	/// <summary>
 	/// .NET does not support alpha-transparent .bmp files.
@@ -75,6 +75,42 @@ namespace IconEditor
 				}
 				return bmp;
 			}
+		}
+		
+		public unsafe static Bitmap ConvertToAlphaTransparentBitmap(Bitmap andMask, Bitmap xorMask)
+		{
+			if (andMask == null || xorMask == null)
+				return null;
+			int width = xorMask.Width;
+			int height = xorMask.Height;
+			if (andMask.Width != width || andMask.Height != height)
+				throw new ArgumentException();
+			Bitmap bmp = new Bitmap(xorMask, width, height);
+			BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+			try {
+				if (bmpData.Stride != width * 4)
+					throw new InvalidOperationException("expected 32bit bitmapdata");
+				BitmapData maskData = andMask.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format1bppIndexed);
+				try {
+					uint* bmpPtr = (uint*)bmpData.Scan0.ToPointer();
+					byte* maskPtr = (byte*)maskData.Scan0.ToPointer();
+					for (int y = 0; y < height; y++) {
+						for (int x = 0; x < width; x++) {
+							if (((maskPtr[x >> 3] << (x & 7)) & 0x80) != 0) {
+								// white in the mask -> survives AND -> transparent
+								bmpPtr[x] = 0;
+							}
+						}
+						bmpPtr += width;
+						maskPtr += maskData.Stride;
+					}
+				} finally {
+					andMask.UnlockBits(maskData);
+				}
+			} finally {
+				bmp.UnlockBits(bmpData);
+			}
+			return bmp;
 		}
 	}
 }

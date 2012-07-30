@@ -2,8 +2,8 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>ICSharpCode.IconEditorAddIn</RootNamespace>
-    <AssemblyName>ICSharpCode.IconEditorAddIn</AssemblyName>
+    <RootNamespace>ICSharpCode.IconEditor</RootNamespace>
+    <AssemblyName>ICSharpCode.IconEditor</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DFB936AD-90EE-4B4F-941E-4F4A636F0D92}</ProjectGuid>
@@ -17,9 +17,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
@@ -54,18 +52,16 @@
       <DependentUpon>IconPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="IconPanel.cs" />
-    <EmbeddedResource Include="IconPanel.resx">
-      <DependentUpon>IconPanel.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="PickFormatDialog.cs" />
+    <Compile Include="PickFormatDialog.Designer.cs">
+      <DependentUpon>PickFormatDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="AlphaTransparentBitmap.cs" />
     <Compile Include="EditorPanel.Designer.cs">
       <DependentUpon>EditorPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorPanel.cs" />
-    <EmbeddedResource Include="EditorPanel.resx">
-      <DependentUpon>EditorPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="IconEditorAddIn.addin">
+    <None Include="IconEditor.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />

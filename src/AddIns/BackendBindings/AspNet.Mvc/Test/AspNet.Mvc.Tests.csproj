@@ -130,6 +130,7 @@
     <Compile Include="Src\Folding\WebFormsHtmlReaderTests.cs" />
     <Compile Include="Src\Folding\WebFormsLanguageBindingTests.cs" />
     <Compile Include="Src\Folding\WebFormsMarkupCharacterReaderTests.cs" />
+    <Compile Include="Src\IISExpressProcessStartInfoTests.cs" />
     <Compile Include="Src\IsMvcControllerFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Src\IsMvcViewFolderSelectedConditionEvaluatorTests.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />

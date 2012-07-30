@@ -26,6 +26,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		Typeface typeface;
 		TextDecorationCollection textDecorations;
 		TextEffectCollection textEffects;
+		TextRunTypographyProperties typographyProperties;
+		NumberSubstitution numberSubstitution;
 		
 		/// <summary>
 		/// Creates a new VisualLineElementTextRunProperties instance that copies its values
@@ -52,6 +54,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (textEffects != null && !textEffects.IsFrozen) {
 				textEffects = textEffects.Clone();
 			}
+			typographyProperties = textRunProperties.TypographyProperties;
+			numberSubstitution = textRunProperties.NumberSubstitution;
 		}
 		
 		/// <summary>
@@ -202,6 +206,36 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			ExtensionMethods.CheckIsFrozen(value);
 			textEffects = value;
+		}
+		
+		/// <summary>
+		/// Gets the typography properties for the text run.
+		/// </summary>
+		public override TextRunTypographyProperties TypographyProperties {
+			get { return typographyProperties; }
+		}
+		
+		/// <summary>
+		/// Sets the <see cref="TypographyProperties"/>.
+		/// </summary>
+		public void SetTypographyProperties(TextRunTypographyProperties value)
+		{
+			typographyProperties = value;
+		}
+		
+		/// <summary>
+		/// Gets the number substitution settings for the text run.
+		/// </summary>
+		public override NumberSubstitution NumberSubstitution {
+			get { return numberSubstitution; }
+		}
+		
+		/// <summary>
+		/// Sets the <see cref="NumberSubstitution"/>.
+		/// </summary>
+		public void SetNumberSubstitution(NumberSubstitution value)
+		{
+			numberSubstitution = value;
 		}
 	}
 }

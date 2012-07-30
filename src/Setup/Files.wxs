@@ -1450,9 +1450,9 @@
 									</Component>
 								</Directory>-->
 								<Directory Id="IconEditorFolder" Name="IconEditor">
-									<Component Guid="A6F985C3-09A5-4650-9A8E-239BBC737B10" Id="IconEditorAddInFiles" DiskId="1">
-										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditorAddIn.dll" Id="ICSharpCode.IconEditorAddIn.dll" Name="ICSharpCode.IconEditorAddIn.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditorAddIn.dll" AssemblyManifest="ICSharpCode.IconEditorAddIn.dll" KeyPath="yes" />
-										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditorAddIn.addin" Id="IconEditorAddIn.addin" Name="IconEditorAddIn.addin" />
+									<Component Guid="A32C8CC1-705D-4BFF-B9CE-A4D867DD2EFA" Id="IconEditorFiles" DiskId="1">
+										<File Source="..\..\AddIns\DisplayBindings\IconEditor\ICSharpCode.IconEditor.dll" Id="ICSharpCode.IconEditor.dll" Name="ICSharpCode.IconEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.IconEditor.dll" AssemblyManifest="ICSharpCode.IconEditor.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\DisplayBindings\IconEditor\IconEditor.addin" Id="IconEditor.addin" Name="IconEditor.addin" />
 									</Component>
 								</Directory><!--
 								<Directory Id="ResourceEditorFolder" Name="ResourceEditor">

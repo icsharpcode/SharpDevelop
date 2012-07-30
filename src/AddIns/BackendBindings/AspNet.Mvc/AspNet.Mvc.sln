@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.2.0.8564-beta
+# SharpDevelop 4.3.0.8820-alpha
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet.Mvc", "Project\AspNet.Mvc.csproj", "{D781721F-C2A7-4E95-B76F-247170AC3B13}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNet.Mvc.Tests", "Test\AspNet.Mvc.Tests.csproj", "{0B12A079-B2DB-42B9-8A8E-AA5CBC2B3225}"
@@ -136,5 +136,9 @@ Global
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|x86.ActiveCfg = Release|Any CPU
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0162E499-42D0-409B-AA25-EED21F75336B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D781721F-C2A7-4E95-B76F-247170AC3B13}.Debug|Any CPU.Build.0 = Debug|x86
+		{D781721F-C2A7-4E95-B76F-247170AC3B13}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D781721F-C2A7-4E95-B76F-247170AC3B13}.Release|Any CPU.Build.0 = Release|x86
+		{D781721F-C2A7-4E95-B76F-247170AC3B13}.Release|Any CPU.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

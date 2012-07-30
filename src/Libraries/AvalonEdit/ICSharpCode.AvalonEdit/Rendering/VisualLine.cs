@@ -1,6 +1,7 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Utils;
@@ -22,9 +23,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// </summary>
 	public sealed class VisualLine
 	{
+		enum LifetimePhase : byte
+		{
+			Generating,
+			Transforming,
+			Live,
+			Disposed
+		}
+		
 		TextView textView;
 		List<VisualLineElement> elements;
 		internal bool hasInlineObjects;
+		LifetimePhase phase;
 		
 		/// <summary>
 		/// Gets the document to which this VisualLine belongs.
@@ -46,10 +56,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// </summary>
 		public ReadOnlyCollection<VisualLineElement> Elements { get; private set; }
 		
+		ReadOnlyCollection<TextLine> textLines;
+		
 		/// <summary>
 		/// Gets a read-only collection of text lines.
 		/// </summary>
-		public ReadOnlyCollection<TextLine> TextLines { get; private set; }
+		public ReadOnlyCollection<TextLine> TextLines {
+			get {
+				if (phase < LifetimePhase.Live)
+					throw new InvalidOperationException();
+				return textLines;
+			}
+		}
 		
 		/// <summary>
 		/// Gets the start offset of the VisualLine inside the document.
@@ -98,6 +116,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		internal void ConstructVisualElements(ITextRunConstructionContext context, VisualLineElementGenerator[] generators)
 		{
+			Debug.Assert(phase == LifetimePhase.Generating);
 			foreach (VisualLineElementGenerator g in generators) {
 				g.StartGeneration(context);
 			}
@@ -107,8 +126,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				g.FinishGeneration();
 			}
 			
+			var globalTextRunProperties = context.GlobalTextRunProperties;
+			foreach (var element in elements) {
+				element.SetTextRunProperties(new VisualLineElementTextRunProperties(globalTextRunProperties));
+			}
 			this.Elements = elements.AsReadOnly();
-			CalculateOffsets(context.GlobalTextRunProperties);
+			CalculateOffsets();
+			phase = LifetimePhase.Transforming;
 		}
 		
 		void PerformVisualElementConstruction(VisualLineElementGenerator[] generators)
@@ -167,14 +191,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			}
 		}
 		
-		void CalculateOffsets(TextRunProperties globalTextRunProperties)
+		void CalculateOffsets()
 		{
 			int visualOffset = 0;
 			int textOffset = 0;
-			foreach (VisualLineElement element in Elements) {
+			foreach (VisualLineElement element in elements) {
 				element.VisualColumn = visualOffset;
 				element.RelativeTextOffset = textOffset;
-				element.SetTextRunProperties(new VisualLineElementTextRunProperties(globalTextRunProperties));
 				visualOffset += element.VisualLength;
 				textOffset += element.DocumentLength;
 			}
@@ -184,14 +207,63 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		internal void RunTransformers(ITextRunConstructionContext context, IVisualLineTransformer[] transformers)
 		{
+			Debug.Assert(phase == LifetimePhase.Transforming);
 			foreach (IVisualLineTransformer transformer in transformers) {
 				transformer.Transform(context, elements);
 			}
+			// For some strange reason, WPF requires that either all or none of the typography properties are set.
+			if (elements.Any(e => e.TextRunProperties.TypographyProperties != null)) {
+				// Fix typographic properties
+				foreach (VisualLineElement element in elements) {
+					if (element.TextRunProperties.TypographyProperties == null) {
+						element.TextRunProperties.SetTypographyProperties(new DefaultTextRunTypographyProperties());
+					}
+				}
+			}
+			phase = LifetimePhase.Live;
+		}
+		
+		/// <summary>
+		/// Replaces the single element at <paramref name="elementIndex"/> with the specified elements.
+		/// The replacement operation must preserve the document length, but may change the visual length.
+		/// </summary>
+		/// <remarks>
+		/// This method may only be called by line transformers.
+		/// </remarks>
+		public void ReplaceElement(int elementIndex, params VisualLineElement[] newElements)
+		{
+			ReplaceElement(elementIndex, 1, newElements);
+		}
+		
+		/// <summary>
+		/// Replaces <paramref name="count"/> elements starting at <paramref name="elementIndex"/> with the specified elements.
+		/// The replacement operation must preserve the document length, but may change the visual length.
+		/// </summary>
+		/// <remarks>
+		/// This method may only be called by line transformers.
+		/// </remarks>
+		public void ReplaceElement(int elementIndex, int count, params VisualLineElement[] newElements)
+		{
+			if (phase != LifetimePhase.Transforming)
+				throw new InvalidOperationException("This method may only be called by line transformers.");
+			int oldDocumentLength = 0;
+			for (int i = elementIndex; i < elementIndex + count; i++) {
+				oldDocumentLength += elements[i].DocumentLength;
+			}
+			int newDocumentLength = 0;
+			foreach (var newElement in newElements) {
+				newDocumentLength += newElement.DocumentLength;
+			}
+			if (oldDocumentLength != newDocumentLength)
+				throw new InvalidOperationException("Old elements have document length " + oldDocumentLength + ", but new elements have length " + newDocumentLength);
+			elements.RemoveRange(elementIndex, count);
+			elements.InsertRange(elementIndex, newElements);
+			CalculateOffsets();
 		}
 		
 		internal void SetTextLines(List<TextLine> textLines)
 		{
-			this.TextLines = textLines.AsReadOnly();
+			this.textLines = textLines.AsReadOnly();
 			Height = 0;
 			foreach (TextLine line in textLines)
 				Height += line.Height;
@@ -446,7 +518,20 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Gets whether the visual line was disposed.
 		/// </summary>
-		public bool IsDisposed { get; internal set; }
+		public bool IsDisposed {
+			get { return phase == LifetimePhase.Disposed; }
+		}
+		
+		internal void Dispose()
+		{
+			if (phase == LifetimePhase.Disposed)
+				return;
+			Debug.Assert(phase == LifetimePhase.Live);
+			phase = LifetimePhase.Disposed;
+			foreach (TextLine textLine in TextLines) {
+				textLine.Dispose();
+			}
+		}
 		
 		/// <summary>
 		/// Gets the next possible caret position after visualColumn, or -1 if there is no caret position.
@@ -557,6 +642,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		internal VisualLineDrawingVisual Render()
 		{
+			Debug.Assert(phase == LifetimePhase.Live);
 			if (visual == null)
 				visual = new VisualLineDrawingVisual(this);
 			return visual;

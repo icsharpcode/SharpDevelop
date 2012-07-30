@@ -85,9 +85,10 @@ class DerivedClass : BaseClass {
 			var itemNames = textEditor.LastCompletionItemList.Items.Select(i=>i.Text).ToArray();
 			Assert.AreEqual(
 				new string[] {
-					"AbstractEvent", "AbstractMethod()", "ReadOnlyAbstractProperty",
-					"Equals(object obj)", "GetHashCode()", "ToString()",
-					"VirtualEvent", "VirtualMethod()", "VirtualProperty", "ProtectedWriteProperty"
+					"AbstractEvent", "AbstractMethod()",
+					"Equals(object obj)", "GetHashCode()", "ProtectedWriteProperty", 
+					"ReadOnlyAbstractProperty", "ToString()",
+					 "VirtualEvent", "VirtualMethod()", "VirtualProperty", 
 				}, itemNames);
 		}
 		
