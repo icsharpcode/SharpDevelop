@@ -33,9 +33,10 @@ class BaseClass {
 	public virtual event EventHandler VirtualEvent;
 	public event EventHandler NormalEvent;
 	
-	public abstract int AbstractProperty { get; set; }
+	public abstract int ReadOnlyAbstractProperty { get; }
 	public virtual int VirtualProperty { get; set; }
 	public int NormalProperty { get; set; }
+	public virtual int ProtectedWriteProperty { get; protected set; }
 }
 class DerivedClass : BaseClass {
 	";
@@ -84,9 +85,9 @@ class DerivedClass : BaseClass {
 			var itemNames = textEditor.LastCompletionItemList.Items.Select(i=>i.Text).ToArray();
 			Assert.AreEqual(
 				new string[] {
-					"AbstractEvent", "AbstractMethod()", "AbstractProperty",
+					"AbstractEvent", "AbstractMethod()", "ReadOnlyAbstractProperty",
 					"Equals(object obj)", "GetHashCode()", "ToString()",
-					"VirtualEvent", "VirtualMethod()", "VirtualProperty"
+					"VirtualEvent", "VirtualMethod()", "VirtualProperty", "ProtectedWriteProperty"
 				}, itemNames);
 		}
 		
@@ -135,6 +136,24 @@ class DerivedClass : BaseClass {
 		
 		[Test]
 		[Ignore("Implement formatter")]
+		public void OverrideReadOnlyAbstractProperty()
+		{
+			CompletionContext context = new CompletionContext();
+			context.Editor = textEditor;
+			context.StartOffset = textEditor.Caret.Offset;
+			context.EndOffset = textEditor.Caret.Offset;
+			ICompletionItem item = textEditor.LastCompletionItemList.Items.First(i=>i.Text == "ReadOnlyAbstractProperty");
+			textEditor.LastCompletionItemList.Complete(context, item);
+			Assert.AreEqual(Normalize(
+				programStart + "public override int ReadOnlyAbstractProperty {\n" +
+				"    get { throw new NotImplementedException(); }\n" +
+				"  }" + programEnd),
+			                Normalize(textEditor.Document.Text)
+			               );
+		}
+		
+		[Test]
+		[Ignore("Implement formatter")]
 		public void OverrideVirtualProperty()
 		{
 			CompletionContext context = new CompletionContext();
@@ -147,6 +166,25 @@ class DerivedClass : BaseClass {
 				programStart + "public override int VirtualProperty {\n" +
 				"    get { return base.VirtualProperty; }\n" +
 				"    set { base.VirtualProperty = value; }\n" +
+				"  }" + programEnd),
+			                Normalize(textEditor.Document.Text)
+			               );
+		}
+		
+		[Test]
+		[Ignore("Implement formatter")]
+		public void OverrideProtectedWriteProperty()
+		{
+			CompletionContext context = new CompletionContext();
+			context.Editor = textEditor;
+			context.StartOffset = textEditor.Caret.Offset;
+			context.EndOffset = textEditor.Caret.Offset;
+			ICompletionItem item = textEditor.LastCompletionItemList.Items.First(i=>i.Text == "ProtectedWriteProperty");
+			textEditor.LastCompletionItemList.Complete(context, item);
+			Assert.AreEqual(Normalize(
+				programStart + "public override int ProtectedWriteProperty {\n" +
+				"    get { return base.ProtectedWriteProperty; }\n" +
+				"    protected set { base.ProtectedWriteProperty = value; }\n" +
 				"  }" + programEnd),
 			                Normalize(textEditor.Document.Text)
 			               );
