@@ -45,9 +45,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			Random rnd = new Random(seed);
 			var test = new RandomizedOrderResolverTest();
 			// Resolve all nodes, but in a random order without using a navigator.
-			test.resolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
+			test.resolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
 			// For comparing whether the results are equivalent, we also use a normal 'resolve all' resolver:
-			test.resolveAllResolver = new CSharpAstResolver(file.Project.Compilation, file.CompilationUnit, file.ParsedFile);
+			test.resolveAllResolver = new CSharpAstResolver(file.Project.Compilation, file.SyntaxTree, file.ParsedFile);
 			test.resolveAllResolver.ApplyNavigator(new ResolveAllNavigator(), CancellationToken.None);
 			// Prepare list of actions that we need to verify:
 			var actions = new List<Func<bool>>();
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			bool checkStateAfter = rnd.Next(0, 2) == 0;
 			bool checkConversion = rnd.Next(0, 2) == 0;
 			bool checkExpectedType = rnd.Next(0, 2) == 0;
-			foreach (var _node in file.CompilationUnit.DescendantsAndSelf) {
+			foreach (var _node in file.SyntaxTree.DescendantsAndSelf) {
 				var node = _node;
 				if (CSharpAstResolver.IsUnresolvableNode(node))
 					continue;

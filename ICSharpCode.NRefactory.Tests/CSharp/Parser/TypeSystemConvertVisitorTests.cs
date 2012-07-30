@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			const string fileName = "TypeSystemTests.TestCase.cs";
 			
 			CSharpParser parser = new CSharpParser();
-			CompilationUnit cu;
+			SyntaxTree cu;
 			using (Stream s = typeof(TypeSystemTests).Assembly.GetManifestResourceStream(typeof(TypeSystemTests), fileName)) {
 				cu = parser.Parse(s, fileName);
 			}

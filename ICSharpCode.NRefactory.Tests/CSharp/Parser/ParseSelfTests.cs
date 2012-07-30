@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			parser.GenerateTypeSystemMode = true;
 			foreach (string fileName in fileNames) {
-				CompilationUnit cu;
+				SyntaxTree cu;
 				using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan)) {
 					cu = parser.Parse(fs, fileName);
 				}
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			foreach (string fileName in fileNames) {
 				this.currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
-				CompilationUnit cu = parser.Parse(currentDocument.CreateReader(), fileName);
+				SyntaxTree cu = parser.Parse(currentDocument.CreateReader(), fileName);
 				if (parser.HasErrors)
 					continue;
 				this.currentFileName = fileName;

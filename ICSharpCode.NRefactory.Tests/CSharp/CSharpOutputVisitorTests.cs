@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	}
 }
 ";
-			var unit = CompilationUnit.Parse(code);
+			var unit = SyntaxTree.Parse(code);
 			AssertOutput("class Test\n{\n$void Foo ()\n${\n$$Action<int> act = delegate (int testMe) {\n$$};\n$}\n}\n", unit);
 		}
 		

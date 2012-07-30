@@ -45,11 +45,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				leave(node);
 		}
 		
-		public event Action<CompilationUnit> EnterCompilationUnit, LeaveCompilationUnit;
+		public event Action<SyntaxTree> EnterSyntaxTree, LeaveSyntaxTree;
 		
-		void IAstVisitor.VisitCompilationUnit(CompilationUnit unit)
+		void IAstVisitor.VisitSyntaxTree(SyntaxTree unit)
 		{
-			Visit(EnterCompilationUnit, LeaveCompilationUnit, unit);
+			Visit(EnterSyntaxTree, LeaveSyntaxTree, unit);
 		}
 		
 		public event Action<Comment> EnterComment, LeaveComment;

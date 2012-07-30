@@ -120,10 +120,10 @@ namespace ICSharpCode.NRefactory.CSharp.TypeSystem
 		}
 		
 		#region Compilation Unit
-		public override IUnresolvedEntity VisitCompilationUnit (CompilationUnit unit)
+		public override IUnresolvedEntity VisitSyntaxTree (SyntaxTree unit)
 		{
 			parsedFile.Errors = unit.Errors;
-			return base.VisitCompilationUnit (unit);
+			return base.VisitSyntaxTree (unit);
 		}
 		#endregion
 		

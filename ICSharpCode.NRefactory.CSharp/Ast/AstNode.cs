@@ -195,12 +195,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		/// <summary>
 		/// Gets the region from StartLocation to EndLocation for this node.
-		/// The file name of the region is set based on the parent CompilationUnit's file name.
+		/// The file name of the region is set based on the parent SyntaxTree's file name.
 		/// If this node is not connected to a whole compilation, the file name will be null.
 		/// </summary>
 		public ICSharpCode.NRefactory.TypeSystem.DomRegion GetRegion()
 		{
-			var cu = (this.Ancestors.LastOrDefault() ?? this) as CompilationUnit;
+			var cu = (this.Ancestors.LastOrDefault() ?? this) as SyntaxTree;
 			string fileName = (cu != null ? cu.FileName : null);
 			return new ICSharpCode.NRefactory.TypeSystem.DomRegion(fileName, this.StartLocation, this.EndLocation);
 		}

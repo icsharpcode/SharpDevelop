@@ -40,10 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		class ConversionVisitor : StructuralVisitor
 		{
-			CompilationUnit unit = new CompilationUnit ();
+			SyntaxTree unit = new SyntaxTree ();
 			internal bool convertTypeSystemMode;
 			
-			public CompilationUnit Unit {
+			public SyntaxTree Unit {
 				get {
 					return unit;
 				}
@@ -668,7 +668,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (namespaceStack.Count > 0) {
 					namespaceStack.Peek ().AddChild (child, NamespaceDeclaration.MemberRole);
 				} else {
-					unit.AddChild (child, CompilationUnit.MemberRole);
+					unit.AddChild (child, SyntaxTree.MemberRole);
 				}
 			}
 			
@@ -3709,12 +3709,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return errorReportPrinter.Errors; }
 		}
 		
-		public CompilationUnit Parse (ITextSource textSource, string fileName, int lineModifier = 0)
+		public SyntaxTree Parse (ITextSource textSource, string fileName, int lineModifier = 0)
 		{
 			return Parse (textSource.CreateReader (), fileName, lineModifier);
 		}
 		
-		public CompilationUnit Parse (TextReader reader, string fileName, int lineModifier = 0)
+		public SyntaxTree Parse (TextReader reader, string fileName, int lineModifier = 0)
 		{
 			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
 			using (MemoryStream stream = new MemoryStream ()) {
@@ -3730,7 +3730,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public CompilationUnit Parse(CompilerCompilationUnit top, string fileName, int lineModifier = 0)
+		public SyntaxTree Parse(CompilerCompilationUnit top, string fileName, int lineModifier = 0)
 		{
 			if (top == null) {
 				return null;
@@ -3769,14 +3769,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public CompilationUnit Parse (string program, string fileName)
+		public SyntaxTree Parse (string program, string fileName)
 		{
 			return Parse (new StringReader (program), fileName);
 		}
 		
 		internal static object parseLock = new object ();
 		
-		public CompilationUnit Parse(Stream stream, string fileName, int lineModifier = 0)
+		public SyntaxTree Parse(Stream stream, string fileName, int lineModifier = 0)
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
@@ -3864,7 +3864,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		/// <summary>
-		/// Parses a file snippet; guessing what the code snippet represents (compilation unit, type members, block, type reference, expression).
+		/// Parses a file snippet; guessing what the code snippet represents (whole file, type members, block, type reference, expression).
 		/// </summary>
 		public AstNode ParseSnippet (TextReader reader)
 		{

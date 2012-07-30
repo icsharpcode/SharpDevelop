@@ -1,4 +1,4 @@
-//
+﻿//
 // CodeCompletionBugTests.cs
 //
 // Author:
@@ -222,10 +222,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 
 			pctx = pctx.AddAssemblyReferences(refs);
 
-			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
-			compilationUnit.Freeze();
+			var syntaxTree = new CSharpParser().Parse(parsedText, "program.cs");
+			syntaxTree.Freeze();
 
-			var parsedFile = compilationUnit.ToTypeSystem();
+			var parsedFile = syntaxTree.ToTypeSystem();
 			pctx = pctx.UpdateProjectContent(null, parsedFile);
 
 			var cmp = pctx.CreateCompilation();
@@ -265,12 +265,12 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			};
 		}
 		
-		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent(string text, CompilationUnit compilationUnit)
+		Tuple<ReadOnlyDocument, CSharpCompletionEngine> GetContent(string text, SyntaxTree syntaxTree)
 		{
 			var doc = new ReadOnlyDocument(text);
 			IProjectContent pctx = new CSharpProjectContent();
 			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
-			var parsedFile = compilationUnit.ToTypeSystem();
+			var parsedFile = syntaxTree.ToTypeSystem();
 			
 			pctx = pctx.UpdateProjectContent(null, parsedFile);
 			var cmp = pctx.CreateCompilation();
@@ -282,7 +282,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			return Tuple.Create (doc, engine);
 		}
 		
-		static CompletionDataList CreateProvider (string text, CompilationUnit compilationUnit, CSharpCompletionEngine engine, ReadOnlyDocument doc, TextLocation loc)
+		static CompletionDataList CreateProvider (string text, SyntaxTree syntaxTree, CSharpCompletionEngine engine, ReadOnlyDocument doc, TextLocation loc)
 		{
 			var cursorPosition = doc.GetOffset (loc);
 			

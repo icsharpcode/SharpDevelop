@@ -42,9 +42,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return default (S);
 		}
 		
-		public event Action<CompilationUnit, T> CompilationUnitVisited;
+		public event Action<SyntaxTree, T> CompilationUnitVisited;
 	
-		S IAstVisitor<T, S>.VisitCompilationUnit (CompilationUnit unit, T data)
+		S IAstVisitor<T, S>.VisitSyntaxTree (SyntaxTree unit, T data)
 		{
 			var handler = CompilationUnitVisited;
 			if (handler != null)

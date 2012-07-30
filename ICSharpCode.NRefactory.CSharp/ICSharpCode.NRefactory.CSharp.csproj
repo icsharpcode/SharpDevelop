@@ -90,7 +90,7 @@
     <Compile Include="Ast\AstType.cs" />
     <Compile Include="Ast\DocumentationReference.cs" />
     <Compile Include="Ast\IdentifierExpressionBackreference.cs" />
-    <Compile Include="Ast\CompilationUnit.cs" />
+    <Compile Include="Ast\SyntaxTree.cs" />
     <Compile Include="Ast\ComposedType.cs" />
     <Compile Include="Ast\CSharpModifierToken.cs" />
     <Compile Include="Ast\CSharpTokenNode.cs" />

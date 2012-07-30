@@ -93,16 +93,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Creates a new ResolveVisitor instance.
 		/// </summary>
-		/// <param name="resolver">
-		/// The CSharpResolver, describing the initial resolve context.
-		/// If you visit a whole CompilationUnit with the resolve visitor, you can simply pass
-		/// <c>new CSharpResolver(typeResolveContext)</c> without setting up the context.
-		/// If you only visit a subtree, you need to pass a CSharpResolver initialized to the context for that subtree.
-		/// </param>
-		/// <param name="parsedFile">
-		/// Result of the <see cref="TypeSystemConvertVisitor"/> for the file being passed. This is used for setting up the context on the resolver.
-		/// You may pass <c>null</c> if you are only visiting a part of a method body and have already set up the context in the <paramref name="resolver"/>.
-		/// </param>
 		public ResolveVisitor(CSharpResolver resolver, CSharpParsedFile parsedFile)
 		{
 			if (resolver == null)
@@ -210,7 +200,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Equivalent to 'Scan', but also resolves the node at the same time.
 		/// This method should be only used if the CSharpResolver passed to the ResolveVisitor was manually set
 		/// to the correct state.
-		/// Otherwise, use <c>resolver.Scan(compilationUnit); var result = resolver.GetResolveResult(node);</c>
+		/// Otherwise, use <c>resolver.Scan(syntaxTree); var result = resolver.GetResolveResult(node);</c>
 		/// instead.
 		/// --
 		/// This method now is internal, because it is difficult to use correctly.
@@ -531,7 +521,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Track UsingScope
-		ResolveResult IAstVisitor<ResolveResult>.VisitCompilationUnit(CompilationUnit unit)
+		ResolveResult IAstVisitor<ResolveResult>.VisitSyntaxTree(SyntaxTree unit)
 		{
 			CSharpResolver previousResolver = resolver;
 			try {

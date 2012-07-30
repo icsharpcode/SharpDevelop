@@ -2305,10 +2305,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			EndNode(variableInitializer);
 		}
 		
-		public void VisitCompilationUnit(CompilationUnit compilationUnit)
+		public void VisitSyntaxTree(SyntaxTree syntaxTree)
 		{
 			// don't do node tracking as we visit all children directly
-			foreach (AstNode node in compilationUnit.Children) {
+			foreach (AstNode node in syntaxTree.Children) {
 				node.AcceptVisitor(this);
 			}
 		}

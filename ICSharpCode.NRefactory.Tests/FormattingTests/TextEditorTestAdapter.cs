@@ -37,8 +37,8 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			options.WrapLineLength = 80;
 			var visitor = new AstFormattingVisitor (policy, document, options);
 			visitor.FormattingMode = mode;
-			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");
-			compilationUnit.AcceptVisitor (visitor);
+			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
+			syntaxTree.AcceptVisitor (visitor);
 			visitor.ApplyChanges();
 			return document;
 		}
@@ -66,8 +66,8 @@ namespace ICSharpCode.NRefactory.CSharp.FormattingTests
 			options.EolMarker = "\n";
 			var visitior = new AstFormattingVisitor (policy, document, options);
 			visitior.FormattingMode = formattingMode;
-			var compilationUnit = new CSharpParser ().Parse (document, "test.cs");
-			compilationUnit.AcceptVisitor (visitior);
+			var syntaxTree = new CSharpParser ().Parse (document, "test.cs");
+			syntaxTree.AcceptVisitor (visitior);
 			visitior.ApplyChanges();
 			string newText = document.Text;
 			if (expectedOutput != newText) {

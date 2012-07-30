@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		public static void Roundtrip(CSharpParser parser, string fileName, string code)
 		{
 			// 1. Parse
-			CompilationUnit cu = parser.Parse(code, fileName);
+			SyntaxTree cu = parser.Parse(code, fileName);
 			if (parser.HasErrors)
 				throw new InvalidOperationException("There were parse errors.");
 			
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				throw new InvalidOperationException(@"Got lone \r in " + fileName);
 			
 			// 4. Parse generated output
-			CompilationUnit generatedCU;
+			SyntaxTree generatedCU;
 			try {
 				generatedCU = parser.Parse(generatedCode, fileName);
 			} catch {

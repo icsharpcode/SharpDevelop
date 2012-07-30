@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -230,7 +230,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return miniLexer.IsInPreprocessorDirective;
 		}
 		
-		IEnumerable<ICompletionData> HandleObjectInitializer(CompilationUnit unit, AstNode n)
+		IEnumerable<ICompletionData> HandleObjectInitializer(SyntaxTree unit, AstNode n)
 		{
 			var p = n.Parent;
 			while (p != null && !(p is ObjectCreateExpression)) {
@@ -1102,7 +1102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				xp = GetExpressionAtCursor();
 			}
 			AstNode node;
-			CompilationUnit unit;
+			SyntaxTree unit;
 			Tuple<ResolveResult, CSharpResolver> rr;
 			if (xp != null) {
 				node = xp.Node;
@@ -2151,7 +2151,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			var exprParent = resolvedNode.GetParent<Expression>();
-			var unit = exprParent != null ? exprParent.GetParent<CompilationUnit>() : null;
+			var unit = exprParent != null ? exprParent.GetParent<SyntaxTree>() : null;
 			
 			var astResolver = unit != null ? CompletionContextProvider.GetResolver(state, unit) : null;
 			IType hintType = exprParent != null && astResolver != null ? 
@@ -2198,7 +2198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
-		IEnumerable<ICompletionData> CreateParameterCompletion(MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, CompilationUnit unit, int parameter, bool controlSpace)
+		IEnumerable<ICompletionData> CreateParameterCompletion(MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, SyntaxTree unit, int parameter, bool controlSpace)
 		{
 			var result = new CompletionDataWrapper(this);
 			var addedEnums = new HashSet<string>();
@@ -2520,7 +2520,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#region Parsing methods
 		ExpressionResult GetExpressionBeforeCursor()
 		{
-			CompilationUnit baseUnit;
+			SyntaxTree baseUnit;
 			if (currentMember == null) {
 				baseUnit = ParseStub("a", false);
 				var type = baseUnit.GetNodeAt<MemberType>(location);

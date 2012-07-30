@@ -26,11 +26,11 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 {
 	/// <summary>
 	/// Determines the fastest way to retrieve a List{IdentifierExpression} of all identifiers
-	/// in a compilation unit.
+	/// in a syntax tree.
 	/// </summary>
 	public class VisitorBenchmark
 	{
-		public static void Run(IEnumerable<CompilationUnit> files)
+		public static void Run(IEnumerable<SyntaxTree> files)
 		{
 			files = files.ToList();
 			
@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 		}
 		
-		static void RunTest(string text, IEnumerable<CompilationUnit> files, Action<CompilationUnit, List<IdentifierExpression>> action)
+		static void RunTest(string text, IEnumerable<SyntaxTree> files, Action<SyntaxTree, List<IdentifierExpression>> action)
 		{
 			// validation:
 			var list = new List<IdentifierExpression>();

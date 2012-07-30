@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected Tuple<CSharpAstResolver, AstNode> PrepareResolver(string code)
 		{
-			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "code.cs");
+			SyntaxTree cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "code.cs");
 			
 			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
@@ -212,7 +212,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return (T)rr;
 		}
 		
-		protected AstNode FindNode(CompilationUnit cu, TextLocation start, TextLocation end)
+		protected AstNode FindNode(SyntaxTree cu, TextLocation start, TextLocation end)
 		{
 			FindNodeVisitor fnv = new FindNodeVisitor(start, end);
 			cu.AcceptVisitor(fnv);
@@ -246,7 +246,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected ResolveResult ResolveAtLocation(string code)
 		{
-			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "test.cs");
+			SyntaxTree cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "test.cs");
 			
 			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(1, dollars.Length, "Expected 1 dollar signs marking the location");

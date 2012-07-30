@@ -30,24 +30,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public static class ResolveAtLocation
 	{
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, SyntaxTree cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return Resolve (new Lazy<ICompilation>(() => compilation), parsedFile, cu, location, cancellationToken);
 		}
-		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location,
+		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpParsedFile parsedFile, SyntaxTree cu, TextLocation location,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			AstNode node;
 			return Resolve(compilation, parsedFile, cu, location, out node, cancellationToken);
 		}
 		
-		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve (ICompilation compilation, CSharpParsedFile parsedFile, SyntaxTree cu, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			return Resolve (new Lazy<ICompilation>(() => compilation), parsedFile, cu, location, out node, cancellationToken);
 		}
-		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpParsedFile parsedFile, CompilationUnit cu, TextLocation location, out AstNode node,
+		public static ResolveResult Resolve(Lazy<ICompilation> compilation, CSharpParsedFile parsedFile, SyntaxTree cu, TextLocation location, out AstNode node,
 		                                    CancellationToken cancellationToken = default(CancellationToken))
 		{
 			node = cu.GetNodeAt(location);

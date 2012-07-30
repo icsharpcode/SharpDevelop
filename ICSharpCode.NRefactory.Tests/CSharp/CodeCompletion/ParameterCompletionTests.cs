@@ -1,4 +1,4 @@
-//
+﻿//
 // ParameterCompletionTests.cs
 //
 // Author:
@@ -272,10 +272,10 @@ namespace ICSharpCode.NRefactory.CSharp.CodeCompletion
 			IProjectContent pctx = new CSharpProjectContent();
 			pctx = pctx.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib, CecilLoaderTests.SystemCore });
 			
-			var compilationUnit = new CSharpParser().Parse(parsedText, "program.cs");
-			compilationUnit.Freeze();
+			var syntaxTree = new CSharpParser().Parse(parsedText, "program.cs");
+			syntaxTree.Freeze();
 			
-			var parsedFile = compilationUnit.ToTypeSystem();
+			var parsedFile = syntaxTree.ToTypeSystem();
 			pctx = pctx.UpdateProjectContent(null, parsedFile);
 			var cmp = pctx.CreateCompilation();
 			var loc = doc.GetLocation(cursorPosition);
