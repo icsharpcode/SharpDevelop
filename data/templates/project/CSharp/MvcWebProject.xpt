@@ -236,6 +236,18 @@ namespace ${StandardNamespace}
 }
 ]]>
 			</File>
+			<File name="Views\web.config">
+<![CDATA[<configuration>
+	<system.web>
+		<pages
+			pageBaseType="System.Web.Mvc.ViewPage"
+			pageParserFilterType="System.Web.Mvc.ViewTypeParserFilter"
+			userControlBaseType="System.Web.Mvc.ViewUserControl">
+		</pages>
+	</system.web>
+</configuration>
+]]>
+		</File>
 			<File name="Views\Home\Contact.aspx">
 <![CDATA[<%@ Page Language="C#" MasterPageFile="~/Views/Shared/Site.Master" Inherits="System.Web.Mvc.ViewPage" %>
 
