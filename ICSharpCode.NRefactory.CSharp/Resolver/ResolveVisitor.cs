@@ -400,33 +400,42 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		void ProcessConversionsInInvocation(Expression target, IEnumerable<Expression> arguments, CSharpInvocationResolveResult invocation)
+		void ProcessInvocationResult(Expression target, IEnumerable<Expression> arguments, ResolveResult invocation)
 		{
-			if (invocation == null) {
-				// we still need to handle the named arguments if invocation==null
-				MarkUnknownNamedArguments(arguments);
-				return;
-			}
-			int i = 0;
-			if (invocation.IsExtensionMethodInvocation) {
-				Debug.Assert(arguments.Count() + 1 == invocation.Arguments.Count);
-				ProcessConversionResult(target, invocation.Arguments[0] as ConversionResolveResult);
-				i = 1;
-			} else {
-				Debug.Assert(arguments.Count() == invocation.Arguments.Count);
-			}
-			foreach (Expression arg in arguments) {
-				ResolveResult argRR = invocation.Arguments[i++];
-				NamedArgumentExpression nae = arg as NamedArgumentExpression;
-				NamedArgumentResolveResult nrr = argRR as NamedArgumentResolveResult;
-				Debug.Assert((nae == null) == (nrr == null));
-				if (nae != null && nrr != null) {
-					StoreCurrentState(nae);
-					StoreResult(nae, nrr);
-					ProcessConversionResult(nae.Expression, nrr.Argument as ConversionResolveResult);
-				} else {
-					ProcessConversionResult(arg, argRR as ConversionResolveResult);
+			if (invocation is CSharpInvocationResolveResult || invocation is DynamicInvocationResolveResult) {
+				int i = 0;
+				IList<ResolveResult> argumentsRR;
+				if (invocation is CSharpInvocationResolveResult) {
+					var csi = (CSharpInvocationResolveResult)invocation;
+					if (csi.IsExtensionMethodInvocation) {
+						Debug.Assert(arguments.Count() + 1 == csi.Arguments.Count);
+						ProcessConversionResult(target, csi.Arguments[0] as ConversionResolveResult);
+						i = 1;
+					} else {
+						Debug.Assert(arguments.Count() == csi.Arguments.Count);
+					}
+					argumentsRR = csi.Arguments;
 				}
+				else {
+					argumentsRR = ((DynamicInvocationResolveResult)invocation).Arguments;
+				}
+
+				foreach (Expression arg in arguments) {
+					ResolveResult argRR = argumentsRR[i++];
+					NamedArgumentExpression nae = arg as NamedArgumentExpression;
+					NamedArgumentResolveResult nrr = argRR as NamedArgumentResolveResult;
+					Debug.Assert((nae == null) == (nrr == null));
+					if (nae != null && nrr != null) {
+						StoreCurrentState(nae);
+						StoreResult(nae, nrr);
+						ProcessConversionResult(nae.Expression, nrr.Argument as ConversionResolveResult);
+					} else {
+						ProcessConversionResult(arg, argRR as ConversionResolveResult);
+					}
+				}
+			}
+			else {
+				MarkUnknownNamedArguments(arguments);
 			}
 		}
 		#endregion
@@ -1425,7 +1434,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					MarkUnknownNamedArguments(indexerExpression.Arguments);
 					ProcessConversionResults(indexerExpression.Arguments, aarr.Indexes);
 				} else {
-					ProcessConversionsInInvocation(target, indexerExpression.Arguments, rr as CSharpInvocationResolveResult);
+					ProcessInvocationResult(target, indexerExpression.Arguments, rr);
 				}
 				return rr;
 			} else {
@@ -1534,7 +1543,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			} else {
 				// process conversions in all other cases
-				ProcessConversionsInInvocation(null, objectCreateExpression.Arguments, rr as CSharpInvocationResolveResult);
+				ProcessInvocationResult(null, objectCreateExpression.Arguments, rr);
 				return rr;
 			}
 		}
@@ -1560,7 +1569,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						OverloadResolution or = mgrr.PerformOverloadResolution(resolver.Compilation, addArguments, null, false, false, resolver.CheckForOverflow, resolver.conversions);
 						var invocationRR = or.CreateResolveResult(initializedObject);
 						StoreResult(aie, invocationRR);
-						ProcessConversionsInInvocation(null, aie.Elements, invocationRR);
+						ProcessInvocationResult(null, aie.Elements, invocationRR);
 						initializerStatements.Add(invocationRR);
 					} else {
 						StoreResult(aie, addRR);
@@ -1890,7 +1899,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			string[] argumentNames;
 			ResolveResult[] arguments = GetArguments(invocationExpression.Arguments, out argumentNames);
 			ResolveResult rr = resolver.ResolveInvocation(target, arguments, argumentNames);
-			ProcessConversionsInInvocation(invocationExpression.Target, invocationExpression.Arguments, rr as CSharpInvocationResolveResult);
+			ProcessInvocationResult(invocationExpression.Target, invocationExpression.Arguments, rr);
 			return rr;
 		}
 		#endregion
@@ -3182,7 +3191,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			string[] argumentNames;
 			ResolveResult[] arguments = GetArguments(constructorArguments, out argumentNames);
 			ResolveResult rr = resolver.ResolveObjectCreation(type, arguments, argumentNames, false, initializerStatements);
-			ProcessConversionsInInvocation(null, constructorArguments, rr as CSharpInvocationResolveResult);
+			ProcessInvocationResult(null, constructorArguments, rr);
 			return rr;
 		}
 		
@@ -3823,7 +3832,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			string[] argumentNames;
 			ResolveResult[] arguments = GetArguments(constructorInitializer.Arguments, out argumentNames);
 			ResolveResult rr = resolver.ResolveObjectCreation(target.Type, arguments, argumentNames, allowProtectedAccess: true);
-			ProcessConversionsInInvocation(null, constructorInitializer.Arguments, rr as CSharpInvocationResolveResult);
+			ProcessInvocationResult(null, constructorInitializer.Arguments, rr);
 			return rr;
 		}
 		#endregion
