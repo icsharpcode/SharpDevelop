@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace IconEditor
+namespace ICSharpCode.IconEditor
 {
 	[Serializable]
 	public class InvalidIconException : Exception

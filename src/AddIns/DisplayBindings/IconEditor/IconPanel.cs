@@ -4,18 +4,30 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace IconEditor
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+
+namespace ICSharpCode.IconEditor
 {
 	public partial class IconPanel
 	{
-		Size size;
+		Size iconSize;
 		int colorDepth;
 		IconEntry entry;
 		Bitmap maskBitmap;
 		Bitmap bitmap;
+		
+		public Size IconSize {
+			get { return iconSize; }
+		}
+		
+		public int ColorDepth {
+			get { return colorDepth; }
+		}
 		
 		public IconEntry Entry {
 			get {
@@ -31,22 +43,30 @@ namespace IconEditor
 					bitmap = null;
 				}
 				entry = value;
-				this.ContextMenuStrip = null;
 				if (entry != null) {
 					bitmap = entry.GetImage();
 					if (entry.Type == IconEntryType.Classic) {
 						maskBitmap = FixBitmap(entry.GetMaskImage());
 						bitmap = FixBitmap(bitmap);
-					} else {
-						//this.ContextMenuStrip = trueColorContextMenu;
 					}
+					
+					exportANDMaskToolStripMenuItem.Visible = entry.Type == IconEntryType.Classic;
+					exportXORMaskToolStripMenuItem.Visible = entry.Type == IconEntryType.Classic;
+					compressedToolStripMenuItem.Checked = entry.IsCompressed;
+					compressedToolStripMenuItem.Enabled = entry.IsCompressed || entry.ColorDepth == 32;
 				}
+				this.ContextMenuStrip = (entry != null) ? contextMenuStrip : emptyContextMenuStrip;
+				UpdateSize();
 				Invalidate();
 			}
 		}
 		
+		public event EventHandler EntryChanged = delegate {};
+		
 		Bitmap FixBitmap(Bitmap src)
 		{
+			if (src == null)
+				return src;
 			Bitmap dest = new Bitmap(src.Width, src.Height);
 			using (Graphics g = Graphics.FromImage(dest)) {
 				g.DrawImageUnscaled(src, 0, 0);
@@ -57,7 +77,7 @@ namespace IconEditor
 		
 		public IconPanel(Size size, int colorDepth)
 		{
-			this.size = size;
+			this.iconSize = size;
 			this.colorDepth = colorDepth;
 			
 			//
@@ -65,7 +85,22 @@ namespace IconEditor
 			//
 			InitializeComponent();
 			
-			this.ClientSize = new Size(size.Width + 2, size.Height + 2);
+			UpdateSize();
+		}
+		
+		void UpdateSize()
+		{
+			Size newClientSize = new Size(LimitSizeIfNoEntry(iconSize.Width) + 2, LimitSizeIfNoEntry(iconSize.Height) + 2);
+			if (this.ClientSize != newClientSize)
+				this.ClientSize = newClientSize;
+		}
+		
+		int LimitSizeIfNoEntry(int size)
+		{
+			if (entry != null)
+				return size;
+			else
+				return Math.Min(size, 32);
 		}
 		
 		void IconPanelPaint(object sender, PaintEventArgs e)
@@ -77,8 +112,9 @@ namespace IconEditor
 					IntPtr memDC = Gdi32.CreateCompatibleDC(destDC);
 					IntPtr srcHBitmap = maskBitmap.GetHbitmap();
 					IntPtr oldHBitmap = Gdi32.SelectObject(memDC, srcHBitmap);
-					Gdi32.BitBlt(destDC, drawOffset, drawOffset, size.Width, size.Height, memDC, 0, 0, Gdi32.SRCAND);
+					Gdi32.BitBlt(destDC, drawOffset, drawOffset, iconSize.Width, iconSize.Height, memDC, 0, 0, Gdi32.SRCAND);
 					
+					// TODO: review if the objects get destroyed correctly
 					Gdi32.SelectObject(memDC, oldHBitmap);
 					Gdi32.DeleteObject(srcHBitmap);
 					Gdi32.DeleteDC(memDC);
@@ -88,7 +124,7 @@ namespace IconEditor
 					IntPtr memDC = Gdi32.CreateCompatibleDC(destDC);
 					IntPtr srcHBitmap = bitmap.GetHbitmap();
 					IntPtr oldHBitmap = Gdi32.SelectObject(memDC, srcHBitmap);
-					Gdi32.BitBlt(destDC, drawOffset, drawOffset, size.Width, size.Height, memDC, 0, 0, Gdi32.SRCINVERT);
+					Gdi32.BitBlt(destDC, drawOffset, drawOffset, iconSize.Width, iconSize.Height, memDC, 0, 0, Gdi32.SRCINVERT);
 					
 					Gdi32.SelectObject(memDC, oldHBitmap);
 					Gdi32.DeleteObject(srcHBitmap);
@@ -136,9 +172,41 @@ namespace IconEditor
 				dlg.DefaultExt = "png";
 				dlg.Filter = "PNG images|*.png|All files|*.*";
 				if (dlg.ShowDialog() == DialogResult.OK) {
-					bitmap.Save(dlg.FileName, ImageFormat.Png);
+					entry.ExportArgbBitmap().Save(dlg.FileName, ImageFormat.Png);
 				}
 			}
+		}
+		
+		void ExportANDMaskToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog()) {
+				dlg.DefaultExt = "bmp";
+				dlg.Filter = "BMP images|*.bmp|All files|*.*";
+				if (dlg.ShowDialog() == DialogResult.OK) {
+					using (var stream = dlg.OpenFile()) {
+						entry.GetMaskImageData().CopyTo(stream);
+					}
+				}
+			}
+		}
+		
+		void ExportXORMaskToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			using (SaveFileDialog dlg = new SaveFileDialog()) {
+				dlg.DefaultExt = "bmp";
+				dlg.Filter = "BMP images|*.bmp|All files|*.*";
+				if (dlg.ShowDialog() == DialogResult.OK) {
+					using (var stream = dlg.OpenFile()) {
+						entry.GetImageData().CopyTo(stream);
+					}
+				}
+			}
+		}
+		
+		void DeleteToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			this.Entry = null;
+			EntryChanged(this, e);
 		}
 		
 		void ReplaceWithImageToolStripMenuItemClick(object sender, EventArgs e)
@@ -146,18 +214,38 @@ namespace IconEditor
 			using (OpenFileDialog dlg = new OpenFileDialog()) {
 				dlg.Filter = "Images|*.png;*.bmp;*.gif;*.jpg|All files|*.*";
 				if (dlg.ShowDialog() == DialogResult.OK) {
-					Bitmap newBitmap = new Bitmap(dlg.FileName);
-					// scale to correct size and make it ARGB
-					string oldFormat = entry.Width + "x" + entry.Height + "x" + entry.ColorDepth;
-					string newFormat = newBitmap.Width + "x" + newBitmap.Height + "x";
-					if (newBitmap.Width != entry.Width || newBitmap.Height != entry.Height) {
-						MessageBox.Show("The loaded bitmap has the");
+					try {
+						Bitmap newBitmap = new Bitmap(dlg.FileName);
+						SetImage(newBitmap);
+					} catch (Exception ex) {
+						MessageService.ShowHandledException(ex);
 					}
-					//entry.SetTrueColorImage(newBitmap, entry.IsCompressed);
-					newBitmap.Dispose();
-					this.Entry = entry; // re-display bitmap
 				}
 			}
+		}
+		
+		void CompressedToolStripMenuItemClick(object sender, EventArgs e)
+		{
+			// Toggle compression
+			this.Entry = new IconEntry(iconSize.Width, iconSize.Height, colorDepth, entry.ExportArgbBitmap(), !entry.IsCompressed);
+			EntryChanged(this, EventArgs.Empty);
+		}
+		
+		void SetImage(Bitmap newBitmap)
+		{
+			// scale to correct size and make it ARGB
+			if (iconSize != newBitmap.Size) {
+				int r = MessageService.ShowCustomDialog(
+					"Import Image",
+					string.Format("The image has size {0}x{1}, but size {2}x{3} is expected.", newBitmap.Width, newBitmap.Height, iconSize.Width, iconSize.Height),
+					0, 1, "Convert", "Cancel");
+				if (r != 0) {
+					return;
+				}
+			}
+			bool? compress = entry != null ? entry.IsCompressed : (bool?)null;
+			this.Entry = new IconEntry(iconSize.Width, iconSize.Height, colorDepth, newBitmap, compress);
+			EntryChanged(this, EventArgs.Empty);
 		}
 		
 		Point mouseDownLocation;
@@ -172,41 +260,56 @@ namespace IconEditor
 		void IconPanelMouseMove(object sender, MouseEventArgs e)
 		{
 			if (e.Button == MouseButtons.Left) {
-				/*
-				if (mouseDownLocation.IsEmpty == false) {
+				if (mouseDownLocation.IsEmpty == false && entry != null) {
 					int dx = Math.Abs(e.X - mouseDownLocation.X);
 					int dy = Math.Abs(e.Y - mouseDownLocation.Y);
 					if (dx > SystemInformation.DragSize.Width || dy > SystemInformation.DragSize.Height)
 					{
 						mouseDownLocation = Point.Empty;
-						this.DoDragDrop(bitmap, DragDropEffects.Copy);
+						this.DoDragDrop(entry.ExportArgbBitmap(), DragDropEffects.Copy);
 					}
 				}
-				*/
 			}
 		}
 		
 		void IconPanelDragEnter(object sender, DragEventArgs e)
 		{
-			/*
-			if (e.Data.GetDataPresent(typeof(Bitmap)))
+			if (e.Data.GetDataPresent(DataFormats.Bitmap)) {
 				e.Effect = DragDropEffects.Copy;
-			else
+			} else if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
 				e.Effect = DragDropEffects.None;
-			*/
+				string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+				if (files != null && files.Length == 1) {
+					string ext = Path.GetExtension(files[0]);
+					if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase) || ext.Equals(".bmp", StringComparison.OrdinalIgnoreCase)
+					    || ext.Equals(".gif", StringComparison.OrdinalIgnoreCase) || ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase))
+					{
+						e.Effect = DragDropEffects.Copy;
+					}
+				}
+			} else {
+				e.Effect = DragDropEffects.None;
+			}
 		}
 		
 		void IconPanelDragDrop(object sender, DragEventArgs e)
 		{
-			/*try {
-				Bitmap bmp = (Bitmap)e.Data.GetData(typeof(Bitmap));
+			try {
+				Bitmap bmp = null;
+				if (e.Data.GetDataPresent(DataFormats.Bitmap)) {
+					bmp = (Bitmap)e.Data.GetData(DataFormats.Bitmap);
+				} else if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+					if (files != null && files.Length == 1) {
+						bmp = new Bitmap(files[0]);
+					}
+				}
 				if (bmp != null) {
-					entry.SetImage(bmp, entry.IsCompressed);
-					this.Entry = entry; // re-display entry
+					SetImage(bmp);
 				}
 			} catch (Exception ex) {
-				MessageBox.Show(ex.ToString());
-			}*/
+				MessageService.ShowHandledException(ex);
+			}
 		}
 	}
 }

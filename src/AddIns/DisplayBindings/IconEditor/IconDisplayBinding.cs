@@ -5,7 +5,7 @@ using System;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.IconEditorAddIn
+namespace ICSharpCode.IconEditor
 {
 	public class IconDisplayBinding : IDisplayBinding
 	{

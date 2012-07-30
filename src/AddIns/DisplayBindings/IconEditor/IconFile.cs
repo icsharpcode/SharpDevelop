@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
-namespace IconEditor
+namespace ICSharpCode.IconEditor
 {
 	/// <summary>
 	/// Icon class supporting XP and Vista icons.
@@ -89,25 +90,24 @@ namespace IconEditor
 		{
 			BinaryReader r = new BinaryReader(stream);
 			if (r.ReadUInt16() != 0)
-				throw new InvalidIconException("reserved word must be 0");
+				throw new InvalidIconException("This is not a valid .ico file.");
 			ushort type = r.ReadUInt16();
 			if (type == 1)
 				isCursor = false;
 			else if (type == 2)
 				isCursor = true;
 			else
-				throw new InvalidIconException("invalid icon type " + type);
-			if (isCursor)
-				throw new InvalidIconException("cursors are currently not supported");
+				throw new InvalidIconException("This is not a valid .ico file.");
 			IconEntry[] icons = new IconEntry[r.ReadUInt16()];
 			for (int i = 0; i < icons.Length; i++) {
 				icons[i] = new IconEntry();
-				icons[i].ReadHeader(r, ref wellFormed);
+				icons[i].ReadHeader(r, isCursor, ref wellFormed);
 			}
 			for (int i = 0; i < icons.Length; i++) {
 				icons[i].ReadData(stream, ref wellFormed);
 			}
-			this.icons = new Collection<IconEntry>(icons);
+			// need to use List<T> so that the collection can be resized
+			this.icons = new Collection<IconEntry>(new List<IconEntry>(icons));
 		}
 		
 		/// <summary>
@@ -138,7 +138,7 @@ namespace IconEditor
 			w.Write((ushort)(isCursor ? 2 : 1));
 			w.Write((ushort)icons.Count);
 			foreach (IconEntry e in icons) {
-				e.WriteHeader(stream, w);
+				e.WriteHeader(stream, isCursor, w);
 			}
 			foreach (IconEntry e in icons) {
 				e.WriteData(stream);
@@ -171,40 +171,47 @@ namespace IconEditor
 		}
 		
 		/// <summary>
+		/// Adds the specified entry
+		/// </summary>
+		public void AddEntry(IconEntry entry)
+		{
+			if (entry == null)
+				throw new ArgumentNullException("entry");
+			// replace matching existing entry:
+			for (int i = 0; i < icons.Count; i++) {
+				if (icons[i].Width == entry.Width && icons[i].Height == entry.Height && icons[i].ColorDepth == entry.ColorDepth) {
+					icons[i] = entry;
+					return;
+				}
+			}
+			icons.Add(entry);
+		}
+		
+		public void RemoveEntry(int width, int height, int colorDepth)
+		{
+			for (int i = 0; i < icons.Count; i++) {
+				if (icons[i].Width == width && icons[i].Height == height && icons[i].ColorDepth == colorDepth) {
+					icons.RemoveAt(i);
+					break;
+				}
+			}
+		}
+		
+		/// <summary>
 		/// Gets a sorted list of all icon sizes available in this file.
 		/// </summary>
-		public IList<Size> AvailableSizes {
+		public IEnumerable<Size> AvailableSizes {
 			get {
-				List<Size> r = new List<Size>();
-				foreach (IconEntry e in this.Icons) {
-					if (r.Contains(e.Size) == false)
-						r.Add(e.Size);
-				}
-				r.Sort(delegate(Size a, Size b) {
-				       	int res = a.Width.CompareTo(b.Width);
-				       	if (res == 0)
-				       		return a.Height.CompareTo(b.Height);
-				       	else
-				       		return res;
-				       });
-				return r;
+				return this.Icons.Select(e => e.Size).Distinct().OrderBy(s => s.Width).ThenBy(s => s.Height);
 			}
 		}
 		
 		/// <summary>
 		/// Gets a sorted list of all color depths available in this file.
 		/// </summary>
-		public IList<int> AvailableColorDepths {
+		public IEnumerable<int> AvailableColorDepths {
 			get {
-				bool[] depths = new bool[33];
-				foreach (IconEntry e in this.Icons) {
-					depths[e.ColorDepth] = true;
-				}
-				List<int> r = new List<int>();
-				for (int i = 0; i < depths.Length; i++) {
-					if (depths[i]) r.Add(i);
-				}
-				return r;
+				return this.Icons.Select(e => e.ColorDepth).Distinct().OrderBy(v => v);
 			}
 		}
 	}

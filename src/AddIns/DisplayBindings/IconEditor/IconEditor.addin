@@ -1,7 +1,7 @@
-﻿<AddIn name        = "IconViewerAddIn"
+﻿<AddIn name        = "Icon Editor"
        author      = "Daniel Grunwald"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Allows viewing .ico files inside SharpDevelop"
+       description = "Allows editing .ico files inside SharpDevelop"
        addInManagerHidden = "preinstalled">
 	
 	<Manifest>
@@ -9,7 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "ICSharpCode.IconEditorAddIn.dll"/>
+		<Import assembly = "ICSharpCode.IconEditor.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
@@ -21,9 +21,9 @@
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id    = "IconEditor"
-		                class = "ICSharpCode.IconEditorAddIn.IconDisplayBinding"
+		                class = "ICSharpCode.IconEditor.IconDisplayBinding"
 		                insertbefore    = "Text"
-		                fileNamePattern = "\.(ico)$"
+		                fileNamePattern = "\.(ico|cur)$"
 		                title = "${res:Gui.ProjectBrowser.OpenWith.Bindings.IconEditor}"/>
 	</Path>
 </AddIn>
