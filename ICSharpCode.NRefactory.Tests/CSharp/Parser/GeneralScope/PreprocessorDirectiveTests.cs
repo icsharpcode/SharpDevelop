@@ -245,5 +245,24 @@ class B { }
 			Assert.AreEqual(PreProcessorDirectiveType.Elif, bbb.Type);
 			Assert.AreEqual("BBB", bbb.Argument);
 		}
+		
+		[Test]
+		[Ignore("parser bug (BBB is missing)")]
+		public void ConditionalSymbolTest()
+		{
+			const string program = @"// Test
+#if AAA
+#undef AAA
+#define CCC
+#else
+#define DDD
+#endif
+class C {}";
+			CSharpParser parser = new CSharpParser();
+			parser.CompilerSettings.ConditionalSymbols.Add("AAA");
+			parser.CompilerSettings.ConditionalSymbols.Add("BBB");
+			var cu = parser.Parse(program, "elif.cs");
+			Assert.AreEqual(new[] { "BBB", "CCC" }, cu.ConditionalSymbols);
+		}
 	}
 }

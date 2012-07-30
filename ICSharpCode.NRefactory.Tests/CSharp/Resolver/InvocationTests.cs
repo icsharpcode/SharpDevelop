@@ -539,5 +539,75 @@ class D : B {
 			Assert.IsFalse(rr.IsError);
 			Assert.IsFalse(rr.IsVirtualCall);
 		}
+		
+		[Test]
+		public void NamedArgument()
+		{
+			string program = @"
+class Test {
+	public void F(int x) {}
+	public void Test() {
+		F($x: 0$);
+	}
+}";
+			var narr = Resolve<NamedArgumentResolveResult>(program);
+			Assert.IsInstanceOf<ConstantResolveResult>(narr.Argument);
+			Assert.AreEqual("x", narr.ParameterName);
+			Assert.AreEqual("Test.F", narr.Member.FullName);
+			Assert.AreSame(narr.Member.Parameters.Single(), narr.Parameter);
+		}
+		
+		[Test]
+		public void NamedArgumentInInvocation()
+		{
+			string program = @"
+class Test {
+	public void F(int x) {}
+	public void Test() {
+		$F(x: 0)$;
+	}
+}";
+			var rr = Resolve<CSharpInvocationResolveResult>(program);
+			Assert.IsInstanceOf<NamedArgumentResolveResult>(rr.Arguments.Single());
+			var narr = (NamedArgumentResolveResult)rr.Arguments.Single();
+			Assert.IsInstanceOf<ConstantResolveResult>(narr.Argument);
+			Assert.AreEqual("x", narr.ParameterName);
+			Assert.AreEqual("Test.F", narr.Member.FullName);
+			Assert.AreSame(narr.Member.Parameters.Single(), narr.Parameter);
+			
+			// but GetArgumentsForCall() should directly return the constant:
+			Assert.IsInstanceOf<ConstantResolveResult>(rr.GetArgumentsForCall().Single());
+		}
+		
+		[Test]
+		public void UnknownNamedArgument()
+		{
+			string program = @"
+class Test {
+	public void F(int x) {}
+	public void Test() {
+		F($y: 0$);
+	}
+}";
+			var narr = Resolve<NamedArgumentResolveResult>(program);
+			Assert.IsInstanceOf<ConstantResolveResult>(narr.Argument);
+			Assert.AreEqual("y", narr.ParameterName);
+			Assert.IsNull(narr.Parameter);
+		}
+		
+		[Test]
+		public void NamedArgumentInMissingMethod()
+		{
+				string program = @"
+class Test {
+	public void Test() {
+		Missing($x: 0$);
+	}
+}";
+			var narr = Resolve<NamedArgumentResolveResult>(program);
+			Assert.IsInstanceOf<ConstantResolveResult>(narr.Argument);
+			Assert.AreEqual("x", narr.ParameterName);
+			Assert.IsNull(narr.Parameter);
+		}
 	}
 }
