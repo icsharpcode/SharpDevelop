@@ -404,6 +404,7 @@
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
     <Compile Include="Refactoring\CodeIssues\FormatStringIssues\FormatStringIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\FormatStringIssues\FormatStringHelper.cs" />
+    <Compile Include="Refactoring\CodeActions\ConvertToInitializer\ConvertInitializerToExplicitInitializationsAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

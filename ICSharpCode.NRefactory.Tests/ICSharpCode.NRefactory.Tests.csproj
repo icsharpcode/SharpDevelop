@@ -297,6 +297,7 @@
     <Compile Include="CSharp\CodeIssues\CallToObjectEqualsViaBaseTests.cs" />
     <Compile Include="CSharp\CodeIssues\IncorrectCallToGetHashCodeTests.cs" />
     <Compile Include="CSharp\CodeIssues\FormatStringIssues\FormatStringTests.cs" />
+    <Compile Include="CSharp\CodeActions\ConvertToInitializer\ConvertInitializerToExplicitIntializationsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Mono.Cecil\Mono.Cecil.csproj">
