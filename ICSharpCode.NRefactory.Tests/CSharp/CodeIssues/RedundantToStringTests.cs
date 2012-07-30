@@ -189,6 +189,39 @@ class Foo
 		}
 		
 		[Test]
+		public void FormatMethodWithObjectParamsArray ()
+		{
+			var input = @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string s = FakeFormat(""{0} {1}"", i.ToString(), i.ToString());
+	}
+
+	void FakeFormat(string format, params object[] args)
+	{
+	}
+}";
+			
+			TestRefactoringContext context;
+			var issues = GetIssues (new RedundantToStringIssue (), input, out context);
+			Assert.AreEqual (2, issues.Count);
+			CheckFix (context, issues, @"
+class Foo
+{
+	void Bar (int i)
+	{
+		string s = FakeFormat(""{0} {1}"", i, i);
+	}
+
+	void FakeFormat(string format, params object[] args)
+	{
+	}
+}");
+		}
+		
+		[Test]
 		public void DetectsBlacklistedCalls ()
 		{
 			var input = @"
