@@ -2172,6 +2172,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteAttributes(indexerDeclaration.Attributes);
 			WriteModifiers(indexerDeclaration.ModifierTokens);
 			indexerDeclaration.ReturnType.AcceptVisitor(this);
+			Space();
 			WritePrivateImplementationType(indexerDeclaration.PrivateImplementationType);
 			WriteKeyword(IndexerDeclaration.ThisKeywordRole);
 			Space(policy.SpaceBeforeMethodDeclarationParentheses);

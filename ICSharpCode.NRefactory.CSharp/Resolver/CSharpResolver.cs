@@ -1954,7 +1954,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				or.AddCandidate(invokeMethod);
 				return new CSharpInvocationResolveResult(
 					target, invokeMethod, //invokeMethod.ReturnType.Resolve(context),
-					or.GetArgumentsWithConversions(), or.BestCandidateErrors,
+					or.GetArgumentsWithConversionsAndNames(), or.BestCandidateErrors,
 					isExpandedForm: or.BestCandidateIsExpandedForm,
 					isDelegateInvocation: true,
 					argumentToParameterMap: or.GetArgumentToParameterMap());
