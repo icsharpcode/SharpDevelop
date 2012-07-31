@@ -400,6 +400,7 @@
     <Compile Include="Refactoring\CodeActions\ExtractFieldAction.cs" />
     <Compile Include="Completion\ICompletionContextProvider.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
+    <Compile Include="Parser\SeekableStreamReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

@@ -3709,25 +3709,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return errorReportPrinter.Errors; }
 		}
 		
-		public SyntaxTree Parse (ITextSource textSource, string fileName, int lineModifier = 0)
-		{
-			return Parse (textSource.CreateReader (), fileName, lineModifier);
-		}
-		
 		public SyntaxTree Parse (TextReader reader, string fileName, int lineModifier = 0)
 		{
-			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
-			using (MemoryStream stream = new MemoryStream ()) {
-				StreamWriter w = new StreamWriter (stream, Encoding.UTF8);
-				char[] buffer = new char[2048];
-				int read;
-				while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
-					w.Write (buffer, 0, read);
-				w.Flush (); // we can't close the StreamWriter because that would also close the MemoryStream
-				stream.Position = 0;
-				
-				return Parse (stream, fileName, lineModifier);
-			}
+			return Parse(new StringTextSource (reader.ReadToEnd ()), fileName, lineModifier);
 		}
 
 		public SyntaxTree Parse(CompilerCompilationUnit top, string fileName, int lineModifier = 0)
@@ -3771,18 +3755,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public SyntaxTree Parse (string program, string fileName)
 		{
-			return Parse (new StringReader (program), fileName);
+			return Parse (new StringTextSource (program), fileName);
 		}
 		
 		internal static object parseLock = new object ();
+
+		public SyntaxTree Parse (Stream stream, string fileName, int lineModifier = 0)
+		{
+			return Parse (new StreamReader (stream), fileName, lineModifier);
+		}
 		
-		public SyntaxTree Parse(Stream stream, string fileName, int lineModifier = 0)
+		public SyntaxTree Parse(ITextSource src, string fileName, int lineModifier = 0)
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
 				var ctx = new CompilerContext (compilerSettings.ToMono(), errorReportPrinter);
 				ctx.Settings.TabSize = 1;
-				var reader = new SeekableStreamReader (stream, Encoding.UTF8);
+				var reader = new SeekableStreamReader (src);
 				var file = new SourceFile (fileName, fileName, 0);
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
@@ -3885,8 +3874,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				errorReportPrinter = new ErrorReportPrinter("");
 				var ctx = new CompilerContext(compilerSettings.ToMono(), errorReportPrinter);
 				ctx.Settings.TabSize = 1;
-				var stream = new MemoryStream(Encoding.Unicode.GetBytes(cref));
-				var reader = new SeekableStreamReader(stream, Encoding.Unicode);
+				var reader = new SeekableStreamReader(new StringTextSource (cref));
 				var file = new SourceFile("", "", 0);
 				Location.Initialize(new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer(ctx);
