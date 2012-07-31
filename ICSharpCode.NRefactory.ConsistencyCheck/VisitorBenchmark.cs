@@ -34,26 +34,26 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		{
 			files = files.ToList();
 			
-			RunTest("recursive method using for", files, (cu, list) => WalkTreeFor(cu, list));
-			RunTest("recursive method using foreach", files, (cu, list) => WalkTreeForEach(cu, list));
-			RunTest("non-recursive loop", files, (cu, list) => WalkTreeNonRecursive(cu, list));
-			RunTest("foreach over Descendants.OfType()", files, (cu, list) => {
-			        	foreach (var node in cu.Descendants.OfType<IdentifierExpression>()) {
+			RunTest("recursive method using for", files, (syntaxTree, list) => WalkTreeFor(syntaxTree, list));
+			RunTest("recursive method using foreach", files, (syntaxTree, list) => WalkTreeForEach(syntaxTree, list));
+			RunTest("non-recursive loop", files, (syntaxTree, list) => WalkTreeNonRecursive(syntaxTree, list));
+			RunTest("foreach over Descendants.OfType()", files, (syntaxTree, list) => {
+			        	foreach (var node in syntaxTree.Descendants.OfType<IdentifierExpression>()) {
 			        		list.Add(node);
 			        	}
 			        });
-			RunTest("DepthFirstAstVisitor", files, (cu, list) => cu.AcceptVisitor(new DepthFirst(list)));
-			RunTest("DepthFirstAstVisitor<object>", files, (cu, list) => cu.AcceptVisitor(new DepthFirst<object>(list)));
-			RunTest("DepthFirstAstVisitor<object, object>", files, (cu, list) => cu.AcceptVisitor(new DepthFirst<object, object>(list), null));
-			RunTest("ObservableAstVisitor", files, (cu, list) => {
+			RunTest("DepthFirstAstVisitor", files, (syntaxTree, list) => syntaxTree.AcceptVisitor(new DepthFirst(list)));
+			RunTest("DepthFirstAstVisitor<object>", files, (syntaxTree, list) => syntaxTree.AcceptVisitor(new DepthFirst<object>(list)));
+			RunTest("DepthFirstAstVisitor<object, object>", files, (syntaxTree, list) => syntaxTree.AcceptVisitor(new DepthFirst<object, object>(list), null));
+			RunTest("ObservableAstVisitor", files, (syntaxTree, list) => {
 			        	var visitor = new ObservableAstVisitor();
 			        	visitor.EnterIdentifierExpression += list.Add;
-			        	cu.AcceptVisitor(visitor);
+			        	syntaxTree.AcceptVisitor(visitor);
 			        });
-			RunTest("ObservableAstVisitor<object, object>", files, (cu, list) => {
+			RunTest("ObservableAstVisitor<object, object>", files, (syntaxTree, list) => {
 			        	var visitor = new ObservableAstVisitor<object, object>();
 			        	visitor.IdentifierExpressionVisited += (id, data) => list.Add(id);
-			        	cu.AcceptVisitor(visitor, null);
+			        	syntaxTree.AcceptVisitor(visitor, null);
 			        });
 		}
 		

@@ -110,9 +110,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		string ConvertTypeDeclaration(string code)
 		{
 			CSharpParser parser = new CSharpParser();
-			var cu = parser.Parse(new StringReader(code), "program.cs");
+			var syntaxTree = parser.Parse(new StringReader(code), "program.cs");
 			Assert.IsFalse(parser.HasErrors);
-			return ConvertTypeDeclaration((EntityDeclaration)cu.Children.Single());
+			return ConvertTypeDeclaration((EntityDeclaration)syntaxTree.Children.Single());
 		}
 		#endregion
 		

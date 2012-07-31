@@ -1027,15 +1027,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> HandleEnumContext()
 		{
-			var cu = ParseStub("a", false);
-			if (cu == null) {
+			var syntaxTree = ParseStub("a", false);
+			if (syntaxTree == null) {
 				return null;
 			}
 			
-			var curType = cu.GetNodeAt<TypeDeclaration>(location);
+			var curType = syntaxTree.GetNodeAt<TypeDeclaration>(location);
 			if (curType == null || curType.ClassType != ClassType.Enum) {
-				cu = ParseStub("a {}", false);
-				var node = cu.GetNodeAt<AstType>(location);
+				syntaxTree = ParseStub("a {}", false);
+				var node = syntaxTree.GetNodeAt<AstType>(location);
 				if (node != null) {
 					var wrapper = new CompletionDataWrapper(this);
 					AddKeywords(wrapper, validEnumBaseTypes);
@@ -1043,7 +1043,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
-			var member = cu.GetNodeAt<EnumMemberDeclaration>(location);
+			var member = syntaxTree.GetNodeAt<EnumMemberDeclaration>(location);
 			if (member != null && member.NameToken.EndLocation < location) {
 				return DefaultControlSpaceItems();
 			}

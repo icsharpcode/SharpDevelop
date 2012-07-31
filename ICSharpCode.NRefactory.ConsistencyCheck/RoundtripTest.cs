@@ -63,13 +63,13 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 		public static void Roundtrip(CSharpParser parser, string fileName, string code)
 		{
 			// 1. Parse
-			SyntaxTree cu = parser.Parse(code, fileName);
+			SyntaxTree syntaxTree = parser.Parse(code, fileName);
 			if (parser.HasErrors)
 				throw new InvalidOperationException("There were parse errors.");
 			
 			// 2. Output
 			StringWriter w = new StringWriter();
-			cu.AcceptVisitor(new CSharpOutputVisitor(w, FormattingOptionsFactory.CreateMono ()));
+			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(w, FormattingOptionsFactory.CreateMono ()));
 			string generatedCode = w.ToString().TrimEnd();
 			
 			// 3. Compare output with original (modulo whitespaces)
@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			}
 			
 			// 5. Compare AST1 with AST2
-			if (!cu.IsMatch(generatedCU))
+			if (!syntaxTree.IsMatch(generatedCU))
 				throw new InvalidOperationException("AST match failed for " + fileName + ".");
 		}
 	}

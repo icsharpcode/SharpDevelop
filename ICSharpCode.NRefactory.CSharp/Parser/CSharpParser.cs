@@ -3806,10 +3806,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<EntityDeclaration> ParseTypeMembers (TextReader reader, int lineModifier = 0)
 		{
 			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
-			var cu = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
-			if (cu == null)
+			var syntaxTree = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
+			if (syntaxTree == null)
 				return Enumerable.Empty<EntityDeclaration> ();
-			var td = cu.FirstChild as TypeDeclaration;
+			var td = syntaxTree.FirstChild as TypeDeclaration;
 			if (td != null) {
 				var members = td.Members.ToArray();
 				// detach members from parent

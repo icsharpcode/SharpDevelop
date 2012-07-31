@@ -88,9 +88,9 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 				}
 			}
 			
-			public virtual void Validate(CSharpAstResolver resolver, SyntaxTree cu)
+			public virtual void Validate(CSharpAstResolver resolver, SyntaxTree syntaxTree)
 			{
-				foreach (AstNode node in cu.DescendantsAndSelf.Except(resolvedNodes.Keys)) {
+				foreach (AstNode node in syntaxTree.DescendantsAndSelf.Except(resolvedNodes.Keys)) {
 					if (!CSharpAstResolver.IsUnresolvableNode(node)) {
 						Console.WriteLine("Forgot to resolve " + node);
 					}

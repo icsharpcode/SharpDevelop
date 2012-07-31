@@ -33,13 +33,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		public static T ParseGlobal<T>(string code, bool expectErrors = false) where T : AstNode
 		{
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree cu = parser.Parse(new StringReader(code), "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse(new StringReader(code), "parsed.cs");
 			
 			foreach (var error in parser.Errors)
 				Console.WriteLine (error.Message);
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			AstNode node = cu.Children.Single();
+			AstNode node = syntaxTree.Children.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
 			return (T)node;

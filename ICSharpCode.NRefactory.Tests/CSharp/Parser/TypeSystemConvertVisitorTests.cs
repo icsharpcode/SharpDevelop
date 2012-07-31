@@ -42,12 +42,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			const string fileName = "TypeSystemTests.TestCase.cs";
 			
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree cu;
+			SyntaxTree syntaxTree;
 			using (Stream s = typeof(TypeSystemTests).Assembly.GetManifestResourceStream(typeof(TypeSystemTests), fileName)) {
-				cu = parser.Parse(s, fileName);
+				syntaxTree = parser.Parse(s, fileName);
 			}
 			
-			var parsedFile = cu.ToTypeSystem();
+			var parsedFile = syntaxTree.ToTypeSystem();
 			return new CSharpProjectContent()
 				.UpdateProjectContent(null, parsedFile)
 				.AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib })
