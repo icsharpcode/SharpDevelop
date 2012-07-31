@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			foreach (string fileName in fileNames) {
 				this.currentDocument = new ReadOnlyDocument(File.ReadAllText(fileName));
-				SyntaxTree syntaxTree = parser.Parse(currentDocument.CreateReader(), fileName);
+				SyntaxTree syntaxTree = parser.Parse(currentDocument, fileName);
 				if (parser.HasErrors)
 					continue;
 				this.currentFileName = fileName;

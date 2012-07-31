@@ -2751,9 +2751,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var sb = new StringBuilder(text);
 			sb.Append("a;");
 			AppendMissingClosingBrackets(sb, text, false);
-			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, "a.cs", 0);
-			stream.Close();
+			var completionUnit = parser.Parse(sb.ToString());
 			var loc = document.GetLocation(offset);
 			
 			var expr = completionUnit.GetNodeAt(
@@ -2774,9 +2772,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			sb.Append("a ();");
 			AppendMissingClosingBrackets(sb, text, false);
 			
-			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, "a.cs", 0);
-			stream.Close();
+			var completionUnit = parser.Parse(sb.ToString());
 			var loc = document.GetLocation(offset);
 			
 			var expr = completionUnit.GetNodeAt(loc, n => n is Expression);
@@ -2785,9 +2781,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				sb = new StringBuilder(text);
 				sb.Append("a ()");
 				AppendMissingClosingBrackets(sb, text, false);
-				stream = new System.IO.StringReader(sb.ToString());
-				completionUnit = parser.Parse(stream, "a.cs", 0);
-				stream.Close();
+				completionUnit = parser.Parse(sb.ToString());
 				loc = document.GetLocation(offset);
 				
 				expr = completionUnit.GetNodeAt(loc, n => n is Expression);

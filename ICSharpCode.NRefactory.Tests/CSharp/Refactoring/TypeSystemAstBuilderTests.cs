@@ -63,7 +63,7 @@ namespace OtherNS {
 		{
 			pc = new CSharpProjectContent();
 			pc = pc.SetAssemblyName("MyAssembly");
-			parsedFile = new CSharpParser().Parse(new StringReader(program), "program.cs").ToTypeSystem();
+			parsedFile = SyntaxTree.Parse(program, "program.cs").ToTypeSystem();
 			pc = pc.UpdateProjectContent(null, parsedFile);
 			pc = pc.AddAssemblyReferences(new [] { CecilLoaderTests.Mscorlib });
 			

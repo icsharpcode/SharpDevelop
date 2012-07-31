@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		{
 			pc = new IDStringTestProjectContent();
 			
-			var syntaxTree = new CSharpParser().Parse(new StringReader(program), "program.cs");
+			var syntaxTree = SyntaxTree.Parse(program, "program.cs");
 			foreach (var type in syntaxTree.ToTypeSystem().TopLevelTypeDefinitions) {
 				pc.AddTypeDefinition(type);
 			}

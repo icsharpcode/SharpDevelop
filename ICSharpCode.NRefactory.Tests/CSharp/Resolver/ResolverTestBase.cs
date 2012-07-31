@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected Tuple<CSharpAstResolver, AstNode> PrepareResolver(string code)
 		{
-			SyntaxTree syntaxTree = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "code.cs");
+			SyntaxTree syntaxTree = new CSharpParser().Parse(code.Replace("$", ""), "code.cs");
 			
 			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
@@ -246,7 +246,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected ResolveResult ResolveAtLocation(string code)
 		{
-			SyntaxTree syntaxTree = new CSharpParser().Parse(new StringReader(code.Replace("$", "")), "test.cs");
+			SyntaxTree syntaxTree = SyntaxTree.Parse(code.Replace("$", ""), "test.cs");
 			
 			TextLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(1, dollars.Length, "Expected 1 dollar signs marking the location");

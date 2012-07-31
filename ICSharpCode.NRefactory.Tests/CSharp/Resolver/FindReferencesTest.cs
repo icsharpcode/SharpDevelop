@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		void Init(string code)
 		{
-			syntaxTree = new CSharpParser().Parse(new StringReader(code), "test.cs");
+			syntaxTree = SyntaxTree.Parse(code, "test.cs");
 			parsedFile = syntaxTree.ToTypeSystem();
 			compilation = TypeSystemHelper.CreateCompilation(parsedFile);
 			findReferences = new FindReferences();

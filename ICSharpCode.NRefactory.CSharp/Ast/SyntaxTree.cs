@@ -155,28 +155,28 @@ namespace ICSharpCode.NRefactory.CSharp
 			return v.ParsedFile;
 		}
 		
-		public static SyntaxTree Parse (string text, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
+		public static SyntaxTree Parse (string program, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (text, fileName);
+			return parser.Parse (program, fileName);
 		}
 		
 		public static SyntaxTree Parse (TextReader reader, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (reader, fileName, 0);
+			return parser.Parse (reader, fileName);
 		}
 		
 		public static SyntaxTree Parse (Stream stream, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (stream, fileName, 0);
+			return parser.Parse (stream, fileName);
 		}
 		
 		public static SyntaxTree Parse (ITextSource textSource, string fileName = "", CompilerSettings settings = null, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var parser = new CSharpParser (settings);
-			return parser.Parse (textSource, fileName, 0);
+			return parser.Parse (textSource, fileName);
 		}
 	}
 }

@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Documentation
 		void Init(string program)
 		{
 			var pc = new CSharpProjectContent().AddAssemblyReferences(new[] { CecilLoaderTests.Mscorlib });
-			var syntaxTree = new CSharpParser().Parse(new StringReader(program), "program.cs");
+			var syntaxTree = SyntaxTree.Parse(program, "program.cs");
 			compilation = pc.UpdateProjectContent(null, syntaxTree.ToTypeSystem()).CreateCompilation();
 			typeDefinition = compilation.MainAssembly.TopLevelTypeDefinitions.FirstOrDefault();
 		}

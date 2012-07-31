@@ -681,17 +681,10 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			if (closingBrackets > 0) { 
 				wrapper.Append(new string('}', closingBrackets));
 			}
-			using (var stream = new System.IO.StringReader (wrapper.ToString ())) {
-				try {
-					var parser = new CSharpParser ();
-					var result = parser.Parse(stream, "stub.cs", memberLocation.Line - 1 - generatedLines);
-					return result;
-				} catch (Exception) {
-					Console.WriteLine("------");
-					Console.WriteLine(wrapper);
-					throw;
-				}
-			}
+			var parser = new CSharpParser ();
+			parser.InitialLocation = new TextLocation(memberLocation.Line - generatedLines, 1);
+			var result = parser.Parse(wrapper.ToString ());
+			return result;
 		}
 		
 //		string cachedText = null;

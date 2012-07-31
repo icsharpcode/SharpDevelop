@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
@@ -446,9 +447,49 @@ class C {
 		C1 c1 = $(C1)c2$;
 	}
 }");
+			Assert.IsTrue(rr.Conversion.IsValid);
 			Assert.IsTrue(rr.Conversion.IsUserDefined);
 			Assert.AreEqual("op_Explicit", rr.Conversion.Method.Name);
 		}
 		
+		[Test]
+		public void ExplicitReferenceConversionFollowedByUserDefinedConversion()
+		{
+			var rr = Resolve<ConversionResolveResult>(@"
+		class B {}
+		class S : B {}
+		class T {
+			public static explicit operator T(S s) { return null; }
+		}
+		class Test {
+			void Run(B b) {
+				T t = $(T)b$;
+			}
+		}");
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("B", rr.Input.Type.Name);
+		}
+		
+		[Test]
+		[Ignore("Not implemented yet.")]
+		public void BothDirectConversionAndBaseClassConversionAvailable()
+		{
+			var rr = Resolve<ConversionResolveResult>(@"
+		class B {}
+		class S : B {}
+		class T {
+			public static explicit operator T(S s) { return null; }
+			public static explicit operator T(B b) { return null; }
+		}
+		class Test {
+			void Run(B b) {
+				T t = $(T)b$;
+			}
+		}");
+			Assert.IsTrue(rr.Conversion.IsValid);
+			Assert.IsTrue(rr.Conversion.IsUserDefined);
+			Assert.AreEqual("b", rr.Conversion.Method.Parameters.Single().Name);
+		}
 	}
 }

@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			int line4Pos = code.IndexOf("\t\tset");
 			
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse(new StringReader(code), "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse(code);
 			PropertyDeclaration pd = (PropertyDeclaration)syntaxTree.Children.Single().GetChildByRole(Roles.TypeMemberRole);
 			Assert.AreEqual(new TextLocation(2, code.IndexOf("{\n\t\tget") - line2Pos + 1), pd.GetChildByRole(Roles.LBrace).StartLocation);
 			Assert.AreEqual(new TextLocation(5, 3), pd.EndLocation);

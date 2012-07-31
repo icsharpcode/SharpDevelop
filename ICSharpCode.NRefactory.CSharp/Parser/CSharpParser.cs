@@ -3709,12 +3709,34 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return errorReportPrinter.Errors; }
 		}
 		
-		public SyntaxTree Parse (TextReader reader, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="program">The source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse (string program, string fileName = "")
 		{
-			return Parse(new StringTextSource (reader.ReadToEnd ()), fileName, lineModifier);
+			return Parse (new StringTextSource (program), fileName);
+		}
+		
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="reader">The text reader containing the source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse (TextReader reader, string fileName = "")
+		{
+			return Parse(new StringTextSource (reader.ReadToEnd ()), fileName);
 		}
 
-		public SyntaxTree Parse(CompilerCompilationUnit top, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Converts a Mono.CSharp syntax tree into an NRefactory syntax tree.
+		/// </summary>
+		public SyntaxTree Parse(CompilerCompilationUnit top, string fileName)
 		{
 			if (top == null) {
 				return null;
@@ -3743,59 +3765,101 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <summary>
+		/// Callback that gets called with the Mono.CSharp syntax tree whenever some code is parsed.
+		/// </summary>
 		public Action<CompilerCompilationUnit> CompilationUnitCallback {
 			get;
 			set;
 		}
 		
+		/// <summary>
+		/// Specifies whether to run the parser in a special mode for generating the type system.
+		/// If this property is true, the syntax tree will only contain nodes relevant for the
+		/// <see cref="SyntaxTree.ToTypeSystem()"/> call and might be missing other nodes (e.g. method bodies).
+		/// The default is false.
+		/// </summary>
 		public bool GenerateTypeSystemMode {
 			get;
 			set;
 		}
 		
-		public SyntaxTree Parse (string program, string fileName)
-		{
-			return Parse (new StringTextSource (program), fileName);
+		TextLocation initialLocation = new TextLocation(1, 1);
+		
+		/// <summary>
+		/// Specifies the text location where parsing starts.
+		/// This property can be used when parsing a part of a file to make the locations of the AstNodes
+		/// refer to the position in the whole file.
+		/// The default is (1,1).
+		/// </summary>
+		public TextLocation InitialLocation {
+			get { return initialLocation; }
+			set { initialLocation = value; }
 		}
 		
 		internal static object parseLock = new object ();
-
-		public SyntaxTree Parse (Stream stream, string fileName, int lineModifier = 0)
+		
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="stream">The stream containing the source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse (Stream stream, string fileName = "")
 		{
-			return Parse (new StreamReader (stream), fileName, lineModifier);
+			return Parse (new StreamReader (stream), fileName);
 		}
 		
-		public SyntaxTree Parse(ITextSource src, string fileName, int lineModifier = 0)
+		/// <summary>
+		/// Parses a C# code file.
+		/// </summary>
+		/// <param name="program">The source code to parse.</param>
+		/// <param name="fileName">The file name. Used to identify the file (e.g. when building a type system).
+		/// This can be an arbitrary identifier, NRefactory never tries to access the file on disk.</param>
+		///  </param>
+		/// <returns>Returns the syntax tree.</returns>
+		public SyntaxTree Parse(ITextSource program, string fileName = "")
+		{
+			return Parse(program, fileName, initialLocation.Line, initialLocation.Column);
+		}
+		
+		SyntaxTree Parse(ITextSource program, string fileName, int initialLine, int initialColumn)
 		{
 			lock (parseLock) {
 				errorReportPrinter = new ErrorReportPrinter ("");
 				var ctx = new CompilerContext (compilerSettings.ToMono(), errorReportPrinter);
 				ctx.Settings.TabSize = 1;
-				var reader = new SeekableStreamReader (src);
+				var reader = new SeekableStreamReader (program);
 				var file = new SourceFile (fileName, fileName, 0);
 				Location.Initialize (new List<SourceFile> (new [] { file }));
 				var module = new ModuleContainer (ctx);
 				var session = new ParserSession ();
 				session.LocationsBag = new LocationsBag ();
 				var report = new Report (ctx, errorReportPrinter);
-				var parser = Driver.Parse (reader, file, module, session, report, lineModifier);
+				var parser = Driver.Parse (reader, file, module, session, report, initialLine - 1, initialColumn - 1);
 				var top = new CompilerCompilationUnit () {
 					ModuleCompiled = module,
 					LocationsBag = session.LocationsBag,
 					SpecialsBag = parser.Lexer.sbag,
 					Conditionals = parser.Lexer.SourceFile.Conditionals
 				};
-				var unit = Parse (top, fileName, lineModifier);
+				var unit = Parse (top, fileName);
 				unit.Errors.AddRange (errorReportPrinter.Errors);
 				CompilerCallableEntryPoint.Reset ();
 				return unit;
 			}
 		}
 
-		public IEnumerable<EntityDeclaration> ParseTypeMembers (TextReader reader, int lineModifier = 0)
+		public IEnumerable<EntityDeclaration> ParseTypeMembers (string code)
 		{
-			string code = "unsafe partial class MyClass { " + Environment.NewLine + reader.ReadToEnd () + "}";
-			var syntaxTree = Parse (new StringReader (code), "parsed.cs", lineModifier - 1);
+			return ParseTypeMembers(code, initialLocation.Line, initialLocation.Column);
+		}
+		
+		IEnumerable<EntityDeclaration> ParseTypeMembers (string code, int initialLine, int initialColumn)
+		{
+			const string prefix = "unsafe partial class MyClass { ";
+			var syntaxTree = Parse (new StringTextSource (prefix + code + "}"), "parsed.cs", initialLine, initialColumn - prefix.Length);
 			if (syntaxTree == null)
 				return Enumerable.Empty<EntityDeclaration> ();
 			var td = syntaxTree.FirstChild as TypeDeclaration;
@@ -3809,11 +3873,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Enumerable.Empty<EntityDeclaration> ();
 		}
 		
-		public IEnumerable<Statement> ParseStatements (TextReader reader, int lineModifier = 0)
+		public IEnumerable<Statement> ParseStatements (string code)
+		{
+			return ParseStatements(code, initialLocation.Line, initialLocation.Column);
+		}
+		
+		IEnumerable<Statement> ParseStatements (string code, int initialLine, int initialColumn)
 		{
 			// the dummy method is async so that 'await' expressions are parsed as expected
-			string code = "async void M() { " + Environment.NewLine + reader.ReadToEnd () + "}";
-			var members = ParseTypeMembers (new StringReader (code), lineModifier - 1);
+			const string prefix = "async void M() { ";
+			var members = ParseTypeMembers (prefix + code + "}", initialLine, initialColumn - prefix.Length);
 			var method = members.FirstOrDefault () as MethodDeclaration;
 			if (method != null && method.Body != null) {
 				var statements = method.Body.Statements.ToArray();
@@ -3825,10 +3894,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Enumerable.Empty<Statement> ();
 		}
 		
-		public AstType ParseTypeReference (TextReader reader)
+		public AstType ParseTypeReference (string code)
 		{
-			string code = reader.ReadToEnd () + " a;";
-			var members = ParseTypeMembers (new StringReader (code));
+			var members = ParseTypeMembers (code + " a;");
 			var field = members.FirstOrDefault () as FieldDeclaration;
 			if (field != null) {
 				AstType type = field.ReturnType;
@@ -3838,9 +3906,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return AstType.Null;
 		}
 		
-		public Expression ParseExpression (TextReader reader)
+		public Expression ParseExpression (string code)
 		{
-			var es = ParseStatements (new StringReader ("tmp = " + Environment.NewLine + reader.ReadToEnd () + ";"), -1).FirstOrDefault () as ExpressionStatement;
+			const string prefix = "tmp = ";
+			var statements = ParseStatements (prefix + code + ";", initialLocation.Line, initialLocation.Column - prefix.Length);
+			var es = statements.FirstOrDefault () as ExpressionStatement;
 			if (es != null) {
 				AssignmentExpression ae = es.Expression as AssignmentExpression;
 				if (ae != null) {
@@ -3852,14 +3922,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return Expression.Null;
 		}
 		
+		/*
 		/// <summary>
 		/// Parses a file snippet; guessing what the code snippet represents (whole file, type members, block, type reference, expression).
 		/// </summary>
-		public AstNode ParseSnippet (TextReader reader)
+		public AstNode ParseSnippet (string code)
 		{
 			// TODO: add support for parsing a part of a file
 			throw new NotImplementedException ();
 		}
+		*/
 		
 		public DocumentationReference ParseDocumentationReference (string cref)
 		{
@@ -3884,6 +3956,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				ParserSession session = new ParserSession ();
 				session.LocationsBag = new LocationsBag ();
 				var parser = new Mono.CSharp.CSharpParser (reader, source_file, report, session);
+				parser.Lexer.Line += initialLocation.Line - 1;
+				parser.Lexer.Column += initialLocation.Column - 1;
 				parser.Lexer.putback_char = Tokenizer.DocumentationXref;
 				parser.Lexer.parsing_generic_declaration_doc = true;
 				parser.parse ();

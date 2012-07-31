@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		{
 			string program = "using\n";
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse (program, "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse (program);
 			Assert.AreEqual(0, syntaxTree.Children.Count());
 			Assert.IsTrue(parser.HasErrors);
 		}
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			string program = "using System;\n" +
 				"using My.Name.Space;\n";
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse(new StringReader(program), "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse(program);
 			Assert.IsFalse(parser.HasErrors);
 			
 			Assert.AreEqual(2, syntaxTree.Children.Count());
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 				"using myAlias=My.Name.Space;\n" +
 				"using StringCollection = System.Collections.Generic.List<string>;\n";
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse(new StringReader(program), "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse(program);
 			Assert.IsFalse(parser.HasErrors);
 			
 			Assert.AreEqual(3, syntaxTree.Children.Count());
@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 				"using myAlias=global::My.Name.Space;\n" +
 				"using a::b.c;\n";
 			CSharpParser parser = new CSharpParser();
-			SyntaxTree syntaxTree = parser.Parse(new StringReader(program), "parsed.cs");
+			SyntaxTree syntaxTree = parser.Parse(program);
 			Assert.IsFalse(parser.HasErrors);
 			
 			Assert.AreEqual(3, syntaxTree.Children.Count());

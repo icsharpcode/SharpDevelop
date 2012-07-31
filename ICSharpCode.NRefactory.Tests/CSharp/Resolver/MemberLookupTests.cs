@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		CSharpParsedFile Parse(string program)
 		{
-			SyntaxTree syntaxTree = new CSharpParser().Parse(new StringReader(program), "test.cs");
+			SyntaxTree syntaxTree = SyntaxTree.Parse(program, "test.cs");
 			CSharpParsedFile parsedFile = syntaxTree.ToTypeSystem();
 			project = project.UpdateProjectContent(null, parsedFile);
 			compilation = project.CreateCompilation();

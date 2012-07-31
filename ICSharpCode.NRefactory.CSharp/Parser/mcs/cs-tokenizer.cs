@@ -386,6 +386,15 @@ namespace Mono.CSharp
 			}
 		}
 
+		public int Column {
+			get {
+				return col;
+			}
+			set {
+				col = value;
+			}
+		}
+
 		//
 		// This is used when the tokenizer needs to save
 		// the current position as it needs to do some parsing

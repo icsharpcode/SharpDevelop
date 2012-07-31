@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		public void ExternAliasTest()
 		{
 			string program = "extern alias X; extern alias Y; using X::System; namespace TestNamespace { extern alias Z; using Y::System; }";
-			var syntaxTree = new CSharpParser().Parse(new StringReader(program), "code.cs");
+			var syntaxTree = new CSharpParser().Parse(program, "code.cs");
 			Assert.AreEqual(
 				new Type[] {
 					typeof(ExternAliasDeclaration),

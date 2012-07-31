@@ -169,7 +169,7 @@ namespace ICSharpCode.NRefactory.ConsistencyCheck
 			this.LinesOfCode = 1 + this.Content.Text.Count(c => c == '\n');
 			
 			CSharpParser p = new CSharpParser(project.CompilerSettings);
-			this.SyntaxTree = p.Parse(Content.CreateReader(), fileName);
+			this.SyntaxTree = p.Parse(Content, fileName);
 			if (p.HasErrors) {
 				Console.WriteLine("Error parsing " + fileName + ":");
 				foreach (var error in p.ErrorsAndWarnings) {
