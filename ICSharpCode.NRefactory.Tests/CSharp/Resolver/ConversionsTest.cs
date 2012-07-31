@@ -566,5 +566,67 @@ class Test {
 }";
 			Assert.AreEqual(C.None, GetConversion(program));
 		}
+		
+		[Test]
+		public void ImplicitTypeParameterArrayConversion()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T[] t) where T : U {
+		U[] u = $t$;
+	}
+}";
+			// invalid, e.g. T=int[], U=object[]
+			Assert.AreEqual(C.None, GetConversion(program));
+		}
+		
+		[Test]
+		public void ImplicitTypeParameterConversionWithClassConstraint()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T t) where T : class, U where U : class {
+		U u = $t$;
+	}
+}";
+			Assert.AreEqual(C.ImplicitReferenceConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void ImplicitTypeParameterArrayConversionWithClassConstraint()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T[] t) where T : class, U where U : class {
+		U[] u = $t$;
+	}
+}";
+			Assert.AreEqual(C.ImplicitReferenceConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void ImplicitTypeParameterConversionWithClassConstraintOnlyOnT()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T t) where T : class, U {
+		U u = $t$;
+	}
+}";
+			Assert.AreEqual(C.ImplicitReferenceConversion, GetConversion(program));
+		}
+		
+		[Test]
+		public void ImplicitTypeParameterArrayConversionWithClassConstraintOnlyOnT()
+		{
+			string program = @"using System;
+class Test {
+	public void M<T, U>(T[] t) where T : class, U {
+		U[] u = $t$;
+	}
+}";
+			Assert.AreEqual(C.ImplicitReferenceConversion, GetConversion(program));
+		}
+		
 	}
 }

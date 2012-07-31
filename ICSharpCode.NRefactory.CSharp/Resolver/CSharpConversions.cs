@@ -412,8 +412,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §6.1.6
 			
-			// reference conversions are possible only if both types are known to be reference types
-			if (!(fromType.IsReferenceType == true && toType.IsReferenceType == true))
+			// reference conversions are possible:
+			// - if both types are known to be reference types
+			// - if both types are type parameters and fromType has a class constraint
+			//     (ImplicitTypeParameterConversionWithClassConstraintOnlyOnT)
+			if (!(fromType.IsReferenceType == true && toType.IsReferenceType != false))
 				return false;
 			
 			ArrayType fromArray = fromType as ArrayType;
