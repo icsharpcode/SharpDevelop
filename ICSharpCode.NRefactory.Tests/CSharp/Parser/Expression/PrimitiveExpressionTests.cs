@@ -245,7 +245,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		[Ignore("Mono parser crash")]
 		public void LargeVerbatimString()
 		{
 			StringBuilder b = new StringBuilder();
