@@ -55,6 +55,10 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				if (invocationExpression.Arguments.Count != 1) {
 					return;
 				}
+				var memberExpression = invocationExpression.Target as MemberReferenceExpression;
+				if (memberExpression == null || !(memberExpression.Target is BaseReferenceExpression)) {
+					return;
+				}
 				var resolveResult = ctx.Resolve(invocationExpression) as InvocationResolveResult;
 				if (resolveResult == null || !resolveResult.Member.DeclaringTypeDefinition.IsKnownType(KnownTypeCode.Object)) {
 					return;

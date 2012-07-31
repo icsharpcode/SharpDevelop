@@ -89,6 +89,27 @@ class Bar : Foo
 	}
 }");
 		}
+		
+		[Test]
+		public void IgnoresCallsToOtherObjects()
+		{
+			var input = @"
+class Foo
+{
+}
+class Bar : Foo
+{
+	void Baz ()
+	{
+		var foo1 = new Foo();
+		var foo2 = new Foo();
+		bool b = foo1.Equals(foo2);
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new CallToObjectEqualsViaBaseIssue(), input, out context);
+			Assert.AreEqual(0, issues.Count);
+		}
 	}
 }
 
