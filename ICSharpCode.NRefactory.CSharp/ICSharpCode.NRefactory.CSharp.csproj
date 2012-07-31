@@ -299,6 +299,7 @@
     <Compile Include="Refactoring\CodeIssues\IdenticalConditionalBranchIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MultipleEnumerationIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantAssignmentIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantAttributeParenthesesIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantFieldInitializerIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantTypeCastIssue.cs" />
