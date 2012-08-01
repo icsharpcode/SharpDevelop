@@ -2798,8 +2798,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					}
 					if (commaLoc != null && curComma < commaLoc.Count)
 						init.AddChild(new CSharpTokenNode(Convert(commaLoc [curComma++])), Roles.Comma);
-
 				}
+
 				if (initLoc != null) {
 					if (initLoc.Count == 3) // optional comma
 						init.AddChild(new CSharpTokenNode(Convert(initLoc [1])), Roles.Comma);
@@ -2883,9 +2883,11 @@ namespace ICSharpCode.NRefactory.CSharp
 							initializer.AddChild (new CSharpTokenNode (Convert (commaLocations [i])), Roles.Comma);
 						}
 					}
-					
-					if (initLocation != null)
+					if (initLocation != null) {
+						if (initLocation.Count == 2) // optional comma
+							initializer.AddChild (new CSharpTokenNode(Convert(initLocation [0])), Roles.Comma);
 						initializer.AddChild (new CSharpTokenNode (Convert (initLocation [initLocation.Count - 1])), Roles.RBrace);
+					}
 					result.AddChild (initializer, ArrayCreateExpression.InitializerRole);
 				}
 				
@@ -3212,7 +3214,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				if (location != null) {
 					if (location.Count == 2) // optional comma
-						result.AddChild (new CSharpTokenNode (Convert (location [1])), Roles.Comma);
+						result.AddChild (new CSharpTokenNode (Convert (location [0])), Roles.Comma);
 					result.AddChild (new CSharpTokenNode (Convert (location [location.Count - 1])), Roles.RBrace);
 				}
 				return result;
