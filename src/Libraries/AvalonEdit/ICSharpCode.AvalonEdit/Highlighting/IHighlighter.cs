@@ -32,4 +32,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <returns>A <see cref="HighlightedLine"/> line object that represents the highlighted sections.</returns>
 		HighlightedLine HighlightLine(int lineNumber);
 	}
+	
+	public interface IHighlighter2
+	{
+		
+	}
 }

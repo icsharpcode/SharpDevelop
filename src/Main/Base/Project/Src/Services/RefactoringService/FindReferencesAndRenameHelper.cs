@@ -375,23 +375,21 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (list == null) return;
 			List<SearchResultMatch> results = new List<SearchResultMatch>(list.Count);
 			TextDocument document = null;
+			ITextBuffer buffer = null;
 			FileName fileName = null;
-			IHighlighter highlighter = null;
+			ISyntaxHighlighter highlighter = null;
 			foreach (Reference r in list) {
 				var f = new FileName(r.FileName);
 				if (document == null || !f.Equals(fileName)) {
-					document = new TextDocument(DocumentUtilitites.GetTextSource(ParserService.GetParseableFileContent(r.FileName)));
+					buffer = ParserService.GetParseableFileContent(r.FileName);
+					document = new TextDocument(DocumentUtilitites.GetTextSource(buffer));
 					fileName = new FileName(r.FileName);
-					var def = HighlightingManager.Instance.GetDefinitionByExtension(Path.GetExtension(r.FileName));
-					if (def != null)
-						highlighter = new DocumentHighlighter(document, def.MainRuleSet);
-					else
-						highlighter = null;
+					highlighter = EditorControlService.Instance.CreateHighlighter(new AvalonEditDocumentAdapter(document, null), fileName);
 				}
 				var start = document.GetLocation(r.Offset).ToLocation();
 				var end = document.GetLocation(r.Offset + r.Length).ToLocation();
 				var builder = SearchResultsPad.CreateInlineBuilder(start, end, document, highlighter);
-				SearchResultMatch res = new SearchResultMatch(fileName, start, end, r.Offset, r.Length, builder);
+				SearchResultMatch res = new SearchResultMatch(fileName, start, end, r.Offset, r.Length, builder, highlighter.DefaultTextColor);
 				results.Add(res);
 			}
 			SearchResultsPad.Instance.ShowSearchResults(title, results);

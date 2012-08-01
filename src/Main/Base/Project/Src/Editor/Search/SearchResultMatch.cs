@@ -22,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		Location startLocation;
 		Location endLocation;
 		HighlightedInlineBuilder builder;
+		HighlightingColor defaultTextColor;
 		
 		public FileName FileName {
 			get { return fileName; }
@@ -37,6 +38,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		
 		public HighlightedInlineBuilder Builder {
 			get { return builder; }
+		}
+		
+		public HighlightingColor DefaultTextColor {
+			get { return defaultTextColor; }
 		}
 		
 		public int StartOffset {
@@ -56,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			return pattern;
 		}
 		
-		public SearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder)
+		public SearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor)
 		{
 			this.fileName = fileName;
 			this.startLocation = startLocation;
@@ -64,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.offset = offset;
 			this.length = length;
 			this.builder = builder;
+			this.defaultTextColor = defaultTextColor;
 		}
 		
 		/// <summary>
@@ -94,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 		
 		public SimpleSearchResultMatch(FileName fileName, Location position, int offset, string displayText)
-			: base(fileName, position, position, offset, 0, null)
+			: base(fileName, position, position, offset, 0, null, null)
 		{
 			this.displayText = displayText;
 		}
@@ -104,8 +110,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 	{
 		ICSharpCode.AvalonEdit.Search.ISearchResult match;
 		
-		public AvalonEditSearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, ICSharpCode.AvalonEdit.Search.ISearchResult match)
-			: base(fileName, startLocation, endLocation, offset, length, builder)
+		public AvalonEditSearchResultMatch(FileName fileName, Location startLocation, Location endLocation, int offset, int length, HighlightedInlineBuilder builder, HighlightingColor defaultTextColor, ICSharpCode.AvalonEdit.Search.ISearchResult match)
+			: base(fileName, startLocation, endLocation, offset, length, builder, defaultTextColor)
 		{
 			this.match = match;
 		}

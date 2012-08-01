@@ -136,7 +136,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			return new CustomizingHighlighter(customizations, base.CreateHighlighter(textView, document));
 		}
 		
-		sealed class CustomizingHighlighter : IHighlighter
+		internal sealed class CustomizingHighlighter : IHighlighter
 		{
 			readonly IEnumerable<CustomizedHighlightingColor> customizations;
 			readonly IHighlighter baseHighlighter;

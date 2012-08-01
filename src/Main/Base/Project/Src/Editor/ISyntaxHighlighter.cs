@@ -23,6 +23,16 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// Retrieves the HighlightingColor with the specified name. Returns null if no color matching the name is found.
 		/// </summary>
 		HighlightingColor GetNamedColor(string name);
+		
+		/// <summary>
+		/// Creates a <see cref="HighlightedInlineBuilder"/> for a specified line.
+		/// </summary>
+		HighlightedInlineBuilder BuildInlines(int lineNumber);
+		
+		/// <summary>
+		/// Gets the default text color.
+		/// </summary>
+		HighlightingColor DefaultTextColor { get; }
 	}
 	
 	public static class SyntaxHighligherKnownSpanNames

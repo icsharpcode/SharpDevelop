@@ -49,6 +49,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		public IList<HighlightedSection> Sections { get; private set; }
 		
+		/// <summary>
+		/// Gets the default color of all text outside a <see cref="HighlightedSection"/>.
+		/// </summary>
+		public HighlightingColor DefaultTextColor { get; set; }
 		
 		sealed class HtmlElement : IComparable<HtmlElement>
 		{
