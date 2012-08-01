@@ -105,7 +105,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var resolvedParameters = invocationResolveResult.Member.Parameters;
 
 				for (int i = arguments.Length - 1; i >= 0; i--) {
-					var parameter = resolvedParameters[argumentToParameterMap[i]];
+					var parameterIndex = argumentToParameterMap[i];
+					if (parameterIndex == -1)
+						// This particular parameter is an error, but keep trying the other ones
+						continue;
+					var parameter = resolvedParameters[parameterIndex];
 					if (parameter.IsParams)
 						// before params all optional arguments are needed, otherwise some of the
 						// param arguments will be shifted out of the params into the fixed parameters
