@@ -319,6 +319,17 @@ class TestClass
 	}
 }");
 		}
+		
+		[Test]
+		public void IgnoresFieldDeclarations()
+		{
+			TestWrongContext<IterateViaForeachAction>(@"
+using System.Collections.Generic;
+class TestClass
+{
+	List<int> list = $new List<int>();
+}");
+		}
 	}
 }
 

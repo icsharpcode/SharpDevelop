@@ -56,6 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (initializer == null)
 				return null;
 			var initializerRR = context.Resolve(initializer) as LocalResolveResult;
+			if (initializerRR == null)
+				return null;
 			var elementType = GetElementType(initializerRR, context);
 			if (elementType == null)
 				return null;
@@ -83,6 +85,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (initializer == null || initializer.Parent.Parent is ForStatement)
 				return null;
 			var initializerRR = context.Resolve(initializer) as LocalResolveResult;
+			if (initializerRR == null)
+				return null;
 			var elementType = GetElementType(initializerRR, context);
 			if (elementType == null)
 				return null;
@@ -102,6 +106,8 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (expression is AssignmentExpression)
 				expression = ((AssignmentExpression)expression).Left;
 			var expressionRR = context.Resolve(expression);
+			if (expressionRR == null)
+				return null;
 			var elementType = GetElementType(expressionRR, context);
 			if (elementType == null)
 				return null;
