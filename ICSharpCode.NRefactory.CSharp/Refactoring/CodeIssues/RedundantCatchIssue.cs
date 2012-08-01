@@ -91,11 +91,15 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 			void AddIssueForTryCatchStatement(TryCatchStatement tryCatchStatement)
 			{
+				var lastCatch = tryCatchStatement.CatchClauses.LastOrNullObject();
+				if (lastCatch.IsNull)
+					return;
+
 				var removeTryCatchMessage = ctx.TranslateString("Remove try statement");
 
 				var removeTryStatementAction = new CodeAction(removeTryCatchMessage, script => {
 					var statements = tryCatchStatement.TryBlock.Statements;
-					if (statements.Count <= 1 || tryCatchStatement.Parent is BlockStatement) {
+					if (statements.Count == 1 || tryCatchStatement.Parent is BlockStatement) {
 						foreach (var statement in statements) {
 							script.InsertAfter(tryCatchStatement.PrevSibling, statement.Clone());
 						}
@@ -114,12 +118,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 				var fixes = new [] {
 					removeTryStatementAction
 				};
-				AddIssue(tryCatchStatement.TryBlock.EndLocation, tryCatchStatement.CatchClauses.LastOrNullObject().EndLocation, removeTryCatchMessage, fixes);
+				AddIssue(tryCatchStatement.TryBlock.EndLocation, lastCatch.EndLocation, removeTryCatchMessage, fixes);
 			}
 
 			bool IsRedundant(CatchClause catchClause)
 			{
-				var throwStatement = catchClause.Body.Statements.FirstOrNullObject() as ThrowStatement;
+				var firstStatement = catchClause.Body.Statements.FirstOrNullObject();
+				if (firstStatement.IsNull) {
+					return true;
+				}
+				var throwStatement = firstStatement as ThrowStatement;
 				if (throwStatement == null) {
 					return false;
 				}

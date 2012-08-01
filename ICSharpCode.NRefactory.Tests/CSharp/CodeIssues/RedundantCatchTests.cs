@@ -117,6 +117,47 @@ class A
 	}
 }");
 		}
+
+		
+		[Test]
+		public void AddsBlockIfNeccessaryOnEmptyTryBlock()
+		{
+			var input = BaseInput + @"
+		if (true)
+			try {
+			} catch {
+				throw;
+			}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantCatchIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues, BaseInput + @"
+		if (true) {
+		}
+	}
+}");
+		}
+		
+		[Test]
+		public void EmptyTryCatchSkeleton()
+		{
+			var input = BaseInput + @"
+		try {
+		} catch {
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantCatchIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			
+			CheckFix(context, issues, BaseInput + @"
+	}
+}");
+		}
 		
 		[Test]
 		public void DoesNotAddBlockIfUnneccessary()
@@ -139,6 +180,20 @@ class A
 			F ();
 	}
 }");
+		}
+		
+		[Test]
+		public void NoIssuesWhenMissingCatch()
+		{
+			var input = BaseInput + @"
+		try {
+			F ();
+		}
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new RedundantCatchIssue(), input, out context, true);
+			Assert.AreEqual(0, issues.Count);
 		}
 
 		[Test]
