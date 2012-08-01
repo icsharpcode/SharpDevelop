@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpCompletionEngine.cs
 //  
 // Author:
@@ -230,7 +230,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			return miniLexer.IsInPreprocessorDirective;
 		}
 		
-		IEnumerable<ICompletionData> HandleObjectInitializer(CompilationUnit unit, AstNode n)
+		IEnumerable<ICompletionData> HandleObjectInitializer(SyntaxTree unit, AstNode n)
 		{
 			var p = n.Parent;
 			while (p != null && !(p is ObjectCreateExpression)) {
@@ -1027,15 +1027,15 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		
 		IEnumerable<ICompletionData> HandleEnumContext()
 		{
-			var cu = ParseStub("a", false);
-			if (cu == null) {
+			var syntaxTree = ParseStub("a", false);
+			if (syntaxTree == null) {
 				return null;
 			}
 			
-			var curType = cu.GetNodeAt<TypeDeclaration>(location);
+			var curType = syntaxTree.GetNodeAt<TypeDeclaration>(location);
 			if (curType == null || curType.ClassType != ClassType.Enum) {
-				cu = ParseStub("a {}", false);
-				var node = cu.GetNodeAt<AstType>(location);
+				syntaxTree = ParseStub("a {}", false);
+				var node = syntaxTree.GetNodeAt<AstType>(location);
 				if (node != null) {
 					var wrapper = new CompletionDataWrapper(this);
 					AddKeywords(wrapper, validEnumBaseTypes);
@@ -1043,7 +1043,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				}
 			}
 			
-			var member = cu.GetNodeAt<EnumMemberDeclaration>(location);
+			var member = syntaxTree.GetNodeAt<EnumMemberDeclaration>(location);
 			if (member != null && member.NameToken.EndLocation < location) {
 				return DefaultControlSpaceItems();
 			}
@@ -1102,7 +1102,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				xp = GetExpressionAtCursor();
 			}
 			AstNode node;
-			CompilationUnit unit;
+			SyntaxTree unit;
 			Tuple<ResolveResult, CSharpResolver> rr;
 			if (xp != null) {
 				node = xp.Node;
@@ -2151,7 +2151,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				return null;
 			}
 			var exprParent = resolvedNode.GetParent<Expression>();
-			var unit = exprParent != null ? exprParent.GetParent<CompilationUnit>() : null;
+			var unit = exprParent != null ? exprParent.GetParent<SyntaxTree>() : null;
 			
 			var astResolver = unit != null ? CompletionContextProvider.GetResolver(state, unit) : null;
 			IType hintType = exprParent != null && astResolver != null ? 
@@ -2198,7 +2198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			}
 		}
 		
-		IEnumerable<ICompletionData> CreateParameterCompletion(MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, CompilationUnit unit, int parameter, bool controlSpace)
+		IEnumerable<ICompletionData> CreateParameterCompletion(MethodGroupResolveResult resolveResult, CSharpResolver state, AstNode invocation, SyntaxTree unit, int parameter, bool controlSpace)
 		{
 			var result = new CompletionDataWrapper(this);
 			var addedEnums = new HashSet<string>();
@@ -2520,7 +2520,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 		#region Parsing methods
 		ExpressionResult GetExpressionBeforeCursor()
 		{
-			CompilationUnit baseUnit;
+			SyntaxTree baseUnit;
 			if (currentMember == null) {
 				baseUnit = ParseStub("a", false);
 				var type = baseUnit.GetNodeAt<MemberType>(location);
@@ -2751,9 +2751,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			var sb = new StringBuilder(text);
 			sb.Append("a;");
 			AppendMissingClosingBrackets(sb, text, false);
-			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, "a.cs", 0);
-			stream.Close();
+			var completionUnit = parser.Parse(sb.ToString());
 			var loc = document.GetLocation(offset);
 			
 			var expr = completionUnit.GetNodeAt(
@@ -2774,9 +2772,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 			sb.Append("a ();");
 			AppendMissingClosingBrackets(sb, text, false);
 			
-			var stream = new System.IO.StringReader(sb.ToString());
-			var completionUnit = parser.Parse(stream, "a.cs", 0);
-			stream.Close();
+			var completionUnit = parser.Parse(sb.ToString());
 			var loc = document.GetLocation(offset);
 			
 			var expr = completionUnit.GetNodeAt(loc, n => n is Expression);
@@ -2785,9 +2781,7 @@ namespace ICSharpCode.NRefactory.CSharp.Completion
 				sb = new StringBuilder(text);
 				sb.Append("a ()");
 				AppendMissingClosingBrackets(sb, text, false);
-				stream = new System.IO.StringReader(sb.ToString());
-				completionUnit = parser.Parse(stream, "a.cs", 0);
-				stream.Close();
+				completionUnit = parser.Parse(sb.ToString());
 				loc = document.GetLocation(offset);
 				
 				expr = completionUnit.GetNodeAt(loc, n => n is Expression);

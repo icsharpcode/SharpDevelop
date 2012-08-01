@@ -36,16 +36,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 					   IssueMarker = IssueMarker.Underline)]
 	public class LocalVariableOnlyAssignedIssue : VariableOnlyAssignedIssue
 	{
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, CompilationUnit unit)
+		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 		{
 			return new GatherVisitor (ctx, unit);
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			CompilationUnit unit;
+			SyntaxTree unit;
 
-			public GatherVisitor (BaseRefactoringContext ctx, CompilationUnit unit)
+			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 				: base (ctx)
 			{
 				this.unit = unit;

@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	{
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as CompilationUnit;
+			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return Enumerable.Empty<CodeIssue> ();
 			return new GatherVisitor (context, unit).GetIssues ();
@@ -50,9 +50,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		{
 			static FindReferences refFinder = new FindReferences ();
 
-			CompilationUnit unit;
+			SyntaxTree unit;
 
-			public GatherVisitor (BaseRefactoringContext ctx, CompilationUnit unit)
+			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 				: base (ctx)
 			{
 				this.unit = unit;

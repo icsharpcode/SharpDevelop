@@ -10,6 +10,14 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.CSharp.Resolver {
 	[TestFixture]
 	public class DynamicTests : ResolverTestBase {
+		private void AssertNamedArgument<T>(ResolveResult rr, string parameterName, Func<T, bool> verifier) where T : ResolveResult {
+			var narr = rr as NamedArgumentResolveResult;
+			Assert.That(narr, Is.Not.Null);
+			Assert.That(narr.ParameterName, Is.EqualTo(parameterName));
+			Assert.That(narr.Argument, Is.InstanceOf<T>());
+			Assert.That(verifier((T)narr.Argument), Is.True);
+		}
+
 		[Test]
 		public void AccessToDynamicMember() {
 			string program = @"using System;
@@ -44,10 +52,8 @@ class TestClass {
 			Assert.That(dynamicMember.Target is LocalResolveResult && ((LocalResolveResult)dynamicMember.Target).Variable.Name == "obj");
 			Assert.That(dynamicMember.Member, Is.EqualTo("SomeMethod"));
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Name, Is.Null);
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "a");
-			Assert.That(rr.Arguments[1].Name, Is.Null);
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "b");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "a");
+			Assert.That(rr.Arguments[1] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1]).Variable.Name == "b");
 		}
 
 		[Test]
@@ -69,12 +75,9 @@ class TestClass {
 			Assert.That(dynamicMember.Target is LocalResolveResult && ((LocalResolveResult)dynamicMember.Target).Variable.Name == "obj");
 			Assert.That(dynamicMember.Member, Is.EqualTo("SomeMethod"));
 			Assert.That(rr.Arguments.Count, Is.EqualTo(3));
-			Assert.That(rr.Arguments[0].Name, Is.Null);
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "x");
-			Assert.That(rr.Arguments[1].Name, Is.EqualTo("param1"));
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "a");
-			Assert.That(rr.Arguments[2].Name, Is.EqualTo("param2"));
-			Assert.That(rr.Arguments[2].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[2].Value).Variable.Name == "b");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "x");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[1], "param1", lrr => lrr.Variable.Name == "a");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[2], "param2", lrr => lrr.Variable.Name == "b");
 		}
 
 		[Test]
@@ -98,11 +101,9 @@ class TestClass {
 			Assert.That(dynamicMember.Member, Is.EqualTo("SomeMethod"));
 			Assert.That(rr.InvocationType, Is.EqualTo(DynamicInvocationType.Invocation));
 			Assert.That(innerInvocation.Arguments.Count, Is.EqualTo(1));
-			Assert.That(innerInvocation.Arguments[0].Name, Is.Null);
-			Assert.That(innerInvocation.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)innerInvocation.Arguments[0].Value).Variable.Name == "a");
+			Assert.That(innerInvocation.Arguments[0] is LocalResolveResult && ((LocalResolveResult)innerInvocation.Arguments[0]).Variable.Name == "a");
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Name, Is.Null);
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "b");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "b");
 		}
 
 		[Test]
@@ -156,7 +157,7 @@ class TestClass : TestBase {
 			Assert.That(mg.Methods.Any(m => m.Parameters.Count == 1 && m.DeclaringType.Name == "TestClass" && m.Name == "SomeMethod" && m.Parameters[0].Type.Name == "String"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
 		}
 
 		[Test, Ignore("Fails")]
@@ -212,7 +213,7 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == "SomeMethod" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
 		}
 
 		[Test]
@@ -240,7 +241,7 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == "SomeMethod" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
 		}
 
 		[Test]
@@ -268,7 +269,7 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == "SomeMethod" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
 		}
 
 		[Test]
@@ -315,10 +316,8 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == "SomeMethod" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Name, Is.EqualTo("a"));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
-			Assert.That(rr.Arguments[1].Name, Is.EqualTo("i"));
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "idx");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[0], "a", lrr => lrr.Variable.Name == "obj");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[1], "i", lrr => lrr.Variable.Name == "idx");
 		}
 
 		[Test]
@@ -336,8 +335,7 @@ class TestClass {
 			Assert.That(rr.InvocationType, Is.EqualTo(DynamicInvocationType.Indexing));
 			Assert.That(rr.Target is LocalResolveResult && ((LocalResolveResult)rr.Target).Variable.Name == "obj");
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Name, Is.Null);
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "a");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "a");
 		}
 
 		[Test]
@@ -355,10 +353,8 @@ class TestClass {
 			Assert.That(rr.InvocationType, Is.EqualTo(DynamicInvocationType.Indexing));
 			Assert.That(rr.Target is LocalResolveResult && ((LocalResolveResult)rr.Target).Variable.Name == "obj");
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Name, Is.EqualTo("arg1"));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "a");
-			Assert.That(rr.Arguments[1].Name, Is.EqualTo("arg2"));
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "b");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[0], "arg1", lrr => lrr.Variable.Name == "a");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[1], "arg2", lrr => lrr.Variable.Name == "b");
 		}
 
 		[Test]
@@ -400,8 +396,7 @@ class TestClass {
 			Assert.That(rr.InvocationType, Is.EqualTo(DynamicInvocationType.Indexing));
 			Assert.That(rr.Target, Is.InstanceOf<ThisResolveResult>());
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Name, Is.Null);
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
 		}
 
 		[Test]
@@ -424,8 +419,7 @@ class TestClass : TestBase {
 			Assert.That(rr.InvocationType, Is.EqualTo(DynamicInvocationType.Indexing));
 			Assert.That(rr.Target, Is.InstanceOf<ThisResolveResult>());
 			Assert.That(rr.Arguments.Count, Is.EqualTo(1));
-			Assert.That(rr.Arguments[0].Name, Is.Null);
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
 		}
 
 		[Test, Ignore("Fails")]
@@ -472,10 +466,8 @@ class TestClass {
 			Assert.That(rr.InvocationType, Is.EqualTo(DynamicInvocationType.Indexing));
 			Assert.That(rr.Target, Is.InstanceOf<ThisResolveResult>());
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Name, Is.EqualTo("a"));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
-			Assert.That(rr.Arguments[1].Name, Is.EqualTo("i"));
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "idx");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[0], "a", lrr => lrr.Variable.Name == "obj");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[1], "i", lrr => lrr.Variable.Name == "idx");
 		}
 
   		[Test]
@@ -526,8 +518,8 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == ".ctor" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "i");
+			Assert.That(rr.Arguments[0] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0]).Variable.Name == "obj");
+			Assert.That(rr.Arguments[1] is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1]).Variable.Name == "i");
 		}
 
  		[Test]
@@ -556,10 +548,8 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == ".ctor" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Name, Is.EqualTo("arg1"));
-			Assert.That(rr.Arguments[0].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[0].Value).Variable.Name == "obj");
-			Assert.That(rr.Arguments[1].Name, Is.EqualTo("arg2"));
-			Assert.That(rr.Arguments[1].Value is LocalResolveResult && ((LocalResolveResult)rr.Arguments[1].Value).Variable.Name == "i");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[0], "arg1", lrr => lrr.Variable.Name == "obj");
+			AssertNamedArgument<LocalResolveResult>(rr.Arguments[1], "arg2", lrr => lrr.Variable.Name == "i");
 		}
 
  		[Test]
@@ -649,8 +639,8 @@ class TestClass : TestBase {
 			Assert.That(mg.Methods.All(m => m.Name == ".ctor" && m.DeclaringType.Name == "TestBase"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Value is MemberResolveResult && ((MemberResolveResult)rr.Arguments[0].Value).Member.Name == "d");
-			Assert.That(rr.Arguments[1].Value is MemberResolveResult && ((MemberResolveResult)rr.Arguments[1].Value).Member.Name == "i");
+			Assert.That(rr.Arguments[0] is MemberResolveResult && ((MemberResolveResult)rr.Arguments[0]).Member.Name == "d");
+			Assert.That(rr.Arguments[1] is MemberResolveResult && ((MemberResolveResult)rr.Arguments[1]).Member.Name == "i");
 		}
 
 		[Test]
@@ -708,8 +698,8 @@ class TestClass {
 			Assert.That(mg.Methods.All(m => m.Name == ".ctor" && m.DeclaringType.Name == "TestClass"));
 
 			Assert.That(rr.Arguments.Count, Is.EqualTo(2));
-			Assert.That(rr.Arguments[0].Value is MemberResolveResult && ((MemberResolveResult)rr.Arguments[0].Value).Member.Name == "d");
-			Assert.That(rr.Arguments[1].Value is MemberResolveResult && ((MemberResolveResult)rr.Arguments[1].Value).Member.Name == "i");
+			Assert.That(rr.Arguments[0] is MemberResolveResult && ((MemberResolveResult)rr.Arguments[0]).Member.Name == "d");
+			Assert.That(rr.Arguments[1] is MemberResolveResult && ((MemberResolveResult)rr.Arguments[1]).Member.Name == "i");
 		}
 	}
 }

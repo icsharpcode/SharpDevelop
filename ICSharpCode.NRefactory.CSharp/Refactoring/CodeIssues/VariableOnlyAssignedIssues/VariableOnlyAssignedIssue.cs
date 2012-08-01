@@ -36,13 +36,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 		static FindReferences refFinder = new FindReferences ();
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as CompilationUnit;
+			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return Enumerable.Empty<CodeIssue> ();
 			return GetGatherVisitor (context, unit).GetIssues ();
 		}
 
-		protected static bool TestOnlyAssigned (BaseRefactoringContext ctx, CompilationUnit unit, IVariable variable)
+		protected static bool TestOnlyAssigned (BaseRefactoringContext ctx, SyntaxTree unit, IVariable variable)
 		{
 			var assignment = false;
 			var nonAssignment = false;
@@ -87,6 +87,6 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			return assignment && !nonAssignment;
 		}
 
-		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, CompilationUnit unit);
+		internal abstract GatherVisitorBase GetGatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit);
 	}
 }

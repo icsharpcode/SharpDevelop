@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			if (!IsIDisposable (type))
 				return null;
 
-			var unit = context.RootNode as CompilationUnit;
+			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return null;
 
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			}
 		}
 
-		static AstNode GetLastReference (IVariable variable, RefactoringContext context, CompilationUnit unit)
+		static AstNode GetLastReference (IVariable variable, RefactoringContext context, SyntaxTree unit)
 		{
 			AstNode lastReference = null;
 			refFinder.FindLocalReferences (variable, context.ParsedFile, unit, context.Compilation,

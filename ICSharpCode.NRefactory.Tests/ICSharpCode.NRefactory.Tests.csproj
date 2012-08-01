@@ -242,6 +242,7 @@
     <Compile Include="CSharp\Parser\Expression\UnaryOperatorExpressionTests.cs" />
     <Compile Include="CSharp\Parser\GeneralScope\AttributeSectionTests.cs" />
     <Compile Include="CSharp\Parser\ParseUtil.cs" />
+    <Compile Include="CSharp\QueryExpressionExpanderTests.cs" />
     <Compile Include="CSharp\Refactoring\TypeSystemAstBuilderTests.cs" />
     <Compile Include="CSharp\Resolver\AnonymousTypeTests.cs" />
     <Compile Include="CSharp\Resolver\ArrayCreateTests.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="CSharp\Resolver\ComTests.cs" />
     <Compile Include="CSharp\Resolver\ConditionalOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\DynamicTests.cs" />
+    <Compile Include="CSharp\Resolver\ExplicitConversionsTest.cs" />
     <Compile Include="CSharp\Resolver\ExtensionMethodTests.cs" />
     <Compile Include="CSharp\Resolver\FindReferencesTest.cs" />
     <Compile Include="CSharp\Resolver\InvocationTests.cs" />
@@ -272,6 +274,7 @@
     <Compile Include="Documentation\CSharpCrefParserTests.cs" />
     <Compile Include="Documentation\CSharpDocumentationTests.cs" />
     <Compile Include="Documentation\IDStringTests.cs" />
+    <Compile Include="Editor\ReadOnlyDocumentTests.cs" />
     <Compile Include="FormattingTests\TestBraceStlye.cs" />
     <Compile Include="FormattingTests\TestFormattingBugs.cs" />
     <Compile Include="FormattingTests\TestSpacingVisitor.cs" />
@@ -388,7 +391,14 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CSharp\" />
+    <Folder Include="CSharp\Parser\" />
+    <Folder Include="CSharp\CodeIssues\" />
+    <Folder Include="CSharp\CodeActions\" />
+    <Folder Include="CSharp\Parser\Bugs\" />
+    <Folder Include="Editor" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

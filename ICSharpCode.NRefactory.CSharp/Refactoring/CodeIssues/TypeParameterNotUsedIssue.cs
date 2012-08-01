@@ -43,13 +43,13 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as CompilationUnit;
+			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return Enumerable.Empty<CodeIssue> ();
 			return new GatherVisitor (context, unit).GetIssues ();
 		}
 
-		protected static bool FindUsage (BaseRefactoringContext context, CompilationUnit unit,
+		protected static bool FindUsage (BaseRefactoringContext context, SyntaxTree unit,
 										 ITypeParameter typaParameter, AstNode declaration)
 		{
 			var found = false;
@@ -63,9 +63,9 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			CompilationUnit unit;
+			SyntaxTree unit;
 
-			public GatherVisitor (BaseRefactoringContext ctx, CompilationUnit unit)
+			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 				: base (ctx)
 			{
 				this.unit = unit;

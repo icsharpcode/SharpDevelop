@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 		TreeStore store = new TreeStore (typeof (string), typeof (string), typeof (AstNode), typeof (Pixbuf));
 		Dictionary<AstNode, TreeIter> iterDict = new Dictionary<AstNode, TreeIter> ();
 //		TextEditor editor = new TextEditor ();
-		CompilationUnit unit;
+		SyntaxTree unit;
 		
 		Pixbuf comment = new Pixbuf (typeof (MainWindow).Assembly, "comment.png");
 		Pixbuf classPixbuf = new Pixbuf (typeof (MainWindow).Assembly, "class.png");
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.GtkDemo
 		}
 
 
-		public void ShowUnit (CompilationUnit unit, CSharpAstResolver visitor)
+		public void ShowUnit (SyntaxTree unit, CSharpAstResolver visitor)
 		{
 			this.unit = unit;
 			store.Clear ();

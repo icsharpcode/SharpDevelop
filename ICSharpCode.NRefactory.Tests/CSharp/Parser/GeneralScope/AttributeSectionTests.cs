@@ -197,27 +197,27 @@ public class Form1 {
 		[Test]
 		public void AssemblyAttributeBeforeNamespace()
 		{
-			var cu = new CSharpParser().Parse(new StringReader("using System; [assembly: Attr] namespace X {}"), "code.cs");
+			var syntaxTree = SyntaxTree.Parse("using System; [assembly: Attr] namespace X {}");
 			Assert.AreEqual(
 				new Type[] {
 					typeof(UsingDeclaration),
 					typeof(AttributeSection),
 					typeof(NamespaceDeclaration)
-				}, cu.Children.Select(c => c.GetType()).ToArray());
+				}, syntaxTree.Children.Select(c => c.GetType()).ToArray());
 		}
 		
 		[Ignore("Fixme!")]
 		[Test]
 		public void AssemblyAttributeBeforeClass()
 		{
-			var cu = new CSharpParser().Parse(new StringReader("using System; [assembly: Attr] class X {}"), "code.cs");
+			var syntaxTree = SyntaxTree.Parse("using System; [assembly: Attr] class X {}");
 			Assert.AreEqual(
 				new Type[] {
 					typeof(UsingDeclaration),
 					typeof(AttributeSection),
 					typeof(TypeDeclaration)
-				}, cu.Children.Select(c => c.GetType()).ToArray());
-			Assert.That(((TypeDeclaration)cu.LastChild).Attributes, Is.Empty);
+				}, syntaxTree.Children.Select(c => c.GetType()).ToArray());
+			Assert.That(((TypeDeclaration)syntaxTree.LastChild).Attributes, Is.Empty);
 		}
 	}
 }

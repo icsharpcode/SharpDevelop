@@ -45,7 +45,7 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'net_4_5_Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -54,7 +54,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
-	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
@@ -84,6 +84,7 @@
     <Compile Include="ResolverTest.cs" />
     <Compile Include="RoundtripTest.cs" />
     <Compile Include="Solution.cs" />
+    <Compile Include="VisitorBenchmark.cs" />
     <Compile Include="Xml\IncrementalXmlParserTests.cs" />
     <Compile Include="Xml\XmlReaderTest.cs" />
   </ItemGroup>

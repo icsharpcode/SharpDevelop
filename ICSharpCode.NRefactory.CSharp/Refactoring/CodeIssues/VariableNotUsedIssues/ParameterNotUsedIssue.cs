@@ -36,16 +36,16 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 	public class ParameterNotUsedIssue : VariableNotUsedIssue
 	{
 
-		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context, CompilationUnit unit)
+		internal override GatherVisitorBase GetGatherVisitor (BaseRefactoringContext context, SyntaxTree unit)
 		{
 			return new GatherVisitor (context, unit);
 		}
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			CompilationUnit unit;
+			SyntaxTree unit;
 
-			public GatherVisitor (BaseRefactoringContext ctx, CompilationUnit unit)
+			public GatherVisitor (BaseRefactoringContext ctx, SyntaxTree unit)
 				: base (ctx)
 			{
 				this.unit = unit;

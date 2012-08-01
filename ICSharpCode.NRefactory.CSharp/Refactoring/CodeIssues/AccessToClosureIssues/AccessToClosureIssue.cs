@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		public IEnumerable<CodeIssue> GetIssues (BaseRefactoringContext context)
 		{
-			var unit = context.RootNode as CompilationUnit;
+			var unit = context.RootNode as SyntaxTree;
 			if (unit == null)
 				return Enumerable.Empty<CodeIssue> ();
 			return new GatherVisitor (context, unit, this).GetIssues ();
@@ -76,11 +76,11 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 
 		class GatherVisitor : GatherVisitorBase
 		{
-			CompilationUnit unit;
+			SyntaxTree unit;
 			string title;
 			AccessToClosureIssue issueProvider;
 
-			public GatherVisitor (BaseRefactoringContext context, CompilationUnit unit,
+			public GatherVisitor (BaseRefactoringContext context, SyntaxTree unit,
 								  AccessToClosureIssue issueProvider)
 				: base (context)
 			{

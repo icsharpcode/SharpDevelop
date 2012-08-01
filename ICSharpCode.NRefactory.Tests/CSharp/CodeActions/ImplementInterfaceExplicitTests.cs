@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ImplementInterfaceExplicitTests.cs
 //  
 // Author:
@@ -46,6 +46,33 @@ class Foo : IDisposable
 	void IDisposable.Dispose ()
 	{
 		throw new NotImplementedException ();
+	}
+	#endregion
+}
+");
+		}
+		
+		[Test]
+		public void NestedInterfaceInGenericClass()
+		{
+			Test<ImplementInterfaceExplicitAction>(@"using System;
+class TestClass<T> {
+	public interface INestedInterface { T Prop { get; } }
+}
+class TargetClass : TestClass<string>.$INestedInterface
+{
+}
+", @"using System;
+class TestClass<T> {
+	public interface INestedInterface { T Prop { get; } }
+}
+class TargetClass : TestClass<string>.INestedInterface
+{
+	#region INestedInterface implementation
+	string TestClass<string>.INestedInterface.Prop {
+		get {
+			throw new NotImplementedException ();
+		}
 	}
 	#endregion
 }

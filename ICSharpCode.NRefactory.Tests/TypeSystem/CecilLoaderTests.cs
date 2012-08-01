@@ -307,5 +307,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsNotNull(c, "System.Func<,> not found");
 			Assert.AreEqual("mscorlib", c.ParentAssembly.AssemblyName);
 		}
+		
+		public void DelegateIsClass()
+		{
+			var @delegate = compilation.FindType(KnownTypeCode.Delegate).GetDefinition();
+			Assert.AreEqual(TypeKind.Class, @delegate);
+			Assert.IsFalse(@delegate.IsSealed);
+		}
+		
+		public void MulticastDelegateIsClass()
+		{
+			var multicastDelegate = compilation.FindType(KnownTypeCode.MulticastDelegate).GetDefinition();
+			Assert.AreEqual(TypeKind.Class, multicastDelegate);
+			Assert.IsFalse(multicastDelegate.IsSealed);
+		}
 	}
 }

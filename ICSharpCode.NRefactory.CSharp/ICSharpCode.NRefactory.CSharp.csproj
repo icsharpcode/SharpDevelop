@@ -90,7 +90,7 @@
     <Compile Include="Ast\AstType.cs" />
     <Compile Include="Ast\DocumentationReference.cs" />
     <Compile Include="Ast\IdentifierExpressionBackreference.cs" />
-    <Compile Include="Ast\CompilationUnit.cs" />
+    <Compile Include="Ast\SyntaxTree.cs" />
     <Compile Include="Ast\ComposedType.cs" />
     <Compile Include="Ast\CSharpModifierToken.cs" />
     <Compile Include="Ast\CSharpTokenNode.cs" />
@@ -151,6 +151,7 @@
     <Compile Include="Ast\Modifiers.cs" />
     <Compile Include="Ast\NodeType.cs" />
     <Compile Include="Ast\ObservableAstVisitor.cs" />
+    <Compile Include="Ast\old_ObservableAstVisitor.cs" />
     <Compile Include="Ast\PrimitiveType.cs" />
     <Compile Include="Ast\SimpleType.cs" />
     <Compile Include="Ast\Statements\BlockStatement.cs" />
@@ -262,6 +263,7 @@
     <Compile Include="Parser\mcs\typespec.cs" />
     <Compile Include="Parser\mcs\visit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryExpressionExpander.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertAsToCastAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertCastToAsAction.cs" />
     <Compile Include="Refactoring\CodeActions\ConvertConditionalToIfAction.cs" />
@@ -454,6 +456,7 @@
     <Compile Include="Refactoring\CodeActions\ExtractFieldAction.cs" />
     <Compile Include="Completion\ICompletionContextProvider.cs" />
     <Compile Include="Refactoring\CodeActions\ExtractMethod\VariableUsageAnalyzation.cs" />
+    <Compile Include="Parser\SeekableStreamReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">

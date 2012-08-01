@@ -159,7 +159,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindReferencesInFile (refFinder.GetSearchScopes (entity), 
 				                               context.ParsedFile, 
-				                               context.RootNode as CompilationUnit, 
+				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
@@ -169,7 +169,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindLocalReferences (variable, 
 				                               context.ParsedFile, 
-				                               context.RootNode as CompilationUnit, 
+				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
@@ -179,7 +179,7 @@ namespace ICSharpCode.NRefactory.CSharp.CodeActions
 				FindReferences refFinder = new FindReferences ();
 				refFinder.FindTypeParameterReferences (type, 
 				                               context.ParsedFile, 
-				                               context.RootNode as CompilationUnit, 
+				                               context.RootNode as SyntaxTree, 
 				                               context.Compilation, (n, r) => Rename (n, name), 
 				                               context.CancellationToken);
 			}
