@@ -52,7 +52,7 @@ class TestClass
 			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
+			Assert.AreEqual(2, issue.Actions.Count);
 				
 			CheckFix(context, issues [0], @"
 class TestClass
@@ -87,7 +87,7 @@ class TestClass
 			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
+			Assert.AreEqual(2, issue.Actions.Count);
 			
 			CheckFix(context, issues [0], @"
 class TestClass
@@ -122,7 +122,7 @@ class TestClass
 			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
 			Assert.AreEqual(1, issues.Count);
 			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
+			Assert.AreEqual(2, issue.Actions.Count);
 			
 			CheckFix(context, issues [0], @"
 class TestClass
@@ -156,8 +156,9 @@ class TestClass
 			TestRefactoringContext context;
 			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
 			Assert.AreEqual(3, issues.Count);
-			var issue = issues [0];
-			Assert.AreEqual(1, issue.Actions.Count);
+			Assert.AreEqual(2, issues[0].Actions.Count);
+			Assert.AreEqual(2, issues[1].Actions.Count);
+			Assert.AreEqual(2, issues[2].Actions.Count);
 			
 			CheckFix(context, issues [2], @"
 class TestClass
@@ -172,7 +173,7 @@ class TestClass
 	}
 }");
 		}
-
+		
 		[Test]
 		public void IgnoresIfParamsAreUsed()
 		{
@@ -191,6 +192,113 @@ class TestClass
 			TestRefactoringContext context;
 			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
 			Assert.AreEqual(0, issues.Count);
+		}
+		
+		[Test]
+		public void NamedArgument()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (a2: ""a2"");
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
+			Assert.AreEqual(1, issues.Count);
+			Assert.AreEqual(2, issues[0].Actions.Count);
+
+			CheckFix(context, issues [0], @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo ();
+	}
+}");
+		}
+		
+		[Test]
+		public void DoesNotStopAtDifferingNamedParameters()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""a2"", a3: ""non-default"");
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
+			Assert.AreEqual(2, issues.Count);
+			Assert.AreEqual(2, issues[0].Actions.Count);
+			Assert.AreEqual(2, issues[1].Actions.Count);
+			
+			CheckFix(context, issues [1], @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", string a3 = ""a3"")
+	{
+	}
+
+	void Bar()
+	{
+		Foo (a3: ""non-default"");
+	}
+}");
+		}
+		
+		[Test]
+		public void DoesNotStopAtNamedParamsArray()
+		{
+			var input = @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", params string[] extras)
+	{
+	}
+
+	void Bar()
+	{
+		Foo (""a1"", ""a2"", extras: new [] { ""extra1"" });
+	}
+}";
+			TestRefactoringContext context;
+			var issues = GetIssues(new OptionalParameterCouldBeSkippedIssue(), input, out context);
+			Assert.AreEqual(2, issues.Count);
+			Assert.AreEqual(2, issues[0].Actions.Count);
+			Assert.AreEqual(2, issues[1].Actions.Count);
+
+			// TODO: Fix formatting
+			CheckFix(context, issues [1], @"
+class TestClass
+{
+	void Foo(string a1 = ""a1"", string a2 = ""a2"", params string[] extras)
+	{
+	}
+
+	void Bar()
+	{
+		Foo (extras: new[] {
+	""extra1""
+});
+	}
+}");
 		}
 	}
 }

@@ -28,6 +28,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
+using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Refactoring
 {
@@ -52,50 +53,66 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 			public override void VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression)
 			{
 				base.VisitObjectCreateExpression(objectCreateExpression);
-
-				var invocationResolveResult = ctx.Resolve(objectCreateExpression) as CSharpInvocationResolveResult;
-				if (invocationResolveResult == null)
-					return;
-				var arguments = objectCreateExpression.Arguments.ToArray();
 				
-				var redundantArguments = GetRedundantArguments(arguments, invocationResolveResult);
-				foreach (var argument in redundantArguments) {
-					string actionMessage = GetActionTitle(objectCreateExpression.Arguments, argument);
-					
-					var action = new CodeAction(actionMessage, script => {
-						var newArgumentList = objectCreateExpression.Arguments
-							.Where(arg => arg.StartLocation < argument.StartLocation)
-							.Select(arg => arg.Clone());
-						var newInvocation = new ObjectCreateExpression(objectCreateExpression.Type.Clone(), newArgumentList);
-						script.Replace(objectCreateExpression, newInvocation);
-					});
-					var issueMessage = ctx.TranslateString("Argument is identical to the default value");
-					AddIssue(argument, issueMessage, new [] { action });
-				}
+				CheckMethodCall(objectCreateExpression, objectCreateExpression.Arguments,
+				                (objectCreation, args) => new ObjectCreateExpression(objectCreation.Type.Clone(), args));
 			}
 
 			public override void VisitInvocationExpression(InvocationExpression invocationExpression)
 			{
 				base.VisitInvocationExpression(invocationExpression);
+				
+				CheckMethodCall(invocationExpression, invocationExpression.Arguments,
+				                (invocation, args) => new InvocationExpression(invocation.Target.Clone(), args));
+			}
 
-				var invocationResolveResult = ctx.Resolve(invocationExpression) as CSharpInvocationResolveResult;
+			void CheckMethodCall<T> (T node, IEnumerable<Expression> arguments, Func<T, IEnumerable<Expression>, T> generateReplacement) where T: AstNode
+			{
+				var invocationResolveResult = ctx.Resolve(node) as CSharpInvocationResolveResult;
 				if (invocationResolveResult == null)
 					return;
-				var arguments = invocationExpression.Arguments.ToArray();
+				
+				string actionMessage = ctx.TranslateString("Remove redundant arguments");
+				
+				var redundantArguments = GetRedundantArguments(arguments.ToArray(), invocationResolveResult);
+				var action = new CodeAction(actionMessage, script => {
+					var newArgumentList = arguments
+						.Where(arg => !redundantArguments.Contains(arg))
+						.Select(arg => arg.Clone());
+					var newInvocation = generateReplacement(node, newArgumentList);
+					script.Replace(node, newInvocation);
+				});
+				var issueMessage = ctx.TranslateString("Argument is identical to the default value");
+				var lastPositionalArgument = redundantArguments.FirstOrDefault(expression => !(expression is NamedArgumentExpression));
+				bool hasNamedArguments = false;
 
-				var redundantArguments = GetRedundantArguments(arguments, invocationResolveResult);
 				foreach (var argument in redundantArguments) {
-					string actionMessage = GetActionTitle(invocationExpression.Arguments, argument);
-					
-					var action = new CodeAction(actionMessage, script => {
-						var newArgumentList = invocationExpression.Arguments
-							.Where(arg => arg.StartLocation < argument.StartLocation)
+					var localArgument = argument;
+					var actions = new List<CodeAction>();
+					actions.Add(action);
+
+					if (localArgument is NamedArgumentExpression || localArgument == lastPositionalArgument) {
+						var title = ctx.TranslateString("Remove this argument");
+						actions.Add(new CodeAction(title, script => {
+							var newArgumentList = arguments
+								.Where(arg => arg != localArgument)
 								.Select(arg => arg.Clone());
-						var newInvocation = new InvocationExpression(invocationExpression.Target.Clone(), newArgumentList);
-						script.Replace(invocationExpression, newInvocation);
-					});
-					var issueMessage = ctx.TranslateString("Argument is identical to the default value");
-					AddIssue(argument, issueMessage, new [] { action });
+							var newInvocation = generateReplacement(node, newArgumentList);
+							script.Replace(node, newInvocation);
+						}));
+						hasNamedArguments = true;
+					} else {
+						var title = ctx.TranslateString("Remove this and the following positional arguments");
+						actions.Add(new CodeAction(title, script => {
+							var newArgumentList = arguments
+								.Where(arg => arg.StartLocation < localArgument.StartLocation && !(arg is NamedArgumentExpression))
+								.Select(arg => arg.Clone());
+							var newInvocation = generateReplacement(node, newArgumentList);
+							script.Replace(node, newInvocation);
+						}));
+					}
+
+					AddIssue(localArgument, issueMessage, actions);
 				}
 			}
 
@@ -110,36 +127,34 @@ namespace ICSharpCode.NRefactory.CSharp.Refactoring
 						// This particular parameter is an error, but keep trying the other ones
 						continue;
 					var parameter = resolvedParameters[parameterIndex];
-					if (parameter.IsParams)
-						// before params all optional arguments are needed, otherwise some of the
-						// param arguments will be shifted out of the params into the fixed parameters
+					var argument = arguments[i];
+					if (argument is PrimitiveExpression) {
+						if (parameter.IsParams)
+							// before positional params arguments all optional arguments are needed, otherwise some of the
+							// param arguments will be shifted out of the params into the fixed parameters
+							break;
+						if (!parameter.IsOptional)
+							// There can be no optional parameters preceding a required one
+							break;
+						var argumentResolveResult = ctx.Resolve(argument) as ConstantResolveResult;
+						if (argumentResolveResult == null || parameter.ConstantValue != argumentResolveResult.ConstantValue)
+							// Stop here since any arguments before this one has to be there
+							// to enable the passing of this argument
+							break;
+						yield return argument;
+					} else if (argument is NamedArgumentExpression) {
+						var expression = ((NamedArgumentExpression)argument).Expression as PrimitiveExpression;
+						if (expression == null)
+							continue;
+						var expressionResolveResult = ctx.Resolve(expression) as ConstantResolveResult;
+						if (expressionResolveResult == null || parameter.ConstantValue != expressionResolveResult.ConstantValue)
+							// continue, since there can still be more arguments that are redundant
+							continue;
+						yield return argument;
+					} else {
+						// This is a non-constant positional argument => no more redundancies are possible
 						break;
-					if (!parameter.IsOptional)
-						// There can be no optional parameters preceding a required one
-						break;
-					var argument = arguments[i] as PrimitiveExpression;
-					if (argument == null)
-						continue;
-					var argumentResolveResult = ctx.Resolve(argument) as ConstantResolveResult;
-					if (parameter.ConstantValue != argumentResolveResult.ConstantValue)
-						// Stop here since any arguments before this one has to be there
-						// to enable the passing of this argument
-						break;
-					yield return argument;
-				}
-			}
-
-			string GetActionTitle(IEnumerable<Expression> arguments, Expression firstArgumentToRemove)
-			{
-				var redundantArgumentCount = arguments
-					.Where(arg => arg.StartLocation >= firstArgumentToRemove.StartLocation)
-					.Count();
-
-				if (redundantArgumentCount == 1) {
-					return ctx.TranslateString("Remove this argument");
-				}
-				else {
-					return ctx.TranslateString("Remove this and the following arguments");
+					}
 				}
 			}
 		}
