@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			                }, ace.Initializer.Children.Select(c => c.Role).ToArray());
 		}
 
-		[Test, Ignore("Parser bug")]
+		[Test]
 		public void ArrayInitializerWithCommaAtEnd()
 		{
 			var ace = ParseUtilCSharp.ParseExpression<ArrayCreateExpression>("new [] { 1, }");
