@@ -164,6 +164,7 @@
     <Compile Include="CSharp\CodeIssues\ParameterHidesMemberIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterNotUsedIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\ParameterOnlyAssignedIssueTests.cs" />
+    <Compile Include="CSharp\CodeIssues\RedundantArrayInitializerCommaIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantAssignmentIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\CompareBooleanWithTrueOrFalseIssueTests.cs" />
     <Compile Include="CSharp\CodeIssues\RedundantAttributeParenthesesIssueTests.cs" />

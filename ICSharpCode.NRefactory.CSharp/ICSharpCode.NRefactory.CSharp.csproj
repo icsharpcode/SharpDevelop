@@ -301,6 +301,7 @@
     <Compile Include="Refactoring\CodeIssues\ForControlVariableNotModifiedIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\IdenticalConditionalBranchIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\MultipleEnumerationIssue.cs" />
+    <Compile Include="Refactoring\CodeIssues\RedundantArrayInitializerCommaIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantAssignmentIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantAttributeParenthesesIssue.cs" />
     <Compile Include="Refactoring\CodeIssues\RedundantElseIssue.cs" />
