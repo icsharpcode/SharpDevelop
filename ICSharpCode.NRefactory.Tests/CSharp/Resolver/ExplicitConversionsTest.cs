@@ -197,6 +197,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(C.None, ExplicitConversion(typeof(object[]), typeof(int[])));
 			Assert.AreEqual(C.None, ExplicitConversion(typeof(short[]), typeof(int[])));
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(Array), typeof(int[])));
+		}
+		
+		[Test]
+		public void ExplicitReferenceConversion_InterfaceToArray()
+		{
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(ICloneable), typeof(int[])));
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(IEnumerable<string>), typeof(string[])));
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(IEnumerable<object>), typeof(string[])));
@@ -205,6 +210,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(IEnumerable<int>), typeof(int[])));
 			Assert.AreEqual(C.None, ExplicitConversion(typeof(IEnumerable<string>), typeof(object[,])));
 			Assert.AreEqual(C.None, ExplicitConversion(typeof(IEnumerable<short>), typeof(object[])));
+		}
+		
+		[Test]
+		public void ExplicitReferenceConversion_ArrayToInterface()
+		{
+			Assert.AreEqual(C.ImplicitReferenceConversion, ExplicitConversion(typeof(int[]), typeof(ICloneable)));
+			Assert.AreEqual(C.ImplicitReferenceConversion, ExplicitConversion(typeof(string[]), typeof(IEnumerable<string>)));
+			Assert.AreEqual(C.ImplicitReferenceConversion, ExplicitConversion(typeof(string[]), typeof(IEnumerable<object>)));
+			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(object[]), typeof(IEnumerable<string>)));
+			Assert.AreEqual(C.ExplicitReferenceConversion, ExplicitConversion(typeof(dynamic[]), typeof(IEnumerable<string>)));
+			Assert.AreEqual(C.ImplicitReferenceConversion, ExplicitConversion(typeof(int[]), typeof(IEnumerable<int>)));
+			Assert.AreEqual(C.None, ExplicitConversion(typeof(object[,]), typeof(IEnumerable<string>)));
+			Assert.AreEqual(C.None, ExplicitConversion(typeof(object[]), typeof(IEnumerable<short>)));
 		}
 		
 		[Test]

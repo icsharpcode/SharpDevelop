@@ -421,14 +421,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						&& ImplicitReferenceConversion(fromArray.ElementType, toArray.ElementType, subtypeCheckNestingDepth);
 				}
 				// conversion from single-dimensional array S[] to IList<T>:
-				ParameterizedType toPT = toType as ParameterizedType;
-				if (fromArray.Dimensions == 1 && toPT != null) {
-					KnownTypeCode tc = toPT.GetDefinition().KnownTypeCode;
-					if (tc == KnownTypeCode.IListOfT || tc == KnownTypeCode.ICollectionOfT || tc == KnownTypeCode.IEnumerableOfT || tc == KnownTypeCode.IReadOnlyListOfT) {
-						// array covariance plays a part here as well (string[] is IList<object>)
-						return IdentityConversion(fromArray.ElementType, toPT.GetTypeArgument(0))
-							|| ImplicitReferenceConversion(fromArray.ElementType, toPT.GetTypeArgument(0), subtypeCheckNestingDepth);
-					}
+				IType toTypeArgument = UnpackGenericArrayInterface(toType);
+				if (fromArray.Dimensions == 1 && toTypeArgument != null) {
+					// array covariance plays a part here as well (string[] is IList<object>)
+					return IdentityConversion(fromArray.ElementType, toTypeArgument)
+						|| ImplicitReferenceConversion(fromArray.ElementType, toTypeArgument, subtypeCheckNestingDepth);
 				}
 				// conversion from any array to System.Array and the interfaces it implements:
 				IType systemArray = compilation.FindType(KnownTypeCode.Array);
@@ -437,6 +434,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// now comes the hard part: traverse the inheritance chain and figure out generics+variance
 			return IsSubtypeOf(fromType, toType, subtypeCheckNestingDepth);
+		}
+		
+		/// <summary>
+		/// For IList{T}, ICollection{T}, IEnumerable{T} and IReadOnlyList{T}, returns T.
+		/// Otherwise, returns null.
+		/// </summary>
+		IType UnpackGenericArrayInterface(IType interfaceType)
+		{
+			ParameterizedType pt = interfaceType as ParameterizedType;
+			if (pt != null) {
+				KnownTypeCode tc = pt.GetDefinition().KnownTypeCode;
+				if (tc == KnownTypeCode.IListOfT || tc == KnownTypeCode.ICollectionOfT || tc == KnownTypeCode.IEnumerableOfT || tc == KnownTypeCode.IReadOnlyListOfT) {
+					return pt.GetTypeArgument(0);
+				}
+			}
+			return null;
 		}
 		
 		// Determines whether s is a subtype of t.
@@ -530,16 +543,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return false;
 					return ExplicitReferenceConversion(fromArray.ElementType, toArray.ElementType);
 				}
-				ParameterizedType pt = fromType as ParameterizedType;
-				if (pt != null && toArray.Dimensions == 1) {
-					KnownTypeCode tc = pt.GetDefinition().KnownTypeCode;
-					if (tc == KnownTypeCode.IListOfT || tc == KnownTypeCode.ICollectionOfT || tc == KnownTypeCode.IEnumerableOfT || tc == KnownTypeCode.IReadOnlyListOfT) {
-						return ExplicitReferenceConversion(pt.GetTypeArgument(0), toArray.ElementType)
-							|| IdentityConversion(pt.GetTypeArgument(0), toArray.ElementType);
-					}
+				IType fromTypeArgument = UnpackGenericArrayInterface(fromType);
+				if (fromTypeArgument != null && toArray.Dimensions == 1) {
+					return ExplicitReferenceConversion(fromTypeArgument, toArray.ElementType)
+						|| IdentityConversion(fromTypeArgument, toArray.ElementType);
 				}
 				// Otherwise treat the array like a sealed class - require implicit conversion in the opposite direction
 				return IsImplicitReferenceConversion(toType, fromType);
+			} else if (fromType.Kind == TypeKind.Array) {
+				ArrayType fromArray = (ArrayType)fromType;
+				IType toTypeArgument = UnpackGenericArrayInterface(toType);
+				if (toTypeArgument != null && fromArray.Dimensions == 1) {
+					return ExplicitReferenceConversion(fromArray.ElementType, toTypeArgument);
+				}
+				// Otherwise treat the array like a sealed class
+				return IsImplicitReferenceConversion(fromType, toType);
 			} else if (fromType.Kind == TypeKind.Delegate && toType.Kind == TypeKind.Delegate) {
 				ITypeDefinition def = fromType.GetDefinition();
 				if (def == null || !def.Equals(toType.GetDefinition()))
@@ -570,7 +588,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				return true;
-			} else if (IsSealedReferenceType(fromType) || fromType.Kind == TypeKind.Array) {
+			} else if (IsSealedReferenceType(fromType)) {
 				// If the source type is sealed, explicit conversions can't do anything more than implicit ones
 				return IsImplicitReferenceConversion(fromType, toType);
 			} else if (IsSealedReferenceType(toType)) {
