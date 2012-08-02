@@ -3223,25 +3223,36 @@ namespace ICSharpCode.NRefactory.CSharp
 			#endregion
 			
 			#region LINQ expressions
+			QueryOrderClause currentQueryOrderClause;
+
 			public override object Visit (Mono.CSharp.Linq.QueryExpression queryExpression)
 			{
-				var result = new QueryExpression ();
-				
-				var currentClause = queryExpression.next;
-				
-				while (currentClause != null) {
-					QueryClause clause = (QueryClause)currentClause.Accept (this);
-					if (clause is QueryContinuationClause) {
-						// insert preceding query at beginning of QueryContinuationClause
-						clause.InsertChildAfter (null, result, QueryContinuationClause.PrecedingQueryRole);
-						// create a new QueryExpression for the remaining query
-						result = new QueryExpression ();
+				var oldQueryOrderClause = currentQueryOrderClause;
+				try {
+					currentQueryOrderClause = null;
+					var result = new QueryExpression ();
+					
+					var currentClause = queryExpression.next;
+					
+					while (currentClause != null) {
+						QueryClause clause = (QueryClause)currentClause.Accept (this);
+						if (clause is QueryContinuationClause) {
+							// insert preceding query at beginning of QueryContinuationClause
+							clause.InsertChildAfter (null, result, QueryContinuationClause.PrecedingQueryRole);
+							// create a new QueryExpression for the remaining query
+							result = new QueryExpression ();
+						}
+						if (clause != null) {
+							result.AddChild (clause, QueryExpression.ClauseRole);
+						}
+						currentClause = currentClause.next;
 					}
-					result.AddChild (clause, QueryExpression.ClauseRole);
-					currentClause = currentClause.next;
+					
+					return result;
 				}
-				
-				return result;
+				finally {
+					currentQueryOrderClause = oldQueryOrderClause;
+				}
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.QueryStartClause queryStart)
@@ -3407,7 +3418,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (Mono.CSharp.Linq.OrderByAscending orderByAscending)
 			{
-				var result = new QueryOrderClause ();
+				currentQueryOrderClause = new QueryOrderClause();
 				
 				var ordering = new QueryOrdering ();
 				if (orderByAscending.Expr != null)
@@ -3417,13 +3428,13 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Ascending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.AscendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return currentQueryOrderClause;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.OrderByDescending orderByDescending)
 			{
-				var result = new QueryOrderClause ();
+				currentQueryOrderClause = new QueryOrderClause ();
 				
 				var ordering = new QueryOrdering ();
 				if (orderByDescending.Expr != null)
@@ -3433,14 +3444,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Descending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.DescendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return currentQueryOrderClause;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.ThenByAscending thenByAscending)
 			{
-				var result = new QueryOrderClause ();
-				
 				var ordering = new QueryOrdering ();
 				if (thenByAscending.Expr != null)
 					ordering.AddChild ((Expression)thenByAscending.Expr.Accept (this), Roles.Expression);
@@ -3449,14 +3458,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Ascending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.AscendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return null;
 			}
 			
 			public override object Visit (Mono.CSharp.Linq.ThenByDescending thenByDescending)
 			{
-				var result = new QueryOrderClause ();
-				
 				var ordering = new QueryOrdering ();
 				if (thenByDescending.Expr != null)
 					ordering.AddChild ((Expression)thenByDescending.Expr.Accept (this), Roles.Expression);
@@ -3465,8 +3472,8 @@ namespace ICSharpCode.NRefactory.CSharp
 					ordering.Direction = QueryOrderingDirection.Descending;
 					ordering.AddChild (new CSharpTokenNode (Convert (location [0])), QueryOrdering.DescendingKeywordRole);
 				}
-				result.AddChild (ordering, QueryOrderClause.OrderingRole);
-				return result;
+				currentQueryOrderClause.AddChild (ordering, QueryOrderClause.OrderingRole);
+				return null;
 			}
 			
 			public override object Visit (Await awaitExpr)
