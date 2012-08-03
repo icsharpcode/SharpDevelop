@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class CodeCoverageOptionsPanel : XmlFormsOptionPanel
+	public class old_CodeCoverageOptionsPanel : XmlFormsOptionPanel
 	{
 		static readonly string foregroundCustomColourButtonName = "foregroundCustomColourButton";
 		static readonly string backgroundCustomColourButtonName = "backgroundCustomColourButton";
